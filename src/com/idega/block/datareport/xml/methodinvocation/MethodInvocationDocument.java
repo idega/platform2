@@ -14,6 +14,7 @@ import org.jdom.DocType;
 
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
 
 /**
  * Title:		MethodInvocationDocument
@@ -49,7 +50,7 @@ public class MethodInvocationDocument extends XMLDocument {
 	/**
 	 * @param document
 	 */
-	public MethodInvocationDocument(XMLDocument document) {
+	public MethodInvocationDocument(XMLDocument document) throws XMLException {
 		this();
 		initialize(document);
 	}
@@ -59,7 +60,7 @@ public class MethodInvocationDocument extends XMLDocument {
 		this.setDocType(docType);
 	}
 	
-	private void initialize(XMLDocument document){
+	private void initialize(XMLDocument document) throws XMLException {
 		List methodDescriptions = document.getRootElement().getChildren(MethodDescription.NAME);
 		Iterator iter = methodDescriptions.iterator();
 		if(iter != null){

@@ -40,11 +40,13 @@ import com.idega.block.datareport.data.MethodInvocationXMLFileHome;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.block.datareport.xml.methodinvocation.ClassDescription;
+import com.idega.block.datareport.xml.methodinvocation.ClassHandler;
 import com.idega.block.datareport.xml.methodinvocation.MethodDescription;
 import com.idega.block.datareport.xml.methodinvocation.MethodInput;
 import com.idega.block.datareport.xml.methodinvocation.MethodInvocationDocument;
 import com.idega.block.datareport.xml.methodinvocation.MethodInvocationParser;
 import com.idega.business.IBOLookup;
+import com.idega.business.InputHandler;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
@@ -295,7 +297,8 @@ public class ReportGenerator extends Block {
 					Class mainClass = mainClassDesc.getClassObject();
 					String type = mainClassDesc.getType();
 					String methodName = mDesc.getName();
-//					System.out.println("methodname: "+methodName);
+
+					
 					
 					MethodInput input = mDesc.getInput();
 					List parameters = null;
@@ -316,11 +319,25 @@ public class ReportGenerator extends Block {
 							Class prmClassType = clDesc.getClassObject();
 							paramTypes[index] = prmClassType;
 							String prm = iwc.getParameter(getParameterName(clDesc.getName()));
-							Object obj = getParameterObject(iwc,prm,prmClassType);
+							Object obj = null;
 							
+							ClassHandler cHandler = clDesc.getClassHandler();
+							InputHandler iHandler = null;
+							if(cHandler != null){
+								iHandler = cHandler.getHandler();						
+							}
+							
+							if(iHandler != null){
+								obj = iHandler.getResultingObject(prm,iwc);
+								_parameterMap.put(clDesc.getName(),iHandler.getDisplayNameOfValue(obj,iwc));
+							} else {
+								obj = getParameterObject(iwc,prm,prmClassType);
+								_parameterMap.put(clDesc.getName(),prm);
+							}
 							
 							_parameterMap.put(_prmLablePrefix+clDesc.getName(),clDesc.getLocalizedName(currentLocale)+":");
-							_parameterMap.put(clDesc.getName(),prm);
+							
+							
 							
 							
 							
@@ -609,9 +626,23 @@ public class ReportGenerator extends Block {
 						row++;
 						_fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale()))+":",1,row);
 						
-						InterfaceObject input = getFieldInputObject(element.getName(),null,element.getClassObject());
-						//_busy.addDisabledObject(input);
+						ClassHandler cHandler = element.getClassHandler();
+						PresentationObject input = null;
+						if(cHandler != null){
+							InputHandler iHandler = cHandler.getHandler();
+							input = iHandler.getHandlerObject(getParameterName(element.getName()),cHandler.getValue(),iwc);
+							setStyle(input);							
+						} else  {
+							input = getFieldInputObject(element.getName(),null,element.getClassObject());
+							//_busy.addDisabledObject(input);
+						}
 						_fieldTable.add(input,2,row);
+						
+						
+					} catch (InstantiationException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}

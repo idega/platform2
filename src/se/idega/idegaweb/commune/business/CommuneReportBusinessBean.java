@@ -16,27 +16,29 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.user.data.Citizen;
+import se.idega.idegaweb.commune.user.data.CitizenHome;
+
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
+import com.idega.block.school.data.SchoolSeason;
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOService;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.data.Address;
-import com.idega.core.data.AddressHome;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
-import com.idega.user.data.GroupHome;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
@@ -85,6 +87,16 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 	
+	public  ReportableCollection getChildAndItsParentsRegisteredInCommune(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstRegistrationDateInPeriode, Date lastRegistrationDateInPeriode) throws RemoteException, CreateException, FinderException{
+		
+		Timestamp timestampFRDIP = new Timestamp(firstRegistrationDateInPeriode.getTime());
+		final long millisecondsInOneDay = 8640000;
+		Timestamp timestampLRDIP = new Timestamp(lastRegistrationDateInPeriode.getTime()+millisecondsInOneDay-1);
+		
+		return 	getChildAndItsParentsRegisteredInCommune(firstBirthDateInPeriode, lastBirthDateInPeriode, timestampFRDIP, timestampLRDIP);
+	}
+	
+	
 	public ReportableCollection getChildAndItsParentsRegisteredInCommune(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Timestamp firstRegistrationDateInPeriode, Timestamp lastRegistrationDateInPeriode) throws RemoteException, CreateException, FinderException{
 		initializeMemberFamilyLogicIfNeeded();
 		initializeCommuneUserBusinessIfNeeded();
@@ -96,7 +108,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		Group communeGroup = _communeUserService.getRootCitizenGroup(); //((GroupHome)IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(3));
 		
 		//find all childs by conditions
-		Collection childs = ((UserHome)IDOLookup.getHome(User.class)).findByDateOfBirthAndGroupRelationInitiationTimeAndStatus(firstBirthDateInPeriode,lastBirthDateInPeriode,communeGroup,firstRegistrationDateInPeriode,lastRegistrationDateInPeriode,null);
+		String[] status = new String[1];
+		status[0] = GroupRelation.STATUS_ACTIVE;
+		Collection childs = ((UserHome)IDOLookup.getHome(User.class)).findByDateOfBirthAndGroupRelationInitiationTimeAndStatus(firstBirthDateInPeriode,lastBirthDateInPeriode,communeGroup,firstRegistrationDateInPeriode,lastRegistrationDateInPeriode,status);
 		
 		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
 		
@@ -180,7 +194,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 
 		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
 		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
-		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.","Parent2 FirstName"),currentLocale);
+		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_first_name","Parent2 FirstName"),currentLocale);
 		reportData.addField(parent2FirstName);
 		
 		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
@@ -213,7 +227,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			
 			Address childAddressEntiy = _communeUserService.getUsersMainAddress(child);
 			if(childAddressEntiy!=null){
-				String childAddressString = childAddressEntiy.getStreetName()+" "+childAddressEntiy.getStreetNumber();
+				String stName = childAddressEntiy.getStreetName();
+				String number = childAddressEntiy.getStreetNumber();
+				String childAddressString = stName+((number==null)?"":(" "+number));
 				data.addData(childAddress,childAddressString);
 			}
 			
@@ -245,8 +261,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					reportData.add(pData);
 				
 					Address parent1AddressEntiy = _communeUserService.getUsersMainAddress(child);
-					if(childAddressEntiy!=null){
-						String parent1AddressString = parent1AddressEntiy.getStreetName()+" "+parent1AddressEntiy.getStreetNumber();
+					if(parent1AddressEntiy!=null) {
+						String stName = parent1AddressEntiy.getStreetName();
+						String number = parent1AddressEntiy.getStreetNumber();
+						String parent1AddressString = stName+((number==null)?"":(" "+number));
 						data.addData(parent1Address,parent1AddressString);
 					}			
 					Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
@@ -274,8 +292,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					reportData.add(pData);
 				
 					Address parent2AddressEntiy = _communeUserService.getUsersMainAddress(child);
-					if(childAddressEntiy!=null){
-						String parent2AddressString = parent2AddressEntiy.getStreetName()+" "+parent2AddressEntiy.getStreetNumber();
+					if(parent2AddressEntiy!=null){
+						String stName = parent2AddressEntiy.getStreetName();
+						String number = parent2AddressEntiy.getStreetNumber();
+						String parent2AddressString = stName+((number==null)?"":(" "+number));
 						data.addData(parent2Address,parent2AddressString);
 					}
 								
@@ -304,5 +324,1058 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 
 		return reportData;
 	}
+	
+	
+	public ReportableCollection getCitizensRelatedToSchoolAndHaveChangedStatusInSelectedPeriod(SchoolSeason season, Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{
+		ReportableCollection reportData = new ReportableCollection();		
+		
+		
+
+		//get all users related to school or child care, that is if user is registered to school or child care or has child that is
+		Collection registeredCitizens = ((CitizenHome)IDOLookup.getHome(Citizen.class)).findAllCitizensRegisteredToSchool(season, firstBirthDateInPeriode, lastBirthDateInPeriode);
+		
+		
+		return filterOutCitizensAndAddToReportDataSource(reportData,registeredCitizens,firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+	}
+	
+	
+	private ReportableCollection filterOutCitizensAndAddToReportDataSource(ReportableCollection reportData, Collection citizenCollection,Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{
+		initializeMemberFamilyLogicIfNeeded();
+		initializeCommuneUserBusinessIfNeeded();
+		initializeBundlesIfNeeded();
+		
+		//find the main nacka group
+		Group communeGroup = _communeUserService.getRootCitizenGroup(); //((GroupHome)IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(3));
+
+		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
+		//initializing fields
+		IDOEntityDefinition userDef = IDOLookup.getEntityDefinitionForClass(User.class);
+		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+	
+	
+		//Child - Fields
+		ReportableField childPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+		childPersonalID.setCustomMadeFieldName("child_ssn");
+		childPersonalID.setLocalizedName( _iwrb.getLocalizedString("CommuneReportBusiness.child_ssn","Personal ID"),currentLocale);
+		reportData.addField(childPersonalID);
+	
+		ReportableField childLastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+		childLastName.setCustomMadeFieldName("child_last_name");
+		childLastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_last_name","LastName"),currentLocale);
+		reportData.addField(childLastName);
+
+		ReportableField childFirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+		childFirstName.setCustomMadeFieldName("child_first_name");
+		childFirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_first_name","FirstName"),currentLocale);
+		reportData.addField(childFirstName);
+	
+		ReportableField childAddress = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		childAddress.setValueClass(String.class);
+		childAddress.setCustomMadeFieldName("child_address");
+		childAddress.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_address","Address"),currentLocale);
+		reportData.addField(childAddress);
+
+		ReportableField childGroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+		childGroupInvitationDate.setValueClass(String.class);
+		childGroupInvitationDate.setCustomMadeFieldName("child_gr_initiation_date");
+		childGroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_gr_initiation_date","Invitiation date"),currentLocale);
+		reportData.addField(childGroupInvitationDate);
+	
+		//reason
+		ReportableField reasonField = new ReportableField("reason",String.class);
+		reasonField.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.reason","Reason"),currentLocale);
+		reportData.addField(reasonField);
+		
+		//date of action
+		ReportableField actionDateField = new ReportableField("actionDate",String.class);
+		actionDateField.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.reg_date","Registration date"),currentLocale);
+		reportData.addField(actionDateField);
+		
+	
+		//Parent1 - Fields
+		ReportableField parent1PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+		parent1PersonalID.setCustomMadeFieldName("parent1_ssn");
+		parent1PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_ssn","Parent1 Personal ID"),currentLocale);
+		reportData.addField(parent1PersonalID);
+	
+		ReportableField parent1LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+		parent1LastName.setCustomMadeFieldName("parent1_last_name");
+		parent1LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_last_name","Parent1 LastName"),currentLocale);
+		reportData.addField(parent1LastName);
+
+		ReportableField parent1FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+		parent1FirstName.setCustomMadeFieldName("parent1_first_name");
+		parent1FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_first_name","Parent1 FirstName"),currentLocale);
+		reportData.addField(parent1FirstName);
+	
+		ReportableField parent1Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		parent1Address.setValueClass(String.class);
+		parent1Address.setCustomMadeFieldName("parent1_address");
+		parent1Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_address","Parent1 Address"),currentLocale);
+		reportData.addField(parent1Address);
+	
+		ReportableField parent1GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+		parent1GroupInvitationDate.setValueClass(String.class);
+		parent1GroupInvitationDate.setCustomMadeFieldName("parent1_gr_initiation_date");
+		parent1GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_gr_initiation_date","Parent1 Invitiation date"),currentLocale);
+		reportData.addField(parent1GroupInvitationDate);
+	
+	
+		//Parent2 - Fields
+		ReportableField parent2PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+		parent2PersonalID.setCustomMadeFieldName("parent2_ssn");
+		parent2PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_ssn","Parent2 Personal ID"),currentLocale);
+		reportData.addField(parent2PersonalID);
+	
+		ReportableField parent2LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+		parent2LastName.setCustomMadeFieldName("parent2_last_name");
+		parent2LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_last_name","Parent2 LastName"),currentLocale);
+		reportData.addField(parent2LastName);
+
+		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
+		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_first_name","Parent2 FirstName"),currentLocale);
+		reportData.addField(parent2FirstName);
+	
+		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		parent2Address.setValueClass(String.class);
+		parent2Address.setCustomMadeFieldName("parent2_address");
+		parent2Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_address","Parent2 Address"),currentLocale);
+		reportData.addField(parent2Address);
+	
+		ReportableField parent2GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+		parent2GroupInvitationDate.setValueClass(String.class);
+		parent2GroupInvitationDate.setCustomMadeFieldName("parent2_gr_initiation_date");
+		parent2GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_gr_initiation_date","Parent2 Invitiation date"),currentLocale);
+		reportData.addField(parent2GroupInvitationDate);
+				
+		//Creating report data and adding to collection 
+		Iterator iter = citizenCollection.iterator();
+		while (iter.hasNext()) {
+			boolean addToList = false;
+			User child = (User)iter.next();
+			Collection parents = null;
+			try{
+				parents = _familyLogic.getParentsFor(child);
+			} catch (NoParentFound e) {
+				//System.out.println("["+this.getClass()+"]: "+e.getMessage());
+				//e.printStackTrace();
+			}
+			
+			Object[][] childConditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(child, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+			Object[][] parent1Conditions = null;
+			Object[][] parent2Conditions = null;
+			if(parents!= null){
+				Iterator parConditionIter = parents.iterator();
+				if(parConditionIter.hasNext()){
+					User parent1 = (User)parConditionIter.next();
+					if(parent1 !=null){
+						parent1Conditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(parent1,firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+					}
+				}
+				if(parConditionIter.hasNext()){
+					User parent2 = (User)parConditionIter.next();
+					if(parent2 !=null){
+						parent2Conditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(parent2, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+					}
+				}
+			}
+			
+			
+			// add fulfilled conditions to string and mark to put in report (that is set addToList=true)
+			boolean firstFulfilledCondition = true;
+			String reasonString = "";
+			String actionDateString = "";
+			if(childConditions != null){
+				addToList=true;
+				for (int i = 0; i < childConditions.length; i++) {
+					if(!firstFulfilledCondition){
+						reasonString += " / ";
+						actionDateString += " / ";
+					}
+					reasonString += (String)childConditions[i][0];  //Reason
+					actionDateString += dataFormat.format((java.util.Date)childConditions[i][1]); //Time
+				}
+			}
+			
+			if(parent1Conditions != null){
+				addToList=true;
+				for (int i = 0; i < parent1Conditions.length; i++) {
+					if(!firstFulfilledCondition){
+						reasonString += " / ";
+						actionDateString += " / ";
+					}
+					reasonString += (String)parent1Conditions[i][0];  //Reason
+					actionDateString += dataFormat.format((java.util.Date)parent1Conditions[i][1]); //Time
+				}
+			}
+			
+			if(parent2Conditions != null){
+				addToList=true;
+				for (int i = 0; i < parent2Conditions.length; i++) {
+					if(!firstFulfilledCondition){
+						reasonString += " / ";
+						actionDateString += " / ";
+					}
+					reasonString += (String)parent2Conditions[i][0];  //Reason
+					actionDateString += dataFormat.format((java.util.Date)parent2Conditions[i][1]); //Time
+				}
+			}
+			
+			
+			// add to report
+			if(addToList){ 
+				ReportableData data = new ReportableData();
+				
+				data.addData(reasonField,reasonString);
+				data.addData(actionDateField,actionDateString);
+				
+				//ChildData
+				data.addData(childPersonalID,child.getPersonalID());
+				data.addData(childLastName,child.getLastName());
+				data.addData(childFirstName,child.getFirstName());
+				reportData.add(data);
+				
+				Address childAddressEntiy = _communeUserService.getUsersMainAddress(child);
+				if(childAddressEntiy!=null){
+					String stName = childAddressEntiy.getStreetName();
+					String number = childAddressEntiy.getStreetNumber();
+					String childAddressString = stName+((number==null)?"":(" "+number));
+					data.addData(childAddress,childAddressString);
+				}
+				
+				Collection coll = gRelationHome.findGroupsRelationshipsContaining(communeGroup,child);
+				Iterator iterator = coll.iterator();
+				if(iterator.hasNext()){
+					GroupRelation rel = (GroupRelation)iterator.next();
+					Timestamp time = rel.getInitiationDate();
+					if(time != null){
+						data.addData(childGroupInvitationDate,dataFormat.format(time));
+					} else {
+						data.addData(childGroupInvitationDate,"No time specified");
+					}
+					
+				}
+				
+				if(parents != null){
+					//Parent data
+					//Collection parents = _familyLogic.getParentsFor(child);
+					Iterator pIter = parents.iterator();
+					//parent1
+					if (pIter.hasNext()) {
+						User parent = (User)pIter.next();
+						ReportableData pData = new ReportableData();
+					
+						data.addData(parent1PersonalID,parent.getPersonalID());
+						data.addData(parent1LastName,parent.getLastName());
+						data.addData(parent1FirstName,parent.getFirstName());
+						reportData.add(pData);
+					
+						Address parent1AddressEntiy = _communeUserService.getUsersMainAddress(child);
+						if(parent1AddressEntiy!=null) {
+							String stName = parent1AddressEntiy.getStreetName();
+							String number = parent1AddressEntiy.getStreetNumber();
+							String parent1AddressString = stName+((number==null)?"":(" "+number));
+							data.addData(parent1Address,parent1AddressString);
+						}			
+						Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
+						Iterator pIterator = pColl.iterator();
+						if(pIterator.hasNext()){
+							GroupRelation rel = (GroupRelation)pIterator.next();
+							Timestamp time = rel.getInitiationDate();
+							if(time != null){
+								data.addData(parent1GroupInvitationDate,dataFormat.format(time));
+							} else {
+								data.addData(parent1GroupInvitationDate,_iwrb.getLocalizedString("CommuneReportBusiness.no_time_specified","No time specified"));
+							}
+					
+						}
+					}
+					
+					//Parent2
+					if (pIter.hasNext()) {
+						User parent = (User)pIter.next();
+						ReportableData pData = new ReportableData();
+					
+						data.addData(parent2PersonalID,parent.getPersonalID());
+						data.addData(parent2LastName,parent.getLastName());
+						data.addData(parent2FirstName,parent.getFirstName());
+						reportData.add(pData);
+					
+						Address parent2AddressEntiy = _communeUserService.getUsersMainAddress(child);
+						if(parent2AddressEntiy!=null){
+							String stName = parent2AddressEntiy.getStreetName();
+							String number = parent2AddressEntiy.getStreetNumber();
+							String parent2AddressString = stName+((number==null)?"":(" "+number));
+							data.addData(parent2Address,parent2AddressString);
+						}
+									
+						Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
+						Iterator pIterator = pColl.iterator();
+						if(pIterator.hasNext()){
+							GroupRelation rel = (GroupRelation)pIterator.next();
+							Timestamp time = rel.getInitiationDate();
+							if(time != null){
+								data.addData(parent2GroupInvitationDate,dataFormat.format(time));
+							} else {
+								data.addData(parent2GroupInvitationDate,_iwrb.getLocalizedString("CommuneReportBusiness.no_time_specified","No time specified"));
+							}
+					
+						}
+					}
+				}
+			}
+		}
+		
+		reportData.addExtraHeaderParameter("label_current_date",_iwrb.getLocalizedString("CommuneReportBusiness.label_current_date","Current date"),"current_date",dataFormat.format(IWTimestamp.getTimestampRightNow()));
+
+		
+		return reportData;
+	}
+	
+	
+	/**
+	 * @param usr
+	 * @return Returns array of Objects that is Object[x][2], null if no conditions are fulfilled
+	 * Object[x][0] = condition Key (String), Object[x][1]=date of occurrance (java.util.Date or it's subclasses)
+	 */
+	private String[][] getFulFilledConditionsForReportAndTheirOccurrenceTime(User usr,Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode){
+		initializeBundlesIfNeeded();
+		initializeContitionSrings();
+					
+		hasDeceasedInTimePeriode(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+		livesInNacka(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+		hasMovedFromNacka(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+		hasChanedAddressToHidden(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+		
+		
+		return null;
+	}
+	
+	
+
+
+	/**
+	 * @param usr
+	 * @param firstDateOfContitionInPeriode
+	 * @param lastDateOfConditionInPeriode
+	 * @return Returns time of the event or null if condition is not fulfilled
+	 */
+	private java.util.Date hasChanedAddressToHidden(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @param usr
+	 * @param firstDateOfContitionInPeriode
+	 * @param lastDateOfConditionInPeriode
+	 * @return Returns time of the event or null if condition is not fulfilled
+	 */
+	private java.util.Date hasMovedFromNacka(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @param usr
+	 * @param firstDateOfContitionInPeriode
+	 * @param lastDateOfConditionInPeriode
+	 * @return Returns true if user lives in nacka the whole time periode
+	 */
+	private boolean livesInNacka(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * @param usr
+	 * @param firstDateOfContitionInPeriode
+	 * @param lastDateOfConditionInPeriode
+	 * @return Returns time of the event or null if condition is not fulfilled
+	 */
+	private java.util.Date hasDeceasedInTimePeriode(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * 
+	 */
+	private void initializeContitionSrings() {
+
+//	String reasonHasDeceased = _iwrb.getLocalizedString("CommuneReportBusiness.","");
+
+	}
+
+	public ReportableCollection getCitizensRelatedToChildCareAndHaveChangedStatusInSelectedPeriod(SchoolSeason season, Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{
+		ReportableCollection reportData = new ReportableCollection();		
+		
+		//	initializing fields
+		IDOEntityDefinition userDef = IDOLookup.getEntityDefinitionForClass(User.class);
+		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+	
+	
+		//Child - Fields
+		ReportableField childPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+		childPersonalID.setCustomMadeFieldName("child_ssn");
+		childPersonalID.setLocalizedName( _iwrb.getLocalizedString("CommuneReportBusiness.child_ssn","Personal ID"),currentLocale);
+		reportData.addField(childPersonalID);
+	
+		ReportableField childLastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+		childLastName.setCustomMadeFieldName("child_last_name");
+		childLastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_last_name","LastName"),currentLocale);
+		reportData.addField(childLastName);
+
+		ReportableField childFirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+		childFirstName.setCustomMadeFieldName("child_first_name");
+		childFirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_first_name","FirstName"),currentLocale);
+		reportData.addField(childFirstName);
+	
+		ReportableField childAddress = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		childAddress.setValueClass(String.class);
+		childAddress.setCustomMadeFieldName("child_address");
+		childAddress.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_address","Address"),currentLocale);
+		reportData.addField(childAddress);
+
+		ReportableField childGroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+		childGroupInvitationDate.setValueClass(String.class);
+		childGroupInvitationDate.setCustomMadeFieldName("child_gr_initiation_date");
+		childGroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.child_gr_initiation_date","Invitiation date"),currentLocale);
+		reportData.addField(childGroupInvitationDate);
+	
+	
+	
+		//Parent1 - Fields
+		ReportableField parent1PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+		parent1PersonalID.setCustomMadeFieldName("parent1_ssn");
+		parent1PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_ssn","Parent1 Personal ID"),currentLocale);
+		reportData.addField(parent1PersonalID);
+	
+		ReportableField parent1LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+		parent1LastName.setCustomMadeFieldName("parent1_last_name");
+		parent1LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_last_name","Parent1 LastName"),currentLocale);
+		reportData.addField(parent1LastName);
+
+		ReportableField parent1FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+		parent1FirstName.setCustomMadeFieldName("parent1_first_name");
+		parent1FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_first_name","Parent1 FirstName"),currentLocale);
+		reportData.addField(parent1FirstName);
+	
+		ReportableField parent1Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		parent1Address.setValueClass(String.class);
+		parent1Address.setCustomMadeFieldName("parent1_address");
+		parent1Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_address","Parent1 Address"),currentLocale);
+		reportData.addField(parent1Address);
+	
+		ReportableField parent1GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+		parent1GroupInvitationDate.setValueClass(String.class);
+		parent1GroupInvitationDate.setCustomMadeFieldName("parent1_gr_initiation_date");
+		parent1GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_gr_initiation_date","Parent1 Invitiation date"),currentLocale);
+		reportData.addField(parent1GroupInvitationDate);
+	
+	
+		//Parent2 - Fields
+		ReportableField parent2PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+		parent2PersonalID.setCustomMadeFieldName("parent2_ssn");
+		parent2PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_ssn","Parent2 Personal ID"),currentLocale);
+		reportData.addField(parent2PersonalID);
+	
+		ReportableField parent2LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+		parent2LastName.setCustomMadeFieldName("parent2_last_name");
+		parent2LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_last_name","Parent2 LastName"),currentLocale);
+		reportData.addField(parent2LastName);
+
+		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
+		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_first_name","Parent2 FirstName"),currentLocale);
+		reportData.addField(parent2FirstName);
+	
+		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		parent2Address.setValueClass(String.class);
+		parent2Address.setCustomMadeFieldName("parent2_address");
+		parent2Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_address","Parent2 Address"),currentLocale);
+		reportData.addField(parent2Address);
+	
+		ReportableField parent2GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+		parent2GroupInvitationDate.setValueClass(String.class);
+		parent2GroupInvitationDate.setCustomMadeFieldName("parent2_gr_initiation_date");
+		parent2GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_gr_initiation_date","Parent2 Invitiation date"),currentLocale);
+		reportData.addField(parent2GroupInvitationDate);
+
+
+		//get all users related to school or child care, that is if user is registered to school or child care or has child that is
+		
+		
+		
+		return reportData;
+	}
+	
+//	public ReportableCollection getUsersRelatedToSchoolOrChildCareByConditions(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode, String conditionKey) throws RemoteException, CreateException, FinderException{
+//		ReportableCollection collection = null;
+//		
+//		if(SignallistaChangesInputHandler.VALUE_PROTECTED_ADDRESS.equals(conditionKey)){
+//				collection = getUsersRelatedToSchoolOrChildCareAndHaveProtectedAddress(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//		} else if(SignallistaChangesInputHandler.VALUE_DOES_NOT_LIVE_IN_COMMUNE.equals(conditionKey)){
+//				collection = getUsersRelatedToSchoolOrChildCareAndDoNotLiveInComune(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);	
+//		} else if(SignallistaChangesInputHandler.VALUE_HAVE_MOVED_FROM_COMMUNE.equals(conditionKey)){
+//				collection = getUsersRelatedToSchoolOrChildCareAndHaveMovedFromCommune(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//		} else if(SignallistaChangesInputHandler.VALUE_DECEASED.equals(conditionKey)){
+//				collection = getUsersRelatedToSchoolOrChildCareAndAreDeceasedOrHaveDeceasedParents(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//		} else if(SignallistaChangesInputHandler.VALUE_ALL.equals(conditionKey)){
+//				collection = new ReportableCollection();
+//				boolean fieldsSet = false;
+//				
+//				ReportableCollection coll0 = getUsersRelatedToSchoolOrChildCareAndHaveProtectedAddress(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//				if(coll0 != null){
+//					collection.addAll(coll0);
+//					if(!fieldsSet){
+//						List l = coll0.getListOfFields();
+//						if(l!= null){
+//							collection.setListOfFields(l);
+//						}
+//						Map prm = coll0.getExtraHeaderParameters();
+//						if(prm != null){
+//							collection.addExtraHeaderParameter(prm);
+//						}
+//						fieldsSet=true;
+//					}
+//
+//				}
+//				
+//				ReportableCollection coll1 = getUsersRelatedToSchoolOrChildCareAndDoNotLiveInComune(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//				if(coll1 != null){
+//					collection.addAll(coll1);
+//					if(!fieldsSet){
+//						List l = coll1.getListOfFields();
+//						if(l!= null){
+//							collection.setListOfFields(l);
+//						}
+//						Map prm = coll1.getExtraHeaderParameters();
+//						if(prm != null){
+//							collection.addExtraHeaderParameter(prm);
+//						}
+//						fieldsSet=true;
+//					}
+//
+//				}
+//							
+//				ReportableCollection coll2 = getUsersRelatedToSchoolOrChildCareAndHaveMovedFromCommune(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//				if(coll2 != null){
+//					collection.addAll(coll2);
+//					if(!fieldsSet){
+//						List l = coll2.getListOfFields();
+//						if(l!= null){
+//							collection.setListOfFields(l);
+//						}
+//						Map prm = coll2.getExtraHeaderParameters();
+//						if(prm != null){
+//							collection.addExtraHeaderParameter(prm);
+//						}
+//						fieldsSet=true;
+//					}
+//
+//				}
+//				
+//				ReportableCollection coll3 = getUsersRelatedToSchoolOrChildCareAndAreDeceasedOrHaveDeceasedParents(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//				if(coll3 != null){
+//					collection.addAll(coll3);
+//					if(!fieldsSet){
+//						List l = coll3.getListOfFields();
+//						if(l!= null){
+//							collection.setListOfFields(l);
+//						}
+//						Map prm = coll3.getExtraHeaderParameters();
+//						if(prm != null){
+//							collection.addExtraHeaderParameter(prm);
+//						}
+//						fieldsSet=true;
+//					}
+//
+//				}
+//		} else {
+//			return new ReportableCollection();
+//		}
+//		return collection;
+//	}
+//	
+//	/**
+//	 * @param firstBirthDateInPeriode
+//	 * @param lastBirthDateInPeriode
+//	 * @param firstDateOfContitionInPeriode
+//	 * @param lastDateOfConditionInPeriode
+//	 * @return
+//	 */
+//	private ReportableCollection getUsersRelatedToSchoolOrChildCareAndAreDeceasedOrHaveDeceasedParents(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
+//		initializeMemberFamilyLogicIfNeeded();
+//		initializeCommuneUserBusinessIfNeeded();
+//		initializeBundlesIfNeeded();
+//				
+//		ReportableCollection reportData = new ReportableCollection();
+//		
+//		//find the main nacka group
+//		Group communeGroup = _communeUserService.getRootCitizenGroup(); //((GroupHome)IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(3));
+//		
+//		
+//		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
+//		
+//		//initializing fields
+//		IDOEntityDefinition userDef = IDOLookup.getEntityDefinitionForClass(User.class);
+//		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+//		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
+//		Locale currentLocale = this.getUserContext().getCurrentLocale();
+//		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+//		
+//		
+//		//Child - Fields
+//		ReportableField individPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		individPersonalID.setCustomMadeFieldName("individ_ssn");
+//		individPersonalID.setLocalizedName( _iwrb.getLocalizedString("CommuneReportBusiness.individ_ssn","Personal ID"),currentLocale);
+//		reportData.addField(individPersonalID);
+//		
+//		ReportableField individLastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		individLastName.setCustomMadeFieldName("individ_last_name");
+//		individLastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_last_name","LastName"),currentLocale);
+//		reportData.addField(individLastName);
+//
+//		ReportableField individFirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		individFirstName.setCustomMadeFieldName("individ_first_name");
+//		individFirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_first_name","FirstName"),currentLocale);
+//		reportData.addField(individFirstName);
+//		
+//		ReportableField individAddress = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		individAddress.setValueClass(String.class);
+//		individAddress.setCustomMadeFieldName("individ_address");
+//		individAddress.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_address","Address"),currentLocale);
+//		reportData.addField(individAddress);
+//
+//		ReportableField individGroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		individGroupInvitationDate.setValueClass(String.class);
+//		individGroupInvitationDate.setCustomMadeFieldName("individ_gr_initiation_date");
+//		individGroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_gr_initiation_date","Invitiation date"),currentLocale);
+//		reportData.addField(individGroupInvitationDate);
+//		
+//		
+//		
+//		//Parent1 - Fields
+//		ReportableField parent1PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent1PersonalID.setCustomMadeFieldName("parent1_ssn");
+//		parent1PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_ssn","Parent1 Personal ID"),currentLocale);
+//		reportData.addField(parent1PersonalID);
+//		
+//		ReportableField parent1LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent1LastName.setCustomMadeFieldName("parent1_last_name");
+//		parent1LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_last_name","Parent1 LastName"),currentLocale);
+//		reportData.addField(parent1LastName);
+//
+//		ReportableField parent1FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent1FirstName.setCustomMadeFieldName("parent1_first_name");
+//		parent1FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_first_name","Parent1 FirstName"),currentLocale);
+//		reportData.addField(parent1FirstName);
+//		
+//		ReportableField parent1Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent1Address.setValueClass(String.class);
+//		parent1Address.setCustomMadeFieldName("parent1_address");
+//		parent1Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_address","Parent1 Address"),currentLocale);
+//		reportData.addField(parent1Address);
+//		
+//		ReportableField parent1GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent1GroupInvitationDate.setValueClass(String.class);
+//		parent1GroupInvitationDate.setCustomMadeFieldName("parent1_gr_initiation_date");
+//		parent1GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_gr_initiation_date","Parent1 Invitiation date"),currentLocale);
+//		reportData.addField(parent1GroupInvitationDate);
+//		
+//		
+//		//Parent2 - Fields
+//		ReportableField parent2PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent2PersonalID.setCustomMadeFieldName("parent2_ssn");
+//		parent2PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_ssn","Parent2 Personal ID"),currentLocale);
+//		reportData.addField(parent2PersonalID);
+//		
+//		ReportableField parent2LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent2LastName.setCustomMadeFieldName("parent2_last_name");
+//		parent2LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_last_name","Parent2 LastName"),currentLocale);
+//		reportData.addField(parent2LastName);
+//
+//		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
+//		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_first_name","Parent2 FirstName"),currentLocale);
+//		reportData.addField(parent2FirstName);
+//		
+//		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent2Address.setValueClass(String.class);
+//		parent2Address.setCustomMadeFieldName("parent2_address");
+//		parent2Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_address","Parent2 Address"),currentLocale);
+//		reportData.addField(parent2Address);
+//		
+//		ReportableField parent2GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent2GroupInvitationDate.setValueClass(String.class);
+//		parent2GroupInvitationDate.setCustomMadeFieldName("parent2_gr_initiation_date");
+//		parent2GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_gr_initiation_date","Parent2 Invitiation date"),currentLocale);
+//		reportData.addField(parent2GroupInvitationDate);
+//		
+//		
+//		
+//		
+//		return reportData;
+//	}
+//
+//	/**
+//	 * @param firstBirthDateInPeriode
+//	 * @param lastBirthDateInPeriode
+//	 * @param firstDateOfContitionInPeriode
+//	 * @param lastDateOfConditionInPeriode
+//	 * @return
+//	 */
+//	private ReportableCollection getUsersRelatedToSchoolOrChildCareAndHaveMovedFromCommune(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
+//		initializeMemberFamilyLogicIfNeeded();
+//		initializeCommuneUserBusinessIfNeeded();
+//		initializeBundlesIfNeeded();
+//				
+//		ReportableCollection reportData = new ReportableCollection();
+//		
+//		//find the main nacka group
+//		Group communeGroup = _communeUserService.getRootCitizenGroup(); //((GroupHome)IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(3));
+//				
+//		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
+//		
+//		//initializing fields
+//		IDOEntityDefinition userDef = IDOLookup.getEntityDefinitionForClass(User.class);
+//		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+//		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
+//		Locale currentLocale = this.getUserContext().getCurrentLocale();
+//		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+//		
+//		
+//		//Child - Fields
+//		ReportableField individPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		individPersonalID.setCustomMadeFieldName("individ_ssn");
+//		individPersonalID.setLocalizedName( _iwrb.getLocalizedString("CommuneReportBusiness.individ_ssn","Personal ID"),currentLocale);
+//		reportData.addField(individPersonalID);
+//		
+//		ReportableField individLastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		individLastName.setCustomMadeFieldName("individ_last_name");
+//		individLastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_last_name","LastName"),currentLocale);
+//		reportData.addField(individLastName);
+//
+//		ReportableField individFirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		individFirstName.setCustomMadeFieldName("individ_first_name");
+//		individFirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_first_name","FirstName"),currentLocale);
+//		reportData.addField(individFirstName);
+//		
+//		ReportableField individAddress = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		individAddress.setValueClass(String.class);
+//		individAddress.setCustomMadeFieldName("individ_address");
+//		individAddress.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_address","Address"),currentLocale);
+//		reportData.addField(individAddress);
+//
+//		ReportableField individGroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		individGroupInvitationDate.setValueClass(String.class);
+//		individGroupInvitationDate.setCustomMadeFieldName("individ_gr_initiation_date");
+//		individGroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_gr_initiation_date","Invitiation date"),currentLocale);
+//		reportData.addField(individGroupInvitationDate);
+//		
+//		
+//		
+//		//Parent1 - Fields
+//		ReportableField parent1PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent1PersonalID.setCustomMadeFieldName("parent1_ssn");
+//		parent1PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_ssn","Parent1 Personal ID"),currentLocale);
+//		reportData.addField(parent1PersonalID);
+//		
+//		ReportableField parent1LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent1LastName.setCustomMadeFieldName("parent1_last_name");
+//		parent1LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_last_name","Parent1 LastName"),currentLocale);
+//		reportData.addField(parent1LastName);
+//
+//		ReportableField parent1FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent1FirstName.setCustomMadeFieldName("parent1_first_name");
+//		parent1FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_first_name","Parent1 FirstName"),currentLocale);
+//		reportData.addField(parent1FirstName);
+//		
+//		ReportableField parent1Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent1Address.setValueClass(String.class);
+//		parent1Address.setCustomMadeFieldName("parent1_address");
+//		parent1Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_address","Parent1 Address"),currentLocale);
+//		reportData.addField(parent1Address);
+//		
+//		ReportableField parent1GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent1GroupInvitationDate.setValueClass(String.class);
+//		parent1GroupInvitationDate.setCustomMadeFieldName("parent1_gr_initiation_date");
+//		parent1GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_gr_initiation_date","Parent1 Invitiation date"),currentLocale);
+//		reportData.addField(parent1GroupInvitationDate);
+//		
+//		
+//		//Parent2 - Fields
+//		ReportableField parent2PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent2PersonalID.setCustomMadeFieldName("parent2_ssn");
+//		parent2PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_ssn","Parent2 Personal ID"),currentLocale);
+//		reportData.addField(parent2PersonalID);
+//		
+//		ReportableField parent2LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent2LastName.setCustomMadeFieldName("parent2_last_name");
+//		parent2LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_last_name","Parent2 LastName"),currentLocale);
+//		reportData.addField(parent2LastName);
+//
+//		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
+//		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_first_name","Parent2 FirstName"),currentLocale);
+//		reportData.addField(parent2FirstName);
+//		
+//		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent2Address.setValueClass(String.class);
+//		parent2Address.setCustomMadeFieldName("parent2_address");
+//		parent2Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_address","Parent2 Address"),currentLocale);
+//		reportData.addField(parent2Address);
+//		
+//		ReportableField parent2GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent2GroupInvitationDate.setValueClass(String.class);
+//		parent2GroupInvitationDate.setCustomMadeFieldName("parent2_gr_initiation_date");
+//		parent2GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_gr_initiation_date","Parent2 Invitiation date"),currentLocale);
+//		reportData.addField(parent2GroupInvitationDate);
+//		
+//		
+//		return reportData;
+//	}
+//
+//	/**
+//	 * @param firstBirthDateInPeriode
+//	 * @param lastBirthDateInPeriode
+//	 * @param firstDateOfContitionInPeriode
+//	 * @param lastDateOfConditionInPeriode
+//	 * @return
+//	 */
+//	private ReportableCollection getUsersRelatedToSchoolOrChildCareAndDoNotLiveInComune(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
+//		initializeMemberFamilyLogicIfNeeded();
+//		initializeCommuneUserBusinessIfNeeded();
+//		initializeBundlesIfNeeded();
+//				
+//		ReportableCollection reportData = new ReportableCollection();
+//		
+//		//find the main nacka group
+//		Group communeGroup = _communeUserService.getRootCitizenGroup(); //((GroupHome)IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(3));
+//		
+//	
+//		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
+//		
+//		//initializing fields
+//		IDOEntityDefinition userDef = IDOLookup.getEntityDefinitionForClass(User.class);
+//		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+//		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
+//		Locale currentLocale = this.getUserContext().getCurrentLocale();
+//		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+//		
+//		
+//		//Child - Fields
+//		ReportableField individPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		individPersonalID.setCustomMadeFieldName("individ_ssn");
+//		individPersonalID.setLocalizedName( _iwrb.getLocalizedString("CommuneReportBusiness.individ_ssn","Personal ID"),currentLocale);
+//		reportData.addField(individPersonalID);
+//		
+//		ReportableField individLastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		individLastName.setCustomMadeFieldName("individ_last_name");
+//		individLastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_last_name","LastName"),currentLocale);
+//		reportData.addField(individLastName);
+//
+//		ReportableField individFirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		individFirstName.setCustomMadeFieldName("individ_first_name");
+//		individFirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_first_name","FirstName"),currentLocale);
+//		reportData.addField(individFirstName);
+//		
+//		ReportableField individAddress = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		individAddress.setValueClass(String.class);
+//		individAddress.setCustomMadeFieldName("individ_address");
+//		individAddress.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_address","Address"),currentLocale);
+//		reportData.addField(individAddress);
+//
+//		ReportableField individGroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		individGroupInvitationDate.setValueClass(String.class);
+//		individGroupInvitationDate.setCustomMadeFieldName("individ_gr_initiation_date");
+//		individGroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_gr_initiation_date","Invitiation date"),currentLocale);
+//		reportData.addField(individGroupInvitationDate);
+//		
+//		
+//		
+//		//Parent1 - Fields
+//		ReportableField parent1PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent1PersonalID.setCustomMadeFieldName("parent1_ssn");
+//		parent1PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_ssn","Parent1 Personal ID"),currentLocale);
+//		reportData.addField(parent1PersonalID);
+//		
+//		ReportableField parent1LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent1LastName.setCustomMadeFieldName("parent1_last_name");
+//		parent1LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_last_name","Parent1 LastName"),currentLocale);
+//		reportData.addField(parent1LastName);
+//
+//		ReportableField parent1FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent1FirstName.setCustomMadeFieldName("parent1_first_name");
+//		parent1FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_first_name","Parent1 FirstName"),currentLocale);
+//		reportData.addField(parent1FirstName);
+//		
+//		ReportableField parent1Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent1Address.setValueClass(String.class);
+//		parent1Address.setCustomMadeFieldName("parent1_address");
+//		parent1Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_address","Parent1 Address"),currentLocale);
+//		reportData.addField(parent1Address);
+//		
+//		ReportableField parent1GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent1GroupInvitationDate.setValueClass(String.class);
+//		parent1GroupInvitationDate.setCustomMadeFieldName("parent1_gr_initiation_date");
+//		parent1GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_gr_initiation_date","Parent1 Invitiation date"),currentLocale);
+//		reportData.addField(parent1GroupInvitationDate);
+//		
+//		
+//		//Parent2 - Fields
+//		ReportableField parent2PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent2PersonalID.setCustomMadeFieldName("parent2_ssn");
+//		parent2PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_ssn","Parent2 Personal ID"),currentLocale);
+//		reportData.addField(parent2PersonalID);
+//		
+//		ReportableField parent2LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent2LastName.setCustomMadeFieldName("parent2_last_name");
+//		parent2LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_last_name","Parent2 LastName"),currentLocale);
+//		reportData.addField(parent2LastName);
+//
+//		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
+//		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_first_name","Parent2 FirstName"),currentLocale);
+//		reportData.addField(parent2FirstName);
+//		
+//		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent2Address.setValueClass(String.class);
+//		parent2Address.setCustomMadeFieldName("parent2_address");
+//		parent2Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_address","Parent2 Address"),currentLocale);
+//		reportData.addField(parent2Address);
+//		
+//		ReportableField parent2GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent2GroupInvitationDate.setValueClass(String.class);
+//		parent2GroupInvitationDate.setCustomMadeFieldName("parent2_gr_initiation_date");
+//		parent2GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_gr_initiation_date","Parent2 Invitiation date"),currentLocale);
+//		reportData.addField(parent2GroupInvitationDate);
+//		
+//	
+//	
+//		
+//		return reportData;
+//	}
+//
+//	private ReportableCollection getUsersRelatedToSchoolOrChildCareAndHaveProtectedAddress(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{
+//		initializeMemberFamilyLogicIfNeeded();
+//		initializeCommuneUserBusinessIfNeeded();
+//		initializeBundlesIfNeeded();
+//				
+//		ReportableCollection reportData = new ReportableCollection();
+//		
+//		//find the main nacka group
+//		Group communeGroup = _communeUserService.getRootCitizenGroup(); //((GroupHome)IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(3));
+//		
+//		
+//		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
+//		
+//		//initializing fields
+//		IDOEntityDefinition userDef = IDOLookup.getEntityDefinitionForClass(User.class);
+//		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+//		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
+//		Locale currentLocale = this.getUserContext().getCurrentLocale();
+//		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+//		
+//		
+//		//Child - Fields
+//		ReportableField individPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		individPersonalID.setCustomMadeFieldName("individ_ssn");
+//		individPersonalID.setLocalizedName( _iwrb.getLocalizedString("CommuneReportBusiness.individ_ssn","Personal ID"),currentLocale);
+//		reportData.addField(individPersonalID);
+//		
+//		ReportableField individLastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		individLastName.setCustomMadeFieldName("individ_last_name");
+//		individLastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_last_name","LastName"),currentLocale);
+//		reportData.addField(individLastName);
+//
+//		ReportableField individFirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		individFirstName.setCustomMadeFieldName("individ_first_name");
+//		individFirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_first_name","FirstName"),currentLocale);
+//		reportData.addField(individFirstName);
+//		
+//		ReportableField individAddress = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		individAddress.setValueClass(String.class);
+//		individAddress.setCustomMadeFieldName("individ_address");
+//		individAddress.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_address","Address"),currentLocale);
+//		reportData.addField(individAddress);
+//
+//		ReportableField individGroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		individGroupInvitationDate.setValueClass(String.class);
+//		individGroupInvitationDate.setCustomMadeFieldName("individ_gr_initiation_date");
+//		individGroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.individ_gr_initiation_date","Invitiation date"),currentLocale);
+//		reportData.addField(individGroupInvitationDate);
+//		
+//		
+//		
+//		//Parent1 - Fields
+//		ReportableField parent1PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent1PersonalID.setCustomMadeFieldName("parent1_ssn");
+//		parent1PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_ssn","Parent1 Personal ID"),currentLocale);
+//		reportData.addField(parent1PersonalID);
+//		
+//		ReportableField parent1LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent1LastName.setCustomMadeFieldName("parent1_last_name");
+//		parent1LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_last_name","Parent1 LastName"),currentLocale);
+//		reportData.addField(parent1LastName);
+//
+//		ReportableField parent1FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent1FirstName.setCustomMadeFieldName("parent1_first_name");
+//		parent1FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_first_name","Parent1 FirstName"),currentLocale);
+//		reportData.addField(parent1FirstName);
+//		
+//		ReportableField parent1Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent1Address.setValueClass(String.class);
+//		parent1Address.setCustomMadeFieldName("parent1_address");
+//		parent1Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_address","Parent1 Address"),currentLocale);
+//		reportData.addField(parent1Address);
+//		
+//		ReportableField parent1GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent1GroupInvitationDate.setValueClass(String.class);
+//		parent1GroupInvitationDate.setCustomMadeFieldName("parent1_gr_initiation_date");
+//		parent1GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent1_gr_initiation_date","Parent1 Invitiation date"),currentLocale);
+//		reportData.addField(parent1GroupInvitationDate);
+//		
+//		
+//		//Parent2 - Fields
+//		ReportableField parent2PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
+//		parent2PersonalID.setCustomMadeFieldName("parent2_ssn");
+//		parent2PersonalID.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_ssn","Parent2 Personal ID"),currentLocale);
+//		reportData.addField(parent2PersonalID);
+//		
+//		ReportableField parent2LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
+//		parent2LastName.setCustomMadeFieldName("parent2_last_name");
+//		parent2LastName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_last_name","Parent2 LastName"),currentLocale);
+//		reportData.addField(parent2LastName);
+//
+//		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
+//		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
+//		parent2FirstName.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_first_name","Parent2 FirstName"),currentLocale);
+//		reportData.addField(parent2FirstName);
+//		
+//		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+//		parent2Address.setValueClass(String.class);
+//		parent2Address.setCustomMadeFieldName("parent2_address");
+//		parent2Address.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_address","Parent2 Address"),currentLocale);
+//		reportData.addField(parent2Address);
+//		
+//		ReportableField parent2GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
+//		parent2GroupInvitationDate.setValueClass(String.class);
+//		parent2GroupInvitationDate.setCustomMadeFieldName("parent2_gr_initiation_date");
+//		parent2GroupInvitationDate.setLocalizedName(_iwrb.getLocalizedString("CommuneReportBusiness.parent2_gr_initiation_date","Parent2 Invitiation date"),currentLocale);
+//		reportData.addField(parent2GroupInvitationDate);
+//		
+//		
+//		return reportData;
+//	}
+//	
 
 }

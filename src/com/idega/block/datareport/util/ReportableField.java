@@ -29,6 +29,7 @@ public class ReportableField implements IDOReportableField, JRField {
 	private int _typeOfContainedField;
 	private static final int CONTAINED_FIELD_TYPE_IDOFIELD = 0;
 	private static final int CONTAINED_FIELD_TYPE_JRFIELD = 1;
+	private static final int CONTAINED_FIELD_TYPE_NONE = 2;
 	private Map _localizedNames = new HashMap();
 	
 	private JRField _jrField = null;
@@ -42,6 +43,13 @@ public class ReportableField implements IDOReportableField, JRField {
 	public ReportableField(JRField field) {
 		_jrField=field;
 		_typeOfContainedField = CONTAINED_FIELD_TYPE_JRFIELD;
+	}
+	
+
+	public ReportableField(String name, Class valueClass) {
+		_customMadeFiledName = name;
+		_customMadeValueClass = valueClass;
+		_typeOfContainedField = CONTAINED_FIELD_TYPE_NONE;
 	}
 	
 	public ReportableField(IDOEntityField field){

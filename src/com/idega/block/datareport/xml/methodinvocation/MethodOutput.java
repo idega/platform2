@@ -7,6 +7,7 @@
 package com.idega.block.datareport.xml.methodinvocation;
 
 import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
 
 /**
  * Title:		MethodOutput
@@ -31,12 +32,12 @@ public class MethodOutput extends XMLElement {
 	/**
 	 * @param element
 	 */
-	public MethodOutput(XMLElement element) {
+	public MethodOutput(XMLElement element) throws XMLException {
 		this();
 		initialize(element);
 	}
 
-	private void initialize(XMLElement element){
+	private void initialize(XMLElement element) throws XMLException {
 		XMLElement childElement = element.getChild(ClassDescription.NAME);
 		if(childElement != null){
 			_returningObject = new ClassDescription(childElement);

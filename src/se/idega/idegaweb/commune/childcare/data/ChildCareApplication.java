@@ -3,6 +3,11 @@ package se.idega.idegaweb.commune.childcare.data;
 
 public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega.block.process.data.Case
 {
+
+ public final static String FIELD_CHILD_ID = "child_id";
+ public final static String FIELD_FROM_DATE = "from_date";
+ public final static String FIELD_REJECTION_DATE = "rejection_date";
+	
  public char getApplicationStatus();
  public int getCareTime();
  public java.lang.String getCaseCodeDescription();

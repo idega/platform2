@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
 
 /**
  * Title:		MethodInput
@@ -35,12 +36,12 @@ public class MethodInput extends XMLElement {
 	/**
 	 * @param element
 	 */
-	public MethodInput(XMLElement element) {
+	public MethodInput(XMLElement element) throws XMLException {
 		this();
 		initialize(element);
 	}
 
-	private void initialize(XMLElement element){
+	private void initialize(XMLElement element) throws XMLException {
 		List methodDescriptions = element.getChildren(ClassDescription.NAME);
 		Iterator iter = methodDescriptions.iterator();
 		if(iter != null){

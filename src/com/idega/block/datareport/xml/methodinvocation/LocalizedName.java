@@ -11,6 +11,7 @@ import java.util.Locale;
 import com.idega.util.LocaleUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
 
 /**
  * Title:		LocalizedName
@@ -47,12 +48,12 @@ public class LocalizedName extends XMLElement {
 	/**
 	 * @param element
 	 */
-	public LocalizedName(XMLElement element) {
+	public LocalizedName(XMLElement element) throws XMLException {
 		this(element.getAttribute(ATTRIBUTE_NAME).getValue(),element.getAttribute(ATTRIBUTE_LOCALE).getValue());
 		initialize(element);
 	}
 
-	private void initialize(XMLElement element){
+	private void initialize(XMLElement element) throws XMLException {
 
 	}
 	

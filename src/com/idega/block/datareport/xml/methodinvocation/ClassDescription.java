@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
 
 /**
  * Title:		ClassDescription
@@ -36,6 +37,7 @@ public class ClassDescription extends XMLElement {
 	public static final String VALUE_TYPE_IDO_SESSION_BEAN = "IBOSessionBean";
 	public static final String VALUE_TYPE_IDO_SERVICE_BEAN = "IBOServeceBean";	
 	private List _localizedNames = new ArrayList();
+	private ClassHandler _handler = null;
 	
 	/**
 	 * @param name
@@ -63,12 +65,12 @@ public class ClassDescription extends XMLElement {
 	/**
 	 * @param element
 	 */
-	public ClassDescription(XMLElement element) {
+	public ClassDescription(XMLElement element) throws XMLException {
 		this(element.getAttribute(ATTRIBUTE_CLASS),element.getAttribute(ATTRIBUTE_DEFAULT_DISPLAY_NAME));
 		initialize(element);
 	}
 
-	private void initialize(XMLElement element){
+	private void initialize(XMLElement element) throws XMLException {
 		XMLAttribute type = element.getAttribute(ATTRIBUTE_TYPE);
 		if(type != null){
 			this.setType(type.getValue());
@@ -77,6 +79,11 @@ public class ClassDescription extends XMLElement {
 		XMLAttribute name = element.getAttribute(ATTRIBUTE_NAME);
 		if(name != null){
 			this.setName(name.getValue());
+		}
+		
+		XMLElement handler = element.getChild(ClassHandler.NAME);
+		if(handler != null){
+			_handler = new ClassHandler(handler);
 		}
 		
 		List methodDescriptions = element.getChildren(LocalizedName.NAME);
@@ -104,6 +111,8 @@ public class ClassDescription extends XMLElement {
 	private void setClassObject(String classObj){
 		setAttribute(ATTRIBUTE_CLASS,classObj);
 	}
+	
+	
 
 	public void setDefaultDisplayName(String name){
 		setAttribute(ATTRIBUTE_DEFAULT_DISPLAY_NAME,name);
@@ -149,6 +158,10 @@ public class ClassDescription extends XMLElement {
 			}
 		}
 		return this.getDefaultDisplayName();
+	}
+	
+	public ClassHandler getClassHandler(){
+		return _handler;
 	}
 	
 }

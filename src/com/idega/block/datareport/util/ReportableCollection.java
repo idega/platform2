@@ -125,4 +125,18 @@ public class ReportableCollection extends Vector implements JRDataSource {
 		_extraHeaderParameters.put(valueKey,valueValue);
 	}
 
+	/**
+	 * @param l
+	 */
+	public void setListOfFields(List l) {
+		_fields = l;
+	}
+
+	/**
+	 * @param prm
+	 */
+	public void addExtraHeaderParameter(Map prm) {
+		_extraHeaderParameters.putAll(prm);
+	}
+
 }

@@ -9,6 +9,7 @@ package com.idega.block.datareport.xml.methodinvocation;
 
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
 
 /**
  * Title:		MethodDescription
@@ -43,12 +44,12 @@ public class MethodDescription extends XMLElement {
 	/**
 	 * @param element
 	 */
-	public MethodDescription(XMLElement element) {
+	public MethodDescription(XMLElement element) throws XMLException {
 		this(element.getAttribute(ATTRIBUTE_NAME));
 		initialize(element);
 	}
 
-	private void initialize(XMLElement element){
+	private void initialize(XMLElement element) throws XMLException {
 		XMLElement clDesc = element.getChild(ClassDescription.NAME);
 		if(clDesc != null){
 			_classDescription = new ClassDescription(clDesc);	
