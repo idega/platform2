@@ -74,7 +74,7 @@ import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.design.JasperDesign;
-
+import dori.jasper.engine.JRParameter;
 /**
  * Title: ReportGenerator Description: Copyright: Copyright (c) 2003 Company:
  * idega Software
@@ -85,6 +85,9 @@ import dori.jasper.engine.design.JasperDesign;
  */
 public class ReportGenerator extends Block {
 
+	private static final String HTML_FORMAT = "html";
+	private static final String PDF_FORMAT = "pdf";
+	private static final String EXCEL_FORMAT = "excel";
 	public final static String STYLE = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000;";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 	public final static String PRIFIX_PRM = "dr_";
@@ -98,12 +101,12 @@ public class ReportGenerator extends Block {
 	private MethodInvocationDocument _methodInvokeDoc = null;
 	private Vector _dynamicFields = new Vector();
 	private Collection _allFields = null;
-	private String _reportFilePath = "";
+	private Map _reportFilePathsMap = null;
 	private QueryHelper _queryParser = null;
 	private JRDataSource _dataSource = null;
 	private Table _fieldTable = null;
 	private JasperDesign _design = null;
-	private HashMap _parameterMap = new HashMap();
+	private Map _parameterMap = new HashMap();
 	private BusyBar _busy = null;
 
 	private String _prmLablePrefix = "label_";
@@ -176,171 +179,140 @@ public class ReportGenerator extends Block {
 
 		//Fetch or generate the layout
 
-		//fetch
-		if (_layoutICFilePK != null) {
-			JasperReportBusiness reportBusiness = getReportBusiness();
-			int designId = _layoutICFilePK.intValue();
-			_design = reportBusiness.getDesign(designId);
-			//add parameters and fields
-			
-			//MOSTLY COPY AND PASTE
-			if (_allFields != null && !_allFields.isEmpty()) {
-				Locale currentLocale = iwc.getCurrentLocale();
-				Iterator iter = _allFields.iterator();
-
-				if (isMethodInvocation) {
-					while (iter.hasNext()) {
-						ReportableField field = (ReportableField) iter.next();
-						String name = field.getName();
-						_parameterMap.put(name, field.getLocalizedName(currentLocale));
-					}
-				}
-				else {
-					while (iter.hasNext()) {
-						try {
-							QueryFieldPart element = (QueryFieldPart) iter.next();
-							ReportableField field = new ReportableField(element.getIDOEntityField());
-							String name = field.getName();
-							_parameterMap.put(name, field.getLocalizedName(currentLocale));
-						}
-						catch (IDOLookupException e) {
-							e.printStackTrace();
-						}
-						catch (ClassNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-			
-			/*if (_extraHeaderParameters != null) {
-				Iterator keyIter = _extraHeaderParameters.keySet().iterator();
-				Iterator valueIter = _extraHeaderParameters.values().iterator();
-				while (keyIter.hasNext()) {
-					String keyLabel = (String) keyIter.next();
-					String valueLabel = (String) valueIter.next();
-					if (keyIter.hasNext()) {
-						String keyValue = (String) keyIter.next();
-						String valueValue = (String) valueIter.next();
-						
-						String tmpPrmLabel = valueLabel;
-						String tmpPrmValue = valueValue;
-						int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-						int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
-						designTemplate.addHeaderParameter(keyLabel, tmpPrmLabelWidth, keyValue, String.class, tmpPrmValueWidth);
-						_parameterMap.put(name, field.getLocalizedName(currentLocale));
-						
-					}
-					
-				}
-				
-			}*/
-
-			//END MOSTLY COPY AND PASTE CRAP
+		//fetch, only available for method invocation, TODO make available for other types
+		if (_layoutICFilePK != null && isMethodInvocation) {
+			getLayoutFromICFileAndAddParameters(iwc);
 		}
 		else { //generate
+			generateLayoutAndAddParameters(iwc, isMethodInvocation);
+		}
 
-			int columnWidth = 120;
-			int prmLableWidth = 95;
-			int prmValueWidth = 55;
+	}
 
-			DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
+	private void generateLayoutAndAddParameters(IWContext iwc, boolean isMethodInvocation) throws IOException, JRException {
+		int columnWidth = 120;
+		int prmLableWidth = 95;
+		int prmValueWidth = 55;
 
-			if (_dynamicFields != null && _dynamicFields.size() > 0) {
-				if (_queryPK != null) {
-					Iterator iter = _dynamicFields.iterator();
-					while (iter.hasNext()) {
-						ReportableField element = (ReportableField) iter.next();
-						String prmName = element.getName();
+		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
 
-						String tmpPrmLabel = (String) _parameterMap.get(_prmLablePrefix + prmName);
-						String tmpPrmValue = (String) _parameterMap.get(prmName);
-						int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-						int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmValueWidth;
-						designTemplate.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName, String.class, tmpPrmValueWidth);
-					}
-				}
-				else {
-					Iterator iter = _dynamicFields.iterator();
-					while (iter.hasNext()) {
-						ClassDescription element = (ClassDescription) iter.next();
-						String prmName = element.getName();
+		if (_dynamicFields != null && _dynamicFields.size() > 0) {
+			if (_queryPK != null) {
+				Iterator iter = _dynamicFields.iterator();
+				while (iter.hasNext()) {
+					ReportableField element = (ReportableField) iter.next();
+					String prmName = element.getName();
 
-						String tmpPrmLabel = (String) _parameterMap.get(_prmLablePrefix + prmName);
-						String tmpPrmValue = (String) _parameterMap.get(prmName);
-						int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-						int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
-						designTemplate.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName, String.class, tmpPrmValueWidth);
-					}
+					String tmpPrmLabel = (String) _parameterMap.get(_prmLablePrefix + prmName);
+					String tmpPrmValue = (String) _parameterMap.get(prmName);
+					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmValueWidth;
+					designTemplate.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName, String.class, tmpPrmValueWidth);
 				}
 			}
+			else {
+				Iterator iter = _dynamicFields.iterator();
+				while (iter.hasNext()) {
+					ClassDescription element = (ClassDescription) iter.next();
+					String prmName = element.getName();
 
-			if (_extraHeaderParameters != null) {
-				Iterator keyIter = _extraHeaderParameters.keySet().iterator();
-				Iterator valueIter = _extraHeaderParameters.values().iterator();
-				while (keyIter.hasNext()) {
-					String keyLabel = (String) keyIter.next();
-					String valueLabel = (String) valueIter.next();
-					if (keyIter.hasNext()) {
-						String keyValue = (String) keyIter.next();
-						String valueValue = (String) valueIter.next();
-
-						String tmpPrmLabel = valueLabel;
-						String tmpPrmValue = valueValue;
-						int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-						int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
-						designTemplate.addHeaderParameter(keyLabel, tmpPrmLabelWidth, keyValue, String.class, tmpPrmValueWidth);
-					}
-
+					String tmpPrmLabel = (String) _parameterMap.get(_prmLablePrefix + prmName);
+					String tmpPrmValue = (String) _parameterMap.get(prmName);
+					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
+					designTemplate.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName, String.class, tmpPrmValueWidth);
 				}
 			}
+		}
 
-			if (_allFields != null && _allFields.size() > 0) {
-				//System.out.println("ReportGenerator.");
+		if (_extraHeaderParameters != null) {
+			Iterator keyIter = _extraHeaderParameters.keySet().iterator();
+			Iterator valueIter = _extraHeaderParameters.values().iterator();
+			while (keyIter.hasNext()) {
+				String keyLabel = (String) keyIter.next();
+				String valueLabel = (String) valueIter.next();
+				if (keyIter.hasNext()) {
+					String keyValue = (String) keyIter.next();
+					String valueValue = (String) valueIter.next();
 
-				//TMP
-				//TODO get columnspacing (15) and it to columnsWidth;
-				int columnsWidth = columnWidth * _allFields.size() + 15 * (_allFields.size() - 1);
-				//TMP
-				//TODO get page Margins (20) and add them to pageWidth;
-				designTemplate.setPageWidth(columnsWidth + 20 + 20);
-				designTemplate.setColumnWidth(columnsWidth);
+					String tmpPrmLabel = valueLabel;
+					String tmpPrmValue = valueValue;
+					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
+					designTemplate.addHeaderParameter(keyLabel, tmpPrmLabelWidth, keyValue, String.class, tmpPrmValueWidth);
+				}
 
-				//
-				Locale currentLocale = iwc.getCurrentLocale();
-				Iterator iter = _allFields.iterator();
+			}
+		}
 
-				if (isMethodInvocation) {
-					while (iter.hasNext()) {
-						ReportableField field = (ReportableField) iter.next();
+		if (_allFields != null && _allFields.size() > 0) {
+			//System.out.println("ReportGenerator.");
+
+			//TMP
+			//TODO get columnspacing (15) and it to columnsWidth;
+			int columnsWidth = columnWidth * _allFields.size() + 15 * (_allFields.size() - 1);
+			//TMP
+			//TODO get page Margins (20) and add them to pageWidth;
+			designTemplate.setPageWidth(columnsWidth + 20 + 20);
+			designTemplate.setColumnWidth(columnsWidth);
+
+			//
+			Locale currentLocale = iwc.getCurrentLocale();
+			Iterator iter = _allFields.iterator();
+
+			if (isMethodInvocation) {
+				while (iter.hasNext()) {
+					ReportableField field = (ReportableField) iter.next();
+					String name = field.getName();
+					_parameterMap.put(name, field.getLocalizedName(currentLocale));
+					designTemplate.addField(name, field.getValueClass(), columnWidth);
+				}
+			}
+			else {
+				while (iter.hasNext()) {
+					try {
+						QueryFieldPart element = (QueryFieldPart) iter.next();
+						ReportableField field = new ReportableField(element.getIDOEntityField());
 						String name = field.getName();
 						_parameterMap.put(name, field.getLocalizedName(currentLocale));
 						designTemplate.addField(name, field.getValueClass(), columnWidth);
 					}
-				}
-				else {
-					while (iter.hasNext()) {
-						try {
-							QueryFieldPart element = (QueryFieldPart) iter.next();
-							ReportableField field = new ReportableField(element.getIDOEntityField());
-							String name = field.getName();
-							_parameterMap.put(name, field.getLocalizedName(currentLocale));
-							designTemplate.addField(name, field.getValueClass(), columnWidth);
-						}
-						catch (IDOLookupException e) {
-							e.printStackTrace();
-						}
-						catch (ClassNotFoundException e) {
-							e.printStackTrace();
-						}
+					catch (IDOLookupException e) {
+						e.printStackTrace();
+					}
+					catch (ClassNotFoundException e) {
+						e.printStackTrace();
 					}
 				}
 			}
-
-			designTemplate.close();
-			_design = designTemplate.getJasperDesign(iwc);
 		}
 
+		designTemplate.close();
+		_design = designTemplate.getJasperDesign(iwc);
+	}
+
+	private void getLayoutFromICFileAndAddParameters(IWContext iwc) throws RemoteException {
+		JasperReportBusiness reportBusiness = getReportBusiness();
+		int designId = _layoutICFilePK.intValue();
+		_design = reportBusiness.getDesign(designId);
+		//add parameters and fields
+		
+		
+		//MOSTLY COPY AND PASTE
+		if (_allFields != null && !_allFields.isEmpty()) {
+			Locale currentLocale = iwc.getCurrentLocale();
+			Iterator iter = _allFields.iterator();
+			
+			while (iter.hasNext()) {
+				ReportableField field = (ReportableField) iter.next();
+				String name = field.getName();
+				_parameterMap.put(name, field.getLocalizedName(currentLocale));
+			}
+		}
+		
+		if (_extraHeaderParameters != null) {
+			_parameterMap.putAll(_extraHeaderParameters);
+		}
 	}
 
 	private void generateDataSource(IWContext iwc) throws XMLException, Exception {
@@ -484,10 +456,14 @@ public class ReportGenerator extends Block {
 			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME, _reportName);
 			JasperPrint print = business.getReport(_dataSource, _parameterMap, _design);
 
-			_reportFilePath = business.getExcelReport(print, _reportName);
-			//TODO add all links
-			//business.getPdfReport(print,_reportName);
-			//business.getHtmlReport(print,_reportName);
+			if (_reportFilePathsMap == null) {
+				_reportFilePathsMap = new HashMap();
+			}
+
+			_reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, _reportName));
+			//_reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, _reportName));
+			_reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, _reportName));
+
 		}
 	}
 
@@ -689,8 +665,25 @@ public class ReportGenerator extends Block {
 	 * @return
 	 */
 	private PresentationObject getReportLink(IWContext iwc) {
-		Link link = new Link(_reportName, _reportFilePath);
-		return link;
+		Table reports = new Table(2, 4);
+		reports.mergeCells(1, 1, 2, 1);
+		Link excel = new Link(_reportName, (String) _reportFilePathsMap.get(EXCEL_FORMAT));
+//		Link pdf = new Link(_reportName, (String) _reportFilePathsMap.get(PDF_FORMAT));
+		Link html = new Link(_reportName, (String) _reportFilePathsMap.get(HTML_FORMAT));
+
+		reports.add(
+			getResourceBundle(iwc).getLocalizedString("ReportGenerator.click_on_format", "Select a link for the desired output format."),
+			1,
+			1);
+		reports.add("Excel : ", 1, 2);
+		reports.add(excel, 2, 2);
+		reports.add("PDF : ", 1, 3);
+//		reports.add(pdf, 2, 3);
+		reports.add("HTML : ", 1, 4);
+		reports.add(html, 2, 4);
+
+		return reports;
+
 	}
 
 	/**
@@ -932,7 +925,7 @@ public class ReportGenerator extends Block {
 		clone._dynamicFields = new Vector();
 		clone._dataSource = null;
 		clone._design = null;
-		clone._reportFilePath = null;
+		clone._reportFilePathsMap = null;
 		clone._queryParser = null;
 		clone._fieldTable = null;
 
