@@ -189,10 +189,12 @@ public class IFSFileCreationThread extends Thread {
 
 		// Get folder info from ExportMappingBean
 		ExportDataMapping mapping = null;
-		String folder = null;
+		String fileFolder = null;
+		String listFolder = null;
 		try {
 			mapping = getIFSBusiness().getExportBusiness().getExportDataMapping(_schoolCategory);
-			folder = mapping.getFileCreationFolder();
+			fileFolder = mapping.getFileCreationFolder();
+			listFolder = mapping.getListCreationFolder();
 		}
 		catch (RemoteException e1) {
 			e1.printStackTrace();
@@ -200,7 +202,10 @@ public class IFSFileCreationThread extends Thread {
 		catch (FinderException e1) {
 			e1.printStackTrace();
 		}
-
+		
+		if (listFolder == null)
+			listFolder = fileFolder;
+		
 		SchoolCategory childCare = null;
 		try {
 			childCare = getIFSBusiness().getSchoolBusiness().getCategoryChildcare();
@@ -224,80 +229,118 @@ public class IFSFileCreationThread extends Thread {
 		catch (RemoteException e4) {
 			e4.printStackTrace();
 		}
-
-		if (childCare != null && folder != null && school != null && highSchool != null) {
+		StringBuffer fileName1 = null;
+		StringBuffer fileName2 = null;
+		StringBuffer fileName3 = null;
+		StringBuffer fileName4 = null;
+		StringBuffer fileName5 = null;
+		StringBuffer fileName6 = null;
+		StringBuffer fileName7 = null;
+		StringBuffer fileName8 = null;
+		StringBuffer fileName9 = null;
+		if (childCare != null && (fileFolder != null || listFolder != null) && school != null && highSchool != null) {
 			if (_schoolCategory.equals(childCare.getPrimaryKey())) {
-				StringBuffer fileName1 = new StringBuffer(folder);
-				fileName1.append("n24_ifs_hvd_bom_");
-				StringBuffer fileName2 = new StringBuffer(folder);
-				fileName2.append("n24_ifs_lev_bom_");
-				StringBuffer fileName3 = new StringBuffer(folder);
-				fileName3.append("n24_ifs_knd_bom_");
-				StringBuffer fileName4 = new StringBuffer(folder);
-				fileName4.append("n24_attestlista_lev_bom_");
-				StringBuffer fileName5 = new StringBuffer(folder);
-				fileName5.append("n24_attestlista_knd_bom_");
-				StringBuffer fileName6 = new StringBuffer(folder);
-				fileName6.append("n24_avvikelselista_knd_bom_");
-				StringBuffer fileName7 = new StringBuffer(folder);
-				fileName7.append("n24_kommun_bom_");
-				fileName1.append(now.getDateString("yyMMdd_HHmm"));
-				fileName2.append(now.getDateString("yyMMdd_HHmm"));
-				fileName3.append(now.getDateString("yyMMdd_HHmm"));
-				fileName4.append(now.getDateString("yyMMdd_HHmm"));
-				fileName5.append(now.getDateString("yyMMdd_HHmm"));
-				fileName6.append(now.getDateString("yyMMdd_HHmm"));
-				fileName7.append(now.getDateString("yyMMdd_HHmm"));
+				if (fileFolder != null) {
+					fileName1 = new StringBuffer(fileFolder);
+					fileName1.append("n24_ifs_hvd_bom_");
+					fileName2 = new StringBuffer(fileFolder);
+					fileName2.append("n24_ifs_lev_bom_");
+					fileName3 = new StringBuffer(fileFolder);
+					fileName3.append("n24_ifs_knd_bom_");
+					fileName1.append(now.getDateString("yyMMdd_HHmm"));
+					fileName2.append(now.getDateString("yyMMdd_HHmm"));
+					fileName3.append(now.getDateString("yyMMdd_HHmm"));
+				}
+				if (listFolder != null) {
+					fileName4 = new StringBuffer(listFolder);
+					fileName4.append("n24_kontrollista_hvd_bom_");
+					fileName5 = new StringBuffer(listFolder);
+					fileName5.append("n24_kontrollista_lev_bom_");
+					fileName6 = new StringBuffer(listFolder);
+					fileName6.append("n24_attestlista_lev_bom_");
+					fileName7 = new StringBuffer(listFolder);
+					fileName7.append("n24_attestlista_knd_bom_");
+					fileName8 = new StringBuffer(listFolder);
+					fileName8.append("n24_avvikelselista_knd_bom_");
+					fileName9 = new StringBuffer(listFolder);
+					fileName9.append("n24_kommun_bom_");
+					fileName4.append(now.getDateString("yyMMdd_HHmm"));
+					fileName5.append(now.getDateString("yyMMdd_HHmm"));
+					fileName6.append(now.getDateString("yyMMdd_HHmm"));
+					fileName7.append(now.getDateString("yyMMdd_HHmm"));
+					fileName8.append(now.getDateString("yyMMdd_HHmm"));
+					fileName9.append(now.getDateString("yyMMdd_HHmm"));
+				}
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName7.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName5.toString(), fileName6.toString(), fileName9.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
 				}
 				try {
-					createInvoiceFiles(fileName3.toString(), fileName5.toString(), fileName6.toString(), _schoolCategory, now, _currentLocale, _periodText, header);
+					createInvoiceFiles(fileName3.toString(), fileName7.toString(), fileName8.toString(), _schoolCategory, now, _currentLocale, _periodText, header);
 				}
 				catch (IOException e6) {
 					e6.printStackTrace();
 				}
 			}
 			else if (_schoolCategory.equals(school.getPrimaryKey())) {
-				StringBuffer fileName1 = new StringBuffer(folder);
-				fileName1.append("n24_ifs_hvd_gsk_");
-				StringBuffer fileName2 = new StringBuffer(folder);
-				fileName2.append("n24_ifs_lev_gsk_");
-				StringBuffer fileName4 = new StringBuffer(folder);
-				fileName4.append("n24_attestlista_lev_gsk_");
-				StringBuffer fileName7 = new StringBuffer(folder);
-				fileName7.append("n24_kommun_gsk_");
-				fileName1.append(now.getDateString("yyMMdd_HHmm"));
-				fileName2.append(now.getDateString("yyMMdd_HHmm"));
-				fileName4.append(now.getDateString("yyMMdd_HHmm"));
-				fileName7.append(now.getDateString("yyMMdd_HHmm"));
+				if (fileFolder != null) {
+					fileName1 = new StringBuffer(fileFolder);
+					fileName1.append("n24_ifs_hvd_gsk_");
+					fileName2 = new StringBuffer(fileFolder);
+					fileName2.append("n24_ifs_lev_gsk_");
+					fileName1.append(now.getDateString("yyMMdd_HHmm"));
+					fileName2.append(now.getDateString("yyMMdd_HHmm"));
+				}
+				if (listFolder != null) {
+					fileName4 = new StringBuffer(listFolder);
+					fileName4.append("n24_kontrollista_hvd_gsk_");
+					fileName5 = new StringBuffer(listFolder);
+					fileName5.append("n24_kontrollista_lev_gsk_");
+					fileName6 = new StringBuffer(listFolder);
+					fileName6.append("n24_attestlista_lev_gsk_");
+					fileName9 = new StringBuffer(listFolder);
+					fileName9.append("n24_kommun_gsk_");
+					fileName4.append(now.getDateString("yyMMdd_HHmm"));
+					fileName5.append(now.getDateString("yyMMdd_HHmm"));
+					fileName6.append(now.getDateString("yyMMdd_HHmm"));
+					fileName9.append(now.getDateString("yyMMdd_HHmm"));
+				}
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName7.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName5.toString(), fileName6.toString(), fileName9.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
 				}
 			}
 			else if (_schoolCategory.equals(highSchool.getPrimaryKey())) {
-				StringBuffer fileName1 = new StringBuffer(folder);
-				fileName1.append("n24_ifs_hvd_gym_");
-				StringBuffer fileName2 = new StringBuffer(folder);
-				fileName2.append("n24_ifs_lev_gym_");
-				StringBuffer fileName4 = new StringBuffer(folder);
-				fileName4.append("n24_attestlista_lev_gym_");
-				StringBuffer fileName7 = new StringBuffer(folder);
-				fileName7.append("n24_kommun_gym_");
-				fileName1.append(now.getDateString("yyMMdd_HHmm"));
-				fileName2.append(now.getDateString("yyMMdd_HHmm"));
-				fileName4.append(now.getDateString("yyMMdd_HHmm"));
-				fileName7.append(now.getDateString("yyMMdd_HHmm"));
+				if (fileFolder != null) {
+					fileName1 = new StringBuffer(fileFolder);
+					fileName1.append("n24_ifs_hvd_gym_");
+					fileName2 = new StringBuffer(fileFolder);
+					fileName2.append("n24_ifs_lev_gym_");
+					fileName1.append(now.getDateString("yyMMdd_HHmm"));
+					fileName2.append(now.getDateString("yyMMdd_HHmm"));
+				}
+				if (listFolder != null) {
+					fileName4 = new StringBuffer(listFolder);
+					fileName4.append("n24_kontrollista_hvd_gym_");
+					fileName5 = new StringBuffer(listFolder);
+					fileName5.append("n24_kontrollista_lev_gym_");
+					fileName6 = new StringBuffer(listFolder);
+					fileName6.append("n24_attestlista_lev_gym_");
+					fileName9 = new StringBuffer(listFolder);
+					fileName9.append("n24_kommun_gym_");
+					fileName4.append(now.getDateString("yyMMdd_HHmm"));
+					fileName5.append(now.getDateString("yyMMdd_HHmm"));
+					fileName6.append(now.getDateString("yyMMdd_HHmm"));
+					fileName9.append(now.getDateString("yyMMdd_HHmm"));
+				}
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName7.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName5.toString(), fileName6.toString(), fileName9.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -310,7 +353,7 @@ public class IFSFileCreationThread extends Thread {
 		header.store();
 	}
 
-	private void createPaymentFiles(String fileName1, String fileName2, String fileName3, String fileName4, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
+	private void createPaymentFiles(String fileName1, String fileName2, String fileName3, String fileName4, String fileName5, String fileName6, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
 		String localizedSchoolCategoryName = _iwac.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(_currentLocale).getLocalizedString("school_category." + _schoolCategory);
 		Collection phInCommune = null;
 		try {
@@ -337,8 +380,8 @@ public class IFSFileCreationThread extends Thread {
 		phAll.addAll(phOutsideCommune);
 		phAll.addAll(phInCommune);
 		try {
-			createPaymentSigningFilesExcel(phInCommune, fileName4 + ".xls", "Utbetalningsattestlista " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), false);
-			createPaymentSigningFilesExcel(phAll, fileName3 + ".xls", "Utbetalningsattestlista " + localizedSchoolCategoryName + ", " + executionDate.getDateString("yyyy-MM-dd"), true);
+			createPaymentSigningFilesExcel(phInCommune, fileName6 + ".xls", "Utbetalningsattestlista " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), false);
+			createPaymentSigningFilesExcel(phAll, fileName5 + ".xls", "Utbetalningsattestlista " + localizedSchoolCategoryName + ", " + executionDate.getDateString("yyyy-MM-dd"), true);
 		}
 		catch (IOException e3) {
 			e3.printStackTrace();
@@ -360,7 +403,7 @@ public class IFSFileCreationThread extends Thread {
 			}
 
 			try {
-				createPaymentFilesExcel(rec, fileName1 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), true);
+				createPaymentFilesExcel(rec, fileName3 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", egna kommunala anordnare, " + executionDate.getDateString("yyyy-MM-dd"), true);
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
@@ -549,7 +592,7 @@ public class IFSFileCreationThread extends Thread {
 				e2.printStackTrace();
 			}
 			try {
-				createPaymentFilesExcel(recOutside, fileName2 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", övriga anordnare, " + executionDate.getDateString("yyyy-MM-dd"), false);
+				createPaymentFilesExcel(recOutside, fileName4 + ".xls", "Checkutbetalning " + localizedSchoolCategoryName + ", övriga anordnare, " + executionDate.getDateString("yyyy-MM-dd"), false);
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
@@ -1781,9 +1824,9 @@ public class IFSFileCreationThread extends Thread {
 			Collections.sort(paymentHeaders, new PaymentComparator());
 			Iterator it = paymentHeaders.iterator();
 			boolean firstRecord;
-			float recordAmount;
-			float totalHeaderAmount = 0;
-			float totalAmount = 0;
+			long recordAmount;
+			long totalHeaderAmount = 0;
+			long totalAmount = 0;
 			int totalHeaderStudents = 0;
 			int totalStudents = 0;
 			School school = null;
