@@ -282,7 +282,8 @@ public class UserSearcher extends Block {
 					}
 					else if(legalNonDigitPIDLetters!=null){
 						if(legalNonDigitPIDLetters.indexOf(ch)>=0){
-							sb.append(ch);
+							// non digit letters turned to uppercase
+							sb.append(Character.toUpperCase(ch));
 						}
 					}
 				}
