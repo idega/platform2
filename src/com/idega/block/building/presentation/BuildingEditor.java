@@ -31,6 +31,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
   protected boolean isAdmin = false;
   protected String TextFontColor = "#000000";
   public String sAction = "be_action";
+  private static final String prmSave = "save",prmDelete = "del";
   private String styleAttribute = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000";
   private String styleAttribute2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
   public final int COMPLEX = 1,BUILDING = 2,FLOOR = 3, APARTMENT = 4,
@@ -40,7 +41,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
   protected boolean fontBold = false;
   private Table outerTable;
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.building";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
@@ -76,7 +77,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
        modinfo.removeSessionAttribute("dr_id");
     }
 
-    if(modinfo.getParameter("save")!=null){
+    if(modinfo.getParameter(prmSave)!=null){
       if(modinfo.getParameter("bm_choice")!=null){
         int i = Integer.parseInt(modinfo.getParameter("bm_choice"));
          switch (i) {
@@ -89,7 +90,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
         }
       }
     }
-    else if(modinfo.getParameter("del")!=null){
+    else if(modinfo.getParameter( prmDelete)!=null){
        if(modinfo.getParameter("bm_choice")!=null && eId > 0){
         int i = Integer.parseInt(modinfo.getParameter("bm_choice"));
          switch (i) {
@@ -734,13 +735,14 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       T.setCellpadding(8);
       T.setAlignment("center");
       T.setWidth("100%");
-    Table T2 = new Table();
+    Table T2 = new Table(1,2);
       T2.setCellpadding(8);
       T2.setAlignment("center");
       T2.setHeight("100%");
       T2.setWidth("100%");
-      T2.setVerticalAlignment(1,1,"bottom");
-      T2.setAlignment(1,1,"center");
+      T2.setVerticalAlignment(1,1,"top");
+      T2.setVerticalAlignment(1,2,"bottom");
+      T2.setAlignment(1,2,"center");
     Frame.add(T,1,1);
     Frame.add(T2,2,1);
 
@@ -764,8 +766,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T2.add(formatText(iwrb.getLocalizedString("map","Map")),1,1);
     T2.add(Text.getBreak(),1,1);
     T2.add(this.makeImageInput(iMapId,"mapid"),1,1);
-    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
-    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("save.gif"),"save"),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),prmDelete),1,2);
     form.add(Frame);
     return form;
   }
@@ -841,8 +843,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T2.add(Text.getBreak(),1,1);
     T2.add(this.makeImageInput(iPhotoId,"photoid"),1,1);
     Frame.add(HI);
-    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
-    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("save.gif"),prmSave),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),prmDelete),1,2);
     form.add(Frame);
     return form;
   }
@@ -903,8 +905,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T2.add(this.makeImageInput(1,"photoid"),1,1);
     Frame.add(HI);
     Frame.add(HA);
-    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
-    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("save.gif"),prmSave),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),prmDelete),1,2);
     form.add(Frame);
     return form;
   }
@@ -927,13 +929,14 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       T.setCellpadding(8);
       T.setAlignment("center");
       T.setWidth("100%");
-    Table T2 = new Table(1,1);
+    Table T2 = new Table(1,2);
       T2.setCellpadding(8);
       T2.setAlignment("center");
       T2.setHeight("100%");
       T2.setWidth("100%");
-      T2.setVerticalAlignment(1,1,"bottom");
-      T2.setAlignment(1,1,"center");
+      T2.setVerticalAlignment(1,1,"top");
+      T2.setVerticalAlignment(1,2,"bottom");
+      T2.setAlignment(1,2,"center");
     Frame.add(T,1,1);
     Frame.add(T2,2,1);
 
@@ -958,8 +961,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T2.add(formatText(iwrb.getLocalizedString("icon","Icon")),1,1);
     T2.add(Text.getBreak(),1,1);
     T2.add(this.makeImageInput(iIconId,"iconid"),1,1);
-    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,1);
-    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,1);
+    T2.add(new SubmitButton(iwrb.getImage("save.gif"),prmSave),1,1);
+    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),prmDelete),1,1);
     form.add(Frame);
     return form;
   }
@@ -1188,8 +1191,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     form.add(HA);
     if(e)
       form.add(HID);
-    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
-    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("save.gif"),prmSave),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),prmDelete),1,2);
     form.add(Frame);
     return form;
   }
