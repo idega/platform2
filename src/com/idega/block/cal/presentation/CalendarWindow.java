@@ -20,6 +20,7 @@ public class CalendarWindow extends StyledIWAdminWindow{
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	
+	private static final String HELP_TEXT_KEY = "cal_calendar";
 	
 	private Table table = null;
 	private String borderWhiteTableStyle = "borderAllWhite";
@@ -45,12 +46,14 @@ public class CalendarWindow extends StyledIWAdminWindow{
 		table.setAlignment("center");
 		table.setCellspacing(5);
 		table.add(calendar,1,1);
+		table.add(getHelp(this.HELP_TEXT_KEY), 1, 3);
 		add(table,iwc);
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("calendarWindow.calendar","Calendar"),titleFont);
+		setTitle(iwrb.getLocalizedString("calendarWindow.calendar","Calendar"));
+		addTitle(iwrb.getLocalizedString("calendarWindow.calendar","Calendar"),TITLE_STYLECLASS);
 		initializeWindow(iwc);
 				
 	}

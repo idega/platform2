@@ -31,6 +31,7 @@ import com.idega.user.data.User;
 public class CreateUserInLedger extends StyledIWAdminWindow{
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	
+	private static final String HELP_TEXT_KEY = "cal_create_user_in_ledger";
 	
 	public static String NEW_USER_IN_LEDGER = "user_new_in_ledger_";
 	
@@ -94,11 +95,13 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		table.add(submitButton,2,3);
 		table.add(Text.NON_BREAKING_SPACE,2,3);
 		table.add(closeButton,2,3);
+		table.add(getHelp(HELP_TEXT_KEY), 1, 4);
 		form.add(table);
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("createUILWindow.create_user","Create user in ledger"),titleFont);
+		setTitle(iwrb.getLocalizedString("createUILWindow.create_user","Create user in ledger"));
+		addTitle(iwrb.getLocalizedString("createUILWindow.create_user","Create user in ledger"),TITLE_STYLECLASS);
 		
 		form = new Form();
 		initializeTexts();

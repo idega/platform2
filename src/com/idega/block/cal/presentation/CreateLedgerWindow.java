@@ -36,6 +36,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
 	
+	private static final String HELP_TEXT_KEY = "cal_create_ledger";
 	
 	
 	//parameter names
@@ -158,6 +159,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		mainTable.add(Text.NON_BREAKING_SPACE,2,6);
 		mainTable.add(closeButton,2,6);
 				
+		mainTable.add(getHelp(HELP_TEXT_KEY),1,7);
 		form.add(mainTable);
 	}
 	/**
@@ -195,7 +197,8 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("createLedgerWindow.create_ledger","Create Ledger"),titleFont);
+		setTitle(iwrb.getLocalizedString("createLedgerWindow.create_ledger","Create Ledger"));
+		addTitle(iwrb.getLocalizedString("createLedgerWindow.create_ledger","Create Ledger"),TITLE_STYLECLASS);
 		
 		form = new Form();
 		initializeTexts();

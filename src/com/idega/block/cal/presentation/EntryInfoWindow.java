@@ -33,6 +33,7 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
 
+	private static final String HELP_TEXT_KEY = "cal_entry_info";
 	
 	//parameter names
 	public static String headlineFieldParameterName = "headline";
@@ -184,10 +185,13 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		table.add(locationField,2,6);
 		table.add(descriptionText,1,7);
 		table.add(descriptionField,2,7);
+		
+		table.add(getHelp(HELP_TEXT_KEY), 1, 8);
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("entryInfoWindow.entry_info","Entry info"),titleFont);
+		setTitle(iwrb.getLocalizedString("entryInfoWindow.entry_info","Entry info"));
+		addTitle(iwrb.getLocalizedString("entryInfoWindow.entry_info","Entry info"),TITLE_STYLECLASS);
 		
 		initializeTexts(iwc);
 		initializeFields(iwc);

@@ -41,6 +41,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
 	
+	private static final String HELP_TEXT_KEY = "cal_user_statistics";
 	
 	
 	//parameter names
@@ -281,6 +282,8 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		table.add(underTable,1,2);
 		table.setAlignment(1,3,"right");
 		table.add(closeButton,1,3);
+		
+		table.add(getHelp(this.HELP_TEXT_KEY), 1, 4);
 	}
 	/**
 	 * 
@@ -360,7 +363,8 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("userStatWindow.user_stat","User statistics"),titleFont);
+		setTitle(iwrb.getLocalizedString("userStatWindow.user_stat","User statistics"));
+		addTitle(iwrb.getLocalizedString("userStatWindow.user_stat","User statistics"),TITLE_STYLECLASS);
 		
 		initializeTexts();
 		initializeFields();

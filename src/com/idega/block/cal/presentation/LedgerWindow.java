@@ -62,6 +62,7 @@ import com.idega.util.IWTimestamp;
 public class LedgerWindow extends StyledIWAdminWindow{
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	
+	private static final String HELP_TEXT_KEY = "cal_ledger";
 	
 	public static final String SELECTED_USERS_KEY = "selected_users";
 	public static final String DELETE_USERS_KEY = "delete_selected_users";
@@ -376,6 +377,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		bottomTable.add(deleteLink,2,1);
 		
 		mainTable.add(bottomTable,1,3);
+		
+		mainTable.add(getHelp(this.HELP_TEXT_KEY), 1, 4);
 		
 		form.add(mainTable);		
 	}
@@ -791,7 +794,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("ledgerWindow.ledger","Ledger"),titleFont);
+		setTitle(iwrb.getLocalizedString("ledgerWindow.ledger","Ledger"));
+		addTitle(iwrb.getLocalizedString("ledgerWindow.ledger","Ledger"),TITLE_STYLECLASS);
 		
 		form = new Form();
 		form.maintainAllParameters();
