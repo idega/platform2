@@ -109,13 +109,13 @@ public Box(String attribute){
     if(_boxID <= 0){
       String sBoxID = iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID);
       if(sBoxID != null)
-        _boxID = Integer.parseInt(sBoxID);
+	_boxID = Integer.parseInt(sBoxID);
       else if(getICObjectInstanceID() > 0){
-        _boxID = BoxFinder.getRelatedEntityId(getICObjectInstance());
-        if(_boxID <= 0 ){
-          BoxBusiness.saveBox(_boxID,getICObjectInstanceID(),null);
-          _newObjInst = true;
-        }
+	_boxID = BoxFinder.getRelatedEntityId(getICObjectInstance());
+	if(_boxID <= 0 ){
+	  BoxBusiness.saveBox(_boxID,getICObjectInstanceID(),null);
+	  _newObjInst = true;
+	}
       }
     }
 
@@ -129,10 +129,10 @@ public Box(String attribute){
     else if ( _attribute != null ){
       box = BoxFinder.getBox(_attribute);
       if ( box != null ) {
-        _boxID = box.getID();
+	_boxID = box.getID();
       }
       else {
-        BoxBusiness.saveBox(-1,-1,_attribute);
+	BoxBusiness.saveBox(-1,-1,_attribute);
       }
       _newWithAttribute = true;
     }
@@ -143,10 +143,10 @@ public Box(String attribute){
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
       try {
-        _boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
+	_boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
       }
       catch (NumberFormatException e) {
-        _boxCategoryID = -1;
+	_boxCategoryID = -1;
       }
     }
 
@@ -170,18 +170,18 @@ public Box(String attribute){
     BoxCategory[] categories = BoxFinder.getCategoriesInBox(box);
     if ( categories != null ) {
       switch (_layout) {
-        case BOX_VIEW:
-          getBoxView(box,categories,boxTable);
-          break;
-        case CATEGORY_VIEW:
-          boxTable.setWidth(_boxWidth);
-          getCategoryView(box,categories,boxTable,iwc);
-          break;
-        case COLLECTION_VIEW:
-          boxTable.setWidth(_boxWidth);
-          boxTable.setCellspacing(0);
-          getCollectionView(box,categories,boxTable,iwc);
-          break;
+	case BOX_VIEW:
+	  getBoxView(box,categories,boxTable);
+	  break;
+	case CATEGORY_VIEW:
+	  boxTable.setWidth(_boxWidth);
+	  getCategoryView(box,categories,boxTable,iwc);
+	  break;
+	case COLLECTION_VIEW:
+	  boxTable.setWidth(_boxWidth);
+	  boxTable.setCellspacing(0);
+	  getCollectionView(box,categories,boxTable,iwc);
+	  break;
       }
     }
 
@@ -195,32 +195,32 @@ public Box(String attribute){
     for ( int a = 0; a < categories.length; a++ ) {
       String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
       if ( categoryString == null ) {
-        categoryString = "$language$";
+	categoryString = "$language$";
       }
 
       Text categoryText = new Text(categoryString);
-        categoryText.setFontStyle(_categoryStyle);
+	categoryText.setFontStyle(_categoryStyle);
 
       Table table = new Table();
-        table.setCellpadding(3);
-        table.setCellspacing(1);
-        table.setWidth(_boxWidth);
-        table.setHeight(_boxHeight);
-        table.setHeight(2,"100%");
-        table.setColor(_borderColor);
-        table.setColor(1,1,_headerColor);
-        table.setColor(1,2,_inlineColor);
-        table.setAlignment(1,1,"center");
-        table.setVerticalAlignment(1,1,"middle");
-        table.setVerticalAlignment(1,2,"top");
+	table.setCellpadding(3);
+	table.setCellspacing(1);
+	table.setWidth(_boxWidth);
+	table.setHeight(_boxHeight);
+	table.setHeight(2,"100%");
+	table.setColor(_borderColor);
+	table.setColor(1,1,_headerColor);
+	table.setColor(1,2,_inlineColor);
+	table.setAlignment(1,1,"center");
+	table.setVerticalAlignment(1,1,"middle");
+	table.setVerticalAlignment(1,2,"top");
 
       table.add(categoryText,1,1);
 
       Table linksTable = new Table();
-        linksTable.setRows(_numberOfDisplayed+1);
-        linksTable.setWidth("100%");
-        if ( _isAdmin )
-          linksTable.setHeight("100%");
+	linksTable.setRows(_numberOfDisplayed+1);
+	linksTable.setWidth("100%");
+	if ( _isAdmin )
+	  linksTable.setHeight("100%");
       table.add(linksTable,1,2);
 
       int linkRow = 1;
@@ -228,39 +228,39 @@ public Box(String attribute){
       BoxLink[] links = BoxFinder.getLinksInBox(box,categories[a]);
       int linksLength = _numberOfDisplayed;
       if ( links != null ) {
-        if ( links.length < linksLength ) {
-          linksLength = links.length;
-        }
+	if ( links.length < linksLength ) {
+	  linksLength = links.length;
+	}
 
-        for ( int b = 0; b < linksLength; b++ ) {
-          Link link = getLink(links[b]);
-          if ( link != null ) {
-            linksTable.add(link,1,linkRow);
-            linksTable.setWidth(1,linkRow,"100%");
+	for ( int b = 0; b < linksLength; b++ ) {
+	  Link link = getLink(links[b]);
+	  if ( link != null ) {
+	    linksTable.add(link,1,linkRow);
+	    linksTable.setWidth(1,linkRow,"100%");
 
-            if ( _isAdmin ) {
-              linksTable.add(getEditLink(links[b].getID()),2,linkRow);
-              linksTable.add(getDeleteLink(links[b].getID()),2,linkRow);
-            }
-            linkRow++;
-          }
-        }
+	    if ( _isAdmin ) {
+	      linksTable.add(getEditLink(links[b].getID()),2,linkRow);
+	      linksTable.add(getDeleteLink(links[b].getID()),2,linkRow);
+	    }
+	    linkRow++;
+	  }
+	}
 
-        if ( _isAdmin ) {
-          linksTable.add(getAddLink(categories[a].getID()),1,_numberOfDisplayed+1);
-          linksTable.setHeight(1,_numberOfDisplayed+1,"100%");
-          linksTable.setVerticalAlignment(1,_numberOfDisplayed+1,"bottom");
-        }
+	if ( _isAdmin ) {
+	  linksTable.add(getAddLink(categories[a].getID()),1,_numberOfDisplayed+1);
+	  linksTable.setHeight(1,_numberOfDisplayed+1,"100%");
+	  linksTable.setVerticalAlignment(1,_numberOfDisplayed+1,"bottom");
+	}
       }
 
       if ( column % _numberOfColumns == 0 ) {
-        boxTable.add(table,column,row);
-        row++;
-        column = 1;
+	boxTable.add(table,column,row);
+	row++;
+	column = 1;
       }
       else {
-        boxTable.add(table,column,row);
-        column++;
+	boxTable.add(table,column,row);
+	column++;
       }
     }
   }
@@ -278,25 +278,25 @@ public Box(String attribute){
 
     for ( int a = 0; a < categories.length; a++ ) {
       if ( a == 0 && _boxCategoryID == -1 )
-        _boxCategoryID = categories[a].getID();
+	_boxCategoryID = categories[a].getID();
 
       String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
       if ( categoryString == null ) {
-        categoryString = "$language$";
+	categoryString = "$language$";
       }
 
       Text categoryText = new Text(categoryString);
       if ( _boxCategoryID == categories[a].getID() )
-        categoryText.setFontStyle(styler.getStyleString());
+	categoryText.setFontStyle(styler.getStyleString());
       else
-        categoryText.setFontStyle(_categoryStyle);
+	categoryText.setFontStyle(_categoryStyle);
 
       Image categoryImage = _iwbBox.getImage("shared/category.gif");
 
       Link categoryImageLink = new Link(categoryImage);
-        categoryImageLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
+	categoryImageLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
       Link categoryLink = new Link(categoryText);
-        categoryLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
+	categoryLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
 
       categoryTable.add(categoryImageLink,1,a+1);
       categoryTable.add(categoryLink,2,a+1);
@@ -313,41 +313,41 @@ public Box(String attribute){
 
       BoxLink[] links = BoxFinder.getLinksInBox(box,category);
       if ( links != null && category != null ) {
-        Table linksTable = new Table();
-          linksTable.setCellpadding(0);
-          linksTable.setCellspacing(1);
-          linksTable.setWidth("100%");
-          linksTable.setWidth(1,"100%");
+	Table linksTable = new Table();
+	  linksTable.setCellpadding(0);
+	  linksTable.setCellspacing(1);
+	  linksTable.setWidth("100%");
+	  linksTable.setWidth(1,"100%");
 
-        Text documentNameText = new Text(_iwrb.getLocalizedString("document_name","Document name"));
-          documentNameText.setFontStyle(_linkStyle+" font-weight: bold;");
-        linksTable.add(documentNameText,1,linkRow);
+	Text documentNameText = new Text(_iwrb.getLocalizedString("document_name","Document name"));
+	  documentNameText.setFontStyle(_linkStyle+" font-weight: bold;");
+	linksTable.add(documentNameText,1,linkRow);
 
-        Text documentDateText = new Text(_iwrb.getLocalizedString("document_date","Date"));
-          documentDateText.setFontStyle(_linkStyle+" font-weight: bold;");
-        linksTable.add(documentDateText,2,linkRow);
-        linkRow++;
+	Text documentDateText = new Text(_iwrb.getLocalizedString("document_date","Date"));
+	  documentDateText.setFontStyle(_linkStyle+" font-weight: bold;");
+	linksTable.add(documentDateText,2,linkRow);
+	linkRow++;
 
-        for ( int b = 0; b < links.length; b++ ) {
-          Link link = getLink(links[b]);
-          idegaTimestamp stamp = new idegaTimestamp(links[b].getCreationDate());
+	for ( int b = 0; b < links.length; b++ ) {
+	  Link link = getLink(links[b]);
+	  idegaTimestamp stamp = new idegaTimestamp(links[b].getCreationDate());
 
-          if ( link != null ) {
-            linksTable.add(link,1,linkRow);
+	  if ( link != null ) {
+	    linksTable.add(link,1,linkRow);
 
-            Text dateText = new Text(TextSoap.addZero(stamp.getDay())+"."+TextSoap.addZero(stamp.getMonth())+"."+Integer.toString(stamp.getYear()));
-              dateText.setFontStyle(_linkStyle);
-            linksTable.add(dateText,2,linkRow);
+	    Text dateText = new Text(TextSoap.addZero(stamp.getDay())+"."+TextSoap.addZero(stamp.getMonth())+"."+Integer.toString(stamp.getYear()));
+	      dateText.setFontStyle(_linkStyle);
+	    linksTable.add(dateText,2,linkRow);
 
-            if ( _isAdmin ) {
-              linksTable.add(getEditLink(links[b].getID()),3,linkRow);
-              linksTable.add(getDeleteLink(links[b].getID()),3,linkRow);
-            }
-            linkRow++;
-          }
-        }
-        boxTable.add(linksTable,1,row);
-        row++;
+	    if ( _isAdmin ) {
+	      linksTable.add(getEditLink(links[b].getID()),3,linkRow);
+	      linksTable.add(getDeleteLink(links[b].getID()),3,linkRow);
+	    }
+	    linkRow++;
+	  }
+	}
+	boxTable.add(linksTable,1,row);
+	row++;
       }
     }
     if ( _isAdmin && _boxCategoryID != -1 ) {
@@ -365,16 +365,16 @@ public Box(String attribute){
     for ( int a = 0; a < categories.length; a++ ) {
       String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
       if ( categoryString == null ) {
-        categoryString = "$language$";
+	categoryString = "$language$";
       }
 
       Text categoryText = new Text(categoryString);
-        categoryText.setFontStyle(_categoryStyle);
+	categoryText.setFontStyle(_categoryStyle);
 
       Table table = new Table();
-        table.setWidth("100%");
-        table.setCellspacing(0);
-        table.setCellpadding(1);
+	table.setWidth("100%");
+	table.setCellspacing(0);
+	table.setCellpadding(1);
 
       table.add(categoryText,1,1);
 
@@ -382,23 +382,23 @@ public Box(String attribute){
 
       BoxLink[] links = BoxFinder.getLinksInBox(box,categories[a]);
       if ( links != null ) {
-        for ( int b = 0; b < links.length; b++ ) {
-          Link link = getLink(links[b]);
-          if ( link != null ) {
-            table.add(link,1,linkRow);
-            table.setWidth(1,linkRow,"100%");
+	for ( int b = 0; b < links.length; b++ ) {
+	  Link link = getLink(links[b]);
+	  if ( link != null ) {
+	    table.add(link,1,linkRow);
+	    table.setWidth(1,linkRow,"100%");
 
-            if ( _isAdmin ) {
-              table.add(getEditLink(links[b].getID()),2,linkRow);
-              table.add(getDeleteLink(links[b].getID()),2,linkRow);
-            }
-            linkRow++;
-          }
-        }
+	    if ( _isAdmin ) {
+	      table.add(getEditLink(links[b].getID()),2,linkRow);
+	      table.add(getDeleteLink(links[b].getID()),2,linkRow);
+	    }
+	    linkRow++;
+	  }
+	}
 
-        if ( _isAdmin ) {
-          table.add(getAddLink(categories[a].getID()),1,linkRow);
-        }
+	if ( _isAdmin ) {
+	  table.add(getAddLink(categories[a].getID()),1,linkRow);
+	}
       }
 
       boxTable.add(table,1,row);
@@ -437,14 +437,14 @@ public Box(String attribute){
     String linkString = BoxBusiness.getLocalizedString(boxLink,_iLocaleID);
     if ( linkString != null ) {
       Link link = new Link(linkString);
-        if ( _styles ) {
-          link.setStyle(_name);
-        }
-        else {
-          link.setFontSize(1);
-        }
-        link.setOnMouseOver("window.status='"+linkString+"'; return true;");
-        link.setOnMouseOut("window.status=''; return true;");
+	if ( _styles ) {
+	  link.setStyle(_name);
+	}
+	else {
+	  link.setFontSize(1);
+	}
+	link.setOnMouseOver("window.status='"+linkString+"'; return true;");
+	link.setOnMouseOut("window.status=''; return true;");
 
       String URL = boxLink.getURL();
       int fileID = boxLink.getFileID();
@@ -452,19 +452,19 @@ public Box(String attribute){
       String target = boxLink.getTarget();
 
       if ( URL != null ) {
-        if ( URL.indexOf("http://") == -1 ) {
-          URL = "http://"+URL;
-        }
-        link.setURL(URL);
+	if ( URL.indexOf("http://") == -1 ) {
+	  URL = "http://"+URL;
+	}
+	link.setURL(URL);
       }
       else if ( fileID != -1 ) {
-        link.setFile(fileID);
+	link.setFile(fileID);
       }
       else if ( pageID != -1 ) {
-        link.setPage(pageID);
+	link.setPage(pageID);
       }
       if ( target != null ) {
-        link.setTarget(target);
+	link.setTarget(target);
       }
       return link;
     }
@@ -507,11 +507,11 @@ public Box(String attribute){
     _boxHeight = "120";
     _boxSpacing = 3;
     _numberOfDisplayed = 4;
-    _categoryStyle = "font-face: Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: bold";
-    _linkStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
-    _visitedStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
-    _activeStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
-    _hoverStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
+    _categoryStyle = "font-family: Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: bold";
+    _linkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
+    _visitedStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
+    _activeStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
+    _hoverStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
     _target = Link.TARGET_TOP_WINDOW;
   }
 
@@ -597,9 +597,9 @@ public Box(String attribute){
       _name = this.getName();
     if ( _name == null ) {
       if ( _attribute == null )
-        _name = "boxoffice_"+Integer.toString(_boxID);
+	_name = "boxoffice_"+Integer.toString(_boxID);
       else
-        _name = "boxoffice_"+_attribute;
+	_name = "boxoffice_"+_attribute;
     }
 
     if ( getParentPage() != null ) {
@@ -627,7 +627,7 @@ public Box(String attribute){
       obj = (Box) super.clone();
 
       if ( this._myTable != null ) {
-        obj._myTable = (Table) this._myTable.clone();
+	obj._myTable = (Table) this._myTable.clone();
       }
     }
     catch (Exception ex) {
