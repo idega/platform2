@@ -7,6 +7,13 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
@@ -26,10 +33,30 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareChildPlacing extends ChildCareBlock {
 
+	private static final String PRM_RM_CLASS_MEMBER_ID = "ccc_rm_cl_mb";
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
+		
+		if(iwc.isParameterSet(PRM_RM_CLASS_MEMBER_ID)){
+			try {
+				Integer classMemberID = Integer.valueOf(iwc.getParameter(PRM_RM_CLASS_MEMBER_ID));
+				getBusiness().getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(classMemberID).remove();
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (EJBException e) {
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (RemoveException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		Table table = new Table(1,5);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -101,6 +128,7 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 		IWTimestamp terminated = null;
 		
 		Collection placings = getBusiness().getSchoolBusiness().findClassMemberInChildCare(getSession().getChildID(), getSession().getChildCareID());
+		ChildCareContractHome contractHome = getBusiness().getChildCareContractArchiveHome();
 		Iterator iter = placings.iterator();
 		while (iter.hasNext()) {
 			column = 1;
@@ -132,9 +160,27 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			table.add(getSmallText(group.getSchoolClassName()), column++, row);
 			table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			if (member.getRemovedDate() != null)
-				table.add(getSmallText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
+				table.add(getSmallText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			else
-				table.add(getSmallText("-"), column++, row++);
+				table.add(getSmallText("-"), column++, row);
+			
+			ChildCareContract contract = null;
+			try {
+				// test for contract relation, allow deletion of class member if none
+				contract = contractHome.findBySchoolClassMember(member);
+
+			} catch (FinderException e) {
+			
+			}	
+			if(contract==null){
+				Link removeLink = new Link(getDeleteIcon(localize("child_care.tooltip.removed_noncontract_placement","Remove noncontract placement")));
+				removeLink.addParameter(PRM_RM_CLASS_MEMBER_ID,member.getPrimaryKey().toString());
+				table.add(removeLink,column++,row);
+			}
+			
+				
+			row++;
+			
 		}
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
