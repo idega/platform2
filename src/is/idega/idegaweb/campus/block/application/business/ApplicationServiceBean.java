@@ -69,7 +69,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 	
-	public class ApplicationServiceBean extends IBOServiceBean implements ApplicationService {
+	public class ApplicationServiceBean extends com.idega.block.application.business.ApplicationServiceBean implements ApplicationService {
 
 		public void storeApplicationSubject(String description,IWTimestamp expires) throws CreateException,RemoteException{
 			if(description.length() > 0){

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.60 2004/07/30 13:55:28 aron Exp $
+ * $Id: CampusApprover.java,v 1.61 2004/08/11 15:00:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -270,7 +270,7 @@ public class CampusApprover extends CampusBlock {
 			CampusApplication app = applicationService.storeWholeApplication(applicationID,new Integer(iSubjectId),aInfo,aprtInfo,spouseInfo,childInfo);
 			applicationID =  ((Integer)app.getPrimaryKey());
 		}
-		catch (EJBException e) {
+		catch (Exception e) {
 			applicationID = null;
 			e.printStackTrace();
 		}
@@ -1408,7 +1408,7 @@ public class CampusApprover extends CampusBlock {
 		Application eApplication,
 		String sStatus,
 		String sPriority,
-		boolean bEdit) {
+		boolean bEdit)throws RemoteException {
 		DataTable T = getDataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("control", "Control"));
@@ -1482,7 +1482,7 @@ public class CampusApprover extends CampusBlock {
 
 	
 
-	private Form subjectForm() {
+	private Form subjectForm()throws RemoteException {
 		Form myForm = new Form();
 		DropdownMenu drp = subjectDrop(String.valueOf(this.iSubjectId));
 		DropdownMenu status = statusDrop("global_status", sGlobalStatus);
@@ -1591,11 +1591,12 @@ public class CampusApprover extends CampusBlock {
 		return drp;
 	}
 
-	private DropdownMenu statusDrop(String name, String selected) {
+	private DropdownMenu statusDrop(String name, String selected) throws RemoteException{
 		DropdownMenu drp = new DropdownMenu(name);
-		drp.addMenuElement("S", getStatus("S"));
-		drp.addMenuElement("A", getStatus("A"));
-		drp.addMenuElement("R", getStatus("R"));
+		String[] stats = applicationService.getApplicationStatuses();
+		for (int i = 0; i < stats.length; i++) {
+		    drp.addMenuElement(stats[i], getStatus(stats[i]));
+        }
 		drp.setSelectedElement(selected);
 		return drp;
 	}
