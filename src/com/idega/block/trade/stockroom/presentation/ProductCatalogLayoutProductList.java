@@ -76,6 +76,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
     Table table = new Table();
       table.setCellspacing(2);
+      table.setWidth("100%");
 
 
     int row = 0;

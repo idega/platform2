@@ -142,6 +142,7 @@ public class ProductCatalog extends CategoryBlock{
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }
+
       Table table = new Table();
         table.setCellpadding(0);
         table.setCellspacing(0);

@@ -27,6 +27,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
     Form form = new Form();
     Table table = new Table();
       form.add(table);
+      table.setWidth("100%");
 
     int row = 0;
 
