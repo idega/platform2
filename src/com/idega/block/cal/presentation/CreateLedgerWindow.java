@@ -182,12 +182,12 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		String coachGroupIDString = iwc.getParameter(otherCoachesFieldParameterName);
 		Integer coachGroupID =null;
 		if(coachGroupIDString == null || coachGroupIDString.equals(""))
-			coachGroupIDString = "";
+			coachGroupIDString = "-1";
 		else {
 			coachGroupIDString = coachGroupIDString.substring(coachGroupIDString.lastIndexOf("_")+1);
-			coachGroupID = new Integer(coachGroupIDString);
-		}
 			
+		}
+		coachGroupID = new Integer(coachGroupIDString);	
 		String coach = iwc.getParameter(coachFieldParameterName);
 		
 		lineUp(iwc);

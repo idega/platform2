@@ -68,18 +68,21 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	private static String dateFieldParameterName = "date";
 	private static String saveButtonParameterName = "save";
 	private static String saveButtonParameterValue = "save";
+	private static String clubNameParameterName = "clubName";
 		
 	//display texts 
 	private Text coachText;
 	private Text otherCoachesText;
 	private Text groupText;
 	private Text dateText;
+	private Text clubNameText;
 	
 	//fields
 	private Text coachNameField;
 	private String otherCoachesNameField;
 	private String groupNameField;
 	private String fromDateField;
+	private String clubNameField;
 	
 	//buttons
 	private SubmitButton saveButton;
@@ -118,6 +121,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
 		groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
 		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Start Date"));
+		clubNameText = new Text(iwrb.getLocalizedString(clubNameParameterName,"Club name"));
 	}
 	/**
 	 * initializes the fields in the form of the window
@@ -140,8 +144,11 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		Group coaches = null;
 		List trainers = null;
 		try {
-			coaches = getGroupBusiness(iwc).getGroupByGroupID(coachGroupID);
-			trainers = (List) getGroupBusiness(iwc).getUsers(coaches);
+			if(coachGroupID != -1) {
+				coaches = getGroupBusiness(iwc).getGroupByGroupID(coachGroupID);
+				trainers = (List) getGroupBusiness(iwc).getUsers(coaches);
+			}
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -159,30 +166,38 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		else {
 			otherCoachesNameField = "";
 		}
-		
-		//
-
-		
+		Collection parentGroups = null;
 		int groupID = getCalendarBusiness(iwc).getLedger(lID.intValue()).getGroupID();
 		try {
 			groupNameField = getGroupBusiness(iwc).getGroupByGroupID(groupID).getName();
+			parentGroups = new ArrayList(getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID)));
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		if(parentGroups != null) {
+			Iterator pgIter = parentGroups.iterator();
+			while(pgIter.hasNext()) {
+				Group g = (Group) pgIter.next();
+				String type = g.getGroupType();
+				if("iwme_club".equals(type)) {
+					clubNameField = g.getName();
+				}
+			}
+		}
+		if(clubNameField == null) {
+			clubNameField = iwrb.getLocalizedString("ledgerwindow.no_club_text","No club");
+		}
 		Timestamp fromD = getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate();
 		IWTimestamp iwFromD = new IWTimestamp(fromD);
 		//fromDate is the start date of the ledger
 		fromDateField = iwFromD.getDateString("dd. MMMMMMM yyyy");
-
 		
 		//when save button is pushed the new ledger is created
 		saveButton = new SubmitButton(iwrb.getLocalizedString("ledgerwindow.save","Save"),saveButtonParameterName,saveButtonParameterValue);
 		//closes the window
 		closeButton = new CloseButton(iwrb.getLocalizedString("ledgerwindow.close","Close"));
 		
-		printButton = new PrintButton(iwrb.getLocalizedString("ledgerwindow.print","Print"));
-		
+		printButton = new PrintButton(iwrb.getLocalizedString("ledgerwindow.print","Print"));		
 	}
 
 	/**
@@ -197,15 +212,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		mainTable.setCellspacing(0);
 		mainTable.setCellpadding(5);
 		mainTable.setStyleClass(mainTableStyle);
-		mainTable.add(coachText,1,1);
-		mainTable.add(coachNameField,2,1);
-		mainTable.setVerticalAlignment(1,2,"top");
-		mainTable.add(otherCoachesText,1,2);
-		mainTable.add(otherCoachesNameField,2,2);
-		mainTable.add(groupText,1,3);
-		mainTable.add(groupNameField,2,3);
-		mainTable.add(dateText,1,4);
-		mainTable.add(fromDateField,2,4);
+		mainTable.add(clubNameText,1,1);
+		mainTable.add(clubNameField,2,1);
+		mainTable.add(coachText,1,2);
+		mainTable.add(coachNameField,2,2);
+		mainTable.setVerticalAlignment(1,3,"top");
+		mainTable.add(otherCoachesText,1,3);
+		mainTable.add(otherCoachesNameField,2,3);
+		mainTable.add(groupText,1,4);
+		mainTable.add(groupNameField,2,4);
+		mainTable.add(dateText,1,5);
+		mainTable.add(fromDateField,2,5);
 		
 		mainTable.mergeCells(3,1,3,4);
 		mainTable.add(iwrb.getLocalizedString("ledgerwindow.allowed_marks", "Allowed marks") ,3,1);
@@ -322,10 +339,9 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				int column = 2;
 				while(entryIter.hasNext()) {					
 					entry = (CalendarEntry) entryIter.next();
-						Timestamp date = entry.getDate();
-						int month = date.getMonth()+1;//date.getMonth() = 0 represents January!
-						String dateString = date.getDate() + "/" + month;
-						attendanceDateTable.setWidth(column,1,30);
+						IWTimestamp date = new IWTimestamp(entry.getDate());						
+						String dateString = date.getDateString("dd/MM");
+						attendanceDateTable.setWidth(column,1,40);
 						attendanceDateTable.add(dateString,column,1);					
 						column++;
 				}
@@ -367,7 +383,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					if(mark != null && !mark.equals("")) {
 						input.setValue(mark);
 					}	
-					attendanceMarkTable.setWidth(i,1,30);
+					attendanceMarkTable.setWidth(i,1,40);
 					attendanceMarkTable.add(input,i,1);						
 				}
 				return attendanceMarkTable;

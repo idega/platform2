@@ -3,8 +3,13 @@
  */
 package com.idega.block.cal.presentation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.CalendarEntry;
+import com.idega.block.cal.data.CalendarLedger;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
@@ -12,6 +17,8 @@ import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -45,6 +52,8 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	private Text descriptionText;
 	
 	//fields
+	private String groupNameField;
+	private String clubNameField;
 	private String headlineField;
 	private String typeField;
 	private String dayFromField;
@@ -86,15 +95,51 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		locationText.setStyleClass(boldText);		
 	}
 	public void initializeFields(IWContext iwc) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		String entryIDString = iwc.getParameter(CalendarEntryCreator.entryIDParameterName);
 		
 		Integer entryID = new Integer(entryIDString);
 		CalendarEntry entry = getCalBusiness(iwc).getEntry(entryID.intValue());
 		
+		int groupID = entry.getGroupID();
+		int ledgerID = entry.getLedgerID();
+		Collection parentGroups = null;
+		try {
+			if(groupID != -1) {
+				groupNameField = getGroupBusiness(iwc).getGroupByGroupID(groupID).getName();
+				parentGroups = new ArrayList(getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID)));
+				
+			}
+			else if(ledgerID != -1) {
+				CalendarLedger ledger = getCalBusiness(iwc).getLedger(ledgerID);
+				Group g = getGroupBusiness(iwc).getGroupByGroupID(ledger.getGroupID());
+				groupNameField = g.getName();
+			}
+			else {
+				groupNameField = iwrb.getLocalizedString("entryinfowindow.no_group_text","No group");
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(parentGroups != null) {
+			Iterator pgIter = parentGroups.iterator();
+			while(pgIter.hasNext()) {
+				Group g = (Group) pgIter.next();
+				String type = g.getGroupType();
+				if("iwme_club".equals(type)) {
+					clubNameField = g.getName();
+				}
+			}
+		}
+		if(clubNameField == null) {
+			clubNameField = iwrb.getLocalizedString("ledgerwindow.no_club_text","No club");
+		}
+		
 		headlineField = entry.getName();
 		typeField = entry.getEntryTypeName();
-		dayFromField = entry.getDate().toString();
-		dayToField = entry.getEndDate().toString();
+		dayFromField = new IWTimestamp(entry.getDate()).getDateString("dd MMM yyyy - HH.mm");
+		dayToField = new IWTimestamp(entry.getEndDate()).getDateString("dd MMM yyyy - HH.mm");
 		
 		locationField = entry.getLocation();
 		descriptionField = entry.getDescription();
@@ -107,13 +152,13 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 			String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
 			String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
 
-			if(month == null || month.length() == 0 &&
-					day == null &&
-					year == null || year.length() == 0) {
-				stamp = IWTimestamp.RightNow();
+			if(month != null && !month.equals("") &&
+					day != null && !day.equals("") &&
+					year != null && !year.equals("")) {
+				stamp = CalendarView.getTimestamp(day,month,year);			
 			}
 			else {
-				stamp = CalendarView.getTimestamp(day,month,year);
+				stamp = IWTimestamp.RightNow();
 			}
 		}		
 	}
@@ -122,18 +167,21 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		table.setCellspacing(0);
 		table.setCellpadding(0);
 		table.setStyleClass(borderAllWhiteStyle);
-		table.add(headlineText,1,1);
-		table.add(headlineField,2,1);
-		table.add(typeText,1,2);
-		table.add(typeField,2,2);
-		table.add(dayFromText,1,3);
-		table.add(dayFromField,2,3);
-		table.add(dayToText,1,4);
-		table.add(dayToField,2,4);
-		table.add(locationText,1,5);
-		table.add(locationField,2,5);
-		table.add(descriptionText,1,6);
-		table.add(descriptionField,2,6);
+		table.add(clubNameField,1,1);
+		table.add(" - ",1,1);
+		table.add(groupNameField,1,1);
+		table.add(headlineText,1,2);
+		table.add(headlineField,2,2);
+		table.add(typeText,1,3);
+		table.add(typeField,2,3);
+		table.add(dayFromText,1,4);
+		table.add(dayFromField,2,4);
+		table.add(dayToText,1,5);
+		table.add(dayToField,2,5);
+		table.add(locationText,1,6);
+		table.add(locationField,2,6);
+		table.add(descriptionText,1,7);
+		table.add(descriptionField,2,7);
 	}
 	public void main(IWContext iwc) throws Exception {
 		initializeTexts(iwc);
@@ -156,6 +204,18 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 			}
 		}
 		return calBiz;
+	}
+	public GroupBusiness getGroupBusiness(IWApplicationContext iwc) {
+		GroupBusiness groupBiz = null;
+		if (groupBiz == null) {
+			try {
+				groupBiz = (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return groupBiz;
 	}
 	
 	
