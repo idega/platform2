@@ -110,10 +110,10 @@ public class CampusAllocator extends Block implements Campus{
     iwb = getBundle(iwc);
     this.fontSize = 1;
     if(iwc.getParameter("list")!=null){
-      if(iwc.getSessionAttribute("sess_cplx_id")!=null)
+/*      if(iwc.getSessionAttribute("sess_cplx_id")!=null)
         iwc.removeSessionAttribute("sess_cplx_id");
       if(iwc.getSessionAttribute("sess_type_id")!=null)
-        iwc.removeSessionAttribute("sess_type_id");
+        iwc.removeSessionAttribute("sess_type_id");*/
     }
 
 /*    if (iwc.getParameter("approveAll") != null) {
@@ -124,19 +124,19 @@ public class CampusAllocator extends Block implements Campus{
     if(iwc.getParameter("type_id")!=null){
       pTypeId = new Parameter("type_id",iwc.getParameter("type_id"));
       this.iTypeId = Integer.parseInt(iwc.getParameter("type_id"));
-      iwc.setSessionAttribute("sess_type_id",new Integer(iTypeId));
+//      iwc.setSessionAttribute("sess_type_id",new Integer(iTypeId));
     }
-    else if(iwc.getSessionAttribute("sess_type_id")!=null){
+/*    else if(iwc.getSessionAttribute("sess_type_id")!=null){
       this.iTypeId = ((Integer)iwc.getSessionAttribute("sess_type_id")).intValue();
-    }
+    }*/
     if(iwc.getParameter("cplx_id")!=null){
       pComplexId = new Parameter("cplx_id",iwc.getParameter("cplx_id"));
       this.iComplexId = Integer.parseInt(iwc.getParameter("cplx_id"));
-      iwc.setSessionAttribute("sess_cplx_id",new Integer(iComplexId));
+//      iwc.setSessionAttribute("sess_cplx_id",new Integer(iComplexId));
     }
-    else if(iwc.getSessionAttribute("sess_cplx_id")!=null){
+/*    else if(iwc.getSessionAttribute("sess_cplx_id")!=null){
       this.iComplexId = ((Integer)iwc.getSessionAttribute("sess_cplx_id")).intValue();
-    }
+    }*/
 
     if(iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName())!=null){
       SysProps = (SystemProperties)iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName());
@@ -150,7 +150,6 @@ public class CampusAllocator extends Block implements Campus{
     int row = 2;
     if(isAdmin){
       if(iTypeId > 0 && iComplexId > 0){
-
         // Allocate apartment to an applicant
         if(iwc.getParameter("allocate")!=null){
           int applicantId = Integer.parseInt(iwc.getParameter("allocate"));
@@ -177,7 +176,7 @@ public class CampusAllocator extends Block implements Campus{
           //Frame.add( getContractTable(iContractId),3,1 );
         }
         // save allocation
-        else if(iwc.getParameter("save_allocation")!=null){
+        else if(iwc.getParameter("save_allocation")!=null && iwc.getParameter("save_allocation").equals("true")){
           String msg = saveAllocation(iwc);
           //System.err.println(msg);
           Text Te = formatText(msg);
@@ -185,6 +184,7 @@ public class CampusAllocator extends Block implements Campus{
           Te.setFontColor("#FF0000");
           Frame.add( Te,1,row++ );
           Frame.add( getWaitingList(iTypeId,iComplexId,-1,iwc),1,row );
+
         }
         // delete allocation
         else if(iwc.getParameter("delete_allocation")!=null){
@@ -369,8 +369,8 @@ public class CampusAllocator extends Block implements Campus{
       Frame.add(formatText(iwrb.getLocalizedString("legal_residence","Legal residence")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("phone","Phone")),col++,row);
-    if(ifLong)
-      Frame.add(registerImage,col++,row);
+//    if(ifLong)
+//      Frame.add(registerImage,col++,row);
       //Frame.add(formatText(iwrb.getLocalizedString("application","Application")),col++,row);
 
     java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
@@ -435,8 +435,8 @@ public class CampusAllocator extends Block implements Campus{
             Frame.add(formatText(A.getLegalResidence()),col++,row);
           Frame.add(formatText(A.getMobilePhone()),col++,row);
           Frame.add(formatText(A.getResidencePhone()),col++,row);
-          if(ifLong && con_id > 0)
-            Frame.add(CampusContracts.getSignedLink(registerImage,con_id,isAdmin),col,row);
+//          if(ifLong && con_id > 0)
+//            Frame.add(CampusContracts.getSignedLink(registerImage,con_id,isAdmin),col,row);
             //Frame.add(getPDFLink(iwb.getImage("print.gif"),A.getID()),col,row);
 
           if(redColorSet)
@@ -565,6 +565,9 @@ public class CampusAllocator extends Block implements Campus{
     else
       Frame.add(getFreeApartments(AT,CX,applicant_id ,C),1,1);
     myForm.add(Frame);
+
+    myForm.add(new HiddenInput(pTypeId.getName(),pTypeId.getValue()));
+    myForm.add(new HiddenInput(pComplexId.getName(),pComplexId.getValue()));
     return myForm;
   }
 
@@ -591,6 +594,9 @@ public class CampusAllocator extends Block implements Campus{
     Frame.add(getContractMakingTable(C,ATP,applicant_id ,from,A.getID()));
     Frame.add(getApartmentContracts(A.getID()),1,3);
     myForm.add(Frame);
+
+    myForm.add(new HiddenInput(pTypeId.getName(),pTypeId.getValue()));
+    myForm.add(new HiddenInput(pComplexId.getName(),pComplexId.getValue()));
     return myForm;
   }
 
@@ -791,7 +797,7 @@ public class CampusAllocator extends Block implements Campus{
       T.addTitle(iwrb.getLocalizedString("contract_dates","Contract dates"));
 
       int row = 1;
-      SubmitButton save = new SubmitButton("save_allocation","Save");
+      SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save_allocation","true");
 
       setStyle(save);
       DateInput dateFrom = new DateInput("contract_date_from",true);
@@ -900,6 +906,10 @@ public class CampusAllocator extends Block implements Campus{
     T.setCellspacing(3);
     T.setBorder(0);
     myForm.add(T);
+
+    myForm.add(new HiddenInput(pTypeId.getName(),pTypeId.getValue()));
+    myForm.add(new HiddenInput(pComplexId.getName(),pComplexId.getValue()));
+
     return myForm;
   }
 
@@ -1122,14 +1132,18 @@ public class CampusAllocator extends Block implements Campus{
     }
     return T;
   }
+
   public Text formatText(int i){
     return formatText(String.valueOf(i));
   }
+
   protected void setStyle(InterfaceObject O){
     O.setAttribute("style",this.styleAttribute);
   }
+
   public void main(IWContext iwc){
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
+    this.debugParameters(iwc);
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }

@@ -80,6 +80,7 @@ public class ContractSignWindow extends Window{
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
         doSignContract(iwc);
         setParentToReload();
+//        this.getParentPage().
       }
       add(getSignatureTable(iwc));
     }
