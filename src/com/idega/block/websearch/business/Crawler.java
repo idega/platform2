@@ -275,16 +275,15 @@ public final class Crawler {
             mydoc.add(Field.Text("contentType", contentType));
             mydoc.add(Field.Keyword("lastModified",DateField.timeToString(lastModified)));
             String contents = handler.getContents();
-            mydoc.add(Field.UnStored("full_contents", contents));
-                       
+                      
             
             if( contents!=null ){
             	//clean more!
             	contents = TextSoap.findAndCut(contents,">");
             	contents = TextSoap.findAndCut(contents,"<");
             	contents = TextSoap.findAndCut(contents,"•?");
-
-            	 mydoc.add(Field.Text("contents", contents.substring(0,Math.min(contents.length(),140)) ));
+            	
+            	 mydoc.add(Field.Text("contents", contents));
             }
             
             if (handler.getTitle() != null) {

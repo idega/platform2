@@ -1,6 +1,8 @@
 package com.idega.block.websearch.data;
 
 import java.text.SimpleDateFormat;
+import java.util.StringTokenizer;
+
 import com.lucene.document.Document;
 import com.lucene.document.DateField;
 
@@ -95,5 +97,67 @@ public final class WebSearchHit {
     public String getContents() {
         return this.document.get("contents");
     }
+    
+    
+	/**
+	 * Method getContents. Gets a "centered" view of the content surrounding the first search word that is found.
+	 * @param queryString
+	 * @return String
+	 */
+    public String getContents(String queryString) {
+        String contents =  this.document.get("contents");
+        
+        
+        if( contents!=null ){
+        	StringTokenizer tokens = new StringTokenizer(queryString);
+        	int length = contents.length();
+        	int maxLength = 200;	
+        	
+	        while ( tokens.hasMoreTokens() ){
+	        	String word = tokens.nextToken();
+	        	if( word.equals("AND") || word.equals("OR") || word.equals("NOT") ) continue;
+	        	
+	        	int middle = contents.indexOf(word);
+	        	int wordLength = word.length();
+	        	int wordLengthAndindex = middle+wordLength;
+	        	int start = 0;
+	        	int end = length;
+	        	int half = maxLength/2;
+	        	int right = half;
+	        	int left = half;
+	        	
+	        	if( middle!=-1 ){
+	        		if( middle>=half ){
+	        			start = middle-half;	
+	        		}
+	        		else{
+	        			int margin = (half-middle);
+	        			left+=margin;	
+	        		}
+	        		
+	        		String temp = contents.substring(start, middle);
+	        		        		
+	        		temp+="<b>"+word+"</b>";
+	        		
+	        		if( (wordLengthAndindex+(left)) < length ){
+	        			end = wordLengthAndindex+(left);
+	        		}
+	        	
+	        			        		
+	        		temp += contents.substring( wordLengthAndindex, end ) ;
+	        		
+	        		return temp;	        		   		
+	        	}
+	        	else continue;
+	        }
+	        
+	        return contents.substring( 0 , Math.min(maxLength,length)) ;
+        }
+ 
+        
+        return contents;
+    }
+    
+    
     
 }

@@ -34,7 +34,7 @@ public final class WebSearcher {
     private DateFilter dateFilter;
     
     private static final String[] fields = 
-            {"title", "description", "keyword","full_contents"};
+            {"title", "description", "keyword","contents"};
     
             Searcher searcher;
     

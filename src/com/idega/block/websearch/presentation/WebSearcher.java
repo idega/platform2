@@ -168,7 +168,7 @@ public class WebSearcher extends Block {
 		if(canEdit){
 			Link crawl = new Link(iwrb.getLocalizedString("index.this.site","Index this site"));
 			crawl.addParameter(CRAWL_PARAM,"true");
-			crawl.addParameter(CRAWL_REPORT_PARAM,INDEX_DETAILED_REPORT);
+			crawl.addParameter(CRAWL_REPORT_PARAM,INDEX_MINOR_REPORT);
 			table.add(crawl,3,1);				
 		}
 		
@@ -240,10 +240,10 @@ public class WebSearcher extends Block {
 				title.setText(hit.getTitle());
 				
 				hitTable.add(title,1,row++);
-				String contents = hit.getContents();
+				String contents = hit.getContents(queryString);//could be heavy....
 				
 				if(contents!=null){
-					contents+="...";
+					contents="..."+contents+"...";
 					Text contentsText = (Text) contentTextProto.clone();
 					contentsText.setText(contents);					
 					hitTable.add(contentsText,1,row++);
