@@ -28,11 +28,13 @@ import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.4 2003/03/23 00:52:21 eiki Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.5 2003/03/24 10:18:50 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -294,22 +296,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	}
 	
 	private class AcceptedStatus{
-		String _appid, _status;
+		String _appid, _status; 
 		Date _date;
 		AcceptedStatus(String appId, String status, String day, String month, String year){
 			_appid = appId;
 			_status = status;
 			if (day != null && month != null && year != null) {
 				try{
-					Calendar c = Calendar.getInstance();
-					c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-					c.set(Calendar.MONTH, Integer.parseInt(month) - 1);
-					c.set(Calendar.YEAR, Integer.parseInt(year));
-					//This method is protected in jdk 1.3 You should use the IWCalendar and IWTimestamp classes to get the desired functionality
-					//_date = new java.sql.Date(c.getTimeInMillis());
-					
-					
-					//new java.sql.Date(new java.util.Date(date).getTime());
+					_date = new java.sql.Date(Integer.parseInt(year) - 1900, Integer.parseInt(month) - 1, Integer.parseInt(day));
 				}catch(IllegalArgumentException ex){
 					_date = new Date(0); /**@TODO: IS THIS OK?*/
 				}
