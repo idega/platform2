@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.14 2001/08/08 14:47:48 aron Exp $
+ * $Id: DateInput.java,v 1.15 2001/08/08 14:56:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -236,7 +236,7 @@ public void setStyle(String styleAttribute){
   theYear.setStyle(styleAttribute);
 }
 
-public void setAttribute(String attributeName,String attributeValue){
+public void setStyleAttribute(String attributeName,String attributeValue){
   theDay.setAttribute(attributeName,attributeValue);
   theMonth.setAttribute(attributeName,attributeValue);
   theYear.setAttribute(attributeName,attributeValue);
