@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.2 2003/09/17 16:28:13 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.3 2003/09/22 08:46:54 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,20 +31,22 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/09/17 16:28:13 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/22 08:46:54 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
 	private final static String KP = "provider_error."; // key prefix 
 
 	public final static String KEY_NAME_MISSING = KP + "name_missing";
+	public final static String KEY_ILLEGAL_ORGANIZATION_NUMBER = KP + "illegal_organization_number";
 	public final static String KEY_CANNOT_SAVE_PROVIDER = KP + "cannot_save_provider";
 	public final static String KEY_CANNOT_DELETE_PROVIDER = KP + "cannot_delete_provider";
 
 	public final static String DEFAULT_NAME_MISSING = "The name of the provider must be entered.";
+	public final static String DEFAULT_ILLEGAL_ORGANIZATION_NUMBER = "Illegal organization number.";
 	public final static String DEFAULT_CANNOT_SAVE_PROVIDER = "The provider cannot be stored due to technical error.";
 	public final static String DEFAULT_CANNOT_DELETE_PROVIDER = "The provider cannot be deleted due to technical error.";
 
@@ -105,6 +107,32 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 		} else {
 			name = s;
 		}
+
+		// Organization number
+		if (organizationNumber.trim().length() != 0) {
+			String orgNum = "";
+			for (int i = 0; i < organizationNumber.length(); i++) {
+				char c = organizationNumber.charAt(i);
+				if ((c >= '0') && (c <= '9')) {
+					orgNum += c;
+				}
+			}
+			if (orgNum.length() != 10) {
+				throw new ProviderException(KEY_ILLEGAL_ORGANIZATION_NUMBER, DEFAULT_ILLEGAL_ORGANIZATION_NUMBER);
+			}
+			int sum = 0;
+			for (int i = 0; i < 10; i++) {
+				int x = orgNum.charAt(i) - 48;
+				if (i % 2 == 0) {
+					x = x * 2;
+				}
+				sum += x / 10 + x % 10;
+			}
+			if (sum % 10 != 0) {
+				throw new ProviderException(KEY_ILLEGAL_ORGANIZATION_NUMBER, DEFAULT_ILLEGAL_ORGANIZATION_NUMBER);
+			}
+		}
+		
 				
 		try {
 			SchoolBusiness sb = getSchoolBusiness();
