@@ -45,9 +45,19 @@ public class MessageBox extends CommuneBlock {
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
+	private boolean showSettings = false;
+	
 	public MessageBox() {
 	}
 
+	public boolean getShowSetting() {
+		return showSettings;
+	}
+	
+	public void setShowSettings(boolean showSettings) {
+		this.showSettings = showSettings;
+	}
+	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -127,26 +137,28 @@ public class MessageBox extends CommuneBlock {
 
 			messageTable.setHeight(row++,5);
 			
-			Table settingsTable = new Table(3, 3);
-			settingsTable.setCellpaddingAndCellspacing(0);
-			settingsTable.setWidth(2, "4");
-			settingsTable.setHeight(2,"4");
-			messageTable.mergeCells(1, row, messageTable.getColumns(), row);
-			messageTable.add(settingsTable, 1, row++);
-
-			boolean toMessageBox = messageSession.getIfUserPreferesMessageInMessageBox(user);
-			CheckBox msgBox = getCheckBox(PARAM_TO_MSG_BOX,"true");
-			msgBox.setChecked(toMessageBox);
+			if (showSettings) {
+				Table settingsTable = new Table(3, 3);
+				settingsTable.setCellpaddingAndCellspacing(0);
+				settingsTable.setWidth(2, "4");
+				settingsTable.setHeight(2,"4");
+				messageTable.mergeCells(1, row, messageTable.getColumns(), row);
+				messageTable.add(settingsTable, 1, row++);
+	
+				boolean toMessageBox = messageSession.getIfUserPreferesMessageInMessageBox(user);
+				CheckBox msgBox = getCheckBox(PARAM_TO_MSG_BOX,"true");
+				msgBox.setChecked(toMessageBox);
+				
+				boolean toEmail = messageSession.getIfUserPreferesMessageByEmail(user);
+				CheckBox email = getCheckBox(PARAM_TO_EMAIL,"true");
+				email.setChecked(toEmail);
+				
+				settingsTable.add(msgBox, 1, 1);
+				settingsTable.add(email, 1, 3);
+				settingsTable.add(getSmallText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)), 3, 1);
+				settingsTable.add(getSmallText(getLocalizedString("message.send_to_email", "Send to email", iwc)), 3, 3);
+			}
 			
-			boolean toEmail = messageSession.getIfUserPreferesMessageByEmail(user);
-			CheckBox email = getCheckBox(PARAM_TO_EMAIL,"true");
-			email.setChecked(toEmail);
-			
-			settingsTable.add(msgBox, 1, 1);
-			settingsTable.add(email, 1, 3);
-			settingsTable.add(getSmallText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)), 3, 1);
-			settingsTable.add(getSmallText(getLocalizedString("message.send_to_email", "Send to email", iwc)), 3, 3);
-
 			messageTable.setHeight(row++,5);
 			
 			Table submitTable = new Table(2, 1);
@@ -160,12 +172,15 @@ public class MessageBox extends CommuneBlock {
 			deleteButton.setToEnableWhenChecked(PARAM_MESSAGE_ID);
 			deleteButton.setDescription(localize("message.delete", "Delete"));
 			deleteButton.setSubmitConfirm(localize("message.messages_to_delete", "Do you really want to delete the selected messages?"));
-			if (hasMessages)
+			if (hasMessages) {
 				submitTable.add(deleteButton, 2, 1);
-
-			SubmitButton settings = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAM_SAVE_SETTINGS, "true"));
-			settings.setDescription(localize("message.settings", "Save settings"));
-			submitTable.add(settings, 1, 1);
+			}
+			
+			if (showSettings) {
+				SubmitButton settings = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAM_SAVE_SETTINGS, "true"));
+				settings.setDescription(localize("message.settings", "Save settings"));
+				submitTable.add(settings, 1, 1);
+			}
 		}
 
 		add(f);
