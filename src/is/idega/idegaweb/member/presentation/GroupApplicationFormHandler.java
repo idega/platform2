@@ -98,5 +98,18 @@ public class GroupApplicationFormHandler extends Block {
 	public String getBundleIdentifier() {
 		return "is.idega.idegaweb.member";
 	}
+	
+	
+
+
+
+	/**
+	 * @see java.lang.Object#clone()
+	 */
+	public Object clone() {
+		GroupApplicationFormHandler obj = (GroupApplicationFormHandler) super.clone();
+		obj.applicationGroup = this.applicationGroup;
+		return obj;
+	}
 
 }
