@@ -451,6 +451,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 					}
 					//Make sure that the sum is not less than 0
+					ErrorLogger errorRelated = new ErrorLogger(tmpErrorRelated);
 					errorRelated.append("Total sum is:"+totalSum);
 					if(totalSum<0){
 						if(subvention!=null){
