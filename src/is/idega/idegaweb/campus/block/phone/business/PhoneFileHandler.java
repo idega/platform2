@@ -123,7 +123,7 @@ public class PhoneFileHandler {
 	public void process3(File PhoneFile) throws java.rmi.RemoteException {
 		Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
 		Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
-		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is_IS"));
+		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is","IS"));
 		// If we can assess something
 		if (M != null && M2 != null) {
 			try {
