@@ -11,8 +11,10 @@
 package com.idega.jmodule.object.interfaceobject;
 
 import com.idega.jmodule.object.*;
-import java.io.*;
 import com.idega.idegaweb.*;
+
+import java.util.Hashtable;
+import java.util.Map;
 
 /*Class to create pop up windows and such*/
 public class Window extends Page{
@@ -34,6 +36,8 @@ private boolean menubar;
 private boolean status;
 private boolean titlebar;
 private boolean resizable;
+
+private static Map allOpenedWindowClasses = new Hashtable();
 
 
 public Window(){
@@ -246,8 +250,26 @@ private String returnCheck(boolean checkBool){
 }
 
 
-
-
+public static String getCallingScriptString(Class windowClass,String url,boolean includeURL){
+      String theURL=null;
+      Window windowInstance = (Window)allOpenedWindowClasses.get(windowClass);
+      if(includeURL){
+        theURL=url;
+      }
+      else{
+        theURL="";
+      }
+      if(windowInstance==null){
+        try{
+          windowInstance = (Window)windowClass.newInstance();
+          allOpenedWindowClasses.put(windowClass,windowInstance);
+        }
+        catch(Exception e){
+          return "window.open('"+theURL+"','tempwindow','resizable=yes,toolbar=yes,location=no,directories=no,status=yes,scrollbars=yes,menubar=yes,titlebar=yes,width=500,height=500')";
+        }
+      }
+      return "window.open('"+theURL+"','"+windowInstance.getTarget()+"','resizable="+windowInstance.returnCheck(windowInstance.resizable)+",toolbar="+windowInstance.returnCheck(windowInstance.toolbar)+",location="+windowInstance.returnCheck(windowInstance.location)+",directories="+windowInstance.returnCheck(windowInstance.directories)+",status="+windowInstance.returnCheck(windowInstance.status)+",scrollbars="+windowInstance.returnCheck(windowInstance.scrollbar)+",menubar="+windowInstance.returnCheck(windowInstance.menubar)+",titlebar="+windowInstance.returnCheck(windowInstance.titlebar)+",width="+windowInstance.getWidth()+",height="+windowInstance.getHeight()+"')";
+}
 
 public String getCallingScriptString(ModuleInfo modinfo,String url){
 	//return "window.open('"+getURL(modinfo)+"','"+getName()+"','resizable="+returnCheck(resizable)+",toolbar="+returnCheck(toolbar)+",location="+returnCheck(location)+",directories="+returnCheck(directories)+",status="+returnCheck(status)+",scrollbars="+returnCheck(scrollbar)+",menubar="+returnCheck(menubar)+",titlebar="+returnCheck(titlebar)+",width="+getWidth()+",height="+getHeight()+"')";
