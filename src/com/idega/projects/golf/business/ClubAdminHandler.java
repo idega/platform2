@@ -66,7 +66,6 @@ public class ClubAdminHandler extends JModuleObject {
         member.setimage_id(1);
 
         Family family = new Family();
-        family.setUnionId(union.getID());
         family.insert();
         member.setFamily(family);
 
@@ -75,7 +74,7 @@ public class ClubAdminHandler extends JModuleObject {
 
         member.insert();
         member.addTo(group);
-        member.addTo(union,"membership_type","main");
+        member.addTo(union);
 
 
 
