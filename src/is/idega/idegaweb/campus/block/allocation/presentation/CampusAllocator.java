@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.36 2002/08/24 15:26:32 aron Exp $
+ * $Id: CampusAllocator.java,v 1.37 2002/08/24 15:35:07 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -848,6 +848,10 @@ public class CampusAllocator extends Block implements Campus {
 			HiddenInput Hid = new HiddenInput("applicantid", String.valueOf(applicant_id));
 			T.add(Hid);
 		}
+    if (iApartmentId != -1) {
+			HiddenInput Hid = new HiddenInput("apartmentid", String.valueOf(iApartmentId));
+			T.add(Hid);
+		}
 		T.add(formatText(iwrb.getLocalizedString("validfrom", "Valid from")), 1, row);
 		T.add(dateFrom, 3, row);
 
@@ -990,6 +994,8 @@ public class CampusAllocator extends Block implements Campus {
       else
         System.err.println("no Applicant id");
 		}
+    else
+      System.err.println("no from or to provided");
 
 		return returner;
 	}
