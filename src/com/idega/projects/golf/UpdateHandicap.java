@@ -8,8 +8,6 @@ import com.idega.projects.golf.business.TournamentController;
 
 public class UpdateHandicap {
 
-
-
     public static void update(int member_id) {
         try {
             Member member = new Member(member_id);
