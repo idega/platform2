@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.128 2004/05/27 22:15:15 gummi Exp $
+ * $Id: NewsReader.java,v 1.129 2004/05/28 00:00:22 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -619,6 +619,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
     if(iLayout != SINGLE_LINE_LAYOUT){
       if(newsInfo !=null){
         T.add(newsInfo,1,row);
+        T.setVerticalAlignment(1,row,Table.VERTICAL_ALIGN_TOP);
         row++;
       }
 
