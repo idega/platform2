@@ -1114,9 +1114,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public void removeFromProvider(int childID, int providerID, Timestamp date, boolean parentalLeave, String message) {
+	public void removeFromProvider(int placementID, Timestamp date, boolean parentalLeave, String message) {
 		try {
-			SchoolClassMember classMember = getLatestPlacement(childID, providerID);
+			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(new Integer(placementID));
 			classMember.setRemovedDate(date);
 			classMember.setNeedsSpecialAttention(parentalLeave);
 			classMember.setNotes(message);
@@ -1126,6 +1126,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
@@ -1350,9 +1353,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setApplicationStatus(getStatusCancelled());
 			application.setRejectionDate(date.getDate());
 			caseBiz.changeCaseStatus(application, this.getCaseStatusCancelled().getStatus(), user);
-			terminateContract(application.getContractFileId(), date.getDate(), true);
+			int placementID = terminateContract(application.getContractFileId(), date.getDate(), true);
 			
-			removeFromProvider(application.getChildId(), application.getProviderId(), date.getTimestamp(), parentalLeave, message);
+			removeFromProvider(placementID, date.getTimestamp(), parentalLeave, message);
 			sendMessageToParents(application, subject, body);
 
 			t.commit();
@@ -2326,10 +2329,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	private void terminateContract(int contractFileID, Date terminatedDate, boolean removePlacing) {
+	private int terminateContract(int contractFileID, Date terminatedDate, boolean removePlacing) {
+		int placementID = -1;
 		try {
 			ChildCareContract archive = getContractFile(contractFileID);
 			if (archive != null) {
+				placementID = archive.getSchoolClassMemberId();
 				IWTimestamp terminate = new IWTimestamp(terminatedDate);
 				IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
 				if (validFrom.isLaterThan(terminate)) {
@@ -2366,6 +2371,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (RemoveException e) {
 			e.printStackTrace();
 		}
+		return placementID;
 	}
 
 	public String getLocalizedCaseDescription(Case theCase, Locale locale) throws RemoteException {
