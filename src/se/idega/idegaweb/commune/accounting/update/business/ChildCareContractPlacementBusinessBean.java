@@ -63,7 +63,7 @@ public class ChildCareContractPlacementBusinessBean extends IBOServiceBean imple
 					}
 					
 					if (group != null) {
-						SchoolClassMember member = getSchoolBusiness().storeSchoolClassMember(application.getChildId(), ((Integer) group.getPrimaryKey()).intValue(), fromDate.getTimestamp(), endDate, -1, null);
+						SchoolClassMember member = getSchoolBusiness().storeSchoolClassMember(application.getChildId(), ((Integer) group.getPrimaryKey()).intValue(), -1, group.getSchoolTypeId(), fromDate.getTimestamp(), endDate, -1, null);
 						Iterator iterator = contracts.iterator();
 						while (iterator.hasNext()) {
 							ChildCareContract contract = (ChildCareContract) iterator.next();
