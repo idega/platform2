@@ -377,6 +377,15 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 	
+	public GrantedCheck getGrantedCheckByChild(int childID) throws RemoteException {
+		try {
+			return getGrantedCheckHome().findChecksByUser(childID);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
 	public GrantedCheck getGrantedCheck(int checkID) throws RemoteException {
 		try {
 			return getGrantedCheckHome().findByPrimaryKey(new Integer(checkID));
