@@ -142,6 +142,10 @@ public class QueryResult implements JRDataSource {
     return cells.isEmpty();
   }
   
+  public int getNumberOfRows() {
+  	return cells.sizeOfFirstKeySet();
+  }
+  
   /** @see dori.jasper.engine.JRDataSource#next()
    * 
    */
