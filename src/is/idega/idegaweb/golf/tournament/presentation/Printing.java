@@ -133,7 +133,7 @@ public class Printing extends TournamentBlock {
 	        //scorecardsExcel.setWindowToOpen(PrintStickersExcelWindow.class);
 	        Link scorecardsExcel = getPrintScoreCardExcelLink(modinfo,iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards")+" (Excel)");
 	        scorecardsExcel.addParameter("tournament_round_id",tournamentRounds[a].getID());
-	        scorecardsExcel.setTarget("_blank");
+	        scorecardsExcel.setTarget(Link.TARGET_BLANK_WINDOW);
 	      
 	        
 	      Link excel = getLink(iwrb.getLocalizedString("tournament.unfilled_leaderboard","Unfilled leaderboard")+" (Excel)");
@@ -195,13 +195,8 @@ public class Printing extends TournamentBlock {
 	  }
 	  
 	  private Link getPrintScoreCardExcelLink(IWContext iwc,String label){
-	  	 Window window = new Window("TournamentAdmin",iwc.getIWMainApplication().getMediaServletURI());
-	     window.setResizable(true);
-	     window.setMenubar(true);
-	     window.setHeight(500);
-	     window.setWidth(700);
 	     Link link = getLink( label );
-	     link.setWindow(window);
+	     link.setURL(iwc.getIWMainApplication().getMediaServletURI());
 	     link.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(PrintStickersWriter.class));
 	     return link;
 	  }
