@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/08 10:19:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/16 13:18:55 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.61 $
+ * @version $Revision: 1.62 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -402,7 +402,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
         (final User createdBy, final Integer amount,
          final Date checkStartPeriod, final Date checkEndPeriod,
          final String doublePosting, final Integer invoiceHeaderId,
-         final String invoiceText, final String note,
+         final String invoiceText, final String invoiceText2, final String note,
          final Integer numberOfDays, final String ownPosting,
          final Date placementStartPeriod, final Date placementEndPeriod,
          final Integer providerId, final Integer regSpecTypeId,
@@ -428,6 +428,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             record.setInvoiceText
                     (null != invoiceText && 0 < invoiceText.length ()
                      ? invoiceText : ruleText);
+            record.setInvoiceText2
+                    (null != invoiceText2 && 0 < invoiceText2.length ()
+                     ? invoiceText2 : "");
             record.setRuleText (ruleText);
             record.setNotes (note);
             record.setOwnPosting (ownPosting);

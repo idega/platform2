@@ -112,7 +112,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		return getStringColumnValue(COLUMN_INVOICE_TEXT);
 	}
 	public String getInvoiceText2() {
-		return getStringColumnValue(COLUMN_INVOICE_TEXT);
+		return getStringColumnValue(COLUMN_INVOICE_TEXT_2);
 	}
 	public String getRuleText() {
 		return getStringColumnValue(COLUMN_RULE_TEXT);
@@ -207,7 +207,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		setColumn(COLUMN_INVOICE_TEXT, s);
 	}
 	public void setInvoiceText2(String s) {
-		setColumn(COLUMN_INVOICE_TEXT, s);
+		setColumn(COLUMN_INVOICE_TEXT_2, s);
 	}
 	public void setRuleText(String s) {
 		setColumn(COLUMN_RULE_TEXT, s);

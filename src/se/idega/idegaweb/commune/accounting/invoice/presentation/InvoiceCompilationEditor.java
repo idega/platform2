@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/08 10:19:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/16 13:18:55 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.87 $
+ * @version $Revision: 1.88 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -154,6 +154,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
     private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
     private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
+    private static final String INVOICE_TEXT2_KEY = PREFIX + "invoice_text2";
     private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokföringsdag";
     private static final String JOURNAL_ENTRY_DATE_KEY = PREFIX + "journal_entry_date";
     private static final String LAST_NAME_DEFAULT = "Efternamn";
@@ -414,6 +415,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Integer invoiceCompilation
                 = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
         final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
+        final String invoiceText2 = context.getParameter (INVOICE_TEXT2_KEY);
         final String note = context.getParameter (NOTE_KEY);
         final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
         final Date placementEndPeriod
@@ -442,8 +444,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 (currentUser, amount,
                  new java.sql.Date (checkStartPeriod.getTime ()),
                  new java.sql.Date (checkEndPeriod.getTime ()), doublePosting,
-                 invoiceCompilation, invoiceText, note, numberOfDays,
-                 ownPosting,
+                 invoiceCompilation, invoiceText, invoiceText2, note,
+								 numberOfDays, ownPosting,
                  new java.sql.Date (placementStartPeriod.getTime ()),
                  new java.sql.Date (placementEndPeriod.getTime ()),
                  providerId, regulationSpecTypeId, vatAmount, vatRule, ruleText,
@@ -472,6 +474,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String doublePosting = getPostingString (context,
                                                        DOUBLE_POSTING_KEY);
         final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
+        final String invoiceText2 = context.getParameter (INVOICE_TEXT2_KEY);
         final String note = context.getParameter (NOTE_KEY);
         final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
         final Date placementEndPeriod
@@ -506,6 +509,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         record.setDoublePosting (doublePosting);
         record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
                                ? invoiceText : ruleText);
+        record.setInvoiceText2
+						(null != invoiceText2 && 0 < invoiceText2.length ()
+						 ? invoiceText2 : "");
         record.setNotes (note);
         record.setOwnPosting (ownPosting);
         record.setPeriodStartCheck (new java.sql.Date
@@ -583,6 +589,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                            searchString));
             inputs.put (INVOICE_TEXT_KEY, getStyledWideInput
                         (INVOICE_TEXT_KEY));
+            inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput
+                        (INVOICE_TEXT2_KEY));
             inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
             inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
             inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
@@ -629,6 +637,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                         (custodian)));
         inputs.put (INVOICE_TEXT_KEY, getStyledWideInput
                     (INVOICE_TEXT_KEY, record.getInvoiceText ()));
+        inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput
+                    (INVOICE_TEXT2_KEY, record.getInvoiceText2 ()));
         inputs.put (CHECK_START_PERIOD_KEY, getStyledInput
                     (CHECK_START_PERIOD_KEY, getFormattedPeriod
                      (record.getPeriodStartCheck ())));
@@ -711,6 +721,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         details.put (DOUBLE_POSTING_KEY, getPostingListTable
                     (context, record.getDoublePosting ()));
         addSmallText (details, INVOICE_TEXT_KEY, record.getInvoiceText ());
+        addSmallText (details, INVOICE_TEXT2_KEY, record.getInvoiceText2 ());
         addSmallText (details, NOTE_KEY, record.getNotes ());
         details.put (OWN_POSTING_KEY,
                     getPostingListTable (context, record.getOwnPosting ()));
@@ -1150,6 +1161,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         INVOICE_TEXT_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns (), row);
         addPresentation (table, presentationObjects, INVOICE_TEXT_KEY, col++,
+                         row);
+        col = 2; row++;
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, INVOICE_TEXT2_KEY, col++,
                          row);
         col = 1; row++;
         if (presentationObjects.containsKey (NUMBER_OF_DAYS_KEY)) {
