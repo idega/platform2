@@ -2,6 +2,10 @@ package com.idega.block.reports.business;
 
 import com.idega.block.reports.data.*;
 import java.util.Vector;
+import java.util.Collection;
+import java.util.TreeMap;
+import java.util.List;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.sql.*;
 import com.idega.util.database.ConnectionBroker;
@@ -49,6 +53,8 @@ public class ReportMaker {
     Vector vJoin = new Vector();
     Vector vWhere = new Vector();
     Vector vOrder = new Vector();
+    List LOrder = null;
+    TreeMap orderMap = new TreeMap();
 
     ReportItem item;
     for (int i = 0; i < conds.size(); i++) {
@@ -68,8 +74,9 @@ public class ReportMaker {
       String[] sa = item.getJoinTable();
       if(sa != null){
         for (int j = 0; j < sa.length; j++) {
-          if(!vTables.contains(sa[j]))
-          vTables.addElement(sa[j]);
+          if(!vTables.contains(sa[j])){
+            vTables.addElement(sa[j]);
+          }
         }
       }
       String sJoin = item.getJoin();
@@ -84,19 +91,28 @@ public class ReportMaker {
       String c = cond.getCondition();
       if(c != null && c.length() > 0 && !vWhere.contains(c))
         vWhere.addElement(c);
+
+      Integer order = cond.getOrder();
+      if(order != null){
+        orderMap.put(order,item.getMainTable()+"."+item.getField());
+      }
+    }
+    if(orderMap.size() > 0){
+      Collection C = orderMap.values();
+      vOrder.addAll(C);
     }
     String sql = makeSQL(vSelect,vTables,vJoin,vWhere,vOrder);
     return sql;
   }
 
-  private String makeSQL(Vector Select,Vector From,Vector Join,Vector Where,Vector Order){
+  private String makeSQL(List Select,List From,List Join,List Where,List Order){
     ///////////////////////////
     //  Select part
     ///////////////////////////
     StringBuffer sql = new StringBuffer("select  ");
     int len = Select.size();
     for(int i = 0; i < len ; i++){
-      sql.append(Select.elementAt(i));
+      sql.append(Select.get(i));
       if(i < len-1)
         sql.append(",");
     }
@@ -109,7 +125,7 @@ public class ReportMaker {
     if(flen > 0){
       sql.append(" from ");
       for(int i = 0; i < flen ; i++){
-        sql.append(From.elementAt(i));
+        sql.append(From.get(i));
         if(i < flen-1)
           sql.append(",");
       }
@@ -121,14 +137,14 @@ public class ReportMaker {
     ////////////////////
     boolean ifwhere = false;
     len = Join.size();
-    System.err.println("join length "+len );
+    //System.err.println("join length "+len );
     // use the join if  we have more than two tables
     //
     if(len > 0 && flen > 1){
       sql.append(" where ");
       ifwhere = true;
       for(int i = 0; i < len ; i++){
-        sql.append(Join.elementAt(i));
+        sql.append(Join.get(i));
         if(i < len-1)
           sql.append(" and ");
       }
@@ -144,7 +160,7 @@ public class ReportMaker {
       else
         sql.append(" where ");
       for(int i = 0; i < len ; i++){
-        sql.append(Where.elementAt(i));
+        sql.append(Where.get(i));
         if( i < len-1)
           sql.append(" and ");
       }
@@ -153,17 +169,18 @@ public class ReportMaker {
     ////////////////////////
     //  Order by part
     ///////////////////////
-
-    len = Order.size();
-    if(len > 0 ){
-      sql.append( "order by ");
-      for(int i = 0; i < len ; i++){
-        sql.append(Order.elementAt(i));
-        if(i > 0 && i < len-1 )
-          sql.append(",");
+    if(Order != null){
+      len = Order.size();
+      if(len > 0 ){
+        sql.append( "order by ");
+        for(int i = 0; i < len ; i++){
+          sql.append(Order.get(i));
+          if(i < len-1)
+            sql.append(",");
+        }
       }
     }
-
+    System.err.println(sql.toString());
     return sql.toString();
   }
 
@@ -193,7 +210,7 @@ public class ReportMaker {
           s[i-1] = temp!=null?temp:"";
         }
         RC = new ReportContent(s);
-        v.addElement(RC);
+        v.add(RC);
       }
       RS.close();
       stmt.close();

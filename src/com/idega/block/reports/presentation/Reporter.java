@@ -4,6 +4,7 @@ import com.idega.block.reports.data.*;
 import com.idega.block.reports.business.*;
 import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.Collections;
@@ -16,6 +17,8 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.Image;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 
 /**
@@ -28,12 +31,12 @@ import com.idega.jmodule.object.Image;
  */
 
 
-public class Reporter extends Editor{
+public class Reporter extends ReportPresentation{
 
-  private final String sAction = "reporter.action";
+  private final String sAction = "rep.reporter.action";
   private String sActPrm = "";
   private int iAction = 0;
-  private String prefix = "reporter.";
+  private static final String prefix = "rep.reporter.";
   private String sLastOrder = "0";
   private int iMainCategories[] = null;
   private int iViewCategories[] = null;
@@ -43,9 +46,16 @@ public class Reporter extends Editor{
   private String sMainCategoryAttribute = null,sViewCategoryAttribute = null;
   private int iMainCategoryAttributeId = 0, iViewCategoryAttributeId= 0;
 
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.reports";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
+
+
   public Reporter(){
+   super();
   }
   public Reporter(int iMainCategory){
+    this();
     iCategory = iMainCategory;
     this.setMainCategory(iMainCategory);
   }
@@ -130,12 +140,8 @@ public class Reporter extends Editor{
   }
 
   protected void control(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute("content")!=null){
-      modinfo.removeSessionAttribute("content");
-    }
-    if(modinfo.getSessionAttribute("headers") != null){
-        modinfo.removeSessionAttribute("headers");
-    }
+    iwrb = getResourceBundle(modinfo);
+    Form form = new Form();
     checkCategories(modinfo);
     if(modinfo.getParameter(sAction) != null){
       sActPrm = modinfo.getParameter(sAction);
@@ -152,8 +158,10 @@ public class Reporter extends Editor{
         e.printStackTrace();
       }
     }
-    doMain(modinfo);
+    form.add(doMain(modinfo));
+    add(form);
   }
+
 
   protected ModuleObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
@@ -176,9 +184,7 @@ public class Reporter extends Editor{
     return LinkTable;
   }
 
-  private void doMain(ModuleInfo modinfo){
-    this.makeView();
-    Form form = new Form();
+  private ModuleObject doMain(ModuleInfo modinfo){
     Table T = new Table();
     T.setWidth("100%");
     int a = 1;
@@ -194,14 +200,9 @@ public class Reporter extends Editor{
         T.add(getCategoryReports(iViewCategories[i],false),1,a++);
       }
     }
-    form.add(T);
-    Link back =  new Link(new Image("/reports/pics/new.gif"),"/reports/reportedit.jsp");
-    back.addParameter("category_id",iCategory);
-    addToHeader(back);
-    this.setTextFontColor(DarkColor);
-    this.setTextFontBold(true);
-    addToHeader(formatText(" Reports"));
-    addMain(form);
+    TextFontColor = DarkColor;
+    fontBold = true;
+    return T;
   }
 
   private ModuleObject getCategoryReports(int iCategoryId,boolean bEdit){
@@ -212,81 +213,93 @@ public class Reporter extends Editor{
     catch (Exception ex) {
 
     }
+    Table T = new Table();
+    List L = ReportEntityHandler.listOfReports(iCategoryId);
+    if(L!=null){
 
-    Report[] R = ReportEntityHandler.findReports(iCategoryId);
+      int len = L.size();
 
-    int len = R.length;
-    //Table T = new Table(4,len+2);
-    Table T = new Table(bEdit?4:3,len+3);
-    T.setCellpadding(2);
-    T.setCellspacing(1);
-    T.setBorder(0);
-    T.setHorizontalZebraColored(this.LightColor,this.MiddleColor);
+      T.setCellpadding(2);
+      T.setCellspacing(1);
+      T.setBorder(0);
+      Link lEdit =  new Link(new Image("/reports/pics/new.gif"));
+      lEdit.setWindowToOpen(ReportEditorWindow.class);
+      lEdit.addParameter(ReportEditorWindow.prmSaveCategory,iCategory);
 
-    T.setRowColor(1,WhiteColor);
-    T.setRowColor(2,DarkColor);
-    T.setRowColor(len+3,WhiteColor);
-    T.setColumnColor(1,WhiteColor);
-    T.setWidth("100%");
-    T.setWidth(1,"40");
-    T.setWidth(2,"150");
-    //T.setWidth(3,"50%");
-    T.setColumnAlignment(1,"center");
-
-    if(RC !=null){
-      T.add(formatText(RC.getName()),2,1);
-      T.add(formatText(RC.getInfo()),3,1);
-    }
-    this.setTextFontColor("#FFFFFF");
-    int a = 2;
-
-    T.add(formatText("Name"),2,2);
-    T.add(formatText("Info"),3,2);
-    String prm = prefix+"chk";
-    if(bEdit){
-      T.setWidth(4,"40");
-       T.setColumnAlignment(4,"center");
-      T.add(formatText("Delete"),4,2);
-      HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
-      T.add(countHidden);
-    }
-    this.setTextFontColor("#000000");
-    for (int i = 0; i < len; i++) {
-      int col = 1;
-      int row = i+3;
-      if(sqlEditAdmin){
-        T.add(getAdminLink(R[i].getID()),col,row);
+      if(RC !=null){
+        T.add(formatText(RC.getName()),2,1);
+        T.add(formatText(RC.getInfo()),3,1);
       }
-      T.add(getLink(R[i].getID()),col,row);
+      TextFontColor = "#FFFFFF";
+      int a = 2;
 
-      col++;
-      T.add(formatText(R[i].getName()),col++,row);
-      T.add(formatText(R[i].getInfo()),col++,row);
-      if(bEdit)
-        T.add(getCheckBox(prm+i,R[i].getID()),col++,row);
-    }
-    T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
-    if(bEdit){
-      SubmitButton deleteButtton = new SubmitButton(new Image("/reports/pics/delete.gif"));
+      T.setColumnAlignment(1,"right");
+      T.setWidth(3,"100%");
+      T.add(lEdit,1,2);
+      T.add(formatText(iwrb.getLocalizedText("name","Name")),2,2);
+      T.add(formatText(iwrb.getLocalizedText("info","Info")),3,2);
+      String prm = prefix+"chk";
+      if(bEdit){
+        T.setWidth(4,"40");
+         T.setColumnAlignment(4,"center");
+        T.add(formatText("Delete"),4,2);
+        HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
+        T.add(countHidden);
+      }
+      TextFontColor = "#000000";
+      for (int i = 0; i < len; i++) {
+        Report R = (Report) L.get(i);
+        int col = 1;
+        int row = i+3;
+        if(sqlEditAdmin){
+          T.add(getAdminLink(R.getID(),iCategoryId),col,row);
+        }
+        T.add(getLink(R.getID()),col,row);
+
+        col++;
+        T.add(formatText(R.getName()),col++,row);
+        T.add(formatText(R.getInfo()),col++,row);
+        if(bEdit)
+          T.add(getCheckBox(prm+i,R.getID()),col++,row);
+      }
       T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
-      T.add(deleteButtton,4,len+3);
+      if(bEdit){
+        SubmitButton deleteButtton = new SubmitButton(new Image("/reports/pics/delete.gif"));
+        T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
+        T.add(deleteButtton,4,len+3);
+      }
+
+      T.setHorizontalZebraColored(this.LightColor,this.MiddleColor);
+      T.setRowColor(1,WhiteColor);
+      T.setRowColor(2,DarkColor);
+      T.setRowColor(len+3,WhiteColor);
+      T.setColumnColor(1,WhiteColor);
+      T.setWidth("100%");
+      T.setWidth(1,"40");
+      T.setWidth(2,"150");
+      //T.setWidth(3,"50%");
+      T.setColumnAlignment(1,"center");
     }
     return T;
   }
 
   private CheckBox getCheckBox(String name,int id){
     CheckBox chk = new CheckBox(name,String.valueOf(id));
+    setStyle(chk);
     return chk;
   }
 
   private Link getLink(int id){
-    Link L = new Link(new Image("/reports/pics/view.gif"),"/reports/reportview.jsp");
-    L.addParameter("report",id);
+    Link L = new Link(new Image("/reports/pics/view.gif"));
+    L.setWindowToOpen(ReportViewWindow.class);
+    L.addParameter(ReportViewWindow.prmReportId,id);
     return L;
   }
-  private Link getAdminLink(int id){
-    Link L = new Link(new Image("/reports/pics/edit.gif"),"/reports/reportedit.jsp");
-    L.addParameter("report",id);
+  private Link getAdminLink(int id,int catid){
+    Link L = new Link(new Image("/reports/pics/edit.gif"));
+    L.setWindowToOpen(ReportEditorWindow.class);
+    L.addParameter(ReportEditorWindow.prmReportId,id);
+    L.addParameter(ReportEditorWindow.prmSaveCategory,catid);
     return L;
   }
 
@@ -312,5 +325,9 @@ public class Reporter extends Editor{
         catch(SQLException ex){}
       }
     }
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 }

@@ -23,91 +23,113 @@ public class ReportItem extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("category","Category",true,true,"java.lang.Integer","many-to-one","com.idega.block.reports.data.ReportCategory");
-    addAttribute("name","Name",true,true,"java.lang.String");
-    addAttribute("field", "Field", true, true, "java.lang.String");
-    addAttribute("maintable", "Table", true, true, "java.lang.String");
-    addAttribute("joins","Join",true,true,"java.lang.String");
-    addAttribute("jointables", "Join Tables", true, true, "java.lang.String");
-    addAttribute("condtype","Condition type",true,true,"java.lang.String");
-    addAttribute("conddata","Condition data",true,true,"java.lang.String");
-    addAttribute("condoperator","Condition data",true,true,"java.lang.String");
-    addAttribute("entity","Entity Class",true,true,"java.lang.String");
-    addAttribute("info","Info",true,true,"java.lang.String");
-    super.setMaxLength("condtype",1);
+    addAttribute(getColumnNameCategory(),"Category",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.reports.data.ReportCategory.class);
+    addAttribute(getColumnNameName(),"Name",true,true,java.lang.String.class);
+    addAttribute(getColumnNameInfo(),"Info",true,true,java.lang.String.class);
+    addAttribute(getColumnNameField(), "Field", true, true, java.lang.String.class);
+    addAttribute(getColumnNameConditionType(),"Condition type",true,true,java.lang.String.class,1);
+    addAttribute(getColumnNameConditionData(),"Condition data",true,true,java.lang.String.class);
+    addAttribute(getColumnNameConditionOperator(),"Condition data",true,true,java.lang.String.class);
+    addAttribute(getColumnNameEntityId(),"Entity",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.reports.data.ReportEntity.class);
+    addAttribute(getColumnNameEntity(),"Entity Class",true,true,java.lang.String.class);
+    addAttribute(getColumnNameMaintable(), "Table", true, true, java.lang.String.class);
+    addAttribute(getColumnNameJoins(),"Join",true,true,java.lang.String.class);
+    addAttribute(getColumnNameJoinTables(), "Join Tables", true, true, java.lang.String.class);
+
 
   }
+
+  public static String getEntityTableName(){return "REP_ITEM";}
+  public static String getColumnNameName(){return "NAME";}
+  public static String getColumnNameInfo(){return "INFO";}
+  public static String getColumnNameCategory(){return "REP_CATEGORY_ID";}
+  public static String getColumnNameField(){return "FIELD";}
+  public static String getColumnNameConditionData(){return "CONDDATA";}
+  public static String getColumnNameConditionType(){return "CONDTYPE";}
+  public static String getColumnNameConditionOperator(){return "CONDOPERATOR";}
+  public static String getColumnNameEntityId(){return "REP_ENTITY_ID";}
+  public static String getColumnNameEntity(){return "DEP_ENTITY";}
+  public static String getColumnNameMaintable(){return "DEP_MAINTABLE";}
+  public static String getColumnNameJoins(){return "DEP_JOINS";}
+  public static String getColumnNameJoinTables(){return "DEP_JOINTABLE";}
+
   public String getEntityName() {
-    return "report_item";
+    return getEntityTableName();
   }
   public int getCategory(){
-    return getIntColumnValue("category");
+    return getIntColumnValue(getColumnNameCategory());
   }
   public void setCategory(int category){
-    setColumn("category", new Integer(category));
+    setColumn(getColumnNameCategory(), new Integer(category));
+  }
+   public int getEntityId(){
+    return getIntColumnValue(getColumnNameEntityId());
+  }
+  public void setEntityId(int id){
+    setColumn(getColumnNameEntityId(), new Integer(id));
   }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getColumnNameName());
   }
   public void setName(String name){
-    setColumn("name", name);
+    setColumn(getColumnNameName(), name);
   }
   public String getField(){
-    return getStringColumnValue("field");
+    return getStringColumnValue(getColumnNameField());
   }
   public void setField(String field){
-    setColumn("field", field);
+    setColumn(getColumnNameField(), field);
   }
   public String getMainTable(){
-    return getStringColumnValue("maintable");
+    return getStringColumnValue(getColumnNameMaintable());
   }
   public void setMainTable(String main_table){
-    setColumn("maintable", main_table);
+    setColumn(getColumnNameMaintable(), main_table);
   }
   public String getJoin(){
-    return getStringColumnValue("joins");
+    return getStringColumnValue(getColumnNameJoins());
   }
   public void setJoin(String joins){
-    setColumn("joins", joins);
+    setColumn(getColumnNameJoins(), joins);
   }
   public String getJoinTables(){
-    return getStringColumnValue("jointables");
+    return getStringColumnValue(getColumnNameJoinTables());
   }
   public void setJoinTables(String jointables){
-    setColumn("jointables", jointables);
+    setColumn(getColumnNameJoinTables(), jointables);
   }
   public String getInfo(){
-    return getStringColumnValue("info");
+    return getStringColumnValue(getColumnNameInfo());
   }
   public void setInfo(String info){
-    setColumn("info", info);
+    setColumn(getColumnNameInfo(), info);
   }
   public String getEntity(){
-    return getStringColumnValue("entity");
+    return getStringColumnValue(getColumnNameEntity());
   }
   public void setEntity(String entity){
-    setColumn("entity", entity);
+    setColumn(getColumnNameEntity(), entity);
   }
   public void setEntity(GenericEntity E){
-    setColumn("entity",E.getClass().getName());
+    setColumn(getColumnNameEntity(),E.getClass().getName());
   }
   public String getConditionType(){
-    return getStringColumnValue("condtype");
+    return getStringColumnValue(getColumnNameConditionType());
   }
   public void setConditionType(String condtype){
-    setColumn("condtype", condtype);
+    setColumn(getColumnNameConditionType(), condtype);
   }
   public String getConditionData(){
-    return getStringColumnValue("conddata");
+    return getStringColumnValue(getColumnNameConditionData());
   }
   public void setConditionData(String conddata){
-    setColumn("conddata", conddata);
+    setColumn(getColumnNameConditionData(), conddata);
   }
   public String getConditionOperator(){
-    return getStringColumnValue("condoperator");
+    return getStringColumnValue(getColumnNameConditionOperator());
   }
   public void setConditionOperator(String condoperator){
-    setColumn("condoperator", condoperator);
+    setColumn(getColumnNameConditionOperator(), condoperator);
   }
   public String[] getOps(){
     String s = this.getConditionOperator();
@@ -120,7 +142,7 @@ public class ReportItem extends GenericEntity {
   public String[] getJoinTable(){
     String s = this.getJoinTables();
     if(!"".equalsIgnoreCase(s)){
-    StringTokenizer st = new StringTokenizer(s,",");
+    StringTokenizer st = new StringTokenizer(s,",;: ");
     String[] S = new String[st.countTokens()];
     int i = 0;
     while(st.hasMoreTokens()){
@@ -137,7 +159,7 @@ public class ReportItem extends GenericEntity {
     String[][] sA = null;
 
     String s = this.getConditionData();
-    System.err.println(s);
+    //System.err.println(s);
     if(s != null){
     String[] sB = ms(s,";");
       sA = new String[sB.length][];

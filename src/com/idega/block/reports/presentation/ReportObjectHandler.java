@@ -25,13 +25,13 @@ public class ReportObjectHandler extends JModuleObject{
     for (int i = 0; i < cat.length; i++) {
       drp.addMenuElement(cat[i].getID(),cat[i].getName());
     }
-    if(!selected.equalsIgnoreCase(""))
+    if(!"".equalsIgnoreCase(selected))
       drp.setSelectedElement(selected);
     return drp;
   }
 
-  public static ModuleObject getInput(ReportCondition RC,String Name,String selected){
-    ModuleObject mo = null;
+  public static InterfaceObject getInput(ReportCondition RC,String Name,String selected){
+    InterfaceObject mo = null;
     String Type = RC.getItem().getConditionType();
     if(Type.equalsIgnoreCase("T"))
       mo =  new TextInput(Name);
@@ -41,12 +41,17 @@ public class ReportObjectHandler extends JModuleObject{
     else if(Type.equalsIgnoreCase("S"))
       mo =  drpEntity(Name,RC.getItem().getEntity(),RC.getItem().getField(),selected,false);
     else if(Type.equalsIgnoreCase("C"))
-      mo = drpValues(RC,Name,selected);
+      mo = drpValues(RC,Name,selected,false);
+    else if(Type.equalsIgnoreCase("D"))
+    mo = drpValues(RC,Name,selected,true);
     return mo;
   }
 
-  public static DropdownMenu drpValues(ReportCondition RC,String Name,String selected){
+  public static DropdownMenu drpValues(ReportCondition RC,String Name,String selected,boolean disabledvalue){
     DropdownMenu drp = new DropdownMenu(Name);
+    if(disabledvalue )
+      drp.addDisabledMenuElement("0","--");
+
     String[][] data = RC.getItem().getData();
     if(data != null){
       if(data.length ==1 && data[0] != null){

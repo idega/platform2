@@ -3,6 +3,7 @@ package com.idega.block.reports.business;
 import java.io.*;
 import java.util.*;
 import java.sql.SQLException;
+import com.idega.data.EntityFinder;
 import com.idega.block.reports.data.*;
 
 /**
@@ -21,7 +22,7 @@ public class ReportEntityHandler {
   public static ReportCategory[] findCategorys(int iCatId){
     try {
       if(iCatId > 0){
-        return (ReportCategory[]) new ReportCategory().findAllByColumn("category",iCatId);
+        return (ReportCategory[]) new ReportCategory().findAllByColumn(ReportItem.getColumnNameCategory(),iCatId);
       }
       else{
         return new ReportCategory[0];
@@ -32,10 +33,21 @@ public class ReportEntityHandler {
     }
   }
 
+  public static List listOfReportItems(int iCatId){
+    List L = null;
+    try {
+      L = EntityFinder.findAllByColumn(new ReportItem(),ReportItem.getColumnNameCategory(),iCatId);
+    }
+    catch (SQLException ex) {
+      L = null;
+    }
+    return L;
+  }
+
    public static ReportItem[] findReportItems(int iCatId){
     try {
       if(iCatId > 0){
-        return (ReportItem[]) new ReportItem().findAllByColumn("category",iCatId);
+        return (ReportItem[]) new ReportItem().findAllByColumn(ReportItem.getColumnNameCategory(),iCatId);
       }
       else{
         return new ReportItem[0];
@@ -46,10 +58,22 @@ public class ReportEntityHandler {
     }
   }
 
+  public static List listOfReports(int iCategoryId){
+    List L = null;
+    try {
+      L = EntityFinder.findAllByColumn(new Report(),Report.getColumnNameCategory(),iCategoryId );
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      L = null;
+    }
+    return L;
+  }
+
   public static Report[] findReports(int iCatId){
     try {
       if(iCatId > 0){
-        return (Report[]) new Report().findAllByColumn("category",iCatId);
+        return (Report[]) new Report().findAllByColumn(ReportItem.getColumnNameCategory(),iCatId);
       }
       else{
         return new Report[0];
@@ -69,25 +93,38 @@ public class ReportEntityHandler {
     return RC;
   }
 
+  public static List listOfReportConditions(int iCategory){
+    ReportItem[] RI = findReportItems(iCategory);
+    Vector V = new Vector(RI.length);
+    for (int i = 0; i < RI.length; i++) {
+      V.add(new ReportCondition(RI[i]));
+    }
+    return V;
+  }
+
   public static boolean saveReportItem(int catid,String name,String field,String table,
                   String joins,String jointables,String condtype,
                   String conddata,String condop,String entity,String info){
     try {
-      ReportItem ri = new ReportItem();
-      ri.setCategory(catid);
-      ri.setName(name);
-      ri.setField(field);
-      ri.setMainTable(table);
-      ri.setJoin(joins);
-      ri.setJoinTables(jointables);
-      ri.setConditionType(condtype);
-      ri.setConditionData(conddata);
-      ri.setConditionOperator(condop);
-      ri.setEntity(entity);
-      ri.setInfo(info);
-      ri.insert();
+      if(catid > 0){
+        ReportItem ri = new ReportItem();
+        ri.setCategory(catid);
+        ri.setName(name);
+        ri.setField(field);
+        ri.setMainTable(table);
+        ri.setJoin(joins);
+        ri.setJoinTables(jointables);
+        ri.setConditionType(condtype);
+        ri.setConditionData(conddata);
+        ri.setConditionOperator(condop);
+        ri.setEntity(entity);
+        ri.setInfo(info);
+        ri.insert();
 
-      return true;
+        return true;
+      }
+      else
+        return false;
     }
     catch (Exception ex) {
       return false;
@@ -97,7 +134,7 @@ public class ReportEntityHandler {
                   String joins,String jointables,String condtype,
                   String conddata,String condop,String entity,String info){
      try {
-      if(id != -1){
+      if(id > 0){
       ReportItem ri = new ReportItem(id);
       ri.setCategory(catid);
       ri.setName(name);
@@ -153,13 +190,15 @@ public class ReportEntityHandler {
     }
   }
 
-  public static boolean saveReport(String name,String info,String sql,int Category){
+  public static boolean saveReport(String name,String info,String[] headers,String sql,int Category){
     try {
       Report r = new Report();
       r.setName(name);
       r.setInfo(info);
+      r.setHeaders(headers );
       r.setSQL(sql);
       r.setCategory(Category);
+      r.insert();
       return true;
     }
     catch (Exception ex) {
@@ -167,12 +206,13 @@ public class ReportEntityHandler {
       return false;
     }
   }
-  public static boolean updateReport(int id,String name,String info,String sql,int Category){
+  public static boolean updateReport(int id,String name,String info,String[] headers,String sql,int Category){
      try {
       if(id != -1){
         Report r = new Report(id);
         r.setName(name);
         r.setInfo(info);
+        r.setHeaders(headers );
         r.setSQL(sql);
         r.setCategory(Category);
         r.update();
@@ -180,6 +220,18 @@ public class ReportEntityHandler {
       }
       else
         return false;
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+      return false;
+    }
+  }
+
+  public static boolean deleteReport(int id){
+    try {
+      Report r = new Report(id);
+      r.delete();
+      return true;
     }
     catch (Exception ex) {
       ex.printStackTrace();

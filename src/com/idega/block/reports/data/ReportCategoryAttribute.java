@@ -24,12 +24,19 @@ public class ReportCategoryAttribute extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute("category_id","Category",true,true, "java.lang.Integer","many-to-one","com.idega.block.reports.data.ReportCategory");
-    addAttribute("attribute_name","Attribute Name",true,true, "java.lang.String");
-    addAttribute("attribute_id","Attribute Id",true,true, "java.lang.Integer");
+    addAttribute(getColumnNameCategoryId(),"Category",true,true, java.lang.Integer.class,"many-to-one",com.idega.block.reports.data.ReportCategory.class);
+    addAttribute(getColumnNameAttributeName(),"Attribute Name",true,true, java.lang.String.class);
+    addAttribute(getColumnNameAttributeId(),"Attribute Id",true,true, java.lang.Integer.class);
   }
+
+  public static String getEntityTableName(){return "REP_CAT_ATTRIBUTE";}
+  public static String getColumnNameCategoryId(){return "REP_CATEGORY_ID";}
+  public static String getColumnNameAttributeName(){return "ATTRIBUTE_NAME";}
+  public static String getColumnNameAttributeId(){return "ATTRIBUTE_ID";}
+
+
   public String getEntityName(){
-    return "report_category_attribute";
+    return getEntityTableName();
   }
 
   public void setName(String name) {
@@ -40,27 +47,27 @@ public class ReportCategoryAttribute extends GenericEntity{
   }
 
   public void setAttributeName(String name) {
-    setColumn("attribute_name",name);
+    setColumn(getColumnNameAttributeName(),name);
   }
 
   public String getAttributeName() {
-    return (String) getStringColumnValue("attribute_name");
+    return (String) getStringColumnValue(getColumnNameAttributeName());
   }
 
   public void setAttributeId(int id) {
-    setColumn("attribute_id",new Integer(id));
+    setColumn(getColumnNameAttributeId(),new Integer(id));
   }
 
   public int getAttributeId() {
-    return getIntColumnValue("attribute_id");
+    return getIntColumnValue(getColumnNameAttributeId());
   }
 
   public void setReportCategoryId(int id) {
-    setColumn("category_id",new Integer(id));
+    setColumn(getColumnNameCategoryId(),new Integer(id));
   }
 
   public int getReportCategoryId() {
-    return getIntColumnValue("category_id");
+    return getIntColumnValue(getColumnNameCategoryId());
   }
 
 

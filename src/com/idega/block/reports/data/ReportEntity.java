@@ -22,37 +22,44 @@ public class ReportEntity extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("entity", "Entity", true, true, "java.lang.String");
-    addAttribute("maintable", "Table", true, true, "java.lang.String");
-    addAttribute("joins","Join",true,true,"java.lang.String");
-    addAttribute("jointables", "Join Tables", true, true, "java.lang.String");
+    addAttribute(getColumnNameEntity(), "Entity", true, true, java.lang.String.class);
+    addAttribute(getColumnNameMaintable(), "Table", true, true, java.lang.String.class);
+    addAttribute(getColumnNameJoins(),"Join",true,true,java.lang.String.class);
+    addAttribute(getColumnNameJoinTables(), "Join Tables", true, true, java.lang.String.class);
   }
+
+  public static String getEntityTableName(){return "REP_ENTITY";}
+  public static String getColumnNameMaintable(){return "MAINTABLE";}
+  public static String getColumnNameJoins(){return "JOINS";}
+  public static String getColumnNameEntity(){return "ENTITY";}
+  public static String getColumnNameJoinTables(){return "JOINTABLES";}
+
   public String getEntityName() {
-    return "report_entity";
+    return getEntityTableName();
   }
   public String getEntity(){
-    return getStringColumnValue("entity");
+    return getStringColumnValue(getColumnNameEntity());
   }
   public void setCategory(String entity){
-    setColumn("entity", entity);
+    setColumn(getColumnNameEntity(), entity);
   }
    public String getMainTable(){
-    return getStringColumnValue("maintable");
+    return getStringColumnValue(getColumnNameMaintable());
   }
   public void setMainTable(String main_table){
-    setColumn("maintable", main_table);
+    setColumn(getColumnNameMaintable(), main_table);
   }
   public String getJoin(){
-    return getStringColumnValue("joins");
+    return getStringColumnValue(getColumnNameJoins());
   }
   public void setJoin(String joins){
-    setColumn("joins", joins);
+    setColumn(getColumnNameJoins(), joins);
   }
   public String getJoinTables(){
-    return getStringColumnValue("jointables");
+    return getStringColumnValue(getColumnNameJoinTables());
   }
   public void setJoinTables(String jointables){
-    setColumn("jointables", jointables);
+    setColumn(getColumnNameJoinTables(), jointables);
   }
 
 

@@ -22,22 +22,27 @@ public class ReportCategory extends GenericEntity{
   }
   public void initializeAttributes(){
           addAttribute(getIDColumnName());
-          addAttribute("name", "Flokkur", true, true, "java.lang.String");
-          addAttribute("info", "Lýsing", true, true, "java.lang.String");
+          addAttribute("name", "Flokkur", true, true, java.lang.String.class);
+          addAttribute("info", "Lýsing", true, true, java.lang.String.class);
   }
+
+  public static String getEntityTableName(){return "REP_CATEGORY";}
+  public static String getColumnNameName(){return "NAME";}
+  public static String getColumnNameInfo(){return "INFO";}
+
   public String getEntityName(){
-    return "report_category";
+    return getEntityTableName();
   }
   public void setName(String name){
-    setColumn("name", name);
+    setColumn(getColumnNameName(), name);
   }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getColumnNameName());
   }
   public String getInfo(){
-    return getStringColumnValue("info");
+    return getStringColumnValue(getColumnNameInfo());
   }
   public void setInfo(String info){
-    setColumn("info", info);
+    setColumn(getColumnNameInfo(), info);
   }
 }

@@ -14,9 +14,10 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.Image;
+import com.idega.business.IWEventListener;
 
 
-public class ReportContentViewer extends Editor{
+public class ReportContentViewer extends ReportPresentation implements IWEventListener{
 
   private final String sAction = "rcv_action";
   private String sActPrm = "";
@@ -28,6 +29,11 @@ public class ReportContentViewer extends Editor{
   private int displayNumber = 20;
   private Report eReport = null;
   private int listStart = 1;
+  public final static String prmReportId = "rep.viewer.repid";
+  protected static String prmContent = "rep.view.content";
+  protected static String prmHeaders = "rep.view.headers";
+  protected static String prmLastOrder = "rep.view.lastorder";
+  protected static String prmListStart = "rep.view.liststart";
 
   public ReportContentViewer(){
     vReportContent = null;
@@ -47,18 +53,22 @@ public class ReportContentViewer extends Editor{
     this.displayNumber = number;
   }
   protected void control(ModuleInfo modinfo){
+    Table  T = new Table();
+    T.setWidth("100%");
+    T.setCellpadding(0);
+    T.setCellspacing(0);
     try{
 
       if(modinfo.getParameter("start")!=null){
         listStart = Integer.parseInt(modinfo.getParameter("start"));
       }
-      modinfo.setSessionAttribute("liststart",new Integer(listStart));
+      modinfo.setSessionAttribute(prmListStart,new Integer(listStart));
 
-      if(modinfo.getParameter("report")!=null){
-        iReport = Integer.parseInt(modinfo.getParameter("report"));
+      if(modinfo.getParameter(prmReportId)!=null){
+        iReport = Integer.parseInt(modinfo.getParameter(prmReportId));
         eReport = new Report(iReport);
         ReportService.setSessionReport(modinfo,eReport);
-        doMain(modinfo);
+        T.add(doMain(modinfo));
       }
       else if(modinfo.getParameter(sAction) != null){
         sActPrm = modinfo.getParameter(sAction);
@@ -66,7 +76,7 @@ public class ReportContentViewer extends Editor{
           iAction = Integer.parseInt(sActPrm);
           switch(iAction){
             case ACT1:    break;
-            case ACT2: doTable(modinfo);  break;
+            case ACT2: T.add(doTable(modinfo));  break;
             case ACT3: doChange(modinfo); break;
             case ACT4: doUpdate(modinfo);        break;
           }
@@ -76,11 +86,12 @@ public class ReportContentViewer extends Editor{
         }
       }
       else
-        doMain(modinfo);
+        T.add(doMain(modinfo));
     }
     catch(Exception S){
       S.printStackTrace();
     }
+    add(T);
   }
 
   protected ModuleObject makeLinkTable(int menuNr){
@@ -105,30 +116,32 @@ public class ReportContentViewer extends Editor{
   }
 
 
-  private void doMain(ModuleInfo modinfo){
-    if(modinfo.getParameter("report") != null){
+  private ModuleObject doMain(ModuleInfo modinfo){
+    Table T = new Table();
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+    T.setWidth("100%");
+    if(modinfo.getParameter(prmReportId) != null){
       String sql = eReport.getSQL();
       String[] headers = eReport.getHeaders();
       Vector v = new ReportMaker().makeReport(sql);
-      modinfo.setSessionAttribute("content",v);
-      modinfo.setSessionAttribute("headers",headers);
-      makeView();
+      modinfo.setSessionAttribute(prmContent,v);
+      modinfo.setSessionAttribute(prmHeaders,headers);
       if(v != null){
-        this.addHeader(this.doHeader(eReport));
-        addMain(this.doFooter(listStart,v.size()));
-        addMain(this.doView(headers,v,listStart));
-        addMain(this.doFooter(listStart,v.size()));
-
+        T.add(this.doHeader(eReport),1,1);
+        T.add(this.doFooter(listStart,v.size()),1,2);
+        T.add(this.doView(headers,v,listStart),1,3);
+        T.add(this.doFooter(listStart,v.size()),1,4);
       }
       else
-        addMain(new Text(" nothing to show"));
-      Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
-      this.addToHeader(back);
-
+        T.add(new Text(" nothing to show"),1,1);
+      //Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+      //this.addToHeader(back);
     }
     else{
-      doTable(modinfo);
+      return doTable(modinfo);
     }
+    return T;
   }
   protected void doChange(ModuleInfo modinfo) throws SQLException{
 
@@ -137,18 +150,22 @@ public class ReportContentViewer extends Editor{
   protected void doUpdate(ModuleInfo modinfo) throws SQLException{
   }
 
-  private void doTable(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute("content")!=null){
-      Vector v= (Vector) modinfo.getSession().getAttribute("content");
+  private ModuleObject doTable(ModuleInfo modinfo){
+    Table T = new Table();
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+    T.setWidth("100%");
+    if(modinfo.getSession().getAttribute(prmContent)!=null){
+      Vector v= (Vector) modinfo.getSession().getAttribute(prmContent);
       eReport = ReportService.getSessionReport(modinfo);
-      listStart = ((Integer)modinfo.getSessionAttribute("liststart")).intValue();
+      listStart = ((Integer)modinfo.getSessionAttribute(prmListStart)).intValue();
       String[] headers = null;
-      if(modinfo.getSessionAttribute("headers") != null){
-        headers = (String[]) modinfo.getSessionAttribute("headers");
+      if(modinfo.getSessionAttribute(prmHeaders) != null){
+        headers = (String[]) modinfo.getSessionAttribute(prmHeaders);
       }
 
-      if(modinfo.getSession().getAttribute(prefix+"lastorder")!=null)
-        this.sLastOrder = (String) modinfo.getSession().getAttribute(prefix+"lastorder");
+      if(modinfo.getSessionAttribute(prmLastOrder)!=null)
+        this.sLastOrder = (String) modinfo.getSessionAttribute(prmLastOrder);
       else
         this.sLastOrder = "";
 
@@ -164,22 +181,22 @@ public class ReportContentViewer extends Editor{
       if(!(modinfo.getParameter("start")!= null))
         OrderVector(v,order,reverse);
 
-      modinfo.getSession().setAttribute(prefix+"lastorder",sOrder);
-
-      this.makeView();
+      modinfo.setSessionAttribute(prmLastOrder,sOrder);
 
       if(v != null){
-        this.addHeader(this.doHeader(eReport));
-        addMain(this.doFooter(listStart,v.size()));
-        addMain(this.doView(headers,v,listStart));
-        addMain(this.doFooter(listStart,v.size()));
+        T.add(this.doHeader(eReport),1,1);
+        T.add(this.doFooter(listStart,v.size()),1,2);
+        T.add(this.doView(headers,v,listStart),1,3);
+        T.add(this.doFooter(listStart,v.size()),1,4);
       }
       else
-        addMain(new Text(" nothing to show"));
-      Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
-      this.addToHeader(back);
+        T.add(new Text(" nothing to show"),1,1);
+      //Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+      //this.addToHeader(back);
     }
+    return T;
   }
+
   private ModuleObject doHeader(Report R){
     Table T2 = new Table(2,1);
     T2.setWidth("100%");
@@ -192,12 +209,15 @@ public class ReportContentViewer extends Editor{
     T.add(getBodyText(R.getInfo()),2,2);
     T2.add(T,1,1);
     Table T3 = new Table(2,1);
-    Window writerWindow = new Window("Idega Report",650,500,"/reports/reportfile.jsp");
-    writerWindow.setResizable(true);
-    writerWindow.setMenubar(true);
-    Link XLS = new Link(new Image("/reports/pics/xls.gif"),writerWindow);
+
+    Link XLS = new Link(new Image("/reports/pics/xls.gif"));
+    XLS.setWindowToOpen(ReportFileWindow.class);
+    XLS.addParameter(ReportFileWindow.prmReportId,R.getID());
     XLS.addParameter("type","xls");
-    Link PDF = new Link(new Image("/reports/pics/pdf.gif"),writerWindow);
+
+    Link PDF = new Link(new Image("/reports/pics/pdf.gif"));
+    PDF.setWindowToOpen(ReportFileWindow.class);
+    PDF.addParameter(ReportFileWindow.prmReportId,R.getID());
     PDF.addParameter("type","pdf");
     T3.add(XLS,1,1);
     T3.add(PDF,2,1);
@@ -256,7 +276,6 @@ public class ReportContentViewer extends Editor{
       T.add(PartLink,2,1);
 
     }
-
     Link WholeLink = new Link("All");
     WholeLink.addParameter("start",-1);
     WholeLink.setFontColor(this.LightColor);
@@ -325,7 +344,7 @@ public class ReportContentViewer extends Editor{
   private Text getBodyText(String text){
     Text T = new Text(text,true,false,false);
     T.setFontColor("#000000");
-    T.setFontSize(2);
+    T.setFontSize(1);
     return T;
   }
 
@@ -347,7 +366,7 @@ public class ReportContentViewer extends Editor{
     }
     for(int i =0; i < content.length;i++){
         for(int j = 0; j < content[i].length;j++){
-          T.add(content[i][j],j+1,i+2);
+          T.add(ReportPresentation.formatText(content[i][j]),j+1,i+2);
       }
     }
     return T;
@@ -369,6 +388,25 @@ public class ReportContentViewer extends Editor{
       }
     }
     return s;
+  }
+
+  protected static void removeSessionParameters(ModuleInfo modinfo){
+    if(modinfo.getSessionAttribute(prmContent)!=null){
+      modinfo.removeSessionAttribute(prmContent );
+    }
+    if(modinfo.getSessionAttribute(prmHeaders)!=null){
+      modinfo.removeSessionAttribute(prmHeaders );
+    }
+    if(modinfo.getSessionAttribute(prmLastOrder)!=null){
+      modinfo.removeSessionAttribute(prmLastOrder );
+    }
+    if(modinfo.getSessionAttribute(prmListStart)!=null){
+      modinfo.removeSessionAttribute(prmListStart );
+    }
+  }
+
+  public void actionPerformed(ModuleInfo modinfo){
+    removeSessionParameters(modinfo);
   }
 
 }

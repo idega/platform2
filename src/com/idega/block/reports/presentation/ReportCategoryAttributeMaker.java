@@ -117,7 +117,10 @@ public class ReportCategoryAttributeMaker extends JModuleObject{
     sId = modinfo.getParameter(prefix+"drp2");
     sName = modinfo.getParameter(prefix+"name");
     sAttId = modinfo.getParameter(prefix+"attid");
-    add(sAttId +" "+ sName +" "+ sId);
+    add(" cat: "+ sId );
+    add(" att: "+ sName );
+    add(" attid: "+ sAttId );
+
 
     if(id == 0)
       this.saveAttribute(sName,sAttId,sId);

@@ -22,48 +22,56 @@ public class Report extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("category","Category",true,true,"java.lang.Integer","many-to-one","com.idega.block.reports.data.ReportCategory");
-    addAttribute("name","Name",true,true,"java.lang.String");
-    addAttribute("sqlsentence", "SQL", true, true, "java.lang.String",2000);
-    addAttribute("headers","Titles",true,true,"java.lang.String");
-    addAttribute("info","ATH",true,true,"java.lang.String");
+    addAttribute(getColumnNameCategory(),"Category",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.reports.data.ReportCategory.class);
+    addAttribute(getColumnNameName(),"Name",true,true,java.lang.String.class);
+    addAttribute(getColumnNameSql(), "SQL", true, true, java.lang.String.class,2000);
+    addAttribute(getColumnNameHeaders(),"Titles",true,true,java.lang.String.class);
+    addAttribute(getColumnNameInfo(),"ATH",true,true,java.lang.String.class);
 
   }
+
+  public static String getEntityTableName(){return "REP_REPORT";}
+  public static String getColumnNameName(){return "NAME";}
+  public static String getColumnNameInfo(){return "INFO";}
+  public static String getColumnNameSql(){return "SQLSENTENCE";}
+  public static String getColumnNameHeaders(){return "HEADERS";}
+  public static String getColumnNameCategory(){return "REP_CATEGORY_ID";}
+
   public String getEntityName() {
-    return "report";
+    return getEntityTableName();
   }
   public int getCategory(){
-    return getIntColumnValue("category");
+    return getIntColumnValue(getColumnNameCategory());
   }
   public void setCategory(int category){
-    setColumn("category", new Integer(category));
+    setColumn(getColumnNameCategory(), new Integer(category));
   }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getColumnNameName());
   }
   public void setName(String name){
-    setColumn("name", name);
+    setColumn(getColumnNameName(), name);
   }
   public String getSQL(){
-    return getStringColumnValue("sqlsentence");
+    return getStringColumnValue(getColumnNameSql());
   }
   public void setSQL(String sqlsentence){
-    setColumn("sqlsentence", sqlsentence);
+    setColumn(getColumnNameSql(), sqlsentence);
   }
   public String getInfo(){
-    return getStringColumnValue("info");
+    return getStringColumnValue(getColumnNameInfo());
   }
   public void setInfo(String info){
-    setColumn("info", info);
+    setColumn(getColumnNameInfo() , info);
   }
   public void setHeaders(String[] headers){
-    setColumn("headers",array2str(headers,delim()));
+    setColumn(getColumnNameHeaders(),array2str(headers,delim()));
   }
   public String getHeader(){
-    return getStringColumnValue("headers");
+    return getStringColumnValue(getColumnNameHeaders());
   }
   public String[] getHeaders(){
-    return str2array(getStringColumnValue("headers"),delim());
+    return str2array(getStringColumnValue(getColumnNameHeaders()),delim());
   }
   private String delim(){
     return ",";

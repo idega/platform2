@@ -3,6 +3,7 @@ package com.idega.block.reports.presentation;
 import com.idega.block.reports.data.*;
 import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import java.sql.SQLException;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.interfaceobject.*;
@@ -13,12 +14,16 @@ import com.idega.block.reports.presentation.ReportObjectHandler;
 import com.idega.block.reports.business.ReportEntityHandler;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.data.GenericEntity;
+import com.idega.data.EntityFinder;
+import java.util.List;
 
 
-public class ReportItemizer extends Editor{
+public class ReportItemizer extends ReportPresentation{
 
   private final String sAction = "report_action";
   private final String prefix = "rpit_" ;
+  private final String sSessPrm = "rep_category";
+  private  int iCategoryId = -1;
   private String sActPrm = "0";
   private int iAction = 0;
   private String sName,sInfo;
@@ -26,52 +31,55 @@ public class ReportItemizer extends Editor{
   private int iCatId = 0;
 
   public ReportItemizer(){
+    super();
     sIndex = "0";
     sName = "";
     sInfo = "";
-    LightColor = "#D7DADF";
-    MiddleColor = "#9fA9B3";
-    DarkColor = "#27334B";
-    WhiteColor = "#FFFFFF";
-    TextFontColor = "#000000";
-    HeaderFontColor = DarkColor;
-    IndexFontColor = "#000000";
-
   }
 
   protected void control(ModuleInfo modinfo){
-
-    try{
-        this.makeView();
-        this.addHeader(this.makeLinkTable(0));
-        doSome(modinfo);
-        doMain(modinfo);
-        int entId = 0;
-        if(modinfo.getParameter("reports.entity.drop")!= null){
-          entId = Integer.parseInt(modinfo.getParameter("reports.entity.drop"));
-          doChange(modinfo,entId);
+    if(isAdmin){
+      try{
+        Form F = new Form();
+        Table T = new Table();
+        T.add(this.makeLinkTable(0),1,1);
+        T.add(getCategoryTable(modinfo),1,2);
+        if(modinfo.getParameter("risave")!=null){
+          doUpdate(modinfo);
         }
-        else if(modinfo.getParameter(sAction) != null){
+        else if(modinfo.getParameter("ea_apply")!= null || modinfo.getParameter("ea_ok")!= null){
+          doUpdateEntityForm(modinfo);
+        }
+
+        if(modinfo.getParameter(sAction) != null){
           sActPrm = modinfo.getParameter(sAction);
           try{
             iAction = Integer.parseInt(sActPrm);
             switch(iAction){
-              case ACT1:    break;
-              case ACT2: doView(modinfo);  break;
-              case ACT3: doChange(modinfo,entId); break;
-              case ACT4: doUpdate(modinfo);        break;
+              case ACT1: T.add(doEntityAdd(modinfo),1,3);    break;
+              case ACT2: T.add(doView(modinfo),1,3);         break;
+              case ACT3: T.add(doChange(modinfo),1,3);       break;
             }
           }
           catch(Exception e){
             e.printStackTrace();
           }
         }
+        else{
+          T.add(doView(modinfo),1,3);
+        }
+        F.add(T);
+        add(F);
+      }
+      catch(Exception S){
+        S.printStackTrace();
+      }
     }
-    catch(Exception S){
-      S.printStackTrace();
+    else{
+      add("access denied");
     }
-
   }
+
   protected ModuleObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
@@ -86,9 +94,13 @@ public class ReportItemizer extends Editor{
     Link Link2 = new Link("View");
     Link2.setFontColor(this.LightColor);
     Link2.addParameter(this.sAction,String.valueOf(this.ACT2));
+    Link Link3 = new Link("Entity");
+    Link3.setFontColor(this.LightColor);
+    Link3.addParameter(this.sAction,String.valueOf(this.ACT1));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
+      LinkTable.add(Link3,2,1);
     }
     return LinkTable;
   }
@@ -109,70 +121,66 @@ public class ReportItemizer extends Editor{
         }
       }
     }
-
   }
 
   private void doMain(ModuleInfo modinfo){
     String sIndex = modinfo.getParameter("rep_cat_drp");
     Table T = new Table();
-    Form myForm = new Form();
     if(sIndex==null)
       sIndex = "0";
-    DropdownMenu drp = ReportObjectHandler.drpCategories("rep_cat_drp",sIndex);
-    drp.setToSubmit();
-    Text Name = new Text(sName);
-    Text Info = new Text(sInfo);
-
-    Table T2 = new Table();
-    T2.add("Category",1,1);
-    T2.add(drp,1,2);
-    T2.add("Name:",2,1);
-    T2.add(Name,2,2);
-    T2.add("Info:",3,1);
-    T2.add(Info,3,2);
-
-    myForm.add(T2);
-    T.add(myForm);
-    this.addMain(T);
-  }
-
-  private void doView(ModuleInfo modinfo){
-    ReportItem[] RI;
-    try{
-    RI = (ReportItem[])new ReportItem().findAll();
-    }
-    catch(Exception e){RI = new ReportItem[0];}
-    int count = RI.length;
-    Table T = new Table();
-
-    for (int i = 0; i < RI.length; i++) {
-      int a = i+2;
-      int b = 1;
-      T.add(formatText(i+1),b++,a);
-      T.add(RI[i].getName(),b++,a);
-      T.add(RI[i].getField(),b++,a);
-      T.add(RI[i].getMainTable(),b++,a);
-      T.add(RI[i].getJoin(),b++,a);
-      T.add(RI[i].getJoinTables(),b++,a);
-      T.add(RI[i].getConditionType(),b++,a);
-      T.add(RI[i].getConditionData(),b++,a);
-      T.add(RI[i].getConditionOperator(),b++,a);
-      T.add(RI[i].getEntity(),b++,a);
-      T.add(RI[i].getInfo(),b++,a);
-    }
-    T.setWidth("100%");
-    T.setHorizontalZebraColored(LightColor,WhiteColor);
-    T.setRowColor(1,MiddleColor);
     add(T);
-
   }
-  protected void doChange(ModuleInfo modinfo,int entityId) throws SQLException{
+
+  private ModuleObject doView(ModuleInfo modinfo){
+    List L = null;
+    try{
+      L = EntityFinder.findAllByColumn(new ReportItem(),ReportItem.getColumnNameCategory(),iCategoryId);
+    }
+    catch(Exception e){L = null;}
+    Table T = new Table();
+    if(L != null){
+      int count = L.size();
+      for (int i = 0; i < count; i++) {
+        int a = i+2;
+        int b = 1;
+        T.add(formatText(i+1),b++,a);
+        ReportItem RI = (ReportItem) L.get(i);
+        Link link = new Link(RI.getName());
+        link.addParameter(sAction,ACT3);
+        link.addParameter("repitemid",RI.getID());
+        link.addParameter("rep.cat.drp",iCategoryId);
+        T.add(link,b++,a);
+      }
+      T.setWidth("100%");
+      T.setHorizontalZebraColored(LightColor,WhiteColor);
+      T.setRowColor(1,MiddleColor);
+    }
+    return T;
+  }
+
+  private ModuleObject getCategoryTable(ModuleInfo modinfo){
+    String sCatId = modinfo.getParameter("rep.cat.drp");
+    if(sCatId != null){
+      int iCatId = Integer.parseInt(sCatId);
+      iCategoryId = iCatId;
+      modinfo.setSessionAttribute(sSessPrm,new Integer(iCategoryId));
+    }
+    else if(modinfo.getSessionAttribute(sSessPrm )!=null){
+      iCategoryId = ((Integer)modinfo.getSessionAttribute(sSessPrm )).intValue();
+      sCatId = String.valueOf(iCategoryId);
+    }
+    Table T = new Table();
+    DropdownMenu drp = ReportObjectHandler.drpCategories("rep.cat.drp",sCatId);
+    drp.setToSubmit();
+    setStyle(drp);
+    T.add(drp);
+    return T;
+  }
+
+  protected ModuleObject doChange(ModuleInfo modinfo) throws SQLException{
+    String sRepItemId = modinfo.getParameter("repitemid");
     Table Frame = new Table(2,1);
     Frame.setRowVerticalAlignment(1,"top");
-    Form myForm = new Form();
-
-    DropdownMenu drp = ReportObjectHandler.drpCategories(prefix+"id","");
-
     Table T =  new Table(2,12);
     T.setCellpadding(2);
     T.setCellspacing(1);
@@ -210,6 +218,29 @@ public class ReportItemizer extends Editor{
     entity      = new TextInput(prefix+"entity");
     info        = new TextInput(prefix+"info");
 
+    if(sRepItemId != null){
+      int repItemId = Integer.parseInt(sRepItemId);
+      if(repItemId > 0){
+        try {
+          ReportItem ri = new ReportItem(repItemId );
+          name.setContent(ri.getName());
+          field.setContent(ri.getField());
+          table.setContent(ri.getMainTable());
+          joins.setContent(ri.getJoin());
+          jointables.setContent(ri.getJoinTables());
+          condtype.setContent(ri.getConditionType());
+          conddata.setContent(ri.getConditionData());
+          condop.setContent(ri.getConditionOperator());
+          entity.setContent(ri.getEntity());
+          info.setContent(ri.getInfo());
+          T.add(new HiddenInput("repitemid",String.valueOf(ri.getID())));
+        }
+        catch (SQLException ex) {
+
+        }
+      }
+    }
+
     int tlen = 50;
     name.setSize(tlen);
     field.setSize(tlen);
@@ -246,31 +277,40 @@ public class ReportItemizer extends Editor{
     T.add(entity,col,row++);
     T.add(info,col,row++);
 
-    myForm.add(T);
-    myForm.add(new SubmitButton("Save",this.sAction,String.valueOf(this.ACT4 )));
-    myForm.add(drp);
-    Frame.add(myForm,1,1);
+    Frame.add(T);
+    Frame.add(new SubmitButton("risave","Save"));
+    Frame.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4 )));
+    Frame.add(new HiddenInput("rep.cat.drp",String.valueOf(iCategoryId)));
 
-    Form entityForm = new Form();
-    String sel = "";
-    if(entityId > 0)
-      sel = String.valueOf(entityId);
-
-    DropdownMenu drpent = this.getEntityDrp(this.getReportEntities(),"reports.entity.drop",sel);
-    drpent.setToSubmit();
-    entityForm.add(drpent);
-    if(entityId > 0){
-      Table Ta = (Table) makeEntityTable(new ReportEntity(entityId));
-      Ta.setHorizontalZebraColored(this.LightColor,this.WhiteColor);
-      Ta.setRowColor(1,MiddleColor);
-      entityForm.add(Ta);
-    }
-    Frame.add(entityForm,2,1);
-
-    this.addMain(Frame);
+    return(Frame);
   }
 
-  private ModuleObject makeEntityTable(ReportEntity RE){
+  private ModuleObject doEntityAdd(ModuleInfo modinfo){
+
+    String sEntId = modinfo.getParameter("ent_drp");
+    int iEntId = -1;
+    if(sEntId !=null)
+      iEntId = Integer.parseInt(sEntId);
+    Table T = new Table();
+    T.add(new HiddenInput(sAction,String.valueOf(ACT1)));
+    DropdownMenu drp = getEntityDrp(getReportEntities(),"ent_drp",sEntId);
+    setStyle(drp);
+    drp.setToSubmit();
+    T.add(drp,1,1);
+    if(iEntId > 0){
+      try{
+        ReportEntity RE = new ReportEntity(iEntId);
+        T.add(getEntityForm(RE),1,2);
+      }
+      catch(SQLException sql){sql.printStackTrace();}
+      T.add(new SubmitButton("ea_cancel","Cancel"),1,3);
+      T.add(new SubmitButton("ea_apply","Apply"),1,3);
+      T.add(new SubmitButton("ea_ok","Ok"),1,3);
+    }
+    return T;
+  }
+
+  private ModuleObject getEntityTable(ReportEntity RE){
     try{
     GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
@@ -291,21 +331,86 @@ public class ReportItemizer extends Editor{
     catch(Exception ex){return new Table();}
   }
 
-  private ReportEntity[] getReportEntities(){
-    ReportEntity[] RE = new ReportEntity[0];
+  private ModuleObject getEntityForm(ReportEntity RE){
     try{
-      RE = (ReportEntity[])new ReportEntity().findAll();
-    }
-    catch(SQLException sql){
+    GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
+    Table T = new Table();
 
+    T.add(formatText("Display"),1,1);
+    T.add(formatText("Field"),2,1);
+    T.add(formatText("Relation"),3,1);
+    T.add(new HiddenInput("re_id",String.valueOf(RE.getID())));
+    SelectionDoubleBox box = new SelectionDoubleBox("box","Fields","Order");
+    SelectionBox box1 = box.getLeftBox();
+    box1.keepStatusOnAction();
+    SelectionBox box2 = box.getRightBox();
+    box1.keepStatusOnAction();
+    box2.addUpAndDownMovers();
+    int a = 1;
+    for (int i = 0; i < ent.getVisibleColumnNames().length; i++) {
+      box1.addMenuElement(i,ent.getLongName(ent.getVisibleColumnNames()[i]));
     }
-    return RE;
+    box1.setHeight(20);
+    box2.setHeight(20);
+    box2.selectAllOnSubmit();
+    T.mergeCells(1,2,3,2);
+    T.add(box,1,2);
+    return T;
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
+      return new Table();
+    }
   }
 
-  private DropdownMenu getEntityDrp(ReportEntity[] entities,String name,String selected){
+  protected void doUpdateEntityForm(ModuleInfo modinfo) throws SQLException{
+    System.err.println("doUpdateEntityForm");
+    try{
+      int re_id = Integer.parseInt(modinfo.getParameter("re_id"));
+      ReportEntity RE = new ReportEntity(re_id);
+      GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
+      String[] s = modinfo.getParameterValues("box");
+      int len = s.length;
+      String[] columns  = ent.getVisibleColumnNames();
+      for (int i = 0; i < len; i++) {
+        int nr = Integer.parseInt(s[i]);
+        boolean b = ReportEntityHandler.saveReportItem(iCategoryId
+            ,ent.getLongName(columns[i])
+            ,columns[nr]
+            ,ent.getEntityName()
+            ,RE.getJoin()
+            ,RE.getJoinTables()
+            ,"I"
+            ,""
+            ,"like"
+            ,ent.getClass().getName()
+            ,"");
+      }
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
+
+    }
+  }
+
+  private List getReportEntities(){
+    List L = null;
+    try{
+      L = EntityFinder.findAll(new ReportEntity());
+    }
+    catch(SQLException sql){
+      sql.printStackTrace();
+    }
+    return L;
+  }
+
+  private DropdownMenu getEntityDrp(List entities,String name,String selected){
     DropdownMenu drp = new DropdownMenu(name);
-    for (int i = 0; i < entities.length; i++) {
-      drp.addMenuElement(entities[i].getID(),entities[i].getEntity());
+    drp.addDisabledMenuElement("-1","Entity");
+    if(entities != null)
+    for (int i = 0; i < entities.size(); i++) {
+      ReportEntity RE = (ReportEntity) entities.get(i);
+      drp.addMenuElement(RE.getID(),RE.getEntity());
     }
     if(!"".equalsIgnoreCase(selected))
       drp.setSelectedElement(selected);
@@ -313,8 +418,13 @@ public class ReportItemizer extends Editor{
   }
 
   protected void doUpdate(ModuleInfo modinfo) throws SQLException{
+    String entityId = modinfo.getParameter("repitemid");
+    int itemId = -1;
+    if(entityId!= null){
+      itemId = Integer.parseInt(entityId);
+    }
 
-    int id  = Integer.parseInt(modinfo.getParameter(prefix+"id"));
+    int id  = iCategoryId;
     String name,field,table,joins,jointables,condtype,conddata,condop,entity,info;
 
     name        = modinfo.getParameter(prefix+"name");
@@ -328,10 +438,14 @@ public class ReportItemizer extends Editor{
     entity      = modinfo.getParameter(prefix+"entity");
     info        = modinfo.getParameter(prefix+"info");
     if(id != 0){
-    boolean b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
-    add(new Boolean(b).toString() );
+      boolean b = false;
+      if(itemId > 0){
+        b = ReportEntityHandler.updateReportItem(itemId,id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
+      }
+      else{
+        b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
+      }
     }
-    add(name+field+table+joins+jointables+condtype+conddata+condop+entity+info);
-
   }
+
 }
