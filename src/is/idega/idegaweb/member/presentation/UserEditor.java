@@ -821,11 +821,11 @@ public class UserEditor extends Block {
 		try {
 			defaultCommune = getCommuneBusiness(iwc).getCommuneHome().findDefaultCommune();
 		} catch (IDOLookupException e3) {
-			e3.printStackTrace();
+			log(e3);
 		} catch (RemoteException e3) {
-			e3.printStackTrace();
+			log(e3);
 		} catch (FinderException e3) {
-			System.out.println("[UserEditor] Default Commune not found");
+			logError("[UserEditor] Default Commune not found");
 			//e3.printStackTrace();
 		}			
 		try {
@@ -833,13 +833,13 @@ public class UserEditor extends Block {
 				getCountryHome().findByIsoAbbreviation(iwc.getApplicationSettings().getDefaultLocale().getCountry());
 		}
 		catch (RemoteException e1) {
-			e1.printStackTrace();
+			log(e1);
 		}
 		catch (MissingResourceException e1) {
-			e1.printStackTrace();
+			log(e1);
 		}
 		catch (FinderException e1) {
-			System.out.println("[UserEditor] Default Country not found");
+			logError("[UserEditor] Default Country not found");
 			//e1.printStackTrace();
 		}
 		TextInput primaryStreetAddressInput = new TextInput(prm_mainaddress_street);
@@ -858,6 +858,7 @@ public class UserEditor extends Block {
 		primaryPostalNameInput.keepStatusOnAction(isNewUserView());
 		
 		DropdownMenu primaryCommunes = new DropdownMenu(prm_maincommune_id);
+		primaryCommunes.addMenuElement("-1",iwrb.getLocalizedString("none-selected","None-selected"));
 		primaryCommunes.setStyleClass(interfaceStyleName);
 		primaryCommunes.keepStatusOnAction(isNewUserView());
 		SelectorUtility su = new SelectorUtility();
@@ -883,6 +884,7 @@ public class UserEditor extends Block {
 		coPostalNameInput.keepStatusOnAction(isNewUserView());
 		
 		DropdownMenu coCommunes = new DropdownMenu(prm_cocommune_id);
+		coCommunes.addMenuElement("-1",iwrb.getLocalizedString("none-selected","None-selected"));
 		su.getSelectorFromIDOEntities(coCommunes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 		coCommunes.setStyleClass(interfaceStyleName);
 		coCommunes.keepStatusOnAction(isNewUserView());
@@ -1247,6 +1249,8 @@ public class UserEditor extends Block {
 							}
 							if (iwc.isParameterSet(prm_maincommune_id)) {
 								communeID = Integer.valueOf(iwc.getParameter(prm_maincommune_id));
+								if(communeID.intValue()<=0)
+									communeID = null;
 							}
 							
 						}
@@ -1344,6 +1348,8 @@ public class UserEditor extends Block {
 							}
 							if (iwc.isParameterSet(prm_maincommune_id)) {
 								communeID = Integer.valueOf(iwc.getParameter(prm_cocommune_id));
+								if(communeID.intValue()<=0)
+									communeID = null;
 							}
 						}
 						else if (iwc.isParameterSet(prm_coaddress_postal_id)) {
