@@ -182,6 +182,7 @@ public class BookingRefunder extends TravelBlock {
     boolean error = false;
     boolean incorrectCCNum = false;
     boolean incorrectCCDate = false;
+    boolean cardNumberWarning = false;
     table.mergeCells(1,row,3,row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")), 1, row);
     //table.setRowColor(row, backgroundColor);
@@ -191,9 +192,18 @@ public class BookingRefunder extends TravelBlock {
     table.add(number,3,row);
     table.setAlignment(3, row, "right");
     try {
-    		incorrectCCNum = !getCreditCardBusiness(iwc).verifyCreditCardNumber(number,this.ccAuthEntry);
-    		error = incorrectCCNum;
-      Long.parseLong(number);
+    		if (this.ccAuthEntry.getCardNumber() != null) {
+	    		incorrectCCNum = !getCreditCardBusiness(iwc).verifyCreditCardNumber(number,this.ccAuthEntry);
+	    		error = incorrectCCNum;
+	      Long.parseLong(number);
+    		} else {
+    			if (bookingSupplier.equals(super.getSupplier()) || super.isSuperAdmin ) {
+    				cardNumberWarning = true;
+    			} else {
+    				incorrectCCNum = true;
+    				error = true;
+    			}
+    		}
     }catch (NumberFormatException n) {
       table.add(notANumber,4,row);
       error = true;
@@ -203,6 +213,7 @@ public class BookingRefunder extends TravelBlock {
     }
     incorrectCCDate = !ccAuthEntry.getCardExpires().equals(month+year);
     if (incorrectCCDate) {
+    		System.out.println("BookingRefunder : ExpireDate is incorrect ("+month+year+")");
     		error = true;
     }
     
@@ -257,9 +268,14 @@ public class BookingRefunder extends TravelBlock {
     }
 
 	  if (incorrectCCNum || incorrectCCDate) {
-  			++row;
-  			table.mergeCells(1, row, 3, row);
+			++row;
+			table.mergeCells(1, row, 3, row);
 			table.add(getErrorText(iwrb.getLocalizedString("creditcard.credicard_info_not_the_same_as_on_booking", "Creditcard information is not the same as the one used when booking.")), 1, row);
+	  } 
+	  else if (cardNumberWarning) {
+			++row;
+			table.mergeCells(1, row, 3, row);
+			table.add(getErrorText(iwrb.getLocalizedString("creditcard.warning_credicard_info_can_not_be_verified", "WARNING !!! Creditcard number can not be verified as being the same as used when booking.")), 1, row);
 	  }
 
     ++row;
