@@ -6,6 +6,7 @@
  */
 package se.agura.applications.vacation.business;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.MessageFormat;
@@ -30,12 +31,15 @@ import com.idega.block.process.data.CaseLog;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 
@@ -249,6 +253,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 			Group parish = getUserParish(user);
 			Map extraInfo = getExtraVacationTypeInformation(type);
 			Collection times = getVacationTimes(vacation);
+			File attachment = null;
 			
 			StringBuffer metadata = new StringBuffer();
 			if (extraInfo != null && extraInfo.size() > 0) {
@@ -269,6 +274,16 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 							metadata.append(getLocalizedString("vacation_type_metadata_boolean." + value, value));
 						}
 						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
+							try {
+								ICFile file = ((ICFileHome) IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(value));
+								attachment = FileUtil.streamToFile(file.getFileValue(), getBundle().getResourcesRealPath(), file.getName());
+							}
+							catch (IDOLookupException ile) {
+								throw new IBORuntimeException(ile);
+							}
+							catch (FinderException fe) {
+								fe.printStackTrace(System.err);
+							}
 						}
 						if (iter.hasNext()) {
 							metadata.append("\n");
@@ -332,7 +347,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 							getLocalizedString(
 									"vacation_application.accepted_body",
 									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5}.\n\nThe vacation period is:\nfrom\t {3}\n to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\nComment to employee:\t{10}"),
-							arguments), null);
+							arguments), attachment);
 		}
 	}	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
 		changeCaseStatus(vacation, getCaseStatusDenied().getStatus(), comment, performer, null);
