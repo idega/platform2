@@ -1,7 +1,6 @@
 package is.idega.idegaweb.travel.data;
 
 import java.rmi.RemoteException;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
