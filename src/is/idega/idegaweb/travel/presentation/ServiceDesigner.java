@@ -15,6 +15,8 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
 import java.sql.SQLException;
 
+import is.idega.travel.data.Service;
+
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -30,8 +32,12 @@ public class ServiceDesigner extends TravelManager {
   private IWResourceBundle iwrb;
 
   private Supplier supplier;
+  private Service service;
 
   private String ServiceAction = "service_action";
+
+  private String PriceCategoryRefresh = "refresh_categories";
+  private String PriceCategorySave = "save_categories";
 
   public ServiceDesigner() {
   }
@@ -56,22 +62,24 @@ public class ServiceDesigner extends TravelManager {
             displayForm(modinfo);
         }else if (action.equals("create")) {
             createService(modinfo);
+        }else if (action.equals(this.PriceCategoryRefresh) ) {
+            priceCategoryCreation(modinfo);
         }
+
 
       }else {
         add("TEMP - Enginn supplier");
       }
 
       super.addBreak();
-      //super.add(tm);
   }
 
 
-  public void displayForm(ModuleInfo modinfo) {
+  private void displayForm(ModuleInfo modinfo) {
 
       Form form = new Form();
       Table table = new Table();
-//        table.setBorder(1);
+
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
@@ -146,6 +154,7 @@ public class ServiceDesigner extends TravelManager {
 
       TextInput numberOfSeats = new TextInput("number_of_seats");
         numberOfSeats.setAsIntegers("TEMP _ Must be numbers");
+        numberOfSeats.setAsNotEmpty("TEMP _ Must not be empty");
 
 
       ++row;
@@ -319,7 +328,6 @@ public class ServiceDesigner extends TravelManager {
       table.add(hotelPickupText,1,row);
       table.add(hotelPickupFixTable,2,row);
 
-//      ++row;
       hotelPickupFixTable.add(addressText,5,1);
       hotelPickupFixTable.add(hotelPickup,5,2);
       hotelPickupFixTable.add(timeText,7,1);
@@ -352,7 +360,7 @@ public class ServiceDesigner extends TravelManager {
   }
 
 
-  public void createService(ModuleInfo modinfo) {
+  private void createService(ModuleInfo modinfo) {
       String name = modinfo.getParameter("name_of_trip");
       String description = modinfo.getParameter("description");
       String imageId = modinfo.getParameter("design_image_id");
@@ -447,9 +455,12 @@ public class ServiceDesigner extends TravelManager {
 
       try {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
-          tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-          tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays, iNumberOfSeats);
-        add("TEMP - Service smíðuð");
+          //tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
+          //int serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays, iNumberOfSeats);
+          //setService(serviceId);
+        priceCategoryCreation(modinfo);
+
+
       }catch (Exception e) {
         e.printStackTrace(System.err);
         add("TEMP - Service EKKI smíðuð");
@@ -459,11 +470,168 @@ public class ServiceDesigner extends TravelManager {
 
   }
 
+  private void setService(int serviceId) throws SQLException{
+      service = new Service(serviceId);
+  }
+
+  private Service getService() {
+    return service;
+  }
 
 
-  public void addScript(ModuleInfo modinfo) {
+  private void priceCategoryCreation(ModuleInfo modinfo) {
+
+//      if (service != null) {
+
+          ShadowBox sb = new ShadowBox();
+            sb.setWidth("90%");
+
+          String sHowMany = modinfo.getParameter("how_many");
+          if (sHowMany == null) {
+            sHowMany = "2";
+          }
+          int iHowMany = Integer.parseInt(sHowMany);
+
+          Form howManyForm = new Form();
+              sb.add(howManyForm);
+              howManyForm.addParameter(this.ServiceAction ,this.PriceCategoryRefresh);
+
+          Table tableHowMany = new Table();
+            howManyForm.add(tableHowMany);
+
+          Text howManyText = (Text) theText.clone();
+            howManyText.setText("T - Hve marga verðliði");
+
+          TextInput howMany = new TextInput("how_many",sHowMany);
+            howMany.setAsIntegers("Temp - bara tölur takk");
+            howMany.setAsNotEmpty("Temp - selja e-ð ");
+
+          SubmitButton howManySubmit = new SubmitButton("T - áfram");
+
+          tableHowMany.add(howManyText,1,1);
+          tableHowMany.add(howMany,2,1);
+          tableHowMany.add(howManySubmit,3,1);
+
+
+          Form form = new Form();
+            sb.add(form);
+
+          Table table = new Table();
+            form.add(table);
+            table.setAlignment("center");
+            table.setWidth("95%");
+            int row = 1;
+
+          TextInput name;
+          TextInput description;
+          DropdownMenu type;
+          TextArea extraInfo;
+          BooleanInput onlineCategory;
+          TextInput priceDiscount;
+
+
+          Text counter;
+
+          Text catName = (Text) theText.clone();
+            catName.setText("T - nafn");
+          Text catDesc = (Text) theText.clone();
+            catDesc.setText("T - description");
+          Text catOnline = (Text) theText.clone();
+            catOnline.setText("T - netbokun");
+          Text catType = (Text) theText.clone();
+            catType.setText("T - type");
+          Text catExtraInfo = (Text) theText.clone();
+            catExtraInfo.setText("T - exrtaInfo");
+          Text priceDiscountText = (Text) theText.clone();
+            priceDiscountText.setText("T - Price / Discount");
+
+          table.setColor(1,row,NatBusiness.backgroundColor);
+          table.mergeCells(1,row,5,row);
+
+          for (int i = 1; i <= iHowMany; i++) {
+              counter = (Text) theBoldText.clone();
+                counter.setText("t - verðliður #"+i);
+              name = new TextInput("price_name");
+              description = new TextInput("price_description");
+              type = new DropdownMenu("price_type");
+                type.addMenuElement(PriceCategory.PRICETYPE_PRICE,"Verð");
+                type.addMenuElement(PriceCategory.PRICETYPE_DISCOUNT,"Afsláttur");
+              extraInfo = new TextArea("price_extra_info");
+                extraInfo.setWidth(60);
+                extraInfo.setHeight(5);
+              onlineCategory = new BooleanInput("price_online");
+              priceDiscount = new TextInput("price_discount");
+                priceDiscount.setAsNotEmpty("T - verður að skrá verð eða afslátt á allt verðliði");
+
+
+              ++row;
+              table.mergeCells(1,row,1,row+2);
+              table.add(counter,1,row);
+              table.setVerticalAlignment(1,row,"top");
+
+              table.add(catName,2,row);
+              table.add(name,3,row);
+              table.add(catOnline,4,row);
+              table.add(onlineCategory,5,row);
+
+              ++row;
+              table.add(catDesc,2,row);
+              table.add(description,3,row);
+              table.add(catType,4,row);
+              table.add(type,5,row);
+
+              ++row;
+              table.add(catExtraInfo,2,row);
+              table.add(Text.getBreak(),2,row);
+              table.add(extraInfo,2,row);
+              table.mergeCells(2,row,5,row);
+
+              ++row;
+              table.add(priceDiscountText,2,row);
+              table.add(priceDiscount,3,row);
+
+              ++row;
+              table.setColor(1,row,NatBusiness.backgroundColor);
+              table.mergeCells(1,row,5,row);
+
+          }
+
+          if (iHowMany > 0) {
+            SubmitButton savePrice = new SubmitButton(this.ServiceAction, this.PriceCategorySave);
+
+          }
+
+          add(Text.getBreak());
+          add(sb);
+//      }else {
+  //      add("TEMP SERVICE ER NULL");
+    //  }
+
+  }
+
+  private void priceCategorySave(ModuleInfo modinfo) {
+      String[] name = (String[]) modinfo.getParameterValues("price_name");
+      String[] desc = (String[]) modinfo.getParameterValues("price_description");
+      String[] type = (String[]) modinfo.getParameterValues("price_type");
+      String[] info = (String[]) modinfo.getParameterValues("price_extra_info");
+      String[] online = (String[]) modinfo.getParameterValues("price_online");
+
+      String[] priceDiscount = (String[]) modinfo.getParameterValues("price_discount");
+
+      Service service = this.getService();
+      TravelStockroomBusiness sb = TravelStockroomBusiness.getNewInstance();
+
+      try {
+        int priceCategoryId;
+        for (int i = 0; i < name.length; i++) {
+            priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i]);
+        }
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
 
 
   }
+
 
 }
