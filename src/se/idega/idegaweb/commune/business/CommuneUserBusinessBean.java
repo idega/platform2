@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.business;
 import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.user.business.*;
 import com.idega.user.data.*;
@@ -11,6 +12,8 @@ import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.data.IDOFinderException;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
+
 import javax.ejb.*;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 /**
@@ -300,4 +303,34 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	{
 		return this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 	}
+
+	/**
+	 * Method getFirstManagingSchoolForUser.
+	 * If there is no school that the user manages then the method throws a FinderException.
+	 * @param user a user
+	 * @return School that is the first school that the user is a manager for.
+	 * @throws javax.ejb.FinderException if ther is no school that the user manages.
+	 */
+	public School getFirstManagingSchoolForUser(User user) throws FinderException, RemoteException {
+		try {
+			Group rootGroup = getRootSchoolAdministratorGroup();
+			// if user is a SchoolAdministrator
+			if (user.hasRelationTo(rootGroup)) {
+				Collection schools = ((SchoolBusiness)IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
+				if (!schools.isEmpty()) {
+					Iterator iter = schools.iterator();
+					while (iter.hasNext()) {
+						School school = (School) iter.next();
+						return school;
+					}
+				}
+			}
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
+
+		throw new FinderException("No school found that " + user.getName() + " manages");
+	}
+
 }
