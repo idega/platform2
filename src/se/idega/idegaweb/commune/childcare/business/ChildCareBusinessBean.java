@@ -1302,8 +1302,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				String body = getLocalizedString("child_care.contract_created_body", "Your child care contract for {0} has been created and will be sent to you in a few days. Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}", locale);
 				sendMessageToParents(application, subject, body);
 			}
-			else
+			else {
 				application.store();
+
+				String subject = getLocalizedString("child_care.alter_caretime_subject", "A contract with changed care time has been created", locale);
+				String body = getLocalizedString("child_care.alter_caretime_body", "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}", locale);
+				sendMessageToParents(application, subject, body);
+			}
 			addContractToArchive(-1, application, contractID, validFrom.getDate());
 
 			transaction.commit();
