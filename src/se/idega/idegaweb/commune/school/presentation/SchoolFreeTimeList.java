@@ -47,7 +47,7 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 	public void init(IWContext iwc) throws Exception {
 		int schoolId = getSchoolID();
 	
-		Collection choices = getSchoolChoiceBusiness(iwc).findBySchoolAndFreeTime(schoolId,true);
+		Collection choices = getSchoolChoiceBusiness(iwc).findBySchoolAndFreeTime(schoolId,getSchoolSeasonID(),true);
 		Map students = getBusiness().getUserMapFromChoices(choices);
 		Map addresses = getBusiness().getUserAddressMapFromChoicesUserIdPK(choices);
 		Map phones = getBusiness().getUserPhoneMapFromChoicesUserIdPK(choices);
@@ -61,8 +61,10 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
+		add(table);
 
 		int row = 1;		
+		table.setRowColor(row, getHeaderColor());
 		table.add(getSmallHeader(localize("freetime.name", "Name")),1,row);
 		table.add(getSmallHeader(localize("freetime.pid", "PID")),2,row);	
 		table.add(getSmallHeader(localize("freetime.address", "Address")),3,row);	
