@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.4 2002/05/03 00:05:35 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.5 2002/06/10 12:18:58 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,6 +40,8 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
   private final String PRIORITY_B = "B";
   private final String PRIORITY_C = "C";
   private final String PRIORITY_D = "D";
+  private final String PRIORITY_E = "E";
+
 
   private final String TYPE_APPLICATION = "A";
   private final String TYPE_TRANSFER = "T";
@@ -249,6 +251,10 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
 
   public void setPriorityLevelD() {
     setPriorityLevel(PRIORITY_D);
+  }
+
+  public void setPriorityLevelE() {
+    setPriorityLevel(PRIORITY_E);
   }
 
   public static String getPriorityColumnName() {

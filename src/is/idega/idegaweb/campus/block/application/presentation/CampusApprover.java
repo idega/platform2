@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.28 2002/06/10 11:46:29 laddi Exp $
+ * $Id: CampusApprover.java,v 1.29 2002/06/10 12:19:05 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -230,6 +230,8 @@ public class CampusApprover extends Block {
 		wl.setPriorityLevelC();
 	      else if (level.equals("D"))
 		wl.setPriorityLevelD();
+	      else if (level.equals("E"))
+		wl.setPriorityLevelE();
 	      else if (level.equals("T")) {
 		wl.setPriorityLevelA();
 		wl.setTypeTransfer();
