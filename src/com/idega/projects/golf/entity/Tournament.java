@@ -69,8 +69,9 @@ public class Tournament extends GolfEntity{
                 // added 27.4.2001
                 addAttribute("max_female_handicap","Hámarksforgjöf kvenna",true,true,"java.lang.Float");
 
-                //addManyToManyRelationShip("com.idega.projects.golf.entity.TournamentGroup","tournament_tournament_group");
-
+                // added  31.9.2001
+                addManyToManyRelationShip(TournamentGroup.class,"tournament_tournament_group");
+                addManyToManyRelationShip(TeeColor.class,"tournament_tee_color");
         }
 
 	public void setDefaultValues(){
@@ -322,7 +323,7 @@ public class Tournament extends GolfEntity{
 	}
 
 	public TournamentGroup[] getTournamentGroups()throws SQLException{
-		return (TournamentGroup[]) findReverseRelated(new TournamentGroup());
+		return (TournamentGroup[]) findRelated(new TournamentGroup());
 	}
 
         public void setNumberOfHoles(int holes){
@@ -381,7 +382,7 @@ public class Tournament extends GolfEntity{
    }
 
    public TeeColor[] getTeeColors()throws SQLException{
-      return (TeeColor[])findReverseRelated(new TeeColor());
+      return (TeeColor[])findRelated(new TeeColor());
    }
 
 	public void insert()throws SQLException{
