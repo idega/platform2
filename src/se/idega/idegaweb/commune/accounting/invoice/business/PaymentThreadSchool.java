@@ -64,15 +64,15 @@ import com.idega.util.IWTimestamp;
  * Abstract class that holds all the logic that is common for the shool billing
  * 
 <<<<<<< PaymentThreadSchool.java
- * Last modified: $Date: 2003/12/16 16:42:02 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/16 17:30:34 $ by $Author: joakim $
  * 
 =======
- * Last modified: $Date: 2003/12/16 16:42:02 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/16 17:30:34 $ by $Author: joakim $
  *
 >>>>>>> 1.59
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.61 $
+ * @version $Revision: 1.62 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -136,8 +136,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					System.err.print ("; paymentByInvoice = " + provider.getPaymentByInvoice());
 					if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
 						System.err.println ("; investigate school = yes");
+						
+						String tmpErrorRelated = errorRelated.toString();
 						for (Iterator j = getSchoolClassMembers(school).iterator(); j.hasNext();) {
 							try {
+								errorRelated = new StringBuffer(tmpErrorRelated);
 								SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
 								createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
 							}
