@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.4 2001/07/12 14:21:38 aron Exp $
+ * $Id: Contract.java,v 1.5 2001/07/12 21:32:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idegaweb.campus.entity;
 import com.idega.data.GenericEntity;
 import java.sql.Date;
 import java.lang.IllegalStateException;
+import java.sql.SQLException;
 
 /**
  *
@@ -34,6 +35,9 @@ public class Contract extends GenericEntity {
   public static final String statusEnded = "E";
 
   public Contract() {
+  }
+  public Contract(int id) throws SQLException {
+    super(id);
   }
 
   public void initializeAttributes() {
