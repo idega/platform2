@@ -32,7 +32,6 @@ import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.util.IWColor;
 
 /**
  * Show the results of a run. This block can show results for a specific run,
@@ -174,6 +173,8 @@ public class RunResultViewer extends Block {
 				runs.addAll(getRunsForRunners(runners));
 			}
 
+			row = insertRunGroupIntoTable(table, row, "results.all_participants");
+
 			sortRuns(runs);
 			Iterator runIter = runs.iterator();
 			int num = 1;
@@ -196,7 +197,7 @@ public class RunResultViewer extends Block {
 			
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
-				row = insertRunGroupIntoTable(table, row, runGroup);
+				row = insertRunGroupIntoTable(table, row, "group_" + runGroup.getName());
 	
 				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
 				List runs = getRunsForRunners(runners);
@@ -410,14 +411,10 @@ public class RunResultViewer extends Block {
 		return t;
 	}
 
-	private int insertRunGroupIntoTable(Table table, int row, Group runGroup) {
+	private int insertRunGroupIntoTable(Table table, int row, String groupName) {
 		table.mergeCells(1, row, COLUMN_COUNT, row);
-		table.setColor(1, row, IWColor.getIWColorFromHex(HEADLINE_BACKGROUND_COLOR));
-		Text name = new Text(runGroup.getName());
-		name.setFontFace(Text.FONT_FACE_ARIAL);
-		name.setFontSize(HEADLINE_SIZE);
-		name.setFontColor(HEADLINE_COLOR);
-		table.add(name, 1, row++);
+		table.setStyleClass(1, row, getStyleName(STYLENAME_GROUP_ROW));
+		table.add(getRunnerRowText(iwrb.getLocalizedString(groupName, groupName)), 1, row++);
 		table.setHeight(row, 2);
 		return ++row;
 	}
