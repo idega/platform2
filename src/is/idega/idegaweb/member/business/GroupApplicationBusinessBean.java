@@ -102,6 +102,8 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		if( groupIds!=null ){
 			GroupBusiness groupBiz = getGroupBusiness();
 			groups = ListUtil.convertCollectionToList(groupBiz.getGroups(groupIds));
+		}else{
+			System.out.println("GROUPS ARE NULL!!!!!!");
 		}
 		
 		//status			
