@@ -55,11 +55,6 @@ public Banner(String attribute){
     _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-    String mode = iwc.getParameter(BannerBusiness.PARAMETER_MODE);
-    if ( mode != null ) {
-      doMode(mode,iwc);
-    }
-
     BannerEntity banner = null;
 
     _myTable = new Table(1,2);
@@ -141,6 +136,7 @@ public Banner(String attribute){
 
         bannerLink.addParameter(BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_CLICKED);
         bannerLink.addParameter(BannerBusiness.PARAMETER_AD_ID,ad.getID());
+        bannerLink.setEventListener(BannerListener.class);
       }
     }
 
@@ -158,19 +154,6 @@ public Banner(String attribute){
       createLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
 
     return createLink;
-  }
-
-  private void doMode(String mode, IWContext iwc) {
-    if ( mode.equalsIgnoreCase(BannerBusiness.PARAMETER_CLICKED) ) {
-      String adID = iwc.getParameter(BannerBusiness.PARAMETER_AD_ID);
-      String URL = null;
-      if ( adID != null ) {
-        URL = BannerBusiness.updateHits(Integer.parseInt(adID));
-      }
-      if ( URL != null ) {
-        getParentPage().setToRedirect(URL);
-      }
-    }
   }
 
   public boolean deleteBlock(int ICObjectInstanceID) {
