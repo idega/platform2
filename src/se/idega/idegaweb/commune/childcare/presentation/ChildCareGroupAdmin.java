@@ -139,9 +139,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		IWTimestamp stamp = new IWTimestamp();
 		Collection students = null;
 		if (sort != -1)
-			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), stamp.getDate(), showNotYetActive);
+			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), showNotYetActive);
 		else
-			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), stamp.getDate());
+			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate());
 		
 		Iterator iter = students.iterator();
 		while (iter.hasNext()) {
