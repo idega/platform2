@@ -44,9 +44,11 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
 	private final String ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
 	private final String ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME = "protected_citizen_group_id";
+	private final String ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME = "customer_choice_group_id";
 	private Group rootCitizenGroup;
 	private Group rootSpecialCitizenGroup;
 	private Group rootProtectedCitizenGroup;
+	private Group rootCustomerChoiceGroup;
 
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
@@ -286,6 +288,38 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootSpecialCitizenGroup.getPrimaryKey());
 		}
 		return rootSpecialCitizenGroup;
+	}
+	
+	/**
+	 * Creates (if not available) and returns 'Kundvalsgruppen'
+     *
+     * @return 'Kundvalsgruppen'
+     * @throws CreateException if it failed to locate or create the group.
+	 */
+	public Group getRootCustomerChoiceGroup () throws CreateException, FinderException, RemoteException {
+
+		if (rootCustomerChoiceGroup != null) {
+			return rootCustomerChoiceGroup;
+        }
+
+		final IWApplicationContext iwc = getIWApplicationContext();
+		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
+		String groupId = (String) settings.getProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME);
+		if (groupId != null) {
+			final GroupHome groupHome = getGroupHome();
+			rootCustomerChoiceGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+		} else {
+			final GroupHome groupHome = getGroupHome();
+
+			System.err.println("trying to store Customer Choice Root group");
+			/**@todo this seems a wrong way to do things**/
+			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
+			final GroupType type = typeHome.create();
+			final GroupBusiness groupBusiness = getGroupBusiness();
+			rootCustomerChoiceGroup = groupBusiness.createGroup("Kundvalsgruppen", "Kundvalsgruppen", type.getGeneralGroupTypeString());
+			settings.setProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME, (Integer) rootCustomerChoiceGroup.getPrimaryKey());
+		}
+		return rootCustomerChoiceGroup;
 	}
 	
 	/**
