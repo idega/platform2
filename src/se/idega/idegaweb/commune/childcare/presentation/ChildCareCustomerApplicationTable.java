@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.54 2003/12/01 16:26:05 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.55 2003/12/02 09:25:50 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -88,23 +88,19 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 		switch (parseAction(iwc)) {
 			case CCConstants.ACTION_SUBMIT_1 :
-				application = handleAcceptStatus(iwc, getAcceptedStatus(iwc));
+				boolean forwardToEndPage = handleAcceptStatus(iwc, getAcceptedStatus(iwc));
 				applications = findApplications(iwc);
-				boolean forwardToEndPage = false;
-				if (application != null) {
-					forwardToEndPage = getChildCareBusiness(iwc).isAfterSchoolApplication(application);
-				}
 				
-				if (forwardToEndPage) {
-					if (getEndPage() != null) {
-						iwc.forwardToIBPage(getParentPage(), getEndPage());
-					}
-					else
-						iwc.forwardToIBPage(getParentPage(), getChildCareBusiness(iwc).getUserBusiness().getHomePageForUser(iwc.getCurrentUser()));
+				if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc))) {
+					form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 				}
 				else {
-					if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc))) {
-						form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
+					if (forwardToEndPage) {
+						if (getEndPage() != null) {
+							iwc.forwardToIBPage(getParentPage(), getEndPage());
+						}
+						else
+							iwc.forwardToIBPage(getParentPage(), getChildCareBusiness(iwc).getUserBusiness().getHomePageForUser(iwc.getCurrentUser()));
 					}
 					else {
 						form.setOnSubmit(createPagePhase2(iwc, layoutTbl, applications));
@@ -234,10 +230,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @param l List of AcceptedStatus objects.
 	 * @throws RemoteException
 	 */
-	private ChildCareApplication handleAcceptStatus(IWContext iwc, List l) throws RemoteException {
+	private boolean handleAcceptStatus(IWContext iwc, List l) throws RemoteException {
 		Iterator i = l.iterator();
 		int acceptedChoiceNumber = 10;
 		int acceptedApplicationID = -1;
+		boolean isAfterSchoolApplication = false;
 
 		while (i.hasNext()) {
 			AcceptedStatus status = (AcceptedStatus) i.next();
@@ -248,7 +245,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				String subject =
 					localize(
 						"ccot_offer_answer_subject",
-						"Svar på erbjudande om plats");				
+						"Svar på erbjudande om plats");
+				if (childCarebusiness.isAfterSchoolApplication(application))
+					isAfterSchoolApplication = true;
 
 				if (status.equals(CCConstants.YES)) {
 					acceptedApplicationID = Integer.valueOf(status._appid).intValue();
@@ -310,12 +309,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Iterator allaps = applications.iterator();
 		//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
 		int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
-		ChildCareApplication application = null;
 
 		while (allaps.hasNext()) {
 			ChildCareApplication app = (ChildCareApplication) allaps.next();
-			if (((Integer)app.getPrimaryKey()).intValue() == acceptedApplicationID)
-				application = app;
 
 			if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
 			|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
@@ -326,7 +322,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			}
 		}
 		
-		return application;
+		return isAfterSchoolApplication;
 	}
 
 	/**
