@@ -5,20 +5,11 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolCategoryHome;
-import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOException;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -34,15 +25,24 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
+
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/04 14:58:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/04 18:39:07 $ by $Author: laddi $
  *
  * @author Joakim
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -74,11 +74,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 */
 	public void removePreliminaryInvoice(Date month, String category) throws RemoveException{
 		//Remove invoices
-		PaymentRecord paymentRecord;
+		//PaymentRecord paymentRecord;
 		Iterator headerIter;
 		InvoiceHeader header;
-		Iterator recordIter;
-		InvoiceRecord invoiceRrecord;
+		//Iterator recordIter;
+		//InvoiceRecord invoiceRrecord;
 		
 		try {
 			SchoolCategory schoolCategory =((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByLocalizedKey(category);
