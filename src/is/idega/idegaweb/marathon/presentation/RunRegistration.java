@@ -853,6 +853,10 @@ public class RunRegistration extends Block {
 				t.add(TextFormatter.formatText(message), 1, row++);
 				t.setHeight(row++, 8);
 				Link l = new Link(iwrb.getLocalizedString("run_reg.printable","Printable"));
+				l.addParameter(IWMarathonConstants.PARAMETER_NAME,name);
+				l.addParameter(IWMarathonConstants.GROUP_TYPE_RUN,run);
+				l.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,distance);
+				l.addParameter(IWMarathonConstants.PARAMETER_TSHIRT,tshirt);
 				l.setWindowToOpen(RegistrationReceivedPrintable.class);
 				t.add(l,1,row++);
 		
