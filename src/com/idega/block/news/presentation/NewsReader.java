@@ -376,7 +376,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     try {
       //isAdmin = AccessControl.isAdmin(iwc);
       /** @todo  */
-      isAdmin = iwc.getAccessControler().hasEditPermission(this,iwc);
+      isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
     }
     catch (SQLException ex) {
       isAdmin = false;

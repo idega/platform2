@@ -327,7 +327,7 @@ public class CampusPhones extends PresentationObjectContainer implements IWEvent
   public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.getAccessControler().isAdmin(iwc);
+    isAdmin = iwc.getAccessController().isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     control(iwc);

@@ -444,7 +444,7 @@ private IWResourceBundle iwrb;
 
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
-    isAdmin = iwc.getAccessControler().hasEditPermission(this,iwc);
+    isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
     eUser = com.idega.block.login.business.LoginBusiness.getUser(iwc);
     iUserId = eUser != null?eUser.getID():-1;
     isAdmin = true;

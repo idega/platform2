@@ -80,7 +80,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
   }
 
   public void main(IWContext iwc) throws Exception {
-    isAdmin = iwc.getAccessControler().hasEditPermission(this,iwc);
+    isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     Locale locale = iwc.getCurrentLocale();

@@ -38,7 +38,7 @@ public TextEditor(){
 
 	public void main(IWContext iwc) {
     try {
-      isAdmin = iwc.getAccessControler().hasEditPermission(new TextReader(),iwc);
+      isAdmin = iwc.getAccessController().hasEditPermission(new TextReader(),iwc);
     }
     catch (SQLException e) {
       isAdmin = false;

@@ -1,5 +1,5 @@
 /*
- * $Id: RoughOrderForm.java,v 1.4 2001/10/16 16:06:17 gummi Exp $
+ * $Id: RoughOrderForm.java,v 1.5 2001/10/16 17:25:33 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -133,7 +133,7 @@ public class RoughOrderForm extends PresentationObjectContainer {
    */
   public void main(IWContext iwc){
     try {
-      isAdmin_ = iwc.getAccessControler().isAdmin(iwc);
+      isAdmin_ = iwc.getAccessController().isAdmin(iwc);
     }
     catch(SQLException sql) {
       isAdmin_ = false;

@@ -176,7 +176,7 @@ public abstract class ReportPresentation extends com.idega.presentation.Presenta
   }
   public void main(IWContext iwc){
     try{
-    isAdmin = iwc.getAccessControler().isAdmin(iwc);
+    isAdmin = iwc.getAccessController().isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     control(iwc);

@@ -44,7 +44,7 @@ public PollQuestionChooser(){
      * @todo permission
      */
     isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
-    superAdmin = iwc.getAccessControler().isAdmin(iwc);
+    superAdmin = iwc.getAccessController().isAdmin(iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_question_chooser","Poll Question Chooser"));

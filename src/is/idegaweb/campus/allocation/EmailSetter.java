@@ -127,7 +127,7 @@ public class EmailSetter extends PresentationObjectContainer{
 
   public void main(IWContext iwc){
     try{
-      isAdmin = iwc.getAccessControler().isAdmin(iwc);
+      isAdmin = iwc.getAccessController().isAdmin(iwc);
     }
     catch(SQLException sql){
       isAdmin = false;
