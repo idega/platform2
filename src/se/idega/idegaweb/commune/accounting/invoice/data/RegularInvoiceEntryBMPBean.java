@@ -6,8 +6,8 @@
  */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
-import java.util.Collection;
 import java.sql.Date;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -15,11 +15,12 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
-import com.idega.block.school.data.SchoolCategory;
 
 /**
  * @author Roar
@@ -294,7 +295,7 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		setColumn(COLUMN_NOTE, note);
 	}
 	
-	public Collection ejbFindByPeriodeAndUser(Date from, Date to, int userId, String schoolCategoryId) throws FinderException {
+	public Collection ejbFindRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws FinderException {
 		return idoFindPKsByQuery(idoQuery() 
 		.appendSelectAllFrom(this)
 		.appendWhereEquals(COLUMN_USER_ID, userId)
@@ -424,6 +425,16 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		setColumn(COLUMN_EDIT_NAME, name);
 	}
 
+	public Collection ejbFindRegularInvoicesForPeriodeAbdCategory(Date date, String category, int lagCat) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, category);
+		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
+		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
+		sql.appendAnd().append(COLUMN_REG_SPEC_TYPE_ID).appendNOTEqual().append(lagCat);
+		System.out.println("SQL:"+sql);
+		return idoFindPKsByQuery(sql);
+	}
 
 
 

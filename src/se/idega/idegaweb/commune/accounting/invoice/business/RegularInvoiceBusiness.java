@@ -1,40 +1,8 @@
-/*
- * Created on 30.9.2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import java.util.Collection;
-import java.sql.Date;
 
-import javax.ejb.FinderException;
-
-import com.idega.data.IDOLookupException;
-
-/**
- * @author Roar
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public interface RegularInvoiceBusiness extends com.idega.business.IBOService {
-	/**
-	 * 
-	 * @param from
-	 * @param to
-	 * @param userId
-	 * @return Collection of RegularPaymentEntry
-	 */
-	Collection findRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws IDOLookupException, FinderException;
-	/**
-	 * 
-	 * @param from
-	 * @param to
-	 * @return Collection of RegularPaymentEntry
-	 */
-	Collection findRegularInvoicesForPeriode(Date from, Date to);
-
-
+public interface RegularInvoiceBusiness extends com.idega.business.IBOService
+{
+ public java.util.Collection findRegularInvoicesForPeriodeAndCategory(java.sql.Date p0,com.idega.block.school.data.SchoolCategory p1)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.Collection findRegularInvoicesForPeriodeUserAndCategory(java.sql.Date p0,java.sql.Date p1,int p2,java.lang.String p3)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
 }

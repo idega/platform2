@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/03 07:35:22 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/05 21:00:48 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.58 $
+ * @version $Revision: 1.59 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -119,19 +119,19 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		try {
 			SchoolCategory schoolCategory =
 				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
-			headerIter = getInvoiceHeaderHome().findByMonthAndSchoolCategory(month, schoolCategory).iterator();
-			while (headerIter.hasNext()) {
-				header = (InvoiceHeader) headerIter.next();
-				removePreliminaryInvoice(header);
-			}
 			if(getPaymentRecordHome().getCountForMonthAndStatusLH(month) == 0){
 				Iterator recordIter = getPaymentRecordHome().findByMonth(month).iterator();
 				while(recordIter.hasNext()){
 					paymentRecord = (PaymentRecord) recordIter.next();
 					paymentRecord.remove();
 				}
+				headerIter = getInvoiceHeaderHome().findByMonthAndSchoolCategory(month, schoolCategory).iterator();
+				while (headerIter.hasNext()) {
+					header = (InvoiceHeader) headerIter.next();
+					removePreliminaryInvoice(header);
+				}
 			}else{
-				throw new RemoveException("invoice.remove_not_allowed");
+				throw new RemoveException("invoice.not_allowed_remove_locked_or_history_records");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

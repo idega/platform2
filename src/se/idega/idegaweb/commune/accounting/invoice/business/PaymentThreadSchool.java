@@ -130,6 +130,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				dispTime("Enter main loop");
 				try {
 					school = (School) schoolIter.next();
+					errorRelated = new StringBuffer("School "+school.getName());
 					dispTime("Gotten School" + school.getName());
 					System.out.println("About to create payments for school " + school.getName());
 					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
@@ -141,15 +142,19 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							try{
 							SchoolClassMember schoolClassMember = null;
 							schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
+							errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
 
 							dispTime("Found " + schoolClassMember.getStudent().getName());
 							if (getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent())) {
 								conditions = new ArrayList();
 								conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
 								conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
+								errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName()+"<br>");
+								errorRelated.append("School Year "+schoolClassMember.getSchoolYear().getName()+"<br>");
 								int studyPathId = schoolClassMember.getStudyPathId();
 								if(studyPathId!=-1){
 									conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH,new Integer(studyPathId)));
+									errorRelated.append("Study path "+schoolClassMember.getStudyPathId()+"<br>");
 								}
 
 								System.out.println(
@@ -273,8 +278,13 @@ public abstract class PaymentThreadSchool extends BillingThread {
 									//That's OK I only want years 1-6
 								}
 								catch (IDORelationshipException e) {
-									createNewErrorMessage(createRelatedString(category,schoolClassMember.getSchoolType(),school,schoolClassMember.getStudent()), "invoice.DBRelationshipError");
 									e.printStackTrace();
+									if(errorRelated!=null)
+									{
+										createNewErrorMessage(errorRelated.toString(), "invoice.DBRelationshipError");
+									}else{
+										createNewErrorMessage(createRelatedString(category,schoolClassMember.getSchoolType(),school,schoolClassMember.getStudent()), "invoice.DBRelationshipError");
+									}
 								}
 //								dispTime("Done with oppen verksamhet + fritidsverksamhet");
 
@@ -333,23 +343,49 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
-					createNewErrorMessage(school.getName(), "invoice.DBError");
+					if(errorRelated!=null)
+					{
+						createNewErrorMessage(errorRelated.toString(), "invoice.DBError_Creating_contracts_for_school");
+					}else{
+						createNewErrorMessage(school.getName(), "invoice.DBError_Creating_contracts_for_school");
+					}
 				}
 				catch (FinderException e) {
 					e.printStackTrace();
-					createNewErrorMessage(school.getName(), "invoice.CouldNotFindContractForSchool");
+					if(errorRelated!=null)
+					{
+						createNewErrorMessage(errorRelated.toString(), "invoice.CouldNotFindContractForSchool");
+					}else{
+						createNewErrorMessage(school.getName(), "invoice.CouldNotFindContractForSchool");
+					}
 				}
 				catch (CreateException e) {
 					e.printStackTrace();
-					createNewErrorMessage(school.getName(), "invoice.CouldNotInsertIntoDatabase");
+					if(errorRelated!=null)
+					{
+						createNewErrorMessage(errorRelated.toString(), "invoice.CouldNotInsertIntoDatabase");
+					}else{
+						createNewErrorMessage(school.getName(), "invoice.CouldNotInsertIntoDatabase");
+					}
 				}
 				catch (PostingException e) {
 					e.printStackTrace();
-					createNewErrorMessage(school.getName(), "invoice.PostingString");
+					if(errorRelated!=null)
+					{
+						createNewErrorMessage(errorRelated.toString(), "invoice.PostingString");
+					}else{
+						createNewErrorMessage(school.getName(), "invoice.PostingString");
+					}
 				}
 				catch (RegulationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					if(errorRelated!=null)
+					{
+						createNewErrorMessage(errorRelated.toString(), "invoice.RegulationException");
+					}else{
+						createNewErrorMessage("invoice.Regulation", "invoice.RegulationException");
+					}
 				}
 				dispTime("Getting regulations for resource");
 				timerStart();
@@ -357,26 +393,26 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.DBError");
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_DBError");
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.CouldNotFindSchoolCategory");
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindSchoolCategory");
 		}
 		catch (EJBException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.CouldNotFindHomeCommune");
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.CouldNotFindHomeCommune");
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
 		}
 		catch (IDOException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.IDOException");
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_IDOException");
 		}
 		catch (NotEmptyException e) {
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.MustFirstEmptyOldData");
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
 			e.printStackTrace();
 		}
 	}

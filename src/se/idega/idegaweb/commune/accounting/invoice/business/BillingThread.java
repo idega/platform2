@@ -70,6 +70,7 @@ public abstract class BillingThread extends Thread{
 	protected ExportDataMapping categoryPosting = null;
 	protected School school;
 	protected BatchRun batchRunLogger=null;
+	protected StringBuffer errorRelated = null;
 	
 	public BillingThread(Date month, IWContext iwc){
 		startPeriod = new IWTimestamp(month);
@@ -112,10 +113,12 @@ public abstract class BillingThread extends Thread{
 			} else {
 				paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
 			}
-			paymentHeader.setPeriod(currentDate);
+			IWTimestamp period = new IWTimestamp(currentDate);
+			period.setAsDate();
+			period.setDay(1);
+			paymentHeader.setPeriod(period.getDate());
 			paymentHeader.store();
 		}
-
 		//Update or create the payment record
 		try {
 			System.out.println("payHeader "+paymentHeader.getPrimaryKey());
@@ -173,18 +176,34 @@ public abstract class BillingThread extends Thread{
 							float vat = paymentRecord.getTotalAmount() * vatRegulation.getVATPercent();
 							paymentRecord.setTotalAmountVAT(-vat);
 						} catch (VATException e) {
-							createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.VATError");
+							if(errorRelated!=null){
+								createNewErrorMessage(errorRelated.toString(),"invoice.VATError");
+							}else{
+								createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.VATError");
+							}
 							e.printStackTrace();
 						} catch (RemoteException e) {
-							createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.DBError");
+							if(errorRelated!=null){
+								createNewErrorMessage(errorRelated.toString(),"invoice.DBError");
+							}else{
+								createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.DBError");
+							}
 							e.printStackTrace();
 						}
 					}
 				} catch (RemoteException e1) {
-					createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError");
+					if(errorRelated!=null){
+						createNewErrorMessage(errorRelated.toString(),"invoice.DBError");
+					}else{
+						createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError");
+					}
 					e1.printStackTrace();
 				} catch (FinderException e1) {
-					createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError");
+					if(errorRelated!=null){
+						createNewErrorMessage(errorRelated.toString(),"invoice.DBError_No_VAT_found");
+					}else{
+						createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError_No_VAT_found");
+					}
 					e1.printStackTrace();
 				}
 			}

@@ -15,4 +15,6 @@ public class RegSpecConstant {
 	public static final String SUBVENTION ="regspec.subvention";
 	public static final String RESOURCE = "cacc_main_rule.resurs";
 	public static final String CHECKTAXA ="z_cacc_reg_spec.checktaxa";
+	public static final String LAGINKOMSTSKYDD =	"cacc_reg_spec_type.laginkomstskydd";
+
 }
