@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.11 2003/10/10 09:48:34 anders Exp $
+ * $Id: AgeBusinessBean.java,v 1.12 2003/10/13 09:10:41 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,10 +26,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/10 09:48:34 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/13 09:10:41 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -285,7 +285,14 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			if (((ageFrom > ar.getAgeFrom()) && (ageFrom < ar.getAgeTo())) ||
 					((ageTo > ar.getAgeFrom()) && (ageTo < ar.getAgeTo())) ||
 					((ageFrom <= ar.getAgeFrom()) && (ageTo >= ar.getAgeTo()))) {
-				throw new AgeException(KEY_AGE_OVERLAP, DEFAULT_AGE_OVERLAP);
+				long f1 = periodFrom.getTime();
+				long t1 = periodTo.getTime();
+				long f2 = ar.getPeriodFrom().getTime();
+				long t2 = ar.getPeriodTo().getTime();
+				if ((f1 >= f2) && (f1 < t2) || (t1 > f2) && (t1 < t2) ||
+						(f1 <= f2) && (t1 >= t2)) {
+					throw new AgeException(KEY_AGE_OVERLAP, DEFAULT_AGE_OVERLAP);
+				}
 			}
 		}
 		if (ageTo - ageFrom != 1) {
