@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -1731,30 +1733,48 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public Map getProviderAreaMap(Collection schoolAreas, Locale locale, String emptyString) throws RemoteException {
-		Map areaMap = new HashMap();
-		if (schoolAreas != null) {
-			List areas = new ArrayList(schoolAreas);
-			Collections.sort(areas, new SchoolAreaComparator(locale));
-			
-			Collection schoolTypes = getSchoolBusiness().findAllSchoolTypesInCategory("CHILDCARE");
-			Iterator iter = areas.iterator();
-			while (iter.hasNext()) {
-				Map providerMap = new HashMap();
-				providerMap.put("-1", emptyString);
-				SchoolArea area = (SchoolArea) iter.next();
-				List providers = new ArrayList(getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer)area.getPrimaryKey()).intValue(), schoolTypes));
-				Collections.sort(providers, new SchoolComparator(locale));
-				if (providers != null) {
-					Iterator iterator = providers.iterator();
-					while (iterator.hasNext()) {
-						School provider = (School) iterator.next();
-						providerMap.put(provider.getPrimaryKey().toString(), provider.getSchoolName());
+	public Map getProviderAreaMap(Collection schoolAreas, Locale locale) throws RemoteException {
+		try {
+			SortedMap areaMap = new TreeMap(new SchoolAreaComparator(locale));
+			if (schoolAreas != null) {
+				List areas = new ArrayList(schoolAreas);
+
+				Collection schoolTypes = getSchoolBusiness().findAllSchoolTypesInCategory("CHILDCARE");
+				Iterator iter = areas.iterator();
+				while (iter.hasNext()) {
+					SortedMap providerMap = new TreeMap(new SchoolComparator(locale));
+					SchoolArea area = (SchoolArea) iter.next();
+					List providers = new ArrayList(getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes));
+					if (providers != null) {
+						Iterator iterator = providers.iterator();
+						while (iterator.hasNext()) {
+							School provider = (School) iterator.next();
+							providerMap.put(provider, provider);
+						}
 					}
+					areaMap.put(area, providerMap);
 				}
-				areaMap.put(area, providerMap);
+			}
+			return areaMap;
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+			return null;
+		}
+	}
+	
+	public ChildCareContractArchive getValidContract(int applicationID) throws RemoteException {
+		try {
+			IWTimestamp stamp = new IWTimestamp();
+			return getChildCareContractArchiveHome().findValidContractByApplication(applicationID, stamp.getDate());
+		}
+		catch (FinderException fe) {
+			try {
+				return getContractFile(getApplication(applicationID).getContractFileId());
+			}
+			catch (NullPointerException e) {
+				return null;
 			}
 		}
-		return areaMap;
 	}
 }

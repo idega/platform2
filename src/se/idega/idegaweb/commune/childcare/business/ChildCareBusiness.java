@@ -90,7 +90,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void sendMessageToProvider(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application, String subject, String message, com.idega.user.data.User sender) throws java.rmi.RemoteException;
  public void sendMessageToParents(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application, String subject, String body) ;
  public java.util.Collection getInactiveApplicationsByProvider(int providerID) throws java.rmi.RemoteException;
- public java.util.Map getProviderAreaMap(java.util.Collection schoolAreas, java.util.Locale locale, String emptyString) throws java.rmi.RemoteException;
+ public java.util.Map getProviderAreaMap(java.util.Collection schoolAreas, java.util.Locale locale) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getApplication(int childID, int choiceNumber) throws java.rmi.RemoteException;
  public java.util.Collection getQueueChoices(int childID) throws java.rmi.RemoteException;
  public int getPositionInQueue(se.idega.idegaweb.commune.childcare.data.ChildCareQueue queue) throws java.rmi.RemoteException;
@@ -100,4 +100,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean getHasUnexportedChoices(int childID);
  public void exportQueue(java.util.Collection choices) throws java.rmi.RemoteException;
  public int getOldQueueTotal(String[] queueType, boolean exported) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive getValidContract(int applicationID) throws java.rmi.RemoteException;
 }
