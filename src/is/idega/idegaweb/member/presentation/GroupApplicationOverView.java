@@ -37,14 +37,15 @@ import com.idega.util.ListUtil;
  * @version 1.0
  */
 
-public class GroupApplicationOverView extends Page implements IWBrowserView, StatefullPresentation, UserGroupPlugInPresentable {
+public class GroupApplicationOverView extends Page implements IWBrowserView, UserGroupPlugInPresentable {
+	//implements IWBrowserView, StatefullPresentation, UserGroupPlugInPresentable {
 
 
   private String _controlTarget = null;
   private IWPresentationEvent _controlEvent = null;
   private IWResourceBundle iwrb = null ;
 
-  private GroupApplicationOverViewPS _presentationState = null; 
+  //private GroupApplicationOverViewPS _presentationState = null; 
   
   //for debug in Builder
   private Group applicationGroup = null;
@@ -78,11 +79,11 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 
 
     //the event model is not being used in this class when used as a plugin!
-    GroupApplicationOverViewPS ps = (GroupApplicationOverViewPS)this.getPresentationState(iwc);
+    //GroupApplicationOverViewPS ps = (GroupApplicationOverViewPS)this.getPresentationState(iwc);
     Group selectedGroup = applicationGroup;
-    if( selectedGroup == null ){
+    /*if( selectedGroup == null ){
     	 selectedGroup= ps.getSelectedGroup();
-    }
+    }*/
       
     GroupApplicationBusiness gABiz = getGroupApplicationBusiness(iwc);
     String pending = gABiz.getPendingStatusString();
@@ -121,8 +122,8 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	            
 	      userTable.setHeight(1,16);
 	
-	      userTable.setWidth(1,"200");
-	      userTable.setWidth(2,"200");
+	      userTable.setWidth(1,"160");
+	      
 	      
 	      //columns start
 	
@@ -288,7 +289,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	public void setApplicationGroup(Group appGroup){
 		this.applicationGroup = appGroup;
 	}
-
+/*
   public IWPresentationState getPresentationState(IWUserContext iwuc){
     if(_presentationState == null){
       try {
@@ -305,7 +306,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
   public Class getPresentationStateClass(){
     return GroupApplicationOverViewPS.class;
   }
-
+*/
   public String getBundleIdentifier(){
   	return "com.idega.user";
   }
