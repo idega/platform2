@@ -297,8 +297,9 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @return
 	 * @throws FinderException if none was found
 	 */
-	public Integer ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(String ownPostingString,String doublePostingString,Regulation vatRuleRegulation,String text,CalendarMonth month) throws FinderException {
+	public Integer ejbFindByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(PaymentHeader pHeader,String ownPostingString,String doublePostingString,Regulation vatRuleRegulation,String text,CalendarMonth month) throws FinderException {
 		IDOQuery sql = idoQueryFindByMonth(month);
+		sql.appendAndEquals(COLUMN_PAYMENT_HEADER,pHeader.getPrimaryKey().toString());
 		sql.appendAndEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
 		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
 		if(vatRuleRegulation!=null){

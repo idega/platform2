@@ -41,6 +41,13 @@ public PaymentRecord findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPayme
 	return this.findByPrimaryKey(pk);
 }
 
+public PaymentRecord findByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,java.lang.String p1,java.lang.String p2,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p3,java.lang.String p4,com.idega.util.CalendarMonth p5)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaderAndPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(p0,p1,p2,p3,p4,p5);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public java.util.Collection findByPaymentHeaders(java.util.Collection p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaders(p0);
@@ -58,13 +65,6 @@ public PaymentRecord findByPostingStrings(java.lang.String p0,java.lang.String p
 public PaymentRecord findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
-public PaymentRecord findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(java.lang.String p0,java.lang.String p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2,java.lang.String p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(p0,p1,p2,p3,p4);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
