@@ -218,7 +218,6 @@ public class GolferTab extends UserTab {
 		table.setCellspacing(0);
 		table.setBorder(0);
 		IWContext iwc = IWContext.getInstance();
-		String currentUserUUID = iwc.getCurrentUser().getUniqueId();
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
 		
 //		table.add(new Text(iwrb.getLocalizedString("GenericMetaDataTab.Key","Key"),true,false,true),1,1);
@@ -228,20 +227,19 @@ public class GolferTab extends UserTab {
 		this.add(table, 1, 1);
 		
 		int row = 1;
-		if(currentUserUUID!=null){
-			row++;
-			LoginByUUIDLink loginByUUIDLink = new LoginByUUIDLink();
-			//hardcoded hack
-			loginByUUIDLink.setText(iwrb.getLocalizedString(TAB_NAME+".handicapinfo_on_golf.is","Open handicap info on golf.is"));
-			loginByUUIDLink.setURL("http://www.golf.is/index.jsp?ib_page=36");
-			loginByUUIDLink.setUUID(currentUserUUID);
-			loginByUUIDLink.setTarget(Link.TARGET_NEW_WINDOW);
-			
-			if(uuid!=null){
-				loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
-			}
-			table.add(loginByUUIDLink,1,row);
+		
+		LoginByUUIDLink loginByUUIDLink = new LoginByUUIDLink();
+		loginByUUIDLink.setToUseCurrentUsersUUID(true);
+		//hardcoded URL hack
+		loginByUUIDLink.setText(iwrb.getLocalizedString(TAB_NAME+".handicapinfo_on_golf.is","Open handicap info on golf.is"));
+		loginByUUIDLink.setURL("http://www.golf.is/index.jsp?ib_page=36");
+		loginByUUIDLink.setTarget(Link.TARGET_NEW_WINDOW);
+		
+		if(uuid!=null){
+			loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
 		}
+		table.add(loginByUUIDLink,1,row);
+		row++;
 		
 		if(!fieldValues.isEmpty()){
 			
