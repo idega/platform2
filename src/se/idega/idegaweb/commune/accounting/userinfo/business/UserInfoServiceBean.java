@@ -39,7 +39,6 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.location.data.Address;
-import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOStoreException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
@@ -192,7 +191,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 				family.setAddress(address);
 				if(spouse!=null){
 					addr = userService.getUserAddress1(((Integer)spouse.getPrimaryKey()).intValue());
-					if(compareAddresses(addr,address)){
+					if(address.isEqualTo(addr)){
 						family.setSpouse(spouse);
 					}
 				}
@@ -200,7 +199,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					// is spouse the same person as cohabitant
 					//if(spouse!=null && !spouse.getPrimaryKey().toString().equals(cohabitant.getPrimaryKey().toString()) ){
 						addr = userService.getUserAddress1(((Integer)cohabitant.getPrimaryKey()).intValue());
-						if(compareAddresses(addr,address))
+						if(address.isEqualTo(addr))
 							family.setCohabitant(cohabitant);
 					//}
 				}
@@ -209,7 +208,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					for (Iterator iter = parentialChildren.iterator(); iter.hasNext();) {
 						User child = (User) iter.next();
 						addr = userService.getUserAddress1(((Integer)child.getPrimaryKey()).intValue());
-						if(compareAddresses(addr,address)){
+						if(address.isEqualTo(addr)){
 							childs.add(child);
 						}
 					}
@@ -221,7 +220,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					for (Iterator iter = custodyChildren.iterator(); iter.hasNext();) {
 						User child = (User) iter.next();
 						addr = userService.getUserAddress1(((Integer)child.getPrimaryKey()).intValue());
-						if(compareAddresses(addr,address)){
+						if(address.isEqualTo(addr)){
 							childs.add(child);
 						}
 					}
@@ -234,36 +233,8 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		}
 		return null;
 	}
-	private boolean compareAddresses(Address one,Address two){
-		if(one!=null && two!=null){
-			boolean b=  (one.getStreetName().equalsIgnoreCase(two.getStreetName())
-					&& one.getStreetNumber().equalsIgnoreCase(two.getStreetNumber())
-					&& comparePostal(one.getPostalCode(),two.getPostalCode()));
-			return b;
-		}
-		return false;
-	}
-	
-	private boolean comparePostal(PostalCode one,PostalCode two){
-		if(one!=null && two !=null){
-			boolean b =  (one.getPostalCode().equalsIgnoreCase(two.getPostalCode())
-			&& one.getName().equalsIgnoreCase(two.getName()));
-			return b;
-		}
-		
-		return false;
-	}
 
 
-	public boolean isSameAddress (final Address address1,
-																final Address address2) {
-		if (null == address1 || null == address2) return false;
-		final boolean isSameStreet = address1.getStreetAddress ()
-				.equalsIgnoreCase	(address2.getStreetAddress ());
-		final boolean isSameZipCode = address1.getPostalCode ().getPostalCode ()
-				.equals (address2.getPostalCode ().getPostalCode ());
-		return isSameStreet && isSameZipCode;
-	}
 
 	/**
 	 * Returns the sibling order according to Check & Peng rules.
@@ -350,7 +321,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					try {
 						Address siblingAddress = userBus.getUsersMainAddress(sibling);
 						if (hasValidContract (sibling, startPeriod)
-								&& isSameAddress (childAddress, siblingAddress)) {
+								&& childAddress.isEqualTo( siblingAddress)) {
 							SortableSibling sortableSibling = new SortableSibling(sibling);
 							if(!sortedSiblings.contains(sortableSibling)){
 								sortedSiblings.add(sortableSibling);

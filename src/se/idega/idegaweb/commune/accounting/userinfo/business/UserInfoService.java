@@ -14,7 +14,6 @@ public interface UserInfoService extends com.idega.business.IBOService
  public HouseHoldFamily getHouseHoldFamily(User headOfFamily) throws java.rmi.RemoteException;
  public boolean isInvoiceReceiver(int p0) throws java.rmi.RemoteException;
  public boolean isInvoiceReceiver(com.idega.user.data.User p0) throws java.rmi.RemoteException;
-	boolean isSameAddress (com.idega.core.location.data.Address adress1, com.idega.core.location.data.Address address2);
 	int getSiblingOrder(com.idega.user.data.User child,com.idega.util.IWTimestamp startPeriod) throws java.rmi.RemoteException, SiblingOrderException;
 	int getSiblingOrder(com.idega.user.data.User child, java.util.Map siblingOrders,com.idega.util.IWTimestamp startPeriod) throws java.rmi.RemoteException, SiblingOrderException;
 	class SiblingOrderException extends Exception{
