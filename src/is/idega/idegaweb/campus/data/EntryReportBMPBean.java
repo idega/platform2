@@ -121,12 +121,12 @@ public class EntryReportBMPBean implements EntryReport{
   public void ejbLoad(){}
   public void ejbActivate(){}
 
-  public static List findAllBySearch(Integer iBuildingId,Integer iAccountKey,Timestamp from,Timestamp to)throws SQLException{
+  public static List findAllBySearch(String[] buildingIds,String[] accountKeys,Timestamp from,Timestamp to)throws SQLException{
      Connection conn= null;
     Statement Stmt= null;
     ResultSetMetaData metaData;
     Vector vector=null;
-    String sql = getFindSql(iBuildingId,iAccountKey,from,to);
+    String sql = getFindSql(buildingIds,accountKeys,from,to);
 
     try{
       conn = ConnectionBroker.getConnection();
@@ -179,7 +179,7 @@ public class EntryReportBMPBean implements EntryReport{
     }
   }
 
-  private static String getFindSql(Integer iBuildingId,Integer iAccountKey,java.sql.Timestamp from,java.sql.Timestamp to){
+  private static String getFindSql(String[] buildingIds,String[] accountKeys,java.sql.Timestamp from,java.sql.Timestamp to){
     StringBuffer sql = new StringBuffer(" select ");
     sql.append(" b.bu_building_id building_id, ");
     sql.append(" b.name building_name, ");
@@ -199,17 +199,27 @@ public class EntryReportBMPBean implements EntryReport{
     sql.append(" and e.fin_account_id = acc.fin_account_id ");
     sql.append(" and k.fin_acc_key_id = e.fin_acc_key_id ");
 
-    if(iBuildingId !=null && iBuildingId.intValue()>0 ){
+    if(buildingIds !=null  ){
       sql.append(" and ");
       sql.append(" b.bu_building_id ");
-      sql.append( " = ");
-      sql.append(iBuildingId);
-      
+      sql.append( " in (");
+      for (int i = 0; i < buildingIds.length; i++) {
+      	if(i>0 && i< buildingIds.length)
+      		sql.append(",");
+		sql.append(buildingIds[i]);
+      }
+      sql.append(" ) ");
     }
-    if(iAccountKey !=null && iAccountKey.intValue()>0){
+    if(accountKeys !=null ){
       sql.append(" and ");
       sql.append(" k.fin_acc_key_id ");
-      sql.append(" = ").append(iAccountKey);
+      sql.append( " in (");
+      for (int i = 0; i < accountKeys.length; i++) {
+      	if(i>0 && i< accountKeys.length)
+      		sql.append(",");
+		sql.append(accountKeys[i]);
+      }
+      sql.append(" ) ");
     }
     if(from!=null){
       sql.append(" and e.payment_date >= '");

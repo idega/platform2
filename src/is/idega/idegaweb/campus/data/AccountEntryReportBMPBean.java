@@ -78,13 +78,13 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
   public void ejbLoad(){}
   public void ejbActivate(){}
 
-  public static Collection findAllBySearch(Integer iBuildingId,Integer iAccountKey,Timestamp from,Timestamp to,boolean byAccountCode)throws SQLException{
+  public static Collection findAllBySearch(String[] buildingIds,String[] accountKeys,Timestamp from,Timestamp to,boolean byAccountCode)throws SQLException{
      Connection conn= null;
     Statement Stmt= null;
     ResultSetMetaData metaData;
     Vector vector=null;
-    String sql = getFindSql(iBuildingId,iAccountKey,from,to,byAccountCode);
-    if(iBuildingId!=null){
+    String sql = getFindSql(buildingIds,accountKeys,from,to,byAccountCode);
+    if(buildingIds!=null){
     try{
       conn = ConnectionBroker.getConnection();
       Stmt = conn.createStatement();
@@ -143,7 +143,7 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
   
   
 
-  private static String getFindSql(Integer buildingId,Integer keyId,java.sql.Timestamp from,java.sql.Timestamp to,boolean byAccountKeyCode){
+  private static String getFindSql(String[] buildingIds,String[] keyIds,java.sql.Timestamp from,java.sql.Timestamp to,boolean byAccountKeyCode){
     
     StringBuffer sql = new StringBuffer();
     
@@ -191,17 +191,28 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
 	
     boolean and = false;
 
-    if(buildingId !=null && buildingId.intValue() >0){
+    if(buildingIds !=null){
       sql.append(" and ");
       sql.append(" b.bu_building_id ");
-      sql.append( " = ");
-      sql.append(buildingId);
+      sql.append( " in (");
+      for (int i = 0; i < buildingIds.length; i++) {
+      	if(i>0 && i< buildingIds.length)
+      		sql.append(",");
+		sql.append(buildingIds[i]);
+      }
+      sql.append(" ) ");
       and = true;
     }
-    if(keyId!=null && keyId.intValue()>0){
+    if(keyIds!=null ){
       sql.append(" and ");
       sql.append(" k.fin_acc_key_id ");
-      sql.append(" = ").append(keyId);
+      sql.append( " in (");
+      for (int i = 0; i < keyIds.length; i++) {
+      	if(i>0 && i< keyIds.length)
+      		sql.append(",");
+		sql.append(keyIds[i]);
+      }
+      sql.append(" ) ");
     }
     if(from!=null){
       sql.append(" and e.payment_date >= '");
@@ -359,6 +370,13 @@ public void setKeyID(Integer keyID) {
 }
 
 public String getName(){
-	return getFirstName()+" "+getMiddleName()+" "+getLastName();
+	StringBuffer name = new StringBuffer();
+	if(getFirstName()!=null)
+		name.append(getFirstName()).append(" ");
+	if(getMiddleName()!=null)
+		name.append(getMiddleName()).append(" ");
+	if(getLastName()!=null);
+		name.append(getLastName());
+	return name.toString().trim();
 }
 }

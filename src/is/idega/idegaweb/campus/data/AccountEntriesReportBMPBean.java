@@ -96,14 +96,14 @@ public class AccountEntriesReportBMPBean {
 	}
 	public void ejbActivate() {
 	}
-	public static Collection findAllBySearch(Integer buildingId, Integer accountKey, Date from, Date to,
+	public static Collection findAllBySearch(String[] buildingIds, String[] accountKeys, Date from, Date to,
 			boolean byAccountCode) throws SQLException {
 		Connection conn = null;
 		Statement Stmt = null;
 		ResultSetMetaData metaData;
 		Vector vector = null;
 		String sql = "";
-		if (buildingId != null) {
+		if (buildingIds != null) {
 			try {
 				
 				
@@ -114,7 +114,7 @@ public class AccountEntriesReportBMPBean {
 				//System.out.println("key length "+keys.length);
 				Stmt = conn.createStatement();
 				
-				sql = getFindSql(buildingId, accountKey, from, to, byAccountCode,keys);
+				sql = getFindSql(buildingIds, accountKeys, from, to, byAccountCode,keys);
 				ResultSet RS = Stmt.executeQuery(sql);
 				
 				int count = 1;
@@ -195,17 +195,14 @@ public class AccountEntriesReportBMPBean {
 		}
 		return null;
 	}
-	private static String getFindSql(Integer buildingId, Integer keyId, Date from, Date to,
+	private static String getFindSql(String[] buildingIds, String[] keyIds, Date from, Date to,
 			boolean byAccountKeyCode,String[] keys) {
 		StringBuffer sql = new StringBuffer();
 		String key;
-		if(keyId!=null && keyId.intValue()>0){
-			keys = new String[1];
-			keys[0] = keyId.toString();
-		}
+		
 		sql.append(" select distinct b.bu_building_id build_id, b.name building,a.fin_account_id acc_id,a.name,u.first_name,u.middle_name,u.last_name,u.personal_id ");
-		for (int i = 0; i < keys.length; i++) {
-			key = keys[i];
+		for (int i = 0; i < keyIds.length; i++) {
+			key = keyIds[i];
 			sql.append(", ").append("e").append(key).append(".total t").append(key);
 		}
 		//sql.append(" ,sum(e1.total) k1,sum(e2.total) k2 ");
@@ -223,8 +220,15 @@ public class AccountEntriesReportBMPBean {
 		sql.append(" and c.bu_apartment_id = ap.bu_apartment_id ");
 		sql.append(" and ap.bu_floor_id = f.bu_floor_id ");
 		sql.append(" and f.bu_building_id = b.bu_building_id ");
-		if(buildingId!=null && buildingId.intValue()>0){
-			sql.append(" and b.bu_building_id = ").append(buildingId);
+		if(buildingIds!=null ){
+			sql.append(" and b.bu_building_id = ");
+			 sql.append( " in (");
+		      for (int i = 0; i < buildingIds.length; i++) {
+		      	if(i>0 && i< buildingIds.length)
+		      		sql.append(",");
+				sql.append(buildingIds[i]);
+		      }
+		      sql.append(" ) ");
 		}
 		sql.append(" and a.ACCOUNT_TYPE = 'FINANCE' ");
 		sql.append(" and a.fin_account_id in  ");
