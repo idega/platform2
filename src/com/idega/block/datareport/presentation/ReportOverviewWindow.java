@@ -57,7 +57,7 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     }
     else if (iwc.isParameterSet(ReportQueryOverview.UPLOAD_LAYOUT)){
     	LayoutUploader layoutUploader = new LayoutUploader();
-    	add(layoutUploader);
+    	add(layoutUploader, iwc);
     }
     else if (iwc.isParameterSet(LayoutUploader.KEY_LAYOUT_UPLOAD_IS_SUBMITTED)) {
     	LayoutUploader layoutUploader = new LayoutUploader();
