@@ -2,7 +2,6 @@ package is.idega.idegaweb.campus.block.finance.business;
 
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.business.FinanceFinder;
-import com.idega.block.finance.business.AccountManager;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
@@ -105,7 +104,7 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
   public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate,idegaTimestamp start,idegaTimestamp end){
-    List listOfTariffs = FinanceFinder.listOfTariffs(iTariffGroupId);
+    List listOfTariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
     //List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
     List listOfUsers = CampusAccountFinder.listOfContractAccountApartment(getAccountType(),start,end);
     //Map mapOfContracts = ContractFinder.mapOfApartmentUsersBy();
@@ -255,12 +254,12 @@ public class CampusFinanceHandler implements FinanceHandler{
       valto = con.getReturnTime().getTime();
     }
 
-
+/*
       System.err.print("Valfr: "+con.getValidFrom().toString());
       System.err.print(" Valto: "+con.getValidTo().toString());
       System.err.print(" start: "+start.toString());
       System.err.print(" end: "+end.toString());
-
+*/
 
     // if contract ends within period
     if(begin <= valto && valto <= endin){
@@ -280,20 +279,15 @@ public class CampusFinanceHandler implements FinanceHandler{
       // donothing
     }
 
-    System.err.println();
     double diff = endin-begin;
-    System.err.println("Endin - Begin" + endin +" - "+begin+" = "+diff +" / "+del );
-
-
     ret = (diff)/del;
-    System.err.println("Factor : "+ ret);
 
     return ret;
   }
 
 
   public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,idegaTimestamp start,idegaTimestamp end){
-    List listOfTariffs = FinanceFinder.listOfTariffs(iTariffGroupId);
+    List listOfTariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
 
     if(listOfTariffs !=null && listOfUsers!=null){

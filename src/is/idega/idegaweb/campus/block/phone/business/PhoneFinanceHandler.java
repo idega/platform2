@@ -156,7 +156,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
               accounts = (ContractAccounts)I.next();
               totalAmount = 0;
               float Amount = 0;
-              List PhoneEntries = AccountManager.listOfUnBilledPhoneEntries(accounts.getPhoneAccountId(),null,idegaTimestamp.RightNow());
+              List PhoneEntries = FinanceFinder.getInstance().listOfUnBilledPhoneEntries(accounts.getPhoneAccountId(),null,idegaTimestamp.RightNow());
               if(PhoneEntries != null){
                 Iterator it = PhoneEntries.iterator();
                 AccountEntry AE = insertKreditEntry(accounts.getFinanceAccountId(),iRoundId,paydate,0,AK,TK,iCashierId);
