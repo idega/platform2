@@ -25,6 +25,7 @@ import com.idega.data.IDOStoreException;
 import com.idega.data.query.Column;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.JoinCriteria;
+import com.idega.data.query.MINUS;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
@@ -169,7 +170,11 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			String[] relationStatus = new String[1];
 			relationStatus[0] = GroupRelation.STATUS_ACTIVE;
 			
+
+			
 			SelectQuery sQuery = idoSelectQuery();
+			sQuery.removeAllColumns();
+			sQuery.addColumn(idoQueryTable(),getIDColumnName());
 
 			Table groupRelationTable = new Table(GroupRelation.class);
 			Table addressTable = new Table(Address.class);
@@ -206,15 +211,25 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			subQuery.addCriteria(new MatchCriteria(schoolClassMemberTable,registerDateField.getSQLFieldName(),MatchCriteria.LESSEQUAL,date));
 			subQuery.addCriteria(new MatchCriteria(schoolClassTable,"sch_school_season_id",MatchCriteria.EQUALS,currentSchoolSeason.getPrimaryKey()));
 			
-			sQuery.addCriteria(new InCriteria(idoQueryTable(),getIDColumnName(),subQuery,true));
+			MINUS m = new MINUS(sQuery,subQuery);
+			
+			//sQuery.addCriteria(new InCriteria(idoQueryTable(),getIDColumnName(),subQuery,true));
+			
+			
+			SelectQuery outerSelect = idoSelectQuery();
+			Table resultTable = new Table(m,"sub_query");
+			
+			outerSelect.addLeftJoin(resultTable,getIDColumnName(),idoQueryTable(),getIDColumnName());
+			
+//			outerSelect.add
 			
 			//Ordering
-			addOrderByName(sQuery,true,true);
+			addOrderByName(outerSelect,true,true);
 			
 			
-			System.out.println("SQL -> "+this.getClass()+":"+sQuery);
+			System.out.println("SQL -> "+this.getClass()+":"+outerSelect);
 					
-			return idoFindPKsByQueryUsingLoadBalance(sQuery,1000);
+			return idoFindPKsByQueryUsingLoadBalance(outerSelect,1000);
 			//Temp debug
 			//return idoFindPKsByQuery(query,100);
 		} 
