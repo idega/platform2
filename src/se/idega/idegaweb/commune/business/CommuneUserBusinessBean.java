@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.business;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.*;
+import com.idega.core.accesscontrol.business.LoginCreateException;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.data.*;
 import com.idega.idegaweb.*;
@@ -151,20 +152,12 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	}
 	/**
 	 * Generates a user login for the user with login derived from the users name and a random password
+	 * @param User the User to create login for
+	 * @throws LoginCreateException If an error occurs creating login for the user.
 	 */
-	public LoginTable generateUserLogin(User user) throws CreateException
+	public LoginTable generateUserLogin(User user) throws LoginCreateException, RemoteException
 	{
-		try
-		{
 			return getUserBusiness().generateUserLogin(user);
-		} catch (Exception e)
-		{
-			/**
-			 * @todo: remove printStackTrace
-			 */
-			e.printStackTrace();
-			throw new com.idega.data.IDOCreateException(e);
-		}
 	}
 
 	/**

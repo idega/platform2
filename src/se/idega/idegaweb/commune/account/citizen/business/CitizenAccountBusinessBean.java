@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.21 2002/11/07 16:02:44 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.22 2002/11/13 22:22:44 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package se.idega.idegaweb.commune.account.citizen.business;
 
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.*;
+import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.*;
@@ -30,8 +31,20 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
 
+
+
+	/**
+	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
+	 * @param user The user that makes the application
+	 * @param pid 	The PersonalId of the User to apply for.
+	 * @param email Email of the user
+	 * @param phoneHome the Home phone of the user
+	 * @param phoneWork the Work phone of the user
+	 * @return boolean	If the Application is successfully created.
+	 * @throws UserHasLoginException If A User already has a login in the system.
+	 */
 	public boolean insertApplication (User user, String pid, String email,
-                                      String phoneHome, String phoneWork) {
+                                      String phoneHome, String phoneWork) throws UserHasLoginException{
 		try {
 			CitizenAccount application =
                     ((CitizenAccountHome) IDOLookup.getHome
@@ -55,6 +68,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			}
 		}
 		catch (Exception e) {
+			if (e instanceof UserHasLoginException) {
+				throw (UserHasLoginException) e;	
+			}
 			e.printStackTrace();
 
 			return false;
@@ -62,7 +78,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 		return true;
 	}
-
     public boolean insertApplication
         (final String name, final int genderId, final String pid,
          final Date date,
@@ -243,6 +258,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		applicant.setOwner (user);
         applicant.store ();
 		super.acceptApplication (applicationID, performer);
+		
 	}
 
 	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException {

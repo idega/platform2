@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.21 2002/11/13 15:38:23 gimmi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.22 2002/11/13 22:22:44 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package se.idega.idegaweb.commune.account.citizen.presentation;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.*;
 import com.idega.presentation.text.Text;
@@ -158,46 +159,42 @@ public class CitizenAccountApplication extends CommuneBlock {
         ssnParameterNames.add (SSN_KEY);
 
         try {
-            final Map parameters = parseParameters
-                    (getResourceBundle (), iwc, mandatoryParametersNames,
-                     stringParameterNames, ssnParameterNames, new HashSet ());
+            final Map parameters = parseParameters(getResourceBundle (), iwc, mandatoryParametersNames, stringParameterNames, ssnParameterNames, new HashSet ());
             final String ssn = parameters.get (SSN_KEY).toString ();
             final String email = parameters.get (EMAIL_KEY).toString ();
-            final String phoneHome
-                    = parameters.get (PHONE_HOME_KEY).toString ();
-            final String phoneWork
-                    = parameters.get (PHONE_WORK_KEY).toString ();
-			final CitizenAccountBusiness business
-                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
-                    (iwc, CitizenAccountBusiness.class);
+            final String phoneHome = parameters.get (PHONE_HOME_KEY).toString ();
+            final String phoneWork = parameters.get (PHONE_WORK_KEY).toString ();
+						final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
             final User user = business.getUser (ssn);
             if (user == null) {
                 // unknown user applies
-                final Text text = new Text (localize (UNKNOWN_CITIZEN_KEY,
-                                                      UNKNOWN_CITIZEN_DEFAULT));
+                final Text text = new Text (localize (UNKNOWN_CITIZEN_KEY,UNKNOWN_CITIZEN_DEFAULT));
                 text.setFontColor ("#ff0000");
                 add (text);
                 viewUnknownCitizenApplicationForm1 (iwc);
-            } else if (!business.insertApplication
-                       (user, ssn, email, phoneHome, phoneWork)) {
+            } else if (!business.insertApplication(user, ssn, email, phoneHome, phoneWork)) {
                 // known user applied, but couldn't be submitted
-                throw new Exception (localize(ERROR_NO_INSERT_KEY,
-                                              ERROR_NO_INSERT_DEFAULT));
+                throw new Exception (localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
             } else {
                 // known user applied and was submitted
                 if (getResponsePage() != null) {
                     iwc.forwardToIBPage(getParentPage(), getResponsePage());
                 } else {
-                    add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY,
-                                          "Ansökan är skickad")));
+                    add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, "Ansökan är skickad")));
                 }
             }            
+        } catch (UserHasLoginException uhle) {
+            final Text text = new Text(localize("user_already_has_a_login","User already has a login"), true, false, false);
+            text.setFontColor ("#ff0000");
+            add (text);
+            add (Text.getBreak ());
+						viewSimpleApplicationForm(iwc);
         } catch (final Exception e) {
             final Text text = new Text(e.getMessage (), true, false, false);
             text.setFontColor ("#ff0000");
             add (text);
             add (Text.getBreak ());
-			viewSimpleApplicationForm(iwc);
+						viewSimpleApplicationForm(iwc);
         }
     }
 

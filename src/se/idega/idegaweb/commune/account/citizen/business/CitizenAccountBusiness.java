@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
 import com.idega.business.IBOService;
+import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import javax.ejb.*;
@@ -16,9 +17,20 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
     List getListOfUnapprovedApplications () throws RemoteException;
     Gender [] getGenders () throws RemoteException;
     User getUser (String p0) throws RemoteException;
-    boolean insertApplication
-        (User user, String pid, String email, String phoneHome,
-         String phoneWork) throws RemoteException;
+
+	/**
+	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
+	 * @param user The user that makes the application
+	 * @param pid 	The PersonalId of the User to apply for.
+	 * @param email Email of the user
+	 * @param phoneHome the Home phone of the user
+	 * @param phoneWork the Work phone of the user
+	 * @return boolean	If the Application is successfully created.
+	 * @throws UserHasLoginException If A User already has a login in the system.
+	 */
+    boolean insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) 
+    		throws RemoteException, UserHasLoginException;
+
     boolean insertApplication
         (String name, int genderId, String pid, Date birthDate, String email,
          String phoneHome, String phoneWork,
