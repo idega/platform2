@@ -7,9 +7,11 @@ public class StartingtimeFieldConfigHomeImpl extends com.idega.data.IDOFactory i
   return StartingtimeFieldConfig.class;
  }
 
+
  public StartingtimeFieldConfig create() throws javax.ejb.CreateException{
-  return (StartingtimeFieldConfig) super.idoCreate();
+  return (StartingtimeFieldConfig) super.createIDO();
  }
+
 
  public StartingtimeFieldConfig createLegacy(){
 	try{
@@ -21,13 +23,23 @@ public class StartingtimeFieldConfigHomeImpl extends com.idega.data.IDOFactory i
 
  }
 
- public StartingtimeFieldConfig findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (StartingtimeFieldConfig) super.idoFindByPrimaryKey(id);
- }
+
+public java.util.Collection findAllActiveTeetimeFieldConfigurations(com.idega.util.IWTimestamp p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((StartingtimeFieldConfigBMPBean)entity).ejbFindAllActiveTeetimeFieldConfigurations(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public StartingtimeFieldConfig findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (StartingtimeFieldConfig) super.idoFindByPrimaryKey(pk);
+  return (StartingtimeFieldConfig) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public StartingtimeFieldConfig findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (StartingtimeFieldConfig) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public StartingtimeFieldConfig findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +50,7 @@ public class StartingtimeFieldConfigHomeImpl extends com.idega.data.IDOFactory i
 	}
 
  }
+
 
 
 }

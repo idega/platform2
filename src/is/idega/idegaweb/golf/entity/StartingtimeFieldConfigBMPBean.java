@@ -10,8 +10,13 @@
 package is.idega.idegaweb.golf.entity;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
+import com.idega.util.IWTimestamp;
 
 public class StartingtimeFieldConfigBMPBean extends GenericEntity implements StartingtimeFieldConfig {
 
@@ -157,6 +162,17 @@ public class StartingtimeFieldConfigBMPBean extends GenericEntity implements Sta
 
   public void setNonMemberRegistration(boolean value){
     setColumn(getNonMemberRegistrationColumnName(),value);
+  }
+  
+  public Collection ejbFindAllActiveTeetimeFieldConfigurations(IWTimestamp date) throws FinderException{
+  	//select s.* from startingtime_field_config s, (SELECT field_id, max(BEGIN_DATE) as max_begin_date  FROM startingtime_field_config where begin_date < '2004-06-15 00:00:00' GROUP BY field_id) m where s.field_id = m.field_id and s.begin_date=m.max_begin_date order by open_time
+  	IDOQuery query = idoQuery();
+  	query.appendSelect().append("s.*").appendFrom().append(getEntityName()).append(" s, ");
+  	IDOQuery sub = idoQuery();
+  	sub.appendSelect().append("field_id, max(BEGIN_DATE) as max_begin_date ").appendFrom().append(getEntityName()).appendWhere("begin_date").appendLessThanOrEqualsSign().appendWithinSingleQuotes(date).appendGroupBy("field_id");
+  	query.appendWithinParentheses(sub).append(" m where s.field_id = m.field_id and s.begin_date=m.max_begin_date ");
+//  	System.out.println(query.toString());
+  	return idoFindPKsByQuery(query);
   }
 
 
