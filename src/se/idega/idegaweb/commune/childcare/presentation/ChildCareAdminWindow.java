@@ -19,7 +19,7 @@ import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
 import com.idega.block.contract.data.Contract;
@@ -477,7 +477,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				dateInput.setDate(earliestDate.getDate());
 			}
 			else {
-				ChildCareContractArchive archive = getBusiness().getLatestContract(_userID);
+				ChildCareContract archive = getBusiness().getLatestContract(_userID);
 				if (archive != null && archive.getTerminatedDate() != null) {
 					IWTimestamp stamp = new IWTimestamp(archive.getTerminatedDate());
 					stamp.addDays(1);
@@ -593,7 +593,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int row = 1;
 		
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
-		ChildCareContractArchive archive = getBusiness().getContractFile(application.getContractFileId());
+		ChildCareContract archive = getBusiness().getContractFile(application.getContractFileId());
 
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
 		textInput.setLength(2);

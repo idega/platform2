@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.School;
 import com.idega.core.data.Address;
@@ -84,7 +84,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.terminated","Terminated"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row++);
 		
-		ChildCareContractArchive contract;
+		ChildCareContract contract;
 		School provider;
 		IWTimestamp created;
 		IWTimestamp validFrom;
@@ -103,7 +103,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		Iterator iter = contracts.iterator();
 		while (iter.hasNext()) {
 			column = 1;
-			contract = (ChildCareContractArchive) iter.next();
+			contract = (ChildCareContract) iter.next();
 			provider = contract.getApplication().getProvider();
 			created = new IWTimestamp(contract.getCreatedDate());
 			if (contract.getValidFromDate() != null)

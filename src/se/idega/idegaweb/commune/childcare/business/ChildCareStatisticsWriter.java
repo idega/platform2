@@ -18,7 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.process.data.CaseLog;
@@ -140,7 +140,7 @@ public class ChildCareStatisticsWriter {
 				Phone phone;
 				CaseLog caseLog;
 				ChildCareApplication application;
-				ChildCareContractArchive archive;
+				ChildCareContract archive;
 				School provider;
 				String status;
 				

@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 import java.sql.Date;
 
 import com.idega.data.GenericEntity;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 /**
  * @author Joakim
@@ -70,7 +70,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
 
 		addManyToOneRelationship(COLUMN_INVOICE_HEADER, InvoiceHeader.class);
-		addManyToOneRelationship(COLUMN_CONTRACT_ID, ChildCareContractArchive.class);
+		addManyToOneRelationship(COLUMN_CONTRACT_ID, ChildCareContract.class);
 	}
 	public int getInvoiceheader() {
 		return getIntColumnValue(COLUMN_INVOICE_HEADER);

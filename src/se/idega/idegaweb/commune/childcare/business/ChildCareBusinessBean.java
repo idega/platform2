@@ -42,8 +42,8 @@ import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
@@ -126,8 +126,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return (ChildCarePrognosisHome) IDOLookup.getHome(ChildCarePrognosis.class);
 	}
 	
-	public ChildCareContractArchiveHome getChildCareContractArchiveHome() throws RemoteException {
-		return (ChildCareContractArchiveHome) IDOLookup.getHome(ChildCareContractArchive.class);
+	public ChildCareContractHome getChildCareContractArchiveHome() throws RemoteException {
+		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 	}
 
 	public ChildCareQueueHome getChildCareQueueHome() throws RemoteException {
@@ -1924,7 +1924,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	private void addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom) {
 		try {
-			ChildCareContractArchive archive = null;
+			ChildCareContract archive = null;
 			if (contractFileID != -1)
 				archive = getChildCareContractArchiveHome().findByContractFileID(contractFileID);
 			else
@@ -1962,7 +1962,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public ChildCareContractArchive getContractFile(int contractFileID) throws RemoteException {
+	public ChildCareContract getContractFile(int contractFileID) throws RemoteException {
 		try {
 			return getChildCareContractArchiveHome().findByContractFileID(contractFileID);
 		}
@@ -2000,7 +2000,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private void terminateContract(int contractFileID, Date terminatedDate) {
 		try {
-			ChildCareContractArchive archive = getContractFile(contractFileID);
+			ChildCareContract archive = getContractFile(contractFileID);
 			if (archive != null) {
 				IWTimestamp terminate = new IWTimestamp(terminatedDate);
 				IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
@@ -2225,12 +2225,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public ChildCareContractArchive getValidContract(int applicationID) throws RemoteException {
+	public ChildCareContract getValidContract(int applicationID) throws RemoteException {
 		IWTimestamp stamp = new IWTimestamp();
 		return getValidContract(applicationID, stamp.getDate());
 	}
 	
-	public ChildCareContractArchive getValidContract(int applicationID, Date validDate) throws RemoteException {
+	public ChildCareContract getValidContract(int applicationID, Date validDate) throws RemoteException {
 		try {
 			return getChildCareContractArchiveHome().findValidContractByApplication(applicationID, validDate);
 		}
@@ -2265,12 +2265,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public ChildCareContractArchive getValidContractByChild(int childID) throws RemoteException {
+	public ChildCareContract getValidContractByChild(int childID) throws RemoteException {
 		IWTimestamp stamp = new IWTimestamp();
 		return getValidContractByChild(childID, stamp.getDate());
 	}
 	
-	public ChildCareContractArchive getValidContractByChild(int childID, Date validDate) throws RemoteException {
+	public ChildCareContract getValidContractByChild(int childID, Date validDate) throws RemoteException {
 		try {
 			return getChildCareContractArchiveHome().findValidContractByChild(childID, validDate);
 		}
@@ -2290,7 +2290,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			ChildCareApplication application = getApplication(applicationID);
-			ChildCareContractArchive archive = getValidContract(applicationID);
+			ChildCareContract archive = getValidContract(applicationID);
 			application.setContractFileId(archive.getContractFileID());
 			application.setContractId(archive.getContractID());
 			application.setCareTime(archive.getCareTime());
@@ -2304,7 +2304,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Collection contracts = getChildCareContractArchiveHome().findFutureContractsByApplication(applicationID, date);
 			Iterator iter = contracts.iterator();
 			while (iter.hasNext()) {
-				archive = (ChildCareContractArchive) iter.next();
+				archive = (ChildCareContract) iter.next();
 				try {
 					Contract contract = archive.getContract();
 					contract.setStatus("T");
@@ -2561,7 +2561,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public ChildCareContractArchive getLatestTerminatedContract(int childID) throws RemoteException {
+	public ChildCareContract getLatestTerminatedContract(int childID) throws RemoteException {
 		try {
 			IWTimestamp stamp = new IWTimestamp();
 			return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, stamp.getDate());
@@ -2571,7 +2571,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public ChildCareContractArchive getLatestContract(int childID) throws RemoteException {
+	public ChildCareContract getLatestContract(int childID) throws RemoteException {
 		try {
 			return getChildCareContractArchiveHome().findLatestContractByChild(childID);
 		}

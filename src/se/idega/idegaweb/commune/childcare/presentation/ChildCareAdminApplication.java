@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.builder.data.IBPage;
@@ -347,7 +347,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 				else {
 					if (getBusiness().hasTerminationInFutureNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
-						ChildCareContractArchive archive = getBusiness().getLatestTerminatedContract(getSession().getChildID());
+						ChildCareContract archive = getBusiness().getLatestTerminatedContract(getSession().getChildID());
 						IWTimestamp terminationDate = new IWTimestamp(archive.getTerminatedDate());
 						IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
 						if (terminationDate.isLaterThanOrEquals(validFrom)) {

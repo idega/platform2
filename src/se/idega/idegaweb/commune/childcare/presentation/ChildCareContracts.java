@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.presentation.IWContext;
@@ -57,7 +57,7 @@ public class ChildCareContracts extends ChildCareBlock {
 			Collection contracts = getBusiness().getAcceptedApplicationsByProvider(getSession().getChildCareID());
 			if (contracts != null) {
 				ChildCareApplication application;
-				ChildCareContractArchive contract;
+				ChildCareContract contract;
 				User child;
 				IWTimestamp created;
 				IWTimestamp validFrom;

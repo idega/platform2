@@ -18,7 +18,7 @@ import com.idega.user.data.User;
 /**
  * @author laddi
  */
-public class ChildCareContractArchiveBMPBean extends GenericEntity implements ChildCareContractArchive {
+public class ChildCareContractBMPBean extends GenericEntity implements ChildCareContract {
 
 	private static final String ENTITY_NAME = "comm_childcare_archive";
 	

@@ -1,7 +1,7 @@
 package se.idega.idegaweb.commune.childcare.data;
 
 
-public interface ChildCareContractArchive extends com.idega.data.IDOEntity
+public interface ChildCareContract extends com.idega.data.IDOEntity
 {
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getApplication();
  public int getApplicationID();

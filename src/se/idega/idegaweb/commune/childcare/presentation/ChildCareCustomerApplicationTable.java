@@ -14,7 +14,7 @@ import javax.ejb.RemoveException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.51 2003/09/08 08:10:07 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.52 2003/09/11 09:35:33 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -506,7 +506,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				Collection contracts = childCarebusiness.getContractsByApplication(acceptedApplication.getNodeID());
 				Iterator i = contracts.iterator();
 				while (i.hasNext()){
-					Contract c = ((ChildCareContractArchive) i.next()).getContract();
+					Contract c = ((ChildCareContract) i.next()).getContract();
 					//System.out.println("CONTRACT: " + c.getPrimaryKey());
 					if (! c.isSigned()){
 						Link signBtn = new Link(localize(SIGN_TOOLTIP));
@@ -524,7 +524,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(Integer.parseInt(childId)); 
 		
 		if (activeApplication != null) {
-			ChildCareContractArchive archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
+			ChildCareContract archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
 			School school = activeApplication.getProvider();
 
 			layoutTbl.setHeight(row++, 12);
