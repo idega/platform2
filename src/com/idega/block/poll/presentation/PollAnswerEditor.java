@@ -40,7 +40,10 @@ public PollAnswerEditor(){
 }
 
   public void main(ModuleInfo modinfo) throws Exception {
-    isAdmin = AccessControl.hasEditPermission(this,modinfo);
+    /**
+     * @todo permission
+     */
+    isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
     addTitle(iwrb.getLocalizedString("poll_answer_editor","Poll Answer Editor"));

@@ -60,7 +60,10 @@ public PollResult() {
     setAllMargins(0);
     setTitle(_iwrb.getLocalizedString("results","Results"));
 
-    _isAdmin = AccessControl.hasEditPermission(this,modinfo);
+    /**
+     * @todo permission
+     */
+    _isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
     _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
 
     String collectionString = modinfo.getParameter(Poll._prmPollCollection);

@@ -41,7 +41,10 @@ private IWResourceBundle iwrb;
   }
 
   public void main(ModuleInfo modinfo)throws Exception{
-    this.isAdmin=AccessControl.hasEditPermission(this,modinfo);
+    /**
+     * @todo permission
+     */
+    this.isAdmin=true;  //AccessControl.hasEditPermission(this,modinfo);
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
 
