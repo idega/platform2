@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopTemplateBean.java,v 1.2 2002/03/19 09:41:10 palli Exp $
+ *  $Id: IShopTemplateBean.java,v 1.3 2002/04/03 12:41:59 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -94,7 +94,7 @@ public class IShopTemplateBean extends GenericEntity implements IShopTemplate {
   }
 
   public void setIShopID(String id) {
-    setColumn(getIShopID(),id);
+    setColumn(getIShopIDColumnName(),id);
   }
 
   public String getIShopClass() {

@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopTemplateHome.java,v 1.1 2002/03/19 09:41:10 palli Exp $
+ *  $Id: IShopTemplateHome.java,v 1.2 2002/04/03 12:41:52 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -12,8 +12,10 @@ package is.idega.idegaweb.intershop.business;
 import com.idega.data.GenericEntity;
 import com.idega.data.EntityFinder;
 import com.idega.data.SimpleQuerier;
+import com.idega.data.IDOFinderException;
 import is.idega.idegaweb.intershop.data.IShopTemplate;
 import is.idega.idegaweb.intershop.data.IShopTemplateBean;
+import java.util.List;
 
 /**
  * @author    <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -113,9 +115,37 @@ public class IShopTemplateHome {
       return(0);
 
     String c = res[0];
-//    try {
-      int ret = Integer.parseInt(c);
-//    }
-      return(ret);
+    int ret = Integer.parseInt(c);
+
+    return ret;
+  }
+
+  public List findAll() {
+    List l = null;
+    try {
+      l = EntityFinder.getInstance().findAll(IShopTemplateBean.class);
+    }
+    catch(IDOFinderException e) {
+    }
+
+    return l;
+  }
+
+  public IShopTemplate findByPageId(int pageId) {
+    List l = null;
+    try {
+      l = EntityFinder.getInstance().findAllByColumn(IShopTemplateBean.class,IShopTemplateBean.getPageIdColumnName(),pageId);
+    }
+    catch(IDOFinderException e) {
+
+    }
+
+    if (l == null)
+      return null;
+
+    if (l.size() == 1)
+      return (IShopTemplate)l.get(0);
+
+    return null;
   }
 }

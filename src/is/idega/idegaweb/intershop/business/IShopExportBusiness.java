@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopExportBusiness.java,v 1.3 2002/03/19 09:47:40 palli Exp $
+ *  $Id: IShopExportBusiness.java,v 1.4 2002/04/03 12:41:53 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,25 +10,20 @@
 package is.idega.idegaweb.intershop.business;
 
 import com.idega.idegaweb.IWApplicationContext;
-
+import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
 import is.idega.idegaweb.intershop.data.IShopTemplate;
-import java.sql.SQLException;
+import is.idega.idegaweb.intershop.data.IShopTemplateBean;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.Clob;
+import java.sql.PreparedStatement;
 import java.util.Properties;
-import java.util.Enumeration;
-
-import com.idega.util.FileUtil;
-//import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
+import java.io.ByteArrayInputStream;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-
 public class IShopExportBusiness {
   private static IShopExportBusiness _instance = null;
 
@@ -43,53 +38,59 @@ public class IShopExportBusiness {
   }
 
   public boolean exportPage(IShopTemplate page, Properties dbProps, String html, IWApplicationContext iwac) {
-//    try {
-//      IShopXMLDesc desc = new IShopXMLDesc(iwac);//.getApplication().getBundle("com.strengur.idegaweb.intershop"));
-//      System.out.println("OS create = " + desc.hasCreatePermissions("OS"));
-//      System.out.println("OS update = " + desc.hasModifyPermissions("OS"));
-//      System.out.println("OS delete = " + desc.hasDeletePermissions("OS"));
+    try {
+      IShopXMLDesc desc = new IShopXMLDesc(iwac);
+      if (!desc.hasModifyPermissions(page.getIShopClass()))
+        return(false);
 
-//      Enumeration e = desc.getAvailableTemplateClasses();
-//      while (e.hasMoreElements()) {
-//        String key = (String)e.nextElement();
-//        System.out.println("key = " + key);
-//        TemplateProps template = (TemplateProps)t.get(key);
-//        System.out.println(key + " = " + template);
-/*      }
+      String driver = dbProps.getProperty("drivers");
+      String url = dbProps.getProperty("default.url");
+      String dbname = dbProps.getProperty("default.dbname");
+      String user = dbProps.getProperty("default.user");
+      String passwd = dbProps.getProperty("default.password");
+
+      if (driver == null || url == null || dbname == null || user == null || passwd == null)
+        return false;
+
+      Class.forName(driver).newInstance();
+      Connection conn = DriverManager.getConnection(url,user,passwd);
+
+      StringBuffer sql = new StringBuffer("update ");
+      sql.append(dbname);
+      sql.append("..");
+      sql.append(IShopTemplate.ISHOP_TABLE_TEMPLATES);
+      sql.append(" set ");
+      sql.append("content");
+      sql.append(" = ");
+      sql.append("?");
+      sql.append(", ");
+      sql.append("bytecode");
+      sql.append(" = null where ");
+      sql.append(IShopTemplateBean.getIShopClassColumnName());
+      sql.append(" = '");
+      sql.append(page.getIShopClass());
+      sql.append("' and ");
+      sql.append(IShopTemplateBean.getIShopIDColumnName());
+      sql.append(" = '");
+      sql.append(page.getIShopID());
+      sql.append("' and ");
+      sql.append(IShopTemplateBean.getIShopLanguageNrColumnName());
+      sql.append(" = ");
+      sql.append(page.getIShopLanguageNr());
+
+      PreparedStatement stmt = conn.prepareStatement(sql.toString());
+      ByteArrayInputStream stream = new ByteArrayInputStream(html.getBytes());
+      stmt.setAsciiStream(1,stream,stream.available());
+      stmt.execute();
+
+      stmt.close();
+      conn.close();
     }
     catch(Exception e) {
       e.printStackTrace();
-    }*/
+      return false;
+    }
 
-    return(true);
+    return true;
   }
-
-/*    Class.forName("com.sybase.jdbc2.jdbc.SybDriver").newInstance();
-      Connection conn = DriverManager.getConnection("jdbc:sybase:Tds:" + ipad + ":5000?ServiceName=" + dbName, "sa", "intershop");
-
-      StringBuffer sql = new StringBuffer("SELECT * FROM ");
-      sql.append(dbName);
-      sql.append("..");
-      sql.append(IShopTemplate.ISHOP_TABLE_NAME);
-      sql.append(" where id = 'pallitest'");
-
-      Statement stmt = conn.createStatement();
-      ResultSet res = stmt.executeQuery(sql.toString());
-
-      res.close();
-      stmt.close();
-
-      /*
-       *  String sql = "update trainingstoredb..templates set content = 'Þetta er smá test' where id = 'pallitest'";
-       *  Statement stmt = conn.createStatement();
-       *  int res = stmt.executeUpdate(sql);
-       *  System.out.println("res = " + res);
-       *  stmt.close();
-       *  conn.close();
-       */
-/*    }
-    catch (Exception e) {
-      System.out.println("error: " + e.getMessage());
-      e.printStackTrace();
-    }*/
 }

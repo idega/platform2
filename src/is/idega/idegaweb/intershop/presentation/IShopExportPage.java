@@ -1,5 +1,5 @@
 /*
- * $Id: IShopExportPage.java,v 1.2 2002/03/19 09:41:10 palli Exp $
+ * $Id: IShopExportPage.java,v 1.3 2002/04/03 12:42:07 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,10 +12,15 @@ package is.idega.idegaweb.intershop.presentation;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.presentation.IWContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.util.FileUtil;
 import is.idega.idegaweb.intershop.data.IShopTemplate;
 import is.idega.idegaweb.intershop.business.IShopTemplateHome;
 import is.idega.idegaweb.intershop.business.IShopExportBusiness;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -23,8 +28,17 @@ import java.util.Properties;
  * @version 1.0
 */
 public class IShopExportPage extends IWAdminWindow {
+  private static final String IW_BUNDLE_IDENTIFIER  = "is.idega.idegaweb.intershop";
+
   private boolean exportToSybase(IWContext iwc) {
     BuilderLogic instance = BuilderLogic.getInstance();
+
+    IWBundle bundle = getBundle(iwc);
+    StringBuffer path = new StringBuffer(bundle.getPropertiesRealPath());
+    if (!path.toString().endsWith(FileUtil.getFileSeparator()))
+      path.append(FileUtil.getFileSeparator());
+
+    path.append(bundle.getProperty("sybaseproperties","sybasedb.properties"));
 
     String ib_page_id = instance.getCurrentIBPage(iwc);
     IBPage ibpage = null;
@@ -37,10 +51,14 @@ public class IShopExportPage extends IWAdminWindow {
       return(false);
     }
 
-    if (!ibpage.getSubType().equals(IShopTemplate.SUBTYPE_NAME))
+    String subType = ibpage.getSubType();
+    if (subType == null)
       return(false);
 
-    IShopTemplate is_page = IShopTemplateHome.getInstance().getElement(page_id);
+    if (!subType.equals(IShopTemplate.SUBTYPE_NAME))
+      return(false);
+
+    IShopTemplate is_page = IShopTemplateHome.getInstance().findByPageId(page_id);
     if (is_page == null)
       return(false);
 
@@ -49,15 +67,33 @@ public class IShopExportPage extends IWAdminWindow {
       return(false);
 
     Properties props = new Properties();
-//    props.load();
+    try {
+      props.load(new FileInputStream(path.toString()));
+    }
+    catch(FileNotFoundException e) {
+      e.printStackTrace();
+      return(false);
+    }
+    catch(IOException e) {
+      e.printStackTrace();
+      return(false);
+    }
+
+    IShopExportBusiness.getInstance().exportPage(is_page,props,html,iwc.getApplicationContext());
 
     return(true);
   }
 
   public void main(IWContext iwc) throws Exception {
-//    exportToSybase(iwc);
-    IShopExportBusiness.getInstance().exportPage(null,null,null,iwc.getApplicationContext());
+    exportToSybase(iwc);
 
     close();
+  }
+
+  /**
+   *
+   */
+  public String getBundleIdentifier() {
+    return IW_BUNDLE_IDENTIFIER;
   }
 }

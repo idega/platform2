@@ -1,5 +1,5 @@
 /*
- * $Id: IShopTemplate.java,v 1.2 2002/03/19 09:41:10 palli Exp $
+ * $Id: IShopTemplate.java,v 1.3 2002/04/03 12:41:59 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,7 @@ package is.idega.idegaweb.intershop.data;
  */
 public interface IShopTemplate {
   public final static String ISHOP_TABLE_TEMPLATES = "templates";
-  public final static String ISHOP_TABLE_TEMPLATEDESC = "templatedesc";
+  public final static String ISHOP_TABLE_TEMPLATEDESC = "templatedescr";
   public final static String SUBTYPE_NAME = "intershop";
 
   public String getIShopID();
