@@ -122,7 +122,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		return true;
 	}
 
-	private AfterSchoolChoice createAfterSchoolChoice(User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body) throws CreateException, RemoteException, FinderException {
+	private AfterSchoolChoice createAfterSchoolChoice(User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body) throws CreateException, RemoteException {
 		if (season == null) {
 			try {
 				season = getSchoolChoiceBusiness().getCurrentSeason();
@@ -133,16 +133,11 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		}
 		AfterSchoolChoice choice = null;
 		if (season != null) {
-			Collection choices = getAfterSchoolChoiceHome().findByChildAndSeason(childID, ((Integer) season.getPrimaryKey()));
-			if (!choices.isEmpty()) {
-				Iterator iter = choices.iterator();
-				while (iter.hasNext()) {
-					AfterSchoolChoice element = (AfterSchoolChoice) iter.next();
-					if (element.getChoiceNumber() == choiceNumber.intValue()) {
-						choice = element;
-						continue;
-					}
-				}
+			try {
+				choice = findChoicesByChildAndChoiceNumberAndSeason(childID, choiceNumber.intValue(), (Integer) season.getPrimaryKey());
+			}
+			catch (FinderException fex) {
+				choice = null;
 			}
 		}
 		if (choice == null) {
