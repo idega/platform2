@@ -258,6 +258,7 @@ public class Poll extends Block implements Builderaware {
 				if (locAnswerText != null) {
 					hasAnswers = true;
 					radioTable.add(getStyleObject(new RadioButton(PollBusiness._PARAMETER_POLL_ANSWER, String.valueOf(answers[a].getID())), ANSWER_STYLE), 1, row);
+					radioTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 					radioTable.add(getStyleText(locAnswerText.getHeadline(), ANSWER_STYLE), 2, row++);
 				}
 			}
