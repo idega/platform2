@@ -360,7 +360,7 @@ public class GolferPage extends Page{
 
       //INFO
       if (chosenParameterValue[0].equals(sInfoParameterValue)) {
-        setInfoView();
+        setInfoView(iwc);
       }
 
       //RESULTS HOME
@@ -370,12 +370,12 @@ public class GolferPage extends Page{
 
       //RESULTS ABROAD
       else if (chosenParameterValue[0].equals(abroadResultsParameterValue)) {
-        setAbroadResultsView();
+        setAbroadResultsView(iwc);
       }
 
       //STATISTICS
       else if (chosenParameterValue[0].equals(sStatisticsParameterValue)) {
-        setStatisticsView();
+        setStatisticsView(iwc);
       }
 
       //PICTURES
@@ -489,7 +489,7 @@ public class GolferPage extends Page{
   }
 
   //Golfpokinn
-  private void setInfoView(){
+  private void setInfoView(IWContext iwc){
     //Added by Laddi
     boolean isBjorgvin = false;
     try {
@@ -523,7 +523,7 @@ public class GolferPage extends Page{
   }
 
   //Árangur Erlendis
-  private void setAbroadResultsView(){
+  private void setAbroadResultsView(IWContext iwc){
     //Added by Laddi
     boolean isBjorgvin = false;
     try {
@@ -659,7 +659,7 @@ public class GolferPage extends Page{
   }
 
   //STATISTICS_VIEW
-  private void setStatisticsView(){
+  private void setStatisticsView(IWContext iwc){
     //Added by Laddi
     boolean isBjorgvin = false;
     try {
