@@ -169,7 +169,7 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		termDate.setAsNotEmpty(iwrb.getLocalizedString("clubexchangewindow.must_set_term_date","You must select a termination date for the transfer."));
 		//termDate.setToCurrentDate();
 		
-		Help help = getHelp(HELP_TEXT_KEY,iwc);
+		Help help = getHelp(HELP_TEXT_KEY);
 		
 		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("clubexchangewindow.close", "Close"));
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("clubexchangewindow.save", "Save"), ACTION, ACTION_SAVE);
