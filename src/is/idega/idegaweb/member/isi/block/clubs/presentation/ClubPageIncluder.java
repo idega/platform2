@@ -29,6 +29,7 @@ public class ClubPageIncluder extends PageIncluder {
 	private Page parentPage;
 	private String menuStyleSrc = "cssmenu/CSSMultiLevelMenu.css";
     private ICPage page;
+    private String rootClubParamName = null; // id of club is sent with this parametere (if not null)
 	
     public ClubPageIncluder() {
         super();
@@ -70,6 +71,9 @@ public class ClubPageIncluder extends PageIncluder {
               //add the extra parameters
             //the division id
             finalUrl.append(PARAM_ROOT_CLUB_ID).append("=").append(groupId);
+            if(rootClubParamName!=null) {
+            	finalUrl.append(rootClubParamName).append("=").append(groupId);
+            }
             
             if(page!=null) {
                 finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append( page.getPrimaryKey().toString());
@@ -92,6 +96,10 @@ public class ClubPageIncluder extends PageIncluder {
     
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	public void setRootClubParamName(String value) {
+		rootClubParamName = value;
 	}
 	
 	public void setCallingPage(ICPage page) {
