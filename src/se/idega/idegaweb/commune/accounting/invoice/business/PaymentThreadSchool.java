@@ -89,9 +89,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 	private void dispTime(String s){
 		long t = System.currentTimeMillis();
 		time = t - start;
-		log.info(s+"  total time:"+((float)time/1000f));
+		log.info(s+"  total time:"+(time/1000f));
 		time = t - stop;
-		log.info(s+"  from last stop, time:"+((float)time/1000f));
+		log.info(s+"  from last stop, time:"+(time/1000f));
 		stop = t;
 	}
 
