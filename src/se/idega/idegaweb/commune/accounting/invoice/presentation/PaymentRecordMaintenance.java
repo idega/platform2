@@ -73,11 +73,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/01 14:08:23 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/01 16:38:16 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.50 $
+ * @version $Revision: 1.51 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1137,10 +1137,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				= {{ ACTION_KEY, ACTION_SHOW_RECORD_DETAILS + "" },
 					 { PAYMENT_RECORD_KEY, recordId }};
 		final String regSpecType = record.getRuleSpecType ();
-		final String [][] showRecordLinkParameters = isManualRecord (record)
-				&& (!hasCurrentSchoolCategoryFlowInAndFlowOut (context)
-						|| null == regSpecType
-						|| !regSpecType.equals ("cacc_reg_spec_type.check"))
+		final boolean userIsSchoolManager = null != getSchool (context);
+		final boolean isFlowInAndOutAndCheck
+				= hasCurrentSchoolCategoryFlowInAndFlowOut (context)
+				&& null == regSpecType
+				&& regSpecType.equals ("cacc_reg_spec_type.check");
+		final boolean isRecordEditAllowed = isManualRecord (record)
+				&& !isFlowInAndOutAndCheck && !userIsSchoolManager;
+		final String [][] showRecordLinkParameters = isRecordEditAllowed
 				? new String [][] {{ ACTION_KEY,
 														 ACTION_SHOW_EDIT_RECORD_FORM + "" },
 													 { PAYMENT_RECORD_KEY, recordId }}
