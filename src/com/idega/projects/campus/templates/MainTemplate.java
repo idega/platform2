@@ -21,7 +21,7 @@ import com.idega.data.*;
 
 public abstract class MainTemplate extends JSPModule implements JspPage{
 
-  private Table MainTable,HeaderTable,SubHeaderTable,TitleTable,RightTable;
+  private Table MainTable,HeaderTable,SubHeaderTable,TitleTable,RightTable,myTable;
   private Table LeftTable,TabTable;
   private Table content;
   private Image LeftHeaderImage,RightHeaderImage;
@@ -91,6 +91,7 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     this.InsertTopLogo();
   }
   public void initTables(){
+    initMyTable();
     initMainTable();
     initHeaderTable();
     initSubHeaderTable();
@@ -101,6 +102,7 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     MainTable = new Table(3,1);
     MainTable.setBorder(BORDER);
     MainTable.setVerticalAlignment(2,1,"top");
+    MainTable.setVerticalAlignment(3,1,"top");
     MainTable.setCellpadding(0);
     MainTable.setCellspacing(0);
     MainTable.setHeight("100%");
@@ -109,10 +111,23 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     MainTable.setWidth(2,"100%");
     MainTable.setWidth(3,"130");
     MainTable.add(getRightTable(),3,1);
+    MainTable.add(getMyTable(),2,1);
     MainTable.add(getLeftTable(),1,1);
+  }
+  public void initMyTable(){
+    myTable = new Table(1,1);
+    myTable.setBorder(BORDER);
+    myTable.setVerticalAlignment(1,1,"top");
+    myTable.setCellpadding(12);
+    myTable.setCellspacing(0);
+    myTable.setHeight("100%");
+    myTable.setWidth("100%");
   }
   public Table getMainTable(){
     return MainTable;
+  }
+  public Table getMyTable(){
+    return myTable;
   }
   public void initHeaderTable(){
     HeaderTable = new Table(3,1);
@@ -163,28 +178,37 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     return TitleTable;
   }
   public Table getLeftTable(){
-    LeftTable = new Table(1,2);
+    LeftTable = new Table(1,3);
     LeftTable.setHeight("100%");
     LeftTable.setHeight(1,2,"100%");
     LeftTable.setWidth("130");
     LeftTable.setCellpadding(0);
     LeftTable.setCellspacing(0);
     ///LeftTable.setWidth(1,2,"100%");
+    LeftTable.setHeight(1,3,"88");
     LeftTable.setVerticalAlignment(1,1,"top");
+    LeftTable.setVerticalAlignment(1,2,"top");
+    LeftTable.setVerticalAlignment(1,3,"bottom");
     LeftTable.setBorder(BORDER);
     return LeftTable;
   }
-  private Table getRightTable(){
+  public Table getRightTable(){
     RightTable = new Table(1,3);
     RightTable.setWidth("135");
-    RightTable.setHeight("100%");
-    RightTable.setHeight(2,"100%");
+    //RightTable.setHeight("100%");
+    //RightTable.setHeight(2,"100%");
     RightTable.setCellpadding(0);
     RightTable.setCellspacing(0);
     RightTable.setHeight(1,3,"88");
     RightTable.setVerticalAlignment(1,1,"top");
-    RightTable.setVerticalAlignment(1,3,"bottom");
+    RightTable.setVerticalAlignment(1,2,"top");
+    RightTable.setVerticalAlignment(1,3,"top");
     RightTable.setBorder(BORDER);
+
+    RightTable.add(new Image("/pics/titles/IS/poll.gif"),1,2);
+    RightTable.addBreak(1,2);
+    RightTable.add(new Image("/pics/titles/IS/calendar.gif"),1,3);
+
     return RightTable;
   }
   private void initTabTable(){
@@ -286,8 +310,7 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
    *
    */
   public void add(ModuleObject objectToAdd){
-    MainTable.add(Text.getBreak(),2,1);
-    MainTable.add(objectToAdd,2,1);
+    myTable.add(objectToAdd,1,1);
   }
   /** Adds a ModuleObject to the center of the left side
    *
@@ -300,6 +323,12 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
    */
   public void addRight(ModuleObject objectToAdd){
     RightTable.add(objectToAdd,1,2);
+  }
+  /** Adds a ModuleObject to the bottom of the right side
+   *
+   */
+  public void addRightBottom(ModuleObject objectToAdd){
+    RightTable.add(objectToAdd,1,3);
   }
   /** Adds a ModuleObject to the titlebar on the left side
    *
@@ -341,7 +370,7 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
    *
    */
   public void addLowerLogo(ModuleObject objectToAdd){
-    RightTable.add(objectToAdd,1,3);
+    LeftTable.add(objectToAdd,1,3);
   }
   /** Adds a ModuleObject into tab area
    *
