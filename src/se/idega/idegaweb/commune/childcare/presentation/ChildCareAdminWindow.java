@@ -1704,7 +1704,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			layoutTbl.add(careTime, 2, row++);
 		}
 
-		layoutTbl.add(getSmallHeader(localize("ccnctw_from_date", "From date") + ":"), 1, row);
+		layoutTbl.add(getSmallHeader(localize("ccnctw_from_date_new", "From date") + ":"), 1, row);
 
 		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		fromDate.setAsNotEmpty(localize("ccnctw_unvalid_date_format_alert", "Please choose a valid from date."));
