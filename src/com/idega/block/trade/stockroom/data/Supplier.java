@@ -3,7 +3,7 @@ package com.idega.block.trade.stockroom.data;
 
 public interface Supplier extends com.idega.data.IDOLegacyEntity
 {
- public void addCreditCardInformation(com.idega.block.creditcard.data.CreditCardInformation p0)throws com.idega.data.IDOAddRelationshipException,javax.ejb.EJBException;
+ public void addCreditCardInformation(com.idega.block.trade.data.CreditCardInformation p0)throws com.idega.data.IDOAddRelationshipException,javax.ejb.EJBException;
  public void addCreditCardInformationPK(java.lang.Object p0)throws com.idega.data.IDOAddRelationshipException;
  public com.idega.core.location.data.Address getAddress()throws java.sql.SQLException;
  public java.util.List getAddresses()throws java.sql.SQLException;

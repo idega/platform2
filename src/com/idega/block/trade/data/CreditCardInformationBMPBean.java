@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package com.idega.block.creditcard.data;
+package com.idega.block.trade.data;
 
 import com.idega.data.GenericEntity;
 

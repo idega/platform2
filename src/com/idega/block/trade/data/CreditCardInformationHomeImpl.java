@@ -1,4 +1,4 @@
-package com.idega.block.creditcard.data;
+package com.idega.block.trade.data;
 
 
 

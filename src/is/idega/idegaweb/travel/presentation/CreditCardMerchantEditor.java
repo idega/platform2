@@ -8,8 +8,8 @@ import java.util.Locale;
 import javax.ejb.CreateException;
 
 import com.idega.block.creditcard.business.CreditCardBusiness;
-import com.idega.block.creditcard.data.CreditCardInformation;
 import com.idega.block.creditcard.data.CreditCardMerchant;
+import com.idega.block.trade.data.CreditCardInformation;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierBMPBean;
 import com.idega.block.trade.stockroom.data.SupplierHome;

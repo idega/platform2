@@ -22,7 +22,7 @@ public interface CreditCardBusiness extends com.idega.business.IBOService
  public com.idega.block.creditcard.data.CreditCardAuthorizationEntry getAuthorizationEntry(com.idega.block.trade.stockroom.data.Supplier p0,java.lang.String p1, IWTimestamp stamp) throws java.rmi.RemoteException;
  public CreditCardClient getCreditCardClient(CreditCardMerchant merchant) throws Exception;
  public com.idega.block.creditcard.business.CreditCardClient getCreditCardClient(com.idega.block.trade.stockroom.data.Supplier p0, IWTimestamp stamp)throws java.lang.Exception, java.rmi.RemoteException;
- public com.idega.block.creditcard.data.CreditCardInformation getCreditCardInformation(com.idega.block.trade.stockroom.data.Supplier p0, IWTimestamp p1) throws java.rmi.RemoteException;
+ public com.idega.block.trade.data.CreditCardInformation getCreditCardInformation(com.idega.block.trade.stockroom.data.Supplier p0, IWTimestamp p1) throws java.rmi.RemoteException;
  public java.util.Collection getCreditCardInformations(com.idega.block.trade.stockroom.data.Supplier p0)throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public com.idega.block.creditcard.data.CreditCardMerchant getCreditCardMerchant(com.idega.block.trade.stockroom.data.Supplier p0, IWTimestamp p1) throws java.rmi.RemoteException;
  public com.idega.block.creditcard.data.CreditCardMerchant getCreditCardMerchant(com.idega.block.trade.stockroom.data.Supplier p0,java.lang.Object p1) throws java.rmi.RemoteException;

@@ -11,7 +11,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.block.creditcard.data.CreditCardInformation;
+import com.idega.block.trade.data.CreditCardInformation;
 import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.contact.data.Email;

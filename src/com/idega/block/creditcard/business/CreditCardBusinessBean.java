@@ -10,8 +10,6 @@ import javax.ejb.CreateException;
 import javax.transaction.TransactionManager;
 
 import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
-import com.idega.block.creditcard.data.CreditCardInformation;
-import com.idega.block.creditcard.data.CreditCardInformationHome;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntries;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntriesHome;
@@ -21,7 +19,8 @@ import com.idega.block.creditcard.data.TPosAuthorisationEntriesBean;
 import com.idega.block.creditcard.data.TPosAuthorisationEntriesBeanHome;
 import com.idega.block.creditcard.data.TPosMerchant;
 import com.idega.block.creditcard.data.TPosMerchantHome;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.data.CreditCardInformation;
+import com.idega.block.trade.data.CreditCardInformationHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
@@ -348,10 +347,6 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			}
 		}
 		return null;
-	}
-	
-	protected ProductBusiness getProductBusiness() throws RemoteException {
-		return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
 	}
 	
 	public boolean getUseCVC(CreditCardClient client) {
