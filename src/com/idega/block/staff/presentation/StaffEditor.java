@@ -172,7 +172,7 @@ public StaffEditor(){
     addLeft(_iwrb.getLocalizedString("extra_info","Extra info")+":",metaTable,true,false);
 
     ImageInserter image = new ImageInserter(StaffBusiness.PARAMETER_IMAGE_ID);
-      image.setWindowClassToOpen(com.idega.block.media.presentation.SimpleChooserWindow.class);
+      image.setWindowClassToOpen(com.idega.block.media.presentation.MediaChooserWindow.class);
       image.setHasUseBox(false);
       if ( entity != null )
         image.setImageId(entity.getImageID());

@@ -18,9 +18,6 @@ import com.idega.block.category.business.*;
 import com.idega.core.data.ICCategory;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-//import com.idega.jmodule.image.presentation.ImageInserter;
-//import com.idega.jmodule.image.presentation.SimpleChooserWindow;
-import com.idega.block.media.presentation.SimpleChooserWindow;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.data.*;
 import com.idega.util.text.*;
@@ -607,7 +604,7 @@ private IWResourceBundle iwrb;
 
           imageTable.add(immi,1,row);
           //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
-          Link edit = com.idega.block.media.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
+          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
           delete.addParameter(prmDeleteFile,f.getID());
           delete.addParameter(prmNwNewsId,nwNews.getID());

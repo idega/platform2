@@ -13,8 +13,6 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.block.text.data.*;
 import com.idega.block.text.business.*;
 import com.idega.core.user.data.User;
-//import com.idega.jmodule.image.presentation.ImageInserter;
-import com.idega.block.media.presentation.SimpleChooserWindow;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.util.text.*;
@@ -297,7 +295,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
           imageTable.add(immi,1,row);
           //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
-          Link edit = com.idega.block.media.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
+          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
           delete.addParameter(prmDeleteFile,f.getID());
           delete.addParameter(prmUsedTextId,txText.getID());
