@@ -71,6 +71,7 @@ public class NewsFinder {
     sql.append(" = ");
     sql.append(newsCategoryId);
     // USE BETWEEN
+    /*
     if(!ignorePublishingDates ){
       idegaTimestamp today = idegaTimestamp.RightNow();
       sql.append(" and '");
@@ -81,8 +82,9 @@ public class NewsFinder {
       sql.append(Content.getColumnNamePublishTo());
 
     }
+    */
     // USE OPERATORS <= AND >=
-    /*
+
     if(!ignorePublishingDates ){
       idegaTimestamp today = idegaTimestamp.RightNow();
       sql.append(" and ");
@@ -95,7 +97,7 @@ public class NewsFinder {
       sql.append(today.toSQLString());
       sql.append("' ");
     }
-    */
+
     sql.append(" order by ");
     sql.append(Content.getColumnNamePublishFrom());
     sql.append(" desc ");
