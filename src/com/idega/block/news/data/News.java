@@ -80,10 +80,10 @@ public class News extends GenericEntity{
     setColumn(getNewsTextColumnName(), newstext);
   }
   public String getIncludeImage(){
-    return getStringColumnValue(getNewsTextColumnName());
+    return getStringColumnValue(getIncludeImageColumnName());
   }
   public void setIncludeImage(String include_image){
-    setColumn(getNewsTextColumnName(), include_image);
+    setColumn(getIncludeImageColumnName(), include_image);
   }
   public int getImageId(){
     return getIntColumnValue(getImageIdColumnName());

@@ -39,6 +39,7 @@ private Text authorstring;
 private Text sourcestring;
 private Text daysshownstring;
 private Text imagestring;
+private String sEditor,sHeadline,sNews,sCategory,sAuthor,sSource,sDaysShown,sImage;
 
 private String attributeName = "union_id";
 //private int attributeId = -1;
@@ -48,44 +49,38 @@ private int attributeId = 3;
 
   }
   public NewsEditor(boolean isAdmin){
-  this.isAdmin=isAdmin;
-
+    this.isAdmin=isAdmin;
   }
 
   private void setSpokenLanguage(ModuleInfo modinfo){
 
-  String language2 = modinfo.getParameter("language");
-  if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
-  if ( language2 != null) language = language2;
-
-  // language = modinfo.getSpokenLanguage();
-  // if(language!=null){
-  if (language.equalsIgnoreCase("IS")){
-  Lang = IS;
-  }else{
-  Lang = EN;
-  }
-
-  // }
+    String language2 = modinfo.getParameter("language");
+    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
+    if ( language2 != null) language = language2;
+    if (language.equalsIgnoreCase("IS")){
+      Lang = IS;
+    }
+    else{
+      Lang = EN;
+    }
 
   }
 
   public void setConnectionAttributes(String attributeName, int attributeId) {
-        this.attributeName = attributeName;
-        this.attributeId = attributeId;
+    this.attributeName = attributeName;
+    this.attributeId = attributeId;
   }
 
   public void setConnectionAttributes(String attributeName, String attributeId) {
-        this.attributeName = attributeName;
-        this.attributeId = Integer.parseInt(attributeId);
+    this.attributeName = attributeName;
+    this.attributeId = Integer.parseInt(attributeId);
   }
 
   public String getColumnString(NewsCategoryAttribute[] attribs){
-
   String values = "";
 
     for (int i = 0 ; i < attribs.length ; i++) {
-      values += " news_category_id = '"+attribs[i].getNewsCategoryId()+"'" ;
+      values += NewsCategory.getNameColumnName()+"_id = '"+attribs[i].getNewsCategoryId()+"'" ;
       if( i!= (attribs.length-1) ) values += " OR ";
     }
   return values;
@@ -93,10 +88,16 @@ private int attributeId = 3;
 
   public void main(ModuleInfo modinfo)throws Exception{
     this.isAdmin=AccessControl.hasEditPermission(this,modinfo);
-
     setSpokenLanguage(modinfo);
     String mode = modinfo.getParameter("mode");
-
+    this.sHeadline = Lang[1];
+    this.sNews = Lang[2];
+    this.sCategory = Lang[3];
+    this.sAuthor = Lang[4];
+    this.sSource = Lang[5];
+    this.sDaysShown = Lang[6];
+    this.sImage = Lang[7];
+    this.sEditor = Lang[0];
 
     headlinestring = new Text("<b>"+Lang[1]+"</b>");
     newsstring = new Text("<b>"+Lang[2]+"</b>");
@@ -107,20 +108,20 @@ private int attributeId = 3;
     imagestring = new Text("<b>"+Lang[7]+"</b>");
 
     try{
-
-
       //check to see if we are doing anything special
       if( mode != null){
-
-        //are we updating
         if( mode.equals("update") ){
-                //add(drawBrowseTable());
+          //add(drawBrowseTable());
         }
         else if( mode.equals("save")){
-                if( storeNews(modinfo) ) add(feedBack(true));
-                else add(feedBack(false));
+          if( storeNews(modinfo) )
+            add(feedBack(true));
+          else
+            add(feedBack(false));
         }
-        else if( mode.equals("delete") ){ add(deleteNews(modinfo.getParameter("news_id"))); }
+        else if( mode.equals("delete") ){
+          add(deleteNews(modinfo.getParameter("news_id")));
+        }
       }
 
       //else we are either writing something new or we are updating something we have selected
@@ -129,11 +130,10 @@ private int attributeId = 3;
         add(editorTable(modinfo));
         }
         else add(new Text("<center><b></b>Login First!</b></center>") );
-        //add(editorTable(modinfo));
       }
     }
     catch(Exception e){
-            add(new Text("villa : "+e.getMessage()) );//something went wrong
+      add(new Text("villa : "+e.getMessage()) );//something went wrong
     }
   }
 
@@ -144,22 +144,23 @@ private int attributeId = 3;
   return new Text("Deleted the news");
   }
 
+  public Text getHeaderText(String s){
+    Text T = new Text(s);
+    T.setBold();
+    return T;
+  }
 
-  public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
-  {
-    HttpSession Session = modinfo.getSession();
+
+  public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException{
 
     Table mainTable = new Table(1, 2);
-  //	Table topToolTable = (new NewsToolbar()).getToolbarTable();//4,1
     Table topToolTable = new Table(1,1);
+    Text tEditor = new Text(sEditor);
+    tEditor.setBold();
+    tEditor.setFontColor("#FFFFFF");
+    tEditor.setFontSize("3");
 
-    Text frettastjori = new Text(Lang[0]);//Lang[0]=newseditor...
-    frettastjori.setBold();
-    frettastjori.setFontColor("#FFFFFF");
-    frettastjori.setFontSize("3");
-
-
-    topToolTable.add(frettastjori,1,1);
+    topToolTable.add(tEditor,1,1);
     topToolTable.setColor("4d6476");
     topToolTable.setWidth("100%");
 
@@ -170,17 +171,12 @@ private int attributeId = 3;
 
 
     boolean update=false;
-    //interface starts
-
     myForm.add(mainPanel);
-
-
-    //mainTable.add(new NewsToolbar(),1,1);
     mainTable.add(topToolTable,1,1);
-
     mainTable.add(myForm,1,2);
-    mainPanel.add(headlinestring,1,1);
-    mainPanel.add(newsstring,1,3);
+
+    mainPanel.add(getHeaderText(sHeadline),1,1);
+    mainPanel.add(getHeaderText(sNews),1,3);
     mainPanel.add(sideToolTable,2,1);
 
     mainTable.setColor("#EFEFEF");
@@ -190,16 +186,9 @@ private int attributeId = 3;
     mainPanel.setVerticalAlignment(1,4,"top");
     mainPanel.mergeCells(2,1,2,4);
 
-    //mainTable.setBorder("1");
-    //mainPanel.setBorder("1");
-
     String news_id = modinfo.getParameter("news_id");
     String category_id = modinfo.getParameter("category_id");
-    /*String mode = modinfo.getParameter("mode");
-    String mode = modinfo.getParameter("mode");*/
 
-    //draw everything first and then if we already selected a news then
-    //fill up the selection boxes with that
     News news=null;
     HiddenInput newsHidden;
 
@@ -208,38 +197,36 @@ private int attributeId = 3;
       update = true;
       newsHidden = new HiddenInput("news_id",news_id);
     }
-    else newsHidden = new HiddenInput("news_id","-1");
+    else
+      newsHidden = new HiddenInput("news_id","-1");
 
     mainPanel.add(newsHidden,1,4);
 
-    //main inputbox and headline
-
-    //check if news and/or headline is already there
     TextArea headlineArea;
-
     if(update) {
       String theheadline = news.getHeadline();
-      if( theheadline!=null )  headlineArea = insertTextArea("NewsHeader",theheadline, 0, 60);
-      else headlineArea = insertTextArea("NewsHeader","", 0, 60);
+      if( theheadline!=null )
+        headlineArea = insertTextArea("NewsHeader",theheadline, 0, 60);
+      else
+        headlineArea = insertTextArea("NewsHeader","", 0, 60);
     }
-    else headlineArea = insertTextArea("NewsHeader","", 0, 60);
+    else
+      headlineArea = insertTextArea("NewsHeader","", 0, 60);
 
     mainPanel.add(headlineArea,1,2);
 
     TextArea newsArea;
     if(update) {
       String thenewstext=news.getText();
-      if ( thenewstext!=null) newsArea = insertTextArea("NewsText",thenewstext,15, 60);
-      else newsArea = insertTextArea("NewsText","",15, 60);
-
+      if ( thenewstext!=null)
+        newsArea = insertTextArea("NewsText",thenewstext,15, 60);
+      else
+        newsArea = insertTextArea("NewsText","",15, 60);
     }
-    else newsArea = insertTextArea("NewsText","",15, 60);
-
-  //     newsArea.setNoWrap();
+    else
+      newsArea = insertTextArea("NewsText","",15, 60);
 
     mainPanel.add(newsArea,1,4);
-
-    //category menu
 
     DropdownMenu newsCategoryMenu = new DropdownMenu("category_id");
 
@@ -249,76 +236,68 @@ private int attributeId = 3;
 
     String categoryString = getColumnString(attribs);
 
-    if( (categoryString!=null) && !(categoryString.equals("")) ) categoryString += " AND ";
+    if( (categoryString!=null) && !(categoryString.equals("")) )
+      categoryString += " AND ";
 
     NewsCategory newscat = new NewsCategory();
-    NewsCategory[] newscats = (NewsCategory[]) newscat.findAll("select * from news_category where "+categoryString+ NewsCategory.getValidColumnName()+" ='Y'");
+    String sql = "select * from "+NewsCategory.getNewsCategoryTableName()+" where "+categoryString+ NewsCategory.getValidColumnName()+" ='Y'";
+    NewsCategory[] newscats = (NewsCategory[]) newscat.findAll(sql);
 
     if( newscats!=null || newscats.length!=0){
-                    for ( int i=0 ; i < newscats.length; i++){
-                            newsCategoryMenu.addMenuElement(newscats[i].getID(), newscats[i].getName());
-                    }
-            newsCategoryMenu.addMenuElement("-1", "Veldu flokk" );
+      for ( int i=0 ; i < newscats.length; i++){
+        newsCategoryMenu.addMenuElement(newscats[i].getID(), newscats[i].getName());
+      }
+      newsCategoryMenu.addMenuElement("-1", "Veldu flokk" );
     }
-    else newsCategoryMenu.addMenuElement("Finn engan flokk" );
+    else
+      newsCategoryMenu.addMenuElement("Finn engan flokk" );
 
-    if(update) newsCategoryMenu.setSelectedElement(""+news.getNewsCategoryId());
-    else newsCategoryMenu.setSelectedElement("-1" );
+    if(update)
+      newsCategoryMenu.setSelectedElement(""+news.getNewsCategoryId());
+    else
+      newsCategoryMenu.setSelectedElement("-1" );
     newsCategoryMenu.keepStatusOnAction();
-    sideToolTable.add(categorystring,1,1);
+    sideToolTable.add(getHeaderText(sCategory),1,1);
     sideToolTable.add(newsCategoryMenu,1,2);
-
-
-    /*myDropdown.setSelectedElement("Y");
-            myDropdown.setToSubmit();
-            myDropdown.keepStatusOnAction();
-            myDropdown.addMenuElement("-1", "Veldu fréttaflokk" );*/
-
-
-    //author
 
     TextInput authorBox;
 
     if(update) {
       String theauthor = news.getAuthor();
-      if( theauthor!=null ) authorBox = insertEditBox("author",theauthor);
-      else authorBox = insertEditBox("author","");
-
+      if( theauthor!=null )
+        authorBox = insertEditBox("author",theauthor);
+      else
+        authorBox = insertEditBox("author","");
     }
-    else authorBox = insertEditBox("author");
-
-    sideToolTable.add(authorstring,1,3);
+    else
+      authorBox = insertEditBox("author");
+    sideToolTable.add(getHeaderText(sAuthor),1,3);
     sideToolTable.add(authorBox,1,4);
-
-    //source
 
     TextInput sourceBox;
 
     if(update) {
       String thesource = news.getSource();
-      if( thesource!=null ) sourceBox = insertEditBox("source",thesource);
-      else sourceBox = insertEditBox("source","");
-
+      if( thesource!=null )
+        sourceBox = insertEditBox("source",thesource);
+      else
+        sourceBox = insertEditBox("source","");
     }
-    else sourceBox = insertEditBox("source");
-
-    sideToolTable.add(sourcestring,1,5);
+    else
+      sourceBox = insertEditBox("source");
+    sideToolTable.add(getHeaderText(sSource),1,5);
     sideToolTable.add(sourceBox,1,6);
-
-    //days shown
 
     DropdownMenu counterMenu = counterDropdown( "daysShown", 1, 30);
     counterMenu.addMenuElement("-1", "óákveðið" );
 
-    if(update) counterMenu.setSelectedElement(""+news.getDaysShown());
-    else counterMenu.setSelectedElement("-1");
-
-    sideToolTable.add(daysshownstring,1,7);
+    if(update)
+      counterMenu.setSelectedElement(""+news.getDaysShown());
+    else
+      counterMenu.setSelectedElement("-1");
+    sideToolTable.add(getHeaderText(sDaysShown),1,7);
     sideToolTable.add(counterMenu,1,8);
-
-    //image
-
-    sideToolTable.addText("<b>Mynd</b>", 1, 9);
+    sideToolTable.add(getHeaderText(sImage), 1, 9);
 
     ImageInserter imageInsert = new ImageInserter();
     if ( update ) {
@@ -326,148 +305,90 @@ private int attributeId = 3;
     }
 
     sideToolTable.add(imageInsert, 1, 10);
-      /////
-
-
-
-      //save button
-
-      SubmitButton mySubmit = new SubmitButton("mode", "save");
-      sideToolTable.add(mySubmit, 1,11);
-      //mainPanel.add(mySubmit,2,5);
-
-
-      /////
-
-      //myTable.add(categoryTable, 1, 3);
-      //myTable.addText("Mynd með? : ", 1, 1);
-      //myTable.addText("Já", 2, 1);
-      //myTable.add(new RadioButton("IncludeImage", "N"), 4, 2);
-      //myTable.add(insertNewsImageForm, 5, 2);
-      //myTable.setColumnAlignment(5, "right");
-
-  //myForm.setMethod("Get");
-
-  //add(outerTable);
-  //add(myForm);
-
-  /*Table returnTable = new Table(1,1);
-  returnTable.add(myForm,1,1);*/
-  mainPanel.setVerticalAlignment(2,1,"top");
-  return mainTable;
-
+    SubmitButton mySubmit = new SubmitButton("mode", "save");
+    sideToolTable.add(mySubmit, 1,11);
+    mainPanel.setVerticalAlignment(2,1,"top");
+    return mainTable;
   }
 
   public boolean storeNews(ModuleInfo modinfo)throws SQLException, IOException{
 
-  boolean update=false;
+    boolean update=false;
+    String news_id = modinfo.getParameter("news_id");
 
-  String news_id = modinfo.getParameter("news_id");
-  //	out.println("newsid :"+news_id);
+    if ( (news_id!=null) && !(news_id.equals("-1")))
+      update=true;
 
-  if ( (news_id!=null) && !(news_id.equals("-1"))) update=true;
-  //	out.println("update :"+update);
+    String newsHeader = modinfo.getParameter("NewsHeader");
+    String newsText = modinfo.getParameter("NewsText");
 
+    newsText = TextSoap.findAndReplace(newsText, "“","\"");
+    newsText = TextSoap.findAndReplace(newsText, "'","´");
 
-  //init parameters
-  //first the required ones
+    String category_id = modinfo.getParameter("category_id");
 
+    if( ((newsHeader==null)||(newsHeader.equalsIgnoreCase("")) ) || ((newsText==null)||(newsText.equalsIgnoreCase(""))) || ((category_id==null)||(category_id.equalsIgnoreCase("-1")) )){
+        return false;
+    }
 
-  String newsHeader = modinfo.getParameter("NewsHeader");
-  //out.println("<br> fyrirsogn: "+newsHeader);
+    News news = null;
+    if (update)
+      news = new News(Integer.parseInt(news_id));
+    else
+      news = new News();
 
-  String newsText = modinfo.getParameter("NewsText");
+    news.setHeadline(newsHeader);
+    news.setText(newsText);
+    news.setNewsCategoryId(new Integer(category_id));
 
-  newsText = TextSoap.findAndReplace(newsText, "“","\"");
-  newsText = TextSoap.findAndReplace(newsText, "'","´");
+    String source = modinfo.getParameter("source");
+    if ( source!=null )
+      news.setSource(source);
 
-  //out.println("<br> text: "+newsText);
+    String author = modinfo.getParameter("author");
+    if ( author!=null )
+      news.setAuthor(author);
 
-  String category_id = modinfo.getParameter("category_id");
-  //out.println("<br> category_id: "+category_id);
+    String daysShown = modinfo.getParameter("daysShown");
+    if ( daysShown!=null )
+      news.setDaysShown(new Integer(daysShown));
 
+    String includeImage = modinfo.getParameter("insertImage");
+    if( includeImage!=null )
+      news.setIncludeImage(includeImage);
+    else
+      news.setIncludeImage("N");
 
-  if( ((newsHeader==null)||(newsHeader.equalsIgnoreCase("")) ) || ((newsText==null)||(newsText.equalsIgnoreCase(""))) || ((category_id==null)||(category_id.equalsIgnoreCase("-1")) )){
-      return false;
-  }
+    String image_id = modinfo.getParameter("image_id");
 
-  News news = null;
-  //make the news object and fill-it up
-  if (update) news = new News(Integer.parseInt(news_id));
-  else news = new News();
+    if(image_id == null)
+      image_id="-1";
 
-  news.setHeadline(newsHeader);
+    news.setImageId(new Integer(image_id));
 
-  news.setText(newsText);
+    idegaTimestamp date = new idegaTimestamp();
 
-  news.setNewsCategoryId(new Integer(category_id));
+    if (!update)
+      news.setDate( date.getTimestampRightNow());
 
-  /*
-  NewsCategoryAttributes newsattr = new NewsCategoryAttributes();
-  newsattr.setNewsCategoryId(Integer.parseInt(category_id));
-  newsattr.setAttributeName("union_id");
-  newsattr.setAttributeId(Integer.parseInt(union_id));*/
-
-  //then the optional ones
-  String source = modinfo.getParameter("source");
-  //out.println("<br> source: "+source);
-  if ( source!=null ) news.setSource(source);
-
-  String author = modinfo.getParameter("author");
-  //out.println("<br> author: "+author);
-  if ( author!=null ) news.setAuthor(author);
-
-  String daysShown = modinfo.getParameter("daysShown");
-  //out.println("<br> daysShown: "+daysShown);
-  if ( daysShown!=null ) news.setDaysShown(new Integer(daysShown));
-
-
-  String includeImage = modinfo.getParameter("insertImage");
-  //out.println("<br> includeImage: "+includeImage);
-  if( includeImage!=null ) news.setIncludeImage(includeImage);
-  else news.setIncludeImage("N");
-
-  String image_id = modinfo.getParameter("image_id");
-
-  //laga a edison
-  //if(image_id == null) image_id="-1";//ef engin mynd
-  if(image_id == null) image_id="-1";//ef engin mynd
-
-  news.setImageId(new Integer(image_id));
-
-  idegaTimestamp date = new idegaTimestamp();
-
-  if (!update) news.setDate( date.getTimestampRightNow());
-
-  //end init params
-
-  //and save or update
-
-  try{
+    try{
       if( update ) {
         news.update();
-   //     news.attr.insert();
-
-
       }
-      else
-      {
+      else{
         news.insert();
-     //   newsattr.insert();
       }
-      //Session.removeAttribute("image_id");
-  }
-  catch(Exception e){
-  e.printStackTrace();
-  System.out.println(e.getMessage());
-  return false;
+    }
+    catch(Exception e){
+      e.printStackTrace();
+      System.out.println(e.getMessage());
+    return false;
+    }
+
+    return true;
   }
 
-  return true;
-  }
-
-  public TextArea insertTextArea(String TextAreaName, String text, int Height, int Width)
-  {
+  public TextArea insertTextArea(String TextAreaName, String text, int Height, int Width){
     TextArea textArea =  new TextArea(TextAreaName);
     textArea.setHeight(Height);
     textArea.setWidth(Width);
@@ -476,8 +397,7 @@ private int attributeId = 3;
     return textArea;
   }
 
-  public TextArea insertTextArea(String TextAreaName, int Height, int Width)
-  {
+  public TextArea insertTextArea(String TextAreaName, int Height, int Width){
     TextArea textArea =  new TextArea(TextAreaName);
     textArea.setHeight(Height);
     textArea.setWidth(Width);
@@ -485,24 +405,20 @@ private int attributeId = 3;
     return textArea;
   }
 
-  public TextInput insertEditBox(String name, String text)
-  {
+  public TextInput insertEditBox(String name, String text){
     TextInput myInput = new TextInput(name);
     myInput.setContent(text);
     myInput.keepStatusOnAction();
     return myInput;
   }
 
-  public TextInput insertEditBox(String name)
-  {
+  public TextInput insertEditBox(String name){
     TextInput myInput = new TextInput(name);
     myInput.keepStatusOnAction();
     return myInput;
   }
 
-
-  public Table feedBack(boolean isOk)
-  {
+  public Table feedBack(boolean isOk){
     Table myTable = new Table(2, 2);
     myTable.mergeCells(1, 1, 2, 1);
     Form actionForm = new Form();
@@ -524,34 +440,8 @@ private int attributeId = 3;
     }
     return myTable;
   }
-  /*
-  public void writeToHeadlines(String site, String Header, String news_url){
 
-    try{
-    Class.forName("org.gjt.mm.mysql.Driver").newInstance();  //loads the driver
-
-    String url = "jdbc:mysql://einstein.idega.is:3306/idegaweb?user=root&password=crazy0nes";
-    Connection Conn2 = DriverManager.getConnection(url);
-
-    Statement MysqlStmt = Conn2.createStatement();
-
-    MysqlStmt.executeUpdate("insert into headlines(group_id,site,headline,theURL) values(3,'"+site+"','"+Header+"','"+news_url+"')");
-            MysqlStmt.close();
-            Conn2.close();
-            }
-            catch (SQLException E) {
-            System.err.print("SQLException: " + E.getMessage());
-    System.err.print("SQLState:     " + E.getSQLState());
-            }
-            catch (Exception E) {
-            E.printStackTrace();
-            }
-  }
-
-  */
-
-  public FileInput insertFileInput(String FileInputName)
-  {
+  public FileInput insertFileInput(String FileInputName){
     FileInput myFileInput = new FileInput(FileInputName);
     return myFileInput;
   }
@@ -585,15 +475,29 @@ private int attributeId = 3;
     String cotgegoryId = modinfo.getParameter(categoryDropdownName);
 
     Statement Stmt = Conn.createStatement();
-    ResultSet RS = Stmt.executeQuery("select news_id, headline from news where news_category_id = '"+cotgegoryId+"' ORDER BY headline;");
+    StringBuffer sql = new StringBuffer( "select ");
+    sql.append(News.getNewsTableName());
+    sql.append("_id,");
+    sql.append(News.getHeadLineColumnName());
+    sql.append(" from ");
+    sql.append(News.getNewsTableName());
+    sql.append(" where ");
+    sql.append(NewsCategory.getNewsCategoryTableName());
+    sql.append("_id = '");
+    sql.append(cotgegoryId);
+    sql.append("' ORDER BY ");
+    sql.append(News.getHeadLineColumnName());
+    System.err.println(sql.toString());
+    ResultSet RS = Stmt.executeQuery(sql.toString());
     myDropdown.addMenuElement("-1", "Veldu frétt" );
     while(RS.next()){
-      myDropdown.addMenuElement(RS.getString("news_id"), RS.getString("headline"));
+      myDropdown.addMenuElement(RS.getString(News.getNewsTableName()+"_id"), RS.getString(News.getHeadLineColumnName()));
     }
     myDropdown.keepStatusOnAction();
     myDropdown.setToSubmit();
     RS.close();
     Stmt.close();
+
 
     return myDropdown;
   }
@@ -607,10 +511,20 @@ private int attributeId = 3;
     try
     {
         Statement Stmt = Conn.createStatement();
-        ResultSet RS = Stmt.executeQuery("select news_category_id, news_category_name from news_category where valid = 'Y' ORDER BY news_category_id;");
+        StringBuffer sql = new StringBuffer( "select ");
+        sql.append(NewsCategory.getNewsCategoryTableName());
+        sql.append("_id, ");
+        sql.append(NewsCategory.getNameColumnName());
+        sql.append(" from ");
+        sql.append(NewsCategory.getNewsCategoryTableName());
+        sql.append(" where valid = 'Y' ORDER BY ");
+        sql.append(NewsCategory.getNewsCategoryTableName());
+        sql.append("_id");
+        System.err.println(sql.toString());
+        ResultSet RS = Stmt.executeQuery(sql.toString());
         myDropdown.addMenuElement("-1", "Veldu fréttaflokk" );
         while(RS.next()){
-          myDropdown.addMenuElement(RS.getString("news_category_id"), RS.getString("news_category_name") );
+          myDropdown.addMenuElement(RS.getString(NewsCategory.getNewsCategoryTableName()+"_id"), RS.getString(NewsCategory.getNameColumnName()) );
         }
         myDropdown.keepStatusOnAction();
         myDropdown.setToSubmit();

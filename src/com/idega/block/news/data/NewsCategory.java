@@ -23,13 +23,14 @@ public class NewsCategory extends GenericEntity{
     addAttribute(getValidColumnName(), "Valid", true, true, "java.lang.String",1);
   }
 
+  public static String getNewsCategoryTableName(){return "NW_NEWS_CAT";}
   public static String getNameColumnName(){return "NAME";}
   public static String getDescriptionColumnName(){return "DESCRIPTION";}
   public static String getValidColumnName(){return "VALID";}
   public static String getNewsDateColumnName(){return "NEWS_DATE";}
 
   public String getEntityName(){
-    return "NW_NEWS_CAT";
+    return getNewsCategoryTableName();
   }
   public String getName(){
     return getNewsCategoryName();
