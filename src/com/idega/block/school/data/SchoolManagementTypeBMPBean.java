@@ -133,6 +133,26 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 		return idoFindPKsByQuery(query);
 	}
 
+	public Collection ejbFindManagementTypesByCategories(String[] categories) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelect();
+		query.append("distinct mt.*").appendFrom();
+		query.append(getEntityName() + " mt, ");
+		query.append("sch_school s, ");
+		query.append("sch_school_sch_school_type sst, ");
+		query.append("sch_school_type st, ");
+		query.append("sch_school_category c");
+		query.appendWhere();
+		query.appendEquals("sst.sch_school_type_id", "st.sch_school_type_id");
+		query.appendAnd().appendEquals("sst.sch_school_id", "s.sch_school_id");
+		query.appendAnd().appendEquals("st.school_category", "c.category");
+		query.appendAnd().appendEquals("s.management_type", "mt.management_type");
+		query.append("c.category in ").appendLeftParenthesis();
+		query.appendCommaDelimitedWithinSingleQuotes(categories).appendRightParenthesis();
+		
+		return idoFindPKsByQuery(query);
+	}
+
 	public String ejbFindManagementType(String name) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, name);

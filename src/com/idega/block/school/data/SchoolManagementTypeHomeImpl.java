@@ -69,6 +69,13 @@ public SchoolManagementType findManagementType(java.lang.String p0)throws javax.
 	return this.findByPrimaryKey(pk);
 }
 
+public java.util.Collection findManagementTypesByCategories(java.lang.String[] p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolManagementTypeBMPBean)entity).ejbFindManagementTypesByCategories(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public SchoolManagementType findPrivateManagementType()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindPrivateManagementType();

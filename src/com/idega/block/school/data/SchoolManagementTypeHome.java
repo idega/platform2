@@ -13,6 +13,7 @@ public interface SchoolManagementTypeHome extends com.idega.data.IDOHome
  public SchoolManagementType findFoundationManagementType()throws javax.ejb.FinderException;
  public SchoolManagementType findGovernmentManagementType()throws javax.ejb.FinderException;
  public SchoolManagementType findManagementType(java.lang.String p0)throws javax.ejb.FinderException;
+ public java.util.Collection findManagementTypesByCategories(java.lang.String[] p0)throws javax.ejb.FinderException;
  public SchoolManagementType findPrivateManagementType()throws javax.ejb.FinderException;
 
 }
