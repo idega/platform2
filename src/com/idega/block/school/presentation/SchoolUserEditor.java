@@ -22,6 +22,7 @@ import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
+import com.idega.block.school.data.SchoolUserBMPBean;
 import com.idega.block.school.data.SchoolUserHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
@@ -1347,7 +1348,10 @@ public class SchoolUserEditor extends Block {
 			else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory()))
 				priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
 			else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory()))
-				priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
+				if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER)
+					priGroup = getSchoolBusiness(iwc).getRootHighSchoolAdministratorGroup();
+				else
+					priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();					
 			if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory()))
 				priGroup = getSchoolBusiness(iwc).getRootMusicSchoolAdministratorGroup();
 		}
