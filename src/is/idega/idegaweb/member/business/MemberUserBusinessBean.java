@@ -38,7 +38,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		
 		try {
 			GroupBusiness groupBiz = getGroupBusiness();
-			parentGroups = groupBiz.getParentGroups(user);
+			parentGroups = groupBiz.getParentGroupsRecursive(user);
 			children = groupBiz.getChildGroups(toDiv);
 			
 			//find the player groups relations and set them to passive_pending
