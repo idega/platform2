@@ -42,4 +42,6 @@ public interface Contract extends com.idega.data.IDOEntity,MetaDataCapable
  public void setXmlSignedData(java.lang.String p0);
  public java.util.Set getUnsetFields();
  public void setUnsetFields(java.util.Map fieldValues);
+ public void setSignedBy(Integer id);
+ public Integer getSignedBy(Integer id);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.12 2003/06/11 09:08:42 laddi Exp $
+ * $Id: ContractBMPBean.java,v 1.13 2003/06/11 15:46:26 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -54,6 +54,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	private static final String signedData_ = "signed_data";
 	private static final String signedFlag_ = "signed_flag";
 	private static final String signedDate_ = "signed_date";
+	private static final String signedBy_ = "signed_by";
 	public static final String statusCreated = "C";
 	public static final String statusPrinted = "P";
 	public static final String statusSigned = "S";
@@ -129,6 +130,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		addAttribute(signedData_, "XML Signed Data", true, true, java.lang.String.class, 30000);
 		addAttribute(signedFlag_, "Signed Flag", true, true, java.lang.Boolean.class);
 		addAttribute(signedDate_, "Signed Date", true, true, java.sql.Date.class);
+		addAttribute(signedBy_, "Signed By", true, true, java.lang.Integer.class, "one-to-many", com.idega.core.user.data.User.class);
 		addManyToManyRelationShip(com.idega.core.data.ICFile.class);
 		addMetaDataRelationship();
 	}
@@ -144,6 +146,12 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	public Integer getUserId() {
 		return (getIntegerColumnValue(userId_));
 	}
+	public void setSignedBy(Integer id){
+		setColumn(signedBy_, id);
+	}
+	public Integer getSignedBy(Integer id){
+		return (getIntegerColumnValue(signedBy_));
+	}	
 	public void setValidFrom(Date date) {
 		setColumn(validFrom_, date);
 	}
