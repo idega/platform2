@@ -257,7 +257,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 /*		outTable.add(Text.BREAK);
 		outTable.add(addTermsAndConditionsAndVerisign());
 		*/
-		if (definedProduct != null && (isInPermissionGroup(iwc) || isAdministrator(iwc))) {
+		if (definedProduct != null && !this.isAlwaysSearchForm && (isInPermissionGroup(iwc) || isAdministrator(iwc))) {
 			Link link = getDirectBookingLink();
 			outTable.add(link);
 		} 
@@ -432,15 +432,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	protected boolean isCacheable(IWContext iwc) {
-		return false; // Layout testing
-/*
+		//return false; // Layout testing
+
 		try {
 			handleSubmit(iwc);
 			return (STATE_CHECK_BOOKING != getSession(iwc).getState());
 		} catch (Exception e) {
 			return super.isCacheable(iwc);
 		}
-*/
 	}
 
 	protected void handleSubmit(IWContext iwc) throws RemoteException {
