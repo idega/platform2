@@ -36,6 +36,7 @@ public class ReportItem extends GenericEntity {
     addAttribute(getColumnNameJoins(),"Join",true,true,java.lang.String.class);
     addAttribute(getColumnNameJoinTables(), "Join Tables", true, true, java.lang.String.class);
     addAttribute(getColumnNameDisplayOrder(),"Display order",true,true,java.lang.String.class);
+		addAttribute(getColumnNameIsFunction(),"Is function",true,true,java.lang.Boolean.class);
 
 
   }
@@ -54,6 +55,7 @@ public class ReportItem extends GenericEntity {
   public static String getColumnNameJoins(){return "DEP_JOINS";}
   public static String getColumnNameJoinTables(){return "DEP_JOINTABLE";}
   public static String getColumnNameDisplayOrder(){return "DISPLAY_ORDER";}
+	public static String getColumnNameIsFunction(){return "IS_FUNCTION";}
 
   public String getEntityName() {
     return getEntityTableName();
@@ -138,6 +140,12 @@ public class ReportItem extends GenericEntity {
   }
   public void setConditionOperator(String condoperator){
     setColumn(getColumnNameConditionOperator(), condoperator);
+  }
+	public boolean getIsFunction(){
+    return getBooleanColumnValue(getColumnNameIsFunction());
+  }
+  public void setIsFunction(boolean isFunction){
+    setColumn(getColumnNameIsFunction(), isFunction);
   }
   public String[] getOps(){
     String s = this.getConditionOperator();

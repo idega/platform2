@@ -2,6 +2,7 @@ package com.idega.block.news.business;
 
 import com.idega.data.EntityFinder;
 import com.idega.block.text.business.*;
+import com.idega.block.text.data.*;
 import com.idega.util.LocaleUtil;
 import com.idega.block.news.data.*;
 import com.idega.block.text.data.*;
@@ -43,6 +44,24 @@ public class NewsFinder {
 		}
 		return null;
   }
+
+	public static List listOfAllNwNewsInCategory(int newsCategoryId,Locale locale){
+		int iLocaleId = getLocaleId(locale);
+    return listOfPublishingNews(newsCategoryId,iLocaleId ,true);
+  }
+
+  public static List listOfNwNewsInCategory(int newsCategoryId,Locale locale){
+		int iLocaleId = getLocaleId(locale);
+    return listOfPublishingNews(newsCategoryId,iLocaleId,false);
+	}
+
+	public static List listOfAllNwNewsInCategory(int newsCategoryId,int iLocaleId){
+    return listOfPublishingNews(newsCategoryId,iLocaleId ,true);
+  }
+
+  public static List listOfNwNewsInCategory(int newsCategoryId,int iLocaleId){
+    return listOfPublishingNews(newsCategoryId,iLocaleId,false);
+	}
 
   public static List listOfAllNwNewsInCategory(int newsCategoryId){
     return listOfPublishingNews(newsCategoryId,true);
@@ -116,6 +135,79 @@ public class NewsFinder {
     return null;
   }
 
+	 public static List listOfPublishingNews(int newsCategoryId,int iLocaleId,boolean ignorePublishingDates){
+		String middleTable = new Content().getLocalizedTextMiddleTableName(new LocalizedText(),new Content());
+    StringBuffer sql = new StringBuffer("SELECT * FROM ");
+    sql.append(NwNews.getEntityTableName());
+    sql.append(" N, ");
+		sql.append(LocalizedText.getEntityTableName());
+    sql.append(" T, ");
+		sql.append(middleTable);
+    sql.append(" M, ");
+    sql.append(Content.getEntityTableName());
+    sql.append(" C ");
+		sql.append("WHERE N.");
+    sql.append(NwNews.getColumnNameContentId());
+    sql.append(" = C.");
+    sql.append(Content.getEntityTableName());
+    sql.append("_ID AND ");
+    sql.append(NwNews.getColumnNameNewsCategoryId());
+    sql.append(" = ");
+    sql.append(newsCategoryId);
+		sql.append(" AND C.");
+		sql.append(Content.getEntityTableName());
+		sql.append("_ID = M.");
+		sql.append(Content.getEntityTableName());
+		sql.append("_ID AND M.");
+		sql.append(LocalizedText.getEntityTableName());
+		sql.append("_ID = T.");
+		sql.append(LocalizedText.getEntityTableName());
+		sql.append("_ID AND T.");
+		sql.append(LocalizedText.getColumnNameLocaleId());
+		sql.append(" = ");
+		sql.append(iLocaleId);
+
+    // USE BETWEEN
+    /*
+    if(!ignorePublishingDates ){
+      idegaTimestamp today = idegaTimestamp.RightNow();
+      sql.append(" and '");
+      sql.append(today.toSQLString());
+      sql.append("' between ");
+      sql.append(Content.getColumnNamePublishFrom() );
+      sql.append(" and ");
+      sql.append(Content.getColumnNamePublishTo());
+
+    }
+    */
+    // USE OPERATORS <= AND >=
+
+    if(!ignorePublishingDates ){
+      idegaTimestamp today = idegaTimestamp.RightNow();
+      sql.append(" and ");
+      sql.append(Content.getColumnNamePublishFrom() );
+      sql.append(" <= '");
+      sql.append(today.toSQLString());
+      sql.append("' and ");
+      sql.append(Content.getColumnNamePublishTo());
+      sql.append(" >= '");
+      sql.append(today.toSQLString());
+      sql.append("' ");
+    }
+
+    sql.append(" order by ");
+    sql.append(Content.getColumnNamePublishFrom());
+    sql.append(" desc ");
+    //System.err.println(sql.toString());
+    try {
+      return EntityFinder.findAll(new NwNews(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
+
   public static List listOfNewsHelpersInCategory(int newsCategoryId,int maxNumberOfNews){
     List L = listOfNwNewsInCategory(newsCategoryId);
     if(L!= null){
@@ -137,12 +229,13 @@ public class NewsFinder {
   }
 
   public static List listOfAllNewsHelpersInCategory(int newsCategoryId,int maxNumberOfNews,Locale locale){
-    List L = listOfAllNwNewsInCategory(newsCategoryId );
-    return listOfNewsHelpersInCategory(L,newsCategoryId ,maxNumberOfNews ,getLocaleId(locale) );
+    int iLocaleId = getLocaleId(locale);
+		List L = listOfAllNwNewsInCategory(newsCategoryId ,iLocaleId);
+    return listOfNewsHelpersInCategory(L,newsCategoryId ,maxNumberOfNews , iLocaleId);
   }
 
   public static List listOfNewsHelpersInCategory(int newsCategoryId,int maxNumberOfNews,int iLocaleId){
-    List L = listOfNwNewsInCategory(newsCategoryId);
+    List L = listOfNwNewsInCategory(newsCategoryId,iLocaleId);
     return listOfNewsHelpersInCategory(L,newsCategoryId ,maxNumberOfNews ,iLocaleId );
   }
 

@@ -53,6 +53,8 @@ public class ReportMaker {
     Vector vJoin = new Vector();
     Vector vWhere = new Vector();
     Vector vOrder = new Vector();
+		Vector vGroupBy = new Vector();
+		Vector vHaving = new Vector();
     List LOrder = null;
     TreeMap orderMap = new TreeMap();
 

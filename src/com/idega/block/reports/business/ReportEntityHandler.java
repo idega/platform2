@@ -104,7 +104,7 @@ public class ReportEntityHandler {
 
   public static boolean saveReportItem(int catid,String name,String field,String table,
                   String joins,String jointables,String condtype,
-                  String conddata,String condop,String entity,String info){
+                  String conddata,String condop,String entity,String info,boolean isFunction){
     try {
       if(catid > 0){
         ReportItem ri = new ReportItem();
@@ -119,6 +119,7 @@ public class ReportEntityHandler {
         ri.setConditionOperator(condop);
         ri.setEntity(entity);
         ri.setInfo(info);
+				ri.setIsFunction(isFunction);
         ri.insert();
 
         return true;
@@ -132,7 +133,7 @@ public class ReportEntityHandler {
   }
    public static boolean updateReportItem(int id,int catid,String name,String field,String table,
                   String joins,String jointables,String condtype,
-                  String conddata,String condop,String entity,String info){
+                  String conddata,String condop,String entity,String info,boolean isFunction){
      try {
       if(id > 0){
       ReportItem ri = new ReportItem(id);
@@ -147,6 +148,7 @@ public class ReportEntityHandler {
       ri.setConditionOperator(condop);
       ri.setEntity(entity);
       ri.setInfo(info);
+			ri.setIsFunction(isFunction);
       ri.update();
       return true;
       }

@@ -199,13 +199,14 @@ public class ReportItemizer extends ReportPresentation{
     T.add(formatText("Condition Operator"),1,a++);
     T.add(formatText("Entity Class"),1,a++);
     T.add(formatText("Information"),1,a++);
-    T.add(formatText("Is Select"),1,a++);
+//    T.add(formatText("Is Select"),1,a++);
+		T.add(formatText("Is Function"),1,a++);
 
     String s = "";
     TextInput name,field,table,joins,jointables,
               condtype,conddata,condop,entity,info;
     HiddenInput idInput;
-    CheckBox delCheck,isSelect;
+    CheckBox delCheck,isSelect,isFunction;
 
     name        = new TextInput(prefix+"name");
     field       = new TextInput(prefix+"field");
@@ -217,6 +218,7 @@ public class ReportItemizer extends ReportPresentation{
     condop      = new TextInput(prefix+"condop");
     entity      = new TextInput(prefix+"entity");
     info        = new TextInput(prefix+"info");
+		isFunction  = new CheckBox(prefix+"function");
 
     if(sRepItemId != null){
       int repItemId = Integer.parseInt(sRepItemId);
@@ -233,6 +235,7 @@ public class ReportItemizer extends ReportPresentation{
           condop.setContent(ri.getConditionOperator());
           entity.setContent(ri.getEntity());
           info.setContent(ri.getInfo());
+					isFunction.setChecked(ri.getIsFunction());
           T.add(new HiddenInput("repitemid",String.valueOf(ri.getID())));
         }
         catch (SQLException ex) {
@@ -263,6 +266,7 @@ public class ReportItemizer extends ReportPresentation{
     setStyle(condop);
     setStyle(entity);
     setStyle(info);
+		setStyle( isFunction);
 
     int col = 2;
     int row = 2;
@@ -276,6 +280,7 @@ public class ReportItemizer extends ReportPresentation{
     T.add(condop,col,row++);
     T.add(entity,col,row++);
     T.add(info,col,row++);
+		T.add(isFunction,col,row++);
 
     Frame.add(T);
     Frame.add(new SubmitButton("risave","Save"));
@@ -384,7 +389,8 @@ public class ReportItemizer extends ReportPresentation{
             ,""
             ,"like"
             ,ent.getClass().getName()
-            ,"");
+            ,""
+						,false);
       }
     }
     catch(Exception ex){
@@ -426,6 +432,7 @@ public class ReportItemizer extends ReportPresentation{
 
     int id  = iCategoryId;
     String name,field,table,joins,jointables,condtype,conddata,condop,entity,info;
+		boolean function;
 
     name        = iwc.getParameter(prefix+"name");
     field       = iwc.getParameter(prefix+"field");
@@ -437,13 +444,14 @@ public class ReportItemizer extends ReportPresentation{
     condop      = iwc.getParameter(prefix+"condop");
     entity      = iwc.getParameter(prefix+"entity");
     info        = iwc.getParameter(prefix+"info");
+		function    = iwc.getParameter(prefix+"function")!=null;
     if(id != 0){
       boolean b = false;
       if(itemId > 0){
-        b = ReportEntityHandler.updateReportItem(itemId,id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
+        b = ReportEntityHandler.updateReportItem(itemId,id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info,function);
       }
       else{
-        b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
+        b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info,function);
       }
     }
   }

@@ -142,8 +142,10 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
       T.setHeight(row,bottomThickness);
     }
     else{
-      T.add(iwrb.getLocalizedString("no_texts","No text in database"),1,2);
+      T.add(Edit.formatText(iwrb.getLocalizedString("no_texts","No text in database")),1,2);
+
     }
+		T.setAlignment(1,2,"right");
 
 
     return T;
@@ -329,6 +331,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
   }
 
   private DropdownMenu getTagDrop(String name,int iCategoryId){
+
 		List L = ContractFinder.listOfContractTagsInUse(iCategoryId);
     DropdownMenu drp = new DropdownMenu(name);
     drp.addMenuElementFirst("tag",iwrb.getLocalizedString("tags","Tags"));

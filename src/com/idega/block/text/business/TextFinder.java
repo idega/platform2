@@ -127,6 +127,7 @@ public class TextFinder {
       return null;
     }
     catch (SQLException e) {
+			e.printStackTrace();
       return null;
     }
   }

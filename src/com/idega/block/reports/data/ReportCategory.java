@@ -21,14 +21,20 @@ public class ReportCategory extends GenericEntity{
           super(id);
   }
   public void initializeAttributes(){
-          addAttribute(getIDColumnName());
-          addAttribute("name", "Flokkur", true, true, java.lang.String.class);
-          addAttribute("info", "Lýsing", true, true, java.lang.String.class);
+    addAttribute(getIDColumnName());
+    addAttribute(getColumnNameName(), "Category", true, true, java.lang.String.class);
+    addAttribute(getColumnNameInfo(), "Info", true, true, java.lang.String.class);
+		addAttribute(getValidColumnName(), "Valid", true, true, Boolean.class);
+		addAttribute(getColumnNameCreated(),"created",true,true,java.sql.Date.class);
+		addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class);
   }
 
   public static String getEntityTableName(){return "REP_CATEGORY";}
   public static String getColumnNameName(){return "NAME";}
   public static String getColumnNameInfo(){return "INFO";}
+	public static String getColumnNameCreated(){return "CREATED";}
+	public static String getValidColumnName(){return "VALID";}
+
 
   public String getEntityName(){
     return getEntityTableName();
@@ -44,5 +50,18 @@ public class ReportCategory extends GenericEntity{
   }
   public void setInfo(String info){
     setColumn(getColumnNameInfo(), info);
+  }
+	public void setCreationDate(Date date) {
+    setColumn(getColumnNameCreated(),date);
+  }
+  public Date getCreationDate(){
+    return (Date) getColumnValue(getColumnNameCreated() );
+  }
+
+	public boolean getValid(){
+    return getBooleanColumnValue(getValidColumnName());
+  }
+  public void setValid(boolean valid){
+    setColumn(getValidColumnName(), valid);
   }
 }

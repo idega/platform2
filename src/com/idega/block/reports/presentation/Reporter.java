@@ -19,6 +19,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Image;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.block.IWBlock;
 
 
 /**
@@ -27,123 +28,68 @@ import com.idega.idegaweb.IWBundle;
  * Copyright:    Copyright (c) 2001
  * Company:      idega multimedia
  * @author       <a href="mailto:aron@idega.is">aron@idega.is</a>
- * @version 1.0
+ * @version 2.0
  */
 
 
-public class Reporter extends ReportPresentation{
+public class Reporter extends ReportPresentation implements IWBlock{
 
-  private final String sAction = "rep.reporter.action";
+  private final String sAction = "rep_reporter_action";
   private String sActPrm = "";
   private int iAction = 0;
-  private static final String prefix = "rep.reporter.";
+  private static final String prefix = "rep_reporter_";
+	private static final String prmCategoryId = prefix+"cat";
   private String sLastOrder = "0";
-  private int iMainCategories[] = null;
-  private int iViewCategories[] = null;
-  private int iCategory = -1;
-  private int[] iCategories = null;
-  private boolean sqlEditAdmin = false;
-  private String sMainCategoryAttribute = null,sViewCategoryAttribute = null;
-  private int iMainCategoryAttributeId = 0, iViewCategoryAttributeId= 0;
+  private int iCategoryId = -1;
+	private boolean sqlEditAdmin = true;
+	boolean newobjinst = false;
+
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.reports";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
+	private IWBundle core ;
 
 
   public Reporter(){
    super();
   }
-  public Reporter(int iMainCategory){
+  public Reporter(int iCategory){
     this();
-    iCategory = iMainCategory;
-    this.setMainCategory(iMainCategory);
+    iCategoryId = iCategory;
   }
-  public void setMainCategory(int iMainCategory){
-    this.iMainCategories = new int[1];
-    this.iMainCategories[0] = iMainCategory;
-  }
-  public void setViewCategory(int iViewCategory){
-    this.iViewCategories = new int[1];
-    this.iViewCategories[0] = iViewCategory;
-  }
-  public void setMainCategories(int[] iMainCategories){
-    this.iMainCategories= iMainCategories;
-  }
-  public void setViewCategories(int[] iViewCategories){
-    this.iViewCategories = iViewCategories;
-  }
+
   public void setSQLEdit(boolean value){
     sqlEditAdmin = value;
-  }
-  public void setMainCategoryAttribute(String name,int id){
-    sMainCategoryAttribute = name;
-    iMainCategoryAttributeId = id;
-  }
-  public void setMainCategoryAttribute(String name){
-    sMainCategoryAttribute = name;
-  }
-  public void setMainCategoryAttributeId(int id){
-    iMainCategoryAttributeId = id;
-  }
-  public void setViewCategoryAttribute(String name,int id){
-    sViewCategoryAttribute = name;
-    iViewCategoryAttributeId = id;
-  }
-  public void setViewCategoryAttribute(String name){
-    sViewCategoryAttribute = name;
-  }
-  public void setViewCategoryAttributeId(int id){
-    iViewCategoryAttributeId = id;
-  }
-
-  private void checkCategories(IWContext iwc){
-    ReportCategoryAttribute RCA = null;
-    if(sMainCategoryAttribute != null){
-      List L = null;
-      try{
-        if(iMainCategoryAttributeId!= 0){
-          L = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sMainCategoryAttribute,"ATTRIBUTE_ID",String.valueOf(iMainCategoryAttributeId));
-        }
-        else
-          L = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sMainCategoryAttribute);
-      }
-      catch(SQLException sql){sql.printStackTrace();}
-
-      if(L != null){
-        iMainCategories = new int[L.size()];
-        for (int i = 0; i < L.size(); i++) {
-          RCA = (ReportCategoryAttribute)L.get(i);
-          iMainCategories[i] = RCA.getReportCategoryId();
-        }
-      }
-    }
-    if(sViewCategoryAttribute != null){
-      List K = null;
-      try{
-        if(iViewCategoryAttributeId!= 0){
-          K = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sViewCategoryAttribute,"ATTRIBUTE_ID",String.valueOf(iViewCategoryAttributeId));
-        }
-        else
-          K = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sViewCategoryAttribute);
-      }
-      catch(SQLException sql){sql.printStackTrace();}
-
-      if(K!= null){
-        iViewCategories = new int[K.size()];
-        for (int i = 0; i < K.size(); i++) {
-          RCA = (ReportCategoryAttribute)K.get(i);
-          iViewCategories[i] = RCA.getReportCategoryId();
-        }
-      }
-    }
   }
 
   protected void control(IWContext iwc){
     iwrb = getResourceBundle(iwc);
 		iwb = getBundle(iwc);
+		core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+
+		Table T = new Table();
+		T.setCellpadding(0);
+		T.setCellspacing(0);
+
+		if(iCategoryId <= 0){
+      String sCategoryId = iwc.getParameter(prmCategoryId );
+      if(sCategoryId != null)
+        iCategoryId = Integer.parseInt(sCategoryId);
+      else if(getICObjectInstanceID() > 0){
+        iCategoryId = ReportFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
+        if(iCategoryId <= 0 ){
+          newobjinst = true;
+        }
+      }
+    }
+
+		if(isAdmin){
+      T.add(getAdminPart(iCategoryId,false,newobjinst,iwc),1,1);
+    }
+
     Form form = new Form();
-    checkCategories(iwc);
+
     if(iwc.getParameter(sAction) != null){
       sActPrm = iwc.getParameter(sAction);
       try{
@@ -159,69 +105,78 @@ public class Reporter extends ReportPresentation{
         e.printStackTrace();
       }
     }
-    form.add(doMain(iwc));
-    add(form);
+    T.add(doMain(iwc),1,2);
+    add(T);
   }
 
+	private PresentationObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst,IWContext iwc){
+    Table T = new Table(3,1);
+    T.setCellpadding(2);
+    T.setCellspacing(2);
 
-  protected PresentationObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table(3,1);
-    int last = 3;
-    LinkTable.setWidth("100%");
-    LinkTable.setCellpadding(2);
-    LinkTable.setCellspacing(1);
-    LinkTable.setColor(this.DarkColor);
-    LinkTable.setWidth(last,"100%");
-    Link Link1 = new Link("Yfirlit");
-    Link1.setFontColor(this.LightColor);
-    Link1.addParameter(this.sAction,String.valueOf(this.ACT1));
-    Link Link2 = new Link("Breyta");
-    Link2.setFontColor(this.LightColor);
-    Link2.addParameter(this.sAction,String.valueOf(this.ACT2));
-    if(isAdmin){
-      LinkTable.add(Link1,1,1);
-      LinkTable.add(Link2,2,1);
+
+		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    if(iCategoryId > 0){
+      Link ne = new Link(core.getImage("/shared/create.gif","create"));
+      ne.setWindowToOpen(ReportSQLEditorWindow.class);
+      ne.addParameter(ReportSQLEditorWindow.prmCategoryId,iCategoryId);
+			ne.addParameter(ReportSQLEditorWindow.prmReportId,"-1");
+      T.add(ne,1,1);
+		  T.add(T.getTransparentCell(iwc),1,1);
+
+      Link text = new Link(core.getImage("/shared/text.gif","text"));
+			text.setWindowToOpen(ReportItemWindow.class);
+      text.addParameter(ReportItemWindow.prmCategoryId,iCategoryId);
+			//text.addParameter(ReportItemWindow.prmItems,"true");
+      T.add(text,1,1);
+		  T.add(T.getTransparentCell(iwc),1,1);
+
+      Link change = new Link(core.getImage("/shared/edit.gif","edit"));
+      change.setWindowToOpen(ReportEditorWindow.class);
+      change.addParameter(ReportEditorWindow.prmCategoryId,iCategoryId);
+      change.addParameter(ReportEditorWindow.prmObjInstId,getICObjectInstanceID());
+      T.add(change,1,1);
+
+      if ( enableDelete ) {
+				T.add(T.getTransparentCell(iwc),1,1);
+        Link delete = new Link(core.getImage("/shared/delete.gif"));
+        delete.setWindowToOpen(ReportEditorWindow.class);
+        delete.addParameter(ReportEditorWindow.prmDelete,iCategoryId);
+        T.add(delete,3,1);
+      }
     }
-    return LinkTable;
+    if(newObjInst){
+      Link newLink = new Link(core.getImage("/shared/create.gif"));
+      newLink.setWindowToOpen(ReportEditorWindow.class);
+      if(newObjInst)
+        newLink.addParameter(ReportEditorWindow.prmObjInstId,getICObjectInstanceID());
+
+      T.add(newLink,2,1);
+    }
+    T.setWidth("100%");
+    return T;
   }
 
   private PresentationObject doMain(IWContext iwc){
     Table T = new Table();
     T.setWidth("100%");
-    int a = 1;
-    if(iMainCategories != null){
-      for (int i = 0; i < iMainCategories.length; i++) {
-        if(i==0)
-          iCategory = iMainCategories[i];
-        T.add(getCategoryReports(iMainCategories[i],true),1,a++);
-      }
-    }
-    if(iViewCategories != null){
-      for (int i = 0; i < iViewCategories.length; i++) {
-        T.add(getCategoryReports(iViewCategories[i],false),1,a++);
-      }
-    }
+    T.add(getCategoryReports(iCategoryId,sqlEditAdmin),1,1);
     TextFontColor = DarkColor;
     fontBold = true;
     return T;
   }
 
   private PresentationObject getCategoryReports(int iCategoryId,boolean bEdit){
-    ReportCategory RC = null;
-    try {
-      RC = new ReportCategory(iCategoryId);
-    }
-    catch (Exception ex) {
+    ReportCategory RC = ReportFinder.getCategory(iCategoryId) ;
 
-    }
     Table T = new Table();
 
       T.setCellpadding(2);
       T.setCellspacing(1);
       T.setBorder(0);
-      Link lEdit =  new Link(iwb.getImage("/shared/new.gif"));//new Image("/reports/pics/new.gif"));
-      lEdit.setWindowToOpen(ReportEditorWindow.class);
-      lEdit.addParameter(ReportEditorWindow.prmSaveCategory,iCategory);
+      Link lEdit =  new Link(core.getImage("/shared/create.gif"));
+      lEdit.setWindowToOpen(ReportSQLEditorWindow.class);
+      lEdit.addParameter(ReportSQLEditorWindow.prmCategoryId,iCategoryId);
 
       if(RC !=null){
         T.add(formatText(RC.getName()),2,1);
@@ -265,7 +220,7 @@ public class Reporter extends ReportPresentation{
         }
         T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
         if(bEdit){
-          SubmitButton deleteButtton = new SubmitButton(iwb.getImage("/shared/delete.gif"));//new Image("/reports/pics/delete.gif"));
+          SubmitButton deleteButtton = new SubmitButton(core.getImage("/shared/delete.gif"));//new Image("/reports/pics/delete.gif"));
           T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
           T.add(deleteButtton,4,len+3);
           HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
@@ -295,16 +250,16 @@ public class Reporter extends ReportPresentation{
   }
 
   private Link getLink(int id){
-    Link L = new Link(iwb.getImage("/shared/view.gif"));// Image("/reports/pics/view.gif"));
+    Link L = new Link(core.getImage("/shared/view.gif"));// Image("/reports/pics/view.gif"));
     L.setWindowToOpen(ReportViewWindow.class);
     L.addParameter(ReportViewWindow.prmReportId,id);
     return L;
   }
   private Link getAdminLink(int id,int catid){
-    Link L = new Link(iwb.getImage("/shared/edit.gif"));//new Image("/reports/pics/edit.gif"));
+    Link L = new Link(core.getImage("/shared/edit.gif"));//new Image("/reports/pics/edit.gif"));
     L.setWindowToOpen(ReportEditorWindow.class);
-    L.addParameter(ReportEditorWindow.prmReportId,id);
-    L.addParameter(ReportEditorWindow.prmSaveCategory,catid);
+    L.addParameter(ReportSQLEditorWindow.prmReportId,id);
+    L.addParameter(ReportSQLEditorWindow.prmCategoryId,catid);
     return L;
   }
 
@@ -315,6 +270,10 @@ public class Reporter extends ReportPresentation{
 
   }
 
+	public boolean deleteBlock(int iObjectInstanceId){
+	  return ReportBusiness.deleteBlock(iObjectInstanceId);
+	}
+
   protected void doDelete(IWContext iwc) throws SQLException{
     String prm = prefix+"chk";
     int count = Integer.parseInt(iwc.getParameter(prefix+"count"));
@@ -323,11 +282,9 @@ public class Reporter extends ReportPresentation{
         String sId = iwc.getParameter(prm+i);
         try{
           int id = Integer.parseInt(sId);
-          Report R = new Report(id);
-          R.delete();
+					ReportBusiness.deleteReport(id);
         }
         catch(NumberFormatException ex){}
-        catch(SQLException ex){}
       }
     }
   }

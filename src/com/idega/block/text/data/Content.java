@@ -35,6 +35,10 @@ public class Content extends GenericEntity{
     addManyToManyRelationShip(com.idega.core.data.ICFile.class);
   }
 
+	public String getLocalizedTextMiddleTableName(GenericEntity returning,GenericEntity from){
+	  return getNameOfMiddleTable(new LocalizedText(),new Content());
+	}
+
   public static String getEntityTableName(){ return "TX_CONTENT";}
 
   public static String getColumnNameUserId(){     return "IC_USER_ID";}
