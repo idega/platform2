@@ -13,7 +13,9 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -26,6 +28,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusin
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -68,7 +71,9 @@ import com.idega.user.data.User;
  */
 public class RegularPaymentEntriesList extends AccountingBlock {
 
-
+	private String ERROR_POSTING = "error_posting";
+	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
+	private String ERROR_DATE_FORMAT = "error_date_form";	
 
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
@@ -353,11 +358,14 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 	
 	private void handleSaveAction(IWContext iwc, School school){
+		Map errorMessages = new HashMap();
+				
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
 		
 		if (from == null || to == null){
-			handleEditAction(iwc, getNotStoredEntry(iwc), localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));	
+			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
+			handleEditAction(iwc, getNotStoredEntry(iwc), errorMessages);	
 		} else {
 		
 			RegularPaymentEntry entry = null;
@@ -390,8 +398,17 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			
 			entry.setUser(getUser(iwc));
 			entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
-			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+			
+			try{
+				PostingBlock p = new PostingBlock(iwc);			
+				entry.setOwnPosting(p.getOwnPosting());
+				entry.setDoublePosting(p.getDoublePosting());
+			} catch (PostingParametersException e) {
+				errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
+			}	
+						
+//			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
+//			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 		
 
 			entry.store();		
@@ -428,7 +445,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}
 
 			
-	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, String errorMessage){
+	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, Map errorMessages){
 		Table t1 = new Table();
 		
 		t1.setCellpadding(getCellpadding());
@@ -451,7 +468,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		form.maintainParameter(PAR_SELECTED_PROVIDER);
 
 	
-		form.add(getDetailPanel(iwc, entry, vatTypes, errorMessage));
+		form.add(getDetailPanel(iwc, entry, vatTypes, errorMessages));
 		
 		t1.add(form, 1, 2);
 		add(t1);
@@ -660,7 +677,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		return list;
 	}
 	
-	private Table getDetailPanel(IWContext iwc, RegularPaymentEntry entry, Collection vatTypes, String errorMessage){
+	private Table getDetailPanel(IWContext iwc, RegularPaymentEntry entry, Collection vatTypes, Map errorMessages){
 				
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
@@ -723,8 +740,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
-		if (errorMessage != null){
-			table.add(getErrorText(errorMessage), 1, row++);			
+		if (errorMessages.get(ERROR_DATE_FORMAT) != null){
+			table.add(getErrorText((String) errorMessages.get(ERROR_DATE_FORMAT)), 1, row++);			
 		}
 		table.add(getLocalizedLabel(KEY_PERIODE, "Periode:"), 1, row);
 		TextInput fromInput = getTextInput(PAR_FROM, KEY_FROM);
@@ -749,9 +766,16 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-		if (postingError != null){
+		
+		if (errorMessages.get(ERROR_POSTING) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_POSTING)), 2, row++);			
+		} else if (errorMessages.get(ERROR_OWNPOSTING_EMPTY) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_OWNPOSTING_EMPTY)), 2, row++);			
+		} else if (postingError != null){
 			table.add(getErrorText(postingError), 2, row++);				
 		}
+
+		
 		table.mergeCells(1, row, 10, row);
 		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
 		table.add(postingBlock, 1, row++);

@@ -26,6 +26,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusin
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntryHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -73,7 +74,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private String ERROR_PLACING_EMPTY = "error_placing_empty";
 	private String ERROR_DATE_FORMAT = "error_date_form";
 	private String ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
-	private String ERROR_AMOUNT_EMPTY = "error_amount_empty";
+//	private String ERROR_AMOUNT_EMPTY = "error_amount_empty";
+	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
 
 	private String LOCALIZER_PREFIX = "regular_invoice_entries_list.";
@@ -312,6 +314,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 	
 	private void handleSaveAction(IWContext iwc, User user){
+		Map errorMessages = new HashMap();
 		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
 		
 		if (entry == null){
@@ -328,12 +331,16 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			entry.setEditSign(iwc.getCurrentUser().getName());
 		}
 		
-		entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+		float amount = 0;
+		if (iwc.getParameter(PAR_AMOUNT_PR_MONTH) != null && iwc.getParameter(PAR_AMOUNT_PR_MONTH).length() != 0){
+			amount = new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue();
+		}
+		entry.setAmount(amount);
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
 		entry.setFrom(from);
 		entry.setTo(to);
-			
+					
 		entry.setNote(iwc.getParameter(PAR_REMARK));
 		entry.setPlacing(iwc.getParameter(PAR_PLACING));
 		entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
@@ -344,8 +351,15 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
 		entry.setUser(user);
 		entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
-		entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-		entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+		
+
+		try{
+			PostingBlock p = new PostingBlock(iwc);			
+			entry.setOwnPosting(p.getOwnPosting());
+			entry.setDoublePosting(p.getDoublePosting());
+		} catch (PostingParametersException e) {
+			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
+		}	
 		
 		boolean schoolCategorySet = false;
 		try{
@@ -357,8 +371,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			ex.printStackTrace();			
 		}		
 		
-		Map errorMessages = new HashMap();
-		
 		if (from == null || to == null){
 			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
 		} else if (to.before(from)){
@@ -367,9 +379,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
 			errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
 		} 
-		if (entry.getAmount() == 0){
-			errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
-		}
+//		if (entry.getAmount() == 0){
+//			errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
+//		}
 
 		if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
 			errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
@@ -745,10 +757,12 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-		if (errorMessages.get(ERROR_AMOUNT_EMPTY) != null) {
-			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_EMPTY)), 2, row++);			
-		}
+//		if (errorMessages.get(ERROR_AMOUNT_EMPTY) != null) {
+//			
+//		}
+		
 		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, "" + entry.getAmount(), 1, row++);
+
 		//Vat is currently set to 0
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
 
@@ -765,7 +779,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
 		addDropDownLocalized(table, PAR_VAT_RULE, KEY_VAT_RULE, vatTypes, entry.getVatRuleId(),  "getVATRule", 1, row++);
 
-		if (errorMessages.get(ERROR_OWNPOSTING_EMPTY) != null) {
+		if (errorMessages.get(ERROR_POSTING) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_POSTING)), 2, row++);			
+		} else if (errorMessages.get(ERROR_OWNPOSTING_EMPTY) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_OWNPOSTING_EMPTY)), 2, row++);			
 		} else if (postingError != null){
 			table.add(getErrorText(postingError), 2, row++);				
@@ -867,7 +883,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}
 		
 			public float getVAT() {
-				
 				return _reg != null ? _reg.getVATEligible().floatValue() : getFloatValue(PAR_VAT_PR_MONTH);
 			}
 		
