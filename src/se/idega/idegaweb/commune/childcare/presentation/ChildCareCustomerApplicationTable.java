@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.58 2003/12/30 17:12:27 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.59 2004/01/06 21:05:23 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -197,6 +197,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			}
 			else if (_showOnlyAfterSchoolCare) {
 				_caseCode = getChildCareBusiness(iwc).getAfterSchoolCareCaseCode();
+			}
+			else {
+				_caseCode = null;
 			}
 		}
 		catch (RemoteException re) {
@@ -463,14 +466,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @throws RemoteException
 	 */
 	private String createPagePhase1(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
-		int numberOfApplications = getChildCareBusiness(iwc).getNumberOfApplicationsForChildNotInactive(getChildId(iwc));
+		int numberOfApplications = getChildCareBusiness(iwc).getNumberOfApplicationsForChildNotInactive(getChildId(iwc), _caseCode);
 		if (numberOfApplications == 0) {
 			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)));
 			return "";
 		}
 		else {
 			layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
-			boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(getChildId(iwc));
+			boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(getChildId(iwc), _caseCode);
 			Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
 
 			boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc), _caseCode);
@@ -689,82 +692,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		//System.out.println("getChildId()eturning:" + childId);
 		return Integer.parseInt(childId);
 	}
-
-	/**
-	 * Checks if the specifid application has an offer connected to it (status BVJD/B).
-	 * @param applications
-	 * @return
-	 * @throws RemoteException
-	 */
-	/*
-	private boolean hasOffer(Collection applications) throws RemoteException {
-
-		Iterator i = applications.iterator();
-
-		while (i.hasNext()) {
-			ChildCareApplication app = (ChildCareApplication) i.next();
-
-			String caseStatus = app.getStatus();
-			char appStatus = app.getApplicationStatus();
-			//			System.out.println(
-			//				"STATUS: "
-			//					+ app.getNodeID()
-			//					+ " - "
-			//					+ caseStatus
-			//					+ "/"
-			//					+ appStatus);
-			if (caseStatus.equals(ChildCareCustomerApplicationTable.STATUS_BVJD) && appStatus != childCarebusiness.getStatusAccepted())
-				return true;
-
-		}
-		return false;
-	}*/
-
-	/**
-	 * Checks if the specifid application has an offer connected to it (status BVJD/B).
-	 * @param applications
-	 * @return
-	 * @throws RemoteException
-	 */
-	//	private ChildCareApplication getAcceptedOffer(Collection applications)
-	//		throws RemoteException {
-	//
-	//		Iterator i = applications.iterator();
-	//
-	//		while (i.hasNext()) {
-	//			ChildCareApplication app = (ChildCareApplication) i.next();
-	//
-	//			String caseStatus = app.getStatus();
-	//			char appStatus = app.getApplicationStatus();
-	//			//				System.out.println(
-	//			//					"STATUS: "
-	//			//						+ app.getNodeID()
-	//			//						+ " - "
-	//			//						+ caseStatus
-	//			//						+ "/"
-	//			//						+ appStatus);
-	//			if (caseStatus
-	//				.equals(ChildCareCustomerApplicationTable.STATUS_PREL)
-	//				&& appStatus == childCarebusiness.getStatusParentsAccept())
-	//				return app;
-	//
-	//		}
-	//		return null;
-	//	}
-
-	/*
-	private ChildCareApplication getActiveApplication(Collection applications) throws RemoteException {
-
-		Iterator i = applications.iterator();
-		while (i.hasNext()) {
-			ChildCareApplication app = (ChildCareApplication) i.next();
-
-			if (app.isActive()) {
-				return app;
-			}
-		}
-		return null;
-	}*/
 
 	/**
 	 * Method getChildCareBusiness returns the ChildCareBusiness object.
