@@ -55,6 +55,7 @@ public class CampusContractWriter{
   public final static String apartment_floor = "apartment_floor";
   public final static String apartment_info = "apartment_info";
   public final static String apartment_rent = "apartment_rent";
+  public final static String apartment_category = "apartment_category";
 
   public final static String apartment_roomcount = "apartment_roomcount";
   public final static String contract_starts = "contract_starts";
@@ -69,7 +70,7 @@ public class CampusContractWriter{
                             apartment_name,apartment_floor,apartment_address,
                             apartment_campus,apartment_area,
                             apartment_roomcount,apartment_info,
-                            apartment_rent,
+                            apartment_rent,apartment_category,
                             contract_starts,contract_ends,renting_index,today};
 
   public final static String IS ="IS";
@@ -282,6 +283,9 @@ public class CampusContractWriter{
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       Apartment eApartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract.getApartmentId().intValue());
       ApartmentType eApartmentType = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(eApartment.getApartmentTypeId());
+//      ApartmentCategory eApartmentCategory = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(eApartmentType.getApartmentCategoryId());
+			String aprtTypeName = eApartmentType.getName();
+			System.out.println("aprtTypeName = " + aprtTypeName);
       Floor eFloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(eApartment.getFloorId());
       Building eBuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(eFloor.getBuildingId());
       Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(eBuilding.getComplexId());
@@ -307,6 +311,18 @@ public class CampusContractWriter{
       H.put(contract_starts,new Chunk(dfLong.format(eContract.getValidFrom()),tagFont));
       H.put(contract_ends,new Chunk(dfLong.format(eContract.getValidTo()),tagFont));
       H.put(apartment_rent,new Chunk(nf.format((long)eApartmentType.getRent()),tagFont));
+//      H.put(apartment_category,new Chunk(eApartmentCategory.getName(),tagFont));
+			String aprtTypeNameAbbr = null;
+			if (aprtTypeName != null) {
+				StringTokenizer tok = new StringTokenizer(aprtTypeName," ");
+				if (tok.hasMoreTokens())
+					aprtTypeNameAbbr = tok.nextToken();
+			}
+			
+			if (aprtTypeNameAbbr != null) 
+				H.put(apartment_category,new Chunk(aprtTypeNameAbbr,nameFont));
+			else
+				H.put(apartment_category,new Chunk("",nameFont));
       /** @todo fixa: */
       H.put(renting_index,new Chunk( "214.9",tagFont));
       return H;
