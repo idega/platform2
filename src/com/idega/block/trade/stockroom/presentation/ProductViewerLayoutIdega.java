@@ -163,6 +163,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 			}
 		}
 		table.add(description, 1, row);
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_LEFT);
 		
 		if (productViewer._showMetaData && _product != null) {
 			table.setHeight(1, ++row, String.valueOf(productViewer._spaceBetween));
