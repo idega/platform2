@@ -4,7 +4,6 @@ package is.idega.idegaweb.golf.block.image.presentation;
 import is.idega.idegaweb.golf.block.image.business.ImageBusiness;
 import is.idega.idegaweb.golf.block.image.business.ImageProperties;
 import is.idega.idegaweb.golf.block.image.business.SimpleImage;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.Connection;
 import java.sql.SQLException;

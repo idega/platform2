@@ -6,12 +6,12 @@
  */
 package is.idega.idegaweb.golf.handicap.presentation;
 
+import is.idega.idegaweb.golf.block.image.presentation.GolfImage;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.MemberInfo;
 import is.idega.idegaweb.golf.entity.MemberInfoHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.io.IOException;
 import java.sql.SQLException;

@@ -2,8 +2,8 @@ package is.idega.idegaweb.golf.member;
 
 
 
+import is.idega.idegaweb.golf.block.image.presentation.GolfImage;
 import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.SQLException;
 

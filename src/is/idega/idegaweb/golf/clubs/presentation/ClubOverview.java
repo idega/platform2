@@ -6,11 +6,11 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
+import is.idega.idegaweb.golf.block.image.presentation.GolfImage;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.UnionImage;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.golf.service.member;
 
+import is.idega.idegaweb.golf.block.image.presentation.GolfImage;
 import is.idega.idegaweb.golf.entity.Address;
 import is.idega.idegaweb.golf.entity.Card;
 import is.idega.idegaweb.golf.entity.CardHome;
@@ -12,7 +13,6 @@ import is.idega.idegaweb.golf.entity.Phone;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 import is.idega.idegaweb.golf.service.FamilyDisconnecterWindow;
 import is.idega.idegaweb.golf.service.FamilyInsertWindow;
 import is.idega.idegaweb.golf.service.GroupMemberInsertWindow;

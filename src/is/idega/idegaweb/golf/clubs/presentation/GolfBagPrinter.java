@@ -9,11 +9,11 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import is.idega.idegaweb.golf.block.image.presentation.GolfImage;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 
 /**
  * @author laddi

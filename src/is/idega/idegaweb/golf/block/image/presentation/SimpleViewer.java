@@ -2,7 +2,6 @@ package is.idega.idegaweb.golf.block.image.presentation;
 
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 import is.idega.idegaweb.golf.block.image.data.ImageEntityHome;
-import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
