@@ -51,6 +51,7 @@ public class PDFTest {
 	public static void main(String[] args) {
     FileOutputStream fileOut = null;
 		try {
+			//File file = new File("test.pdf");
 			fileOut = new FileOutputStream("test.pdf");
 		}
 		catch (FileNotFoundException e) {
@@ -188,7 +189,7 @@ public class PDFTest {
 		}
 	}
 
-	protected static Document getLetterDocumentTemplate(){
+	public static Document getLetterDocumentTemplate(){
 			  //Margins defined in millimeters:
 		float headFootMarginsMM = 9.0f;
 		float leftRightMarginsMM = 30.0f;
@@ -204,7 +205,7 @@ public class PDFTest {
 		return document;
 	}
 
-	protected static float getPointsFromMM(float millimeters){
+	public static float getPointsFromMM(float millimeters){
 		float pointPerMM=72/25.4f;
 		return millimeters*pointPerMM;
 	}
