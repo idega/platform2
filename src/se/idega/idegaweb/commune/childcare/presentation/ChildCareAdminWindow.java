@@ -2,15 +2,21 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
+import com.idega.core.user.business.UserBusiness;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -71,6 +77,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_CHANGE_OFFER = 12;
 	public static final int METHOD_RETRACT_OFFER = 13;
 	public static final int METHOD_ALTER_VALID_FROM_DATE = 14;
+	public static final int METHOD_VIEW_PROVIDER_QUEUE = 15;
+	public static final int METHOD_END_CONTRACT = 16;
+	public static final int METHOD_NEW_CARE_TIME = 17;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -89,6 +98,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_REMOVE_FUTURE_CONTRACTS = 14;
 	public static final int ACTION_CREATE_CONTRACT_FOR_BANKID = 15;
 	public static final int ACTION_ALTER_VALID_FROM_DATE = 16;
+	public static final int ACTION_END_CONTRACT = 17;	
+	public static final int ACTION_NEW_CARE_TIME = 18;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -159,6 +170,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case ACTION_ALTER_VALID_FROM_DATE :
 				alterValidFromDate(iwc);
 				break;
+			case ACTION_END_CONTRACT :
+				sendEndContractRequest(iwc);
+				break;
+			case ACTION_NEW_CARE_TIME :
+				sendNewCareTimeRequest(iwc);
+				break;				
+
 		}
 
 		if (_method != -1)
@@ -253,6 +271,20 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				headerTable.add(getHeader(localize("child_care.alter_valid_from_date", "Change placement date")));
 				contentTable.add(getChangeDateForm(true));
 				break;
+			case METHOD_VIEW_PROVIDER_QUEUE :
+				headerTable.add(getHeader(localize("child_care.view_provider_queue", "Provider queue")));			
+				contentTable.add(getProviderQueueForm(iwc));	
+				break;	
+			case METHOD_END_CONTRACT :
+				headerTable.add(getHeader(localize("child_care.end_contract", "End contract")));			
+				contentTable.add(getEndContractForm());	
+				break;	
+			case METHOD_NEW_CARE_TIME :
+				headerTable.add(getHeader(localize("child_care.new_care_time", "New care time")));			
+				contentTable.add(getNewCareTimeForm());	
+				break;					
+				
+							
 		}
 		
 		add(form);
@@ -708,7 +740,183 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		return table;
 	}
+	
+	/**
+	 * Shows the providerqueue without personal information. Used by citizen.
+	 * @param iwc
+	 * @return
+	 * @throws Exception
+	 */
+	private Table getProviderQueueForm(IWContext iwc) throws RemoteException {
+		
+		String providerId = iwc.getParameter(CCConstants.PROVIDER_ID);
+		String appId = iwc.getParameter(CCConstants.APPID);		
+		School school = getBusiness().getSchoolBusiness().getSchool(providerId);
+		
+		
+		ChildCarePrognosis prognosis = getBusiness().getPrognosis(Integer.parseInt(providerId));
+						
+		//todo: (Roar) localize
+		String prognosisText = prognosis == null ? localize("ccpqw_no_prognosis", "No prognosis available") :
+			localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ "  " +
+			localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + "  " +
+			localize("ccpqw_updated_date", "Updated date:") + " " + prognosis.getUpdatedDate();	
+		
+		Table appTbl = new Table();
+		
+//		add(new Text("ProviderId: " + providerId));
+		if (providerId != null){
+			Collection applications = getBusiness().getOpenAndGrantedApplicationsByProvider(new Integer(providerId).intValue());
+			
+			Iterator i = applications.iterator();
+			
+			appTbl.add(getSmallHeader(localize("ccpqw_order", "Queue number")), 1, 1);
+			appTbl.add(getSmallHeader(localize("ccpqw_queue_date", "Queue date")), 2, 1);
+			appTbl.add(getSmallHeader(localize("ccpqw_from_date", "Placement date")), 3, 1);
+			appTbl.setRowColor(1, getHeaderColor());			
+	
+			int row = 2;
+			
+			while(i.hasNext()){
+				ChildCareApplication app = (ChildCareApplication) i.next();
+				
+				Text queueOrder = getSmallText("" + getBusiness().getNumberInQueue(app)),
+					queueDate = getSmallText(app.getQueueDate().toString()),
+					fromDate = getSmallText(app.getFromDate().toString());
+//					currentAppId = style.getSmallText(""+app.getNodeID());   //debug only
+				
+				appTbl.add(queueOrder, 1, row);
+				appTbl.add(queueDate, 2, row);
+				appTbl.add(fromDate, 3, row);
+//				appTbl.add(currentAppId, 4, row);  //debug only
+			
+				if (app.getNodeID() == new Integer(appId).intValue()){
+					makeBlueAndBold(queueOrder);
+					makeBlueAndBold(queueDate);
+					makeBlueAndBold(fromDate);
+				}
+				
+				if (row % 2 == 0) {
+					appTbl.setRowColor(row, getZebraColor1());
+				} else {
+					appTbl.setRowColor(row, getZebraColor2());
+				}				
+				row++;
+			}
+		}
+				
+		Table layoutTbl = new Table();	
+		layoutTbl.setCellpadding(5);
+		layoutTbl.setWidth(Table.HUNDRED_PERCENT);
+		layoutTbl.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+					
+		layoutTbl.add(getSmallHeader(localize("ccpqw_provider", "Provider") + ":"), 1, row);
+		layoutTbl.add(getSmallText(school.getName()), 2, row++);	
 
+		layoutTbl.setRowHeight(2, "20px");	
+		
+		layoutTbl.add(getSmallHeader(localize("ccpqw_prognosisr", "Prognosis") + ":"), 1, row);
+		layoutTbl.add(getSmallText(prognosisText), 2, row++);		
+			
+		layoutTbl.setRowHeight(row++, "20px");
+			
+		layoutTbl.add(appTbl, 1, row);
+		layoutTbl.mergeCells(1, row, 2, row);
+		row++;
+	
+		layoutTbl.add(close, 1, row);
+		layoutTbl.setHeight(row, Table.HUNDRED_PERCENT);
+		layoutTbl.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+				
+//		CloseButton closeBtn = (CloseButton) getStyledInterface(new CloseButton(localize("ccpqw_close", "Close")));
+//		layoutTbl.add(closeBtn, 1, 6);
+//		layoutTbl.setAlignment(1, 6, "left");
+
+		return layoutTbl;
+	}	
+		
+	private Text makeBlueAndBold(Text t){
+		t.setBold(true);
+		t.setStyleAttribute("color:blue");	
+		return t;
+	}
+	
+	private Table getEndContractForm() {
+		Table layoutTbl = new Table();
+		layoutTbl.setCellpadding(5);
+		layoutTbl.setWidth(Table.HUNDRED_PERCENT);
+		layoutTbl.setHeight(Table.HUNDRED_PERCENT);		
+
+		int row = 1;
+		
+		layoutTbl.add(getSmallHeader(localize("ccnctw_info", "Info about care time.")), 1, row++);
+		
+		layoutTbl.add(getSmallHeader(localize("ccnctw_from_date", "From date") + ":"), 1, row);	
+		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		fromDate.setAsNotEmpty(localize("ccecw_date_format_alert", "Please choose a valid from date."));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, 2);
+		fromDate.setEarliestPossibleDate(cal.getTime(), localize("ccecw_date_alert", "Date must be not earlier than two months from today."));
+		layoutTbl.add(fromDate, 2, row++);
+		
+		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_END_CONTRACT)));
+		layoutTbl.add(submit, 1, row);
+		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
+		layoutTbl.add(close, 1, row);
+		layoutTbl.setHeight(row, Table.HUNDRED_PERCENT);
+		layoutTbl.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+		
+		return layoutTbl;
+	}
+	
+	private Table getNewCareTimeForm() throws RemoteException {
+		Table layoutTbl = new Table();
+		layoutTbl.setCellpadding(5);
+		layoutTbl.setWidth(Table.HUNDRED_PERCENT);
+		layoutTbl.setHeight(Table.HUNDRED_PERCENT);			
+
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);	
+
+		int row = 1;
+		layoutTbl.add(getSmallHeader(localize("ccnctw_info", "Info about care time.")), 1, row++);
+				
+		layoutTbl.add(
+			getSmallHeader(localize("ccnctw_care_time", "Care time") + ":"),
+			1,
+			row);
+		TextInput careTime = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
+		careTime.setValue(application.getCareTime());
+		careTime.setAsIntegers(localize("ccnctw_alert_care_time_format", "Care time must be an integer"));
+		careTime.setLength(4);
+		layoutTbl.add(careTime, 2, row++);
+
+		layoutTbl.add(
+		getSmallHeader(localize("ccnctw_from_date", "From date") + ":"),
+			1,
+			row);
+			
+		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		fromDate.setAsNotEmpty(localize("ccnctw_unvalid_date_format_alert", "Please choose a valid from date."));
+		fromDate.setEarliestPossibleDate(
+			new Date(),
+			localize("ccnctw_unvalid_date_alert", "The date most be in the future."));
+
+		layoutTbl.add(fromDate, 2, row++);
+
+		row++;
+
+		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_NEW_CARE_TIME)));
+		layoutTbl.add(submit, 1, row);
+		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
+		layoutTbl.add(close, 1, row);
+		layoutTbl.setHeight(row, Table.HUNDRED_PERCENT);
+		layoutTbl.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return layoutTbl;
+	}	
+		
+	
 	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_METHOD))
 			_method = Integer.parseInt(iwc.getParameter(PARAMETER_METHOD));
@@ -880,6 +1088,83 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		getParentPage().close();
 	}
 	
+	private void sendEndContractRequest(IWContext iwc) throws RemoteException{
+		System.out.println("SendEndContractrequest()");
+		
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		User owner = application.getOwner();
+		com.idega.core.user.data.User child = UserBusiness.getUser(application.getChildId());
+		
+		getBusiness().sendMessageToParents(
+			application, 
+			localize("ccecw_encon_par1", "Begäran om uppsägning av kontrakt gjord"), 
+			localize("ccecw_encon_par2", "Du har skickat en begäran om uppsägning av kontrakt för") + " " +
+			child.getName() + " " +  child.getPersonalID() + " " +
+			localize("ccecw_encon_par3", "fr.o.m.")+ " " + iwc.getParameter(PARAMETER_CHANGE_DATE) + ".");
+		
+		
+		getBusiness().sendMessageToProvider(
+			application,
+			localize("ccecw_encon_prov1", "Uppsägning av kontrakt"),
+			owner.getName() + " " + localize("ccecw_encon_prov2", "har begärt uppsägning av kontrakt för") + " " +
+			child.getName() + " " +  child.getPersonalID() + ". " + 
+			localize("ccecw_encon_prov3", "Kontraktet ska upphöra fr.o.m.") + " " + iwc.getParameter(PARAMETER_CHANGE_DATE) + ".",
+			application.getOwner());	
+			
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();	
+	}
+		
+	private void sendNewCareTimeRequest(IWContext iwc)	throws RemoteException {
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		User owner = application.getOwner();
+		com.idega.core.user.data.User child = UserBusiness.getUser(application.getChildId());
+
+		getBusiness().sendMessageToParents(
+			application,
+			localize(
+				"ccnctw_new_caretime_msg_parents_subject",
+				"Begäran om ändrad omsorgstid gjord"),
+			localize(
+				"ccnctw_new_caretime_msg_parents_message",
+				"Du har skickat en begäran om ändrad omsorgstid för ")
+				+ child.getName()
+				+ " "
+				+ child.getPersonalID());
+
+		getBusiness().sendMessageToProvider(
+			application,
+			localize(
+				"ccnctw_new_caretime_msg_provider_subject",
+				"Begäran om ändrad omsorgstid"),
+			owner.getName()
+				+ " "
+				+ localize(
+					"ccnctw_new_caretime_msg_provider_message1",
+					"har begärt ändrad omsorgstid till")
+				+ " "
+				+ iwc.getParameter(PARAMETER_CHILDCARE_TIME)
+				+ " "
+				+ localize(
+					"ccnctw_new_caretime_msg_provider_message2",
+					"tim/vecka för")
+				+ " "
+				+ child.getName()
+				+ " "
+				+ child.getPersonalID()
+				+ ". "
+				+ localize(
+					"ccnctw_new_caretime_msg_provider_message3",
+					"Den nya omsorgstiden skall gälla fr.o.m.")
+				+ " "
+				+ iwc.getParameter(PARAMETER_CHANGE_DATE)
+				+ ".",
+			application.getOwner());
+			
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();				
+	}
+		
 	private void close() {
 		getParentPage().setParentToReload();
 		getParentPage().close();
