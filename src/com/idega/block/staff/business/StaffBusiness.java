@@ -5,6 +5,8 @@ package com.idega.block.staff.business;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
+import javax.transaction.TransactionManager;
+
 import com.idega.block.staff.data.StaffEntity;
 import com.idega.block.staff.data.StaffInfo;
 import com.idega.block.staff.data.StaffLocalized;
@@ -12,7 +14,7 @@ import com.idega.block.staff.data.StaffMeta;
 import com.idega.block.staff.data.StaffMetaData;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.business.UserGroupBusiness;
-import com.idega.data.EntityBulkUpdater;
+import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.IWTimestamp;
 
 
@@ -445,152 +447,132 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
     }
 
 
-
-    EntityBulkUpdater bulk = new EntityBulkUpdater();
-
-    boolean execute = false;
-
-
+    TransactionManager t = IdegaTransactionManager.getInstance();
 
     StaffMetaData meta = null;
 
 
-
-    if ( a1 != null && a1.length() > 0 ) {
-
-      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
-
-      meta.setUserID(userID);
-
-      meta.setAttribute(a1);
-
-      if ( v1 != null )
-
-        meta.setValue(v1);
-
-      bulk.add(meta,EntityBulkUpdater.insert);
-
-      execute = true;
-
-    }
-
-
-
-    if ( a2 != null && a2.length() > 0 ) {
-
-      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
-
-      meta.setUserID(userID);
-
-      meta.setAttribute(a2);
-
-      if ( v2 != null )
-
-        meta.setValue(v2);
-
-      bulk.add(meta,EntityBulkUpdater.insert);
-
-      execute = true;
-
-    }
-
-
-
-    if ( a3 != null && a3.length() > 0 ) {
-
-      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
-
-      meta.setUserID(userID);
-
-      meta.setAttribute(a3);
-
-      if ( v3 != null )
-
-        meta.setValue(v3);
-
-      bulk.add(meta,EntityBulkUpdater.insert);
-
-      execute = true;
-
-    }
-
-
-
-    if ( a4 != null && a4.length() > 0 ) {
-
-      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
-
-      meta.setUserID(userID);
-
-      meta.setAttribute(a4);
-
-      if ( v4 != null )
-
-        meta.setValue(v4);
-
-      bulk.add(meta,EntityBulkUpdater.insert);
-
-      execute = true;
-
-    }
-
-
-
-    if ( a5 != null && a5.length() > 0 ) {
-
-      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
-
-      meta.setUserID(userID);
-
-      meta.setAttribute(a5);
-
-      if ( v5 != null )
-
-        meta.setValue(v5);
-
-      bulk.add(meta,EntityBulkUpdater.insert);
-
-      execute = true;
-
-    }
-
-
-
-    if ( a6 != null && a6.length() > 0 ) {
-
-      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
-
-      meta.setUserID(userID);
-
-      meta.setAttribute(a6);
-
-      if ( v6 != null )
-
-        meta.setValue(v6);
-
-      bulk.add(meta,EntityBulkUpdater.insert);
-
-      execute = true;
-
-    }
-
-
-
-    if ( execute ) {
-
+    try {
+    	
+    	t.begin();
+    	
+ 	    if ( a1 != null && a1.length() > 0 ) {
+	
+	      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
+	
+	      meta.setUserID(userID);
+	
+	      meta.setAttribute(a1);
+	
+	      if ( v1 != null )
+	
+	        meta.setValue(v1);
+	      meta.insert();
+	
+	    }
+	
+	
+	
+	    if ( a2 != null && a2.length() > 0 ) {
+	
+	      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
+	
+	      meta.setUserID(userID);
+	
+	      meta.setAttribute(a2);
+	
+	      if ( v2 != null )
+	
+	        meta.setValue(v2);
+	      	
+	      meta.insert();
+	
+	    }
+	
+	
+	
+	    if ( a3 != null && a3.length() > 0 ) {
+	
+	      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
+	
+	      meta.setUserID(userID);
+	
+	      meta.setAttribute(a3);
+	
+	      if ( v3 != null )
+	
+	        meta.setValue(v3);
+
+	      meta.insert();
+	
+	    }
+	
+	
+	
+	    if ( a4 != null && a4.length() > 0 ) {
+	
+	      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
+	
+	      meta.setUserID(userID);
+	
+	      meta.setAttribute(a4);
+	
+	      if ( v4 != null )
+	
+	        meta.setValue(v4);
+	
+	      meta.insert();
+	
+	    }
+	
+	
+	
+	    if ( a5 != null && a5.length() > 0 ) {
+	
+	      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
+	
+	      meta.setUserID(userID);
+	
+	      meta.setAttribute(a5);
+	
+	      if ( v5 != null )
+	
+	        meta.setValue(v5);
+	
+	      meta.insert();
+	
+	    }
+	
+	
+	
+	    if ( a6 != null && a6.length() > 0 ) {
+	
+	      meta = ((com.idega.block.staff.data.StaffMetaDataHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMetaData.class)).createLegacy();
+	
+	      meta.setUserID(userID);
+	
+	      meta.setAttribute(a6);
+	
+	      if ( v6 != null )
+	
+	        meta.setValue(v6);
+	
+	      meta.insert();
+	
+	    }
+
+	    t.commit();
+    } catch (Exception e) {
+    	e.printStackTrace(System.err);
+      
       try {
-
-        bulk.execute();
-
-      }
-
-      catch (Exception e) {
-
-        e.printStackTrace(System.err);
-
+      	t.rollback();
+      } catch (Exception e1) {
+      	e1.printStackTrace(System.err);
       }
 
     }
+
 
 }
 
@@ -611,53 +593,47 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
     }
 
 
-
-    EntityBulkUpdater bulk = new EntityBulkUpdater();
-
-    boolean execute = false;
-
-
+    TransactionManager t = IdegaTransactionManager.getInstance();
 
     StaffMeta meta = null;
 
-    for ( int a = 0; a < values.length; a++ ) {
 
-      if ( attributes[a] != null && attributes[a].length() > 0 ) {
+    try {
+    	
+    	t.begin();
 
-        meta = ((com.idega.block.staff.data.StaffMetaHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMeta.class)).createLegacy();
+	
+	    for ( int a = 0; a < values.length; a++ ) {
+	
+	      if ( attributes[a] != null && attributes[a].length() > 0 ) {
+	
+	        meta = ((com.idega.block.staff.data.StaffMetaHome)com.idega.data.IDOLookup.getHomeLegacy(StaffMeta.class)).createLegacy();
+	
+	        meta.setUserID(userID);
+	
+	        meta.setLocaleId(localeID);
+	
+	        meta.setAttribute(attributes[a]);
+	
+	        if ( values[a] != null )
+	
+	          meta.setValue(values[a]);
+	
+	        meta.insert();
+	
+	      }
+	
+	    }
 
-        meta.setUserID(userID);
 
-        meta.setLocaleId(localeID);
-
-        meta.setAttribute(attributes[a]);
-
-        if ( values[a] != null )
-
-          meta.setValue(values[a]);
-
-        bulk.add(meta,EntityBulkUpdater.insert);
-
-        execute = true;
-
-      }
-
-    }
-
-
-
-    if ( execute ) {
-
+	    t.commit();
+    } catch (Exception e) {
+    	e.printStackTrace(System.err);
+      
       try {
-
-        bulk.execute();
-
-      }
-
-      catch (Exception e) {
-
-        e.printStackTrace(System.err);
-
+      	t.rollback();
+      } catch (Exception e1) {
+      	e1.printStackTrace(System.err);
       }
 
     }

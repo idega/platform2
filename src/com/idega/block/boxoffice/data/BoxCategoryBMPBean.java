@@ -9,9 +9,11 @@ package com.idega.block.boxoffice.data;
 import java.sql.SQLException;
 import java.util.Locale;
 
+import javax.transaction.TransactionManager;
+
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.data.EntityBulkUpdater;
+import com.idega.transaction.IdegaTransactionManager;
 
 
 
@@ -43,9 +45,10 @@ public class BoxCategoryBMPBean extends com.idega.data.GenericEntity implements 
 
     for ( int a = 0; a < 5; a++ ) {
 
-      EntityBulkUpdater bulk = new EntityBulkUpdater();
+    	TransactionManager t = IdegaTransactionManager.getInstance();
+    	t.begin();
 
-      BoxCategory cat = ((com.idega.block.boxoffice.data.BoxCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(BoxCategory.class)).createLegacy();
+    	BoxCategory cat = ((com.idega.block.boxoffice.data.BoxCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(BoxCategory.class)).createLegacy();
 
 
 
@@ -64,21 +67,15 @@ public class BoxCategoryBMPBean extends com.idega.data.GenericEntity implements 
         text2.setHeadline(entries[a+5]);
 
 
-
-      bulk.add(cat,EntityBulkUpdater.insert);
-
-      bulk.add(text,EntityBulkUpdater.insert);
-
-      bulk.add(text2,EntityBulkUpdater.insert);
-
-      bulk.execute();
-
+      cat.insert();
+      text.insert();
+      text2.insert();
 
 
       text.addTo(cat);
-
       text2.addTo(cat);
 
+      t.commit();
     }
 
   }

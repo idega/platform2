@@ -9,9 +9,11 @@ package com.idega.block.calendar.data;
 import java.sql.SQLException;
 import java.util.Locale;
 
+import javax.transaction.TransactionManager;
+
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.data.EntityBulkUpdater;
+import com.idega.transaction.IdegaTransactionManager;
 
 
 
@@ -43,41 +45,47 @@ public class CalendarEntryTypeBMPBean extends com.idega.data.GenericEntity imple
 
     for ( int a = 0; a < 6; a++ ) {
 
-      EntityBulkUpdater bulk = new EntityBulkUpdater();
-
-      CalendarEntryType type = ((com.idega.block.calendar.data.CalendarEntryTypeHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntryType.class)).createLegacy();
-
-
-
-      LocalizedText text = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
-
-        text.setLocaleId(TextFinder.getLocaleId(new Locale("is","IS")));
-
-        text.setHeadline(entries[a]);
-
-
-
-      LocalizedText text2 = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
-
-        text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
-
-        text2.setHeadline(entries[a+6]);
-
-
-
-      bulk.add(type,EntityBulkUpdater.insert);
-
-      bulk.add(text,EntityBulkUpdater.insert);
-
-      bulk.add(text2,EntityBulkUpdater.insert);
-
-      bulk.execute();
-
-
-
-      text.addTo(type);
-
-      text2.addTo(type);
+    	TransactionManager t = IdegaTransactionManager.getInstance();
+    	
+    	try {
+    		t.begin();
+    		
+    		CalendarEntryType type = ((com.idega.block.calendar.data.CalendarEntryTypeHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntryType.class)).createLegacy();
+	
+	
+	
+	      LocalizedText text = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+	
+	        text.setLocaleId(TextFinder.getLocaleId(new Locale("is","IS")));
+	
+	        text.setHeadline(entries[a]);
+	
+	
+	
+	      LocalizedText text2 = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+	
+	        text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
+	
+	        text2.setHeadline(entries[a+6]);
+	
+	
+	      type.insert();
+	      text.insert();
+	      text2.insert();
+		
+	      text.addTo(type);
+	
+	      text2.addTo(type);
+	      
+	      t.commit();
+    	} catch (Exception e) {
+    		e.printStackTrace(System.err);
+    		try {
+    			t.rollback();
+    		} catch (Exception e1) {
+    			e1.printStackTrace(System.err);
+    		}
+    	}
 
     }
 

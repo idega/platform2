@@ -1,21 +1,27 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
-import com.idega.core.contact.data.Email;
-import com.idega.data.EntityBulkUpdater;
-import com.idega.data.EntityFinder;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.SendMail;
-import com.idega.util.IWTimestamp;
-import com.idega.util.text.ContentParser;
-import com.idega.idegaweb.IWApplicationContext;
-import is.idega.idegaweb.campus.block.mailinglist.data.*;
+import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter;
+import is.idega.idegaweb.campus.block.mailinglist.data.MailingList;
+import is.idega.idegaweb.campus.presentation.Campus;
+
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import is.idega.idegaweb.campus.presentation.Campus;
+
+import javax.transaction.TransactionManager;
+
+import com.idega.core.contact.data.Email;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.transaction.IdegaTransactionManager;
+import com.idega.util.IWTimestamp;
+import com.idega.util.SendMail;
+import com.idega.util.text.ContentParser;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -196,8 +202,30 @@ public class MailingListBusiness {
 
         try {
             MailingList mlist = ((is.idega.idegaweb.campus.block.mailinglist.data.MailingListHome)com.idega.data.IDOLookup.getHomeLegacy(MailingList.class)).findByPrimaryKeyLegacy(iMailingListId);
-            EntityBulkUpdater bulk = new EntityBulkUpdater(mlist);
-            bulk.addAll(emails, bulk.addto);
+            TransactionManager t = IdegaTransactionManager.getInstance();
+          	if (emails != null && mlist != null) {
+	            try {
+	            	t.begin();
+            		Iterator iter = emails.iterator();
+            		IDOLegacyEntity ent;
+            		while (iter.hasNext()) {
+                  ent = (IDOLegacyEntity)iter.next();
+                  if( mlist != null ){
+                    ent.addTo(mlist);
+                  }
+	            	}
+	        	    t.commit();
+	            } catch (Exception e) {
+	            	e.printStackTrace(System.err);
+	              
+	              try {
+	              	t.rollback();
+	              } catch (Exception e1) {
+	              	e1.printStackTrace(System.err);
+	              }
+	
+	            }
+        		}
 
             return true;
         } catch (Exception ex) {

@@ -11,19 +11,23 @@ package com.idega.block.calendar.business;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
+
+import javax.transaction.TransactionManager;
+
+import com.idega.block.calendar.data.CalendarEntry;
+import com.idega.block.calendar.data.CalendarEntryType;
+import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.text.business.TextFinder;
-import com.idega.util.IWTimestamp;
-import com.idega.data.EntityFinder;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.block.calendar.data.*;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.category.business.CategoryFinder;
 import com.idega.core.category.data.ICCategory;
-import com.idega.data.EntityBulkUpdater;
+import com.idega.data.EntityFinder;
 import com.idega.idegaweb.presentation.CalendarParameters;
-import com.idega.block.category.business.CategoryBusiness;
-import java.util.Locale;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.transaction.IdegaTransactionManager;
+import com.idega.util.IWTimestamp;
 
 public class CalendarBusiness {
 
@@ -275,26 +279,37 @@ public class CalendarBusiness {
 	}
 
 	public static void initializeCalendarEntry() throws SQLException {
-		EntityBulkUpdater bulk = new EntityBulkUpdater();
-		CalendarEntry entry = ((com.idega.block.calendar.data.CalendarEntryHome) com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
-		entry.setDate(new com.idega.util.IWTimestamp(1, 1, 2000).getTimestamp());
-		entry.setEntryTypeID(3);
+		TransactionManager t = IdegaTransactionManager.getInstance();
+		try {
+			t.begin();
 
-		LocalizedText text = ((com.idega.block.text.data.LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
-		text.setLocaleId(TextFinder.getLocaleId(new Locale("is", "IS")));
-		text.setHeadline("idega hf. stofna?");
-
-		LocalizedText text2 = ((com.idega.block.text.data.LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
-		text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
-		text2.setHeadline("idega co. founded");
-
-		bulk.add(entry, EntityBulkUpdater.insert);
-		bulk.add(text, EntityBulkUpdater.insert);
-		bulk.add(text2, EntityBulkUpdater.insert);
-		bulk.execute();
-
-		text.addTo(entry);
-		text2.addTo(entry);
+			CalendarEntry entry = ((com.idega.block.calendar.data.CalendarEntryHome) com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
+			entry.setDate(new com.idega.util.IWTimestamp(1, 1, 2000).getTimestamp());
+			entry.setEntryTypeID(3);
+	
+			LocalizedText text = ((com.idega.block.text.data.LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+			text.setLocaleId(TextFinder.getLocaleId(new Locale("is", "IS")));
+			text.setHeadline("idega hf. stofna?");
+	
+			LocalizedText text2 = ((com.idega.block.text.data.LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+			text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
+			text2.setHeadline("idega co. founded");
+	
+			entry.insert();
+			text.insert();
+			text2.insert();
+	
+			text.addTo(entry);
+			text2.addTo(entry);
+			t.commit();
+		} catch (Exception e) {
+			try {
+				t.rollback();
+			} catch (Exception e1) {
+				throw new SQLException(e1.getMessage());
+			}
+			throw new SQLException(e.getMessage());
+		}
 	}
 
 	public static boolean deleteBlock(int iObjectInstanceId) {

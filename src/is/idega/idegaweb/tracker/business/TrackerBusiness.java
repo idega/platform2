@@ -1,16 +1,31 @@
 package is.idega.idegaweb.tracker.business;
 
-import com.idega.data.*;
-import java.util.*;
-import is.idega.idegaweb.tracker.data.*;
+import is.idega.idegaweb.tracker.data.DomainStatistics;
+import is.idega.idegaweb.tracker.data.PageStatistics;
+import is.idega.idegaweb.tracker.data.PageStatisticsHome;
+import is.idega.idegaweb.tracker.data.PageTotalStatistics;
+import is.idega.idegaweb.tracker.data.ReferrerStatistics;
+import is.idega.idegaweb.tracker.data.UserAgentStatistics;
 
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.IWCacheManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.transaction.TransactionManager;
+
 import com.idega.builder.business.BuilderLogic;
-import com.idega.util.IWTimestamp;
 import com.idega.core.builder.data.ICDomain;
-import com.idega.core.builder.data.ICPage;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWCacheManager;
+import com.idega.presentation.IWContext;
+import com.idega.transaction.IdegaTransactionManager;
+import com.idega.util.IWTimestamp;
 
  //synchronized
 //unsynchronized
@@ -350,18 +365,25 @@ public class TrackerBusiness {
 
   private static void saveMapToDB(Map stats){
     if( stats!=null ){
-     EntityBulkUpdater bulk = new EntityBulkUpdater();
-
+    	
+    	TransactionManager t = IdegaTransactionManager.getInstance();
       try {
+      	t.begin();
         Iterator iter = stats.keySet().iterator();
         while (iter.hasNext()) {
           IDOLegacyEntity item = (IDOLegacyEntity) iter.next();
-          bulk.add(item,EntityBulkUpdater.insert);
+          item.insert();
         }
-        bulk.execute();
-      }
-      catch (Exception ex) {
-       ex.printStackTrace(System.err);
+  	    t.commit();
+      } catch (Exception e) {
+        e.printStackTrace(System.err);
+        
+        try {
+        	t.rollback();
+        } catch (Exception e1) {
+        	e1.printStackTrace(System.err);
+        }
+
       }
     }
 

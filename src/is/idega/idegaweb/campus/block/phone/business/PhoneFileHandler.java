@@ -1,23 +1,30 @@
 package is.idega.idegaweb.campus.block.phone.business;
 
-import java.io.*;
-import com.idega.block.finance.data.*;
-
-import java.util.Locale;
-import java.util.StringTokenizer;
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Map.Entry;
-import com.idega.data.EntityBulkUpdater;
-import com.idega.util.IWTimestamp;
-import is.idega.idegaweb.campus.data.AccountPhone;
 import is.idega.idegaweb.campus.block.phone.data.PhoneFileInfo;
-import java.util.Date;
+import is.idega.idegaweb.campus.data.AccountPhone;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.text.DateFormat;
-import java.sql.Timestamp;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.transaction.TransactionManager;
+
+import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AccountPhoneEntry;
+import com.idega.transaction.IdegaTransactionManager;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:
@@ -358,7 +365,7 @@ public class PhoneFileHandler {
 
 			FileReader fin = new FileReader(PhoneFile);
 			LineNumberReader lin = new LineNumberReader(fin);
-			EntityBulkUpdater bulk = new EntityBulkUpdater();
+			TransactionManager t = IdegaTransactionManager.getInstance();
 
 			String line = null;
 			StringTokenizer st;
@@ -381,117 +388,129 @@ public class PhoneFileHandler {
 			Account eAccount;
 			boolean cont = false;
 			List entryList;
-			while ((line = lin.readLine()) != null) { //&& count != 0){
-				cont = false;
-				st = new StringTokenizer(line, ";");
-				if (st.countTokens() == 8) {
-					ape = ((com.idega.block.finance.data.AccountPhoneEntryHome) com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
-					try {
-						anumber = st.nextToken().trim();
-						snumber = st.nextToken().trim();
-						bnumber = st.nextToken().trim();
-						String s = st.nextToken().trim();
-						stamp = parseStamp(s);
-						nightsec = Integer.parseInt(st.nextToken());
-						daysec = Integer.parseInt(st.nextToken());
-						sec = Integer.parseInt(st.nextToken());
-						price = Float.parseFloat(st.nextToken());
-						ape.setLastUpdated(IWTimestamp.getTimestampRightNow());
-						ape.setDayDuration(daysec);
-						ape.setNightDuration(nightsec);
-						ape.setDuration(sec);
-						ape.setMainNumber(anumber);
-						ape.setPhonedStamp(stamp.getTimestamp());
-						ape.setPhoneNumber(bnumber);
-						ape.setPrice(price);
-						ape.setSubNumber(snumber);
-						ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusUnread);
-						vEntries.add(ape);
-						cont = true;
-					}
-					catch (Exception ex) {
-						System.err.println("error in line " + linecount);
-						cont = false;
-					}
-					// valid line in file
-					if (cont) {
-						String number = ape.getSubNumber();
-						// account for phonenumber exist
-						if (phoneNumbers.containsKey(number)) {
-							Integer ncount = (Integer) phoneNumbers.get(number);
-							phoneNumbers.put(number, new Integer(ncount.intValue() + 1));
+			try {
+				t.begin();
+				while ((line = lin.readLine()) != null) { //&& count != 0){
+					cont = false;
+					st = new StringTokenizer(line, ";");
+					if (st.countTokens() == 8) {
+						ape = ((com.idega.block.finance.data.AccountPhoneEntryHome) com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
+						try {
+							anumber = st.nextToken().trim();
+							snumber = st.nextToken().trim();
+							bnumber = st.nextToken().trim();
+							String s = st.nextToken().trim();
+							stamp = parseStamp(s);
+							nightsec = Integer.parseInt(st.nextToken());
+							daysec = Integer.parseInt(st.nextToken());
+							sec = Integer.parseInt(st.nextToken());
+							price = Float.parseFloat(st.nextToken());
+							ape.setLastUpdated(IWTimestamp.getTimestampRightNow());
+							ape.setDayDuration(daysec);
+							ape.setNightDuration(nightsec);
+							ape.setDuration(sec);
+							ape.setMainNumber(anumber);
+							ape.setPhonedStamp(stamp.getTimestamp());
+							ape.setPhoneNumber(bnumber);
+							ape.setPrice(price);
+							ape.setSubNumber(snumber);
+							ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusUnread);
+							vEntries.add(ape);
+							cont = true;
 						}
+						catch (Exception ex) {
+							System.err.println("error in line " + linecount);
+							cont = false;
+						}
+						// valid line in file
+						if (cont) {
+							String number = ape.getSubNumber();
+							// account for phonenumber exist
+							if (phoneNumbers.containsKey(number)) {
+								Integer ncount = (Integer) phoneNumbers.get(number);
+								phoneNumbers.put(number, new Integer(ncount.intValue() + 1));
+							}
+							else {
+								phoneNumbers.put(number, new Integer(1));
+								numberCount++;
+							}
+						}
+						// invalid line in file
 						else {
-							phoneNumbers.put(number, new Integer(1));
-							numberCount++;
+							System.err.println("error in line " + linecount + " : parsing error");
+							sbError.append(line);
+							sbError.append("\n");
+							errorCount++;
 						}
 					}
-					// invalid line in file
 					else {
-						System.err.println("error in line " + linecount + " : parsing error");
+						System.err.println("error in line " + linecount + " : too few columns");
 						sbError.append(line);
 						sbError.append("\n");
 						errorCount++;
 					}
-				}
-				else {
-					System.err.println("error in line " + linecount + " : too few columns");
-					sbError.append(line);
-					sbError.append("\n");
-					errorCount++;
-				}
-				count--;
-				linecount++;
-			} // while
-
-			Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(from);
-			if (M != null && vEntries.size() > 0) {
-				String number;
-				AccountPhone ap;
-				List accountList;
-
-				int listsize;
-				Iterator it = vEntries.iterator();
-				while (it.hasNext()) {
-					ape = (AccountPhoneEntry) it.next();
-					number = ape.getSubNumber();
-					if (M != null && M.containsKey(number)) {
-						accountList = (List) M.get(number);
-						if (accountList != null) {
-							listsize = accountList.size();
-							for (int i = 0; i < listsize; i++) {
-								ap = (AccountPhone) accountList.get(i);
-								if (ape.getPhonedStamp().getTime() <= ap.getValidTo().getTime()) {
-									System.err.println("ape " + ape.getSubNumber() + " account" + ap.getAccountId().intValue());
-									ape.setAccountId(ap.getAccountId());
+					count--;
+					linecount++;
+				} // while
+	
+				Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(from);
+				if (M != null && vEntries.size() > 0) {
+					String number;
+					AccountPhone ap;
+					List accountList;
+	
+					int listsize;
+					Iterator it = vEntries.iterator();
+					while (it.hasNext()) {
+						ape = (AccountPhoneEntry) it.next();
+						number = ape.getSubNumber();
+						if (M != null && M.containsKey(number)) {
+							accountList = (List) M.get(number);
+							if (accountList != null) {
+								listsize = accountList.size();
+								for (int i = 0; i < listsize; i++) {
+									ap = (AccountPhone) accountList.get(i);
+									if (ape.getPhonedStamp().getTime() <= ap.getValidTo().getTime()) {
+										System.err.println("ape " + ape.getSubNumber() + " account" + ap.getAccountId().intValue());
+										ape.setAccountId(ap.getAccountId());
+									}
 								}
+	
 							}
-
+							ape.insert();
 						}
-						bulk.add(ape, bulk.insert);
-					}
-					// account for phonenumber doesn´t exist
-					else {
-						sbNoAccount.append(line);
-						sbNoAccount.append("\n");
-						noAccountCount++;
+						// account for phonenumber doesn´t exist
+						else {
+							sbNoAccount.append(line);
+							sbNoAccount.append("\n");
+							noAccountCount++;
+						}
 					}
 				}
-			}
-			else
-				System.err.println(" no accounts ");
-
-			PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome) com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
-			pfi.setDateRead(IWTimestamp.getTimestampRightNow());
-			pfi.setLineCount(linecount - 1);
-			pfi.setErrorCount(errorCount);
-			pfi.setNoAccountCount(noAccountCount);
-			pfi.setFileName(PhoneFile.getName());
-			pfi.setNumberCount(numberCount);
-			pfi.setTotalAmount(totPrice);
-			bulk.add(pfi, bulk.insert);
-
-			bulk.execute();
+				else
+					System.err.println(" no accounts ");
+	
+				PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome) com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
+				pfi.setDateRead(IWTimestamp.getTimestampRightNow());
+				pfi.setLineCount(linecount - 1);
+				pfi.setErrorCount(errorCount);
+				pfi.setNoAccountCount(noAccountCount);
+				pfi.setFileName(PhoneFile.getName());
+				pfi.setNumberCount(numberCount);
+				pfi.setTotalAmount(totPrice);
+				pfi.insert();
+	
+		    t.commit();
+	    } catch (Exception e) {
+	    	e.printStackTrace(System.err);
+	      
+	      try {
+	      	t.rollback();
+	      } catch (Exception e1) {
+	      	e1.printStackTrace(System.err);
+	      }
+	
+	    }
 
 			if (errorCount > 0) {
 				FileWriter out = new FileWriter(new File(PhoneFile.getParentFile(), "e_" + PhoneFile.getName()));
