@@ -242,7 +242,7 @@ public class TourOverview extends AbstractServiceOverview {
             for (int j = 0; j < prices.length; j++) {
 							try {
 								  currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-							} catch (SQLException e) {
+							} catch (Exception e) {
 								currency = null;
 							}
 
@@ -267,7 +267,7 @@ public class TourOverview extends AbstractServiceOverview {
                 	priceText.addToText(_iwrb.getLocalizedString("travel.currency_not_found_error_message","-ERROR-"));
                 }
                 
-              }catch (ProductPriceException p) {
+              }catch (Exception p) {
                 priceText.setText("Rangt upp sett");
               }
 

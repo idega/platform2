@@ -172,8 +172,11 @@ private int listPrices(IWContext iwc, Table contentTable,	int contRow,	Service s
 	int col1 = 2;
 	int col2 = 3;
 	for (int j = 0; j < prices.length; j++) {
-	
-	  currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+		try {
+	  	currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+		}catch (Exception e) {
+			currency = null;
+		}
 	  nameOfCategory = (Text) theText.clone();
 	  nameOfCategory.setFontColor(super.BLACK);
 	  nameOfCategory.setText(prices[j].getPriceCategory().getName());
@@ -186,7 +189,7 @@ private int listPrices(IWContext iwc, Table contentTable,	int contRow,	Service s
 	    priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 ) ));
 	    priceText.addToText(Text.NON_BREAKING_SPACE);
 	    priceText.addToText(currency.getCurrencyAbbreviation());
-	  }catch (ProductPriceException p) {
+	  }catch (Exception p) {
 	    priceText.setText("Rangt upp sett");
 	  }
 	

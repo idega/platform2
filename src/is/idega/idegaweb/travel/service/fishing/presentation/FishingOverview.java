@@ -240,7 +240,11 @@ public class FishingOverview extends AbstractServiceOverview {
             }
 
             for (int j = 0; j < prices.length; j++) {
-              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+            	try {
+              	currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+            	}catch (Exception e) {
+            		currency = null;	
+            	}
               nameOfCategory = (Text) theText.clone();
                 nameOfCategory.setFontColor(super.BLACK);
                 nameOfCategory.setText(prices[j].getPriceCategory().getName());
@@ -255,7 +259,7 @@ public class FishingOverview extends AbstractServiceOverview {
                 priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddress.getID() ) ));
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
-              }catch (ProductPriceException p) {
+              }catch (Exception p) {
                 priceText.setText("Rangt upp sett");
               }
 
