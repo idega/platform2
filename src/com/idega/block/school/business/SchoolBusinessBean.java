@@ -16,11 +16,15 @@ import javax.transaction.UserTransaction;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.block.school.data.SchoolType;
@@ -100,6 +104,32 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 	}
 
+	public SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
+		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+	}
+
+	public SchoolManagementTypeHome getSchoolManagementTypeHome() throws RemoteException {
+		return (SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class);
+	}
+
+	public Collection getSchoolCategories() throws RemoteException {
+		try {
+			return getSchoolCategoryHome().findAllCategories();
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+	
+	public Collection getSchoolManagementTypes() throws RemoteException {
+		try {
+			return getSchoolManagementTypeHome().findAllManagementTypes();
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+	
 	public School getSchool(Object primaryKey) throws RemoteException {
 		try {
 			return getSchoolHome().findByPrimaryKey(primaryKey);
