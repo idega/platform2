@@ -272,7 +272,7 @@ public class ServiceViewer extends Window {
 
 
 
-      ProductHome pHome = (ProductHome) IDOLookup.getHome(ProductHome.class);
+      ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
        while( (iter!=null) && iter.hasNext() ) {
         Product prod = pHome.findByPrimaryKey(iter.next());
 //        Product prod = (Product) iter.next();
