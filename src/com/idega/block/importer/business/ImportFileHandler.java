@@ -1,5 +1,6 @@
 package com.idega.block.importer.business;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import com.idega.block.importer.data.ImportFile;
 import com.idega.user.data.Group;
@@ -18,6 +19,5 @@ public interface ImportFileHandler {
 public boolean handleRecords() throws RemoteException;
 public void setImportFile(ImportFile file) throws RemoteException;
 public void setRootGroup(Group rootGroup) throws RemoteException;
-
-
+public List getFailedRecords() throws RemoteException;
 }
