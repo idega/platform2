@@ -481,11 +481,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 		return table;
 	}
-			
+	
 	protected void setupBookingForm() throws RemoteException {
 		
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
 		int betw = getNumberOfDays(from);
+		IWTimestamp to = new IWTimestamp(from);
+		to.addDays(betw);
 
 		Product product = getProduct();
 		Supplier supplier = null;
@@ -494,6 +496,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			supplier = sHome.findByPrimaryKey(product.getSupplierId());
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		
+		boolean isProductValid = false;
+		try {
+			isProductValid = getSearchBusiness(iwc).getIsProductValid(iwc, product, from, to);
+		}
+		catch (Exception e2) {
+			e2.printStackTrace();
 		}
 		
 		formTable.mergeCells(1, row, 3, row);
@@ -514,8 +524,6 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		++row;
 		formTable.mergeCells(1, row, 3, row);
 		if (betw > 0) {
-			IWTimestamp to = new IWTimestamp(from);
-			to.addDays(betw);
 			formTable.add(getHeaderText(from.getLocaleDate(iwc)+" - "+to.getLocaleDate(iwc)), 1, row);
 		} else {
 			formTable.add(getHeaderText(from.getLocaleDate(iwc)), 1, row);
@@ -523,155 +531,158 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		++row;
 		++row;
 		addErrorWarning();
-		/*
-		if (errorFields != null && !errorFields.isEmpty()) {
-			Text error = getErrorText(iwrb.getLocalizedString("travek.search.fields_must_be_filled","Fields marked with * must be filled"));
-			formTable.add(error, 1, row);
-			formTable.mergeCells(1, row, 3, row);
+
+		if (isProductValid) {
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)});
+			formTable.mergeCells(2, (row-1), 3, (row-1));
+	
+			TextInput postalC = new TextInput(PARAMETER_POSTAL_CODE);
+			postalC.setSize(6);
+			TextInput city = new TextInput(PARAMETER_CITY);
+			city.setSize(18);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.street","Street"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code"), iwrb.getLocalizedString("travel.search.city","City")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC,city});
+	
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.country","Country"), iwrb.getLocalizedString("travel.search.email","Email")}, new PresentationObject[]{new TextInput(PARAMETER_COUNTRY), new TextInput(PARAMETER_EMAIL)});
+			formTable.mergeCells(2, (row-1), 3, (row-1));
+	
+			setupSpecialFieldsForBookingForm(errorFields);
+			
+			TextInput expMonth = new TextInput(PARAMETER_CC_MONTH);
+			expMonth.setSize(3);
+			expMonth.setMaxlength(2);
+			TextInput expYear = new TextInput(PARAMETER_CC_YEAR);
+			expYear.setSize(3);
+			expYear.setMaxlength(2);
+			TextInput expCVC = new TextInput(PARAMETER_CC_CVC);
+			expCVC.setSize(5);
+			expCVC.setMaxlength(4);
+	
+			if ( errorFields != null && errorFields.contains(PARAMETER_CC_NUMBER)) {
+				formTable.add(getErrorText("* "), 1, row);
+			}
+			formTable.add(getText(iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")), 1, row);
 			++row;
-		}*/
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)});
-		formTable.mergeCells(2, (row-1), 3, (row-1));
-
-		TextInput postalC = new TextInput(PARAMETER_POSTAL_CODE);
-		postalC.setSize(6);
-		TextInput city = new TextInput(PARAMETER_CITY);
-		city.setSize(18);
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.street","Street"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code"), iwrb.getLocalizedString("travel.search.city","City")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC,city});
-
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.country","Country"), iwrb.getLocalizedString("travel.search.email","Email")}, new PresentationObject[]{new TextInput(PARAMETER_COUNTRY), new TextInput(PARAMETER_EMAIL)});
-		formTable.mergeCells(2, (row-1), 3, (row-1));
-
-		setupSpecialFieldsForBookingForm(errorFields);
-		
-		TextInput expMonth = new TextInput(PARAMETER_CC_MONTH);
-		expMonth.setSize(3);
-		expMonth.setMaxlength(2);
-		TextInput expYear = new TextInput(PARAMETER_CC_YEAR);
-		expYear.setSize(3);
-		expYear.setMaxlength(2);
-		TextInput expCVC = new TextInput(PARAMETER_CC_CVC);
-		expCVC.setSize(5);
-		expCVC.setMaxlength(4);
-
-		if ( errorFields != null && errorFields.contains(PARAMETER_CC_NUMBER)) {
-			formTable.add(getErrorText("* "), 1, row);
-		}
-		formTable.add(getText(iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")), 1, row);
-		++row;
-		formTable.add(new TextInput(PARAMETER_CC_NUMBER), 1, row);
-		
-		++row;
-		Table ccTable = new Table();
-		ccTable.setCellpaddingAndCellspacing(0);
-		if ( errorFields != null && errorFields.contains(PARAMETER_CC_MONTH)) {
-			ccTable.add(getErrorText("* "), 1, 1);
-		}
-		ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_month","Expires month")), 1, 1);
-		if ( errorFields != null && errorFields.contains(PARAMETER_CC_YEAR)) {
-			ccTable.add(getErrorText("* "), 3, 1);
-		}
-		ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_year","Expires year")), 3, 1);
-		ccTable.add(expMonth, 1, 2);
-		ccTable.add(expYear, 3, 2);
-		ccTable.setColumnWidth(2, "8");
-		formTable.add(ccTable, 1, row);
-		
-		
-		if (cvcIsUsed) {
-			Table ccTable2 = new Table();
-			ccTable2.setCellpaddingAndCellspacing(0);
-			if ( errorFields != null && errorFields.contains(PARAMETER_CC_CVC)) {
-				ccTable2.add(getErrorText("* "), 1, 1);
+			formTable.add(new TextInput(PARAMETER_CC_NUMBER), 1, row);
+			
+			++row;
+			Table ccTable = new Table();
+			ccTable.setCellpaddingAndCellspacing(0);
+			if ( errorFields != null && errorFields.contains(PARAMETER_CC_MONTH)) {
+				ccTable.add(getErrorText("* "), 1, 1);
 			}
-			ccTable2.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1, 1);
-			ccTable2.add(expCVC, 1, 2);
-			Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
-			if (cvcLink != null) {
-				ccTable2.add(cvcLink, 1, 2);
+			ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_month","Expires month")), 1, 1);
+			if ( errorFields != null && errorFields.contains(PARAMETER_CC_YEAR)) {
+				ccTable.add(getErrorText("* "), 3, 1);
 			}
-			formTable.mergeCells(2, row, 3, row);
-			formTable.add(ccTable2, 2, row);
-		}
-		++row;
-		
-		//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER)});
-		//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.expires_month","Expires month"), iwrb.getLocalizedString("travel.search.expires_year","Expires year"), iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")}, new PresentationObject[]{expMonth,expYear, expCVC});
-
-		TextArea comment = new TextArea(PARAMETER_COMMENT);
-		comment.setWidth("350");
-		comment.setHeight("50");
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment});
-		formTable.mergeCells(1, (row-1), 3, (row-1));
-
-		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
-		String sAddressId = "-1";
-		String sTimeframeId = "-1";
-		
-		if (productPriceId == null) {
-			Timeframe timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, Integer.parseInt(sAddressId));
-			if (timeframe != null) {
-				sTimeframeId = timeframe.getPrimaryKey().toString();
-			}
-			ProductPrice[] prices = getProductPrices(product, Integer.parseInt(sAddressId), Integer.parseInt(sTimeframeId));
-			if (prices != null && prices.length > 0) {
-				productPriceId = prices[prices.length-1].getPrimaryKey().toString();
-			}
-		}
-		
-		formTable.add(new HiddenInput(PARAMETER_ADDRESS_ID, sAddressId));
-		formTable.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
-		formTable.add(new HiddenInput(PARAMETER_ONLINE, "true"));
-		formTable.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
-		formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
-		formTable.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
-		formTable.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
-		formTable.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
-		
-//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
-		formTable.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
-		
-		try {
-			ProductPrice pPrice = ((ProductPriceHome) IDOLookup.getHome(ProductPrice.class)).findByPrimaryKey(new Integer(productPriceId));
-			int addressId = -1;
-			try {
-				addressId = Integer.parseInt(sAddressId);
-			} catch (Exception e) {}
-			//Timeframe tFrame = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
-			int tFrameID = -1;
-			if (sTimeframeId != null) {
-				tFrameID = Integer.parseInt(sTimeframeId);
-			}
-			formTable.mergeCells(1, row, 3, row);
-			formTable.add(getHeaderText(getPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice, betw)), 1, row);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		++row;
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("travel.search.confirm","Confirm"), ACTION, ACTION_CONFIRM);
-		formTable.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		formTable.add(submit, 3, row);
-		//formTable.setBorder(1);
-
-		++row;
-		Table logoTable = new Table();
-		Collection imgs = null;
-		try {
-			imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supplier, IWTimestamp.RightNow()));
-			if (imgs != null && !imgs.isEmpty()) {
-				Iterator iter = imgs.iterator();
-				int col = 0;
-				while (iter.hasNext()) {
-					logoTable.add((Image)iter.next(), ++col, 1);
+			ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_year","Expires year")), 3, 1);
+			ccTable.add(expMonth, 1, 2);
+			ccTable.add(expYear, 3, 2);
+			ccTable.setColumnWidth(2, "8");
+			formTable.add(ccTable, 1, row);
+			
+			
+			if (cvcIsUsed) {
+				Table ccTable2 = new Table();
+				ccTable2.setCellpaddingAndCellspacing(0);
+				if ( errorFields != null && errorFields.contains(PARAMETER_CC_CVC)) {
+					ccTable2.add(getErrorText("* "), 1, 1);
 				}
-				//addInputLine(new String[]{"", "", ""}, new PresentationObject[]{null, null, logoTable});
-				formTable.add(logoTable, 1, row);
+				ccTable2.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1, 1);
+				ccTable2.add(expCVC, 1, 2);
+				Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
+				if (cvcLink != null) {
+					ccTable2.add(cvcLink, 1, 2);
+				}
+				formTable.mergeCells(2, row, 3, row);
+				formTable.add(ccTable2, 2, row);
 			}
-		}catch (Exception e1) {
-			e1.printStackTrace();
+			++row;
+			
+			//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER)});
+			//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.expires_month","Expires month"), iwrb.getLocalizedString("travel.search.expires_year","Expires year"), iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")}, new PresentationObject[]{expMonth,expYear, expCVC});
+	
+			TextArea comment = new TextArea(PARAMETER_COMMENT);
+			comment.setWidth("350");
+			comment.setHeight("50");
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment});
+			formTable.mergeCells(1, (row-1), 3, (row-1));
+	
+			String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
+			String sAddressId = "-1";
+			String sTimeframeId = "-1";
+			
+			if (productPriceId == null) {
+				Timeframe timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, Integer.parseInt(sAddressId));
+				if (timeframe != null) {
+					sTimeframeId = timeframe.getPrimaryKey().toString();
+				}
+				ProductPrice[] prices = getProductPrices(product, Integer.parseInt(sAddressId), Integer.parseInt(sTimeframeId));
+				if (prices != null && prices.length > 0) {
+					productPriceId = prices[prices.length-1].getPrimaryKey().toString();
+				}
+			}
+			
+			formTable.add(new HiddenInput(PARAMETER_ADDRESS_ID, sAddressId));
+			formTable.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
+			formTable.add(new HiddenInput(PARAMETER_ONLINE, "true"));
+			formTable.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
+			formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
+			formTable.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
+			formTable.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
+			formTable.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
+			
+	//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
+			formTable.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
+			
+			try {
+				ProductPrice pPrice = ((ProductPriceHome) IDOLookup.getHome(ProductPrice.class)).findByPrimaryKey(new Integer(productPriceId));
+				int addressId = -1;
+				try {
+					addressId = Integer.parseInt(sAddressId);
+				} catch (Exception e) {}
+				//Timeframe tFrame = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
+				int tFrameID = -1;
+				if (sTimeframeId != null) {
+					tFrameID = Integer.parseInt(sTimeframeId);
+				}
+				formTable.mergeCells(1, row, 3, row);
+				formTable.add(getHeaderText(getPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice, betw)), 1, row);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			++row;
+			SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("travel.search.confirm","Confirm"), ACTION, ACTION_CONFIRM);
+			formTable.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			formTable.add(submit, 3, row);
+			//formTable.setBorder(1);
+	
+			++row;
+			Table logoTable = new Table();
+			Collection imgs = null;
+			try {
+				imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supplier, IWTimestamp.RightNow()));
+				if (imgs != null && !imgs.isEmpty()) {
+					Iterator iter = imgs.iterator();
+					int col = 0;
+					while (iter.hasNext()) {
+						logoTable.add((Image)iter.next(), ++col, 1);
+					}
+					//addInputLine(new String[]{"", "", ""}, new PresentationObject[]{null, null, logoTable});
+					formTable.add(logoTable, 1, row);
+				}
+			}catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
-		
+		else {
+			formTable.mergeCells(1, row, 3, row);
+			formTable.add(getErrorText(iwrb.getLocalizedString("search_product_not_available", "This product is not available on the selected days.")), 1, row);
+			++row;
+			++row;
+			BackButton back = new BackButton(iwrb.getLocalizedImageButton("travelSearch.try_again", "Try again"));
+			formTable.add(back, 1, row);
+		}
 	}
 	
 	/**
