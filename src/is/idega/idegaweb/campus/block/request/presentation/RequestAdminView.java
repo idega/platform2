@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.1 2002/02/15 11:05:46 palli Exp $
+ * $Id: RequestAdminView.java,v 1.2 2002/02/15 11:20:47 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
@@ -32,7 +33,7 @@ import is.idega.idegaweb.campus.block.request.data.Request;
  * @version 1.0
  */
 public class RequestAdminView extends Block {
-  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus.block.request";
+  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
   private static final String NAME_KEY = "cam_request_admin_view_block";
   private static final String DEFAULT_VALUE = "Requests";
 
@@ -81,13 +82,15 @@ public class RequestAdminView extends Block {
   }
 
   private Table getRequests() {
+//    DataTable table = new DataTable();
     Table table = new Table();
     table.setCellspacing(1);
     table.setCellpadding(3);
     table.mergeCells(1,1,3,1);
     table.setWidth("100%");
 
-    System.out.println("_iwrb = " + _iwrb);
+//    System.out.println("_iwrb = " + _iwrb);
+
 
     table.add(formatText(_iwrb.getLocalizedString("requests","Requests"),"#FFFFFF",true),1,1);
     table.add(formatText(_iwrb.getLocalizedString("request","Request")),1,2);
