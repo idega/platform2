@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.41 2001/09/25 02:33:53 eiki Exp $
+ * $Id: Link.java,v 1.42 2001/09/25 13:33:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -557,7 +557,7 @@ public class Link extends Text {
       StringBuffer url = new StringBuffer();
       url.append(IWMainApplication.BUILDER_SERVLET_URL);
       url.append('?');
-      url.append(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+      url.append(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
       url.append('=');
       url.append(page.getID());
       setURL(url.toString());
