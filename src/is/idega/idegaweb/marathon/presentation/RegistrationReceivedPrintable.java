@@ -33,6 +33,8 @@ public class RegistrationReceivedPrintable extends Window {
 		
 	}
 	public void main(IWContext iwc) throws Exception {
+		super.setResizable(true);
+		super.setHeight(450);
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		String name = iwc.getParameter(IWMarathonConstants.PARAMETER_NAME);
 		String run = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN);
