@@ -39,10 +39,12 @@ public interface MessageBusiness extends com.idega.business.IBOService
 	 * @return Collection of PrintedLetterMessage that have already been printed
 	 */
 	public Collection getPrintedLetterMessages()throws FinderException,RemoteException;
+	public Collection getPrintedLetterMessagesByType(String type)throws FinderException,RemoteException;
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed
 	 */	
 	public Collection getUnPrintedLetterMessages()throws FinderException,RemoteException;
+	public Collection getUnPrintedLetterMessagesByType(String type)throws FinderException,RemoteException;
 	/**
 	 * Mark the status of the message so that it is printed.
 	 * @param performer The User that makes the change
@@ -58,6 +60,6 @@ public interface MessageBusiness extends com.idega.business.IBOService
 
 	public SystemArchivationMessage createPrintArchivationMessage(User forUser, User creator, String subject, String body,ICFile attatchement) throws CreateException, RemoteException;
 	public SystemArchivationMessage createPrintArchivationMessage(int forUserID, int creatorUserID, String subject, String body,int attatchementFileID) throws CreateException, RemoteException;
-
+	public PrintedLetterMessage createPrintedPasswordLetterMessage(User forUser, String subject, String body) throws CreateException, RemoteException;
 
 }

@@ -10,6 +10,7 @@ import java.util.Vector;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessageComparator;
 import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
@@ -23,6 +24,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
@@ -46,6 +48,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
   private final static int ACTION_SHOW_DELETE_INFO = 3;
   private final static int ACTION_DELETE_MESSAGE = 4;
   private final static int ACTION_PRINT_UNPRINTED_MESSAGES = 5;
+  private final static int ACTION_PRINT_MESSAGE=6;
 
   private final static String PARAM_VIEW_MESSAGE = "prv_view_msg";
   private final static String PARAM_VIEW_MESSAGE_LIST = "prv_view_msg_list";
@@ -53,6 +56,13 @@ public class PrintDocumentsViewer extends CommuneBlock {
   private final static String PARAM_SHOW_DELETE_INFO = "prv_s_delete_i";
   private final static String PARAM_DELETE_MESSAGE = "prv_delete_message";
   private final static String PARAM_PRINT_UNPRINTED = "prv_unprinted";
+  private final static String PARAM_PRINT_MSG = "prv_pr_msg";
+  private final static String PARAM_LETTER_TYPE = "prv_let_tp";
+  
+  private boolean isBulkType = false;
+  private boolean showTypesAsDropdown = false;
+  private String currentType = "";
+  private int msgId = -1;
 
   private Table mainTable = null;
 
@@ -64,13 +74,15 @@ public class PrintDocumentsViewer extends CommuneBlock {
   }
 
   public void main(IWContext iwc){
+  	debugParameters(iwc);
     this.setResourceBundle(getResourceBundle(iwc));
 
     try{
       int action = parseAction(iwc);
       switch(action){
       	case ACTION_VIEW_MESSAGE_OVERVIEW:
-      		viewMessageOverview(iwc);
+      		//viewMessageOverview(iwc);
+      		viewMessages(iwc);
       		break;
         case ACTION_VIEW_MESSAGE_LIST:
           viewMessageList(iwc);
@@ -87,6 +99,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
         	break;
         case ACTION_PRINT_UNPRINTED_MESSAGES:
           printAllUnPrintedMessages(iwc);
+          viewMessageOverview(iwc);
+        	break;
+       	case ACTION_PRINT_MESSAGE:
+          printMessage(iwc);
           viewMessageOverview(iwc);
         	break;
         default:
@@ -124,49 +140,197 @@ public class PrintDocumentsViewer extends CommuneBlock {
     else if(iwc.isParameterSet(PARAM_PRINT_UNPRINTED)){
       action = ACTION_PRINT_UNPRINTED_MESSAGES;
     }
+    else if(iwc.isParameterSet(PARAM_PRINT_MSG)){
+      action = ACTION_PRINT_MESSAGE;
+    }
+    
+    if(iwc.isParameterSet(PARAM_LETTER_TYPE )){
+      currentType = iwc.getParameter(PARAM_LETTER_TYPE);
+    }
+    if("".equals(currentType))
+      currentType = getDocumentBusiness(iwc).getPrintedLetterTypes()[0];
+     
+    isBulkType=getDocumentBusiness(iwc).isBulkLetterType(currentType);
+     
+    if(iwc.isParameterSet(PARAM_MESSAGE_ID)){
+    	msgId = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
+    }
 
     return action;
   }
 
   private void printAllUnPrintedMessages(IWContext iwc)throws Exception{
-		  int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
-		  getDocumentBusiness(iwc).printAllUnPrintedLetters(userID);
+	int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
+	getDocumentBusiness(iwc).printAllUnPrintedLetters(userID,currentType);
+  }
+  
+  private void printMessage(IWContext iwc) throws Exception {
+  	int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
+  	getDocumentBusiness(iwc).writePrintedLetterPDF(msgId,userID);
+  	
+  }
+  
+  private void viewMessages(IWContext iwc) throws Exception{
+  	if ( iwc.isLoggedOn() ) {
+	    //add(getLocalizedHeader("printdoc.letters", "Letters for printing"));
+	  	addTypeMenu(iwc);
+	  	if(isBulkType)
+	  		addDocumentsList(iwc);
+	  	else
+	  		addMessagesList(iwc);
+	  	}
+	else{
+	    add(getLocalizedHeader("printdoc.not_logged_on", "You must be logged on to use this function"));
+	}
+  }
+  
+  private void addTypeMenu(IWContext iwc) throws Exception{
+  	 
+  	 String[] types = getDocumentBusiness(iwc).getPrintedLetterTypes();
+  	 if(showTypesAsDropdown){
+  	 	DropdownMenu drp = new DropdownMenu(PARAM_LETTER_TYPE);
+  	 	for (int i = 0; i < types.length; i++) {
+			drp.addMenuElement(types[i],localize("letter_type_"+types[i],types[i]));
+		}
+		drp.setToSubmit();
+		drp.setSelectedElement(currentType);
+  	 	Form F = new Form();
+  	 	F.add(drp);
+  	 	add(F);
+  	 }  	 
+  	 else{
+	  	 Table T = new Table();
+	  	 T.setCellpadding(2);
+	  	 int col = 1;
+	  	 for (int i = 0; i < types.length; i++) {
+			Link typeLink = new Link(localize("letter_type_"+types[i],types[i]));	
+			typeLink.addParameter(PARAM_LETTER_TYPE,types[i]);
+			T.add(typeLink,col,1);
+		}
+  	 	add(T);
+  	 }
+  	
+  }
+  
+  private void addDocumentsList(IWContext iwc)throws Exception{
+  	add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"));
+  	
+  	ColumnList unPrintedLetterDocs = new ColumnList(3);
+		
+		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
+		//messageList.setHeader(localize("printdoc.name","Name"),1);
+		//unPrintedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+		//unPrintedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
+
+		unPrintedLetterDocs.add(localize("printdoc.unprinted","Unprinted"));
+		//messageList.add("-");
+		unPrintedLetterDocs.add(Integer.toString(getDocumentBusiness(iwc).getUnprintedLettersCountByType(currentType)));
+
+		Link printLink = new Link(localize("printdoc.print","Print"));
+		printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
+		printLink.addParameter(PARAM_LETTER_TYPE,currentType);
+		unPrintedLetterDocs.add(printLink);
+		
+	add(unPrintedLetterDocs);
+	add(Text.getBreak());
+	
+		ColumnList printedLetterDocs = new ColumnList(3);
+		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType);
+		if(!printDocs.isEmpty()){
+			
+			add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
+			add(printedLetterDocs);
+			
+			printedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
+			printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+			
+			Iterator iter = printDocs.iterator();
+			while (iter.hasNext()) {
+				PrintDocuments doc = (PrintDocuments)iter.next();
+				printedLetterDocs.add(doc.getCreated().toString());
+				//messageList.add("-");
+				printedLetterDocs.add(Integer.toString(doc.getNumberOfSubDocuments()));
+				int fileID = doc.getDocumentFileID();
+				Link viewLink = new Link(localize("printdoc.view","View"));
+				viewLink.setFile(fileID);
+				printedLetterDocs.add(viewLink);
+			}
+			
+		}
+	
+	
+	
+  	
+  
+  }
+  
+  private void addMessagesList(IWContext iwc)throws Exception{
+  	add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"));
+  	
+  	ColumnList unPrintedLetterDocs = new ColumnList(3);
+  	
+  	Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType);
+		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
+		//messageList.setHeader(localize("printdoc.name","Name"),1);
+		unPrintedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+		unPrintedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),2);
+
+		
+		Iterator iter = unprintedLetters.iterator();
+		while (iter.hasNext()) {
+			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
+			unPrintedLetterDocs.add(msg.getCreated().toString());
+			//messageList.add("-");
+			unPrintedLetterDocs.add(msg.getOwner().getName());
+			
+			
+			Link printLink = new Link(localize("printdoc.print","Print"));
+			printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
+			printLink.addParameter(PARAM_LETTER_TYPE,currentType);
+			printLink.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
+			
+			unPrintedLetterDocs.add(printLink);
+		}
+		
+		add(unPrintedLetterDocs);
+	
+		Collection printedLetters = getMessageBusiness(iwc).getPrintedLetterMessagesByType(currentType);
+		if(!printedLetters.isEmpty()){
+		ColumnList printedLetterDocs = new ColumnList(3);
+		printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+		
+		Iterator iter2 = printedLetters.iterator();
+		while (iter.hasNext()) {
+			PrintedLetterMessage msg = (PrintedLetterMessage) iter2.next();
+			printedLetterDocs.add(msg.getCreated().toString());
+			//messageList.add("-");
+			printedLetterDocs.add(msg.getOwner().getName());
+			
+			int fileID = msg.getMessageDataFileID();
+			Link viewLink = new Link(localize("printdoc.view","View"));
+			viewLink.setFile(fileID);
+			printedLetterDocs.add(viewLink);
+		}
+	
+	add(Text.getBreak());
+	add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
+	add(printedLetterDocs);
+		}
+  	
   }
 
   private void viewMessageOverview(IWContext iwc)throws Exception{
 
 	if ( iwc.isLoggedOn() ) {
 	   add(getLocalizedHeader("printdoc.letters", "Letters for printing"));
-		ColumnList messageList = new ColumnList(3);
-		add(messageList);
-		messageList.setWidth(Table.HUNDRED_PERCENT);
-		messageList.setBackroundColor("#e0e0e0");
-		//messageList.setHeader(localize("printdoc.name","Name"),1);
-		messageList.setHeader(localize("printdoc.date","Date"),1);
-		messageList.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
-
-		messageList.add(localize("printdoc.unprinted","Unprinted"));
-		//messageList.add("-");
-		messageList.add(Integer.toString(getDocumentBusiness(iwc).getUnPrintedLettersCount()));
-
-		Link printLink = new Link(localize("printdoc.print","Print"));
-		printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
-		messageList.add(printLink);
+		
 
 		//messageList.skip();
 
-		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments();
-		Iterator iter = printDocs.iterator();
-		while (iter.hasNext()) {
-			PrintDocuments doc = (PrintDocuments)iter.next();
-			messageList.add(doc.getCreated().toString());
-			//messageList.add("-");
-			messageList.add(Integer.toString(doc.getNumberOfSubDocuments()));
-			int fileID = doc.getDocumentFileID();
-			Link viewLink = new Link(localize("printdoc.view","View"));
-			viewLink.setFile(fileID);
-			messageList.add(viewLink);
-		}
+		
 
 	}
 	else{
@@ -346,5 +510,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
     int msgId = Integer.parseInt(id);
     Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
     return msg;
+  }
+  
+  public void setShowTypesInDropdown(boolean showInDropdown){
+  	this.showTypesAsDropdown = showInDropdown;
   }
 }

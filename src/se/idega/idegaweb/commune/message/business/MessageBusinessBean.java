@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.20 2002/11/14 13:03:20 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.21 2002/12/23 14:29:44 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -79,7 +79,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 	}
 	
-	protected PrintedLetterMessageHome getPrintedLetterMessageHome(){
+	protected PrintedLetterMessageHome getPrintedLetterMessageHome()throws RemoteException{
 		try{
 			return (PrintedLetterMessageHome) this.getIDOHome(PrintedLetterMessage.class);
 		}
@@ -184,7 +184,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public Message createPrintedLetterMessage(User user, String subject, String body) throws CreateException, RemoteException {
-		Message message = createMessage(getTypeMailMessage(), user, subject, body);
+		Message message = createPrintedLetterMessage(user, subject, body,null);
 		return message;
 	}
 
@@ -209,12 +209,36 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			throw new IBORuntimeException(e);
 		}
 	}
+	
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed
+	 */
+	public Collection getPrintedLetterMessagesByType(String type)throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findPrintedLettersByType(type);	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
+	}
+	/**
+	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
 	public Collection getUnPrintedLetterMessages()throws FinderException{
 		try{	
 			return getPrintedLetterMessageHome().findAllUnPrintedLetters();	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	/**
+	 * @return Collection of PrintedLetterMessage that have not been printed
+	 */	
+	public Collection getUnPrintedLetterMessagesByType(String type)throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findUnPrintedLettersByType(type);	
 		}
 		catch(RemoteException e){
 			throw new IBORuntimeException(e);
@@ -306,6 +330,41 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 		return message;
 	}
+
+	public PrintedLetterMessage createPrintedPasswordLetterMessage(User user, String subject, String body) throws CreateException, RemoteException {
+		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
+		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
+		message.setOwner(user);
+		message.setSubject(subject);
+		message.setBody(body);
+		message.setAsPasswordLetter();
+		try {
+			message.store();
+		}
+		catch (IDOStoreException idos) {
+			throw new IDOCreateException(idos);
+		}
+		return message;
+	}
+
+	public PrintedLetterMessage createPrintedLetterMessage(User user, String subject, String body,String printedLetterType) throws CreateException, RemoteException {
+		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
+		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
+		message.setOwner(user);
+		message.setSubject(subject);
+		message.setBody(body);
+		if(printedLetterType!=null){
+			message.setLetterType(printedLetterType);
+		}
+		try {
+			message.store();
+		}
+		catch (IDOStoreException idos) {
+			throw new IDOCreateException(idos);
+		}
+		return message;
+	}
+
 
 	public void sendMessage(String email, String subject, String body) {
 
