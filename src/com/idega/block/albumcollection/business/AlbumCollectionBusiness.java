@@ -3,6 +3,7 @@ package com.idega.block.albumcollection.business;
 import com.idega.data.EntityFinder;
 import com.idega.block.albumcollection.data.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.util.text.TextSoap;
 
 import java.util.List;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ public class AlbumCollectionBusiness {
 
   public final static String _PRM_ALBUM_ID = "ac_album_id";
   public final static String _PRM_TRACK_ID = "ac_track_id";
+  public final static String _PRM_LYRIC_ID = "ac_lyric_id";
 
   public AlbumCollectionBusiness() {
   }
@@ -140,13 +142,76 @@ public class AlbumCollectionBusiness {
 
   }
 
+
+  public static void addLyric(String name, String description, String lyric, Integer trackId, int[] authors) throws SQLException {
+    Lyric acLyric = new Lyric();
+
+    if( name != null){
+      acLyric.setName(name);
+    }
+
+    if(description != null){
+      acLyric.setDescription(description);
+    }
+
+    if(lyric != null){
+      acLyric.setLyric(TextSoap.formatText(lyric));
+    }
+
+    acLyric.insert();
+
+    if( trackId != null){
+      Track track = new Track(trackId.intValue());
+      track.setLyricId(acLyric.getID());
+      track.update();
+    }
+
+    if( authors != null){
+      for (int i = 0; i < authors.length; i++) {
+        acLyric.addTo(Author.class,authors[i]);
+      }
+    }
+
+
+  }
+
+  public static void addAuthor(String name, String displayName) throws SQLException {
+    Author author = new Author();
+
+    if( name != null){
+      author.setName(name);
+    }
+
+    if(displayName != null){
+      author.setDisplayName(displayName);
+    }
+
+
+    author.insert();
+
+  }
+
+
   public static List getTracks(int albumId) throws SQLException {
     return EntityFinder.findAllByColumnOrdered(Track.getStaticInstance(Track.class),Track._COLUMNNAME_ALBUM_ID,Integer.toString(albumId), Track._COLUMNNAME_NUMBER);
+  }
+
+  public static List getLyrics() throws SQLException {
+    return EntityFinder.findAll(Lyric.getStaticInstance(Lyric.class));
   }
 
   public static Album getAlbum(int albumId) {
     try {
       return new Album(albumId);
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  public static Lyric getLyric(int lyricId) {
+    try {
+      return new Lyric(lyricId);
     }
     catch (SQLException ex) {
       return null;

@@ -46,11 +46,17 @@ public class AlbumCollection extends Block {
   }
 
   public void lineUpLyricListState(IWContext iwc) throws Exception{
-
+    LyricList l = new LyricList();
+    l.setICObjectID(this.getICObjectID());
+    l.setICObjectInstanceID(this.getICObjectInstanceID());
+    this.add(l);
   }
 
   public void lineUpLyricState(IWContext iwc) throws Exception{
-
+    LyricViewer l = new LyricViewer();
+    l.setICObjectID(this.getICObjectID());
+    l.setICObjectInstanceID(this.getICObjectInstanceID());
+    this.add(l);
   }
 
 

@@ -30,10 +30,18 @@ public class AlbumDetails extends Block {
   public final static String _PRM_ALBUM_ID = AlbumCollectionBusiness._PRM_ALBUM_ID;
   private Text trackNameTemplate;
   private Text trackNumberTemplate;
+  private Link setLyricLinkTemplate;
+  private Link lyricViewerLinkTemplate;
 
   public AlbumDetails() {
     trackNameTemplate = new Text();
     trackNumberTemplate= new Text();
+
+    setLyricLinkTemplate = new Link();
+    setLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
+
+    lyricViewerLinkTemplate = new Link();
+    lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
 
   }
 
@@ -66,10 +74,12 @@ public class AlbumDetails extends Block {
     if(albumId != null && !"".equals(albumId)){
       List tracks = AlbumCollectionBusiness.getTracks(Integer.parseInt(albumId));
       if(tracks != null && tracks.size() > 0){
-        trackTable = new Table(2,tracks.size()+1);
+        trackTable = new Table(3,tracks.size()+1);
         int index=1;
         trackTable.add(new Text("Númer"),1,index);
-        trackTable.add(new Text("Heiti"),2,index++);
+        trackTable.add(new Text("Heiti"),2,index);
+        trackTable.add(new Text("Texti"),3,index);
+        index++;
         Iterator iter = tracks.iterator();
         while (iter.hasNext()) {
           Track item = (Track)iter.next();
@@ -83,6 +93,21 @@ public class AlbumDetails extends Block {
           Text trackName = (Text)trackNameTemplate.clone();
           trackName.setText(item.getName());
           trackTable.add(trackName,2,index);
+
+          if(item.getLyricId() < 0){
+            Link setLyric = (Link)setLyricLinkTemplate.clone();
+            setLyric.setText("setja texta");
+            setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
+
+            trackTable.add(setLyric,3,index);
+          } else {
+            Link setLyric = (Link)lyricViewerLinkTemplate.clone();
+            setLyric.setText("Texti");
+            setLyric.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,item.getLyricId());
+
+            trackTable.add(setLyric,3,index);
+          }
+
 
           index++;
         }

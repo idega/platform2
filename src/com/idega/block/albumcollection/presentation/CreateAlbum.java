@@ -13,6 +13,7 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.*;
@@ -59,6 +60,7 @@ public class CreateAlbum extends IWAdminWindow {
 
   public CreateAlbum() {
     super();
+    this.setHeight(430);
 
     myForm = new Form();
     /*myTable = new Table(1,1);
@@ -107,6 +109,7 @@ public class CreateAlbum extends IWAdminWindow {
 
 
     _fieldAuthors = new SelectionBox(_fieldNameAuthors);
+    _fieldAuthors.setHeight(6);
     List authorList = AlbumCollectionBusiness.getAuthors();
     if(authorList != null){
       Iterator iter = authorList.iterator();
@@ -118,6 +121,7 @@ public class CreateAlbum extends IWAdminWindow {
     _fieldAuthors.keepStatusOnAction();
 
     _fieldPerformers = new SelectionBox(_fieldNamePerformers);
+    _fieldPerformers.setHeight(6);
     List perfomerList = AlbumCollectionBusiness.getPerformers();
     if(perfomerList != null){
       Iterator iter = perfomerList.iterator();
@@ -164,12 +168,19 @@ public class CreateAlbum extends IWAdminWindow {
 
     contentTable.add(descriptionTable,1,2);
 
-    Table t2 = new Table(2,2);
+    Table t2 = new Table(2,3);
     t2.setWidth("100%");
     t2.add(new Text("Höfundar:"),1,1);
     t2.add(this._fieldAuthors,1,2);
     t2.add(new Text("Flytjendur:"),2,1);
     t2.add(this._fieldPerformers,2,2);
+    Link addAuthor = new Link("add");
+    addAuthor.setWindowToOpen(CreateAuthor.class);
+    t2.add(addAuthor,1,3);
+    Link addPerformer = new Link("add");
+    addPerformer.setWindowToOpen(CreatePerformer.class);
+    t2.add(addPerformer,2,3);
+
 
     contentTable.add(t2,1,3);
 
@@ -180,7 +191,7 @@ public class CreateAlbum extends IWAdminWindow {
     bTable.add(new CloseButton("  Close  "),2,1);
 
     contentTable.add(bTable,1,4);
-    contentTable.setAlignment(1,3,"right");
+    contentTable.setAlignment(1,4,"right");
 
     return contentTable;
   }
