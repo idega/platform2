@@ -46,12 +46,13 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 			CheckoutPlugin {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 
-	protected static final String LABEL_DIVISION = "isi_acc_alw_div";
-	protected static final String LABEL_GROUP = "isi_acc_alw_group";
-	protected static final String LABEL_INFO = "isi_acc_alw_info";
-	protected static final String LABEL_USER = "isi_acc_alw_user";
-	protected static final String LABEL_AMOUNT = "isi_acc_alw_amount";
-	protected static final String LABEL_SUM = "isi_acc_alw_sum";
+	protected static final String LABEL_DIVISION = "isi_acc_dcp_div";
+	protected static final String LABEL_GROUP = "isi_acc_dcp_group";
+	protected static final String LABEL_INFO = "isi_acc_dcp_info";
+	protected static final String LABEL_USER = "isi_acc_dcp_user";
+	protected static final String LABEL_AMOUNT = "isi_acc_dcp_amount";
+	protected static final String LABEL_AMOUNT_PAID = "isi_acc_dcp_amount_paid";
+	protected static final String LABEL_SUM = "isi_acc_dcp_sum";
 
 	private String backTableStyle = "back";
 	private String borderTableStyle = "borderAll";
@@ -151,7 +152,7 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 		Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT,
 				"Amount"));
 		labelAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelAmountPaid = new Text(iwrb.getLocalizedString(LABEL_AMOUNT,
+		Text labelAmountPaid = new Text(iwrb.getLocalizedString(LABEL_AMOUNT_PAID,
 		"Amount paid"));
 		labelAmountPaid.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelSum = new Text(iwrb.getLocalizedString(LABEL_SUM, "Sum"));
