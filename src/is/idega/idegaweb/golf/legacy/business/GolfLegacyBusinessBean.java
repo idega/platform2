@@ -3,7 +3,6 @@
  */
 package is.idega.idegaweb.golf.legacy.business;
 
-import is.idega.idegaweb.golf.GolfConstants;
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 import is.idega.idegaweb.golf.entity.FieldImage;
 import is.idega.idegaweb.golf.entity.FieldImageHome;
@@ -13,6 +12,7 @@ import is.idega.idegaweb.golf.entity.TeeImage;
 import is.idega.idegaweb.golf.entity.TeeImageHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
+import is.idega.idegaweb.golf.util.GolfConstants;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;

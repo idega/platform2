@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.business;
 
-import is.idega.idegaweb.golf.GolfConstants;
 import is.idega.idegaweb.golf.clubs.presentation.UnionCorrect;
 import is.idega.idegaweb.golf.entity.AddressHome;
 import is.idega.idegaweb.golf.entity.Country;
@@ -12,6 +11,7 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.ZipCode;
 import is.idega.idegaweb.golf.entity.ZipCodeHome;
+import is.idega.idegaweb.golf.util.GolfConstants;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
