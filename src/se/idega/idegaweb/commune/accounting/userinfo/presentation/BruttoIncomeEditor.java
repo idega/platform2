@@ -227,17 +227,13 @@ public class BruttoIncomeEditor extends AccountingBlock {
 						table.add(getText(nf.format(income.getIncome().doubleValue())));
 						table.add(getText(df.format(income.getValidFrom())));
 						table.add(getText(tf.format(income.getCreated())));
-						User creator = null;
 						try {
-							creator = getUserService(iwc).getUser(income.getCreatorID());
-						}
-						catch (RemoteException e) {
+							User creator = income.getCreator ();
+							table.add(getText(creator.getNameLastFirst()));
+						}	catch (Exception e) {
+							table.skip();
 							e.printStackTrace();
 						}
-						if (creator != null)
-							table.add(getText(creator.getNameLastFirst()));
-						else
-							table.skip();
 						//table.add(getCheckBox(PRM_DEL_ITEM, income.getPrimaryKey().toString()));
 						table.add(getDeleteLink(income.getPrimaryKey().toString(),tooltip) );
 						row++;
