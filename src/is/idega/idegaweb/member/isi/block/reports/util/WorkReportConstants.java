@@ -70,5 +70,5 @@ public class WorkReportConstants extends IWMemberConstants {
 
     public static final String DEBT_SUM_KEY = "FIN_debt_sum";
 
-    public static final String[] NOT_EDITABLE_FIN_NAMES = { "FIN_29998, FIN_74999, FIN_75000, FIN_99998"};
+    public static final String[] NOT_EDITABLE_FIN_NAMES = { "FIN_29998, FIN_44999, FIN_99998"};
 }
