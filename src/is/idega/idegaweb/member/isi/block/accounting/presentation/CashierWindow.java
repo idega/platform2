@@ -810,7 +810,7 @@ public class CashierWindow extends StyledIWAdminWindow {
             }
 
             addTitle(actionTitle.toString(),
-                    IWConstants.BUILDER_FONT_STYLE_TITLE);
+                    TITLE_STYLECLASS);
 
             if (subWindow != null) {
                 Table helpTable = new Table(1, 1);

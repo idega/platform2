@@ -101,7 +101,7 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
 			add(overview, iwc);
 		}
 		else if (iwc.isParameterSet(QueryResultViewer.EXECUTE_QUERY_KEY) || ButtonConverter.getResultByParsing(iwc).isValid()) {
-			addTitle(iwrb.getLocalizedString("ro_report_viewer", "ReportGeneratorViewer"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+			addTitle(iwrb.getLocalizedString("ro_report_viewer", "ReportGeneratorViewer"), TITLE_STYLECLASS);
 			QueryResultViewer result = new QueryResultViewer();
 			add(result, iwc);
 		}

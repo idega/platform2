@@ -65,7 +65,7 @@ public class MemberFinanceEntryDetailWindow extends StyledIWAdminWindow {
         setTitle("Finance entry detail window");
         addTitle(iwrb.getLocalizedString("member_fin_entry_detail_window",
                 "Finance entry detail window"),
-                IWConstants.BUILDER_FONT_STYLE_TITLE);
+                TITLE_STYLECLASS);
 
         String finEntryID = iwc
                 .getParameter(MemberOverview.PARAM_NAME_FINANCE_ENTRY_ID);
