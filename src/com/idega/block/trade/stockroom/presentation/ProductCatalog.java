@@ -581,7 +581,7 @@ public class ProductCatalog extends CategoryBlock{
  * Sets the _linkImage.
  * @param _linkImage The _linkImage to set
  */
-public void set_linkImage(Image _linkImage) {
+public void setLinkImage(Image _linkImage) {
 	this._linkImage = _linkImage;
 }
 
