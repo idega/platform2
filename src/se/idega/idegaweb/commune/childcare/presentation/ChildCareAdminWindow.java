@@ -1061,18 +1061,20 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		table.add(schoolClasses, 1, row++);
 		
-
-		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
-		///if(archive.getEmploymentTypeId()>0)
-		///	employmentTypes.setSelectedElement(archive.getEmploymentTypeId());
-		if(helper.getCurrentEmploymentID()!=null)
-		    employmentTypes.setSelectedElement(helper.getCurrentEmploymentID().toString());
-		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
-		employmentTypes = (DropdownMenu) getStyledInterface(employmentTypes);
+		if (_showEmploymentDrop){
+			DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
+			///if(archive.getEmploymentTypeId()>0)
+			///	employmentTypes.setSelectedElement(archive.getEmploymentTypeId());
+			if(helper.getCurrentEmploymentID()!=null)
+				employmentTypes.setSelectedElement(helper.getCurrentEmploymentID().toString());
+			employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
+			employmentTypes = (DropdownMenu) getStyledInterface(employmentTypes);
+			
+			table.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
+			table.add(employmentTypes, 1, row++);
+		}
 		
-		table.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(employmentTypes, 1, row++);
 		
 		if(helper.hasDeadlinePassed())
 		    table.add(getText(localize("school.deadline_msg_for_passedby_date","Chosen period has been invoiced. Earliest possible date is the first day of next month.")),1,row++);

@@ -33,6 +33,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	private boolean allowAlter = true;
 	private boolean _requiresPrognosis;
 	private int allowedFutureContracts = 2;
+	private boolean showEmplDrop = true;
 	//private boolean showCreateGroupBtn = true;
 	
 	protected static final int STATUS_ACTIVE = 1;
@@ -222,19 +223,21 @@ public class ChildCareContracts extends ChildCareBlock {
 						if (isNotYetActive) {
 							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_placement_date_for_child","Alter the placement date for this child.")));
 							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_VALID_FROM_DATE);
-							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PRE_SCHOOL, String.valueOf(showPreSchool));
+							
 							
 						}
 						else {
 							//alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
 							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_contract_or_schooltype_for_child","Alter the contract/schooltype for this child.")));
 							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
+							
 						}
 						
 						alterCareTime.setWindowToOpen(ChildCareWindow.class);
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-						
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PRE_SCHOOL, String.valueOf(showPreSchool));
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_EMPLOYMENT_DROP, String.valueOf(showEmplDrop));
 						
 						if (validFrom.isLaterThan(stamp)) {
 							showComment = true;
@@ -769,5 +772,9 @@ public class ChildCareContracts extends ChildCareBlock {
 	
 	public void setShowPreSchool(boolean show){
 		showPreSchool= show;
+	}
+	
+	public void setShowEmploymentDropDown(boolean show){
+		showEmplDrop = show;
 	}
 }
