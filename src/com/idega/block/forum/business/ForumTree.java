@@ -106,7 +106,7 @@ public ForumTree() {
       Email mail = UserBusiness.getUserMail(thread.getUserID());
       if ( user != null && mail != null ) {
 	String name = user.getName();
-	if ( user.getDisplayName() != null )
+	if ( user.getDisplayName() != null && user.getDisplayName().length() > 0 )
 	  name = user.getDisplayName();
 	Link link = formatLink(name);
 	link.setURL("mailto:"+mail.getEmailAddress());
