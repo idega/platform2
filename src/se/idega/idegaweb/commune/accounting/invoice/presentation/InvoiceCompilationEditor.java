@@ -18,6 +18,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
@@ -33,8 +34,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import javax.ejb.FinderException;
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -65,10 +66,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/26 12:40:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 14:02:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.56 $
+ * @version $Revision: 1.57 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -797,7 +798,82 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                   INVOICE_RECORD_DEFAULT, table));
         }
     }
+
+    private String getUserInfo (final User user) {
+        return user == null ? "" : getUserName (user) + " (" + formatSsn
+                (user.getPersonalID ()) + "), " + getAddressString (user);
+    }
     
+    private boolean isCustodian (final IWContext context, final User user)
+        throws RemoteException {
+        final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
+                IBOLookup.getServiceInstance (context, MemberFamilyLogic.class);
+        try {
+            final Collection children
+                    = familyBusiness.getChildrenInCustodyOf (user);
+            return null != children && !children.isEmpty ();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void addInvoiceReceiver (final IWContext context, final Table table,
+                                     final int col, final int row,
+                                     final User user) {
+        table.mergeCells (col, row, table.getColumns (), row);
+        User receiver = null;
+        try {
+            if (isOver18 (user.getPersonalID ()) || isCustodian (context,
+                                                                 user)) {
+                receiver = user;
+            } else {
+                final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
+                        IBOLookup.getServiceInstance (context,
+                                                      MemberFamilyLogic.class);
+                final Collection custodians
+                        = familyBusiness.getCustodiansFor (user);
+                if (null == custodians || custodians.isEmpty ()) {
+                    receiver = user;
+                } else if (1 == custodians.size ()) {
+                    receiver = (User) custodians.iterator ().next ();
+                } else {
+                    final Table radioTable = createTable (2);
+                    int radioRow = 1;
+                    for (Iterator i = custodians.iterator (); i.hasNext ();
+                         radioRow++) {
+                        final User custodian = (User) i.next ();
+                        final RadioButton button = getRadioButton
+                                (INVOICE_RECEIVER_KEY,
+                                 custodian.getPrimaryKey () + "");
+                        if (1 == radioRow) button.setSelected ();
+                        radioTable.add (button, 1, radioRow);
+                        radioTable.add (getUserInfo (custodian), 2, radioRow);
+                        table.add (radioTable, col, row);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            receiver = user;
+        }
+
+        if (null != receiver) {
+            table.add (new HiddenInput
+                       (INVOICE_RECEIVER_KEY, receiver.getPrimaryKey () + ""),
+                       col, row);
+            addSmallText (table, getUserInfo (receiver), col, row);
+        }
+    }
+
+    private static boolean isOver18 (final String ssn) {
+        final int year = new Integer (ssn.substring (0, 4)).intValue ();
+        final int month = new Integer (ssn.substring (4, 6)).intValue ();
+        final int day = new Integer (ssn.substring (6, 8)).intValue ();
+        final Date rightNow = Calendar.getInstance ().getTime();
+        final Calendar birthday18 = Calendar.getInstance ();
+        birthday18.set (year + 18, month - 1, day);
+        return rightNow.after (birthday18.getTime());
+    }
+
     private void showNewCompilationForm (final IWContext context)
         throws RemoteException {
         final UserSearcher searcher = createSearcher ();
@@ -814,17 +890,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
             table.setHeight (row++, 12);
-            final User user = searcher.getUser ();
             int col = 1;
             addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
                             INVOICE_RECEIVER_DEFAULT, ":");
-            final String userInfo = getUserName (user) + " ("
-                    + formatSsn (user.getPersonalID ()) + "), "
-                    + getAddressString (user);
-            table.mergeCells (2, row, table.getColumns (), row);
-            table.add (new HiddenInput (INVOICE_RECEIVER_KEY,
-                                        user.getPrimaryKey () + ""), col, row);
-            addSmallText(table, userInfo, col++, row++);
+            addInvoiceReceiver (context, table, col, row++,
+                                searcher.getUser ());
             col = 1;
             addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
             final Date now = new Date ();
