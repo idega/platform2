@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationHolder.java,v 1.3 2001/08/29 20:31:44 laddi Exp $
+ * $Id: CampusApplicationHolder.java,v 1.4 2001/08/30 10:01:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,9 +11,9 @@ package is.idegaweb.campus.application;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
-import is.idegaweb.campus.entity.Applied;
 import is.idegaweb.campus.entity.CampusApplication;
 import is.idegaweb.campus.entity.Contract;
+//import is.idegaweb.campus.entity.WaitingList;
 import java.util.Vector;
 
 /**
@@ -25,43 +25,119 @@ public class CampusApplicationHolder {
   private Application eApplication = null;
   private Applicant eApplicant = null;
   private CampusApplication eCampusApplication = null;
+  private Contract eContract = null;
   private Vector vApplied = null;
+  private Vector vWaitingList = null;
 
-  public CampusApplicationHolder(Application application,Applicant applicant,
-        CampusApplication campusApplication,Vector vapplied){
-    this.eApplicant = applicant;
-    this.eApplication = application;
-    this.eCampusApplication = campusApplication;
-    this.vApplied = vapplied;
+  /**
+   *
+   */
+  public CampusApplicationHolder(Application application, Applicant applicant,
+                                 CampusApplication campusApplication, Vector vapplied) {
+    initialize(application,applicant,campusApplication,vapplied,null,null);
   }
-  public void setApplication(Application application){
-    this.eApplication = application;
+
+  /**
+   *
+   */
+  public CampusApplicationHolder(Application application, Applicant applicant,
+                                 CampusApplication campusApplication, Vector vapplied,
+                                 Contract contract, Vector waitingList) {
+    initialize(application,applicant,campusApplication,vapplied,contract,waitingList);
   }
-  public void setApplicant(Applicant applicant){
-    this.eApplicant = applicant;
+
+  /**
+   *
+   */
+  public void setApplication(Application application) {
+    eApplication = application;
   }
-  public void setCampusApplication(CampusApplication application){
-    this.eCampusApplication = application;
+
+  /**
+   *
+   */
+  public void setApplicant(Applicant applicant) {
+    eApplicant = applicant;
   }
-  public void setApplied(Vector applied){
-    this.vApplied = applied;
+
+  /**
+   *
+   */
+  public void setCampusApplication(CampusApplication application) {
+    eCampusApplication = application;
   }
-  public Application getApplication(){
-    return this.eApplication;
+
+  /**
+   *
+   */
+  public void setApplied(Vector applied) {
+    vApplied = applied;
   }
-  public CampusApplication getCampusApplication(){
-    return eCampusApplication;
+
+  /**
+   *
+   */
+  public Application getApplication() {
+    return(eApplication);
   }
-  public Applicant getApplicant(){
-    return this.eApplicant ;
+
+  /**
+   *
+   */
+  public CampusApplication getCampusApplication() {
+    return(eCampusApplication);
   }
-   public Vector getApplied(){
-    return this.vApplied ;
+
+  /**
+   *
+   */
+  public Applicant getApplicant() {
+    return(eApplicant);
   }
-  public Contract getContract(){
-    return null;
+
+  /**
+   *
+   */
+  public Vector getApplied() {
+    return(vApplied);
   }
-  public Vector getWaitingList(){
-    return null;
+
+  /**
+   *
+   */
+  public void setContract(Contract contract) {
+    eContract = contract;
+  }
+
+  /**
+   *
+   */
+  public Contract getContract() {
+    return(eContract);
+  }
+
+  /**
+   *
+   */
+  public void setWaitingList(Vector waitingList) {
+    vWaitingList = waitingList;
+  }
+
+  /**
+   *
+   */
+  public Vector getWaitingList() {
+    return(vWaitingList);
+  }
+
+  private void initialize(Application application, Applicant applicant,
+                          CampusApplication campusApplication, Vector vapplied,
+                          Contract contract, Vector waitingList ) {
+    eApplicant = applicant;
+    eApplication = application;
+    eCampusApplication = campusApplication;
+    vApplied = vapplied;
+    eContract = contract;
+    vWaitingList = waitingList;
   }
 }
