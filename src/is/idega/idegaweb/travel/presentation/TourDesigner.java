@@ -96,13 +96,14 @@ public class TourDesigner extends TravelManager {
       Form form = new Form();
         form.setName(NAME_OF_FORM);
       Table table = new Table();
-
+        form.add(table);
+/*
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
         sb.setAlignment("center");
         sb.add(table);
-
+*/
     if (isDataValid) {
 
       table.setWidth("95%");

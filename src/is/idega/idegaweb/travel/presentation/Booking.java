@@ -8,7 +8,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
-import com.idega.jmodule.calendar.presentation.SmallCalendar;
+import com.idega.block.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -153,12 +153,12 @@ public class Booking extends TravelManager {
 
       if ((supplier != null) || (reseller != null) || ((supplier == null) && (reseller == null) && (product == null)) )
         form.add(topTable);
-
+/*
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
         sb.setAlignment("center");
-
+*/
         if (product != null) {
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
@@ -169,10 +169,10 @@ public class Booking extends TravelManager {
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
               contentTable.setBorderColor(super.textColor);
-          sb.add(contentTable);
+          form.add(contentTable);
         }
         else {
-          sb.add("TEMP - Veldu ferð");
+          form.add("TEMP - Veldu ferð");
         }
 
 
@@ -386,7 +386,8 @@ public class Booking extends TravelManager {
 
 
   public Table getCalendar(IWContext iwc) {
-      String colorForAvailableDay = super.textColor;
+      String colorForAvailableDay = super.ORANGE;
+      String colorForAvailableDayText = super.backgroundColor;
       String colorForInquery = super.YELLOW;
       String colorForToday = "#71CBFB";
 
@@ -497,8 +498,10 @@ public class Booking extends TravelManager {
           sm.setTextColor("WHITE");
           sm.setDaysAsLink(true);
           sm.showNameOfDays(true);
-          sm.setHeaderTextColor("#666699");
-          sm.setHeaderColor(super.textColor);
+          sm.setHeaderTextColor(super.textColor);
+          sm.setDayTextColor(super.textColor);
+          sm.setHeaderColor(super.backgroundColor);
+          sm.setDayCellColor(super.backgroundColor);
           sm.setBodyColor("#8484D6");
           sm.setInActiveCellColor("#B1B1E5");
 //          sm.useColorToday(true);
@@ -517,6 +520,7 @@ public class Booking extends TravelManager {
             if (!TravelStockroomBusiness.getIfExpired(contract, temp))
             if (TravelStockroomBusiness.getIfDay(iwc,contract,product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
+              sm.setDayFontColor(temp,colorForAvailableDayText);
             }
             temp.addDays(1);
           }
@@ -527,6 +531,7 @@ public class Booking extends TravelManager {
               sm.setDayColor(temp, colorForInquery);
             }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
+              sm.setDayFontColor(temp,colorForAvailableDayText);
             }
             temp.addDays(1);
           }
@@ -537,6 +542,7 @@ public class Booking extends TravelManager {
               sm.setDayColor(temp, colorForInquery);
             }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
+              sm.setDayFontColor(temp,colorForAvailableDayText);
             }
             temp.addDays(1);
           }
@@ -639,11 +645,17 @@ public class Booking extends TravelManager {
                 answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
                 answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
+                answerYes.addParameter("year",this.stamp.getYear());
+                answerYes.addParameter("month",this.stamp.getMonth());
+                answerYes.addParameter("day",this.stamp.getDay());
 
               answerNo = new Link("T - Hafna bókun");
                 answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
+                answerNo.addParameter("year",this.stamp.getYear());
+                answerNo.addParameter("month",this.stamp.getMonth());
+                answerNo.addParameter("day",this.stamp.getDay());
 
               table.add(answerYes,2,row);
               table.add("&nbsp;&nbsp;",2,row);

@@ -191,7 +191,8 @@ public class InitialData extends TravelManager {
 
 
         pGroup = SupplierManager.getPermissionGroup(supps[i]);
-        try {
+        try { // skoða eftir mat.......
+
           users = UserGroupBusiness.getUsersContained(pGroup);
           if (users != null) {
             for (int j = 0; j < users.size(); j++) {

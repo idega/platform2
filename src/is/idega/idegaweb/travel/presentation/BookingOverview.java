@@ -141,17 +141,20 @@ public class BookingOverview extends TravelManager {
 
       }
 
+      form.add(table);
+      /*
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
         sb.setAlignment("center");
         sb.add(getContentHeader(iwc));
         sb.add(table);
-
+*/
       Paragraph par = new Paragraph();
         par.setAlign("right");
         par.add(new PrintButton("TEMP-PRENTA"));
-        sb.add(par);
+        form.add(par);
+//        sb.add(par);
 
 
       int row = 0;
@@ -735,6 +738,7 @@ public class BookingOverview extends TravelManager {
               table.setColor(6, row, super.RED);
               table.setColor(7, row, super.LIGHTGREEN);
               table.setColor(8, row, super.backgroundColor);
+
               link = (Link) changeLink.clone();
               table.add(link, 8, row);
           }

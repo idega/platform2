@@ -156,9 +156,6 @@ public class ServiceDesigner extends TravelManager {
       this.priceCategoryCreation = new Boolean(true);
       if (this.getService(iwc) != null) {
         ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
-          ShadowBox sb = new ShadowBox();
-            sb.setWidth("90%");
-
           String sHowMany = iwc.getParameter("how_many");
           int iHowMany = 2;
           if (sHowMany == null) {
@@ -173,7 +170,7 @@ public class ServiceDesigner extends TravelManager {
           iHowMany = Integer.parseInt(sHowMany);
 
           Form howManyForm = new Form();
-              sb.add(howManyForm);
+  //            sb.add(howManyForm);
               Parameter par = new Parameter(this.ServiceAction, this.PriceCategoryRefresh);
                 par.keepStatusOnAction();
               howManyForm.add(par);
@@ -197,7 +194,6 @@ public class ServiceDesigner extends TravelManager {
 
           Form form = new Form();
             form.setName(this.NAME_OF_PRICE_CATEGORY_FORM);
-            sb.add(form);
 
           Table table = new Table();
             form.add(table);
@@ -271,8 +267,10 @@ public class ServiceDesigner extends TravelManager {
 
           }
 
+
+          add(howManyForm);
           add(Text.getBreak());
-          add(sb);
+          add(form);
       }else {
         add("TEMP SERVICE ER NULL");
         this.priceCategoryCreation = null;

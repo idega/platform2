@@ -102,17 +102,21 @@ public class Statistics extends TravelManager {
         form.add(topTable);
       if (service != null) {
           Table table = getContentTable(iwc);
+          /*
           ShadowBox sb = new ShadowBox();
             form.add(sb);
             sb.setWidth("90%");
             sb.setAlignment("center");
             sb.add(getContentHeader(iwc));
             sb.add(table);
+          */
+          form.add(table);
 
           Paragraph par = new Paragraph();
             par.setAlign("right");
             par.add(new PrintButton("TEMP-PRENTA"));
-            sb.add(par);
+          form.add(par);
+            //sb.add(par);
       }
 
       int row = 0;
@@ -271,6 +275,9 @@ public class Statistics extends TravelManager {
 
       int row = 0;
 
+      Text smallText = (Text) super.smallText.clone();
+        smallText.setFontColor(super.backgroundColor);
+
       Text netBookText = (Text) smallText.clone();
           netBookText.setText(iwrb.getLocalizedString("travel.bookings_on_the_net","Bookings on the net"));
 
@@ -360,8 +367,8 @@ public class Statistics extends TravelManager {
       table.setColumnAlignment(2,"center");
       table.setWidth(2,"100");
 
-      table.setBorderColor(super.textColor);
-      table.setRowColor(1,super.backgroundColor);
+      table.setBorderColor(super.backgroundColor);
+      table.setRowColor(1,super.LIGHTBLUE);
       table.setRowColor(2,super.YELLOW);
       table.setRowColor(3,super.ORANGE);
       table.setRowColor(4,super.BLUE);

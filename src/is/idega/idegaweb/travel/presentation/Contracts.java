@@ -79,9 +79,11 @@ public class Contracts extends TravelManager {
 
   public void mainMenu(IWContext iwc) {
       Form form = new Form();
+      /*
       ShadowBox sb = new ShadowBox();
         sb.add(form);
         sb.setWidth("90%");
+      */
 
       Table table = new Table();
         form.add(new SubmitButton("T - new reseller", this.sAction,this.parameterNewReseller));
@@ -116,6 +118,7 @@ public class Contracts extends TravelManager {
           refNum = (Text) theText.clone();
             refNum.setText(resellers[i].getReferenceNumber());
           assign = new Link("T - assign");
+            assign.setFontColor(super.textColor);
             assign.addParameter(this.sAction,this.parameterAssignReseller);
             assign.addParameter(this.parameterResellerId,resellers[i].getID());
 
@@ -128,14 +131,15 @@ public class Contracts extends TravelManager {
       }
 //      table.add(resellers);
 
-      add(sb);
+      add(form);
   }
 
   public void resellerCreation() throws SQLException{
+  /*
       ShadowBox sb = new ShadowBox();
         sb.setWidth("90%");
+*/
       Form form = new Form();
-        sb.add(form);
       Table table = new Table();
         form.add(table);
         table.setAlignment("center");
@@ -255,7 +259,7 @@ public class Contracts extends TravelManager {
       table.add(submit,2,row);
 
       add(Text.getBreak());
-      add(sb);
+      add(form);
   }
 
   public void saveReseller(IWContext iwc)  {
@@ -343,11 +347,12 @@ public class Contracts extends TravelManager {
       contract = contracts[0];
     }
 
-
+/*
     ShadowBox sb = new ShadowBox();
       sb.setWidth("90%");
+*/
     Form form = new Form();
-      sb.add(form);
+//      sb.add(form);
     Table table = new Table();
       table.setAlignment("center");
       table.setWidth("90%");
@@ -394,6 +399,7 @@ public class Contracts extends TravelManager {
     Timeframe timeframe;
 
     Link closerLook = new Link("T- Nánar");
+      closerLook.setFontColor(super.textColor);
       closerLook.addParameter(this.sAction, this.parameterAssignReseller);
       closerLook.addParameter(this.parameterResellerId , reseller.getID());
 
@@ -419,6 +425,7 @@ public class Contracts extends TravelManager {
             table.setAlignment(4,row,"right");
             temp = (Link) closerLook.clone();
               temp.setText("T-Loka");
+              temp.setFontColor(super.textColor);
             table.add(temp,4,row);
 
 
@@ -593,7 +600,7 @@ public class Contracts extends TravelManager {
 
 
     add(Text.getBreak());
-    add(sb);
+    add(form);
   }
 
   private void saveProductInfo(IWContext iwc) {

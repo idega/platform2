@@ -122,23 +122,25 @@ public class DailyReport extends TravelManager {
       Form form = new Form();
       Table topTable = getTopTable(iwc);
         form.add(topTable);
+      /*
       ShadowBox sb = new ShadowBox();
             sb.setWidth("90%");
         form.add(sb);
+      */
         if (product != null) {
-            sb.setAlignment("center");
-            sb.add(getContentHeader(iwc));
+//            form.setAlignment("center");
+            form.add(getContentHeader(iwc));
           Table table = getContentTable(iwc);
-            sb.add(table);
+            form.add(table);
 
           Paragraph par = new Paragraph();
             par.setAlign("right");
             par.add(new PrintButton("TEMP-PRENTA"));
-            sb.add(par);
+            form.add(par);
 
         }
         else {
-          sb.add("T ekkert product valið");
+          form.add("T ekkert product valið");
         }
 
       int row = 0;
@@ -572,6 +574,7 @@ public class DailyReport extends TravelManager {
 
       Link link = new Link();
         link.setText(" t - add new");
+        link.setFontColor(super.textColor);
         link.addParameter(AdditionalBooking.parameterServiceId,service.getID());
         link.addParameter(AdditionalBooking.parameterDate, stamp.toSQLDateString());
         link.setWindowToOpen(AdditionalBooking.class);

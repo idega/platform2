@@ -29,14 +29,16 @@ public class TravelManager extends Block {
     protected Text smallText = new Text();
     protected Text theSmallBoldText = new Text();
 
-    public static String backgroundColor = "#D5D7EA";
-    public static String textColor = "#666699";
+    public static String backgroundColor = "#003399";
+    public static String textColor = "#FFFFFF";
+//    public static String textColor = "#666699";
 
     public static String YELLOW = "#FFFFCC";
     public static String GREEN = "#99FF99";
     public static String ORANGE = "#FCCB66";
     public static String RED = "#F19393";
     public static String BLUE = "#99CCFF";
+    public static String LIGHTBLUE = "#D5D7EA";
     public static String LIGHTGREEN = "#CCFFCC";
     public static String LIGHTORANGE = "#FFCC99";
     public static String DARKBLUE = "#85839D";
@@ -130,7 +132,7 @@ public class TravelManager extends Block {
           iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
         }
 
-        if ( iwc.getAccessController().isAdmin(iwc)){
+        if ( AccessControl.isAdmin(iwc)){
 
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
@@ -223,16 +225,16 @@ public class TravelManager extends Block {
 
 
         theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-        theText.setFontFace(Text.FONT_FACE_VERDANA);
+        theText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
         theText.setFontColor(this.textColor);
         theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-        theBoldText.setFontFace(Text.FONT_FACE_VERDANA);
+        theBoldText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
         theBoldText.setBold();
         theBoldText.setFontColor(this.textColor);
         smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        smallText.setFontFace(Text.FONT_FACE_VERDANA);
+        smallText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
         smallText.setFontColor(this.textColor);
-        theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA);
+        theSmallBoldText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
         theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         theSmallBoldText.setBold();
         theSmallBoldText.setFontColor(this.textColor);

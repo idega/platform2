@@ -128,12 +128,14 @@ public class ServiceOverview extends TravelManager {
         table.setWidth(1,"100");
         table.setWidth(2,"90");
         table.setWidth(4,"90");
+        form.add(table);
+        /*
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
         sb.setAlignment("center");
         sb.add(table);
-
+*/
       table.setWidth("95%");
       String sYear = iwc.getParameter("year");
       if (sYear == null) {
