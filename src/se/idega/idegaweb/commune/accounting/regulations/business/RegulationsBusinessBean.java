@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.48 2003/10/24 13:04:32 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.49 2003/10/24 17:25:14 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -7,6 +7,7 @@
  * Use is subject to license terms.
  *
  */
+ 
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
 import java.rmi.RemoteException;
