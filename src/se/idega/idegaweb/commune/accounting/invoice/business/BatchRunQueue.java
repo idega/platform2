@@ -39,18 +39,21 @@ public class BatchRunQueue {
 	 */
 	public static void addBatchRunToQueue(Date month, Date readDate, String schoolCategory, School school, IWContext iwc, boolean testRun) throws SchoolCategoryNotFoundException{
 		BatchRunObject batchRunObject = new BatchRunObject(month, readDate, schoolCategory, school, iwc, testRun);
-		queue.add(batchRunObject);
-		log.info("Added "+batchRunObject+" to queue at place "+(queue.size()-1));
-		if(queue.size()==1){
-			try {
-				log.info("About to start "+batchRunObject);
-				startBatch(batchRunObject);
-			} catch (IDOLookupException e) {
-				e.printStackTrace();
-			} catch (FinderException e) {
-				e.printStackTrace();
-			} catch (BatchAlreadyRunningException e) {
-				e.printStackTrace();
+		
+		if(!isAlreadyInQueue(batchRunObject)){
+			queue.add(batchRunObject);
+			log.info("Added "+batchRunObject+" to queue at place "+(queue.size()-1));
+			if(queue.size()==1){
+				try {
+					log.info("About to start "+batchRunObject);
+					startBatch(batchRunObject);
+				} catch (IDOLookupException e) {
+					e.printStackTrace();
+				} catch (FinderException e) {
+					e.printStackTrace();
+				} catch (BatchAlreadyRunningException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -59,6 +62,24 @@ public class BatchRunQueue {
 		addBatchRunToQueue(month, readDate, schoolCategory, null, iwc, false);			
 	}
 
+	/**
+	 * Check to see if a batchrun of this type already is in the queue
+	 * 
+	 * @param newBatchRun
+	 * @return true if batch is in queue, else false.
+	 */
+	private static boolean isAlreadyInQueue(BatchRunObject newBatchRun){
+		String s = newBatchRun.toString();
+		Iterator iter = queue.iterator();
+		while(iter.hasNext()){
+			BatchRunObject batchRunObject = (BatchRunObject)iter.next();
+			if(batchRunObject.toString().equalsIgnoreCase(s)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Removes a batch from the queue according to the String parameter sent in
 	 * 
@@ -74,7 +95,6 @@ public class BatchRunQueue {
 					System.out.println("Removing current thread "+s);
 					if(runningThread!=null){
 						runningThread.terminate();
-//						queue.remove(batchRunObject);
 						runningThread = null;
 						return "batchlist.Terminating_a_running_batch._It_will_take_a_few_seconds_before_it_is_terminated";
 					}else{
