@@ -186,6 +186,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		Collection groups = null;
 		
 		if(_stringResults) {
+			System.out.println("[GroupSelectionBox] returning Strings");
 			if (values != null && values.length > 0) {
 				groups = new ArrayList();
 				
@@ -194,10 +195,10 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 				}
 			}
 		} else {
+			System.out.println("[GroupSelectionBox] returning Groups");
 			if (values != null && values.length > 0) {
 				try {
 					groups = getGroupBusiness(iwc).getGroups(values);
-	
 				}
 				catch (IDOLookupException e) {
 					e.printStackTrace();
