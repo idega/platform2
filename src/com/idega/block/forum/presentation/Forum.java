@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.data.ICCategory;
@@ -123,9 +124,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	 */
 	private StatefullPresentationImplHandler stateHandler = new ForumTree().getStateHandler();
 
-	protected String _authorWidth = "160";
-	protected String _replyWidth = "60";
-	protected String _dateWidth = "100";
+	private String _authorWidth = "160";
+	private String _replyWidth = "60";
+	private String _dateWidth = "100";
 
 	public Forum() {
 		setDefaultValues();
@@ -286,7 +287,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	/** Override to add below topic in ForumTreads view*/
 	protected int addBelowTopic(IWContext iwc, ICCategory cat, Table table, int row) {return row;}
 
-	private void getForumThreads(IWContext iwc, Table table) {
+	protected void getForumThreads(IWContext iwc, Table table) {
 		int row = 1;
 
 		ICCategory topic = null;
@@ -314,7 +315,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			row = addBelowTopic(iwc, topic, table, row);
 
 			if (thread != null && thread.isValid()) {
-				row = displaySelectedForum(iwc, table, row, thread);
+				row = displaySelectedForum(iwc, table, row, thread, 0);
 			}
 			
 			table.setHeight(1, row++, "20");
@@ -334,11 +335,12 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		}
 	}
 
-	protected int displaySelectedForum(IWContext iwc, Table table, int row, ForumData thread) {
+	protected int displaySelectedForum(IWContext iwc, Table table, int row, ForumData thread, int depth) {
+		//hér á að kalla á minni föll í stað getThreadHeaderTable - henni verður eytt
 		table.add(getThreadHeaderTable(thread, iwc), 1, row++);
 		table.setHeight(row++, 3);
 		//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
-		table.add(getThreadBodyTable(thread), 1, row);
+		table.add(getThreadBody(thread), 1, row);
 		table.setCellpaddingLeft(1, row, _bodyIndent);
 		table.setCellpaddingRight(1, row++, _bodyIndent);
 		table.setHeight(row++, 3);
@@ -539,14 +541,42 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		tree.setDarkRowStyle(getStyleName(DARK_ROW_STYLE));
 		return tree;
 	}
-
+//changed from private to protected because og ForumFlatLayout - ac
 	private Table getThreadHeaderTable(ForumData thread, IWContext iwc) {
 		Table table = new Table(2, 1);
-		table.setWidth("100%");
+		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(2);
 		table.setCellspacing(0);
 		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
+		table.add(getThreadImage(), 1, 1);
+		table.add(getThreadLink(thread, THREAD_LINK_STYLE), 1, 1);
+		table.add(getUser(thread), 2, 1);
+		table.add(formatText("," + Text.NON_BREAKING_SPACE), 2, 1);
+		table.add(getThreadDate(iwc, thread, INFORMATION_STYLE), 2, 1);
+
+		return table;
+	}
+	
+	protected Text getThreadSubject(ForumData thread) {
+		String headlineString = thread.getThreadSubject();
+		if (headlineString == null)
+			headlineString = "";
+		Text headline = formatText(headlineString, HEADING_STYLE);
+		return headline;
+	}
+
+	//changed from private to protected because of ForumFlatLayout - ac
+	protected Text getThreadBody(ForumData thread) {
+		String bodyString = thread.getThreadBody();
+		if (bodyString == null)
+			bodyString = "";
+		Text body = formatText(TextSoap.formatText(bodyString));
+
+		return body;
+	}
+	
+	protected Image getThreadImage() {
 		Image image;
 		if (_threadImage == null) {
 			image = _iwb.getImage("shared/thread.gif");
@@ -556,43 +586,10 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		}
 		image.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 		image.setPaddingRight(2);
-
-		String headlineString = thread.getThreadSubject();
-		if (headlineString == null)
-			headlineString = "";
-		Text headline = formatText(headlineString, HEADING_STYLE);
-		
-		Link nameLink = new Link(headline);
-		nameLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getPrimaryKey().toString());
-		nameLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-		nameLink.addParameter(ForumBusiness.PARAMETER_STATE, _state);
-		
-
-		IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
-		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
-		Date date = new Date(stamp.getTimestamp().getTime());
-		Text dateText = formatText(format.format(date), INFORMATION_STYLE);
-
-		table.add(image, 1, 1);
-		table.add(nameLink, 1, 1);
-//		table.add(headline, 1, 1);
-		table.add(getUser(thread), 2, 1);
-		table.add(formatText("," + Text.NON_BREAKING_SPACE), 2, 1);
-		table.add(dateText, 2, 1);
-
-		return table;
+		return image;
 	}
-
-	private Text getThreadBodyTable(ForumData thread) {
-		String bodyString = thread.getThreadBody();
-		if (bodyString == null)
-			bodyString = "";
-		Text body = formatText(TextSoap.formatText(bodyString));
-
-		return body;
-	}
-
-	private Table getNextPreviousTable(boolean hasNext, boolean hasPrevious) {
+//protected because ForumFlatLayout uses it!
+	protected Table getNextPreviousTable(boolean hasNext, boolean hasPrevious) {
 		Table table = new Table();
 		if (hasPrevious) {
 			Link link = new Link(_iwb.getImage("shared/previous.gif"));
@@ -637,77 +634,35 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 		return table;
 	}
-
-	private Table getThreadLinks(IWContext iwc, ForumData thread) {
+	//changed from private to protected because of ForumFlatLayout - ac
+	protected Table getThreadLinks(IWContext iwc, ForumData thread) {
 		Table table = new Table();
 		table.setCellspacing(0);
 		table.setCellpadding(2);
 		int column = 1;
 
-		Image replyImage = _iwb.getImage("shared/reply.gif");
-		replyImage.setPaddingRight(2);
-		replyImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-
 		if (_hasReplyPermission) {
-			Link replyImageLink = new Link(replyImage);
-			replyImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-			replyImageLink.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getID());
-			replyImageLink.setWindowToOpen(ForumThreadEditor.class);
+			ThreadReplyLink replyLink = new ThreadReplyLink(thread);
+			replyLink.setImagePadding(2);
+			replyLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 
-			Link reply = getStyleLink(_iwrb.getLocalizedString("reply", "Reply"), LINK_STYLE);
-			reply.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-			reply.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getID());
-			reply.setWindowToOpen(ForumThreadEditor.class);
-
-			table.add(replyImageLink, column, 1);
-			table.add(reply, column++, 1);
-		}
-		else {
-			Text text = getStyleText(_iwrb.getLocalizedString("reply", "Reply"), SMALL_TEXT_STYLE);
-			table.add(replyImage, column, 1);
-			table.add(text, column++, 1);
+			table.add(replyLink, column++, 1);
 		}
 
 		if (thread.getUserID() != -1 && iwc.getUserId() == thread.getUserID() && thread.getChildCount() == 0) {
-			Image editImage = _iwb.getImage("shared/edit.gif");
-			editImage.setPaddingRight(2);
-			editImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+			ThreadEditLink editLink = new ThreadEditLink(thread);
+			editLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+			editLink.setImagePadding(2);
 
-			Link editImageLink = new Link(editImage);
-			editImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-			editImageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
-			editImageLink.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
-			editImageLink.setWindowToOpen(ForumThreadEditor.class);
-			
-			Link edit = getStyleLink(_iwrb.getLocalizedString("edit", "Edit"), LINK_STYLE);
-			edit.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-			edit.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
-			edit.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
-			edit.setWindowToOpen(ForumThreadEditor.class);
-
-			table.add(editImageLink, column, 1);
-			table.add(edit, column++, 1);
+			table.add(editLink, column++, 1);
 		}
 
 		if (_hasDeletePermission) {
-			Image deleteImage  = _iwb.getImage("shared/delete.gif");
-			deleteImage.setPaddingRight(2);
-			deleteImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-			
-			Link deleteImageLink = new Link(deleteImage);
-			deleteImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-			deleteImageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
-			deleteImageLink.addParameter(ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_DELETE);
-			deleteImageLink.setWindowToOpen(ForumThreadEditor.class);
+			ThreadDeleteLink deleteLink = new ThreadDeleteLink(thread);
+			deleteLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+			deleteLink.setImagePadding(2);
 
-			Link delete = getStyleLink(_iwrb.getLocalizedString("delete", "Delete"), LINK_STYLE);
-			delete.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-			delete.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
-			delete.addParameter(ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_DELETE);
-			delete.setWindowToOpen(ForumThreadEditor.class);
-
-			table.add(deleteImageLink, column, 1);
-			table.add(delete, column++, 1);
+			table.add(deleteLink, column++, 1);
 		}
 
 		return table;
@@ -720,53 +675,24 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		int column = 1;
 
 		if (_topicID != -1) {
-			Image newImage = _iwb.getImage("shared/new.gif");
-			newImage.setPaddingRight(2);
-			newImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-
-			if (_hasAddPermission) {
-				Link newImageLink = new Link(newImage);
-				newImageLink.setWindowToOpen(ForumThreadEditor.class);
-				newImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-				
-				Link newLink = getStyleLink(_iwrb.getLocalizedString("new_thread"), LINK_STYLE);
-				newLink.setWindowToOpen(ForumThreadEditor.class);
-				newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
-
-				table.add(newImageLink, column, 1);
-				table.add(newLink, column++, 1);
-			}
-			else {
-				Text newText = getStyleText(_iwrb.getLocalizedString("new_thread"), SMALL_TEXT_STYLE);
-				table.add(newImage, column, 1);
-				table.add(newText, column++, 1);
-			}
+			ThreadNewLink newLink = new ThreadNewLink();
+			newLink.setImagePadding(2);
+			newLink.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+			table.add(newLink, column++, 1);
 		}
 
 		if (_showOverviewLink) {
-			Image overviewImage = _iwb.getImage("shared/forum.gif");
-			overviewImage.setPaddingRight(2);
-			overviewImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+			TopicOverviewLink overview = new TopicOverviewLink();
+			overview.setImagePadding(2);
+			overview.setImageAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+			if (_page != null) {
+				overview.setPage(_page);
+			}
 			
-			Link overviewImageLink = new Link(overviewImage);
-			overviewImageLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_TOPICS);
-			if (_page != null)
-				overviewImageLink.setPage(_page);
-			
-			table.add(overviewImageLink, column, 1);
-			table.add(getOverviewLink(), column, 1);
+			table.add(overview, column, 1);
 		}
 
 		return table;
-	}
-
-	private Link getOverviewLink() {
-		Link overView = getStyleLink(_iwrb.getLocalizedString("topic_overview", "Topic overview"), LINK_STYLE);
-		overView.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_TOPICS);
-		if (_page != null)
-			overView.setPage(_page);
-
-		return overView;
 	}
 
 	protected Table getAdminPart(IWContext iwc) {
@@ -780,8 +706,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 		return adminTable;
 	}
-
-	private void updateThreadCount(IWContext iwc) {
+	//protected because ForumFlatLayout uses it!
+	protected void updateThreadCount(IWContext iwc) {
 		try {
 			_firstThread = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_FIRST_THREAD));
 		}
@@ -1033,5 +959,17 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	 */
 	public void setIgnoreObjectID(boolean ignoreObjectID) {
 		this.ignoreObjectID = ignoreObjectID;
+	}
+	
+	protected String getAuthorWidth() {
+		return _authorWidth;
+	}
+	
+	protected String getDateWidth() {
+		return _dateWidth;
+	}
+	
+	protected String getReplyWidth() {
+		return _replyWidth;
 	}
 } // Class Forum

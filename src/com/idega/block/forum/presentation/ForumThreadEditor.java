@@ -112,6 +112,12 @@ public class ForumThreadEditor extends IWAdminWindow {
 				_update = true;
 			}
 		}
+		
+		if (_update && _parentThreadID == -1) {
+			_parentThreadID = _threadID;
+			_threadID = -1;
+			_update = false;
+		}
 
 		initializeFields();
 	}

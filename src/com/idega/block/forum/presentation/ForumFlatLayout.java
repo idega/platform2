@@ -8,11 +8,14 @@ package com.idega.block.forum.presentation;
 
 import java.util.Iterator;
 
+import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.data.ICCategory;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.data.ForumData;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 
@@ -21,29 +24,91 @@ import com.idega.presentation.text.Text;
  */
 public class ForumFlatLayout extends Forum {
 	
+	private int initialBodyIndent = 15;
+	private int initialHeaderIndent = 10;
+	private int indent = 15;
+	private int _threadID = -1;
+	private boolean _showTopicName = true;
+	private String _headingColor;
+	private int _firstThread = 1;
+	private int _lastThread = 10;
 
 	
-	protected int displaySelectedForum(IWContext iwc, Table table, int row, ForumData thread) {
+	
+	//finds all threads and their children, displays children (answer to a thread) following their parent (thread)  - ac
+	protected int displaySelectedForum(IWContext iwc, Table table, int row, ForumData thread, int depth) {
 		if (thread != null) {
-			row = super.displaySelectedForum(iwc, table, row, thread);
+			row = displaySelectedForumFlatLayout(iwc, table, row, thread, depth);
 			
 			Iterator iter = thread.getChildrenIterator();
 			while (iter != null && iter.hasNext()) {
-				row = this.displaySelectedForum(iwc, table, row, (ForumData) iter.next());
+				row = this.displaySelectedForum(iwc, table, row, (ForumData) iter.next(), depth + 1);
 			}
 		}
 		return row;
 	}
+	
+	//shows the forum for a selected thread - ac 
+	protected int displaySelectedForumFlatLayout(IWContext iwc, Table table, int row, ForumData thread, int depth) {
+		table.add(getThreadHeaderTable(thread, iwc, depth), 1, row++);
+	
+		table.setHeight(row++, 3);
+		
+		if(depth == 0){
+			table.add(getThreadSubject(thread),1, row);
+			table.add(new Break(), 1, row);
+		}
+		
+		table.add(getThreadBody(thread), 1, row);
+		
+		//here the body is indented for every new answer
+		table.setCellpaddingLeft(1, row, initialBodyIndent);
+		if (depth > 0) {
+			table.setCellpaddingLeft(1, row, initialBodyIndent +(indent * depth));
+		}
+		table.setCellpaddingRight(1, row++, 3);
+		table.setHeight(row++, 3);
+		return row;
+	}
+	
+	//overwrited to fit ForumFlatLayout - ac
+	protected Table getThreadHeaderTable(ForumData thread, IWContext iwc, int depth) {
+		Table table = new Table(2, 1);
+		table.setWidth("100%");
+		table.setCellpadding(2);
+		table.setCellspacing(0);
+		//here the thread header is indented for every new answer
+		table.setCellpaddingLeft(1, 1, initialHeaderIndent);
+		if (depth > 0) {
+			table.setCellpaddingLeft(1, 1, initialHeaderIndent + (indent * depth));
+		}
+		table.setCellpaddingRight(2,1,15);
+		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setRowStyleClass(1, getStyleName(DARK_ROW_STYLE));
 
+		table.add(getThreadImage(), 1, 1);
+		table.add(formatText(" " + Text.NON_BREAKING_SPACE), 1, 1);
+		table.add(getUser(thread), 1, 1);
+		table.add(formatText("," + Text.NON_BREAKING_SPACE), 1, 1);
+		table.add(getThreadDate(iwc, thread, INFORMATION_STYLE), 1, 1);
+		table.add(getThreadLinks(iwc, thread),2,1);
+		
+
+		return table;
+	}
+	
+	
+	//a table that shows a list of all threads at the bottom of the forum - ac
 	protected PresentationObject getForumTree(IWContext iwc, ForumData[] topThreads) {
 		Table table = new Table();
 		int row = 1;
-		table.setCellspacing(0);
-		table.setCellpadding(0);
+		table.setCellspacing(0);/*controls the space between table cells */
+		table.setCellpadding(0);/*sets the amount of space between the contents of the cell and the cell wall */
 		table.setWidth("100%");
-		table.setColumnWidth(2, _authorWidth);
-		table.setColumnWidth(3, _replyWidth);
-		table.setColumnWidth(4, _dateWidth);
+		table.setBorder(0);
+		table.setColumnWidth(2, getAuthorWidth());
+		table.setColumnWidth(3, getReplyWidth());
+		table.setColumnWidth(4, getDateWidth());
 
 		if(topThreads == null) {
 			return table;
@@ -60,10 +125,6 @@ public class ForumFlatLayout extends Forum {
 		table.setRowStyleClass(row, getStyleName(HEADING_STYLE));
 		row++;
 		
-		
-		
-		
-		
 		for(int i = 0; i < topThreads.length; i++){
 			if(topThreads [i]!= null){
 				if (i % 2 == 0) {
@@ -76,6 +137,8 @@ public class ForumFlatLayout extends Forum {
 				nameLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, super._topicID);
 				nameLink.addParameter(ForumBusiness.PARAMETER_STATE, super._state);
 				
+				table.add(getThreadImage(),1,row);
+				table.add(formatText(" " + Text.NON_BREAKING_SPACE), 1, row);
 				table.add(nameLink, 1, row);
 				table.add(getUser(topThreads[i]), 2, row);
 				table.add(formatText(Integer.toString(topThreads[i].getNumberOfResponses())),3,row);
@@ -87,8 +150,68 @@ public class ForumFlatLayout extends Forum {
 		return table;
 	}
 	
+	//overrided from Forum
+	protected void getForumThreads(IWContext iwc, Table table) {
+		int row = 1;
+
+		ICCategory topic = null;
+		if (_topicID != -1)
+			topic = CategoryFinder.getInstance().getCategory(_topicID);
+
+		ForumData thread = null;
+		try {
+			thread = forumBusiness.getForumData(Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID)));
+			_threadID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_THREAD_ID));
+		}
+		catch (NumberFormatException e) {
+			thread = null;
+		}
+
+		if (topic != null) {
+			if (_showTopicName) {
+				Text topicText = formatText(topic.getName(), HEADER_STYLE);
+				table.setRowColor(row, _headingColor);
+				table.setRowPadding(row, 2);
+				table.add(topicText, 1, row++);
+			}
+			
+			row = addBelowTopic(iwc, topic, table, row);
+
+			if (thread != null && thread.isValid()) {
+				row = displaySelectedForum(iwc, table, row, thread, 0);
+			}
+			
+			table.setHeight(1, row++, "20");
+			//this is the only difference in this overrided method from Forum - removing of getForumLinks()
+			//table.add(getForumLinks(), 1, row++);
+
+			updateThreadCount(iwc);
+
+			ForumData[] threads = forumBusiness.getThreads(topic);
+			ForumData[] someThreads = forumBusiness.getThreads(threads, _firstThread, _lastThread);
+			boolean hasNextThreads = forumBusiness.hasNextThreads(threads, _lastThread);
+			boolean hasPreviousThreads = forumBusiness.hasPreviousThreads(_firstThread);
+
+			table.add(getForumTree(iwc, someThreads), 1, row);
+
+			if (hasNextThreads || hasPreviousThreads)
+				table.add(getNextPreviousTable(hasNextThreads, hasPreviousThreads), 1, ++row);
+		}
+	}
+	
 	private Link formatLink(String string) {
 		Link link = getStyleLink(string, THREAD_LINK_STYLE);
 		return link;
+	}
+	
+	public void setIndent(int indent) {
+		this.indent = indent;
+	}
+	
+	public void setInitialBodyIndent(int initialIndent) {
+		this.initialBodyIndent = initialIndent;
+	}
+	protected void setInitialHeaderIndent(int initialHeaderIndent) {
+		this.initialHeaderIndent = initialHeaderIndent;
 	}
 }
