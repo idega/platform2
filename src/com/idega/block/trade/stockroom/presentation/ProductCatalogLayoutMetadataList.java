@@ -2,17 +2,20 @@ package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import javax.ejb.FinderException;
+import com.idega.block.category.business.CategoryService;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.trade.stockroom.business.ProductEditorBusiness;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -35,16 +38,7 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 		table.setCellspacing(1);
 		table.setCellpadding(2);
 
-		System.out.println("[ProductCatalogLayoutMetadata] - debug starts");
-		if (productCategories != null) {
-			System.out.println("productCategories.size() = "+productCategories.size());
-		}
 		Collection products = productCatalog.getProducts(productCategories);
-		if (products != null) {
-			System.out.println("products.size() = "+products.size());
-		}
-		
-		
 		Iterator iter = products.iterator();
 		Iterator catIter = productCategories.iterator();
 		
@@ -53,15 +47,20 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 		int column = 1;
 		int imageColumn = 1;
 		
+		Hashtable metaDataTypes = new Hashtable();
 		
 		table.add(productCatalog.getHeader(productCatalog.iwrb.getLocalizedString("product.product", "Product")), column++, row);
 		List metadataKeys = new Vector();
 		String[] metadata = new String[10+column];
-		ICCategory cat;
+
+
 		while (catIter.hasNext()) {
-			cat = (ICCategory) catIter.next();
-			Map map = cat.getMetaDataTypes();
-			Set set = map.keySet();
+			ICCategory element = (ICCategory) catIter.next();
+			metaDataTypes.putAll(getCategoryService(iwc).getInheritedMetaDataTypes(element.getMetaDataTypes(), element));
+		}
+
+		if (!metaDataTypes.isEmpty()) {
+			Set set = metaDataTypes.keySet();
 			Iterator setIter = set.iterator();
 			while (setIter.hasNext()) {
 				String key = setIter.next().toString();
@@ -124,4 +123,9 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 	protected ProductEditorBusiness getEditorBusiness(IWContext iwc) {
 		return ProductEditorBusiness.getInstance();
 	}
+	
+	private CategoryService getCategoryService(IWApplicationContext iwac) throws RemoteException {
+		return (CategoryService) IBOLookup.getServiceInstance(iwac, CategoryService.class);
+	}
+	
 }
