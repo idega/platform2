@@ -69,6 +69,8 @@ public class HouseHoldViewer extends AccountingBlock {
 	private String userBruttoIncomeUserParameterName = BruttoIncomeWindow.getUserIDParameterName();
 	private String userLowIncomeUserParameterName = null;
 	private ApplicationForm appForm = null;
+	private int nameInputLength = 25;
+	private int personalIdInputLength = 15;
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -172,9 +174,9 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherOne.setSkipResultsForOneFound(false);
 		searcherOne.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
 		searcherOne.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
-		searcherOne.setPersonalIDLength(12);
-		searcherOne.setFirstNameLength(20);
-		searcherOne.setLastNameLength(20);
+		searcherOne.setPersonalIDLength(personalIdInputLength);
+		searcherOne.setFirstNameLength(nameInputLength);
+		searcherOne.setLastNameLength(nameInputLength);
 		UserSearcher searcherTwo = new UserSearcher();
 		searcherTwo.setShowMiddleNameInSearch(false);
 		searcherTwo.setOwnFormContainer(false);
@@ -182,9 +184,9 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherTwo.setSkipResultsForOneFound(false);
 		searcherTwo.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
 		searcherTwo.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
-		searcherTwo.setPersonalIDLength(12);
-		searcherTwo.setFirstNameLength(20);
-		searcherTwo.setLastNameLength(20);
+		searcherTwo.setPersonalIDLength(personalIdInputLength);
+		searcherTwo.setFirstNameLength(nameInputLength);
+		searcherTwo.setLastNameLength(nameInputLength);
 
 		String prmTwo = UserSearcher.getUniqueUserParameterName("two");
 		String prmOne = UserSearcher.getUniqueUserParameterName("one");
@@ -547,6 +549,160 @@ public class HouseHoldViewer extends AccountingBlock {
 
 	private BruttoIncomeHome getBruttoIncomeHome() throws RemoteException {
 		return (BruttoIncomeHome) IDOLookup.getHome(BruttoIncome.class);
+	}
+
+	/**
+	 * @return
+	 */
+	public int getNameInputLength() {
+		return nameInputLength;
+	}
+
+	/**
+	 * @param nameInputLength
+	 */
+	public void setNameInputLength(int nameInputLength) {
+		this.nameInputLength = nameInputLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPersonalIdInputLength() {
+		return personalIdInputLength;
+	}
+
+	/**
+	 * @param personalIdInputLength
+	 */
+	public void setPersonalIdInputLength(int personalIdInputLength) {
+		this.personalIdInputLength = personalIdInputLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getUserBruttoIncomePageID() {
+		return userBruttoIncomePageID;
+	}
+
+	/**
+	 * @param userBruttoIncomePageID
+	 */
+	public void setUserBruttoIncomePageID(Integer userBruttoIncomePageID) {
+		this.userBruttoIncomePageID = userBruttoIncomePageID;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getUserBruttoIncomeUserParameterName() {
+		return userBruttoIncomeUserParameterName;
+	}
+
+	/**
+	 * @param userBruttoIncomeUserParameterName
+	 */
+	public void setUserBruttoIncomeUserParameterName(String userBruttoIncomeUserParameterName) {
+		this.userBruttoIncomeUserParameterName = userBruttoIncomeUserParameterName;
+	}
+
+	/**
+	 * @return
+	 */
+	public Class getUserBruttoIncomeWindowClass() {
+		return userBruttoIncomeWindowClass;
+	}
+
+	/**
+	 * @param userBruttoIncomeWindowClass
+	 */
+	public void setUserBruttoIncomeWindowClass(Class userBruttoIncomeWindowClass) {
+		this.userBruttoIncomeWindowClass = userBruttoIncomeWindowClass;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getUserEditorPageID() {
+		return userEditorPageID;
+	}
+
+	/**
+	 * @param userEditorPageID
+	 */
+	public void setUserEditorPageID(Integer userEditorPageID) {
+		this.userEditorPageID = userEditorPageID;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getUserEditorUserParameterName() {
+		return userEditorUserParameterName;
+	}
+
+	/**
+	 * @param userEditorUserParameterName
+	 */
+	public void setUserEditorUserParameterName(String userEditorUserParameterName) {
+		this.userEditorUserParameterName = userEditorUserParameterName;
+	}
+
+	/**
+	 * @return
+	 */
+	public Class getUserEditorWindowClass() {
+		return userEditorWindowClass;
+	}
+
+	/**
+	 * @param userEditorWindowClass
+	 */
+	public void setUserEditorWindowClass(Class userEditorWindowClass) {
+		this.userEditorWindowClass = userEditorWindowClass;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getUserLowIncomePageID() {
+		return userLowIncomePageID;
+	}
+
+	/**
+	 * @param userLowIncomePageID
+	 */
+	public void setUserLowIncomePageID(Integer userLowIncomePageID) {
+		this.userLowIncomePageID = userLowIncomePageID;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getUserLowIncomeUserParameterName() {
+		return userLowIncomeUserParameterName;
+	}
+
+	/**
+	 * @param userLowIncomeUserParameterName
+	 */
+	public void setUserLowIncomeUserParameterName(String userLowIncomeUserParameterName) {
+		this.userLowIncomeUserParameterName = userLowIncomeUserParameterName;
+	}
+
+	/**
+	 * @return
+	 */
+	public Class getUserLowIncomeWindowClass() {
+		return userLowIncomeWindowClass;
+	}
+
+	/**
+	 * @param userLowIncomeWindowClass
+	 */
+	public void setUserLowIncomeWindowClass(Class userLowIncomeWindowClass) {
+		this.userLowIncomeWindowClass = userLowIncomeWindowClass;
 	}
 
 }
