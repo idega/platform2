@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.3 2003/10/30 09:10:40 kjell Exp $
+/* $Id: ControlListWriter.java,v 1.4 2003/10/31 22:45:02 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
+import java.sql.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,6 +29,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import se.idega.idegaweb.commune.accounting.invoice.presentation.ControlList;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
+import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
@@ -49,21 +51,27 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.3 2003/10/30 09:10:40 kjell Exp $
+ * $Id: ControlListWriter.java,v 1.4 2003/10/31 22:45:02 kjell Exp $
  *
  * @author Kelly
  */
-public class ControlListWriter implements MediaWritable {
+public class ControlListWriter extends AccountingBlock implements MediaWritable  {
 
 	private MemoryFileBuffer buffer = null;
 	private Locale locale;
 	private IWResourceBundle iwrb;
 
 	public final static String prmPrintType = "print_type";
+	public final static String compareDate = "compare_date";
+	public final static String withDate = "with_date";
 	public final static String XLS = "xls";
 	public final static String PDF = "pdf";
 	
 	public ControlListWriter() {
+	}
+
+	public void init(IWContext iwc) {
+	
 	}
 	
 	public void init(HttpServletRequest req, IWMainApplication iwma) {
@@ -73,10 +81,13 @@ public class ControlListWriter implements MediaWritable {
 			ControlListBusiness business = getControlListBusiness(iwma.getIWApplicationContext());
 			
 			String type = req.getParameter(prmPrintType);
+			Date cDate = parseDate(req.getParameter(compareDate));
+			Date wDate = parseDate(req.getParameter(withDate));
+			
 			if (type.equals(PDF)) {
-				buffer = writePDF(business.getControlListValues());
+				buffer = writePDF(business.getControlListValues(cDate, wDate));
 			} else if (type.equals(XLS)) {
-				buffer = writeXLS(business.getControlListValues());
+				buffer = writeXLS(business.getControlListValues(cDate, wDate));
 			}
 		}
 		catch (Exception e) {

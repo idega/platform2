@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.4 2003/10/31 08:35:06 laddi Exp $
+/* $Id: ControlList.java,v 1.5 2003/10/31 22:45:02 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -11,10 +11,12 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.sql.Date;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.Table;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.Image;
 import com.idega.idegaweb.IWMainApplication;
@@ -26,6 +28,7 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.invoice.business.ControlListWriter;
 
 import se.idega.idegaweb.commune.accounting.invoice.business.ControlListBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.business.ControlListException;
 
 /**
  * ControlList
@@ -39,7 +42,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListBusiness
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.4 2003/10/31 08:35:06 laddi Exp $ 
+ * $Id: ControlList.java,v 1.5 2003/10/31 22:45:02 kjell Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -47,26 +50,38 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListBusiness
 public class ControlList extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
+	private final static int ACTION_SEARCH = 1;
 	
 	private final static String KEY_PREFIX = "batch_reg_list."; 
-	
+		
 	public final static String KEY_TITLE = KEY_PREFIX + "title";
+	public final static String KEY_COMPARE_PERIOD = KEY_PREFIX + "compare_period";
+	public final static String KEY_WITH_PERIOD = KEY_PREFIX + "with_period";
+	public final static String KEY_SEARCH = KEY_PREFIX + "search";
 	public final static String KEY_PROVIDER = KEY_PREFIX + "provider";
 	public final static String KEY_NUM_INDIVIDUALS_PREL = KEY_PREFIX + "num_individuals_prel";
 	public final static String KEY_LAST_MONTH = KEY_PREFIX + "last_month";
 	public final static String KEY_TOTAL_AMOUNT_PREL = KEY_PREFIX + "total_amount_prel";
 	public final static String KEY_MEDIA_WINDOW_TITLE = KEY_PREFIX + "media_window_title";
+	public final static String PARAMETER_SEARCH_PERIOD_COMPARE = "param_period_from";
+	public final static String PARAMETER_SEARCH_PERIOD_CURRENT = "param_period_to";
+	public final static String PARAMETER_SEARCH = "param_search";
 
+	private String _errorMessage;
+		
 	/**
 	 * Handles all of the blocks presentation.
 	 * @param iwc user/session context 
 	 */
 	public void init(final IWContext iwc) {
 		try {
-			int action = parseAction();
+			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_DEFAULT :
-					viewDefaultForm(iwc);
+					handleDefaultAction(iwc);
+					break;
+				case ACTION_SEARCH :
+					handleSearchAction(iwc);
 					break;
 			}
 		}
@@ -79,25 +94,48 @@ public class ControlList extends AccountingBlock {
 	 * Returns the action constant for the action to perform based 
 	 * on the POST parameters in the specified context.
 	 */
-	private int parseAction() {
-		return ACTION_DEFAULT;
+	private int parseAction(IWContext iwc) {
+		int action = ACTION_DEFAULT;
+		
+		if (iwc.isParameterSet(PARAMETER_SEARCH)) {
+			action = ACTION_SEARCH;
+		}
+
+		return action;
 	}
 
 	/*
-	 * Adds the default form to the block.
+	 * Handles default action with only search form 
 	 */	
-	private void viewDefaultForm(IWContext iwc) {
+	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Control list");
-		app.setMainPanel(getControlList(iwc));
-		app.setButtonPanel(getButtonPanel());
+		app.setSearchPanel(getSearchPanel(iwc));
 		add(app);
 	}
-	
+
 	/*
-	 * Returns the BatchControlList
+	 * Handles search action with search form plus result and excel link 
+	 */	
+	private void handleSearchAction(IWContext iwc) {
+		Date compareMonth = parseDate(iwc.getParameter(PARAMETER_SEARCH_PERIOD_COMPARE));
+		Date withMonth = parseDate(iwc.getParameter(PARAMETER_SEARCH_PERIOD_CURRENT));
+		_errorMessage = "";
+
+		ApplicationForm app = new ApplicationForm(this);
+		app.setLocalizedTitle(KEY_TITLE, "Control list");
+		app.setSearchPanel(getSearchPanel(iwc));
+		app.setMainPanel(getControlList(iwc, compareMonth, withMonth));
+		if(_errorMessage.length() == 0) {
+			app.setButtonPanel(getButtonPanel(compareMonth, withMonth ));
+		}
+		add(app);
+	}
+
+	/*
+	 * Returns the Control List
 	 */
-	private ListTable getControlList(IWContext iwc) {
+	private ListTable getControlList(IWContext iwc, Date compareMonth, Date withMonth) {
 
 		ListTable list = new ListTable(this, 5);
 
@@ -109,9 +147,14 @@ public class ControlList extends AccountingBlock {
 
 		Collection collection = null;
 		try {
-			collection = getControlListBusiness(iwc).getControlListValues();
-		} catch (RemoteException e) {}
-		
+			collection = (Collection) getControlListBusiness(iwc).getControlListValues(compareMonth, withMonth);
+		} catch (RemoteException e) {
+		} catch (ControlListException e) {
+			_errorMessage = localize(e.getTextKey(), e.getDefaultText());
+			list.add(getErrorText(_errorMessage));
+			return list;			
+		}
+				
 		Iterator iter = collection.iterator();
 		
 		while (iter.hasNext()) {
@@ -125,42 +168,50 @@ public class ControlList extends AccountingBlock {
 		}
 		return list;
 	}
+
+
+	/*
+	 * Returns the search panel for this block.
+	 */
+	private Table getSearchPanel(IWContext iwc) {
+		Table table = new Table();
+		table.add(getLocalizedLabel(KEY_COMPARE_PERIOD, "Compare month"), 1, 1);
+		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_COMPARE, getParameter(iwc, PARAMETER_SEARCH_PERIOD_COMPARE), 60), 2, 1);
+		table.add(getLocalizedLabel(KEY_WITH_PERIOD, "with month"), 3, 1);
+		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_CURRENT,  getParameter(iwc, PARAMETER_SEARCH_PERIOD_CURRENT), 60), 4, 1);
+		table.add(getLocalizedButton(PARAMETER_SEARCH, KEY_SEARCH, "Search"), 5, 1);
+		return table;
+	}	
+
+
 	
 	/*
 	 * Returns the button panel for this block
 	 */
-	private ButtonPanel getButtonPanel() {
+	private ButtonPanel getButtonPanel(Date compareDate, Date withDate) {
 		ButtonPanel bp = new ButtonPanel(this);
 		Link excelLink = null;
-//		Link pdfLink = null;
 		try {
-			excelLink = getXLSLink(ControlListWriter.class, getBundle().getImage("shared/xls.gif"));
-//			pdfLink = getPDFLink(ControlListWriter.class, getBundle().getImage("shared/pdf.gif"));
+			excelLink = getXLSLink(ControlListWriter.class, 
+					getBundle().getImage("shared/xls.gif"),
+			 		compareDate,
+			 		withDate 
+			);
 		} catch (RemoteException e) {}
 		bp.add(excelLink);
-//		bp.add(pdfLink); //Hmmm, this doesnt work for some reason /Kelly
 		
 		return bp;
 	}
 	
-// TODO: Move these below to AccountingBlock
-	
-	public Link getXLSLink(Class classToUse,Image image) throws RemoteException {
+	private Link getXLSLink(Class classToUse, Image image, Date compareDate, Date withDate) throws RemoteException {
 		Link link = new Link(image);
 		link.setWindow(getFileWindow());
 		link.addParameter(ControlListWriter.prmPrintType, ControlListWriter.XLS);
+		link.addParameter(ControlListWriter.compareDate, compareDate.toString());
+		link.addParameter(ControlListWriter.withDate, withDate.toString());
 		link.addParameter(ControlListWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
 		return link;
 	}
-
-	public Link getPDFLink(Class classToUse,Image image) throws RemoteException {
-		Link link = new Link(image);
-		link.setWindow(getFileWindow());
-		link.addParameter(ControlListWriter.prmPrintType, ControlListWriter.PDF);
-		link.addParameter(ControlListWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
-		return link;
-	}
-
 	public Window getFileWindow() {
 		Window w = new Window(localize(KEY_MEDIA_WINDOW_TITLE, "Control list"), getIWApplicationContext().getApplication().getMediaServletURI());
 		w.setResizable(true);
@@ -173,6 +224,5 @@ public class ControlList extends AccountingBlock {
 	private ControlListBusiness getControlListBusiness(IWContext iwc) throws RemoteException {
 		return (ControlListBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ControlListBusiness.class);
 	}	
-
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.5 2003/10/30 20:07:09 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.6 2003/10/31 22:45:01 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,17 +31,22 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 
 /**
- * This business handles the logic to retrieve a control list for batch runs.
+ * This business handles the logic to retrieve a control list after a batch run.
  * It basically gets all providers for an OperationField at a time. It then gets all contracts
  * for each provider to calulate the number of children involved. Then it gets the amount
  * from the payment records.
- * It does this for the current period and basically 2 months back.
+ * It does this for the "compare month" and "with month".
  * <p>
- * $Id: ControlListBusinessBean.java,v 1.5 2003/10/30 20:07:09 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.6 2003/10/31 22:45:01 kjell Exp $
  *
  * @author Kelly
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
+
+	private final static String KP = "control_list."; // key prefix 
+
+	public final static String KEY_DATE_MISSING = KP + "date_missing";
+	public final static String ERROR_DATE_MISSING = "Date missing";
 
 	/**
 	 * Retreives an array of values such as
@@ -54,7 +59,7 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 	 *
 	 * @return array of data for the ControlList
 	 */
-	public Collection getControlListValues() {
+	public Collection getControlListValues(Date compareMonth, Date withMonth) throws ControlListException {
 		
 		int contractCountCurrent;
 		int contractCountLast;
@@ -68,13 +73,29 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 		Iterator providers = null;
 		ArrayList arr = new ArrayList();
 
-		Date currentDate = new Date( System.currentTimeMillis());
 
+		if(compareMonth == null) {		
+			throw new ControlListException(KEY_DATE_MISSING, ERROR_DATE_MISSING);
+		}
+		
+		if(withMonth == null) {		
+			throw new ControlListException(KEY_DATE_MISSING, ERROR_DATE_MISSING);
+		}
+
+	
+//		Date currentDate = new Date( System.currentTimeMillis());
+		Date currentDate = withMonth;
+
+/*
 		startLastPeriod = new IWTimestamp(currentDate);
 		startLastPeriod.setAsDate();
 		startLastPeriod.addMonths(-1);
 		startLastPeriod.setDay(1);
-
+*/
+		startLastPeriod = new IWTimestamp(compareMonth);
+		startLastPeriod.setAsDate();
+		startLastPeriod.setDay(1);
+		
 		endLastPeriod = new IWTimestamp(startLastPeriod);
 		endLastPeriod.setAsDate();
 		endLastPeriod.addMonths(1);
@@ -83,17 +104,32 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 		startCurrentPeriod.setAsDate();
 		startCurrentPeriod.setDay(1);
 
+/*
 		endCurrentPeriod = new IWTimestamp(currentDate);
 		endCurrentPeriod.setAsDate();
+*/
+		endCurrentPeriod = new IWTimestamp(startCurrentPeriod);
+		endCurrentPeriod.setAsDate();
+		endCurrentPeriod.addMonths(1);
+
 
 		Iterator operationFields = getAllOperationFields().iterator();
 		int cnt = 1;
 		
+		arr.add(new Object[] {
+			new Integer(cnt++), 
+			"", 
+			""+withMonth.toString(),
+			""+compareMonth.toString(),
+			""+withMonth.toString(),
+			""+compareMonth.toString()}
+		);
 		while (operationFields.hasNext()) {
 			SchoolCategory opField = (SchoolCategory) operationFields.next();
 			providers = getProvidersByOperationField(opField.getPrimaryKey().toString()).iterator();
 			while (providers.hasNext()) {
 				School school = (School) providers.next();
+				System.out.println("Processing: "+school.getName()+ " : id : "+school.getPrimaryKey().toString());
 				try {				
 					contractCountLast = 
 						getChildCareContractHome().getContractsCountByDateRangeAndProvider(
@@ -122,14 +158,16 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 						startCurrentPeriod.getDate()
 					);
 	
-					arr.add(new Object[] {
+					if ((contractCountCurrent > 0 || contractCountLast > 0)) { 
+						arr.add(new Object[] {
 							new Integer(cnt++), 
 							school.getName(), 
 							""+contractCountCurrent,
 							""+contractCountLast,
 							""+amountCurrent,
 							""+amountLast }
-					);
+						);
+					}
 				} catch (FinderException e) {
 					e.printStackTrace();
 				} catch (IDOException e) {
