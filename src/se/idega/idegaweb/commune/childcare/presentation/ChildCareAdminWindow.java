@@ -132,6 +132,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_PLACEMENT_ID = "cc_placement_id";
 
 	public static final String PARAMETER_SCHOOL_CLASS = "cc_sch_class";
+	
+	public static final String PARAMETER_IS_ENDDATE_SET = "cc_end_date_set";
 
 	public static final String PARAMETER_CANCEL_CONTRACT_DIRECTLY = "cc_cancel_contract_directly";
 	
@@ -245,7 +247,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	// private IWTimestamp earliestDate;
 
-	private CloseButton close;
+	//private CloseButton close;
+	
+	private SubmitButton close;
 
 	private Form form;
 
@@ -259,6 +263,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private User _child = null;
 	
 	private SubmitButton _submitButton = null;
+	
+	private boolean isEndDateSet = false;
 		
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -267,7 +273,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		parse(iwc);
 		switch (_action) {
 			case ACTION_CLOSE:
-				close();
+				//close();
+				close(iwc);
 				break;
 			case ACTION_GRANT_PRIORITY:
 				grantPriority(iwc);
@@ -370,10 +377,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		contentTable.setHeight(Table.HUNDRED_PERCENT);
 		table.add(contentTable, 2, 4);
 
-		close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
-
-		// close.setPageToOpen(getParentPageID());
-		// close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
+		//close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
+		//close.setPageToOpen(getParentPageID());
+		//close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
+		//close button doesn't seem to be working to reload parent page so use submit instead to close
+		close = (SubmitButton) getStyledInterface(new SubmitButton(localize("close_window", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
 
 		String userName = null;
 		String personalId = null;
@@ -1225,23 +1233,36 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					table.add(Text.getNonBrakingSpace(), 1, row);
 				}
 				else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
-					IWTimestamp stampNow = new IWTimestamp();
-					DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
-					dateInput.setDate(stampNow.getDate());
+					if (isEndDateSet){
+						GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
+						showForm.setFileToOpen(application.getCancelFormFileID());
+						table.add(getSmallHeader(localize("child_care.show_cancel_contract_form", "Show cancel contract form") + ":"), 1, row++); 					
+						table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
+						table.add(getSmallText(localize("child_care.show_cancel_contract_form_info", "Info about the cancel form")), 1, row++);
+						table.add(showForm, 1, row);
+						table.add(Text.getNonBrakingSpace(), 1, row);
+						isEndDateSet = false;
+					}else{
+						IWTimestamp stampNow = new IWTimestamp();
+						DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
+						dateInput.setDate(stampNow.getDate());
+						
+						table.add(getSmallHeader(localize("child_care.cancel_confirmation_received", "Cancel confirmation received") + ":"), 1, row++);
+						table.add(getSmallText(localize("child_care.cancel_confirmation_info", "Info about cancel confirmation received")), 1, row++);
+						table.add(dateInput, 1, row++);
+						
+						SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_received", "Set"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
+						form.setToDisableOnSubmit(cancelContract, true);
+						table.add(cancelContract, 1, row);
+						table.add(Text.getNonBrakingSpace(), 1, row);
+						
+						/*GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
+						showForm.setFileToOpen(application.getCancelFormFileID());
+						table.add(showForm, 1, row);
+						table.add(Text.getNonBrakingSpace(), 1, row);
+						*/
+					}
 					
-					table.add(getSmallHeader(localize("child_care.cancel_confirmation_received", "Cancel confirmation received") + ":"), 1, row++);
-					table.add(getSmallText(localize("child_care.cancel_confirmation_info", "Info about cancel confirmation received")), 1, row++);
-					table.add(dateInput, 1, row++);
-					
-					SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_received", "Set"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
-					form.setToDisableOnSubmit(cancelContract, true);
-					table.add(cancelContract, 1, row);
-					table.add(Text.getNonBrakingSpace(), 1, row);
-					
-					GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
-					showForm.setFileToOpen(application.getCancelFormFileID());
-					table.add(showForm, 1, row);
-					table.add(Text.getNonBrakingSpace(), 1, row);
 				}
 				IWTimestamp stampNow = new IWTimestamp();
 				stampNow.addDays(-1);
@@ -1328,6 +1349,24 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		return table;
 	}
+	
+	
+	
+	private Table getCancelFormButton(ChildCareApplication application){
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+		IWTimestamp placementDate = null;
+		
+		GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
+		showForm.setFileToOpen(application.getCancelFormFileID());
+		table.add(showForm, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		
+		return table;
+	}
 
 	private Table getCreateGroupForm() throws RemoteException {
 		Table table = new Table();
@@ -1377,6 +1416,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		else
 			localized = localize("child_care.create_group", "Create group");
 
+	
 		SubmitButton createGroup = (SubmitButton) getStyledInterface(new SubmitButton(localized, PARAMETER_ACTION, String.valueOf(ACTION_CREATE_GROUP)));
 		form.setToDisableOnSubmit(createGroup, true);
 		table.add(createGroup, 1, row);
@@ -2235,8 +2275,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			else if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
 				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
 				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
-				getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
-				getParentPage().close();
+				//getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+				//getParentPage().close();
+				isEndDateSet = true;
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
 				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
@@ -2333,6 +2374,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private void close() {
 		getParentPage().setParentToReload();
+		getParentPage().close();
+	}
+	
+	private void close(IWContext iwc) {
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
 	}
 
