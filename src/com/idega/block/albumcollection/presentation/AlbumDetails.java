@@ -14,8 +14,10 @@ import com.idega.block.albumcollection.data.Track;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.block.albumcollection.data.Lyric;
+import com.idega.block.albumcollection.data.AlbumType;
 import com.idega.data.EntityFinder;
 import com.idega.util.text.TextSoap;
+import com.idega.util.idegaTimestamp;
 
 import java.util.List;
 import java.util.Iterator;
@@ -70,47 +72,140 @@ public class AlbumDetails extends Block {
     frameTable.setAlignment("center");
 
 
-    Table contentTable = new Table(1,2);
+    Table contentTable = new Table(1,6);
     contentTable.setCellpadding(0);
     contentTable.setCellspacing(0);
     contentTable.setWidth("550");
+    contentTable.setHeight(2,"10");
+    contentTable.setHeight(3,"1");
+    contentTable.setHeight(4,"10");
+    contentTable.setRowAlignment(1,"center");
+    contentTable.setVerticalAlignment(1,1,"bottom");
+    contentTable.setHeight(1,"145");
+    contentTable.setRowAlignment(3,"center");
+
     String albumId = iwc.getParameter(this._PRM_ALBUM_ID);
     if(albumId != null && !"".equals(albumId)){
       Album album = AlbumCollectionBusiness.getAlbum(Integer.parseInt(albumId));
+
+      Table infoTable = new Table(2,1);
+      infoTable.setVerticalAlignment(2,1,"bottom");
+      infoTable.setWidth(1,1,"120");
+      infoTable.setHeight(1,1,"120");
+      //infoTable.setColor(1,1,AlbumCollection._COLOR_BRIGHTEST);
+
+
       if(album != null){
-        contentTable.add(AlbumCollectionBusiness.getHeaderTextClone(album.getName()),1,1);
-        contentTable.add(Text.getBreak(),1,1);
         int imageId = album.getFrontCoverFileId();
         if(imageId > 0){
           Image fCover = new Image(imageId,album.getName());
-          fCover.setAlignment("right");
-          contentTable.add(fCover,1,1);
+          fCover.setAlignment("left");
+          fCover.setHeight(120);
+          fCover.setWidth(120);
+          infoTable.add(fCover,1,1);
         }
-        contentTable.add(Text.getBreak(),1,1);
-        contentTable.add(TextSoap.formatText(album.getDescription()),1,1);
+
+        Table albumInfoTable = new Table(2,4);
+        albumInfoTable.setCellpadding(0);
+        albumInfoTable.setCellspacing(3);
+        albumInfoTable.setWidth(340);
+        albumInfoTable.setWidth(1,1,"100");
+        albumInfoTable.setWidth(2,1,"240");
+        albumInfoTable.setHeight(90);
+        albumInfoTable.setColumnAlignment(1,"right");
+        albumInfoTable.setColumnAlignment(2,"left");
+        albumInfoTable.setColumnColor(2,AlbumCollection._COLOR_DARK);
+
+        albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("titill:"),1,1);
+        albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("flytjendur:"),1,2);
+        albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("útgáfuár:"),1,3);
+        albumInfoTable.add(AlbumCollectionBusiness.getMainTextClone("tegund:"),1,4);
+
+        for (int i = 0; i < 1; i++) {
+          albumInfoTable.add(Text.getNonBrakingSpace(),2,1);
+          albumInfoTable.add(Text.getNonBrakingSpace(),2,2);
+          albumInfoTable.add(Text.getNonBrakingSpace(),2,3);
+          albumInfoTable.add(Text.getNonBrakingSpace(),2,4);
+        }
+
+        albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(album.getName()),2,1);
+
+        List performers = EntityFinder.findRelated(album,Performer.getStaticInstance(Performer.class));
+        if(performers != null){
+          Iterator iter2 = performers.iterator();
+          boolean f = false;
+          String name = "";
+          while (iter2.hasNext()) {
+            Performer performer = (Performer)iter2.next();
+            if(f){
+              name += ", ";
+            }
+            name += performer.getDisplayName();
+            f=true;
+          }
+          albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(name),2,2);
+        }
+        if(album.getPublishingDay() != null){
+          albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(Integer.toString(new idegaTimestamp(album.getPublishingDay()).getYear())),2,3);
+        }
+
+        if(album.getAlbumTypeId() > 0){
+          String type = null;
+          try {
+            if(album.getAlbumTypeId() > 0){
+              type = new AlbumType(album.getAlbumTypeId()).getName();
+            }
+          }
+          catch (Exception ex) {
+            ex.printStackTrace();
+          }
+
+
+          if(type != null){
+            albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(type),2,4);
+          }
+        }
+
+        infoTable.add(albumInfoTable,2,1);
+
+        contentTable.add(infoTable,1,1);
+
+        String description = TextSoap.formatText(album.getDescription());
+        if(description != null && !"".equals(description)){
+          Table t = new Table();
+          t.add(AlbumCollectionBusiness.getMainTextClone(description),1,1);
+          t.setWidth(410);
+          t.setCellpadding(8);
+          contentTable.add(t,1,3);
+        }
       }
     }
 
-    contentTable.add(getTrackList(iwc),1,2);
+    contentTable.add(getTrackList(iwc),1,5);
+
+    contentTable.add(new BackButton("Til baka"),1,6);
+    contentTable.setAlignment(1,6,"right");
 
     frameTable.add(contentTable);
     this.add(Text.getBreak());
     this.add(Text.getBreak());
     this.add(frameTable);
+    this.add(Text.getBreak());
+    this.add(Text.getBreak());
   }
 
   public Table getTrackList(IWContext iwc)throws Exception {
     Table trackTable = null;
+    int index=1;
     String albumId = iwc.getParameter(this._PRM_ALBUM_ID);
     if(albumId != null && !"".equals(albumId)){
       List tracks = AlbumCollectionBusiness.getTracks(Integer.parseInt(albumId));
       if(tracks != null && tracks.size() > 0){
 
-        trackTable = new Table(1,tracks.size()+1);
+        trackTable = new Table(1,tracks.size()+2);
         trackTable.setWidth("550");
         trackTable.setCellspacing(2);
         trackTable.setCellpadding(0);
-        int index=1;
 
         Table trackInfo = new Table(9,1);
         trackInfo.setCellpadding(1);
@@ -245,6 +340,25 @@ public class AlbumDetails extends Block {
     }
 
 
+    if(hasEditPermission()){
+      Link addTrackLink = AlbumCollectionBusiness.getMainLinkClone("add track");
+      //addTrackLink.setFontColor("#EEEEEE");
+      addTrackLink.setBold();
+      addTrackLink.setWindowToOpen(AddTrack.class);
+      if(albumId != null && !albumId.equals("")){
+        addTrackLink.addParameter(_PRM_ALBUM_ID,albumId);
+      }
+
+      if(trackTable == null){
+        trackTable = new Table();
+        trackTable.setWidth("550");
+        trackTable.setCellspacing(2);
+        trackTable.setCellpadding(0);
+      }
+      trackTable.add(addTrackLink,1,index);
+    }
+
+
     return trackTable;
   }
 
@@ -252,22 +366,6 @@ public class AlbumDetails extends Block {
 
     lineUpElements(iwc);
 
-    Link addTrackLink = AlbumCollectionBusiness.getMainLinkClone("add track");
-    //addTrackLink.setFontColor("#EEEEEE");
-    addTrackLink.setBold();
-    addTrackLink.setWindowToOpen(AddTrack.class);
-    String albumId = iwc.getParameter(_PRM_ALBUM_ID);
-    if(albumId != null && !albumId.equals("")){
-      addTrackLink.addParameter(_PRM_ALBUM_ID,albumId);
-    }
-
-    if(hasEditPermission()){
-      this.add(addTrackLink);
-    }
-
-    this.add(Text.getBreak());
-    this.add(Text.getBreak());
-    this.add(new BackButton("Til baka"));
 
   }
 }
