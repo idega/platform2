@@ -11,6 +11,7 @@
 </class_description>
 <class_description class="java.lang.Integer" default_display_name="Age" name="age">
 <localized_name name="Aldur" locale="is_IS"/>
+<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.AgeDropDownMenu" />
 </class_description>
 <class_description class="java.lang.String" default_display_name="Gender" name="gender">
 <localized_name name="Kyn" locale="is_IS"/>

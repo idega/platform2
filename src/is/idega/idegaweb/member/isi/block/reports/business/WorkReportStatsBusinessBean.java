@@ -943,7 +943,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					//}
 					leagueStatsData = addToIntegerCount(totalCountOfPlayersForLeague, leagueStatsData, playerCount);
 					int cost = 0;
-					cost = getWorkReportBusiness().getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(((Integer)report.getPrimaryKey()).intValue(),leagueKey.intValue());
+					cost = getWorkReportBusiness().getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(((Integer)report.getPrimaryKey()).intValue(),((Integer)league.getPrimaryKey()).intValue());
 					leagueStatsData = addToIntegerCount(totalCost,leagueStatsData,cost);
 					
 					//put it back again
