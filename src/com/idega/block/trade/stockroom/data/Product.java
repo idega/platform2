@@ -241,8 +241,15 @@ public class Product extends GenericEntity {
    *@param  id  The new fileId value
    */
   public void setFileId( Integer id ) {
-    this.setColumn( getColumnNameFileId(), id );
+    if (id == null) {
+      System.err.println("Removing fileID : " +id);
+      this.removeFromColumn(getColumnNameFileId());
+    }else {
+      this.setColumn( getColumnNameFileId(), id );
+    }
+
   }
+
 
   /*
    *  public void setProductName(String name){

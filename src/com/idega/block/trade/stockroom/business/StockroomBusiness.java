@@ -90,7 +90,11 @@ public class StockroomBusiness /* implements SupplyManager */ {
       buffer.append(" ORDER BY "+pPrice.getColumnNamePriceDate()+" DESC");
 
     try {
+//      EntityFinder.debug = true;
       List prices = EntityFinder.getInstance().findAll(ProductPrice.class, buffer.toString());
+//      List prices = EntityFinder.findAll(new ProductPrice(), buffer.toString());
+//      EntityFinder.debug = false;
+      if (prices != null)
       if (prices.size() > 0) {
         return ((ProductPrice)prices.get(0));
       }
