@@ -73,6 +73,9 @@ public Box(String attribute){
     //_isAdmin = true;
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
+
     String mode = iwc.getParameter(BoxBusiness.PARAMETER_MODE);
     if ( mode != null ) {
       doMode(mode,iwc);

@@ -67,6 +67,7 @@ public BoxEditorWindow(){
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_admin","Box Admin"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
 
     try {
       _userID = LoginBusiness.getUser(iwc).getID();

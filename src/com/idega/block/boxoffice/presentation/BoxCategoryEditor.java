@@ -180,6 +180,7 @@ public BoxCategoryEditor(){
   }
 
   private void closePollQuestion(IWContext iwc) {
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
     setParentToReload();
     close();
   }
