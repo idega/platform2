@@ -601,7 +601,12 @@ public class GolferPage extends Page{
     GolferFriendsSigningSheet golferFriendsSigningSheet = new GolferFriendsSigningSheet(supportTextReaderId,
       (String) modinfo.getSessionAttribute("golferName"), sTopMenuParameterName,sInterviewsParameterValue,
       sSubmitParameterValue, (String) modinfo.getSessionAttribute("fullGolferName"));
-    interviewsTable.add(golferFriendsSigningSheet,1,1);
+    Table dummyTable = new Table(1,2);
+    dummyTable.setHeight(1,"20");
+    dummyTable.setCellpadding(0);
+    dummyTable.setCellspacing(0);
+    dummyTable.add(golferFriendsSigningSheet,1,2);
+    interviewsTable.add(dummyTable,1,1);
     add(interviewsTable);
   }
 
