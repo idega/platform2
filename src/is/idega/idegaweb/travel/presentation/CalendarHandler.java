@@ -356,6 +356,7 @@ public class CalendarHandler extends TravelManager {
 
 
       try {
+		    BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc,  this._product);
         if (_contract != null) {
           for (int i = 0; i < depDays.size(); i++) {
             temp = (IWTimestamp) depDays.get(i);
@@ -363,7 +364,8 @@ public class CalendarHandler extends TravelManager {
             if (!getTravelStockroomBusiness(iwc).getIfExpired(_contract, temp))
             try {
             if (getTravelStockroomBusiness(iwc).getIfDay(iwc,_contract,_product,temp)) {
-              if (seats > 0 && seats <= getBooker(iwc).getBookingsTotalCount(_productId, temp) ) {
+              if (bf.isFullyBooked( iwc, _product, temp) ) {
+//              if (seats > 0 && seats <= getBooker(iwc).getBookingsTotalCount(_productId, temp) ) {
                 sm.setDayColor(temp, colorForFullyBooked);
                 sm.setDayFontColor(temp, colorForFullyBookedText);
               }else {
@@ -392,7 +394,8 @@ public class CalendarHandler extends TravelManager {
           for (int i = 0; i < depDays.size(); i++) {
             //System.err.println("trying");
             temp = (IWTimestamp) depDays.get(i);
-            if (seats > 0 && seats <= getBooker(iwc).getBookingsTotalCount(_productId, temp) ) {
+            if (bf.isFullyBooked( iwc, _product, temp) ) {
+//            if (seats > 0 && seats <= getBooker(iwc).getBookingsTotalCount(_productId, temp) ) {
             //System.err.println("bookings...");
               sm.setDayColor(temp, colorForFullyBooked);
               sm.setDayFontColor(temp, colorForFullyBookedText);
@@ -443,6 +446,8 @@ public class CalendarHandler extends TravelManager {
         tfnfe.printStackTrace(System.err);
       }catch (FinderException fe) {
         fe.printStackTrace(System.err);
+      }catch (Exception ce) {
+      	ce.printStackTrace(System.err);	
       }
 
       Table legend = new Table();
