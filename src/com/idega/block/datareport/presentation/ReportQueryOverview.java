@@ -446,9 +446,10 @@ public class ReportQueryOverview extends Block {
 			//
 	    if (query.isDynamic()) {
 	    	Map identifierValueMap = query.getIdentifierValueMap();
+	    	boolean calculateAccess = false;
 	    	boolean containsOnlyAccessVariable = 
-	    		(	identifierValueMap.containsKey(USER_ACCESS_VARIABLE)  || 
-	    			identifierValueMap.containsKey(GROUP_ACCESS_VARIABLE)) && 
+	    		(	(calculateAccess = identifierValueMap.containsKey(USER_ACCESS_VARIABLE))  || 
+	    			(calculateAccess = identifierValueMap.containsKey(GROUP_ACCESS_VARIABLE))) && 
 	    			(identifierValueMap.size() == 1);
 	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action) &&
 	    			! containsOnlyAccessVariable) {
@@ -458,7 +459,9 @@ public class ReportQueryOverview extends Block {
 	    	else {
 	    		// get the values of the input fields
 	    		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
-	    		setAccessCondition(modifiedValues, iwc);
+	    		if (calculateAccess) {
+	    			setAccessCondition(modifiedValues, iwc);
+	    		}
 	    		query.setIdentifierValueMap(modifiedValues);
 	    		// show result of query
 	    		List executedSQLStatements = new ArrayList();
