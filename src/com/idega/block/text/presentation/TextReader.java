@@ -66,10 +66,6 @@ private IWResourceBundle iwrb;
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
   public TextReader(){
-    textBgColor = "#FFFFFF";
-    textColor = "#000000";
-    headlineBgColor = "#FFFFFF";
-    headlineColor = "#000000";
   }
 
   public TextReader(String sAttribute){
@@ -195,10 +191,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     if ( displayHeadline ) {
       if ( headline.getText() != null ) {
-      Anchor headlineAnchor = new Anchor(headline,headline.getText());
-      headlineAnchor.setFontColor(headlineColor);
-      T.add(headlineAnchor ,1,1);
-      T.add(body,1,2);
+        Anchor headlineAnchor = new Anchor(headline,headline.getText());
+        headlineAnchor.setFontColor(headlineColor);
+        T.add(headlineAnchor ,1,1);
+        T.add(body,1,2);
       }
     }
     else {
@@ -331,5 +327,41 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
   public String getBundleIdentifier(){
   return IW_BUNDLE_IDENTIFIER;
+  }
+
+public synchronized Object clone() {
+    TextReader obj = null;
+    try {
+      obj = (TextReader)super.clone();
+
+      obj.sLocaleId = this.sLocaleId;
+      obj.sAttribute = this.sAttribute;
+      obj.adminURL = this.adminURL;
+
+      obj.iTextId = this.iTextId;
+      obj.textSize = this.textSize;
+      obj.tableTextSize = this.tableTextSize;
+      obj.headlineSize = this.headlineSize;
+      obj.tableWidth = this.tableWidth;
+
+      obj.textBgColor = this.textBgColor;
+      obj.textColor = this.textColor;
+      obj.headlineBgColor = this.headlineBgColor;
+      obj.headlineColor = this.headlineColor;
+      obj.tableAlignment = this.tableAlignment;
+      obj.textWidth = this.textWidth;
+      obj.textStyle = this.textStyle;
+      obj.headlineStyle = this.headlineStyle;
+      obj.displayHeadline = this.displayHeadline;
+      obj.enableDelete = this.enableDelete;
+      obj.viewall = this.viewall;
+      obj.newobjinst = this.newobjinst;
+      obj.newWithAttribute = this.newWithAttribute;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
   }
 }

@@ -14,7 +14,6 @@ import java.io.IOException;
  */
 
 public class Anchor extends Link {
-  private ModuleObject obj;
 
   public Anchor() {
     super("");
@@ -38,14 +37,25 @@ public class Anchor extends Link {
 
   public void print(ModuleInfo modinfo)throws Exception{
     initVariables(modinfo);
-    obj = super.getObject();
+    ModuleObject obj = super.getObject();
     if (getLanguage().equals("HTML")){
       print("<a "+getAttributeString()+" >");
       if ( obj!=null) obj.print(modinfo);
       print("</a>");
     }
+  }
+
+  public synchronized Object clone() {
+    Anchor obj = null;
+    try {
+      obj = (Anchor)super.clone();
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
 
 
-
-}
 }
