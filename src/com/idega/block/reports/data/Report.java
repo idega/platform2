@@ -24,10 +24,10 @@ public class Report extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute("category","Category",true,true,"java.lang.Integer","many-to-one","com.idega.block.reports.data.ReportCategory");
     addAttribute("name","Name",true,true,"java.lang.String");
-    addAttribute("sqlsentence", "SQL", true, true, "java.lang.String");
+    addAttribute("sqlsentence", "SQL", true, true, "java.lang.String",2000);
     addAttribute("headers","Titles",true,true,"java.lang.String");
     addAttribute("info","ATH",true,true,"java.lang.String");
-    setMaxLength("sqlsentence",2000);
+
   }
   public String getEntityName() {
     return "report";
