@@ -41,7 +41,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
-		isAdministrator = isAdministrator(iwc);
+		isAdministrator = isCommuneAdministrator(iwc);
 		
 		Table table = new Table(1,7);
 		table.setCellpadding(0);

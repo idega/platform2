@@ -29,7 +29,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		if (getSession().hasPrognosis() || isAdministrator(iwc)) {
+		if (getSession().hasPrognosis() || isCommuneAdministrator(iwc)) {
 			Table table = new Table();
 			table.setWidth(getWidth());
 			table.setCellpadding(getCellpadding());
