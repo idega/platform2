@@ -1,8 +1,8 @@
 /*
- * $Id: VacationBusiness.java,v 1.3 2004/12/09 13:43:37 laddi Exp $
- * Created on 9.12.2004
+ * $Id: VacationBusiness.java,v 1.4 2005/02/14 14:54:53 laddi Exp $
+ * Created on 14.2.2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2004/12/09 13:43:37 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/14 14:54:53 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface VacationBusiness extends ApplicationsBusiness {
 
@@ -62,12 +62,12 @@ public interface VacationBusiness extends ApplicationsBusiness {
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#storeApplication
 	 */
-	public void storeApplication(User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment) throws CreateException, java.rmi.RemoteException;
+	public void storeApplication(User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment, Locale locale) throws CreateException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#storeApplication
 	 */
-	public void storeApplication(Object pk, User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment) throws CreateException, java.rmi.RemoteException;
+	public void storeApplication(Object pk, User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment, Locale locale) throws CreateException, java.rmi.RemoteException;
 
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#approveApplication
@@ -113,5 +113,10 @@ public interface VacationBusiness extends ApplicationsBusiness {
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getExtraInformationType
 	 */
 	public String getExtraInformationType(VacationType type, String key) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.agura.applications.vacation.business.VacationBusinessBean#canDeleteCase
+	 */
+	public boolean canDeleteCase(Case theCase) throws java.rmi.RemoteException;
 
 }

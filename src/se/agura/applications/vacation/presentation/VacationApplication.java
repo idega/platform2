@@ -106,7 +106,7 @@ public class VacationApplication extends VacationBlock {
 		}
 		try {
 			getBusiness(iwc).storeApplication(iwc.getCurrentUser(), fromDate.getDate(), toDate.getDate(), selectedHours,
-					vacationType, workingHours, extra, comment);
+					vacationType, workingHours, extra, comment, iwc.getCurrentLocale());
 		}
 		catch (CreateException ce) {
 			log(ce);
@@ -456,8 +456,8 @@ public class VacationApplication extends VacationBlock {
 		table.setBorder(0);
 		
 		int row = 1;
-		IWTimestamp fromDate = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_FROM_DATE));
-		IWTimestamp toDate = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_TO_DATE));
+		IWTimestamp fromDate = new IWTimestamp(iwc.getCurrentLocale(), iwc.getParameter(PARAMETER_VACATION_FROM_DATE));
+		IWTimestamp toDate = new IWTimestamp(iwc.getCurrentLocale(), iwc.getParameter(PARAMETER_VACATION_TO_DATE));
 		IWTimestamp today = new IWTimestamp();
 		String selectedHours = iwc.getParameter(PARAMETER_VACATION_WORKING_HOURS);
 		String[] workingHours = iwc.getParameterValues(PARAMETER_VACATION_HOURS);
@@ -517,13 +517,9 @@ public class VacationApplication extends VacationBlock {
 			int a = 0;
 			toDate.addDays(1);
 			while (fromDate.isEarlierThan(toDate)) {
-				if (week != fromDate.getWeekOfYear() && !(fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
+				if (week != fromDate.getWeekOfYear()) {
 					row++;
 					week = fromDate.getWeekOfYear();
-					table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
-				}
-				if (week == -1 && (fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
-					row++;
 					table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
 				}
 				

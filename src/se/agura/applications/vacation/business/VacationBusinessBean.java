@@ -135,11 +135,11 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		}
 	}
 
-	public void storeApplication(User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment) throws CreateException {
-		storeApplication(null, user, fromDate, toDate, ordinaryWorkingHours, type, workingHours, extraInfo, comment);
+	public void storeApplication(User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment, Locale locale) throws CreateException {
+		storeApplication(null, user, fromDate, toDate, ordinaryWorkingHours, type, workingHours, extraInfo, comment, locale);
 	}
 
-	public void storeApplication(Object pk, User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment) throws CreateException {
+	public void storeApplication(Object pk, User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment, Locale locale) throws CreateException {
 		VacationRequest application = null;
 		if (pk != null) {
 			try {
@@ -189,19 +189,13 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		application.store();
 
 		if (workingHours != null) {
-			stamp = new IWTimestamp(fromDate);
+			stamp = new IWTimestamp(locale, fromDate);
 			VacationTime time = null;
 			int week = -1;
 			for (int i = 0; i < workingHours.length; i++) {
 				int day = stamp.getDayOfWeek();
-				if (week != stamp.getWeekOfYear() && !(stamp.getDayOfWeek() == Calendar.SUNDAY)) {
+				if (week != stamp.getWeekOfYear()) {
 					week = stamp.getWeekOfYear();
-					if (time != null) {
-						time.store();
-					}
-					time = getVacationTimeHome().create();
-				}
-				if (week == -1 && (stamp.getDayOfWeek() == Calendar.SUNDAY)) {
 					if (time != null) {
 						time.store();
 					}

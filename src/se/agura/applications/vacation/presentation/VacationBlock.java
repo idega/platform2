@@ -143,9 +143,9 @@ public abstract class VacationBlock extends Block {
 		
 		VacationType vacationType = vacation.getVacationType();
 
-		IWTimestamp fromDate = new IWTimestamp(vacation.getFromDate());
-		IWTimestamp toDate = new IWTimestamp(vacation.getToDate());
-		IWTimestamp date = new IWTimestamp(vacation.getCreatedDate());
+		IWTimestamp fromDate = new IWTimestamp(iwc.getCurrentLocale(), vacation.getFromDate());
+		IWTimestamp toDate = new IWTimestamp(iwc.getCurrentLocale(), vacation.getToDate());
+		IWTimestamp date = new IWTimestamp(iwc.getCurrentLocale(), vacation.getCreatedDate());
 		int selectedHours = vacation.getOrdinaryWorkingHours();
 		Collection times = null;
 		try {
