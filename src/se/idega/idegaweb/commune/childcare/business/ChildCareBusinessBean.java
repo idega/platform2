@@ -50,6 +50,7 @@ import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.CareTime;
+import se.idega.idegaweb.commune.care.data.CareTimeBMPBean;
 import se.idega.idegaweb.commune.care.data.CareTimeHome;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareApplicationHome;
@@ -1062,7 +1063,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean isAfterSchoolApplication(int applicationID) throws RemoteException {
+	public boolean isAfterSchoolApplication(int applicationID) {
 		try {
 			return isAfterSchoolApplication(getChildCareApplication(applicationID));
 		}
@@ -1847,7 +1848,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean removeFromQueue(ChildCareApplication application, User user) throws RemoteException {
+	public boolean removeFromQueue(ChildCareApplication application, User user) {
 		return removeFromQueue(application, user, null);
 	}
 
@@ -4694,6 +4695,54 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (FinderException fe) {
 			return new ArrayList();
 		}
+	}
+
+	public Collection getCareTimes(User child) {	
+		Collection all = getCareTimes();
+		IWTimestamp childDate = new IWTimestamp(child.getDateOfBirth());
+		childDate.setAsDate();
+		IWTimestamp today = IWTimestamp.RightNow();
+		today.setAsDate();
+		List list = new ArrayList();
+		Iterator iter = all.iterator();
+		while (iter.hasNext()) {
+			CareTime ct = (CareTime) iter.next();
+			// Hard coded values for Sollentuna
+			if (ct.getCode().equals(CareTimeBMPBean.CODE_FSKHEL)) {
+				int childYears = today.getYear() - childDate.getYear();
+				if (today.getMonth() > 8) {
+					childYears++;
+				} else if (today.getMonth() == 8 && today.getDay() >= 14) {
+					childYears++;
+				}
+				if (childYears < 4) {
+					list.add(ct);
+				}				
+			} else if (ct.getCode().equals(CareTimeBMPBean.CODE_FSKHEL4_5)) {
+				int childYears = today.getYear() - childDate.getYear();
+				if (today.getMonth() > 8) {
+					childYears++;
+				} else if (today.getMonth() == 8 && today.getDay() >= 15) {
+					childYears++;
+				}
+				if (childYears >= 4 || childYears <= 6) {
+					list.add(ct);
+				}				
+			} else if (ct.getCode().equals(CareTimeBMPBean.CODE_FSKDEL)) {
+				list.add(ct);
+			} else if (ct.getCode().equals(CareTimeBMPBean.CODE_FSKDEL4_5)) {				
+				int childYears = today.getYear() - childDate.getYear();
+				if (today.getMonth() > 8) {
+					childYears++;
+				} else if (today.getMonth() == 8 && today.getDay() >= 15) {
+					childYears++;
+				}
+				if (childYears >= 4 || childYears <= 5) {
+					list.add(ct);
+				}				
+			}
+		}
+		return list;
 	}
 
 	public CareTime getCareTime(String careTime) throws FinderException {
