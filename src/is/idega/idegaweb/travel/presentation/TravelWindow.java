@@ -131,7 +131,7 @@ public class TravelWindow extends Window {
 			table.setColor(3,1,TravelManager.backgroundColor);
 		}
 
-    table.mergeCells(1,1,2,1);
+    table.mergeCells(1,1,3,1);
     table.add(headerImage,1,1);
 
     text.setFontColor(TravelManager.BLACK);
