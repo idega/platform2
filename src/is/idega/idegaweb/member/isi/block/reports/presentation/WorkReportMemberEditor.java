@@ -309,7 +309,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       add(text);
     }
     if (memberAlreadyExist) {
-      String message = resourceBundle.getLocalizedString("wr_account_member_member_with_ssn_already_exist", "The member with the specified social security number already exist");
+      String message = resourceBundle.getLocalizedString("wr_account_member_member_with_ssn_already_exist", "The member with the specified social security number does already exist");
       Text text = new Text(message);
       text.setBold();
       add(text);
@@ -375,7 +375,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     TextEditorConverter socialSecurityNumberEditorConverter = new TextEditorConverter(form);
-    String message = resourceBundle.getLocalizedString("wr_member_editor_not_a_valid_ssn", "The input is not a valid social securirty number");
+    String message = resourceBundle.getLocalizedString("wr_member_editor_not_a_valid_ssn", "The input is not a valid social security number");
     socialSecurityNumberEditorConverter.setAsIcelandicSocialSecurityNumber(message);
     socialSecurityNumberEditorConverter.maintainParameters(this.getParametersToMaintain());
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
