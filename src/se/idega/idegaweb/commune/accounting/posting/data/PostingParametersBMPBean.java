@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.18 2003/10/24 10:29:37 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.19 2003/11/12 13:03:27 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.18 2003/10/24 10:29:37 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.19 2003/11/12 13:03:27 anders Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -281,6 +281,34 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID, reg);
 		sql.appendEquals(COLUMN_COMPANY_TYPE, comt);
 		sql.appendEquals(COLUMN_COMMUNE_BELONGING_ID, comb);
+		return idoFindOnePKByQuery(sql);
+	}
+
+	public Object ejbFindPostingParameter(
+			Date from,
+			Date to,
+			String ownPosting,
+			String doublePosting,
+			int activityType,
+			int regSpecType,
+			String companyType,
+			int communeBelonging,
+			int schoolYear1,
+			int schoolYear2,
+			int studyPath) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY_ID, activityType);
+		sql.appendAndEqualsQuoted(COLUMN_PERIODE_FROM, from.toString());
+		sql.appendAndEqualsQuoted(COLUMN_PERIODE_TO, to.toString());
+		sql.appendAndEqualsQuoted(COLUMN_OWN_POSTING_STRING, ownPosting);
+		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING_STRING, doublePosting);
+		sql.appendAndEqualsQuoted(COLUMN_COMPANY_TYPE, companyType);
+		sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID, regSpecType);
+		sql.appendAndEquals(COLUMN_COMMUNE_BELONGING_ID, communeBelonging);
+		sql.appendAndEquals(COLUMN_SCHOOL_YEAR1_ID, schoolYear1);
+		sql.appendAndEquals(COLUMN_SCHOOL_YEAR2_ID, schoolYear2);
+		sql.appendAndEquals(COLUMN_STUDY_PATH_ID, studyPath);
+		System.out.println(sql.toString());
 		return idoFindOnePKByQuery(sql);
 	}
 
