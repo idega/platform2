@@ -327,11 +327,19 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-  public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, IWTimestamp stamp) {
-    return ejbHomeGetNumberOfBookings(resellerIds, serviceId, stamp, null);
+  public int ejbHomeGetBookingsTotalCount(int[] resellerIds, int serviceId, IWTimestamp stamp) {
+    return ejbHomeGetBookingsTotalCount(resellerIds, serviceId, stamp, null);
   }
 
   public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, Collection travelAddressIds) {
+    return ejbHomeGetBookingsTotalCount(resellerIds, serviceId, stamp, travelAddressIds, true);
+  }
+
+  public int ejbHomeGetBookingsTotalCount(int[] resellerIds, int serviceId, IWTimestamp stamp, Collection travelAddressIds) {
+    return ejbHomeGetBookingsTotalCount(resellerIds, serviceId, stamp, travelAddressIds, true);
+  }
+
+  public int ejbHomeGetBookingsTotalCount(int[] resellerIds, int serviceId, IWTimestamp stamp, Collection travelAddressIds, boolean returnsTotalCountInsteadOfNumberOfBookings) {
     int returner = 0;
     try {
         if (resellerIds == null) {
@@ -339,10 +347,14 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         }
         Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
         String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
+        String returning = "sum(b."+getTotalCountColumnName()+")";
+        if (returnsTotalCountInsteadOfNumberOfBookings) {
+        	returning = "count(*)";
+        }
 
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select sum(b."+getTotalCountColumnName()+") from "+getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
+            sql.append("Select "+returning+" from "+getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
             if (travelAddressIds != null) {
               sql.append(", "+addressMiddleTable+" am");
             }
@@ -395,44 +407,52 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds){
-    return ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, productPriceIds, null);
+  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType){
+		return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[]{}, null, true, false );
   }
 
-  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
-    return ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, false);
+  public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds){
+    return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, productPriceIds, null);
   }
 
-  public int ejbHomeGetNumberOfBookingsByDateOfBooking(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
-    return ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, true);
+  public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
+    return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, false);
   }
 
-  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn){
+  public int ejbHomeGetBookingsTotalCountByDateOfBooking(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
+    return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, true);
+  }
+
+  public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn){
+		return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, useDateOfBookingColumn, true );
+  }
+  
+  public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn, boolean returnTotalCountInsteadOfBookingCount){
     int returner = 0;
     StringBuffer sql = new StringBuffer();
-    //Connection conn = null;
     try {
-//      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(serviceId));
 
-      /** @todo lonsa við getInstance crap */
-//      ProductBusiness pBus = new ProductBusiness();//(ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
+      // @todo lonsa við getInstance crap /
       ProductBusiness pBus = (ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
       Timeframe timeframe = pBus.getTimeframe(pBus.getProduct(serviceId), fromStamp);
-//      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
       String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
 
       String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
       String tTable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
 
-      //conn = ConnectionBroker.getConnection();
       String dateColumn = this.getBookingDateColumnName();
+      String returning = "b."+getTotalCountColumnName();
+      
       if (useDateOfBookingColumn) {
         dateColumn = this.getDateOfBookingColumnName();
       }
+      if (!returnTotalCountInsteadOfBookingCount) {
+      	returning = "count(*)"	;
+      }
 
         String[] many = {};
-            sql.append("Select b."+getTotalCountColumnName()+" from "+getBookingTableName()+" b,"+pTable+" p");
+            sql.append("Select "+returning+" from "+getBookingTableName()+" b,"+pTable+" p");
             if (timeframe != null) {
               sql.append(","+middleTable+" m,"+tTable+" t");
             }
@@ -489,9 +509,13 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         many = SimpleQuerier.executeStringQuery(sql.toString());
 //        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
-        for (int i = 0; i < many.length; i++) {
-          returner += Integer.parseInt(many[i]);
-        }
+	      if (returnTotalCountInsteadOfBookingCount) {
+	        for (int i = 0; i < many.length; i++) {
+	          returner += Integer.parseInt(many[i]);
+	        }
+	      }else if (many != null && many.length > 0){
+	      	returner += Integer.parseInt( many[0]);	
+	      }
 
     }catch (Exception e) {
         System.err.println(sql.toString());

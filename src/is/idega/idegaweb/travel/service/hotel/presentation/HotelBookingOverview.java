@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.hotel.presentation;
 
+import is.idega.idegaweb.travel.service.hotel.business.HotelBooker;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.presentation.*;
@@ -7,6 +8,7 @@ import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.core.user.data.User;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.block.calendar.business.CalendarBusiness;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import java.rmi.*;
 import java.sql.*;
@@ -113,7 +115,6 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       ServiceDay sDay = sDayHome.create();
 
       toStamp.addDays(1);
-      System.out.println("Reppis... in hotelbooking overview");
       while (toStamp.isLaterThan(tempStamp)) {
         dayOfWeek = cal.getDayOfWeek(tempStamp.getYear(), tempStamp.getMonth(), tempStamp.getDay());
 
@@ -161,10 +162,11 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 //                  iCount = sDay.getMax();
 //                }
                 
-                iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                iBooked = getHotelBooker(iwc).getNumberOfReservedRooms(((Integer) service.getPrimaryKey()).intValue(), tempStamp, null);
+//                iBooked = getBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
 
-                int resellerBookings = getBooker(iwc).getNumberOfBookingsByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                int resellerBookings = getBooker(iwc).getBookingsTotalCountByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 if (iAssigned != 0) {
                   iAssigned = iAssigned - resellerBookings;
                 }
@@ -174,7 +176,8 @@ public class HotelBookingOverview extends AbstractBookingOverview {
                 iAvailable = iCount - iBooked - iAssigned;
               }else if (_reseller != null) {
                 iCount = _contract.getAlotment();
-                iBooked = getBooker(iwc).getNumberOfBookingsByReseller(_reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                iBooked = getHotelBooker(iwc).getNumberOfReservedRooms(new int[]{_reseller.getID()},((Integer) service.getPrimaryKey()).intValue(),tempStamp);
+//                iBooked = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = 0;
 
                 iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(),tempStamp,_reseller.getID(), true);
@@ -342,13 +345,14 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       }
       assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) product.getPrimaryKey()).intValue(), stamp);
       iInqueries = getInquirer(iwc).getInqueredSeats(product.getID() , stamp, true);
-      booked = getBooker(iwc).getNumberOfBookings(product.getID(), stamp);
+      booked = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
       available = seats - booked;
     }else if (_reseller != null) {
       seats = contract.getAlotment();
       assigned = 0;
       iInqueries = getInquirer(iwc).getInquiryHome().getInqueredSeats(product.getID() , stamp, _reseller.getID(), true);
-      booked = getBooker(iwc).getNumberOfBookingsByReseller(_reseller.getID(),product.getID(), stamp);
+			booked = getHotelBooker(iwc).getNumberOfReservedRooms(new int[]{_reseller.getID()},product.getID() ,stamp);
+//      booked = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID(),product.getID(), stamp);
       available = seats - booked - iInqueries;
     }
 
@@ -622,4 +626,9 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 
     return table;
   }
+  
+  private HotelBooker getHotelBooker(IWApplicationContext iwac) throws RemoteException {
+  	return (HotelBooker)  IBOLookup.getServiceInstance( iwac, HotelBooker.class);
+  }
+  
 }

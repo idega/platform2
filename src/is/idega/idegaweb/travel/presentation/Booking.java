@@ -322,7 +322,7 @@ public class Booking extends TravelManager {
 //          }
           if (supplier == null) {
             if (isDayVisible) {
-              iBookings = getBooker(iwc).getNumberOfBookings(productId, stamp);
+              iBookings = getBooker(iwc).getBookingsTotalCount(productId, stamp);
               /*if (iBookings < tour.getMinimumSeats() || iBookings > tour.getTotalSeats()) {
                 isDayVisible = false;
               }*/ /** @todo setja í calendarHandler */
@@ -723,7 +723,7 @@ public class Booking extends TravelManager {
               countTextBold.setText(Integer.toString(iCount));
             }
 
-            iBooked = getBooker(iwc).getNumberOfBookingsByReseller(resellerId, ((Integer) service.getPrimaryKey()).intValue(), this.stamp);
+            iBooked = getBooker(iwc).getBookingsTotalCountByReseller(resellerId, ((Integer) service.getPrimaryKey()).intValue(), this.stamp);
             bookedTextBold.setText(Integer.toString(iBooked));
 
             iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), this.stamp, reseller.getID(), true);
@@ -748,7 +748,7 @@ public class Booking extends TravelManager {
           if (tsb.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
             iCount = 0;
 //            if (this.travelAddress != null) {
-              iBooked = getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) product.getPrimaryKey()).intValue(), this.stamp, null, -1, new int[]{}, travelAddressIds );
+              iBooked = getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), this.stamp, null, -1, new int[]{}, travelAddressIds );
 //            }else {
 //              System.err.println("travelAddres == null");
 //            }

@@ -154,27 +154,27 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return returner;
   }
 
-  public  int getNumberOfBookingsByResellers(int serviceId, IWTimestamp stamp) throws RemoteException {
-    return getNumberOfBookings(-1, serviceId, stamp, null);
+  public  int getBookingsTotalCountByResellers(int serviceId, IWTimestamp stamp) throws RemoteException {
+    return getBookingsTotalCount(-1, serviceId, stamp, null);
   }
 
-  public  int getNumberOfBookingsByResellers(int[] resellerIds, int serviceId, IWTimestamp stamp) throws RemoteException {
+  public  int getBookingsTotalCountByResellers(int[] resellerIds, int serviceId, IWTimestamp stamp) throws RemoteException {
     int returner = 0;
     for (int i = 0; i < resellerIds.length; i++) {
-      returner += getNumberOfBookings(resellerIds[i], serviceId, stamp, null);
+      returner += getBookingsTotalCount(resellerIds[i], serviceId, stamp, null);
     }
     return returner;
   }
 
-  public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, IWTimestamp stamp) throws RemoteException{
-    return getNumberOfBookings(resellerId, serviceId, stamp, null);
+  public  int getBookingsTotalCountByReseller(int resellerId, int serviceId, IWTimestamp stamp) throws RemoteException{
+    return getBookingsTotalCount(resellerId, serviceId, stamp, null);
   }
 
-  public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, IWTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
-    return getNumberOfBookings(resellerId, serviceId, stamp, travelAddress);
+  public  int getBookingsTotalCountByReseller(int resellerId, int serviceId, IWTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
+    return getBookingsTotalCount(resellerId, serviceId, stamp, travelAddress);
   }
 
-  private  int getNumberOfBookings(int resellerId, int serviceId, IWTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
+  private  int getBookingsTotalCount(int resellerId, int serviceId, IWTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
     if (resellerId != -1) {
       try {
         Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
@@ -187,7 +187,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
         }
         if (iter == null) {
             int[] tempInts = {reseller.getID()};
-            return getGeneralBookingHome().getNumberOfBookings( tempInts , serviceId, stamp);
+            return getGeneralBookingHome().getBookingsTotalCount( tempInts , serviceId, stamp);
         }else {
           if (iter.hasNext()) {
             /**
@@ -200,10 +200,10 @@ public class BookerBean extends IBOServiceBean implements Booker{
             for (int i = 0; i < tempInts.length; i++) {
               tempInts[i] = ((Reseller) items.get(i)).getID();
             }
-            return getGeneralBookingHome().getNumberOfBookings( tempInts , serviceId, stamp);
+            return getGeneralBookingHome().getBookingsTotalCount( tempInts , serviceId, stamp);
           }else {
             int[] tempInts = {reseller.getID()};
-            return getGeneralBookingHome().getNumberOfBookings( tempInts , serviceId, stamp);
+            return getGeneralBookingHome().getBookingsTotalCount( tempInts , serviceId, stamp);
           }
         }
       }catch (SQLException sql) {
@@ -213,7 +213,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
         return 0;
       }
     }else {
-      return getGeneralBookingHome().getNumberOfBookings(null, serviceId, stamp);
+      return getGeneralBookingHome().getBookingsTotalCount(null, serviceId, stamp);
     }
   }
 
@@ -238,38 +238,38 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 */
 
-  public int getNumberOfBookings(List products, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException {
+  public int getBookingsTotalCount(List products, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException {
     int counter = 0;
     Iterator iter = products.iterator();
     while (iter.hasNext()) {
-      counter += getNumberOfBookings( ( (Product) iter.next() ).getID(), fromStamp, toStamp, bookingType);
+      counter += getBookingsTotalCount( ( (Product) iter.next() ).getID(), fromStamp, toStamp, bookingType);
     }
 
     return counter;
   }
 
 
-  public  int getNumberOfBookings(int serviceId, IWTimestamp stamp)throws RemoteException{
-      return getNumberOfBookings(serviceId, stamp, null);
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp stamp)throws RemoteException{
+      return getBookingsTotalCount(serviceId, stamp, null);
   }
 
-  public  int getNumberOfBookings(int serviceId, IWTimestamp stamp, int bookingType) throws RemoteException{
-      return getNumberOfBookings(serviceId, stamp, null, bookingType);
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp stamp, int bookingType) throws RemoteException{
+      return getBookingsTotalCount(serviceId, stamp, null, bookingType);
   }
 
-  public  int getNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp)throws RemoteException{
-      return getNumberOfBookings(serviceId, fromStamp, toStamp, -1);
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp)throws RemoteException{
+      return getBookingsTotalCount(serviceId, fromStamp, toStamp, -1);
   }
 
-  public  int getNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException{
-    return getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, false);//, new int[] {});
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException{
+    return getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, false);//, new int[] {});
   }
 
-  public  int getNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, boolean orderByDateOfBooking) throws RemoteException{
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, boolean orderByDateOfBooking) throws RemoteException{
     if (!orderByDateOfBooking) {
-      return getGeneralBookingHome().getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, new int[] {});
+      return getGeneralBookingHome().getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[] {});
     } else {
-      return getGeneralBookingHome().getNumberOfBookingsByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, null);
+      return getGeneralBookingHome().getBookingsTotalCountByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, null);
     }
   }
 
@@ -611,7 +611,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
 
 
-  public  int getNumberOfBookings(ProductPrice pPrice) throws RemoteException {
+  public  int getBookingsTotalCount(ProductPrice pPrice) throws RemoteException {
     try {
 
       BookingEntryHome beHome = (BookingEntryHome) IDOLookup.getHome(BookingEntry.class);

@@ -569,7 +569,7 @@ public class TourBookingForm extends BookingForm{
   }
 
   public Form getPublicBookingForm(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-    int bookings = getTourBooker(iwc).getNumberOfBookings(_productId, this._stamp);
+    int bookings = getTourBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
     int max = 0;
     int min = 0;
 
@@ -1383,7 +1383,7 @@ public class TourBookingForm extends BookingForm{
     int iAvailable;
     if (totalSeats > 0) {
       if (betw == 1) {
-        iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
+        iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
 //        iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, _stamp);
         if (iMany > iAvailable) {
           tooMany = true;
@@ -1397,7 +1397,7 @@ public class TourBookingForm extends BookingForm{
           }else {
             fromStamp.addDays(1);
           }
-          iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, addressIds );
+          iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, addressIds );
 //          iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, fromStamp);
           if (iMany > iAvailable) {
               tooMany = true;

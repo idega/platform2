@@ -47,21 +47,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
   private String PARAMETER_DESCRIPTION     = "hd_par_desc";
   private String PARAMETER_NUMBER          = "hd_par_num";
   private String PARAMETER_NUMBER_OF_UNITS = "hd_par_num_un";
-  private String PARAMETER_ACTIVE_FROM     = "hd_par_act_fr";
-  private String PARAMETER_ACTIVE_TO       = "hd_par_act_to";
-  private String PARAMETER_ACTIVE_YEARLY   = "hd_par_act_yrl";
-  private String PARAMETER_ALL_DAYS        = "hd_par_all_days";
-  private String PARAMETER_MONDAYS         = "hd_par_mon";
-  private String PARAMETER_TUESDAYS        = "hd_par_tue";
-  private String PARAMETER_WEDNESDAYS      = "hd_par_wed";
-  private String PARAMETER_THURSDAYS       = "hd_par_thu";
-  private String PARAMETER_FRIDAYS         = "hd_par_fri";
-  private String PARAMETER_SATURDAYS       = "hd_par_sat";
-  private String PARAMETER_SUNDAYS         = "hd_par_sun";
-  private String PARAMETER_DEPARTURE_FROM  = "hd_par_dep_from";
-  private String PARAMETER_DEPARTURE_TIME  = "hd_par_dep_time";
-  private String PARAMETER_ARRIVAL_AT      = "hd_par_arr_at";
-  private String PARAMETER_ARRIVAL_TIME    = "hd_par_arr_time";
+  private String PARAMETER_MAX_PER_UNIT    = "hd_par_max_un";
   private String PARAMETER_DISCOUNT_TYPE   = "hd_par_disc";
   private String PARAMETER_DESIGN_IMAGE_ID = "hd_par_des_img_id";
   private String PARAMETER_USE_IMAGE_ID    = "hd_par_use_img_id";
@@ -106,6 +92,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     }
     String imageId = iwc.getParameter( PARAMETER_DESIGN_IMAGE_ID );
     String numberOfUnits = iwc.getParameter( PARAMETER_NUMBER_OF_UNITS );
+    String maxPerUnit = iwc.getParameter(PARAMETER_MAX_PER_UNIT );
     String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
     String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
 
@@ -130,6 +117,13 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       }
     }
 
+		int iMaxPerUnit = 0;
+		if (maxPerUnit != null) {
+			try {
+				iMaxPerUnit = Integer.parseInt( maxPerUnit);
+			}catch (NumberFormatException n) {
+			}
+		}
 
     int returner = -1;
 
@@ -138,14 +132,14 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     try {
       if ( serviceId == -1 ) {
 //        hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
-        returner = hb.createHotel(_supplier.getID(), iImageId, name, number, description, iNumberOfUnits,true, iDiscountType);
+        returner = hb.createHotel(_supplier.getID(), iImageId, name, number, description, iNumberOfUnits,iMaxPerUnit, true, iDiscountType);
       } else {
         String timeframeId = iwc.getParameter( PARAMETER_TIMEFRAME_ID );
         if ( timeframeId == null ) {
           timeframeId = "-1";
         }
 //        hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
-        returner = hb.updateHotel(serviceId, _supplier.getID(), iImageId, name, number, description, iNumberOfUnits, true, iDiscountType);
+        returner = hb.updateHotel(serviceId, _supplier.getID(), iImageId, name, number, description, iNumberOfUnits, iMaxPerUnit, true, iDiscountType);
         if ( useImageId == null ) {
           ProductEditorBusiness.getInstance().dropImage( _product, true );
         }
@@ -205,6 +199,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       int currentYear = IWTimestamp.RightNow().getYear();
 
       TextInput numberOfUnits = new TextInput( PARAMETER_NUMBER_OF_UNITS );
+      TextInput maxPerUnit = new TextInput( PARAMETER_MAX_PER_UNIT );
 
       DropdownMenu discountType = new DropdownMenu( PARAMETER_DISCOUNT_TYPE );
       discountType.addMenuElement( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT, _iwrb.getLocalizedString( "travel.amount", "Amount" ) );
@@ -243,7 +238,15 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
         Hotel hotel = null;
         try {
           hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(_product.getPrimaryKey());
-          numberOfUnits.setContent(Integer.toString(hotel.getNumberOfUnits()));
+          int iNoUnits = hotel.getNumberOfUnits();
+          int iMaxPerUnit = hotel.getMaxPerUnit();
+          
+          if (iNoUnits >= 0 ) {
+	          numberOfUnits.setContent(Integer.toString(iNoUnits));
+          }
+          if (iMaxPerUnit >= 0 ) {
+	          maxPerUnit.setContent( Integer.toString(iMaxPerUnit));
+          }
         }catch (FinderException fe) {
           System.out.println("[HotelDesigner] HotelBean not available");
         }
@@ -277,6 +280,12 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       noUnitsText.setText( _iwrb.getLocalizedString( "travel.number_of_units", "Number of units" ) );
       table.add( noUnitsText, 1, row );
       table.add( numberOfUnits, 2, row );
+
+      ++row;
+      Text maxPerUnitText = ( Text ) theBoldText.clone();
+      maxPerUnitText.setText( _iwrb.getLocalizedString( "travel.maximum_passegers_per_room", "Maximum passengers per room" ) );
+      table.add( maxPerUnitText, 1, row );
+      table.add( maxPerUnit, 2, row );
 
       ++row;
       Text discountTypeText = ( Text ) theBoldText.clone();

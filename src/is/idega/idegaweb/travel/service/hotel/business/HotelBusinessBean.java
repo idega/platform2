@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.Vector;
 
-
+import com.idega.business.IBOLookup; 
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.*;
 import com.idega.presentation.IWContext;
@@ -36,11 +36,11 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
   public HotelBusinessBean() {
   }
 
-  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, boolean isValid, int discountTypeId) throws Exception{
-    return updateHotel(-1, supplierId, fileId, name, number, description, numberOfUnits, isValid, discountTypeId);
+  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId) throws Exception{
+    return updateHotel(-1, supplierId, fileId, name, number, description, numberOfUnits, maxPerUnit, isValid, discountTypeId);
   }
 
-  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, boolean isValid, int discountTypeId) throws Exception{
+  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId) throws Exception{
     int productId = -1;
 
     if (serviceId == -1) {
@@ -55,12 +55,14 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       /** update hotel */
       hotel = hHome.findByPrimaryKey(new Integer(productId));
       hotel.setNumberOfUnits(numberOfUnits);
+      hotel.setMaxPerUnit( maxPerUnit );
       hotel.store();
     }catch (FinderException fe) {
       /** create hotel */
       hotel = hHome.create();
       hotel.setPrimaryKey(new Integer(productId));
       hotel.setNumberOfUnits(numberOfUnits);
+      hotel.setMaxPerUnit( maxPerUnit );
       hotel.store();
     }
 
@@ -102,15 +104,36 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
       Object obj = null;
       if (obj == null) {
+      	boolean validDate = false;
 	      if (!includePast) {
 	        IWTimestamp now = IWTimestamp.RightNow();
 	        IWTimestamp tNow = new IWTimestamp(now.getDay(), now.getMonth(), now.getYear());
 	        if (!tNow.isLaterThan(stamp)) {
-	        	isDay = true;
-	        }
+	        	validDate = true;
+	      	}
 	      }else {
-	          isDay = true;
+	          validDate = true;
 	      }
+	      
+	      if (validDate) {
+	      	Hotel hotel;
+					try {
+						hotel =	((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey());
+		      	int totalRooms = hotel.getNumberOfUnits();
+		      	if (totalRooms > 0) {
+		      		HotelBooker hBook = (HotelBooker) IBOLookup.getServiceInstance( iwc, HotelBooker.class);
+		      		int manyBookings = hBook.getNumberOfReservedRooms( product.getID(), stamp, null);
+		      		if (totalRooms > manyBookings) {
+		      			isDay = true;
+		      		}
+		        }else {
+		        	isDay = true;	
+		      	}
+			
+					} catch (FinderException e) {
+						e.printStackTrace(System.err);
+					}
+				} 
       }
       else {
         isDay = ((Boolean) obj).booleanValue();

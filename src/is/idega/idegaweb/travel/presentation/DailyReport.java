@@ -869,7 +869,7 @@ public class DailyReport extends TravelManager implements Report{
 	table.setRowColor(row, super.GRAY);
 	prod = (Product) products.get(i);
 	bookings = getBooker(iwc).getBookings(prod.getID(), stamp);
-	count = getBooker(iwc).getNumberOfBookings(prod.getID(), stamp);
+	count = getBooker(iwc).getBookingsTotalCount(prod.getID(), stamp);
 	price =  getBooker(iwc).getBookingPrice(bookings);
 	depTime = getServiceHandler(iwc).getDepartureTime(prod);
 	totalCount += count;

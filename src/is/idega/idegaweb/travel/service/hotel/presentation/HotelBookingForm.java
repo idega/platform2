@@ -7,7 +7,12 @@ import com.idega.block.trade.data.Currency;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import com.idega.business.IBOLookup;
+
+import is.idega.idegaweb.travel.service.hotel.business.HotelBooker;
 import is.idega.idegaweb.travel.service.hotel.business.HotelBusiness;
+import is.idega.idegaweb.travel.service.hotel.data.Hotel;
+import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
+
 import java.rmi.*;
 import java.sql.*;
 import java.util.*;
@@ -18,6 +23,7 @@ import com.idega.block.calendar.business.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.*;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -544,7 +550,7 @@ public class HotelBookingForm extends BookingForm {
   }
 
   public Form getPublicBookingForm(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-    int bookings = getBooker(iwc).getNumberOfBookings(_productId, this._stamp);
+    int bookings = getBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
     int max = 0;
     int min = 0;
 
@@ -1429,6 +1435,108 @@ public class HotelBookingForm extends BookingForm {
     return table;
   }
 
+
+  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
+    boolean tooMany = false;
+
+    int iMany = 0;
+
+    String sBookingId = iwc.getParameter(this.parameterBookingId);
+    int iBookingId = -1;
+
+
+    String sOnline = iwc.getParameter(this.parameterOnlineBooking);
+    boolean onlineOnly = false;
+    if (sOnline != null && sOnline.equals("true")) {
+      onlineOnly = true;
+    }else if (sOnline != null && sOnline.equals("false")) {
+      onlineOnly = false;
+    }
+
+
+    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly);
+    int current = 0;
+    for (int i = 0; i < pPrices.length; i++) {
+      try {
+        current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+      }catch (NumberFormatException n) {
+        current = 0;
+      }
+      iMany += current;
+    }
+
+
+    int serviceId = _service.getID();
+    Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(_service.getPrimaryKey());
+    String fromDate = iwc.getParameter(this.parameterFromDate);
+    String manyDays = iwc.getParameter(this.parameterManyDays);
+    IWTimestamp fromStamp = null;
+    IWTimestamp toStamp = null;
+    int betw = 1;
+    int heildarbokanir = 0;
+    
+    try {
+      fromStamp = new IWTimestamp(fromDate);
+    	heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(serviceId, fromStamp, null);
+      int iManyDays = Integer.parseInt(manyDays);
+      if (iManyDays < 1) betw = 1;
+      else betw = iManyDays;
+    }catch (Exception e) {
+      debug(e.getMessage());
+    }
+
+//    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//    ServiceDay sDay = sDayHome.create();
+
+//    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
+//    if (sDay != null) {
+//      totalSeats = sDay.getMax();
+//    }
+		int totalRooms = hotel.getNumberOfUnits();
+		int maxPerRoom = hotel.getMaxPerUnit();
+		
+
+/**
+ * gera checkid thannig ad thad checki a
+ * totalRooms...
+ * maxPerRoom... */
+
+//    iMany;
+
+		if (iMany > maxPerRoom) {
+		  tooMany = true;
+		  errorDays.add(fromStamp);
+		}
+
+		if (!tooMany) {
+	    int iAvailable;
+	    if (totalRooms > 0) {
+		    iAvailable = totalRooms - heildarbokanir;
+		    System.out.println("iAvail = totalRooms - heildarbokanir ....."+iAvailable+" = "+totalRooms+" - "+heildarbokanir);
+	//	    iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, null );
+			  if (iAvailable <= 0 ) {
+		    	tooMany = true;
+		    	errorDays.add(fromStamp);
+		    }
+	    }
+		}
+
+    if (tooMany && !bookIfTooMany) {
+      return this.errorTooMany;
+    }else {
+      if (saveBookingIfValid) {
+        return saveBooking(iwc);
+      }else {
+        return 0;
+      }
+    }
+  }
+
+
+
+	private HotelBooker getHotelBooker(IWApplicationContext iwac) throws RemoteException {
+    return (HotelBooker) IBOLookup.getServiceInstance(iwac, HotelBooker.class);
+	}
 
   private HotelBusiness getHotelBusiness(IWContext iwc) throws RemoteException{
     return (HotelBusiness) IBOLookup.getServiceInstance(iwc, HotelBusiness.class);
