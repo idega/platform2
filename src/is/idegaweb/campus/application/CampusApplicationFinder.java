@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.9 2001/07/23 10:00:00 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.10 2001/07/25 10:39:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -341,8 +341,8 @@ public abstract class CampusApplicationFinder {
       sql.append(order);
     }
     int count = 0;
-    System.err.println(sql.toString());
-    System.err.println();
+    //System.err.println(sql.toString());
+    //System.err.println();
     try{
       count = new Applied().getNumberOfRecords(sql.toString());
     }
