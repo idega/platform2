@@ -365,7 +365,7 @@ public class Emailer extends Block {
         Link L;
         String tag;
         for (int i = 0; i < tags.length; i++) {
-            tag = ContentParser.getFormattedTag(tags[i]);
+            tag = contentParsable.formatTag(tags[i]);
             L = new Link(Edit.formatText(tag));
             //L.setOnClick("this.form."+prmBody+".value += this.options[this.selectedIndex].value;");
             L.setURL("javascript://");

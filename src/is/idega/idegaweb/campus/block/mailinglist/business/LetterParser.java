@@ -16,7 +16,6 @@ import is.idega.idegaweb.campus.block.allocation.data.Contract;
 
 public class LetterParser implements ContentParsable {
 
-
     public static String APPROVAL = "APPROVAL";
     public static String REJECTION = "REJECTION";
     public static String ALLOCATION = "ALLOCATION";
@@ -164,5 +163,25 @@ public class LetterParser implements ContentParsable {
     public Object getParseObject() {
         return holder;
     }
+
+    public String getDelimiters(){
+      return "[]";
+    }
+
+    /**
+     *  Static method to provide a formatted tag string with [ ] around the value
+     *
+     * @param  tag  Description of the Parameter
+     * @return      The formatted tag value
+     */
+    public static String getFormattedTag(String tag) {
+        return "[" + tag + "]";
+    }
+
+    public String formatTag(String tag){
+      return getFormattedTag(tag);
+    }
+
+
 
 }
