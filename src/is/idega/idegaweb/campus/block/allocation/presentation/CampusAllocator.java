@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.47 2003/06/01 21:46:25 palli Exp $
+ * $Id: CampusAllocator.java,v 1.48 2003/07/24 20:48:10 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.application.presentation.ApplicationFilerWindow;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
@@ -27,13 +28,19 @@ import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.presentation.Campus;
 import is.idega.idegaweb.campus.presentation.CampusProperties;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
 import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.business.BuildingCacher;
@@ -46,6 +53,7 @@ import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -92,6 +100,7 @@ public class CampusAllocator extends Block implements Campus {
 	protected int fontSize = 2;
 	protected boolean fontBold = false;
 	protected String styleAttribute = "font-size: 8pt";
+	private DateFormat dateFormat;
 
 	public String getLocalizedNameKey() {
 		return "allocator";
@@ -120,6 +129,7 @@ public class CampusAllocator extends Block implements Campus {
 	}
 
 	protected void control(IWContext iwc) {
+		dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 		iwrb = getResourceBundle(iwc);
 		iwb = getBundle(iwc);
 		fontSize = 1;
@@ -183,9 +193,63 @@ public class CampusAllocator extends Block implements Campus {
 					deleteAllocation(iwc);
 					Frame.add(getWaitingList(iTypeId, iComplexId, -1, iwc), 1, row);
 				}
-				// get Waitinglist for this type and complex
-				else
+				else if(iwc.isParameterSet("offwaitinglist")){
+					Integer wID = new Integer(iwc.getParameter("offwaitinglist"));
+					Integer wAID = new Integer(iwc.getParameter("wl_appid"));
+					Frame.add(getApplicantInfo(wAID.intValue(), iwc), 1, row);
+					Frame.add(getOffWaitingList(wID),3,row);
+				}
+				else if(iwc.isParameterSet("remove_waitinglist")){
+					Integer wID = new Integer(iwc.getParameter("remove_waitinglist"));
+					try {
+						WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(wID);
+						wl.remove();
+					}
+					catch (IDOLookupException e) {
+						e.printStackTrace();
+					}
+					catch (EJBException e) {
+						e.printStackTrace();
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+					}
+					catch (RemoveException e) {
+						e.printStackTrace();
+					}
 					Frame.add(getWaitingList(iTypeId, iComplexId, -1, iwc), 1, row);
+										row++;
+										Frame.add(getColorButtonInfo(),1,row);
+				}
+				else if(iwc.isParameterSet("reactivate_waitinglist")){
+					Integer wID = new Integer(iwc.getParameter("reactivate_waitinglist"));
+					try {
+						WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(wID);
+						wl.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
+						wl.store();
+					}
+					catch (IDOLookupException e) {
+						e.printStackTrace();
+					}
+					catch (EJBException e) {
+						e.printStackTrace();
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+					}
+					catch (RemoveException e) {
+						e.printStackTrace();
+					}
+					Frame.add(getWaitingList(iTypeId, iComplexId, -1, iwc), 1, row);
+										row++;
+										Frame.add(getColorButtonInfo(),1,row);
+								}
+				// get Waitinglist for this type and complex
+				else{
+					Frame.add(getWaitingList(iTypeId, iComplexId, -1, iwc), 1, row);
+					row++;
+					Frame.add(getColorButtonInfo(),1,row);
+				}
 			}
 			// get type and complex list
 			else
@@ -512,6 +576,10 @@ public class CampusAllocator extends Block implements Campus {
 						Frame.add(getChangeLink(C.getID(), C.getApplicantId().intValue()), col++, row);
 						con_id = C.getID();
 					}
+					// if applicant has requested removal from list
+					else if(WL.getRemovedFromList()){
+						Frame.add(getOffWaitingListLink((Integer)WL.getPrimaryKey(),(Integer)A.getPrimaryKey()),col++,row);
+					}
 					else {
 						Frame.add(getAllocateLink(A.getID()), col++, row);
 					}
@@ -548,6 +616,17 @@ public class CampusAllocator extends Block implements Campus {
 		}
 		return L;
 	}
+	
+	private Link getOffWaitingListLink(Integer waitingListID,Integer applicantID) {
+		Link L = new Link(iwb.getImage("blue.gif"));
+		L.addParameter("offwaitinglist",waitingListID.toString());
+		L.addParameter("wl_appid",applicantID.toString());
+		if (pTypeId != null && pComplexId != null) {
+				L.addParameter(pTypeId);
+				L.addParameter(pComplexId);
+		}
+		return L;
+	}
 
 	private Link getApartmentContractsLink(Text display, int applicant_id, int contract_id, int apartment_id, IWTimestamp from) {
 		Link L = new Link(display);
@@ -571,6 +650,66 @@ public class CampusAllocator extends Block implements Campus {
 			L.addParameter(pComplexId);
 		}
 		return L;
+	}
+	
+	public PresentationObject getOffWaitingList(Integer wID){
+		Form form = new Form();
+		DataTable T = new DataTable();
+		form.add(T);
+		T.addTitle(iwrb.getLocalizedString("remove_from_waitinglist","Remove from waitinglist"));
+		T.setTitlesVertical(true);
+		try {
+			WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(wID);
+			Applicant applicant = ((ApplicantHome)IDOLookup.getHome(Applicant.class)).findByPrimaryKey(wl.getApplicantId());
+			ApartmentType type= BuildingCacher.getApartmentType(wl.getApartmentTypeId().intValue());
+			int row = 1;
+			T.add(formatText(iwrb.getLocalizedString("applicant","Applicant")),1,row);
+			T.add(formatText(applicant.getName()),2,row);
+			row++;
+			T.add(formatText(iwrb.getLocalizedString("apartment_type","Apartment type")),1,row);
+			T.add(formatText(type.getName()),2,row);
+			row++;
+			T.add(formatText(iwrb.getLocalizedString("last_confirmation","Last confirmation")),1,row);
+			if(wl.getLastConfirmationDate()!=null)
+				T.add(formatText(
+				dateFormat.format(
+				wl.getLastConfirmationDate())),2,row);
+			row++;
+			SubmitButton remove = new SubmitButton(iwrb.getLocalizedImageButton("remove","Remove"),"remove_waitinglist",wID.toString());
+			remove.setSubmitConfirm(iwrb.getLocalizedString("confirm_remove_waitinglist","Are you sure you want to remove this ?"));
+			SubmitButton reactivate = new SubmitButton(iwrb.getLocalizedImageButton("reactivate","Reactivate"),"reactivate_waitinglist",wID.toString());
+			T.addButton(remove);
+			T.addButton(reactivate);
+			if (pTypeId != null && pComplexId != null) {
+						form.addParameter(pTypeId.getName(),pTypeId.getValue());
+						form.addParameter(pComplexId.getName(),pComplexId.getValue());
+			}
+			
+			
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return form;
+	}
+	
+	public PresentationObject getColorButtonInfo(){
+			Table T = new Table();
+			int col = 1;
+			T.add(iwb.getImage("green.gif"),col++,1);
+			T.add(iwrb.getLocalizedString("greenbutton_info","Has been allocated"),col++,1);
+			T.add(iwb.getImage("red.gif"),col++,1);
+			T.add(iwrb.getLocalizedString("redbutton_info","Not been allocated"),col++,1);
+			T.add(iwb.getImage("blue.gif"),col++,1);
+			T.add(iwrb.getLocalizedString("bluebutton_info","Wants off this list"),col++,1);
+			
+			return T;
 	}
 
 	private Link getHomeLink() {

@@ -50,7 +50,7 @@ public class CampusContracts extends Block{
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  private int iSubjectId = -1;
+  private int iSubjectId = -1, iGlobalSize =50;
   private String sGlobalStatus = "C", sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1",sORDER = "-1";
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
@@ -64,6 +64,8 @@ public class CampusContracts extends Block{
   protected boolean isAdmin = false;
   private String conPrm = "contract_status";
   private String sessConPrm = "sess_con_status";
+  private String sizePrm = "global_size";
+  private String sessSizePrm = "sess_global_size";
 
   public String getLocalizedNameKey(){
     return "contracts";
@@ -94,6 +96,14 @@ public class CampusContracts extends Block{
     else if(iwc.getSessionAttribute(sessConPrm)!=null){
       this.sGlobalStatus = ((String)iwc.getSessionAttribute(sessConPrm));
     }
+    
+	if(iwc.getParameter(sizePrm)!=null){
+		 this.iGlobalSize= Integer.parseInt(iwc.getParameter(sizePrm));
+		 iwc.setSessionAttribute(sessConPrm,new Integer(iGlobalSize));
+	   }
+	   else if(iwc.getSessionAttribute(sessSizePrm)!=null){
+		 this.iGlobalSize = ((Integer)iwc.getSessionAttribute(sessSizePrm)).intValue();
+	   }
 
     if(isAdmin){
         add(statusForm());
@@ -138,10 +148,12 @@ public class CampusContracts extends Block{
     //DropdownMenu cat = drpLodgings(((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy(),prmArray[3],"--",sValues[3]);
     //DropdownMenu type = drpLodgings(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy(),prmArray[4],"--",sValues[4]);
     DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
+    DropdownMenu sizeMenu = sizeDrop(sizePrm,iGlobalSize);
     Edit.setStyle(status);
     Edit.setStyle(complex);
     Edit.setStyle(building);
     Edit.setStyle(floor);
+	Edit.setStyle(sizeMenu);
     //Edit.setStyle(cat);
     //Edit.setStyle(type);
     Edit.setStyle(order);
@@ -157,20 +169,35 @@ public class CampusContracts extends Block{
      // T.add(Edit.formatText(iwrb.getLocalizedString("category","Category")),4,1);
      // T.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),5,1);
       T.add(Edit.formatText(iwrb.getLocalizedString("order","Order")),5,1);
+	T.add(Edit.formatText(iwrb.getLocalizedString("viewsize","View size")),6,1);
       T.add(status,1,2);
       T.add(complex,2,2);
       T.add(building,3,2);
       T.add(floor,4,2);
+	T.add(order,5,2);
+		T.add(sizeMenu,6,2);
       //T.add(cat,4,2);
       //T.add(type,5,2);
-      T.add(order,5,2);
+    
       SubmitButton get = new SubmitButton("conget",iwrb.getLocalizedString("get","Get"));
       Edit.setStyle(get);
-      T.add(get,6,2);
+      T.add(get,7,2);
 
     myForm.add(T);
     return myForm;
   }
+  
+  private DropdownMenu sizeDrop(String name, int  selected) {
+			  DropdownMenu drp = new DropdownMenu(name);
+			  drp.addMenuElement("10");
+			  drp.addMenuElement("20");
+			  drp.addMenuElement("50");
+			  drp.addMenuElement("100");
+			  drp.addMenuElement("500");
+			  drp.addMenuElement("-1","All");
+			  drp.setSelectedElement(selected);
+			  return drp;
+		  }
 
   private DropdownMenu drpLodgings(IDOLegacyEntity lodgings,String name,String display,String selected) {
     IDOLegacyEntity[] lods = new IDOLegacyEntity[0];
@@ -280,7 +307,7 @@ public class CampusContracts extends Block{
     int row = 1;
     int col = 1;
     DataTable T = new DataTable();
-    T.addTitle(iwrb.getLocalizedString("contracts","Contracts"));
+   
     T.setTitlesHorizontal(true);
     T.setWidth("100%");
     T.add(Edit.formatText("#"),col++,1);
@@ -309,6 +336,11 @@ public class CampusContracts extends Block{
     if(L!=null){
 
       int len = L.size();
+      if(iGlobalSize>0&& iGlobalSize<=len){
+      	len = iGlobalSize;
+      }
+	  T.addTitle(iwrb.getLocalizedString("contracts","Contracts")+" "+iwrb.getLocalizedString("showing","showing")
+				  +" "+len+" "+iwrb.getLocalizedString("of","of")+" "+L.size());
 
       StringBuffer sbIDs = new StringBuffer();
       for (int i = 0; i < len; i++) {
