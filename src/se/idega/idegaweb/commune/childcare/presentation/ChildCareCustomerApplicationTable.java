@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.21 2003/04/23 17:08:16 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.22 2003/04/24 14:06:07 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -45,7 +45,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 //	public final static String STATUS_UBEH = "UBEH";
 	public final static String STATUS_BVJD = "BVJD";
 	public final static String STATUS_PREL = "PREL";
+	public final static String STATUS_TYST = "TYST";
+	
 	final static String REQ_BUTTON = "REQ_BUTTON"; //Session variable for disabling used request-buttons
+	final static String DELETED_APPLICATIONS = "DELETED_APPLICATIONS"; //Session variable for rejected and cancelled applications
 	
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();	
 	
@@ -63,7 +66,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Table layoutTbl = new Table(3, 5);
 		//layoutTbl.mergeCells(1, 1, 2, 1); //merging upper two cells
 
-		Collection applications = findApplications(iwc); 
+		Collection applications = findApplications(iwc);
 				
 		switch(parseAction(iwc)){
 			case CCConstants.ACTION_SUBMIT_1: 
@@ -127,6 +130,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			default: 
 				/**@todo: What should happen here? */ 
+				iwc.removeSessionAttribute(DELETED_APPLICATIONS);				
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications)); 		
 				
 
@@ -134,6 +138,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		form.add(layoutTbl);		
 		add(form);		
+		
 		
 	}
 
@@ -211,16 +216,24 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Iterator i = l.iterator();
 		while(i.hasNext()){
 			String[] status = (String[]) i.next(); 
+			System.out.println("handleKeepQueueStatus: " + status[0] + " " + status[1]);
 			if (status[0] != null){
 				if (status[1] != null && status[1].equals(CCConstants.NO)){
-					
-					getChildCareBusiness(iwc).removeFromQueue(new Integer(status[0]).intValue(), iwc.getCurrentUser());
-//					getChildCareBusiness(iwc).rejectOffer(new Integer(status[0]).intValue(), iwc.getCurrentUser());
-					//ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(status[0]);
-					//application.setStatus(CaseBMPBean.STATE_DELETED);
+//					getChildCareBusiness(iwc).removeFromQueue(new Integer(status[0]).intValue(), iwc.getCurrentUser());
+					ChildCareApplication app = getChildCareBusiness(iwc).getApplication(new Integer(status[0]).intValue());
+					app.setApplicationStatus('Z');
+					app.setStatus("TYST");
+					System.out.println("Deleted: " + app.getNodeID() + " " + app.getStatus());
+					app.store();	
+					System.out.println("Status: " + getChildCareBusiness(iwc).getApplication(app.getNodeID()).getStatus());	
+
 				}
 			}
 		}
+		
+		//delete all removed application from session
+		iwc.removeSessionAttribute(DELETED_APPLICATIONS);
+
 	}
 	
 	/**
@@ -242,20 +255,21 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				ChildCareApplication application = childCarebusiness.getApplicationByPrimaryKey(status._appid);
 		
 				if(status.equals(CCConstants.YES)) {
-//					System.out.println("Accepting application.");
+					System.out.println("Accepting application:" + application.getNodeID() + " " + application.getChoiceNumber());
 					getChildCareBusiness(iwc).parentsAgree(
 					    Integer.valueOf(status._appid).intValue(), 
 						application.getOwner(),
 						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT), 
 						getAcceptedMessage(iwc, application)
-						); 
-						acceptedChoiceNumber = status.getChoiceNumber();
+					); 
+					acceptedChoiceNumber = application.getChoiceNumber();
 						
 				} else if(status.equals(CCConstants.NO_NEW_DATE)) {
 					getChildCareBusiness(iwc).rejectOfferWithNewDate(
 					    Integer.valueOf(status._appid).intValue(), 
 					    application.getOwner(),
 					    status._date);
+					    
 //						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), 
 //						getRejectedMessage(iwc, application),
 //						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
@@ -267,6 +281,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					getChildCareBusiness(iwc).rejectOffer(
 						Integer.valueOf(status._appid).intValue(), 
 					    application.getOwner()); 
+					    
+					addDeletedAppToSession(iwc, application);
 
 //						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), 
 //						getRejectedMessage(iwc, application),
@@ -281,13 +297,41 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		//if (true) {	
 			  Collection applications = findApplications(iwc); 
 			  Iterator allaps = applications.iterator();
+			  int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
+
 			  while(allaps.hasNext()){
 				  ChildCareApplication app = (ChildCareApplication) allaps.next();
-				  if (app.getChoiceNumber() > acceptedChoiceNumber){
+				  
+				  if (app.getChoiceNumber() > deleteFromChoice || 
+				  	(acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))){
 					  childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner()); 
+					  app.setApplicationStatus(childCarebusiness.getStatusCancelled());
+
+					addDeletedAppToSession(iwc, app);
+
 				  }
 			  }
 		//}
+	}
+	
+	private boolean isAccepted(ChildCareApplication application) throws RemoteException{
+		return 	application.getStatus().equals(STATUS_PREL) && application.getApplicationStatus() == childCarebusiness.getStatusParentsAccept();
+	}	
+
+
+
+
+
+	private void addDeletedAppToSession (IWContext iwc,	ChildCareApplication application) throws RemoteException
+	{
+		Collection deletedApps = (Collection)iwc.getSessionAttribute(DELETED_APPLICATIONS);
+		if (deletedApps == null){
+			deletedApps = new ArrayList();
+			iwc.setSessionAttribute(DELETED_APPLICATIONS, deletedApps);
+		}
+		application.setApplicationStatus('Z');
+		application.setStatus("TYST");
+		deletedApps.add(application);
 	}
 
 
@@ -327,8 +371,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				iwc.getParameter(CCConstants.ACCEPT_OFFER + i),
 				iwc.getParameter(CCConstants.NEW_DATE + i + "_day"),
 				iwc.getParameter(CCConstants.NEW_DATE + i + "_month"),
-				iwc.getParameter(CCConstants.NEW_DATE + i + "_year"),
-				i));
+				iwc.getParameter(CCConstants.NEW_DATE + i + "_year")));
 			i++;
 		}
 		
@@ -340,10 +383,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Date _date;
 		int _choiceNumber;
 		
-		AcceptedStatus(String appId, String status, String day, String month, String year, int choiceNumber){
+		AcceptedStatus(String appId, String status, String day, String month, String year){
 			_appid = appId;
 			_status = status;
-			_choiceNumber = choiceNumber;
 	
 			if (day != null && month != null && year != null) {
 				try{
@@ -384,9 +426,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			return _status != null;
 		}
 		
-		int getChoiceNumber(){
-			return _choiceNumber;
-		}
 	}
 	
 	/**
@@ -510,7 +549,25 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				childId = (String) iwc.getSessionAttribute(CHILD_ID);
 			}
 			
+			//Remove canceled and rejected applications				
 			applications = getChildCareBusiness(iwc).getApplicationsForChild(Integer.parseInt(childId));
+			Iterator i = applications.iterator();
+			while(i.hasNext()){
+				ChildCareApplication app = (ChildCareApplication) i.next();
+				System.out.println("findApplications - Status: " + app.getStatus()); 
+				if (app.getApplicationStatus() == getChildCareBusiness(iwc).getStatusCancelled() ||
+					app.getApplicationStatus() == getChildCareBusiness(iwc).getStatusRejected() ||
+					app.getStatus().equals(STATUS_TYST)){
+						i.remove();
+				}				
+			}
+					
+			//Add canceled and removed applications from this session	
+			Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);
+			if (deletedApps != null){		
+				applications.addAll(deletedApps);
+			}
+			
 
 		} catch (RemoteException e) {
 			e.printStackTrace();

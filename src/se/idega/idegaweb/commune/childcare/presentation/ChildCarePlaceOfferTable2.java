@@ -73,22 +73,33 @@ class ChildCarePlaceOfferTable2 extends Table{
 			System.out.println("offerChoiceNr: " + offerChoiceNr);
 			
 			//No row is disabled if the first choice on the list is offered
-			boolean disable = app.getChoiceNumber() > offerChoiceNr && offerChoiceNr != 1;
+//			boolean disable = app.getApplicationStatus() == _page.childCarebusiness.getStatusCancelled() ||  
+//				app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected() || 
+//				(app.getChoiceNumber() > offerChoiceNr && offerChoiceNr != 1);
+//			boolean disable = app.getChoiceNumber() > offerChoiceNr && offerChoiceNr != 1;
 			boolean selectOne = offerChoiceNr == 1;
 					
 			String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
 	
 			resetOtherScript += addToTable(row, id, app.getChoiceNumber() + ": " + name 
 				+ _page.getDebugInfo(app)		
-				, offerText, prognosis, offer, disable, selectOne);
+				, offerText, prognosis, offer, isCancelledOrRejected(app), selectOne);
 	
 			row++;
 		}
 		
 		Script script = new Script("javascript");
 		script.setFunction("resetOther", resetOtherScript += "\n}");
-		add(script);
+//The script is not in use anymore...
+//		add(script);
 	}
+	
+	
+	private boolean isCancelledOrRejected(ChildCareApplication application) throws RemoteException{
+		return 	application.getStatus().equals(_page.STATUS_TYST) 
+		&& (application.getApplicationStatus() == _page.childCarebusiness.getStatusCancelled()
+		|| application.getApplicationStatus() == _page.childCarebusiness.getStatusRejected());
+	}	
 	
 	/**
 	 * Method addToTable.

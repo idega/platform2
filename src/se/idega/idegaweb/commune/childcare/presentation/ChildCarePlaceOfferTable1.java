@@ -91,12 +91,13 @@ class ChildCarePlaceOfferTable1 extends Table{
 			boolean disableReqBtn = iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID()) != null;
 			
 			
+			
 			//Adding row to the table
 			validateDateScript += addToTable(row, id, app.getChoiceNumber() + ": " + name +
 			    _page.getDebugInfo(app)
 				, offerText, prognosis, offer && ! offerPresented, 
 				offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected(),
-				disableReqBtn);
+				disableReqBtn, isAccepted(app), isCancelledOrRejected(app));
 				
 			if (offer){
 				offerPresented = true;
@@ -122,7 +123,15 @@ class ChildCarePlaceOfferTable1 extends Table{
 
 		
 	}
-
+	
+	private boolean isAccepted(ChildCareApplication application) throws RemoteException{
+		return 	application.getStatus().equals(_page.STATUS_PREL) && application.getApplicationStatus() == _page.childCarebusiness.getStatusParentsAccept();
+	}
+	private boolean isCancelledOrRejected(ChildCareApplication application) throws RemoteException{
+		return 	application.getStatus().equals(_page.STATUS_TYST) 
+		&& (application.getApplicationStatus() == _page.childCarebusiness.getStatusCancelled()
+		|| application.getApplicationStatus() == _page.childCarebusiness.getStatusRejected());
+	}
 	
 	public String getOnSubmitHandler(){
 		return _onSubmitHandler;
@@ -136,18 +145,26 @@ class ChildCarePlaceOfferTable1 extends Table{
 	 * @param status
 	 * @param prognosis
 	 */
-	private String addToTable(int row, String id, String name, String status, String prognosis, boolean presentOffer, boolean disable, boolean disableReqBtn) {
+	private String addToTable(int row, String id, String name, String offerText, String prognosis, boolean presentOffer, boolean disable, boolean disableReqBtn, boolean isAccepted, boolean isCancelled) {
 		int index = row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id)); 
-		String textColor = disable ? "gray":"black";
+		String textColor = "black";
+		if (isCancelled){
+			textColor = "red";
+		}else if (disable){
+			textColor = "grey";
+		}
 
 		if (name != null){
 			Text t = _page.getSmallText(name);
+			if (isAccepted){
+				t.setBold();
+			}
 			t.setStyleAttribute("color:" + textColor);
 			add(t, 1, row);
 		}
-		if (status != null){
-			Text t = _page.getSmallText(status);
+		if (offerText != null){
+			Text t = _page.getSmallText(offerText);
 			t.setStyleAttribute("color:" + textColor);
 			add(t, 2, row);
 		}
