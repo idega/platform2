@@ -542,14 +542,14 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		from.setSecond(0);
 		sql.appendAnd();
 		sql.append("p.created");
-		sql.append(" >= '");
-		sql.append(from.toSQLString());
-		sql.append("'");
+		sql.append(" >= ");
+		sql.append(from.getTimestamp());
+		sql.append("");
 		sql.appendAnd();
 		sql.append("p.created");
-		sql.append(" <= '");
-		sql.append(to.toSQLString());
-		sql.append("' ");
+		sql.append(" <= ");
+		sql.append(to.getTimestamp());
+		sql.append(" ");
 		sql.appendOrderBy("p.created");
 		
 //		System.out.println("########### SQL:" + sql.toString() + ".");
@@ -586,14 +586,14 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		from.setSecond(0);
 		sql.appendAnd();
 		sql.append("p.created");
-		sql.append(" >= '");
-		sql.append(from.toSQLString());
-		sql.append("'");
+		sql.append(" >= ");
+		sql.append(from.getTimestamp());
+		sql.append(" ");
 		sql.appendAnd();
 		sql.append("p.created");
-		sql.append(" <= '");
-		sql.append(to.toSQLString());
-		sql.append("' ");
+		sql.append(" <= ");
+		sql.append(to.getTimestamp());
+		sql.append(" ");
 		sql.appendOrderBy("p.created");
 			
 	//	System.out.println("########### SQL:" + sql.toString() + ".");
