@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -68,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/12 11:46:40 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/13 11:18:39 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.100 $
+ * @version $Revision: 1.101 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -87,7 +88,17 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	// localization keys!!!
 	private static final String OPPEN_VERKSAMHET = "sch_type.school_type_oppen_verksamhet";
 	private static final String FRITIDSKLUBB = "sch_type.school_type_fritidsklubb";
+	
 	private static final String FRITIDSKLUBB_YEAR_PREFIX = "Fr";
+	private static final HashSet validFritidsklubbYears = new HashSet();
+	{
+		validFritidsklubbYears.add("4");
+		validFritidsklubbYears.add("5");
+		validFritidsklubbYears.add("6");
+		validFritidsklubbYears.add("S4");
+		validFritidsklubbYears.add("S5");
+		validFritidsklubbYears.add("S6");
+	}
 
 	public PaymentThreadSchool(Date month, IWContext iwc) {
 		super(month, iwc);
@@ -326,7 +337,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			SchoolType schoolType = null;
 			//Find the oppen verksamhet and fritidsklubb
 			try {
-				int schoolYear = Integer.parseInt(schoolClassMember.getSchoolYear().getName());
+				String SchoolYearName = schoolClassMember.getSchoolYear().getName();
+				int schoolYear = Integer.parseInt(SchoolYearName);
 
 				if (schoolYear <= 3) {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
@@ -337,7 +349,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						}
 					}
 				}
-				else if (schoolYear <= 6) {
+				else if (validFritidsklubbYears.contains(SchoolYearName)) {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)) {
@@ -491,26 +503,35 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				RegulationSpecType regSpecType = regulation.getRegSpecType();
 				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType(),1);
 				errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey(),1);
-				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase((getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey())){
+				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(
+						(getRegulationSpecTypeHome().findByRegulationSpecType(
+								postingDetail.getRuleSpecType())).getLocalizationKey())){
 					createNewErrorMessage(errorRelated, "invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb");
 				}
-//				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
-				int schoolYearInt = Integer.parseInt(schoolClassMember.getSchoolYear().getName());
 				
-				SchoolYear SchoolYear;
+				String schoolYearName = schoolClassMember.getSchoolYear().getName();
+				int len = schoolYearName.length();
 				try {
-					SchoolYear = ((SchoolYearHome) IDOLookup.getHome(SchoolYear.class)).
+					errorRelated.append("Schoolyear" + schoolYearName);
+					int schoolYearInt = Integer.parseInt(schoolYearName.substring(len-1,len));
+					SchoolYear schoolYear = ((SchoolYearHome) IDOLookup.getHome(SchoolYear.class)).
 							findByYearName(FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					errorRelated.append("Fritidsklubb schoolyear" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					
-					String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer)SchoolYear.getPrimaryKey()).intValue());
+					String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, 
+							((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, 
+							((Integer)schoolYear.getPrimaryKey()).intValue());
 				
-					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
+					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
+							placementTimes.getMonths(), school);
 					errorRelated.append("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName(),1);
 					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 				} catch (FinderException e1) {
 					e1.printStackTrace();
 					createNewErrorMessage(errorRelated, "invoice.CouldNotFindSchoolYearForFritidsklubb");
+				} catch (NumberFormatException e1) {
+					e1.printStackTrace();
+					createNewErrorMessage(errorRelated, "invoice.CouldNotParseSchoolYearForFritidsklubb");
 				}
 			}
 			catch (BruttoIncomeException e) {
@@ -542,7 +563,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				Regulation regulation = (Regulation) i.next();
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions,placementTimes);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-//				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 				String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
@@ -650,25 +670,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 
-	/**
-	 * Creates all the invoice headers, invoice records, payment headers and
-	 * payment records for the Regular payments
-	 */
-	/*
-	 * protected void regularPayment() { PostingDetail postingDetail = null; try {
-	 * //Go through all the regular payments for (Iterator i =
-	 * getRegularPayments().iterator(); i.hasNext();) { RegularPaymentEntry
-	 * regularPaymentEntry = (RegularPaymentEntry) i.next(); postingDetail = new
-	 * PostingDetail(regularPaymentEntry); PlacementTimes placementTimes =
-	 * calculateTime(regularPaymentEntry.getFrom(), regularPaymentEntry.getTo());
-	 * createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(),
-	 * regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(),
-	 * regularPaymentEntry.getSchool()); } } catch (Exception e) {
-	 * e.printStackTrace(); if (postingDetail != null) {
-	 * createNewErrorMessage(postingDetail.getTerm(), "payment.DBSetupProblem"); }
-	 * else { createNewErrorMessage("payment.severeError",
-	 * "payment.DBSetupProblem"); } } }
-	 */
 	private ArrayList getConditions(SchoolClassMember schoolClassMember, Provider provider) {
 		ArrayList conditions = new ArrayList();
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
