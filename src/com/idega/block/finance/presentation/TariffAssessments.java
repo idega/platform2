@@ -51,7 +51,7 @@ public class TariffAssessments extends Finance {
 
   private int iCashierId = 1;
   private static String prmGroup = "tass_grp";
-  private int iCategoryId = -1;
+//  private int iCategoryId = -1;
 
   private StatusBar status ;
 
@@ -69,11 +69,12 @@ public class TariffAssessments extends Finance {
   }
 
   protected void control(IWContext iwc){
-    if(isAdmin){
-      iCategoryId = Finance.parseCategoryId(iwc);
+    if(isAdmin){    	
+//      iCategoryId = Finance.parseCategoryId(iwc);
       int iGroupId = -1;
       //List groups = FinanceFinder.getInstance().listOfTariffGroupsWithHandlers(iCategoryId);
       List groups = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
+      System.out.println("groups.size() = " + groups.size());
       TariffGroup group = null;
       if(iwc.isParameterSet(prmGroup))
         iGroupId = Integer.parseInt(iwc.getParameter(prmGroup));
@@ -121,8 +122,9 @@ public class TariffAssessments extends Finance {
         T.add(Edit.headerText(iwrb.getLocalizedString("tariff_assessment","Tariff assessment"),3),1,1);
         //T.add(status,1,1);
         T.add(getGroupLinks(iCategoryId,iGroupId,groups),1,2);
-        if(group != null)
+        if(group != null) {
           T.add(makeLinkTable(  1,iCategoryId,iGroupId),1,3);
+        }
         T.add(MO,1,4);
         add(T);
 
