@@ -31,7 +31,7 @@ import com.idega.util.IWTimestamp;
 /**
  * @author laddi
  */
-public class ChildCareContractPlacementBusinessBean extends IBOServiceBean {
+public class ChildCareContractPlacementBusinessBean extends IBOServiceBean implements ChildCareContractPlacementBusiness {
 
 	public void updateMissingPlacements() {
 		System.out.println("[ContractSchoolPlacementUpdate]: Beginning updating applications...");
