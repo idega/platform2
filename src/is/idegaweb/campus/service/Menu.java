@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.2 2001/06/13 12:45:37 aron Exp $
+ * $Id: Menu.java,v 1.3 2001/07/11 11:55:49 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -113,7 +113,7 @@ public class Menu extends JModuleObject{
     LinkTable.add(link7,1,7);
 
     LinkTable.add(new Image("/pics/menu/redtab.gif","",iWidth,iHeight),1,8);
-    LinkTable.add(new Image("/pics/menu/idegaweb.gif","",iWidth,39),1,9);
+    LinkTable.add(new Image("/pics/menu/idegaweb.gif",""),1,9);
 
     Title = getT();
 
