@@ -812,7 +812,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(Integer.parseInt(providerId));
 						
-		//todo: (Roar) localize
+		//TODO: (Roar) localize
 		String prognosisText = prognosis == null ? localize("ccpqw_no_prognosis", "No prognosis available") :
 			localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ "  " +
 			localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + "  " +
@@ -1015,7 +1015,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			if (table != null && table.getRows() > 1){
 				return table;			
 			} else {
-				//todo: (Roar) Fungerer ikke...
+				//TODO: (Roar) Not working...
 				((Window) getParentObject()).setWidth(700);
 				((Window) getParentObject()).setHeight(400);
 				return initSignContract(iwc);
@@ -1063,7 +1063,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			}
 		
 			if (table != null){
-				SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT)));
+				HiddenInput action = new HiddenInput(PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT));
+				table.add(action);
+				SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit")));
 				table.add(submit, 1, row);
 				table.add(Text.getNonBrakingSpace(), 1, row);
 				table.add(close, 1, row);
@@ -1185,6 +1187,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (restrict != null) {
 			restrictDates = Boolean.valueOf(restrict).booleanValue();
 		}
+		
+		//todo:(TODO) Remove debug code:
+		System.out.println("Method: " + _method);
+		System.out.println("Action: " + _action);
+		System.out.println("App id: " + _applicationID);
 	}
 	
 	private void alterCareTime(IWContext iwc) throws RemoteException {
