@@ -21,9 +21,11 @@ import com.idega.presentation.PresentationObject;
  */
 public class NBSSigningApplet extends PresentationObject {
 	NBSMessageHttp _nbsMessageHttp = null;
+	
+	private final static String BIDT_JAR_PATH_PROPERTY = "bidt_jar_path";	
 
-	//TODO: (Roar) the jar file chould be stored in the bundle		
-	private final static String JAR_ARCHIVE =
+	//TODO: (Roar) the jar file should be stored in the bundle		
+	private final static String DEFAULT_JAR_ARCHIVE =
 		"/nacka/archive/cbt_bidt_2_3_11.jar";
 
 	public NBSSigningApplet(NBSMessageHttp nbsMessageHttp) {
@@ -46,7 +48,7 @@ public class NBSSigningApplet extends PresentationObject {
 		html =
 			html.substring(0, start)
 				+ " archive=\""
-				+ JAR_ARCHIVE
+				+ getJarFilepath(iwc)
 				+ "\" "
 				+ html.substring(end + 5);
 
@@ -71,5 +73,12 @@ public class NBSSigningApplet extends PresentationObject {
 				+ html.substring(start);
 
 		print(html);
+	}
+	
+	private String getJarFilepath(IWContext iwc){
+		String path =  getBundle(iwc).getProperty(BIDT_JAR_PATH_PROPERTY);
+		System.out.println("Jar file path: " + path);
+		return path != null ? path : DEFAULT_JAR_ARCHIVE;		
+		
 	}
 }
