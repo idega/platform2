@@ -34,6 +34,7 @@ import dori.jasper.engine.JasperManager;
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.JasperReport;
 import dori.jasper.engine.design.JasperDesign;
+import dori.jasper.engine.export.JRHtmlExporter;
 import dori.jasper.engine.export.JRXlsExporter;
 import dori.jasper.engine.export.JRXlsExporterParameter;
 
@@ -86,14 +87,16 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     try {
 		JasperExportManager.exportReportToHtmlFile(print, path);
 		/* Not needed since jasper 0.5
+		 * well maybe it is
+		 */
 		  JRHtmlExporter exporter = new JRHtmlExporter();
 			//to handle icelandic in html
 			//saw this in the JRHTMLExport of jasperreports	
-		  //exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING,"ISO-8859-1");
+		  exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING,"iso-8859-1");
 		  exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
 		  exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, path);
 		    
-		  exporter.exportReport();*/
+		  exporter.exportReport();
     }
     catch (JRException ex)  {
       System.err.println("[ReportBusiness]: Jasper print could not be generated.");
