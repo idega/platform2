@@ -17,7 +17,7 @@ public abstract class QueryConstants {
 	// used for adding a counter to a name if the name is not unique
 	// e.g. reykjavik (already existing) -> reykjavik+COUNTER_TOKEN+1 
 	public final static String COUNTER_TOKEN = "_";
-	public final static int MAX_NUMBER_OF_ROWS_IN_RESULT =  200;
+	public final static int MAX_NUMBER_OF_ROWS_IN_RESULT =  2500; //previous value was 200. Increased after some optimizations
 	public final static int MAX_LENGTH_TABLE_NAME = 30;
 	public final static String QUERY_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	public final static String LOCALIZATION_CONDITION_TYPE_PREFIX = "conditions.";
