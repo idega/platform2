@@ -38,6 +38,17 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 	}
 
 	/* (non-Javadoc)
+	 * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
+	 */
+	public Class getPrimaryKeyClass() {
+		return StrokesPK.class;
+	}
+
+	protected boolean doInsertInCreate() {
+		return true;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
@@ -130,18 +141,13 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 		setColumn(COLUMN_HOLE_ID, hole);
 	}
 	
-	public Object ejbFindByPrimaryKey(Object scorecardID, Object holeID) throws FinderException {
-		return ejbFindStrokesByScorecardAndHole(scorecardID, holeID);
+	public Object ejbFindByPrimaryKey(StrokesPK primaryKey) throws FinderException {
+		return super.ejbFindByPrimaryKey(primaryKey);
 	}
 	
-	public Object ejbCreate(Object scorecardID, Object holeID) throws CreateException {
-		setScorecardID(scorecardID);
-		setHoleID(holeID);
+	public Object ejbCreate(StrokesPK primaryKey) throws CreateException {
+		setPrimaryKey(primaryKey);
 		return super.ejbCreate();
-	}
-
-	protected void ejbPostCreate(Object scorecardID, Object holeID) {
-		//does nothing
 	}
 
 	//Find methods
@@ -149,7 +155,7 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 		IDOQuery query = idoQuery();
 		query.appendSelect().append("s.*").appendFrom().append(getEntityName()).append(" s,").append(HoleBMPBean.ENTITY_NAME).append(" h");
 		query.appendWhereEquals("s." + COLUMN_HOLE_ID, "h." + COLUMN_HOLE_ID).appendAndEquals(COLUMN_SCORECARD_ID, scorecardID).appendOrderBy("h." + HoleBMPBean.COLUMN_NUMBER);
-		
+
 		return idoFindPKsByQuery(query);
 	}
 	

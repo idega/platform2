@@ -20,9 +20,9 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -32,7 +32,7 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 
 	protected CourseHome getCourseHome() {
 		try {
-			return (CourseHome) IBOLookup.getServiceInstance(getIWApplicationContext(), Course.class);
+			return (CourseHome) IDOLookup.getHome(Course.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -41,7 +41,7 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 
 	protected HoleHome getHoleHome() {
 		try {
-			return (HoleHome) IBOLookup.getServiceInstance(getIWApplicationContext(), Hole.class);
+			return (HoleHome) IDOLookup.getHome(Hole.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -50,7 +50,7 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 
 	protected TeeHome getTeeHome() {
 		try {
-			return (TeeHome) IBOLookup.getServiceInstance(getIWApplicationContext(), Tee.class);
+			return (TeeHome) IDOLookup.getHome(Tee.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -59,7 +59,7 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 
 	protected TeeColorHome getTeeColorHome() {
 		try {
-			return (TeeColorHome) IBOLookup.getServiceInstance(getIWApplicationContext(), TeeColor.class);
+			return (TeeColorHome) IDOLookup.getHome(TeeColor.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());

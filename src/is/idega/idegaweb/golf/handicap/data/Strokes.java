@@ -8,6 +8,7 @@ public interface Strokes extends com.idega.data.IDOEntity
  public is.idega.idegaweb.golf.course.data.Hole getHole();
  public java.lang.Object getHoleID();
  public int getPoints();
+ public java.lang.Class getPrimaryKeyClass();
  public int getPutts();
  public is.idega.idegaweb.golf.handicap.data.Scorecard getScorecard();
  public java.lang.Object getScorecardID();

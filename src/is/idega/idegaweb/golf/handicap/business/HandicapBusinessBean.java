@@ -9,6 +9,7 @@ import is.idega.idegaweb.golf.handicap.data.Scorecard;
 import is.idega.idegaweb.golf.handicap.data.ScorecardHome;
 import is.idega.idegaweb.golf.handicap.data.Strokes;
 import is.idega.idegaweb.golf.handicap.data.StrokesHome;
+import is.idega.idegaweb.golf.handicap.data.StrokesPK;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
@@ -18,9 +19,9 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
 
 /**
  * @author laddi
@@ -29,7 +30,7 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 
 	protected ScorecardHome getScorecardHome() {
 		try {
-			return (ScorecardHome) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Scorecard.class);
+			return (ScorecardHome) IDOLookup.getHome(Scorecard.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -38,7 +39,7 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 
 	protected StrokesHome getStrokesHome() {
 		try {
-			return (StrokesHome) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Strokes.class);
+			return (StrokesHome) IDOLookup.getHome(Strokes.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -53,8 +54,13 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 		return getScorecardHome().findAllByUser(userID);
 	}
 
-	public Collection getStrokes(Object scorecardID) throws FinderException {
+	public Collection getStrokesByScorecard(Object scorecardID) throws FinderException {
 		return getStrokesHome().findAllByScorecard(scorecardID);
+	}
+	
+	public Strokes getStrokes(Object scorecardID, Object holeID) throws FinderException {
+		StrokesPK key = new StrokesPK(scorecardID, holeID);
+		return getStrokesHome().findByPrimaryKey(key);
 	}
 
 	public int getCourseHandicap(float handicap, Tee tee) {
@@ -101,16 +107,22 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 		return true;
 	}
 	
+	private Strokes createStrokes(Object scorecardID, Object holeID) throws CreateException {
+		StrokesPK key = new StrokesPK(scorecardID, holeID);
+		return getStrokesHome().create(key);
+	}
+	
 	public boolean storeStrokes(Object scorecardID, Object holeID, int strokes, int points, int putts, boolean hitFairway, boolean greenInRegulation) {
 		Strokes stroke = null;
 		try {
-			stroke = getStrokesHome().findStrokesByScorecardAndHole(scorecardID, holeID);
+			stroke = getStrokes(scorecardID, holeID);
 		}
 		catch (FinderException fe) {
 			try {
-				stroke = getStrokesHome().create(scorecardID, holeID);
+				stroke = createStrokes(scorecardID, holeID);
 			}
 			catch (CreateException ce) {
+				ce.printStackTrace(System.err);
 				return false;
 			}
 		}

@@ -3,6 +3,13 @@
  */
 package is.idega.idegaweb.golf.presentation;
 
+import java.rmi.RemoteException;
+
+import is.idega.idegaweb.golf.handicap.business.HandicapBusiness;
+
+import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.Block;
 
 /**
@@ -17,5 +24,14 @@ public class GolfBlock extends Block {
 	 */
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	protected HandicapBusiness getHandicapBusiness(IWApplicationContext iwac) {
+		try {
+			return (HandicapBusiness) IBOLookup.getServiceInstance(iwac, HandicapBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 }

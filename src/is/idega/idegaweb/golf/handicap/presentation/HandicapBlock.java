@@ -3,6 +3,12 @@
  */
 package is.idega.idegaweb.golf.handicap.presentation;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.presentation.IWContext;
+
+import is.idega.idegaweb.golf.handicap.data.Strokes;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 /**
