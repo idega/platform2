@@ -711,7 +711,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				}
 			}
 			
-			Collection records = getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(reportId);
+/*			Collection records = getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(reportId);
 			Iterator iter2 = records.iterator();
 
 			while (iter2.hasNext()) {
@@ -726,7 +726,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					e1.printStackTrace();
 				}
 			}
-
+*/
 
 		}
 		catch (FinderException e) {
