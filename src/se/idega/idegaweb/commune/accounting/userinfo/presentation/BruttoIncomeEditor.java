@@ -268,6 +268,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		validFromInput.setDate(today.getDate());
 		int currentYear = today.getYear();
 		validFromInput.setYearRange(currentYear - 5, currentYear + 5);
+		validFromInput.setToShowDay(false);
 		setStyle(validFromInput, STYLENAME_INTERFACE);
 		table.add(validFromInput, 2, 3);
 		if(registerErrorMsg!=null){
