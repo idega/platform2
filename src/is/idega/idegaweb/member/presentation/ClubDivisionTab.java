@@ -267,7 +267,7 @@ public class ClubDivisionTab extends UserGroupTab {
 					Group club = getMemberUserBusiness(iwc).getClubForGroup(group,iwc);
 					if (club != null)
 						clubName = club.getName();
-					getClubInformationPluginBusiness(iwc).createSpecialConnectionDivision(connection, getGroupId(), clubName, iwc);
+					getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(), clubName, iwc);
 					group.setMetaData("CLUBDIV_CONN", connection);
 				}
 

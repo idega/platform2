@@ -400,7 +400,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	  				String[] inputValuesAsArray =  (String[]) inputValues.toArray(new String[0]);
 	  				// method below throws Exception 
 	  				Object resultingObject = inputHandler.getResultingObject(inputValuesAsArray, iwc);
-	  				inputValueDisplay = inputHandler.getDisplayStringForResultingObject(resultingObject, iwc);
+	  				inputValueDisplay = inputHandler.getDisplayForResultingObject(resultingObject, iwc);
 	  			}
 	  			catch (ClassNotFoundException classEx) {
 	  				logError("[JasperReportBusiness] Inputhandler class could not be found");

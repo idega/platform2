@@ -69,7 +69,7 @@ public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
 	 * 
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.String, com.idega.presentation.IWContext)
 	 */
-	public String getDisplayNameOfValue(Object value, IWContext iwc) {
+	public String getDisplayForResultingObject(Object value, IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		if (value != null) {
 			

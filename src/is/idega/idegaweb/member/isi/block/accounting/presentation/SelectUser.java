@@ -23,15 +23,14 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
+import com.idega.user.presentation.UserChooserBrowser;
 
 /**
  * @author palli
  */
 public class SelectUser extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "su_submit";
-	
-	private final static String USER_CHOOSER_NAME = "su_name";
+	protected static final String PARAMETER_OLD_USER_ID = "cashier_old_user_id";
 	
 	private final static String LABEL_SELECTED_USER = "isi_acc_se_selected_user";
 	
@@ -48,8 +47,10 @@ public class SelectUser extends CashierSubWindowTemplate {
 		t.setCellpadding(5);
 
 		//Has a new user been selected?
-		String userPrm = UserSearcher.getUniqueUserParameterName(USER_CHOOSER_NAME);
-		String selectedUser = iwc.getParameter(userPrm);
+		String selectedUser = iwc.getParameter(CashierWindow.PARAMETER_USER_ID);
+		String oldSelectedUser = iwc.getParameter(PARAMETER_OLD_USER_ID);
+		System.out.println("selectedUser = " + selectedUser);
+		System.out.println("old selectedUser = " + oldSelectedUser);
 			
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
@@ -64,7 +65,7 @@ public class SelectUser extends CashierSubWindowTemplate {
 			t.add(getUser().getName(), 1, row);
 		
 		row++;
-		t.add(getSearchItem(iwc, USER_CHOOSER_NAME), 1, row++);
+		t.add(new UserChooserBrowser(CashierWindow.PARAMETER_USER_ID), 1, row++);
 		t.add(submit, 1, row);
 		
 		t.setAlignment(1, 3, "RIGHT");
@@ -72,49 +73,19 @@ public class SelectUser extends CashierSubWindowTemplate {
 		f.add(t);
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-		if (selectedUser != null) 
-			f.add(new HiddenInput(CashierWindow.PARAMETER_USER_ID, selectedUser));
-		else
-			f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
+		if (selectedUser == null || "".equals(selectedUser)) {
+		    if (oldSelectedUser != null && !"".equals(oldSelectedUser)) {
+		        f.add(new HiddenInput(CashierWindow.PARAMETER_USER_ID, oldSelectedUser));
+		    }
+		}
+		else {
+		    f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
+		    f.add(new HiddenInput(PARAMETER_OLD_USER_ID, selectedUser));
+		}
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
 		add(f);
-	}
-	
-	public PresentationObject getSearchItem(IWContext iwc, String name) {
-		Table table = new Table();
-		UserSearcher searcher = new UserSearcher();
-		searcher.setShowMiddleNameInSearch(false);
-		searcher.setOwnFormContainer(false);
-		searcher.setUniqueIdentifier(name);
-		searcher.setSkipResultsForOneFound(false);
-		searcher.setPersonalIDLength(10);
-		searcher.setFirstNameLength(20);
-		searcher.setLastNameLength(20);
-		String action = iwc.getParameter(CashierWindow.ACTION);
-		String group = iwc.getParameter(CashierWindow.PARAMETER_GROUP_ID);
-//		String division = iwc.getParameter(CashierWindow.)
-		String user = iwc.getParameter(CashierWindow.PARAMETER_USER_ID);
-		if (action != null)
-			searcher.maintainParameter(new Parameter(CashierWindow.ACTION, action));
-		if (group != null)
-			searcher.maintainParameter(new Parameter(CashierWindow.PARAMETER_GROUP_ID, group));
-		if (user != null)
-			searcher.maintainParameter(new Parameter(CashierWindow.PARAMETER_USER_ID, user));
-		if (iwc.isParameterSet(name)) {
-			searcher.maintainParameter(new Parameter(name, iwc.getParameter(name)));
-		}
-		String prmName = UserSearcher.getUniqueUserParameterName(name);
-		System.out.println("prmName = " + prmName);
-		if (iwc.isParameterSet(prmName)) {
-			System.out.println("parameter is set");
-			System.out.println("value = " + iwc.getParameter(prmName));
-			searcher.maintainParameter(new Parameter(prmName, iwc.getParameter(prmName)));
-		}
-		table.add(searcher, 1, 1);
-		
-		return table;
 	}
 	
 	// service method

@@ -162,7 +162,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 		
 		String sUserId = iwc.getParameter(PARAMETER_USER_ID);
-		if (sUserId != null) {
+		if (sUserId != null && !"".equals(sUserId)) {
 			try {
 				_user = getUserBusiness(iwc).getUser(new Integer(sUserId));
 			}

@@ -71,7 +71,7 @@ public class WorkReportStatusDropDownMenu extends DropdownMenu implements InputH
 	/* (non-Javadoc)
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.Object, com.idega.presentation.IWContext)
 	 */
-	public String getDisplayNameOfValue(Object value, IWContext iwc) {
+	public String getDisplayForResultingObject(Object value, IWContext iwc) {
 		String displayName = "";
 		if (value != null) {
 			IWResourceBundle iwrb = getResourceBundle(iwc);

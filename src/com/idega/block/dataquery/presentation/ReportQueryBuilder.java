@@ -1508,7 +1508,7 @@ public class ReportQueryBuilder extends Block {
 			String display = null;
 			try {
 				resultingObjects = inputHandler.getResultingObject(patternArray, iwc);
-				display = inputHandler.getDisplayStringForResultingObject(resultingObjects, iwc);
+				display = inputHandler.getDisplayForResultingObject(resultingObjects, iwc);
 			} 	catch (Exception e)	 {
 				log(e);
 				display = "";

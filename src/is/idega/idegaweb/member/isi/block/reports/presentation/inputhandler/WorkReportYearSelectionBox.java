@@ -83,7 +83,7 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 		return result;
 	}
 	
-	public String getDisplayNameOfValue(Object value, IWContext iwc) {
+	public String getDisplayForResultingObject(Object value, IWContext iwc) {
 		String result = "";
 		if(value instanceof String){
 			result = (String) value;

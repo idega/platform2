@@ -84,7 +84,7 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.String,
 	 *      com.idega.presentation.IWContext)
 	 */
-	public String getDisplayNameOfValue(Object value, IWContext iwc) {
+	public String getDisplayForResultingObject(Object value, IWContext iwc) {
 		if(value!=null){
 			return value.toString();
 		}
