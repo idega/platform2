@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Vector;
+import com.idega.jmodule.object.Editor;
 
 /**
  * Title:
@@ -28,7 +29,7 @@ import java.util.Vector;
  * @version 1.0
  */
 
-public class CampusTariffEditor extends KeyEditor{
+public class CampusTariffEditor extends Editor{
 
 
   protected final static int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4;

@@ -21,6 +21,7 @@ public class TariffIndex extends GenericEntity{
           addAttribute("tindex", "Vísitala", true, true, "java.lang.Float");
           addAttribute("insert_date", "Dags", true, true, "java.sql.TimeStamp");
           addAttribute("info", "Upplýsingar", true, true, "java.lang.String");
+          addAttribute("useindex","Gild",true,true,"java.lang.Boolean");
 	}
 
 	public String getEntityName(){
@@ -47,4 +48,11 @@ public class TariffIndex extends GenericEntity{
         public void setDate(Timestamp use_date){
           setColumn("from_date",use_date);
         }
+        public void setUseIndex(boolean useindex){
+          setColumn("useindex",useindex);
+        }
+        public boolean getUseIndex(){
+          return getBooleanColumnValue("useindex");
+        }
+
 }

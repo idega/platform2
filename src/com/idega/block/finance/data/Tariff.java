@@ -29,6 +29,7 @@ public class Tariff extends GenericEntity {
     addAttribute("from_date","Upphafsdags",true,true,"java.sql.Timestamp");
     addAttribute("to_date","Lokadags",true,true,"java.sql.Timestamp");
     addAttribute("tariff_attribute","",true,true,"java.lang.String");
+    addAttribute("useindex","Gild",true,true,"java.lang.Boolean");
   }
   public String getEntityName() {
     return "tariff";
@@ -89,5 +90,11 @@ public class Tariff extends GenericEntity {
   }
   public void setUseToDate(Timestamp use_date){
     setColumn("to_date",use_date);
+  }
+  public void setUseIndex(boolean useindex){
+    setColumn("useindex",useindex);
+  }
+  public boolean getUseIndex(){
+    return getBooleanColumnValue("useindex");
   }
 }
