@@ -1,14 +1,16 @@
 package se.idega.idegaweb.commune.accounting.childcare.check.data;
 
-import com.idega.block.process.data.AbstractCaseBMPBean;
-import com.idega.block.process.data.Case;
-import com.idega.block.process.data.CaseStatus;
-import com.idega.data.IDOQuery;
-import com.idega.user.data.User;
-
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+
+import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseStatus;
+import com.idega.data.query.Criteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.user.data.User;
 
 /**
  * Title:
@@ -269,20 +271,30 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	}
 	
 	public Integer ejbFindCheckForChild(int childID) throws FinderException {
-		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID,childID);
+	    SelectQuery query = idoSelectQueryGetAllCases();
+		query.addCriteria(idoCriteriaForChild(new Integer(childID)));
 		return (Integer) super.idoFindOnePKByQuery(query);
 	}
 	
+	protected Criteria idoCriteriaForChild(Integer childID){
+	    return new MatchCriteria(idoTableSubCase(),COLUMN_CHILD_ID,MatchCriteria.EQUALS,childID);
+	}
+	
 	public Collection ejbFindByStatusAndChild(String status, Integer child) throws FinderException{
-		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatus(status).appendAndEquals(COLUMN_CHILD_ID,child.intValue()));
+	    SelectQuery query = idoSelectQueryGetAllCasesByStatus(status);
+	    query.addCriteria(idoCriteriaForChild(child));
+	    return idoFindPKsByQuery(query);
 	}
 	
 	public Collection ejbFindByUserAndChild(User user, Integer child) throws FinderException{
-		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByUser(user).appendAndEquals(COLUMN_CHILD_ID,child.intValue()));
+	    SelectQuery query = idoSelectQueryGetAllCasesByUser(user);
+	    query.addCriteria(idoCriteriaForChild(child));
+	    return idoFindPKsByQuery(query);
 	}
 	
 	public Collection ejbFindByStatusAndUserAndChild(String status,User user,Integer childID) throws FinderException{
-		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByUserAndStatus(user,status).appendAndEquals(COLUMN_CHILD_ID,childID.intValue()));
+	    SelectQuery query = idoSelectQueryGetAllCasesByUserAndStatus(user,status);
+	    query.addCriteria(idoCriteriaForChild(childID));
+	    return idoFindPKsByQuery(query);
 	}
 }
