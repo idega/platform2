@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.52 2003/08/06 00:17:24 aron Exp $
+ * $Id: CampusAllocator.java,v 1.53 2003/08/08 11:26:58 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -706,7 +706,7 @@ public class CampusAllocator extends Block implements Campus {
 				// if reject status on , handle by office
 				if(waitingList.getAcceptedDate()!=null){
 					if(onTime)
-						number.setFontColor("#ff9900");
+						number.setFontColor("#9900ff");
 					else
 						number.setFontColor("#996600");
 				}
@@ -744,7 +744,7 @@ public class CampusAllocator extends Block implements Campus {
 	private Link getChangeLink(Integer contractID,WaitingList waitingList,boolean onTime) {
 		Image color = iwb.getImage(onTime? "green.gif" :  "yellow.gif");
 		if(waitingList.getAcceptedDate()!=null)
-			color = iwb.getImage(onTime?"orange.gif":"brown.gif");
+			color = iwb.getImage(onTime?"purple.gif":"brown.gif");
 		Link L = new Link(color);
 		L.addParameter("change", contractID.toString());
 		L.addParameter("applicant", waitingList.getApplicantId().toString());
@@ -758,7 +758,7 @@ public class CampusAllocator extends Block implements Campus {
 	
 	private Link getAcceptsLink(int Contractid, int iApplicantId,boolean onTime) {
 		
-			Image color = iwb.getImage(onTime? "orange.gif" :  "brown.gif");
+			Image color = iwb.getImage(onTime? "purple.gif" :  "brown.gif");
 			Link L = new Link(color);
 			L.addParameter("change", String.valueOf(Contractid));
 			L.addParameter("applicant", String.valueOf(iApplicantId));
@@ -855,8 +855,8 @@ public class CampusAllocator extends Block implements Campus {
 		row++;
 		col = 1;
 		
-		T.add(iwb.getImage("orange.gif"),col++,row);
-		T.add(iwrb.getLocalizedString("orangebutton_info","Allocation accepted"),col,row);
+		T.add(iwb.getImage("purple.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("purplebutton_info","Allocation accepted"),col,row);
 		T.add(Text.getNonBrakingSpace(),col,row);
 		T.add(Text.getNonBrakingSpace(),col,row);
 		
