@@ -79,7 +79,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String OKAY_BUTTON = "okayButton";
   
   private static final String INCOME = "income";
-  private static final String EXPONSES = "exponses";
+  private static final String EXPENSES = "expenses";
   private static final String ASSET = "asset";
   private static final String DEBT = "debt";
   
@@ -90,8 +90,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     
     specialFieldList.add(LEAGUE_NAME);
     specialFieldList.add(WorkReportConstants.INCOME_SUM_KEY);
-    specialFieldList.add(WorkReportConstants.EXPONSES_SUM_KEY);
-    specialFieldList.add(WorkReportConstants.INCOME_EXPONSES_SUM_KEY);
+    specialFieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
+    specialFieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
     specialFieldList.add(WorkReportConstants.ASSET_SUM_KEY);
     specialFieldList.add(WorkReportConstants.DEBT_SUM_KEY); 
     for (int i = 0; i < WorkReportConstants.NOT_EDITABLE_FIN_NAMES.length; i++) {
@@ -291,12 +291,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       throw new RuntimeException(message);
     }
     List incomeKeys = null;
-    List exponsesKeys = null;
+    List expensesKeys = null;
     List assetKeys = null;
     List debtKeys = null; 
     try {
       incomeKeys = new ArrayList(accountKeyHome.findIncomeAccountKeys());
-      exponsesKeys = new ArrayList(accountKeyHome.findExponsesAccountKeys());
+      expensesKeys = new ArrayList(accountKeyHome.findExpensesAccountKeys());
       assetKeys = new ArrayList(accountKeyHome.findAssetAccountKeys());
       debtKeys = new ArrayList(accountKeyHome.findDeptAccountKeys());
     }
@@ -306,7 +306,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       System.err.println(message + " Message is: " + ex.getMessage());
       ex.printStackTrace(System.err);
       incomeKeys = new ArrayList();
-      exponsesKeys = new ArrayList();
+      expensesKeys = new ArrayList();
       assetKeys = new ArrayList();
       debtKeys = new ArrayList();
     }
@@ -348,16 +348,16 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     };
     // sort keys
     Collections.sort(incomeKeys, keyComparator);
-    Collections.sort(exponsesKeys, keyComparator);
+    Collections.sort(expensesKeys, keyComparator);
     Collections.sort(assetKeys, keyComparator);
     Collections.sort(debtKeys, keyComparator);
     // add sorted keys to the fields
     fieldList.add(LEAGUE_NAME);
     addKeys(incomeKeys,INCOME);
     fieldList.add(WorkReportConstants.INCOME_SUM_KEY);
-    addKeys(exponsesKeys,EXPONSES);
-    fieldList.add(WorkReportConstants.EXPONSES_SUM_KEY);
-    fieldList.add(WorkReportConstants.INCOME_EXPONSES_SUM_KEY);
+    addKeys(expensesKeys,EXPENSES);
+    fieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
+    fieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
     addKeys(assetKeys,ASSET);
     fieldList.add(WorkReportConstants.ASSET_SUM_KEY);
     addKeys(debtKeys,DEBT);
@@ -922,14 +922,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         float result = calculateAccountArea(INCOME);
         return new Float(result);
       }
-      else if (accountKeyName.equals(WorkReportConstants.EXPONSES_SUM_KEY)) {
-        float result = calculateAccountArea(EXPONSES);
+      else if (accountKeyName.equals(WorkReportConstants.EXPENSES_SUM_KEY)) {
+        float result = calculateAccountArea(EXPENSES);
         return new Float(result);
 
       }
-      else if (accountKeyName.equals(WorkReportConstants.INCOME_EXPONSES_SUM_KEY))  {
+      else if (accountKeyName.equals(WorkReportConstants.INCOME_EXPENSES_SUM_KEY))  {
         float income = calculateAccountArea(INCOME);
-        float exponses = calculateAccountArea(EXPONSES);
+        float exponses = calculateAccountArea(EXPENSES);
         float result = income - exponses;
         return new Float(result);
       }

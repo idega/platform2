@@ -46,6 +46,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
@@ -83,9 +84,11 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private static final String SSN = "ssn";
   
   private List fieldList;
-  private List leagueList;
   
-  protected Map memberLeaguesMap = null;
+  // key: member id, value: collection of league names, to that the member belongs
+  private Map memberLeaguesMap = null;
+  // key: league name, int number of members that belong to that league 
+  private Map leagueCountMap = null;
     
   public WorkReportMemberEditor() {
     super();
@@ -114,7 +117,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     Collection leagues;
     try {
-      leagues = workReportBusiness.getAllWorkReportGroupsForYearAndType( getYear() ,IWMemberConstants.GROUP_TYPE_LEAGUE);
+      leagues = workReportBusiness.getLeaguesOfWorkReportById(getWorkReportId());
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -123,8 +126,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportGroups.");
     }
+    catch (IDOException idEx) {
+      System.err.println(
+        "[WorkReportMemberEditor]: Can't retrieve WorkReportGroups. Message is: "
+          + idEx.getMessage());
+      idEx.printStackTrace(System.err);
+      leagues = new ArrayList();
+    }
     fieldList = new ArrayList();
-    leagueList = new ArrayList();
     fieldList.add(NAME);
     fieldList.add(PERSONAL_ID);
     fieldList.add(STREET_NAME);
@@ -133,7 +142,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     while (iterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) iterator.next();
       String groupName = group.getName();
-      leagueList.add(groupName);
+      leagueCountMap.put(groupName, new Integer(0));
     }
   }
   
@@ -214,7 +223,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         String leagueName = league.getName();
         membersLeagueNames.add(leagueName);
       }
-      Iterator leagueIterator = leagueList.iterator();
+      Iterator leagueIterator = leagueCountMap.keySet().iterator();
       while (leagueIterator.hasNext())  {
         String key = (String) leagueIterator.next();
         boolean isChecked = CheckBoxConverter.isEntityChecked(iwc, key, primaryKey);
@@ -258,6 +267,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     // create map: member as key, leagues as value 
     memberLeaguesMap = new HashMap();
+    leagueCountMap = new HashMap();
     Iterator membersIterator = members.iterator();
     while (membersIterator.hasNext())  {
       WorkReportMember member = (WorkReportMember) membersIterator.next();
@@ -268,6 +278,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
           WorkReportGroup league = (WorkReportGroup) leagues.next();
           String leagueName = league.getName();
           leaguesList.add(leagueName);
+          Integer count = (Integer) leagueCountMap.get(leagueName);
+          count = (count == null) ? null : new Integer( (count.intValue()) + 1 );
         }
         Integer memberId = (Integer) member.getPrimaryKey();
         memberLeaguesMap.put(memberId, leaguesList);
@@ -339,7 +351,6 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
-      NAME, textEditorConverter,
       PERSONAL_ID, textEditorConverter,
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter};
@@ -347,7 +358,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     browser.setLeadingEntity(WorkReportMember.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     browser.setUseEventSystem(false);
-    // set parameters
+    // maintain parameters
     List parameters = getParametersToMaintain();
     Iterator para = parameters.iterator();
     while (para.hasNext())  {
@@ -367,7 +378,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       browser.setEntityToPresentationConverter(column, converter);
     }
     // add more columns
-    Iterator iterator = leagueList.iterator();
+    Iterator iterator = leagueCountMap.keySet().iterator();
     int i = 100;
     while (iterator.hasNext())  {
       String leagueName = (String) iterator.next();
@@ -519,10 +530,17 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   class WorkReportCheckBoxConverter extends CheckBoxConverter {
     
+    private List maintainParameterList = new ArrayList(0);
+    
     public WorkReportCheckBoxConverter(String key) {
       super(key);
     }
     
+    /** This method uses a copy of the specified list */
+    public void maintainParameters(List maintainParameters) {
+      this.maintainParameterList.addAll(maintainParameters);
+    }    
+        
     public PresentationObject getPresentationObject(
       Object entity,
       EntityPath path,
@@ -531,31 +549,53 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       
       EntityRepresentation idoEntity = (EntityRepresentation) entity;
       Integer id = (Integer) idoEntity.getPrimaryKey();
-      CheckBox checkBox = new CheckBox(getKeyForCheckBox(), id.toString());
+
       Collection leagues = (Collection) memberLeaguesMap.get(id);
       boolean shouldBeChecked = (leagues != null && leagues.contains(getKeyForCheckBox()));
-      checkBox.setChecked(shouldBeChecked);
+
       boolean disableCheckBox = true;
       if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_KEY)) {
         String idEditEntity = iwc.getParameter(ConverterConstants.EDIT_ENTITY_KEY);
         try {
           Integer primaryKey = new Integer(idEditEntity);
           if (id.equals(primaryKey))  {
-            disableCheckBox = false;
+            CheckBox checkBox = new CheckBox(getKeyForCheckBox(), id.toString());
+            checkBox.setChecked(shouldBeChecked);
+            return checkBox;
           }
         }
         catch (NumberFormatException ex)  {
         }
       }
-      checkBox.setDisabled(disableCheckBox);
-      return checkBox;
+      String text;
+      if (shouldBeChecked) {
+        text = "_";
+      }
+      else {
+        // unicode black dot
+        text = "\u25CF";
+      }
+      Link link = new Link(text);
+      link.addParameter(ConverterConstants.EDIT_ENTITY_KEY, id.toString());
+       // add maintain parameters
+      Iterator iteratorList = maintainParameterList.iterator();
+      while (iteratorList.hasNext())  {
+        String parameter = (String) iteratorList.next();
+        link.maintainParameter(parameter, iwc);
+      }
+      return link;
     }
     
     public PresentationObject getHeaderPresentationObject(
       EntityPath entityPath,
       EntityBrowser browser,
       IWContext iwc) {
-      Text text = new Text(getKeyForCheckBox());
+       
+      String leagueName = getKeyForCheckBox(); 
+      StringBuffer buffer = new StringBuffer(leagueName);
+      buffer.append(": ");
+      buffer.append(leagueCountMap.get(leagueName));
+      Text text = new Text(buffer.toString());
       text.setBold();
       return text;
     }
