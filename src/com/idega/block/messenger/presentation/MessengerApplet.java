@@ -176,12 +176,12 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void getMessagesFromDialog(MessageDialog dialog){
     if( packetToServlet == null ){
       packetToServlet = new Packet();
-      packetToServlet.setSender(sessionId);
     }
+    packetToServlet.setSender(sessionId);
     //System.out.println("In getMessagesFromDialog()");
 
     Vector msg = dialog.getMessages();
-    /**@todo make this work for many dialogs..don't clear*/
+    /**@todo make this work for many dialogs..don't clear don't have to check if null*/
     if( msg!=null ) {
       packetToServlet.clearMessages();
       packetToServlet.setMessages(msg);
@@ -245,7 +245,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
      //   isfirstRun = false;
      // }
 
-      if( packetToServlet != null ){
+     // if( packetToServlet != null ){
         System.out.println("sending packets");
         outputToServlet = new ObjectOutputStream(conn.getOutputStream());
         // serialize the object
@@ -255,9 +255,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         outputToServlet.close();
 
         System.out.println("Sending Complete.");
-      }
-
-      packetToServlet = null;
+     // }
 
     }
     catch (IOException e){
@@ -343,6 +341,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     System.out.println("DONE! processing the packet");
 
     repaint();
+
+    packetToServlet = null;
+
 
   }
 
