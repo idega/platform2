@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.15 2002/11/07 14:47:57 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.16 2002/11/07 14:50:09 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -460,9 +460,9 @@ public class CitizenAccountApplication extends CommuneBlock {
                 digitOnlyInput.append (rawInput.charAt (i));
             }
         }
+        final Calendar rightNow = Calendar.getInstance();
+        final int currentYear = rightNow.get (Calendar.YEAR);
         if (digitOnlyInput.length () == 10) {
-            final Calendar rightNow = Calendar.getInstance();
-            final int currentYear = rightNow.get (Calendar.YEAR);
             final int inputYear = new Integer
                     (digitOnlyInput.substring (0, 2)).intValue ();
             final int century = inputYear + 2000 > currentYear ? 19 : 20;
