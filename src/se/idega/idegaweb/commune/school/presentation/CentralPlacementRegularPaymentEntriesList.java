@@ -62,7 +62,7 @@ public class CentralPlacementRegularPaymentEntriesList extends Window {
 		
 	public CentralPlacementRegularPaymentEntriesList() {
 		this.setWidth(700);
-		this.setHeight(400);
+		this.setHeight(600);
 		this.setScrollbar(true);
 		this.setResizable(true);	
 		this.setAllMargins(0);
