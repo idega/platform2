@@ -1,5 +1,5 @@
 /*
- * $Id: BatchDeadlinePlacementHelper.java,v 1.1 2004/11/26 09:11:08 aron Exp $
+ * $Id: BatchDeadlinePlacementHelper.java,v 1.2 2005/02/17 12:16:30 anders Exp $
  * Created on 26.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import se.idega.idegaweb.commune.care.business.PlacementHelper;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 09:11:08 $ by $Author: aron $
+ *  Last modified: $Date: 2005/02/17 12:16:30 $ by $Author: anders $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BatchDeadlinePlacementHelper extends DefaultPlacementHelper implements PlacementHelper {
     
@@ -93,7 +93,7 @@ public class BatchDeadlinePlacementHelper extends DefaultPlacementHelper impleme
 	            IWCalendar cal = new IWCalendar();
 	            int today = cal.getDay();
 	            int deadlineDay = deadline.getDeadlineDay();
-	            if(today<=deadlineDay ){
+	            if(today<deadlineDay ){
 	                validPeriod =  new TimePeriod(new IWTimestamp(1,cal.getMonth(),cal.getYear()),new IWTimestamp(deadlineDay,cal.getMonth(),cal.getYear()));
 	            }
 	            else{
