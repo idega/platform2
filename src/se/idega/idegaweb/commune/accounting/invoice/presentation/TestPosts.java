@@ -9,16 +9,25 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.invoice.business.BatchRunQueue;
 import se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
+import com.idega.user.data.User;
 
 
 /**
@@ -39,15 +48,25 @@ public class TestPosts extends InvoiceBatchStarter{
 
 	
 	protected PresentationObject getShoolDropDown(){
-		DropdownMenu dropDown = getDropdownMenu(PAR_PROVIDER, getSchools(getIWContext()), "getSchoolName");
-		dropDown.setToSubmit(false);
-		if (_currentSchool != null){
-			dropDown.setSelectedElement((String) _currentSchool.getPrimaryKey());
+		final School loggedInUsersProvider = getSchoolByLoggedInUser (getIWContext());	
+		if (loggedInUsersProvider != null) {
+			return new HiddenInput(PAR_PROVIDER, "" + loggedInUsersProvider.getPrimaryKey ());
+			
+		} else if (isCentralAdministrator (getIWContext())){
+			DropdownMenu dropDown = getDropdownMenu(PAR_PROVIDER, getSchools(getIWContext()), "getSchoolName");
+			dropDown.setToSubmit(false);
+			if (_currentSchool != null){
+				dropDown.setSelectedElement((String) _currentSchool.getPrimaryKey());
+			}
+			return getInputContainer("cacc_testposts_school", "School", dropDown);
+			
+		} else {
+			return new Text("");
 		}
-
-		return getInputContainer("cacc_testposts_school", "School", dropDown);
 	}
 	
+
+		
 	protected void handleSave(IWContext iwc, String schoolCategory) {
 		//Getting selected school
 		try{
@@ -103,7 +122,85 @@ public class TestPosts extends InvoiceBatchStarter{
 		return _currentSchoolCategory;	
 	}	
 	
+	
+	
+	
+	
+	
+	
+	/** The following methods is stolen from PaymentRecordMaintenance**/ 
+	private School getSchoolByLoggedInUser (final IWContext context) {
+		User user = context.getCurrentUser ();
+		School school = null;
+		if (null != user) {
+			try {
+				SchoolUserBusiness business = getSchoolUserBusiness ();
+				Collection schoolIds = business.getSchools (user);
+				if (!schoolIds.isEmpty  ()) {
+					Object schoolId = schoolIds.iterator ().next ();
+					school = getSchoolBusiness ().getSchool (schoolId);
+				}
+			} catch (FinderException e) {
+				// no problem, no school found
+			} catch (RemoteException e){
+				e.printStackTrace();
+			}
+		}
+		return school;
+	}
+	
+	private boolean isCentralAdministrator (final IWContext context) {
+		try {
+			// first see if we have cached certificate
+			final String sessionKey = getClass () + ".isCentralAdministrator";
+			final User verifiedCentralAdmin
+					= (User) context.getSessionAttribute (sessionKey);
+			final User user = context.getCurrentUser ();
 
+			if (null != verifiedCentralAdmin && user.equals ((IDOEntity)verifiedCentralAdmin)) {
+				// certificate were cached
+				return true;
+			}
+			
+			// since no cert were cached, check current users group instaed
+			final int groupId
+					= getCommuneUserBusiness ().getRootAdministratorGroupID ();
+			final GroupHome home =	(GroupHome) IDOLookup.getHome (Group.class);
+			final Group communeGroup = home.findByPrimaryKey (new Integer (groupId));
+			final Collection usersGroups = getUserBusiness ().getUserGroups
+					(((Integer) user.getPrimaryKey ()).intValue ());
+			if (usersGroups != null && communeGroup != null
+					&& (usersGroups.contains (communeGroup)
+							|| user.getPrimaryKey ().equals (new Integer (1)))) {
+				// user is allaowed, cache certificate and return true
+				context.setSessionAttribute (sessionKey, user);
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		return false;
+	}
+	
+	private CommuneUserBusiness getCommuneUserBusiness () throws RemoteException {
+		return (CommuneUserBusiness) IBOLookup.getServiceInstance
+				(getIWApplicationContext (), CommuneUserBusiness.class);
+	}	
+	
+	private SchoolUserBusiness getSchoolUserBusiness () throws RemoteException {
+		return (SchoolUserBusiness) IBOLookup.getServiceInstance
+				(getIWApplicationContext (), SchoolUserBusiness.class);	
+	}
+	
+	private SchoolBusiness getSchoolBusiness () throws RemoteException {
+		return (SchoolBusiness) IBOLookup.getServiceInstance
+				(getIWApplicationContext (), SchoolBusiness.class);	
+	}	
+	
+	private UserBusiness getUserBusiness () throws RemoteException {
+		return (UserBusiness) IBOLookup.getServiceInstance
+				(getIWApplicationContext (), UserBusiness.class);	
+	}
 		
 
 }
