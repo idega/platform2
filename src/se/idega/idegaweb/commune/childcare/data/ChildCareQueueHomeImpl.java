@@ -34,10 +34,31 @@ public ChildCareQueue findQueueByChildAndChoiceNumber(com.idega.user.data.User p
 	return this.findByPrimaryKey(pk);
 }
 
+public java.util.Collection findQueueByProviderAndDate(int p0,java.sql.Date p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareQueueBMPBean)entity).ejbFindQueueByProviderAndDate(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public ChildCareQueue findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (ChildCareQueue) super.findByPrimaryKeyIDO(pk);
  }
 
+
+public int getNumberInQueue(int p0,java.sql.Date p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareQueueBMPBean)entity).ejbHomeGetNumberInQueue(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOfNotExported(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareQueueBMPBean)entity).ejbHomeGetNumberOfNotExported(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }

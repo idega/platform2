@@ -365,7 +365,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		if (caseStatus != null)
 			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER);
+		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER+", c."+QUEUE_DATE);
 
 		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
@@ -393,7 +393,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			sql.appendAnd().append("c."+FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
 			sql.appendAnd().append("c."+FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
 		}
-		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER);
+		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER+", c."+QUEUE_DATE);
 
 		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
@@ -484,11 +484,11 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
-	public Integer ejbFindNewestApplication(int providerID) throws FinderException {
+	public Integer ejbFindNewestApplication(int providerID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.appendAnd().append(QUEUE_DATE).appendLessThanOrEqualsSign().append(date);
 		sql.appendOrderBy(QUEUE_ORDER+" desc");
-		System.out.println(sql.toString());
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	

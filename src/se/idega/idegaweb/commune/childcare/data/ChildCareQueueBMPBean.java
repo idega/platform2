@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.6 2003/04/24 08:20:39 laddi Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.7 2003/04/25 12:31:46 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
@@ -128,6 +129,10 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		return getIntColumnValue(PROVIDER_ID);			
 	}
 
+	public School getProvider() {
+		return (School) getColumnValue(PROVIDER_ID);			
+	}
+
 	public String getPriority() {
 		return getStringColumnValue(PRIORITY);			
 	}
@@ -236,5 +241,26 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID,childID);
 		sql.appendOrderBy(CHOICE_NUMBER);
 		return super.idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindQueueByProviderAndDate(int providerID, Date queueDate) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.appendAndEquals(QUEUE_DATE,queueDate);
+		return super.idoFindPKsByQuery(sql);
+	}
+	
+	public int ejbHomeGetNumberInQueue(int providerID, Date queueDate) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
+		return super.idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetNumberOfNotExported(int childID) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).appendWhereEquals(CHILD_ID, childID);
+		sql.appendAndEqualsQuoted(EXPORTED, "N");
+		return super.idoGetNumberOfRecords(sql);
 	}
 }

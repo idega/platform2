@@ -167,9 +167,9 @@ public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public ChildCareApplication findNewestApplication(int p0)throws javax.ejb.FinderException{
+public ChildCareApplication findNewestApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ChildCareApplicationBMPBean)entity).ejbFindNewestApplication(p0);
+	Object pk = ((ChildCareApplicationBMPBean)entity).ejbFindNewestApplication(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

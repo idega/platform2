@@ -11,6 +11,7 @@ public interface ChildCareQueue extends com.idega.data.IDOEntity,com.idega.block
  public int getContractId();
  public java.sql.Date getImportDate();
  public java.lang.String getPriority();
+ public com.idega.block.school.data.School getProvider();
  public int getProviderId();
  public java.lang.String getProviderName();
  public java.sql.Date getQueueDate();

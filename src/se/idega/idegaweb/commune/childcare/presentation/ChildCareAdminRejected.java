@@ -61,7 +61,10 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
-				rejectDate = new IWCalendar(iwc.getCurrentLocale(), application.getRejectionDate());
+				if (application.getRejectionDate() != null)
+					rejectDate = new IWCalendar(iwc.getCurrentLocale(), application.getRejectionDate());
+				else	
+					rejectDate = null;
 						
 				if (row % 2 == 0)
 					table.setRowColor(row, getZebraColor1());
@@ -72,7 +75,10 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				table.add(getSmallText(getStatusString(application)), column++, row);
 				table.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
-				table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
+				if (rejectDate != null)
+					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column++, row++);
+				else
+					row++;
 			}
 			table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);

@@ -39,6 +39,8 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
+import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
@@ -76,11 +78,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static char STATUS_SENT_IN = 'A';
-	private final static char STATUS_ACCEPTED = 'B';
-	private final static char STATUS_PARENTS_ACCEPT = 'C';
-	private final static char STATUS_CONTRACT = 'D';
-	private final static char STATUS_READY = 'E';
-	private final static char STATUS_CANCELLED = 'F';
+	private final static char STATUS_PRIORITY = 'B';
+	private final static char STATUS_ACCEPTED = 'C';
+	private final static char STATUS_PARENTS_ACCEPT = 'D';
+	private final static char STATUS_CONTRACT = 'E';
+	private final static char STATUS_READY = 'F';
+	private final static char STATUS_CANCELLED = 'V';
 	private final static char STATUS_MOVED = 'W';
 	private final static char STATUS_NEW_CHOICE = 'X';
 	private final static char STATUS_NOT_ANSWERED = 'Y';
@@ -97,7 +100,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ChildCareContractArchiveHome getChildCareContractArchiveHome() throws RemoteException {
 		return (ChildCareContractArchiveHome) IDOLookup.getHome(ChildCareContractArchive.class);
 	}
-	
+
+	public ChildCareQueueHome getChildCareQueueHome() throws RemoteException {
+		return (ChildCareQueueHome) IDOLookup.getHome(ChildCareQueue.class);
+	}
+
 	public ChildCarePrognosis getPrognosis(int providerID) throws RemoteException {
 		try {
 			return getChildCarePrognosisHome().findPrognosis(providerID);
@@ -116,9 +123,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public ChildCareApplication getNewestApplication(int providerID) throws RemoteException {
+	public ChildCareApplication getNewestApplication(int providerID, Date date) throws RemoteException {
 		try {
-			return getChildCareApplicationHome().findNewestApplication(providerID);
+			return getChildCareApplicationHome().findNewestApplication(providerID, date);
 		}
 		catch (FinderException fe) {
 			return null;
@@ -157,6 +164,26 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public void setChildCareQueueExported(ChildCareQueue queue) {
+		queue.setExported(true);
+		queue.store();
+	}
+	
+	public boolean getHasUnexportedChoices(int childID) {
+		try {
+			int choices = getChildCareQueueHome().getNumberOfNotExported(childID);
+			if (choices > 0)
+				return true;
+			return false;
+		}
+		catch (RemoteException e) {
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
+	}
+	
 	public boolean insertApplications(User user, int provider[], String date, int checkId, int childId, String subject, String message, boolean freetimeApplication) {
 		String[] dates = new String[provider.length];
 		for (int a = 0; a < dates.length; a++) {
@@ -166,6 +193,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public boolean insertApplications(User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication) {
+		return insertApplications(user, provider, dates, message, checkId, childId, subject, subject, freetimeApplication, true, null, null);
+	}
+	
+	public boolean insertApplications(User user, int provider[], String[] dates, String message, int childID, Date[] queueDates, boolean[] hasPriority) {
+		return insertApplications(user, provider, dates, message, -1, childID, null, null, false, false, queueDates, hasPriority);
+	}
+	
+	public boolean insertApplications(User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -197,20 +232,29 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							appl.setMessage("");
 						appl.setPresentation("");
 						appl.setChildId(childId);
-						appl.setQueueDate(now.getDate());
+						if (queueDates != null)
+							appl.setQueueDate(queueDates[i]);
+						else
+							appl.setQueueDate(now.getDate());
 						appl.setMethod(1);
 						appl.setChoiceNumber(i + 1);
 						stamp.addSeconds((1 - ((i + 1) * 1)));
 						appl.setCreated(stamp.getTimestamp());
 						appl.setQueueOrder(((Integer)appl.getPrimaryKey()).intValue());
-						appl.setApplicationStatus(getStatusSentIn());
+						
+						if (hasPriority != null && hasPriority[i])
+							appl.setApplicationStatus(getStatusPriority());
+						else
+							appl.setApplicationStatus(getStatusSentIn());
+						
 						if (checkId != -1)
 							appl.setCheckId(checkId);
 						if (freetimeApplication)
 							caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
 						else {
 							caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
-							sendMessageToParents(appl, subject, body);
+							if (sendMessages)
+								sendMessageToParents(appl, subject, body);
 							updateQueue(appl);
 						}
 					}
@@ -292,7 +336,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 			else {
-				ChildCareApplication newestApplication = getNewestApplication(application.getProviderId());
+				ChildCareApplication newestApplication = getNewestApplication(application.getProviderId(), application.getQueueDate());
 				if (newestApplication != null) {
 					queueOrder = newestApplication.getQueueOrder();
 					application.setQueueOrder(++queueOrder);
@@ -370,6 +414,41 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (RemoteException re) {
 			re.printStackTrace();
+		}
+	}
+
+	public Collection getQueueChoices(int childID) throws RemoteException {
+		try {
+			return getChildCareQueueHome().findQueueByChild(childID);
+		}
+		catch (FinderException e) {
+			return null;
+		}		
+	}
+	
+	public int getPositionInQueue(ChildCareQueue queue) throws RemoteException {
+		try {
+			int order = getChildCareQueueHome().getNumberInQueue(queue.getProviderId(), queue.getQueueDate());
+			List choices = new ArrayList(getChildCareQueueHome().findQueueByProviderAndDate(queue.getProviderId(), queue.getQueueDate()));
+			if (choices != null && !choices.isEmpty()) {
+				Collections.sort(choices, new ChildCareQueueComparator());
+				Iterator iter = choices.iterator();
+				while (iter.hasNext()) {
+					order++;
+					ChildCareQueue element = (ChildCareQueue) iter.next();
+					if (((Integer)element.getPrimaryKey()).intValue() == ((Integer)queue.getPrimaryKey()).intValue())
+						return order;
+				}
+			}
+			return ++order;
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 1;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return 1;
 		}
 	}
 
@@ -695,6 +774,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			t.begin();
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			application.setApplicationStatus(getStatusCancelled());
+			application.setRejectionDate(date.getDate());
 			caseBiz.changeCaseStatus(application, this.getCaseStatusCancelled().getStatus(), user);
 			
 			removeFromProvider(application.getChildId(), application.getProviderId(), date.getTimestamp(), parentalLeave, message);
@@ -1474,6 +1554,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 */
 	public char getStatusParentsAccept() {
 		return STATUS_PARENTS_ACCEPT;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusPriority() {
+		return STATUS_PRIORITY;
 	}
 
 	/**

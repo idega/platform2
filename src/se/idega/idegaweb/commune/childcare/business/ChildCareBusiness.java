@@ -48,6 +48,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public char getStatusCancelled() throws java.rmi.RemoteException;
  public char getStatusContract() throws java.rmi.RemoteException;
  public char getStatusParentsAccept() throws java.rmi.RemoteException;
+ public char getStatusPriority() throws java.rmi.RemoteException;
  public char getStatusReady() throws java.rmi.RemoteException;
  public char getStatusSentIn() throws java.rmi.RemoteException;
  public char getStatusMoved() throws java.rmi.RemoteException;
@@ -88,5 +89,10 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.util.Collection getInactiveApplicationsByProvider(int providerID) throws java.rmi.RemoteException;
  public java.util.Map getProviderAreaMap(java.util.Collection schoolAreas, java.util.Locale locale, String emptyString) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getApplication(int childID, int choiceNumber) throws java.rmi.RemoteException;
-
+ public java.util.Collection getQueueChoices(int childID) throws java.rmi.RemoteException;
+ public int getPositionInQueue(se.idega.idegaweb.commune.childcare.data.ChildCareQueue queue) throws java.rmi.RemoteException;
+ public boolean insertApplications(com.idega.user.data.User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, java.sql.Date[] queueDates, boolean[] hasPriority) throws java.rmi.RemoteException;
+ public boolean insertApplications(com.idega.user.data.User user, int provider[], String[] dates, String message, int childID, java.sql.Date[] queueDates, boolean[] hasPriority) throws java.rmi.RemoteException;
+ public void setChildCareQueueExported(se.idega.idegaweb.commune.childcare.data.ChildCareQueue queue) throws java.rmi.RemoteException;
+ public boolean getHasUnexportedChoices(int childID);
 }
