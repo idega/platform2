@@ -3,8 +3,10 @@
 package com.idega.block.quote.data;
 
 import java.sql.*;
+import java.util.Locale;
 import com.idega.data.*;
 import com.idega.core.data.ICLocale;
+import com.idega.block.text.business.TextFinder;
 
 public class QuoteEntity extends GenericEntity{
 
@@ -18,7 +20,7 @@ public class QuoteEntity extends GenericEntity{
 
   public void insertStartData()throws Exception{
     QuoteEntity quote = new QuoteEntity();
-      quote.setICLocaleID(1);
+      quote.setICLocaleID(TextFinder.getLocaleId(new Locale("is","IS")));
       quote.setQuoteAuthor("Einar Már Guðmundsson");
       quote.setQuoteText("Byltingin er bömmer, frelsið er bara flipp.");
       quote.insert();

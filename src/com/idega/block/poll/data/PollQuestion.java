@@ -19,18 +19,6 @@ public class PollQuestion extends GenericEntity{
 		super(id);
 	}
 
-  public void insertStartData()throws Exception{
-    PollQuestion question = new PollQuestion();
-      question.insert();
-
-    LocalizedText text = new LocalizedText();
-      text.setLocaleId(1);
-      text.setHeadline("Is this a question?");
-      text.insert();
-
-    text.addTo(question);
-  }
-
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
     addAttribute(getColumnNameUserID(), "User", true, true, Integer.class);
