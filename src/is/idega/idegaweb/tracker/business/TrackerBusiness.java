@@ -1,12 +1,11 @@
 package is.idega.idegaweb.tracker.business;
 
+import com.idega.data.*;
 import java.util.*;
 import is.idega.idegaweb.tracker.data.*;
 
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWCacheManager;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityBulkUpdater;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBDomain;
 import com.idega.builder.data.IBPage;
@@ -161,13 +160,22 @@ public class TrackerBusiness {
 
   public static ArrayList getPageHitsArrayList(){
     ArrayList list = new ArrayList();
-
-    if( pageHits!=null ){
-      Iterator iter = pageHits.keySet().iterator();
-        while (iter.hasNext()) {
-          PageStatistics item = (PageStatistics) pageHits.get((String)iter.next());
-          list.add(item);
-        }
+    try {
+      if( pageHits!=null ){
+        PageStatisticsHome rhome = (PageStatisticsHome)IDOLookup.getHome(PageStatistics.class);
+        Iterator iter = pageHits.keySet().iterator();
+        String key;
+          while (iter.hasNext()) {
+            key = (String)iter.next();
+            PageStatistics page = rhome.create();
+            page.setPageId(Integer.parseInt(key));
+            page.setHits(((Integer)pageHits.get(key)).intValue());
+            list.add(page);
+          }
+      }
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
     }
 
     return list;
@@ -321,7 +329,7 @@ public class TrackerBusiness {
   public static void saveStatsToDB(){
     notWritingToDB = false;//stop updating for a while
 /*
-    saveMapToDB(pages);
+    saveMapToDB(5);
     saveMapToDB(referers);
     saveMapToDB(agents);
 
