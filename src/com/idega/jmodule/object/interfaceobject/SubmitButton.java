@@ -149,7 +149,8 @@ private void printButton(ModuleInfo modinfo) throws IOException{
         if (usingControlParameter){
           //this.includedParameter.print(modinfo);
           //System.out.println("includedParameter!=null");
-          this.getParentForm().setControlParameter(parameterName,"");
+          //this.getParentForm().setControlParameter(parameterName,"");
+          this.getParentForm().add(new Parameter(parameterName,""));
           this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
         }
 
