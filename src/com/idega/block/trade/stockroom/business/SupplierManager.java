@@ -218,6 +218,7 @@ public class SupplierManager {
       PermissionGroup pGroup = getPermissionGroup(supplier);
       List permUsers = getUsersInPermissionGroup(supplier);
 
+      if (permUsers != null)
       allUsers.removeAll(permUsers);
 
       return allUsers;
@@ -240,23 +241,27 @@ public class SupplierManager {
   }
 
   public static List getUsersIncludingResellers(Supplier supplier, Object objBetweenResellers) {
-      System.err.println("On my way");
     List users = getUsers(supplier);
+    List temp;
     if (users == null) users = com.idega.util.ListUtil.getEmptyList();
     Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
     while (resellers.hasNext()) {
-      users.addAll(ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next(), objBetweenResellers));
+      temp = ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next(), objBetweenResellers);
+      if (temp != null)
+      users.addAll(temp);
     }
-    System.err.println("USERS.size() : "+users.size());
     return users;
   }
 
   public static List getUsersIncludingResellers(Supplier supplier) {
     List users = getUsers(supplier);
+    List temp;
     if (users == null) users = com.idega.util.ListUtil.getEmptyList();
     Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
     while (resellers.hasNext()) {
-      users.addAll(ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next()));
+      temp = ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next());
+      if (temp != null)
+      users.addAll(temp);
     }
     return users;
   }

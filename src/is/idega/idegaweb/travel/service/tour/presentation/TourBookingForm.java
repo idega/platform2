@@ -352,10 +352,10 @@ public class TourBookingForm extends TravelManager {
           if (super.user != null) {
             ++row;
             List users = null;
-            if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
-            if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
-            //if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
-            //if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
+//            if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
+//            if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
+            if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
+            if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
             if (users == null) users = com.idega.util.ListUtil.getEmptyList();
             usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
             usersDrop.setSelectedElement(Integer.toString(super.userId));
@@ -882,7 +882,6 @@ public class TourBookingForm extends TravelManager {
             table.setAlignment(3,row,"right");
             table.setAlignment(4,row,"right");
 
-            /*
             if (super.user != null) {
               ++row;
               table.mergeCells(1,row,6,row);
@@ -906,7 +905,8 @@ public class TourBookingForm extends TravelManager {
               table.setAlignment(1,row, "right");
               table.add(tUser, 1, row);
               table.add(usersDrop, 2 ,row);
-            }*/
+            }
+
             ++row;
             table.mergeCells(1,row,6,row);
             table.add(hr,1,row);
@@ -919,10 +919,6 @@ public class TourBookingForm extends TravelManager {
             }
             table.add(new HiddenInput(this.BookingAction,this.BookingParameter),6,row);
 
-            //table.setColumnAlignment(1,"right");
-            //table.setColumnAlignment(2,"left");
-            //table.setColumnAlignment(3,"right");
-            //table.setColumnAlignment(4,"left");
             Text starText = (Text) theText.clone();
               starText.setFontColor(WHITE);
               starText.setText(iwrb.getLocalizedString("travel.fields_marked_with_a_star","* Fields marked with a star must be filled."));
@@ -952,7 +948,7 @@ public class TourBookingForm extends TravelManager {
     DropdownMenu usersDrop = new DropdownMenu("ic_user");
     User usr = null;
     for (int i = 0; i < users.size(); i++) {
-      if (users.get(i).equals(null)) {
+      if (users.get(i) ==null) {
         System.err.println("User == null");
         if (i != (users.size() -1)) {
           usr = (User) users.get(i+1);

@@ -201,15 +201,12 @@ public class ProductBusiness {
 
 
   public static List getProducts(int supplierId, idegaTimestamp stamp) {
-    List products = null;
+/*    List products = null;
 
       try {
-          /**
-           * @todo Oracle support...
-           */
-          List tempProducts = getProducts(supplierId);
+           //@todo Oracle support...
 
-          if (tempProducts.size() > 0) {
+System.err.println("getProducts 1");
             idegaCalendar calendar = new idegaCalendar();
 
             int dayOfWeek = calendar.getDayOfWeek(stamp.getYear(),stamp.getMonth(),stamp.getDay());
@@ -221,6 +218,7 @@ public class ProductBusiness {
             String Ttable = Timeframe.getTimeframeTableName();
             String Ptable = Product.getProductEntityName();
             String Stable = Supplier.getSupplierTableName();
+System.err.println("getProducts 2");
 
             StringBuffer timeframeSQL = new StringBuffer();
               timeframeSQL.append("SELECT "+Ptable+".* FROM  "+Ttable+", "+Ptable+","+middleTable);
@@ -251,16 +249,20 @@ public class ProductBusiness {
               timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName());
 //              timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName()+","+Ptable+"."+Product.getColumnNameProductName());
 
-//            System.err.println(timeframeSQL.toString());
+            System.err.println(timeframeSQL.toString());
+System.err.println("getProducts 3");
             products = EntityFinder.findAll(Product.getStaticInstance(Product.class),timeframeSQL.toString());
+System.err.println("getProducts 4");
 
-          }
 
       }catch(SQLException sql) {
         sql.printStackTrace(System.err);
       }
 
     return products;
+*/
+    return getProducts(supplierId, stamp, new idegaTimestamp(stamp));
+
   }
 
 

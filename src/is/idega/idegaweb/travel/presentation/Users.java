@@ -310,10 +310,15 @@ public class Users extends TravelManager {
 
     boolean inUse = true;
     boolean passwordsOK = false;
+    boolean passwordUpdate = true;
 
     if (passOne != null && passTwo != null && !passOne.equals("") && passOne.equals(passTwo)) {
       passwordsOK = true;
+    }else if (passOne.equals("") && passTwo.equals("")) {
+      passwordsOK = true;
+      passwordUpdate = false;
     }
+
 
     if (login != null) {
       if (!login.equals(""))
@@ -342,11 +347,13 @@ public class Users extends TravelManager {
         }else {
           user = new User(Integer.parseInt(userId));
           ub.updateUser(user.getID(), name, "", "", name, "staff", null, null, null);
-          LoginTable lt = LoginDBHandler.getUserLogin(Integer.parseInt(userId));
-          if (lt == null) {
-            LoginDBHandler.createLogin(user.getID(), login, passOne);
-          }else {
-            LoginDBHandler.updateLogin(user.getID(), login, passOne);
+          if (passwordUpdate) {
+            LoginTable lt = LoginDBHandler.getUserLogin(Integer.parseInt(userId));
+            if (lt == null) {
+              LoginDBHandler.createLogin(user.getID(), login, passOne);
+            }else {
+              LoginDBHandler.updateLogin(user.getID(), login, passOne);
+            }
           }
           removeUserFromAllGroups(user);
         }
@@ -386,7 +393,7 @@ public class Users extends TravelManager {
 
     if (!passwordsOK) {
       ++row;
-      table.add(getText(_iwrb.getLocalizedString("travel.passwords_not_the_save","Password not the save")), 1, row);
+      table.add(getText(_iwrb.getLocalizedString("travel.passwords_not_the_same","Password not the same")), 1, row);
     }
 
     if (!userCreated) {

@@ -83,7 +83,7 @@ public class Statistics extends TravelManager {
         }else {
           iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
         }
-        if (productId != null) {
+        if (productId != null && !productId.equals("-1")) {
           product = new Product(Integer.parseInt(productId));
           service = tsb.getService(product);
           tour = TourBusiness.getTour(product);

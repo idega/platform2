@@ -576,7 +576,9 @@ public class ResellerManager {
     try {
       PermissionGroup pGroup = getPermissionGroup(reseller);
       List users = UserBusiness.getUsersInGroup(pGroup);
-      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      if (users != null) {
+        java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      }
       return users;
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -590,7 +592,9 @@ public class ResellerManager {
       PermissionGroup pGroup = getPermissionGroup(reseller);
       List permUsers = getUsersInPermissionGroup(reseller);
 
-      allUsers.removeAll(permUsers);
+      if (permUsers != null) {
+        allUsers.removeAll(permUsers);
+      }
 
       return allUsers;
     }catch (SQLException sql) {
@@ -603,7 +607,9 @@ public class ResellerManager {
     try {
       ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
       List users = UserBusiness.getUsersInGroup(sGroup);
-      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      if (users != null) {
+         java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      }
       return users;
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -614,10 +620,13 @@ public class ResellerManager {
   public static List getUsersIncludingSubResellers(Reseller reseller) {
     Iterator childs = ResellerManager.getResellerChilds(reseller, Reseller.getColumnNameName());
     List users = getUsers(reseller);
+    List temp;
 
     while (childs.hasNext()) {
-      System.err.println("In iter");
-      users.addAll(getUsers((Reseller) childs.next()));
+      temp = getUsers((Reseller) childs.next());
+      if (temp != null) {
+        users.addAll(temp);
+      }
     }
     return users;
   }
@@ -625,11 +634,17 @@ public class ResellerManager {
   public static List getUsersIncludingSubResellers(Reseller reseller, Object objectBetweenResellers) {
     Iterator childs = ResellerManager.getResellerChilds(reseller, Reseller.getColumnNameName());
     List users = getUsers(reseller);
+    List temp;
 
     while (childs.hasNext()) {
-      System.err.println("In iter");
-      users.add(objectBetweenResellers);
-      users.addAll(getUsers((Reseller) childs.next()));
+      if (objectBetweenResellers != null) {
+        users.add(objectBetweenResellers);
+      }
+
+      temp = getUsers((Reseller) childs.next());
+      if (temp != null) {
+        users.addAll(temp);
+      }
     }
     System.err.println("Ur iter");
     return users;

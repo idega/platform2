@@ -116,7 +116,7 @@ public class Booking extends TravelManager {
         }else {
           iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",sProductId);
         }
-        if (sProductId != null) {
+        if (sProductId != null && !sProductId.equals("-1")) {
           productId = Integer.parseInt(sProductId);
           product = new Product(productId);
           service = tsb.getService(product);
@@ -154,6 +154,7 @@ public class Booking extends TravelManager {
   private void displayForm(IWContext iwc, PresentationObject contentTableForm) throws Exception{
 
       Form topTable = getTopTable(iwc);
+          add(Text.BREAK);
 
       if ((supplier != null) || (reseller != null) || ((supplier == null) && (reseller == null) && (product == null)) ) {
           add(topTable);
@@ -195,15 +196,14 @@ public class Booking extends TravelManager {
         topTable.setBorder(0);
         topTable.setWidth("90%");
 
-      Text tframeText = (Text) theText.clone();
-          tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
-          tframeText.addToText(":");
+      Text dateText = (Text) theText.clone();
+          dateText.setText(iwrb.getLocalizedString("travel.date","Date"));
+          dateText.addToText(":");
 
       DropdownMenu trip = null;
       try {
         if (supplier != null) {
           trip = ProductBusiness.getDropdownMenuWithProducts(supplierId);
-//          trip = new DropdownMenu(ProductBusiness.getProducts(supplierId));
         }else if (reseller != null) {
           trip = new DropdownMenu(ResellerManager.getProductsForReseller(resellerId ));
         }else if (product == null) {
@@ -223,19 +223,23 @@ public class Booking extends TravelManager {
           nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
           nameText.addToText(":");
 
+
+      DateInput dateInp = new DateInput("IWCalendar");
+        dateInp.setDate(stamp.getSQLDate());
+
       topTable.setColumnAlignment(1,"right");
       topTable.setColumnAlignment(2,"left");
       topTable.add(nameText,1,1);
       topTable.add(trip,2,1);
-//      topTable.add(tframeText,3,1);
-//      topTable.add(year,4,1);
+      topTable.add(dateText,3,1);
+      topTable.add(dateInp,4,1);
 
       topTable.setAlignment(5,1,"right");
       topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif"),"", ""),5,1);
 
-      topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
-      topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
-      topTable.add(new HiddenInput("year",Integer.toString(stamp.getYear())));
+//      topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
+//      topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
+//      topTable.add(new HiddenInput("year",Integer.toString(stamp.getYear())));
 
       return form;
   }

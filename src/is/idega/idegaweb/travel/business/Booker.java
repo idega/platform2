@@ -333,6 +333,18 @@ public class Booker {
     return returner;
   }
 
+  public static Booking[] getBookings(List products, idegaTimestamp stamp) {
+    if (products != null) {
+      int[] ids = new int[products.size()];
+      Product prod;
+      for (int i = 0; i < ids.length; i++) {
+        prod = (Product) products.get(i);
+        ids[i] = prod.getID();
+      }
+      return getBookings(ids, stamp, new int[]{});
+    }
+    return new Booking[]{};
+  }
 
   public static Booking[] getBookings(int serviceId, idegaTimestamp stamp) {
     return getBookings(serviceId,stamp,new int[]{});
@@ -343,14 +355,22 @@ public class Booker {
   }
 
   public static Booking[] getBookings(int serviceId, idegaTimestamp stamp, int[] bookingTypeIds) {
+    return getBookings(new int[]{serviceId}, stamp, bookingTypeIds);
+  }
+
+
+  public static Booking[] getBookings(int[] serviceIds, idegaTimestamp stamp, int[] bookingTypeIds) {
     Booking[] returner = {};
     StringBuffer sql = new StringBuffer();
     try {
 
         sql.append("Select * from "+GeneralBooking.getBookingTableName());
-        sql.append(" where ");
-        sql.append(GeneralBooking.getServiceIDColumnName()+"="+serviceId);
-        sql.append(" and ");
+        sql.append(" where "+GeneralBooking.getServiceIDColumnName()+" in (");
+        for (int i = 0; i < serviceIds.length; i++) {
+          if (i > 0) sql.append(", ");
+          sql.append(serviceIds[i]);
+        }
+        sql.append(") and ");
         sql.append(GeneralBooking.getIsValidColumnName()+" = 'Y'");
         sql.append(" and ");
         sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+stamp.toSQLDateString()+"'");
