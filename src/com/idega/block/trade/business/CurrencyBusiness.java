@@ -9,19 +9,30 @@ package com.idega.block.trade.business;
  * @version 1.0
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import java.io.*;
-import java.rmi.*;
-import java.util.*;
 
-
-import com.idega.block.trade.data.*;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
-import com.idega.util.*;
-import com.idega.util.text.*;
-import com.idega.xml.*;
+import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.data.CurrencyHome;
+import com.idega.block.trade.data.CurrencyValues;
+import com.idega.data.EntityBulkUpdater;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.util.FileUtil;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
+import com.idega.xml.XMLParser;
 
 public class CurrencyBusiness {
 
