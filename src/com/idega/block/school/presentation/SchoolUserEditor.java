@@ -554,9 +554,9 @@ public class SchoolUserEditor extends Block {
 		String category = getSchoolUserBusiness(iwc).getSchoolCategory(school);
 		Group priGroup = null;
 		try {
-			if (category.equalsIgnoreCase("SCHOOL"))
+			if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory()))
 				priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
-			else if (category.equalsIgnoreCase("CHILDCARE"))
+			else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory()))
 				priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
 		}
 		catch (CreateException e1) {

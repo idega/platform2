@@ -150,9 +150,9 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			while (iter.hasNext()) {
 				sType = (SchoolType)(iter.next());
 				sCat = sType.getSchoolCategory();
-				if (sCat != null && sCat.equals("SCHOOL")){
+				if (sCat != null && sCat.equals(getSchoolBusiness().getElementarySchoolSchoolCategory())){
 					SCHOOL = true;
-				}else if (sCat != null && sCat.equals("CHILDCARE")) {
+				}else if (sCat != null && sCat.equals(getSchoolBusiness().getChildCareSchoolCategory())) {
 					CHILDCARE = true;
 				}
 			}
@@ -160,10 +160,10 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		
 		Collection coll = new Vector();
 		if (SCHOOL) {
-			coll.add("SCHOOL");	
+			coll.add(getSchoolBusiness().getElementarySchoolSchoolCategory());	
 		}
 		if (CHILDCARE) {
-			coll.add("CHILDCARE");	
+			coll.add(getSchoolBusiness().getChildCareSchoolCategory());	
 		}
 		
 		return coll;
@@ -192,12 +192,12 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				category = "BOTH";
 			}
 
-			if (category.equals("SCHOOL") || category.equals("BOTH")) {
+			if (category.equals(getSchoolBusiness().getElementarySchoolSchoolCategory()) || category.equals("BOTH")) {
 				userTypes.add(new String[] {"school.headmaster", "Headmaster", Integer.toString(USER_TYPE_HEADMASTER) });
 				userTypes.add(new String[] {"school.assistant_headmaster", "Assistant headmaster", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
-			}else if (category.equals("CHILDCARE")) {
+			}else if (category.equals(getSchoolBusiness().getChildCareSchoolCategory())) {
 				userTypes.add(new String[] {"school.manager", "Manager", Integer.toString(USER_TYPE_HEADMASTER) });
 				userTypes.add(new String[] {"school.assistant_manager", "Assistant manager", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
@@ -219,13 +219,13 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 					}
 				}	
 			}
-			return "SCHOOL";
+			return getSchoolBusiness().getElementarySchoolSchoolCategory();
 		}
 		catch (IDORelationshipException e) {
-			return "SCHOOL";
+			return getSchoolBusiness().getElementarySchoolSchoolCategory();
 		}
 		catch (FinderException e) {
-			return "SCHOOL";
+			return getSchoolBusiness().getElementarySchoolSchoolCategory();
 		}
 	}
 

@@ -107,7 +107,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		_user = iwc.getCurrentUser();
 
 		if (_user != null) {
-			_schoolTypes = getSchoolTypes(iwc, "CHILDCARE");
+			_schoolTypes = getSchoolTypes(iwc, getChildCareBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory());
 			_areas = getAreas(iwc);
 
 			setResourceBundle(getResourceBundle(iwc));

@@ -5,12 +5,15 @@ import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ui.*;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.presentation.text.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextFormat;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolType;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
 import com.idega.business.IBOLookup;
 
@@ -126,7 +129,7 @@ public class SchoolTypeEditor extends Block {
     return T;
   }
 
-  public PresentationObject getInputTable(SchoolType type){
+  public PresentationObject getInputTable(SchoolType type) throws RemoteException {
     Table T = new Table(3,6);
     T.mergeCells(1,1,3,1);
     T.add(tFormat.format(iwrb.getLocalizedString("school_type","Schooltype"),tFormat.TITLE),1,1);
@@ -135,9 +138,8 @@ public class SchoolTypeEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
     T.add(tFormat.format(iwrb.getLocalizedString("localization_key","Key")),1,5);
 
-    DropdownMenu drpCategory = new DropdownMenu("sch_type_cat");
-    drpCategory.addMenuElement("CHILDCARE",iwrb.getLocalizedString("childcare","Childcare"));
-    drpCategory.addMenuElement("SCHOOL",iwrb.getLocalizedString("school","School"));
+		SelectorUtility util = new SelectorUtility();
+		DropdownMenu drpCategory = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), sbBean.getSchoolManagementTypes(), "getLocalizedKey", iwrb);
 
     TextInput inputName = new TextInput("sch_type_name");
     TextInput inputKey = new TextInput("sch_type_lockey");

@@ -17,6 +17,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
@@ -63,25 +64,13 @@ import com.idega.util.IWTimestamp;
 public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness {
 
 
-	private static String CHILDCARE_SCHOOL_CATEGORY="CHILDCARE";
-	private static String ELEMENTARY_SCHOOL_CATEGORY="SCHOOL";
 	public static final String GROUP_TYPE_SCHOOL_GROUP = "school_staff_group";
 	
-	public static String MANAGEMENT_TYPE_PRIVATE = "school_man_type_private";
-	public static final int MANAGEMENT_TYPE_PRIVATE_ID = 1;
-	public static String MANAGEMENT_TYPE_PUBLIC = "school_man_type_public";
-	public static final int MANAGEMENT_TYPE_PUBLIC_ID = 2;
-
-	/**
-	 * Added by Kelly (kelly@lindman.se), 14 may 2003
-	 * Schools now have three management types
-	 */
-	public static final int MANAGEMENT_TYPE_COMM_ID = 1; // Communal management
-	public static String MANAGEMENT_TYPE_COMM = "school_man_type_communal";
-	public static final int MANAGEMENT_TYPE_INDE_ID = 2; // Independent management 
-	public static String MANAGEMENT_TYPE_INDE = "school_man_type_independent";
-	public static final int MANAGEMENT_TYPE_COOP_ID = 3; // Cooperative management
-	public static String MANAGEMENT_TYPE_COOP = "school_man_type_coop";
+	private static SchoolCategory SCHOOL_CATEGORY_CHILD_CARE;
+	private static SchoolCategory SCHOOL_CATEGORY_ELEMENTARY_SCHOOL;
+	private static SchoolCategory SCHOOL_CATEGORY_HIGH_SCHOOL;
+	private static SchoolCategory SCHOOL_CATEGORY_COLLEGE;
+	private static SchoolCategory SCHOOL_CATEGORY_UNIVERSITY;
 
 
 	public SchoolHome getSchoolHome() throws java.rmi.RemoteException {
@@ -119,6 +108,71 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		catch (FinderException e) {
 			return null;
 		}
+	}
+	
+	public SchoolCategory getCategoryChildcare() throws RemoteException {
+		if (SCHOOL_CATEGORY_CHILD_CARE == null) {
+			try {
+				SCHOOL_CATEGORY_CHILD_CARE = getSchoolCategoryHome().findChildcareCategory();
+			}
+			catch (FinderException e) {
+				SCHOOL_CATEGORY_CHILD_CARE = null;
+			}
+		}
+			
+		return SCHOOL_CATEGORY_CHILD_CARE;
+	}
+	
+	public SchoolCategory getCategoryElementarySchool() throws RemoteException {
+		if (SCHOOL_CATEGORY_ELEMENTARY_SCHOOL == null) {
+			try {
+				SCHOOL_CATEGORY_ELEMENTARY_SCHOOL = getSchoolCategoryHome().findElementarySchoolCategory();
+			}
+			catch (FinderException e) {
+				SCHOOL_CATEGORY_ELEMENTARY_SCHOOL = null;
+			}
+		}
+			
+		return SCHOOL_CATEGORY_ELEMENTARY_SCHOOL;
+	}
+	
+	public SchoolCategory getCategoryHighSchool() throws RemoteException {
+		if (SCHOOL_CATEGORY_HIGH_SCHOOL == null) {
+			try {
+				SCHOOL_CATEGORY_HIGH_SCHOOL = getSchoolCategoryHome().findHighSchoolCategory();
+			}
+			catch (FinderException e) {
+				SCHOOL_CATEGORY_HIGH_SCHOOL = null;
+			}
+		}
+			
+		return SCHOOL_CATEGORY_HIGH_SCHOOL;
+	}
+	
+	public SchoolCategory getCategoryCollege() throws RemoteException {
+		if (SCHOOL_CATEGORY_COLLEGE == null) {
+			try {
+				SCHOOL_CATEGORY_COLLEGE = getSchoolCategoryHome().findCollegeCategory();
+			}
+			catch (FinderException e) {
+				SCHOOL_CATEGORY_COLLEGE = null;
+			}
+		}
+			
+		return SCHOOL_CATEGORY_COLLEGE;
+	}
+	
+	public SchoolCategory getCategoryUniversity() throws RemoteException {
+		if (SCHOOL_CATEGORY_UNIVERSITY == null) {
+			try {
+				SCHOOL_CATEGORY_UNIVERSITY = getSchoolCategoryHome().findUniversityCategory();
+			}
+			catch (FinderException e) {
+				SCHOOL_CATEGORY_UNIVERSITY = null;
+			}
+		}
+			
+		return SCHOOL_CATEGORY_UNIVERSITY;
 	}
 	
 	public Collection getSchoolManagementTypes() throws RemoteException {
@@ -609,22 +663,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public String getSchoolManagementTypeString(int managementTypeId) {
-		/**
-		 * Added three managemnent types
-		 * by Kelly (kelly@lindman.se), 14 may 2003
-		 */
-		switch (managementTypeId) {
-			case MANAGEMENT_TYPE_COMM_ID :
-				return MANAGEMENT_TYPE_COMM;
-			case MANAGEMENT_TYPE_INDE_ID :
-				return MANAGEMENT_TYPE_INDE;
-			case MANAGEMENT_TYPE_COOP_ID :
-				return MANAGEMENT_TYPE_COOP;
-		}
-		return null;
-	}
-	
 	/**
 	 * @deprecated SHOULD NOT BE HERE
 	 */
@@ -895,22 +933,28 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	/**
 	 * @return The School type key registered for Childcare school types.
 	 */
-	public String getChildCareSchoolCategory(){
-		return CHILDCARE_SCHOOL_CATEGORY;
+	public String getChildCareSchoolCategory() throws RemoteException {
+		SchoolCategory category = getCategoryChildcare();
+		if (category != null)
+			return category.getCategory();
+		return null;
 	}
 
 	/**
 	 * @return The School type key registered for Elementary school types.
 	 */
-	public String getElementarySchoolSchoolCategory(){
-		return ELEMENTARY_SCHOOL_CATEGORY;
+	public String getElementarySchoolSchoolCategory() throws RemoteException{
+		SchoolCategory category = getCategoryElementarySchool();
+		if (category != null)
+			return category.getCategory();
+		return null;
 	}
 
-	public Collection findAllSchoolTypesForChildCare() {
+	public Collection findAllSchoolTypesForChildCare() throws RemoteException {
 		return findAllSchoolTypesInCategory(getChildCareSchoolCategory());
 	}
 
-	public Collection findAllSchoolTypesForSchool() {
+	public Collection findAllSchoolTypesForSchool() throws RemoteException {
 		return findAllSchoolTypesInCategory(getElementarySchoolSchoolCategory());
 	}
 

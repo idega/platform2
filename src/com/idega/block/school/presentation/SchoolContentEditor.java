@@ -33,6 +33,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.UserBusiness;
 //import com.idega.user.data.User;
 
@@ -170,10 +171,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 		areaCode.setSize(7);
 //		zipArea.setSize(20);
 		
-		DropdownMenu manType = new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE);
-		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_COMM_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_COMM_ID), "Communal"));
-		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_INDE_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_INDE_ID), "Independent"));
-		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_COOP_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_COOP_ID), "Cooperative"));
+		SelectorUtility util = new SelectorUtility();
+		DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedKey", _iwrb);
 
 		TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
 		TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
@@ -217,8 +216,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 			if ( _school.getSchoolFax() != null) {
 				fax.setContent(_school.getSchoolFax());
 			}
-			if ( _school.getSchoolManagermentType() != -1) {
-				manType.setSelectedElement(_school.getSchoolManagermentType());
+			if ( _school.getSchoolManagementType() != null) {
+				manType.setSelectedElement(_school.getSchoolManagementTypeString());
 			}
 			if ( _school.getMapUrl() != null ) {
 				mapUrl.setContent(_school.getMapUrl());	
@@ -405,7 +404,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				}
 				if (manType != null && !manType.equals("-1")) {
 					try {
-						_school.setSchoolManagementType(Integer.parseInt(manType));
+						_school.setSchoolManagementType(manType);
 					}catch (NumberFormatException e){
 						e.printStackTrace(System.err);
 					}

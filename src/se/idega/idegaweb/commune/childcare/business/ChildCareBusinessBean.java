@@ -2199,7 +2199,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (schoolAreas != null) {
 				List areas = new ArrayList(schoolAreas);
 
-				Collection schoolTypes = getSchoolBusiness().findAllSchoolTypesInCategory("CHILDCARE");
+				Collection schoolTypes = getSchoolBusiness().findAllSchoolTypesInCategory(getSchoolBusiness().getChildCareSchoolCategory());
 				Iterator iter = areas.iterator();
 				while (iter.hasNext()) {
 					SortedMap providerMap = new TreeMap(new SchoolComparator(locale));

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import com.idega.block.school.business.SchoolUserBusiness;
+import com.idega.block.school.data.SchoolManagementType;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Email;
 import com.idega.core.data.EmailHome;
@@ -130,11 +131,17 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 
 		// Moved the management type here  (Kelly)
-		String manType = getSchoolBusiness(_iwc).getSchoolManagementTypeString(_school.getSchoolManagermentType());
+		String manType = null;
+		if (_school != null) {
+			SchoolManagementType type = _school.getSchoolManagementType();
+			if (type != null)
+				manType = _iwrb.getLocalizedString(type.getLocalizedKey(), type.getName());
+		}
+		
 		if (manType != null) {
 			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
 			++row;
-			table.add(getText(_iwrb.getLocalizedString(manType)), 1, row);
+			table.add(getText(manType), 1, row);
 		}
 		if (useBreak) {
 			++row;
@@ -288,7 +295,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 	private boolean isElementarySchool() {
 		try {
 			String category = getSchoolUserBusiness(_iwc).getSchoolCategory(_school);
-			if (category.equalsIgnoreCase("SCHOOL")) {
+			if (category.equalsIgnoreCase(getSchoolUserBusiness(_iwc).getSchoolBusiness().getElementarySchoolSchoolCategory())) {
 				return true;
 			}
 		} catch (Exception e) {
