@@ -165,7 +165,7 @@ public class Medication extends EHealthBlock {
 		
 		String medicName[] = {"Furix", "Salazoppyrin", "Salazoppyrin", "Alvedon", "Furix"};
 		String form[] = {"Tabl", "Tabl", "Tabl", "Tabl", "Tabl", "Tabl"};
-		String dose[] = {"20 mg", "500 mg", "500 mg", "500 mg", "20 mg"};
+		String dose[] = {"40 mg", "500 mg", "500 mg", "500 mg", "40 mg"};
 		String caregivers[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Alve Don"};
 		String dates[] = {"2004-10-11", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
 		
