@@ -22,6 +22,7 @@ private boolean isSetAsFloat;
 private boolean isSetAsAlphabetical;
 private boolean isSetAsEmail;
 private boolean isSetAsNotEmpty;
+private boolean isSetAsIcelandicSSNumber;
 
 
 private String integersErrorMessage;
@@ -29,6 +30,7 @@ private String floatErrorMessage;
 private String alphabetErrorMessage;
 private String emailErrorMessage;
 private String notEmptyErrorMessage;
+private String icelandicSSNumberErrorMessage;
 
 
 public TextInput(){
@@ -50,6 +52,7 @@ public TextInput(String name,String content){
 	isSetAsAlphabetical=false;
 	isSetAsEmail=false;
 	isSetAsNotEmpty=false;
+        isSetAsIcelandicSSNumber=false;
 }
 
 public void setLength(int length){
@@ -124,6 +127,17 @@ public void setAsFloat(String errorMessage){
 	floatErrorMessage=errorMessage;
 }
 
+public void setAsIcelandicSSNumber(){
+       this.setAsFloat("Please only a Icelandic social security number in "+this.getName());
+}
+
+//Checks if it is a valid "kennitala" (social security number)
+public void setAsIcelandicSSNumber(String errorMessage){
+        isSetAsIntegers=true;
+        isSetAsIcelandicSSNumber=true;
+	icelandicSSNumberErrorMessage=errorMessage;
+}
+
 public void setAsAlphabetictext(){
 	this.setAsAlphabeticText("Please use only alpabetical characters in "+this.getName());
 }
@@ -160,8 +174,16 @@ public void _main(ModuleInfo modinfo)throws Exception{
 		}
 
 		if (isSetAsIntegers){
+                        getParentForm().setOnSubmit("return checkSubmit(this)");
+                        setCheckSubmit();
+			getScript().addToFunction("checkSubmit","if (warnIfNotIntegers (inputs."+getName()+",'"+integersErrorMessage+"') == false ){\nreturn false;\n}\n");
+			getScript().addFunction("warnIfNotIntegers","function warnIfNotIntegers (inputbox,warnMsg) {\n \n    for(i=0; i < inputbox.value.length; i++) { \n	if (inputbox.value.charAt(i) < '0'){	\n alert ( warnMsg );\n		return false; \n	} \n	if(inputbox.value.charAt(i) > '9'){	\n alert ( warnMsg );\n		return false;\n	} \n } \n  return true;\n\n}");
+		}
+                if(isSetAsIcelandicSSNumber){
 			getParentForm().setOnSubmit("return checkSubmit(this)");
-			//Not implemented yet
+			setCheckSubmit();
+			getScript().addToFunction("checkSubmit","if (warnIfNotIcelandicSSNumber (inputs."+getName()+",'"+icelandicSSNumberErrorMessage+"') == false ){\nreturn false;\n}\n");
+			getScript().addFunction("warnIfNotIcelandicSSNumber","function warnIfNotIcelandicSSNumber (inputbox,warnMsg) {\n  \n   if (inputbox.value.length == 10){ \n       sum = inputbox.value.charAt(0)*3 + inputbox.value.charAt(1)*2 + inputbox.value.charAt(2)*7 + inputbox.value.charAt(3)*6 + inputbox.value.charAt(4)*5 + inputbox.value.charAt(5)*4 + inputbox.value.charAt(6)*3 + inputbox.value.charAt(7)*2; \n      if ((inputbox.value.charAt(8) == 11 - (sum % 11)) && ((inputbox.value.charAt(9) == 0) || (inputbox.value.charAt(9) == 8) || (inputbox.value.charAt(9) == 9))){	\n        return true; \n     }\n   }   \n     alert ( warnMsg );\n   return false;\n \n }");
 		}
 		else if(isSetAsFloat){
 			getParentForm().setOnSubmit("return checkSubmit(this)");
@@ -169,8 +191,11 @@ public void _main(ModuleInfo modinfo)throws Exception{
 		}
 		else if(isSetAsAlphabetical){
 			getParentForm().setOnSubmit("return checkSubmit(this)");
-			//Not implemented yet
+			setCheckSubmit();
+			getScript().addToFunction("checkSubmit","if (warnIfNotAlphabetical (inputs."+getName()+",'"+alphabetErrorMessage+"') == false ){\nreturn false;\n}\n");
+			getScript().addFunction("warnIfNotAlphabetical","function warnIfNotAlphabetical (inputbox,warnMsg) {\n \n    for(i=0; i < inputbox.value.length; i++) { \n	if ((inputbox.value.charAt(i) > '0') && (inputbox.value.charAt(i) < '9')){	\n alert ( warnMsg );\n		return false; \n	}  \n } \n  return true;\n\n}");
 		}
+
 		else if(isSetAsEmail){
 			getParentForm().setOnSubmit("return checkSubmit(this)");
 			setCheckSubmit();
