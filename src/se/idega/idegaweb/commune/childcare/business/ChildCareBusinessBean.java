@@ -3523,7 +3523,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		IWTimestamp weeks = new IWTimestamp();
 		weeks.addWeeks(weeksToPlacementDate);
 		
-		String applicationStatus[] = {String.valueOf(getStatusSentIn()), String.valueOf(getStatusRejected())};
+		String applicationStatus[] = {String.valueOf(getStatusSentIn())/*, String.valueOf(getStatusRejected())*/};
 		return getChildCareApplicationHome().findAllByAreaAndApplicationStatus(area, applicationStatus, caseCode, months.getDate(), weeks.getDate(), firstHandOnly);
 	}
 
