@@ -140,6 +140,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
     String select = "select s.* from "+SCHOOL+" s,sch_school_sch_school_type m where m.sch_school_type_id = "+typeId+" and m.sch_school_id = s.sch_school_id";
     return super.idoFindPKsBySQL(select);
   }
+  
+  public Collection ejbFindAllBySchoolName(String schoolName) throws javax.ejb.FinderException{
+  	return super.idoFindAllIDsByColumnBySQL(NAME,schoolName);
+  }
 
   public Collection ejbFindAllBySchoolArea(int areaId)throws javax.ejb.FinderException{
     return super.idoFindPKsBySQL("select * from "+SCHOOL+" where "+SCHOOLAREA+" = "+areaId);
@@ -218,6 +222,8 @@ public class SchoolBMPBean extends GenericEntity implements School {
   	return super.idoFindPKsBySQL(sql.toString());
   }
   
+
+   
    public static void main(String[] args){
    	System.out.println("hellu there");
    }

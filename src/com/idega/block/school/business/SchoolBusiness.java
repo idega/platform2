@@ -2,6 +2,9 @@ package com.idega.block.school.business;
 
 import javax.ejb.*;
 
+import com.idega.block.school.data.*;
+import com.idega.user.data.User;
+
 public interface SchoolBusiness extends com.idega.business.IBOService
 {
  public java.util.Collection findAllSchoolsByAreaAndType(int p0,int p1) throws java.rmi.RemoteException;
@@ -24,6 +27,11 @@ public com.idega.block.school.data.School createSchool(
 		String phone,
 		int school_type)
 		throws CreateException,java.rmi.RemoteException;
+
+public SchoolClass createSchoolClass(String schoolClassName,School school, SchoolYear year,SchoolSeason season) throws CreateException,java.rmi.RemoteException;
+public SchoolClassMember createSchoolClassMember(SchoolClass sClass, User user) throws CreateException,java.rmi.RemoteException;
+
+
 public com.idega.block.school.data.School createSchool(
 		String name,
 		String address,

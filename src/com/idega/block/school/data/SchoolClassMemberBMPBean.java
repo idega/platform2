@@ -1,7 +1,14 @@
 package com.idega.block.school.data;
 
-import com.idega.data.*;
+import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
+import com.idega.user.data.User;
 
 
 /**
@@ -17,7 +24,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
   public final static String SCHOOLCLASSMEMBER = "sch_class_member";
   public final static String MEMBER = "ic_user_id";
-  public final static String SCHOOLCLASS = "sch_school_id";
+  public final static String SCHOOLCLASS = "sch_school_class_id";
   public final static String REGISTER_DATE = "register_date";
   public final static String REGISTRATOR = "registrator";
 
@@ -55,4 +62,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public int getRegistratorId(){
     return this.getIntColumnValue(REGISTRATOR);
   }
+  
+  public Integer ejbFindByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException, RemoteException{
+  	IDOQuery sql = new IDOQuery();
+  	sql.appendSelectAllFrom(this).appendWhere().append(MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
+  	.appendAnd().append(SCHOOLCLASS).appendEqualSign().append(((Integer)schoolClass.getPrimaryKey()).intValue());
+  		
+  	return (Integer)this.idoFindOnePKBySQL(sql.toString());
+  }
+  
+  
 }

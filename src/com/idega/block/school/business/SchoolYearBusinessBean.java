@@ -16,19 +16,20 @@ import com.idega.business.IBOServiceBean;
 
 public class SchoolYearBusinessBean extends IBOServiceBean implements SchoolYearBusiness{
 
-  public SchoolYear getSchoolYear(Object primaryKey){
+  public SchoolYear getSchoolYear(Object primaryKey) throws java.rmi.RemoteException{
      try{
-      SchoolYearHome shome = (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+      SchoolYearHome shome = getSchoolYearHome();
       return shome.findByPrimaryKey(primaryKey);
     }
     catch(Exception ex){
       return null;
     }
   }
+  
 
-  public void removeSchoolYear(int id){
+  public void removeSchoolYear(int id) throws java.rmi.RemoteException{
     try{
-      SchoolYearHome shome = (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+      SchoolYearHome shome = getSchoolYearHome();
       SchoolYear area = getSchoolYear(new Integer(id));
       area.remove();
     }
@@ -38,9 +39,9 @@ public class SchoolYearBusinessBean extends IBOServiceBean implements SchoolYear
     }
   }
 
-  public Collection findAllSchoolYears()  {
+  public Collection findAllSchoolYears()   throws java.rmi.RemoteException{
     try{
-      SchoolYearHome shome = (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+      SchoolYearHome shome = getSchoolYearHome();
       return shome.findAllSchoolYears();
     }
     catch(Exception ex){
@@ -49,9 +50,9 @@ public class SchoolYearBusinessBean extends IBOServiceBean implements SchoolYear
     }
   }
 
-   public Collection findAllSchoolYearsByAge(int age)  {
+   public Collection findAllSchoolYearsByAge(int age)  throws java.rmi.RemoteException{
     try{
-      SchoolYearHome shome = (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+      SchoolYearHome shome = getSchoolYearHome();
       return shome.findAllByAge(age);
     }
     catch(Exception ex){
@@ -62,7 +63,7 @@ public class SchoolYearBusinessBean extends IBOServiceBean implements SchoolYear
 
   public void storeSchoolYear(int pk,String name,String info,int age) throws java.rmi.RemoteException{
 
-      SchoolYearHome shome = (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+      SchoolYearHome shome = getSchoolYearHome();
       SchoolYear newYear;
       try{
         if(pk>0){
@@ -85,6 +86,10 @@ public class SchoolYearBusinessBean extends IBOServiceBean implements SchoolYear
       newYear.setSchoolYearAge(age);
       newYear.store();
     }
+    
+    public SchoolYearHome getSchoolYearHome() throws java.rmi.RemoteException{
+    	return (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+    } 
 
 
 }

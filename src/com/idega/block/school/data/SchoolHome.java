@@ -10,5 +10,6 @@ public interface SchoolHome extends com.idega.data.IDOHome
  public java.util.Collection findAllBySchoolGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findAllSchools()throws javax.ejb.FinderException, java.rmi.RemoteException;
-
+ public java.util.Collection findAllBySchoolName(String schoolName) throws javax.ejb.FinderException, java.rmi.RemoteException;
+   
 }

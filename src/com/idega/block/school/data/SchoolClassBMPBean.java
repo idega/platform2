@@ -1,6 +1,12 @@
 package com.idega.block.school.data;
 
-import com.idega.data.*;
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 
 /**
@@ -15,7 +21,7 @@ import com.idega.data.*;
 public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
   public final static String SCHOOLCLASS = "sch_school_class";
-  public final static String SCHOOLYEAR = "sch_school_year";
+  public final static String SCHOOLYEAR = "sch_school_year_id";
   public final static String TEACHER = "ic_user_id";
   public final static String SEASON = "sch_school_season_id";
   public final static String NAME = "class_name";
@@ -39,11 +45,11 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public void setSchoolId(int id){
     this.setColumn(SCHOOL,id);
   }
-  public void setSchoolYear(String year){
+  public void setSchoolYearId(int year){
     this.setColumn(SCHOOLYEAR,year);
   }
-  public String getSchoolYear(){
-    return this.getStringColumnValue(SCHOOLYEAR);
+  public int getSchoolYearId(){
+    return this.getIntColumnValue(SCHOOLYEAR);
   }
   public void setSchoolSeasonId(int id){
     this.setColumn(SEASON,id);
@@ -62,5 +68,16 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   }
   public String getSchoolClassName(String name){
     return getStringColumnValue(NAME);
+  }
+  
+  public Integer ejbFindBySchoolClassNameSchoolSchoolYearSchoolSeason(String className, School school, SchoolYear schoolYear, SchoolSeason schoolSeason)throws FinderException ,RemoteException{
+  	IDOQuery sql = new IDOQuery();
+  	
+  	sql.appendSelectAllFrom(this).appendWhere().append(NAME).appendEqualSign().appendWithinSingleQuotes(className)
+  	.appendAnd().append(SCHOOL).appendEqualSign().append(((Integer)school.getPrimaryKey()).intValue())
+  	.appendAnd().append(SCHOOLYEAR).appendEqualSign().append(((Integer)schoolYear.getPrimaryKey()).intValue())
+  	.appendAnd().append(SEASON).appendEqualSign().append(((Integer)schoolSeason.getPrimaryKey()).intValue());
+
+  	return (Integer)super.idoFindOnePKBySQL(sql.toString());
   }
 }

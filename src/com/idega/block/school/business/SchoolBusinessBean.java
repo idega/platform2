@@ -1,20 +1,32 @@
 package com.idega.block.school.business;
-import com.idega.block.school.data.*;
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-
+import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass; 
+import com.idega.block.school.data.SchoolClassHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOServiceBean;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.business.GroupBusiness;
-import com.idega.user.data.*;
-import com.idega.user.data.User;
-import java.rmi.RemoteException;
-import javax.ejb.*;
 import com.idega.data.IDOCreateException;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupType;
+import com.idega.user.data.GroupTypeHome;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -358,6 +370,31 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
   protected UserBusiness getUserBusiness()throws RemoteException{
     return (UserBusiness)this.getServiceInstance(UserBusiness.class);
   }
+  
+  public SchoolClass createSchoolClass(String schoolClassName,School school, SchoolYear year,SchoolSeason season) throws CreateException, RemoteException{
+  	SchoolClassHome sClassHome = (SchoolClassHome) this.getIDOHome(SchoolClass.class);
+  	SchoolClass sClass = sClassHome.create();
+  	
+  	sClass.setSchoolClassName(schoolClassName);
+  	sClass.setSchoolId( ((Integer)school.getPrimaryKey()).intValue() );
+  	sClass.setSchoolSeasonId( ((Integer)season.getPrimaryKey()).intValue() );
+  	sClass.setSchoolYearId( ((Integer)year.getPrimaryKey()).intValue() );
+ 	 	
+ 	return sClass;
+  }  
+  
+  public SchoolClassMember createSchoolClassMember(SchoolClass sClass, User user) throws CreateException,java.rmi.RemoteException{
+	SchoolClassMemberHome sClassMemberHome = (SchoolClassMemberHome) this.getIDOHome(SchoolClassMember.class);
+  	SchoolClassMember sClassMember = sClassMemberHome.create();
+  	sClassMember.setSchoolClassId(((Integer)sClass.getPrimaryKey()).intValue() );
+  	sClassMember.setClassMemberId(((Integer)user.getPrimaryKey()).intValue());
+  	sClassMember.setRegisterDate(IWTimestamp.getTimestampRightNow());
+  	//NEEDS THE CURRENT USER ID FOR REGISTERING USER
+  	  	
+  	return sClassMember;
+  
+  }
+  
 
 	public Collection findAllSchoolsByType(int type)
 	{
