@@ -62,6 +62,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 
@@ -103,6 +104,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private static final String KEY_SCH_TYPE = "school_type";
 	private static final String KEY_SCH_YEAR_HOURS = "school_year_hours";
 	private static final String KEY_SCH_GROUP = "school_group";
+	
+	private static final String KEY_SELECT="select";	
 
 	
 	private static final String PAR_AMOUNT_TOTAL = KEY_AMOUNT_TOTAL;
@@ -820,6 +823,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private Table addDropDownLocalized(Table table, String parameter, String key, Collection options, int selected, String method, int col, int row) {
 		DropdownMenu dropDown = getDropdownMenuLocalized(parameter, options, method);
 		dropDown.setSelectedElement(selected);
+		String selectString = this.getResourceBundle().getLocalizedString(KEY_SELECT,"Select:");
+		dropDown.addFirstOption(new SelectOption(selectString,""));
 		return addWidget(table, key, dropDown, col, row);		
 	}
 	
