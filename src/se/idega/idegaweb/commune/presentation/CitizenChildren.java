@@ -29,6 +29,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Age;
+import com.idega.util.PersonalIDFormatter;
 
 /**
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -213,16 +214,7 @@ public class CitizenChildren extends CommuneBlock {
 	}
 	
 	private String handlePersonalID(String s){
-		StringBuffer sb = new StringBuffer();
-
-		for (int i=0; i<s.length(); i++) {
-  			 if (Character.isDigit(s.charAt(i)))
-       			sb.append(s.charAt(i));
-		}
-		sb.insert(0,"%");
-		//System.err.println("changing "+s+" to "+sb.toString());
-		return sb.toString();
-	
+		return PersonalIDFormatter.stripForDatabaseSearch(s);
 	}
 
 	private Collection getChilds(IWContext iwc, User user) {
