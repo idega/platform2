@@ -784,16 +784,6 @@ private boolean isMemberAllowedToRegister(Member member,Tournament tournament)th
 
         int memberAge = member.getAge();
 
-        /**
-
-         * TODO: Testa betur
-
-         */
-
-
-
-
-
         if (member.getMainUnionID() != 1) {
 
             TournamentGroup[] groups = tournament.getTournamentGroups();
