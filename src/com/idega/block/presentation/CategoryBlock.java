@@ -6,6 +6,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.core.data.ICCategory;
 import com.idega.block.category.business.CategoryFinder;
+import java.util.Collection;
 
 /**
  * Title:
@@ -20,19 +21,59 @@ public abstract class CategoryBlock extends Block{
 
   private ICCategory icCategory;
   private int icCategoryId = -1;
+  private int[] icCategoryIds  = new int[0];
   public final static String prmCategoryId = "catbl_catid";
   private boolean autocreate = true;
 
+  /**
+   *  Returns the first Category bound to this instance
+   */
   public int getCategoryId(){
-    return icCategoryId;
+    return icCategoryIds[0];
   }
 
+  /**
+   *  Returns an array of Category ids from
+   */
+  public int[] getCategoryIds(){
+    return icCategoryIds;
+  }
+
+  /**
+   *  Sets the first categoryId
+   */
   public void setCategoryId(int iCategoryId){
      icCategoryId = iCategoryId;
   }
 
+  /**
+   * Sets the Category ids bound to this instance
+   */
+  public void setCategoryIds(int[] iCategoryIds){
+     icCategoryIds = iCategoryIds;
+  }
+
+  /**
+   *  Turns Category autocreation on/off
+   */
   public void setAutoCreate(boolean autocreate){
     autocreate = autocreate;
+  }
+
+  /**
+   *  Returns a collection of ICCategory objects bound to this instance
+   *  specified by default type
+   */
+  public Collection getCategories(String type){
+    return CategoryFinder.getCategories(icCategoryIds,type);
+  }
+
+
+  /**
+   *  Returns a collection of ICCategory objects bound to this instance
+   */
+  public Collection getCategories(){
+    return CategoryFinder.listOfCategoryForObjectInstanceId(getICObjectInstanceID());
   }
 
   protected void initCategory(IWContext iwc){
@@ -43,7 +84,8 @@ public abstract class CategoryBlock extends Block{
         icCategory = CategoryFinder.getCategory(icCategoryId);
       }
       else if(getICObjectInstanceID() > 0){
-        icCategoryId = CategoryFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),autocreate,getCategoryType());
+        icCategoryIds = CategoryFinder.getObjectInstanceCategoryIds(getICObjectInstanceID(),autocreate,getCategoryType());
+        //icCategoryId = CategoryFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),autocreate,getCategoryType());
       }
     }
   }
@@ -64,6 +106,9 @@ public abstract class CategoryBlock extends Block{
     return obj;
   }
 
+  /**
+   *  Returns a Link to CategoryWindow
+   */
   public Link getCategoryLink(String type){
     Link L = new Link();
     L.addParameter(CategoryWindow.prmCategoryId,getCategoryId());
@@ -76,6 +121,5 @@ public abstract class CategoryBlock extends Block{
   public String getCategoryType(){
     return "no_type";
   }
-
 
 }

@@ -36,10 +36,12 @@ public class CategoryWindow extends IWAdminWindow {
   private int iCategoryId = -1;
   private int iObjectInstanceId = -1;
   private String sType = "no_type";
+  private boolean multi = false;
 
 	public static final  String prmCategoryId = "iccat_categoryid";
   public static final  String prmObjInstId = "iccat_obinstid";
 	public  final static String prmCategoryType = "iccat_type";
+  public  final static String prmMulti = "iccat_multi";
   private static final String actDelete = "iccat_del";
   private static final String actSave = "iccat_save";
   private static final String actClose = "iccat_close";
@@ -52,14 +54,15 @@ public class CategoryWindow extends IWAdminWindow {
 	private int iUserId = -1;
 
   public CategoryWindow() {
+
     setWidth(500);
-    setHeight(460);
+    setHeight(400);
     setResizable(true);
 		setUnMerged();
   }
 
   protected void control(IWContext iwc){
-    //debugParameters(iwc);
+    debugParameters(iwc);
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -76,11 +79,15 @@ public class CategoryWindow extends IWAdminWindow {
 			sType = iwc.getParameter(prmCategoryType );
 		}
 
+    multi = iwc.isParameterSet(prmMulti);
+    multi = true;
+
     if(isAdmin){
 			if(iwc.isParameterSet(actForm)){
         processCategoryForm(iwc);
       }
-      addCategoryFields(CategoryFinder.getCategory(iCategoryId));
+      //addCategoryFields(CategoryFinder.getCategory(iCategoryId));
+      getCategoryFields(CategoryFinder.getCategory(iCategoryId));
     }
     else{
       add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -91,12 +98,28 @@ public class CategoryWindow extends IWAdminWindow {
 			// saving :
 			if(iwc.isParameterSet(actSave) || iwc.isParameterSet(actSave+".x") ){
         String sName = iwc.getParameter("name");
-        String sDesc = iwc.getParameter("desc");
+        String sDesc = iwc.getParameter("info");
         String sType = iwc.getParameter(prmCategoryType);
-        String multi = iwc.getParameter("multi");
+
+
 				if(sName!=null && sType !=null){
           //System.err.println("saving category :"+iCategoryId+" icoid :"+iObjectInstanceId);
-					iCategoryId = CategoryBusiness.saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,sType,multi!=null).getID();
+
+          if(iCategoryId <= 0){
+            iCategoryId = CategoryBusiness.saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,sType,multi).getID();
+          }
+          else {
+            String[] sids= iwc.getParameterValues("id_box");
+            int[] savedids = new int[0];
+            if(sids!=null)
+             savedids = new int[sids.length];
+            for (int i = 0; i < savedids.length; i++) {
+              savedids[i] = Integer.parseInt(sids[i]);
+              System.err.println("save id "+savedids[i]);
+            }
+            CategoryBusiness.updateCategory(iCategoryId,sName,sDesc);
+            CategoryBusiness.saveRelatedCategories(iObjectInstanceId,savedids);
+          }
 				}
 			}
 			if(iwc.isParameterSet(actClose) || iwc.isParameterSet(actClose+".x") ){
@@ -106,7 +129,7 @@ public class CategoryWindow extends IWAdminWindow {
 			// deleting :
 			else if(iwc.isParameterSet(actDelete) || iwc.isParameterSet(actDelete+".x") ){
         try{
-				CategoryBusiness.deleteCategory(iCategoryId);
+				  CategoryBusiness.deleteCategory(iCategoryId);
         }
         catch(Exception ex){
           ex.printStackTrace();
@@ -190,6 +213,109 @@ public class CategoryWindow extends IWAdminWindow {
     addHiddenInput( new HiddenInput (prmObjInstId,String.valueOf(iObjectInstanceId)));
     addHiddenInput( new HiddenInput (actForm,"true"));
 
+  }
+
+   private void getCategoryFields(ICCategory eCategory){
+
+	  String sCategory= iwrb.getLocalizedString("category","Category");
+    String sName = iwrb.getLocalizedString("name","Name");
+    String sDesc = iwrb.getLocalizedString("description","Description");
+		//String sFields = iwrb.getLocalizedString("fields","Fields");
+
+		Link newLink = new Link(core.getImage("/shared/create.gif"));
+		newLink.addParameter(prmCategoryId,-1);
+		newLink.addParameter(prmObjInstId,iObjectInstanceId);
+		newLink.addParameter(actForm,"true");
+
+    /** @todo  permission handling */
+		List L = CategoryFinder.listOfCategories(sType);
+    Collection coll = CategoryFinder.collectCategoryIntegerIds(iObjectInstanceId);
+
+    int chosenId = eCategory!=null?eCategory.getID():-1;
+
+    Table T = new Table();
+    int row = 1;
+    int col = 1;
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),2,row);
+    //T.add(formatText(iwrb.getLocalizedString("info","Info")),2,row);
+    T.add(formatText(iwrb.getLocalizedString("use","Use")),1,row);
+    row++;
+    TextInput name = new TextInput("name");
+    TextInput info = new TextInput("info");
+    setStyle(name);
+    setStyle(info);
+    boolean formAdded = false;
+    if(L !=null){
+      java.util.Iterator iter = L.iterator();
+      ICCategory cat ;
+      CheckBox box;
+      RadioButton rad;
+      while(iter.hasNext()){
+        col = 1;
+        cat = (ICCategory) iter.next();
+        if(cat.getID() == chosenId){
+          name.setContent(cat.getName());
+          info.setContent(cat.getDescription());
+          T.add(name,2,row);
+          //T.add(info,2,row);
+          T.add(new HiddenInput(prmCategoryId,String.valueOf(cat.getID())));
+          formAdded = true;
+        }
+        else{
+          Link Li = new Link(formatText(cat.getName()));
+          Li.addParameter(prmCategoryId,cat.getID());
+          Li.addParameter(prmCategoryType,sType);
+          Li.addParameter(prmObjInstId,String.valueOf(iObjectInstanceId));
+          T.add(Li,2,row);
+          //T.add(formatText(cat.getDescription()),2,row);
+
+        }
+        if(multi){
+          box = new CheckBox("id_box",String.valueOf(cat.getID()));
+          box.setChecked(coll!=null && coll.contains(new Integer(cat.getID())));
+          //setStyle(box);
+          T.add(box,1,row);
+        }
+        else{
+          rad = new RadioButton("id_box",String.valueOf(cat.getID()) );
+          if(coll!=null && coll.contains(new Integer(cat.getID())))
+            rad.setSelected();
+          //setStyle(rad);
+          T.add(rad,1,row);
+        }
+        row++;
+      }
+    }
+    if(!formAdded){
+       T.add(name,1,row);
+       T.add(info,2,row);
+    }
+    else{
+      Link li = new Link(iwrb.getLocalizedImageButton("new","New"));
+      li.addParameter(prmCategoryType,sType);
+      li.addParameter(prmObjInstId,String.valueOf(iObjectInstanceId));
+      T.add(li,1,row);
+
+    }
+
+    addLeft(sCategory,T,true,false);
+
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
+		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),actClose);
+    addSubmitButton(save);
+		addSubmitButton(close);
+    addHiddenInput( new HiddenInput (prmCategoryType,sType));
+    addHiddenInput( new HiddenInput (prmObjInstId,String.valueOf(iObjectInstanceId)));
+    addHiddenInput( new HiddenInput (actForm,"true"));
+
+  }
+
+  public PresentationObject getNameInput(ICCategory node){
+    TextInput name = new TextInput("name");
+    if(node!=null){
+      name.setContent(node.getName());
+    }
+    return name;
   }
 
   public void main(IWContext iwc) throws Exception{
