@@ -42,7 +42,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		
 		try {
 			GroupBusiness groupBiz = getGroupBusiness();
-			Collection usersParentGroup = groupBiz.getParentGroupsRecursive(user);
+			Collection usersParentGroup = groupBiz.getParentGroups(user);
 			Collection childrenOfToDivisonGroup = groupBiz.getChildGroups(toDivisionGroup);
 			Collection parentsOfToDivisionGroup = groupBiz.getParentGroupsRecursive(toDivisionGroup);
 
@@ -176,7 +176,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		String body = theMessageBody.toString();
 		
 		Collection userEmails = user.getEmails();
-		if(userEmails!=null && userEmails.isEmpty()){
+		if(userEmails!=null && !userEmails.isEmpty()){
 			toEmailAddress = ((Email) userEmails.iterator().next()).getEmailAddress();
 			try {
 				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
@@ -187,7 +187,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		}
 		
 		Collection leagueEmails = fromLeagueGroup.getEmails();//is same as to league
-		if(leagueEmails!=null && leagueEmails.isEmpty()){
+		if(leagueEmails!=null && !leagueEmails.isEmpty()){
 			toEmailAddress = ((Email) leagueEmails.iterator().next()).getEmailAddress();
 			try {
 				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
@@ -198,7 +198,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		}
 		
 		Collection toRegionalEmails = toRegionalUnionGroup.getEmails();
-		if(toRegionalEmails!=null && toRegionalEmails.isEmpty()){
+		if(toRegionalEmails!=null && !toRegionalEmails.isEmpty()){
 			toEmailAddress = ((Email) toRegionalEmails.iterator().next()).getEmailAddress();
 			try {
 				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
@@ -209,7 +209,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		}
 		
 		Collection fromRegionalEmails = fromRegionalUnionGroup.getEmails();
-		if(fromRegionalEmails!=null && fromRegionalEmails.isEmpty()){
+		if(fromRegionalEmails!=null && !fromRegionalEmails.isEmpty()){
 			toEmailAddress = ((Email) fromRegionalEmails.iterator().next()).getEmailAddress();
 			try {
 				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
