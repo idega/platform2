@@ -125,7 +125,13 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
 
     public void drawUploadTable(ModuleInfo modinfo,String image_id,boolean replace){
       Form MultipartForm = new Form();
+      /**
+       * @todo Change this workaround
+       */
+      //MultipartForm.addParameter(com.idega.idegaweb.IWMainApplication.classToInstanciateParameter,this.getClass().getName());
+
       MultipartForm.setMultiPart();
+      MultipartForm.setAction(modinfo.getRequestURI()+"?"+com.idega.idegaweb.IWMainApplication.classToInstanciateParameter+"="+com.idega.idegaweb.IWMainApplication.getEncryptedClassName(this.getClass()));
       if (replace) {
         MultipartForm.add(new HiddenInput("statement","update image set image_value=?,content_type=?,image_name=? where image_id="+image_id+""));
       }
@@ -181,9 +187,12 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
 
     public void vista(ModuleInfo modinfo,Connection Conn)throws SQLException {
       int img_id = Integer.parseInt((String)modinfo.getSessionAttribute(sessImageParameter));
-      int cat_id = Integer.parseInt(modinfo.getParameter("category"));
-      Statement Stmt = Conn.createStatement();
-      Stmt.executeUpdate("INSERT INTO image_image_catagory values ("+img_id+","+cat_id+")");
-      Stmt.close();
+      String sCat_id = modinfo.getParameter("category");
+      if(sCat_id!=null){
+        int cat_id = Integer.parseInt(sCat_id);
+        Statement Stmt = Conn.createStatement();
+        Stmt.executeUpdate("INSERT INTO image_image_catagory values ("+img_id+","+cat_id+")");
+        Stmt.close();
+      }
     }
   }
