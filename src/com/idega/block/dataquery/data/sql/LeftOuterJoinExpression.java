@@ -15,9 +15,6 @@ import com.idega.util.StringHandler;
  */
 public class LeftOuterJoinExpression implements Expression {
 
-	private IDOEntityDefinition sourceDefinition = null;
-	private IDOEntityDefinition targetDefinition = null;
-
 	private String sourceAlias;
 	private String sourceKey;
 	
