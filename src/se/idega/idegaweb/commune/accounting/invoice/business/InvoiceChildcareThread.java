@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/03/10 07:42:04 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/11 17:01:15 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.139 $
+ * @version $Revision: 1.140 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -444,7 +444,12 @@ public class InvoiceChildcareThread extends BillingThread{
 							errorRelated.append(getLocalizedString("invoice.InvoiceHeader","InvoiceHeader")+":"+invoiceHeader.getPrimaryKey());
 							//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,calculationDate);
-							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract);
+
+							// if this is a discounted subvention, then amount is allready
+							// divided by the number of days
+							final boolean isDiscount = 0.0f != regulation.getDiscount ()
+									|| 0.0f != regulation.getMaxAmountDiscount();
+							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract,isDiscount);
 							
 							//Need to store the subvention row, so that it can be adjusted later if needed
 							//							if(postingDetail.getRuleSpecType().equalsIgnoreCase(RegSpecConstant.SUBVENTION) || regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(RegSpecConstant.SUBVENTION)){
@@ -452,13 +457,7 @@ public class InvoiceChildcareThread extends BillingThread{
 								highestOrderNr = postingDetail.getOrderID();
 								subventionToReduce = invoiceRecord;
 							}
-							// if this is a discounted subvention, then amount is allready
-							// divided by the number of days
-							final float amount = postingDetail.getAmount()
-									* ((0.0f != regulation.getDiscount ()
-											|| 0.0f != regulation.getMaxAmountDiscount())
-										 ? 1.0f : placementTimes.getMonths ());
-							totalSum += AccountingUtil.roundAmount(amount);
+							totalSum += invoiceRecord.getAmount ();
 						}
 						catch (BruttoIncomeException e) {
 							//Who cares!!!
@@ -874,7 +873,7 @@ public class InvoiceChildcareThread extends BillingThread{
 //		errorRelated.append("Created invoice for check Invoiceheader: "+invoiceHeader.getPrimaryKey());
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
-		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
+		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract, false);
 	}
 	
 	/**
@@ -887,12 +886,12 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws CreateException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
+	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract, boolean isDiscount) 
 		throws RemoteException, CreateException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(postingDetail.getTerm());
-		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
+		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract, isDiscount);
 	}
 	
 	/**
@@ -907,7 +906,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws RemoteException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
+	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract, boolean isDiscount) 
 		throws RemoteException{
 		invoiceRecord.setProvider(school);
 		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMember());
@@ -919,7 +918,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setPeriodEndPlacement(contract.getTerminatedDate());
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
-		invoiceRecord.setAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths()));
+		invoiceRecord.setAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*(isDiscount ? 1.0f : placementTimes.getMonths())));
 		invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVATPercent()*placementTimes.getMonths()));
 		invoiceRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
