@@ -21,6 +21,7 @@ public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements P
   private static final String COLUMN_ADDRESS="PROV_ADDRESS";
   private static final String COLUMN_PLACES="PROV_PLACES";
   private static final String COLUMN_PHONE="PROV_PHONE";
+  private static final String COLUMN_ADDITIONAL_INFO="PROV_ADD_INFO";
   private static final String COLUMN_MANAGER_NAME="PROV_MANAGER_NAME";
 
   public void initializeAttributes() {
@@ -32,7 +33,7 @@ public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements P
     this.addAttribute(COLUMN_MANAGER_NAME,"Manager Name",String.class);
     this.addAttribute(COLUMN_EMAIL,"Manager email",String.class);
     this.addAttribute(COLUMN_PLACES,"Provider places",Integer.class);
-
+    this.addAttribute(COLUMN_ADDITIONAL_INFO,"Additional info",String.class,2000);
   }
   public String getEntityName() {
     return this.TABLE_NAME;
@@ -84,5 +85,13 @@ public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements P
 
   public void setManagerName(String name){
     this.setColumn(COLUMN_MANAGER_NAME,name);
+  }
+
+  public String getAdditionalInfo(){
+    return this.getStringColumnValue(COLUMN_ADDITIONAL_INFO);
+  }
+
+  public void setAdditionalInfo(String info){
+    this.setColumn(COLUMN_ADDITIONAL_INFO,info);
   }
 }
