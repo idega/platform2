@@ -99,4 +99,13 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	 * @throws RemoteException
 	 */
 	public User getCustodianForChild(User child) throws RemoteException;
+	
+	/**
+	 * Sets the specified user as deceased and takes all actions needed
+	 * be handled here
+	 * @param userID
+	 * @param deceasedDate
+	 * @return true if successfull
+	 */
+	public boolean setUserAsDeceased(Integer userID,java.util.Date deceasedDate)throws RemoteException;
 }

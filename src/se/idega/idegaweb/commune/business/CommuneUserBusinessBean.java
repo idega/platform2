@@ -6,6 +6,7 @@ import is.idega.idegaweb.member.business.NoCustodianFound;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
@@ -35,6 +36,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusinessBean;
+import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
@@ -938,5 +940,25 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		catch (NoPhoneFoundException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * Sets the specified user as deceased all system actions taken when someone dies should
+	 * be handled here
+	 * @param userID
+	 * @param deceasedDate
+	 * @return true if successfull
+	 */
+	public boolean setUserAsDeceased(Integer userID,Date deceasedDate){
+		try {
+			UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
+			userStatusService.setUserAsDeceased(userID,deceasedDate);
+			return true;
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		//TODO add more actions when user registered as deceased 
+		return false;
 	}
  }
