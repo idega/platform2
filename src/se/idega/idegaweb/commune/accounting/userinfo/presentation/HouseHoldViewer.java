@@ -158,6 +158,9 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherOne.setSkipResultsForOneFound(false);
 		searcherOne.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
 		searcherOne.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
+		searcherOne.setPersonalIDLength(12);
+		searcherOne.setFirstNameLength(20);
+		searcherOne.setLastNameLength(20);
 		UserSearcher searcherTwo = new UserSearcher();
 		searcherTwo.setShowMiddleNameInSearch(false);
 		searcherTwo.setOwnFormContainer(false);
@@ -165,6 +168,9 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherTwo.setSkipResultsForOneFound(false);
 		searcherTwo.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
 		searcherTwo.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
+		searcherTwo.setPersonalIDLength(12);
+		searcherTwo.setFirstNameLength(20);
+		searcherTwo.setLastNameLength(20);
 
 		String prmTwo = UserSearcher.getUniqueUserParameterName("two");
 		String prmOne = UserSearcher.getUniqueUserParameterName("one");
@@ -180,8 +186,8 @@ public class HouseHoldViewer extends AccountingBlock {
 
 		//add(table);
 		//Form form = new Form();
-		//form.maintainParameter(prmOne);
-		//form.maintainParameter(prmTwo);
+		appForm.maintainParameter(prmOne);
+		appForm.maintainParameter(prmTwo);
 		//form.add(table);
 		//add(form);
 		//add(Text.getBreak());
