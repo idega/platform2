@@ -77,7 +77,7 @@ public class PrognosisInformation extends ChildCareBlock {
 		table.mergeCells(1, row, 2, row);
 		table.add(getSmallText(localize("child_care.provider_queue3months", "Children with desired placement within 3 months") + ":" + Text.NON_BREAKING_SPACE), 1, row);
 		table.add(getSmallHeader(String.valueOf(queueWithin3Months)), 1, row++);
-		
+		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 2, row);
 		table.add(getSmallText(localize("child_care.provider_queue12months", "Children with desired placement within 12 months") + ":" + Text.NON_BREAKING_SPACE), 1, row);
 		table.add(getSmallHeader(String.valueOf(queueWithin12Months)), 1, row++);
