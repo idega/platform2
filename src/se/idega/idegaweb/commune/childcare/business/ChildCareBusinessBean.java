@@ -2281,7 +2281,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					SchoolArea area = (SchoolArea) iter.next();
 					SchoolBusiness sb = getSchoolBusiness();
 					Collection providers = sb.findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes);
-					providers = sb.getHomeCommuneSchools(providers);
 					if (providers != null) {
 						Iterator iterator = providers.iterator();
 						while (iterator.hasNext()) {
