@@ -127,7 +127,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
   }
 
   public void addListener(String listenerKey){
-    //
+    PFcontent.setListeners(listenerKey);
   }
 
   public void setBorder(int border){
@@ -211,6 +211,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
     String targetName = null;
     PresentationObject ownerInstance = null;
     boolean isInIFrame = true;
+    String listenerString = null;
 
     ProjectBusiness business = null;
 
@@ -299,15 +300,20 @@ public class ProjectFilter extends Block implements IFrameContainer{
       return url;
     }
 */
+    public void setListeners(String listenerString){
+      this.listenerString = listenerString;
+    }
+
     protected void addParameters(IWContext iwc, GenericEntity item, Link link){
       super.addParameters(iwc,item,link);
       link.addParameter(_PRM_CAT_TYPE_ID, this.categoryTypeId);
 
       link.addIWPOListener(this.getOwnerInstance());
-      /**
-       * @todo implement chooser
-       */
-      link.addIWPOListener("9_22");
+
+      if(listenerString != null){
+        link.addIWPOListener(listenerString);
+      }
+
       if(isInIFrame()){
         link.setTarget(Link.TARGET_PARENT_WINDOW);
         link.setURL(IWMainApplication.BUILDER_SERVLET_URL);

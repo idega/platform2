@@ -136,7 +136,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
   }
 
   public void addListener(String listenerKey){
-    //
+    PFcontent.setListeners(listenerKey);
   }
 
   public void setBorder(int border){
@@ -215,6 +215,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
     String targetName = null;
     PresentationObject ownerInstance = null;
     boolean isInIFrame = true;
+    String listenerString = null;
     ProjectBusiness business = null;
 
     public ProjectNavigatorContent() {
@@ -305,6 +306,10 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       super.addLinkEntityColumn(PageLink._COLUMNNAME_DEFAULT_LINK_TEXT);
     }
 
+    public void setListeners(String listenerString){
+      this.listenerString = listenerString;
+    }
+
     protected void addParameters(IWContext iwc, GenericEntity item, Link link){
       super.addParameters(iwc,item,link);
       if(item != null){
@@ -312,6 +317,10 @@ public class ProjectNavigator extends Block implements IFrameContainer{
         link.addParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER,((PageLink)item).getPageId());
       }
       link.addIWPOListener(this.getOwnerInstance());
+
+      if(listenerString != null){
+        link.addIWPOListener(listenerString);
+      }
 
       if(isInIFrame()){
         link.setTarget(Link.TARGET_PARENT_WINDOW);
