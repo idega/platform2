@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.19 2003/05/02 03:07:02 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.20 2003/07/18 13:05:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,6 +35,8 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.HiddenInput;
+import com.leviathansoft.emailvalidator.EmailValidator;
+
 import java.util.Vector;
 import java.util.Date;
 import java.util.Iterator;
@@ -83,8 +85,8 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			if (update != null) {
 				String phone = iwc.getParameter("phone");
 				String email = iwc.getParameter("email");
-
-				CampusReferenceNumberInfoHelper.updatePhoneAndEmail(holder, phone, email);
+				if(email!=null && email.length()> 0 &&  email.indexOf("@")>0)				
+					CampusReferenceNumberInfoHelper.updatePhoneAndEmail(holder, phone, email);
 			}
 
 			else if (confirm != null) {
@@ -172,7 +174,9 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				String email = camApp.getEmail();
 				if (email == null)
 					email = "";
-				updateTable.add(new TextInput("email", email), 2, 2);
+				TextInput emailInput = new TextInput("email", email);
+				emailInput.setAsEmail(_iwrb.getLocalizedString("invalid_email","Please enter a valid email !!"));
+				updateTable.add(emailInput, 2, 2);
 				updateTable.add(new SubmitButton("updatePhoneEmail", _iwrb.getLocalizedString("update", "Update")), 3, 2);
 
 				refTable.add(updateTable, 1, row);
@@ -191,7 +195,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 
 				Contract c = holder.getContract();
 
-				if (c == null) { //Fékk ekki úthlutað, eða ekki búið að úthluta.
+				if (c == null) { //F?kk ekki ?thluta?, e?a ekki b?i? a? ?thluta.
 					Vector wl = holder.getWaitingList();
 					Vector choices = holder.getApplied();
 
@@ -273,7 +277,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 					refTable.add(container, 1, row);
 					row++;
 
-					if (wl == null) { //Ekki búið að úthluta
+					if (wl == null) { //Ekki b?i? a? ?thluta
 						Text notAllocated = new Text("&nbsp;*&nbsp;" + _iwrb.getLocalizedString("appNotYetAssigned", "Apartments have not yet been allocated"));
 						notAllocated.setStyle("required");
 						refTable.add(notAllocated, 1, row);
@@ -294,20 +298,20 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(iwc);
 
 			if (li == null || li.size() == 0) {
-				add(new Text("Það er enginn notandi skráður á þessa kennitölu "));
+				add(new Text("?a? er enginn notandi skr??ur ? ?essa kennit?lu "));
 			}
 			else {
 
 				if (li.size() == 1) {
 					if (iwc.isParameterSet("allow") && iwc.isParameterSet("usrid")) {
 						clearLoginChanged(Integer.parseInt(iwc.getParameter("usrid")));
-						add(new Text("Opnað aftur fyrir kennitölu"));
+						add(new Text("Opna? aftur fyrir kennit?lu"));
 					}
 					else {
-						add(new Text("Það er  búið að ná í lykilorð fyrir kennitölu"));
+						add(new Text("?a? er  b?i? a? n? ? lykilor? fyrir kennit?lu"));
 						if (iwc.hasEditPermission(this)) {
 							Form f = new Form();
-							f.add(new SubmitButton("allow", "Leyfa innskráningu á ný"));
+							f.add(new SubmitButton("allow", "Leyfa innskr?ningu ? n?"));
 							f.addParameter("usrid", ((Integer) li.get(0)).intValue());
 							add(f);
 						}
