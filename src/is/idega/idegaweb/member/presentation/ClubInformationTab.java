@@ -170,14 +170,14 @@ public class ClubInformationTab extends UserGroupTab {
 
 		if (connection != null && !connection.equals("")) {
 			_connectionToSpecialField.setDisabled(true);
-			_makeField.addMenuElement("2", "Sérgreinafélag");
+			_makeField.addMenuElement("2", "SŽrgreinafŽlag");
 			_makeField.addMenuElement("4", "Óvirkt");
 		}
 		else {
-			_makeField.addMenuElement("1", "Fjölgreinafélag");
-			_makeField.addMenuElement("2", "Sérgreinafélag");
-			_makeField.addMenuElement("3", "Félag án iðkenda");
-			_makeField.addMenuElement("4", "Óvirkt");
+			_makeField.addMenuElement("1", "FjšlgreinafŽlag");
+			_makeField.addMenuElement("2", "SŽrgreinafŽlag");
+			_makeField.addMenuElement("3", "FŽlag ‡n i?kenda");
+			_makeField.addMenuElement("4", "îvirkt");
 			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName, "2");
 		}
 		_makeField.setSelectedElement(make);
@@ -211,19 +211,19 @@ public class ClubInformationTab extends UserGroupTab {
 		/**
 		 * @todo Setja í töflu og sækja þaðan.
 		 */
-		_typeField.addMenuElement("1", "Innlent félag");
-		_typeField.addMenuElement("2", "Sérsamband");
-		_typeField.addMenuElement("3", "Héraðssamband/Íþróttabandalag");
+		_typeField.addMenuElement("1", "Innlent fŽlag");
+		_typeField.addMenuElement("2", "SŽrsamband");
+		_typeField.addMenuElement("3", "HŽra?ssamband/ê?r—ttabandalag");
 
 
 		_statusField.addMenuElement("0", "");
 		_statusField.addMenuElement("1", "Virkt");
-		_statusField.addMenuElement("2", "Óvirkt");
+		_statusField.addMenuElement("2", "îvirkt");
 		_statusField.addMenuElement("3", "Keppnisbann");
 
 		Collection special = null;
 		try {
-			special = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType("iwme_league");
+			special = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_LEAGUE);
 
 		}
 		catch (Exception ex) {
@@ -455,7 +455,7 @@ public class ClubInformationTab extends UserGroupTab {
 			if (it != null) {
 				while (it.hasNext()) {
 					Group parent = (Group) it.next();
-					if (parent.getGroupType().equals("iwme_regional_union"))
+					if (parent.getGroupType().equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION))
 						regional = parent.getName();
 				}
 			}
