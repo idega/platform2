@@ -124,16 +124,16 @@ public class InvoiceChildcareThread extends BillingThread{
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
-			StringBuffer message = new StringBuffer();
-			StackTraceElement[] stackTraceElement = e.getStackTrace();
-			for(int i=0; i<stackTraceElement.length;i++){
-				message.append(stackTraceElement[i].toString());
-			}
 			if (null != errorRelated) {
-				errorRelated.append(message.toString());
+				errorRelated.append(e);
 				errorRelated.logToConsole();
 				createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
 			}else{
+				StringBuffer message = new StringBuffer();
+				StackTraceElement[] stackTraceElement = e.getStackTrace();
+				for(int i=0; i<stackTraceElement.length;i++){
+					message.append(stackTraceElement[i].toString());
+				}
 				createNewErrorMessage(message.toString(),"invoice.DBSetupProblem");
 			}
 			batchRunLoggerDone();
@@ -405,6 +405,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 						catch (CreateException e1) {
 							e1.printStackTrace();
+							errorRelated.append(e1);
 							createNewErrorMessage(errorRelated,"invoice.CreateException");
 						}
 						catch (RegulationException e1) {
@@ -466,6 +467,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				}catch (NullPointerException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
+						errorRelated.append(e1);
 						createNewErrorMessage(errorRelated,"invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB");
@@ -501,6 +503,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				} catch (CreateException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
+						errorRelated.append(e);
 						createNewErrorMessage(errorRelated,"invoice.DBProblem");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.DBProblem");
@@ -508,6 +511,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				} catch (EJBException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
+						errorRelated.append(e);
 						createNewErrorMessage(errorRelated,"invoice.EJBError");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
