@@ -151,9 +151,7 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
       EntityBulkUpdater bulk = new EntityBulkUpdater();
       idegaTimestamp stamp = new idegaTimestamp();
 
-      HashMap currencies = CurrencyFinder.getCurrenciesMap();
-      if ( currencies == null )
-        currencies = saveCurrenciesToDatabase();
+      HashMap currencies = saveCurrenciesToDatabase();
 
       CurrencyHolder holder = null;
       Currency currency = null;
@@ -194,6 +192,7 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
   public static HashMap saveCurrenciesToDatabase() {
     EntityBulkUpdater bulk = new EntityBulkUpdater();
     Currency currency = null;
+    boolean execute = false;
 
     Iterator iter = currencyMap.keySet().iterator();
     while (iter.hasNext()) {
@@ -203,15 +202,18 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
         currency.setCurrencyAbbreviation(holder.getCurrencyName());
         currency.setCurrencyName(holder.getCurrencyName());
         bulk.add(currency,bulk.insert);
+        execute = true;
       }
     }
 
-    try {
-      bulk.execute();
-      System.out.println("Saving currency values to database...");
-    }
-    catch (Exception e) {
-      e.printStackTrace(System.err);
+    if ( execute ) {
+      try {
+        bulk.execute();
+        System.out.println("Saving currency values to database...");
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
     }
 
     return CurrencyFinder.getCurrenciesMap();
