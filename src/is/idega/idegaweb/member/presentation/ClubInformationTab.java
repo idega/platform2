@@ -10,8 +10,6 @@ import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -25,6 +23,8 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.Script;
+import com.idega.presentation.TabbedPropertyPanel;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -33,7 +33,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
-import com.idega.user.data.User;
 import com.idega.user.presentation.UserGroupTab;
 import com.idega.util.IWTimestamp;
 /**
@@ -185,7 +184,9 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
 		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
-		_connectionToSpecialField.setAsNotEmpty(iwrb.getLocalizedString("clubinformationtab.special_field_name_not_empty", "You have to select a regional union"),"-1");
+		_connectionToSpecialField.setOnChange("alert('"+ iwrb.getLocalizedString("clubinformationtab.alert_connection_to_special","Are you sure you want to change the Regional Union")+"')");
+		
+				
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
@@ -342,7 +343,6 @@ public class ClubInformationTab extends UserGroupTab {
 			Boolean inOperation = (Boolean) fieldValues.get(_inOperationFieldName);
 			Boolean usingSystem = (Boolean) fieldValues.get(_usingMemberSystemFieldName);
 			
-			
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER, number);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_SSN, ssn);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED, founded);
@@ -476,4 +476,5 @@ public class ClubInformationTab extends UserGroupTab {
 		help.setImage(helpImage);
 		return help;
 	}
+
 }
