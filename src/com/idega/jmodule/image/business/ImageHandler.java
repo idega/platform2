@@ -144,7 +144,7 @@ private void getImageFromDatabase() throws Exception{
 }
 
 protected void updateOriginalInfo() throws SQLException{
-  ImageEntity imageInfo = new ImageEntity( imageId , false);
+  ImageEntity imageInfo = new ImageEntity( imageId );
   setContentType( imageInfo.getContentType() );
   setImageName( imageInfo.getName() );
   imageInfo.setWidth(Integer.toString(originalImage.getWidth()));
