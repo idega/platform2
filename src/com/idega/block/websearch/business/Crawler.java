@@ -10,6 +10,7 @@ import com.lucene.document.Field;
 import com.lucene.document.DateField;
 import com.idega.block.websearch.data.*;
 import com.idega.util.FileUtil;
+import com.idega.util.text.TextSoap;
 
 /**
  * <p><code>Crawler</code> Web crawler.</p>
@@ -291,8 +292,15 @@ public final class Crawler {
             String contents = handler.getContents();
             
             
-            if( contents!=null ) mydoc.add(Field.Text("contents", contents.substring(0,Math.min(contents.length(),140)) ));
-            
+            if( contents!=null ){
+            	//clean more!
+            	contents = TextSoap.findAndCut(contents,">");
+            	contents = TextSoap.findAndCut(contents,"<");
+            	contents = TextSoap.findAndCut(contents,"•?");
+            	
+            	
+            	 mydoc.add(Field.Text("contents", contents.substring(0,Math.min(contents.length(),140)) ));
+            }
             if (handler.getTitle() != null) {
                 mydoc.add(Field.Text("title", handler.getTitle()));
             }

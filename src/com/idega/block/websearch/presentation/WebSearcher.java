@@ -54,6 +54,13 @@ public class WebSearcher extends Block {
   
   private String queryString = null;
   private String direction = null;
+  
+  private Link titleLinkProto = new Link();
+  private Text contentTextProto = new Text();
+  private Text extraInfoTextProto = new Text(); 
+  private String contentTextProtoStyle = null;
+  private String extraInfoTextProtoStyle = null;
+  private String titleLinkProtoStyle = null;
 
   private int hitsPerSet = 10;
   private int publishedFromDays = 0;
@@ -61,6 +68,8 @@ public class WebSearcher extends Block {
 	
   private IWBundle iwb = null;
   private IWResourceBundle iwrb = null;
+
+
 
 
     
@@ -101,51 +110,70 @@ public class WebSearcher extends Block {
 	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
+
 		
 		parseAction(iwc);
 		
 		if( showResults ){
+			prepStyles();
 			search(iwc);
 		}
 		else if( crawl ){
-			index = WebSearchManager.getIndex("main");//this should not be hard coded
-			
-			
-			if ( report  > 0) {
-				crawler = new Crawler(index, report, iwc.getWriter() );//change so that crawler return an arraylist and then print that or something
-			}
-			else{//no report
-				crawler = new Crawler(index);
-			}
-
-			crawler.crawl();
-			add("Done");
+			crawl(iwc);
 		}
 		else{	
-			Form searchForm = new Form();
-			Table table = new Table(2,2);
-			TextInput search = new TextInput(SEARCH_PARAM);
-			SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search","Search"));
-			
-			table.add(search,1,1);
-			table.add(button,2,1);
-			
-			searchForm.add(table);
-			
-			add(searchForm);
-			
-			if(canEdit){
-				Link crawl = new Link("Index this site");
-				crawl.addParameter(CRAWL_PARAM,"true");
-				crawl.addParameter(CRAWL_REPORT_PARAM,INDEX_DETAILED_REPORT);
-				table.add(crawl,1,2);				
-			}
-		
-			
+			add(getSearchForm());
 		}
 	}
 
+
+	private void crawl(IWContext iwc) throws Exception{
+		add(new BackButton("Back"));
+		index = WebSearchManager.getIndex("main");//this should not be hard coded
+					
+		if ( report  > 0) {
+			crawler = new Crawler(index, report, iwc.getWriter() );//change so that crawler return an arraylist and then print that or something
+		}
+		else{//no report
+			crawler = new Crawler(index);
+		}
+	
+		crawler.crawl();
+		add("Done");
+		
+	}
+
+	
+	private Form getSearchForm(){
+		Form searchForm = new Form();
+		Table table = new Table(2,2);
+		TextInput search = new TextInput(SEARCH_PARAM);
+		if(queryString!=null){ 
+			search.setContent(queryString); 
+		}
+		
+		SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search","Search"));
+		//button.setAsImageButton(true);
+		
+		table.add(search,1,1);
+		table.add(button,2,1);
+		
+		searchForm.add(table);
+		
+		if(canEdit){
+			Link crawl = new Link("Index this site");
+			crawl.addParameter(CRAWL_PARAM,"true");
+			crawl.addParameter(CRAWL_REPORT_PARAM,INDEX_DETAILED_REPORT);
+			table.add(crawl,1,2);				
+		}
+		
+		return searchForm;
+		
+	}
+
 	private void search(IWContext iwc){
+		add(getSearchForm());
+		addBreak();
 		
 
 		WebSearchHitIterator hits = (WebSearchHitIterator) iwc.getSessionAttribute(HITS_ITERATOR_SESSION_PARAM+queryString);
@@ -172,32 +200,10 @@ public class WebSearcher extends Block {
 		}
 		
 		if(hits!=null){
-			// Get Set via direction
-			if (direction!=null && direction.equals(DIRECTION_NEXT)) hits.nextSet();
-			if (direction!=null && direction.equals(DIRECTION_PREV)) hits.previousSet();
-					
-			if (hits.hasPreviousSet()) { 
-				Link prev = new Link("previous");
-				prev.addParameter(DIRECTION_PARAM,DIRECTION_PREV);
-				prev.addParameter(SEARCH_PARAM,queryString);
-				add(prev);
-			}
-			
-			add("&nbsp;&nbsp;"+hits.getSetStartPosition());
-			add(" - ");
-			add(hits.getSetEndPosition()+"&nbsp;&nbsp;");
-	
-		    if (hits.hasNextSet()) { 
-		   		Link next = new Link("next");
-				next.addParameter(DIRECTION_PARAM,DIRECTION_NEXT);
-				next.addParameter(SEARCH_PARAM,queryString);
-				add(next);
-			}
-			
 			addBreak();
-			add("Query : "+hits.getQuery());
+			add(getResultSetInfo(hits));
 			addBreak();
-			add("Total hits : "+ hits.getTotalHits());
+			
 			Table results = new Table();
 			results.setWidth(Table.HUNDRED_PERCENT);
 			results.setHeight(Table.HUNDRED_PERCENT);
@@ -208,13 +214,14 @@ public class WebSearcher extends Block {
 			
 			while (hits.hasNextInSet()) {
 				WebSearchHit hit = hits.next();
-				String bgColor = (hit.getRank()%2==0)?"#BBBBBB":"#CDCDCD";
-				Table hitTable = new Table();
+				//String bgColor = (hit.getRank()%2==0)?"#BBBBBB":"#CDCDCD";
+				Table hitTable = new Table(1,3);
 				hitTable.setWidth(Table.HUNDRED_PERCENT);
 				hitTable.setHeight(Table.HUNDRED_PERCENT);
+				hitTable.setCellpadding(0);
+				hitTable.setCellspacing(1);
 			
-				hitTable.setColor(bgColor);
-				hitTable.add(new Text("Rank: "+hit.getRank()),1,row++);
+				//hitTable.setColor(bgColor);
 				//if detailed ?
 				//hitTable.add(new Text("Score: "+hit.getScore()),1,row++);
 				//hitTable.add(new Text("Published: "+ hit.getPublishedFormated()),1,row++);
@@ -222,12 +229,29 @@ public class WebSearcher extends Block {
 				//hitTable.add(new Text("Keywords: "+hit.getKeywords()),1,row++); veit ekki afhverju thetta skilar alltaf null !?
 				//hitTable.add(new Text("Categories: "+hit.getCategories()),1,row++);
 				//hitTable.add(new Text("Description: "+hit.getDescription()),1,row++);
-				hitTable.add(new Text("Title: "+hit.getTitle()),1,row++);
+				Link title = (Link) titleLinkProto.clone();
+				title.setURL(hit.getURL());
+				title.setText(hit.getTitle());
+				
+				hitTable.add(title,1,row++);
 				String contents = hit.getContents();
-				if(contents!=null)	hitTable.add(new Text(contents+"..."),1,row++);
-				hitTable.add(new Link(hit.getURL(),hit.getHREF()),1,row);
+				
+				if(contents!=null){
+					contents+="...";
+					Text contentsText = (Text) contentTextProto.clone();
+					contentsText.setText(contents);					
+					hitTable.add(contentsText,1,row++);
+				
+				}
+				
+				String extraInfo = hit.getHREF()+" - "+hit.getContentType()+" - rank: "+hit.getRank();
+				Text extraInfoText = (Text) extraInfoTextProto.clone();
+				extraInfoText.setText(extraInfo);
+				hitTable.add(extraInfoText,1,row);
 				row = 1;
 				results.add(hitTable,1,row2++);
+				results.add(Text.getBreak(),1,row2++);
+				
 			} 
 			
 			add(results);
@@ -236,5 +260,106 @@ public class WebSearcher extends Block {
 	
 		
 	}
+	
+	private void prepStyles(){
+		if( contentTextProtoStyle != null){
+			contentTextProto.setFontStyle(contentTextProtoStyle);	
+		}
+		else{
+			contentTextProto.setFontFace(Text.FONT_FACE_ARIAL);
+			contentTextProto.setFontSize(Text.FONT_SIZE_10_HTML_2);
+
+		}
+		
+		if( extraInfoTextProtoStyle != null){
+			extraInfoTextProto.setFontStyle(extraInfoTextProtoStyle);
+		}
+		else{
+			extraInfoTextProto.setFontFace(Text.FONT_FACE_ARIAL);
+			extraInfoTextProto.setFontSize(Text.FONT_SIZE_10_HTML_2);	
+			extraInfoTextProto.setFontColor("#008000");
+		}
+		
+		if( titleLinkProtoStyle != null){
+			titleLinkProto.setFontStyle(titleLinkProtoStyle);
+		}
+		else{
+			titleLinkProto.setFontSize(Text.FONT_SIZE_12_HTML_3);
+			titleLinkProto.setFontColor("#0000CC");
+		}
+	}
+	
+	private Table getResultSetInfo( WebSearchHitIterator hits ){
+		//temporary html tags inline and need to localize
+		Table info = new Table();
+		info.setWidth(Table.HUNDRED_PERCENT);
+		info.setColor("#3366cc");
+			
+		// Get Set by direction
+		if (direction!=null && direction.equals(DIRECTION_NEXT)) hits.nextSet();
+		if (direction!=null && direction.equals(DIRECTION_PREV)) hits.previousSet();
+		
+		Text textProto = new Text();
+		textProto.setFontColor("#FFFFFF");
+		textProto.setFontFace(Text.FONT_FACE_ARIAL);
+		textProto.setFontSize(Text.FONT_SIZE_10_HTML_2);
+		
+		Text text1 = (Text) textProto.clone();
+		Text text2 = (Text) textProto.clone();
+		Text text3 = (Text) textProto.clone();
+		
+		text1.setText("Searched for : <b>"+hits.getQuery()+"</b>. Results ");
+		info.add(text1,1,1);
+		
+		if (hits.hasPreviousSet()) { 
+			Link prev = new Link("<< ");
+			prev.addParameter(DIRECTION_PARAM,DIRECTION_PREV);
+			prev.addParameter(SEARCH_PARAM,queryString);
+			prev.setFontColor("#FFFFFF");
+			prev.setFontFace(Text.FONT_FACE_ARIAL);
+			prev.setFontSize(Text.FONT_SIZE_10_HTML_2);
+			prev.setBold();			
+			
+			info.add(prev,1,1);
+		}
+		
+		text2.setText("<b>"+hits.getSetStartPosition()+" - "+hits.getSetEndPosition()+"</b>");
+		info.add(text2,1,1);
+
+	
+	    if (hits.hasNextSet()) { 
+	   		Link next = new Link(" >> ");
+			next.addParameter(DIRECTION_PARAM,DIRECTION_NEXT);
+			next.addParameter(SEARCH_PARAM,queryString);
+			next.setFontColor("#FFFFFF");
+			next.setFontFace(Text.FONT_FACE_ARIAL);
+			next.setFontSize(Text.FONT_SIZE_10_HTML_2);
+			next.setBold();		
+			
+			info.add(next,1,1);
+		}
+		
+		text3.setText(" of "+"<b>"+hits.getTotalHits()+"</b>"+".");
+		info.add(text3,1,1);
+
+		return info;
+			
+		
+	}
+
+
+public void setContentTextStyle(String style) {
+	this.contentTextProtoStyle = style;
+}
+
+
+public void setExtraInfoTextStyle(String style) {
+	this.extraInfoTextProtoStyle = style;
+}
+
+
+public void setTitleLinkStyle(String style) {
+	this.titleLinkProtoStyle = style;
+}
 
 }
