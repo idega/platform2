@@ -547,9 +547,10 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   public  boolean deleteBooking(Booking booking) throws RemoteException {
-      booking.setIsValid(false);
-      booking.store();
-      return true;
+  	invalidateCache(((Integer) booking.getPrimaryKey()).intValue());
+	  booking.setIsValid(false);
+	  booking.store();
+	  return true;
   }
 
   /**
@@ -802,7 +803,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return -1;
   }
   
-  private void invalidateCache(int bookingID) {
+  public void invalidateCache(int bookingID) {
   	this.triggerActionEvent(COMMAND_BOOKING, bookingID);
     Iterator iter = cacheKeys.iterator();
     while (iter.hasNext()) {

@@ -325,4 +325,6 @@ public interface Booker extends IBOService {
 	 * @see is.idega.idegaweb.travel.business.BookerBean#getProductBusiness
 	 */
 	public ProductBusiness getProductBusiness() throws RemoteException;
+	
+  public void invalidateCache(int bookingID);
 }
