@@ -2747,6 +2747,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin, boolean canCreateMultiple) throws AlreadyCreatedException {
+		return importChildToProvider(applicationID, childID, providerID, groupID, careTime, employmentTypeID, schoolTypeID, comment, fromDate, toDate, locale, parent, admin, canCreateMultiple, null, null, false, null, false, null);
+	}
+	
+	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin, boolean canCreateMultiple, IWTimestamp lastReplyDate, String preSchool, boolean extraContract, String extraContractMessage, boolean extraContractOther, String extraContractOtherMessage) throws AlreadyCreatedException {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		
 		if (!canCreateMultiple) {
@@ -2765,10 +2769,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		try {
 			t.begin();
+			boolean isUpdate = false;
+			boolean finalize = false;
 
 			ChildCareApplication application = getApplication(applicationID);
-			if (application == null)
+			if (application == null) {
 				application = getChildCareApplicationHome().create();
+			}
+			else {
+				isUpdate = true;
+				if (application.getApplicationStatus() == getStatusContract())
+					finalize = true;
+			}
 			
 			User child = getUserBusiness().getUser(childID);
 
@@ -2787,54 +2799,69 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				check = getCheckBusiness().getGrantedCheck(checkID);
 			}
 			application.setCheck(check);
-	
-			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
-			List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			if(buffers !=null && buffers.size() == 2){
-				String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
-				ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
-				ContractService service = (ContractService) getServiceInstance(ContractService.class);
-				Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),fromDate,toDate,"C",contractText);
-				int contractID = ((Integer)contract.getPrimaryKey()).intValue();
-				
-				//contractFile.addTo(Contract.class,contractID);
-				contract.addFileToContract(contractFile);
+			if (preSchool != null)
+				application.setPreSchool(preSchool);
+			if (lastReplyDate != null)
+				application.setOfferValidUntil(lastReplyDate.getDate());
+			application.setHasExtraContract(extraContract);
+			if (extraContractMessage != null)
+				application.setExtraContractMessage(extraContractMessage);
+			application.setHasExtraContractOther(extraContractOther);
+			if (extraContractOtherMessage != null)
+				application.setExtraContractMessageOther(extraContractOtherMessage);
 			
-				application.setContractId(contractID);
-				application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
-				if (toDate != null) {
-					application.setApplicationStatus(getStatusCancelled());
-					changeCaseStatus(application, getCaseStatusCancelled().getStatus(), admin);
-				}
-				else {
-					application.setApplicationStatus(getStatusReady());
-					changeCaseStatus(application, getCaseStatusReady().getStatus(), admin);
-				}
+			if (finalize) {
+				alterValidFromDate(application, fromDate.getDate(), employmentTypeID, locale, admin);
+			}
+			else {
+				ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
+				List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+				if(buffers !=null && buffers.size() == 2){
+					String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
+					ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
+					ContractService service = (ContractService) getServiceInstance(ContractService.class);
+					Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),fromDate,toDate,"C",contractText);
+					int contractID = ((Integer)contract.getPrimaryKey()).intValue();
+					
+					//contractFile.addTo(Contract.class,contractID);
+					contract.addFileToContract(contractFile);
 				
-				addContractToArchive(-1, application, contractID, fromDate.getDate(), employmentTypeID);
+					application.setContractId(contractID);
+					application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
+					if (toDate != null) {
+						application.setApplicationStatus(getStatusCancelled());
+						changeCaseStatus(application, getCaseStatusCancelled().getStatus(), admin);
+					}
+					else {
+						if (isUpdate) {
+							application.setApplicationStatus(getStatusContract());
+							changeCaseStatus(application, getCaseStatusContract().getStatus(), admin);
+						}
+						else {
+							application.setApplicationStatus(getStatusReady());
+							changeCaseStatus(application, getCaseStatusReady().getStatus(), admin);
+						}
+					}
+					
+					addContractToArchive(-1, application, contractID, fromDate.getDate(), employmentTypeID);
+				}
+			}
+				
+			if (!isUpdate || finalize) {
 				Timestamp removedDate = null;
 				if (toDate != null)
 					removedDate = toDate.getTimestamp();
 					
 				if (groupID == -1) {
-					String className = "Placerade barn";
-					SchoolClass group = null;
-					try {
-						group = getSchoolBusiness().getSchoolClassHome().findByNameAndSchool(className, providerID);
-					}
-					catch (Exception e) {
-						group = getSchoolBusiness().storeSchoolClass(-1, className, providerID, -1, -1, -1);
-					}
-					
-					if (group != null)
-						groupID = ((Integer) group.getPrimaryKey()).intValue();
-					else
+					groupID = createDefaultGroup(providerID);
+					if (groupID == -1)
 						return false;
 				}
 				if (schoolTypeID == -1)
 					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
 				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), comment);
 			}
+
 			t.commit();
 			return true;
 		}
@@ -2848,6 +2875,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}
 		return false;
+	}
+	
+	private int createDefaultGroup(int providerID) {
+		String className = "Placerade barn";
+		SchoolClass group = null;
+		try {
+			group = getSchoolBusiness().getSchoolClassHome().findByNameAndSchool(className, providerID);
+		}
+		catch (Exception e) {
+			try {
+				group = getSchoolBusiness().storeSchoolClass(-1, className, providerID, -1, -1, -1);
+			}
+			catch (RemoteException e1) {
+				return -1;
+			}
+		}
+		
+		if (group != null) {
+			return ((Integer) group.getPrimaryKey()).intValue();
+		}
+		return -1;
 	}
 	
 	public Collection findAllEmploymentTypes() {
@@ -2906,11 +2954,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection findUnhandledApplicationsNotInCommune() {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
+			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusContract().getStatus()};
 			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 			int areaID = Integer.parseInt(iwb.getProperty(PROP_OUTSIDE_SCHOOL_AREA,"-1"));
 			
-			return home.findApplicationsInSchoolAreaByStatus(areaID, caseStatus);
+			return home.findApplicationsInSchoolAreaByStatus(areaID, caseStatus, 1);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
