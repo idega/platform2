@@ -68,7 +68,7 @@ public class ApproveAllWithPriorityA {
       A.update();
       Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
 
-      MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+//      MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
 
       CampusApplicationHome CAHome = null;
       CampusApplication CA = null;
