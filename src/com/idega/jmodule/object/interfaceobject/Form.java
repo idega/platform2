@@ -47,7 +47,7 @@ public Form(String action){
 }
 
 public Form(Class classToInstanciateAndSubmitTo){
-	this(IdegaWebHandler.getObjectInstanciatorURL(classToInstanciateAndSubmitTo));
+	this(IWMainApplication.getObjectInstanciatorURL(classToInstanciateAndSubmitTo));
 }
 
 
@@ -61,7 +61,7 @@ public Form(String actionURL,String method){
 }
 
 public Form(Class classToInstanciateAndSubmitTo,String method){
-  this(IdegaWebHandler.getObjectInstanciatorURL(classToInstanciateAndSubmitTo),method);
+  this(IWMainApplication.getObjectInstanciatorURL(classToInstanciateAndSubmitTo),method);
 }
 
 
@@ -164,15 +164,15 @@ public String[] findAllInputNames(){
 }
 
 private String getIdegaSpecialRequestURI(ModuleInfo modinfo){
-	if (modinfo.getRequest().getParameter("idegaspecialrequesttype") == null){
-		return modinfo.getRequest().getRequestURI();
+	if (modinfo.getParameter("idegaspecialrequesttype") == null){
+		return modinfo.getRequestURI();
 	}
 	else{
 
 		//return encodeSpecialRequestString(modinfo.getRequest().getParameter("idegaspecialrequesttype"),modinfo.getRequest().getParameter("idegaspecialrequestname"),modinfo);
-		add(new Parameter("idegaspecialrequesttype",modinfo.getRequest().getParameter("idegaspecialrequesttype")));
-		add(new Parameter("idegaspecialrequestname",modinfo.getRequest().getParameter("idegaspecialrequestname")));
-		return modinfo.getRequest().getRequestURI();
+		add(new Parameter("idegaspecialrequesttype",modinfo.getParameter("idegaspecialrequesttype")));
+		add(new Parameter("idegaspecialrequestname",modinfo.getParameter("idegaspecialrequestname")));
+		return modinfo.getRequestURI();
 	}
 }
 
@@ -191,18 +191,6 @@ public void addParameter(String parameterName,String parameterValue){
 public void maintainAllParameters(){
 	maintainAllParameters=true;
 }
-
-/**
- * @deprecated Implementors should use addActionListener
- */
-/*public void submitTo(ModuleObject objectToSubmitTo){
-  //maintainAllParameters();
-  //Window window = new Window(200,100);
-  //setWindow(window);
-  //window.setBackgroundColor("gray");
-  //window.add("Processing");
-  submitToObject = objectToSubmitTo;
-}*/
 
 
 
@@ -263,7 +251,7 @@ private void addTheMaintainedParameters(ModuleInfo modinfo){
 		else{
 
 			ModuleObjectContainer cont = new ModuleObjectContainer();
-			for (Enumeration enum = modinfo.getRequest().getParameterNames();enum.hasMoreElements();){
+			for (Enumeration enum = modinfo.getParameterNames();enum.hasMoreElements();){
 				String tempString = (String)enum.nextElement();
 				cont.add(new Parameter(tempString,modinfo.getParameter(tempString)));
 			}
