@@ -448,7 +448,8 @@ public class GolferFriendsSigningSheet extends JModuleObject {
       Window viewSignedFormsWindow = new Window( viewSignedFormsWindowName, "/golfers/viewFriendsData.jsp");
       viewSignedFormsWindow.setResizable(true);
       viewSignedFormsWindow.setHeight(500);
-      Text text = new Text("Skoða Skráningartöflu");
+      String dummyString = iwrb.getLocalizedString("golferpage.view_signing_table","Skoða Skráningartöflu");
+      Text text = new Text(dummyString);
 
      // Image linkImage = new Image(iwrb.getImage());
       Link viewFormButton = new Link( text, viewSignedFormsWindow);
@@ -627,7 +628,8 @@ public class GolferFriendsSigningSheet extends JModuleObject {
 
         Table table = new Table(1,1);
         table.setAlignment(1,1,"center");
-        table.add(" Þú hefur verið skráður ");
+        String dummyString = iwrb.getLocalizedString("golferpage.you_have_signed","Þú hefur verið skráður");
+        table.add(" "+dummyString);
         add(table);
       }
     }

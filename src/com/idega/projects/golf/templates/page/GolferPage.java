@@ -637,6 +637,8 @@ public class GolferPage extends Page{
   }
 
   private void addFakeResultsSidemenu(){
+    String string1 = iwrb.getLocalizedString("golferpage.home_results","햞angur heima");
+    String string2 = iwrb.getLocalizedString("golferpage.abroad_results","햞angur erlendis");
     this.setStyleSheetURL("/style/GolferStatisticsView.css");
     Table dummyTable = new Table(1,1);
     dummyTable.setHeight(1,"70");
@@ -646,7 +648,7 @@ public class GolferPage extends Page{
     fakeSideMenuHomeTable.setVerticalAlignment(2,1,"bottom");
     Image bullet = iwb.getImage("shared/arrow_ble.gif");
     fakeSideMenuHomeTable.add(bullet,1,1);
-    Link fakeSideMenuLinkHome = new Link("  햞angur heima");
+    Link fakeSideMenuLinkHome = new Link("  "+string1);
     fakeSideMenuLinkHome.setCSSClass("style1");
     fakeSideMenuLinkHome.setFontFace(Text.FONT_FACE_VERDANA);
     fakeSideMenuLinkHome.setFontSize(1);
@@ -655,7 +657,7 @@ public class GolferPage extends Page{
     fakeSideMenuLinkHome.addParameter(sTopMenuParameterName, homeResultsParameterValue);
     fakeSideMenuHomeTable.add(fakeSideMenuLinkHome,2,1);
     dummyTable.add(fakeSideMenuHomeTable,1,1);
-    Link fakeSideMenuLinkAbroad = new Link("  햞angur erlendis");
+    Link fakeSideMenuLinkAbroad = new Link("  "+string2);
     fakeSideMenuLinkAbroad.setCSSClass("style1");
     fakeSideMenuLinkAbroad.setFontFace(Text.FONT_FACE_VERDANA);
     fakeSideMenuLinkAbroad.setStyle("linkur");
