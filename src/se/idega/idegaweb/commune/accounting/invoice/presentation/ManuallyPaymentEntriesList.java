@@ -4,8 +4,6 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
-import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
@@ -24,8 +22,6 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-import com.idega.util.CalendarMonth;
-import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -40,14 +36,11 @@ import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingHome;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.business.PlacementTimes;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -62,15 +55,14 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * Last modified: $Date: 2004/03/04 10:12:34 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/04 10:36:42 $ by $Author: staffan $
  *
  * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
@@ -421,24 +413,19 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				} catch (Exception e) {	e.printStackTrace ();	}
 			}
 
-			//Creating paymentDetailRecord ( = InvoiceRecord) if student is given
-			User student = null;
+			// if student is given, then creating detailed payment record
 			try{
-				String ssn = getValue(iwc, PAR_USER_SSN);
+				final String ssn = getValue(iwc, PAR_USER_SSN);
 				if (ssn != null && ssn.length() > 0){ //ssn == '' returns a user...
-					student = getUserBusiness(iwc).getUser(ssn); 
+					final User student = getUserBusiness(iwc).getUser(ssn); 
+					getInvoiceBusiness (iwc).createDetailedPaymentRecord
+							(student, pay, iwc.getCurrentUser ());
 				}
 			}catch(FinderException ex){
 				ex.printStackTrace();
-			}
-	
-			if (student != null){
-				try{
-					createDetailedPaymentRecord (iwc, student, pay);
-				} catch(Exception ex) {
-					ex.printStackTrace ();
-				}	
-			}
+			} catch(Exception ex) {
+				ex.printStackTrace ();
+			}	
 
 			if (getResponsePage () != null){
 				iwc.forwardToIBPage(getParentPage(), getResponsePage ());
@@ -446,118 +433,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 
-	private InvoiceRecord createDetailedPaymentRecord
-		(final IWContext iwc, final User child, final PaymentRecord paymentRecord)
-		throws IDOLookupException, FinderException, RemoteException,
-					 CreateException {
-		final PaymentHeader paymentHeader = paymentRecord.getPaymentHeader ();
-		final SchoolCategory schoolCategory = paymentHeader.getSchoolCategory ();
-		final SchoolClassMemberHome memberHome
-				= (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
-		final SchoolClassMember member
-				= memberHome.findLatestByUserAndSchCategory (child, schoolCategory);
-		final Date period = paymentRecord.getPeriod ();
-		final PlacementTimes placementTimes
-				= getPlacementTimes (member, new CalendarMonth (period));
-		final Date startDate = null != member	&& null != member.getRegisterDate ()
-				? new Date (member.getRegisterDate ().getTime ()) : null;
-		final Date endDate = null != member && null != member.getRemovedDate ()
-				? new Date (member.getRemovedDate ().getTime ()) : null;
-		final InvoiceRecord result = getInvoiceBusiness (iwc).createInvoiceRecord
-				(paymentRecord, member, null, placementTimes, startDate, endDate,
-				 getSignature (iwc.getCurrentUser ()));
-		final School school = paymentHeader.getSchool ();
-		result.setProvider (school);
-
-		// find regulation and connected values
-		final Regulation regulation
-				= findRegulation (paymentRecord, schoolCategory, period);
-		if (null != regulation) {
-			final String regulationName = regulation.getName ();
-			final RegulationSpecType regSpecType = regulation.getRegSpecType ();
-			final Integer regSpecTypeId	= (Integer) regSpecType.getPrimaryKey ();
-			final RegulationsBusiness regulationsBusiness
-					= getRegulationsBusiness (iwc);
-			final SchoolType schoolType
-					= regulationsBusiness.getSchoolType (regulation);
-			final PostingBusiness postingBusiness = getPostingBusiness (iwc);
-			result.setRuleText (regulationName);
-			result.setInvoiceText (regulationName);
-			result.setInvoiceText2 (" ");
-			final int pieceAmount = null == regulation.getAmount ()
-					? 0 : regulation.getAmount ().intValue ();
-			result.setAmount (pieceAmount * placementTimes.getMonths ());
-			if (null != regulation.getConditionOrder ()) {
-				result.setOrderId (regulation.getConditionOrder ().intValue ());
-			}
-
-			// set postings
-			try {
-				final String [] paymentPostings = postingBusiness.getPostingStrings
-						(schoolCategory, schoolType, regSpecTypeId.intValue (),
-						 new Provider (school), period);
-				result.setOwnPosting (paymentPostings [0]);
-				result.setDoublePosting (paymentPostings [1]);
-			} catch (PostingException e) {
-				e.printStackTrace ();
-			}
-		}
-		result.store ();
-		return result;
-	}
-
-	private Regulation findRegulation
-		(final PaymentRecord paymentRecord, final SchoolCategory schoolCategory,
-		 final Date period) throws IDOLookupException {
-		Regulation matchedRegulation  = null;
-		final RegulationHome regulationHome = getRegulationHome ();
-		try {
-			final Collection regulations =
-					regulationHome.findRegulationsByNameNoCaseDateAndCategory
-					(paymentRecord.getPaymentText (), period,
-					 schoolCategory.getCategory ());
-			if (1 == regulations.size ()) {
-				matchedRegulation = (Regulation) regulations.iterator ().next ();
-			}
-		} catch (Exception e) {
-			e.printStackTrace ();
-		}
-		return matchedRegulation;
-	}
-
-	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember, CalendarMonth month) {
-		Date sDate = null;
-		Date eDate = null;
-		if (schoolClassMember.getRegisterDate() != null) {
-			sDate = new Date(schoolClassMember.getRegisterDate().getTime());
-		}
-		if (schoolClassMember.getRemovedDate() != null) {
-			eDate = new Date(schoolClassMember.getRemovedDate().getTime());
-		}
-		PlacementTimes placementTimes = calculateTime(sDate, eDate, month);
-		return placementTimes;
-	}
-
-	private PlacementTimes calculateTime(Date start, Date end, CalendarMonth month){
-		IWTimestamp firstCheckDay = new IWTimestamp(start);
-		firstCheckDay.setAsDate();
-		IWTimestamp time = new IWTimestamp(month.getFirstDateOfMonth());
-		time.setAsDate();
-		if(!firstCheckDay.isLaterThan(time)){
-			firstCheckDay = time;
-		}
-		IWTimestamp lastCheckDay = new IWTimestamp(month.getLastDateOfMonth());
-		lastCheckDay.setAsDate();
-		if(end!=null){
-			time = new IWTimestamp(end.getTime ());
-			if(!lastCheckDay.isEarlierThan(time)){
-				lastCheckDay = time;
-			}
-		}
-		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
-		return placementTimes;
-	}
-	
 	private static String getSignature (final User user) {
 		if (null == user) return "not logged in user";
 		final String firstName = user.getFirstName ();
@@ -1028,17 +903,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 	}	
 
-	private static RegulationHome getRegulationHome ()
-		throws IDOLookupException {
-		return (RegulationHome) IDOLookup.getHome (Regulation.class);
-	}
-
-	private static PostingBusiness getPostingBusiness
-		(final IWContext context) throws RemoteException {
-		return (PostingBusiness) IBOLookup.getServiceInstance
-				(context, PostingBusiness.class);	
-	}
-	
 	private static RegulationsBusiness getRegulationsBusiness
 		(final IWContext context) throws RemoteException {
 		return (RegulationsBusiness) IBOLookup.getServiceInstance

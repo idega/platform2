@@ -22,6 +22,7 @@ import com.idega.io.MemoryInputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.CalendarMonth;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -54,6 +55,7 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -65,11 +67,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/01 13:44:32 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/04 10:36:42 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.116 $
+ * @version $Revision: 1.117 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -1012,6 +1014,119 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return (SchoolClassMember []) allPlacements.toArray
 				(new SchoolClassMember [0]);
 	}
+
+	public InvoiceRecord createDetailedPaymentRecord
+		(final User child, final PaymentRecord paymentRecord,
+		 final User registrator)
+		throws IDOLookupException, FinderException, RemoteException,
+					 CreateException {
+		final PaymentHeader paymentHeader = paymentRecord.getPaymentHeader ();
+		final SchoolCategory schoolCategory = paymentHeader.getSchoolCategory ();
+		final SchoolClassMemberHome memberHome
+				= (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+		final SchoolClassMember member
+				= memberHome.findLatestByUserAndSchCategory (child, schoolCategory);
+		final Date period = paymentRecord.getPeriod ();
+		final PlacementTimes placementTimes
+				= getPlacementTimes (member, new CalendarMonth (period));
+		final Date startDate = null != member	&& null != member.getRegisterDate ()
+				? new Date (member.getRegisterDate ().getTime ()) : null;
+		final Date endDate = null != member && null != member.getRemovedDate ()
+				? new Date (member.getRemovedDate ().getTime ()) : null;
+		final InvoiceRecord result = createInvoiceRecord
+				(paymentRecord, member, null, placementTimes, startDate, endDate,
+				 getSignature (registrator));
+		final School school = paymentHeader.getSchool ();
+		result.setProvider (school);
+
+		// find regulation and connected values
+		final Regulation regulation
+				= findRegulation (paymentRecord, schoolCategory, period);
+		if (null != regulation) {
+			final String regulationName = regulation.getName ();
+			final RegulationSpecType regSpecType = regulation.getRegSpecType ();
+			final Integer regSpecTypeId	= (Integer) regSpecType.getPrimaryKey ();
+			final RegulationsBusiness regulationsBusiness
+					= getRegulationsBusiness ();
+			final SchoolType schoolType
+					= regulationsBusiness.getSchoolType (regulation);
+			final PostingBusiness postingBusiness = getPostingBusiness ();
+			result.setRuleText (regulationName);
+			result.setInvoiceText (regulationName);
+			result.setInvoiceText2 (" ");
+			final int pieceAmount = null == regulation.getAmount ()
+					? 0 : regulation.getAmount ().intValue ();
+			result.setAmount (pieceAmount * placementTimes.getMonths ());
+			if (null != regulation.getConditionOrder ()) {
+				result.setOrderId (regulation.getConditionOrder ().intValue ());
+			}
+
+			// set postings
+			try {
+				final String [] paymentPostings = postingBusiness.getPostingStrings
+						(schoolCategory, schoolType, regSpecTypeId.intValue (),
+						 new Provider (school), period);
+				result.setOwnPosting (paymentPostings [0]);
+				result.setDoublePosting (paymentPostings [1]);
+			} catch (PostingException e) {
+				e.printStackTrace ();
+			}
+		}
+		result.store ();
+		return result;
+	}
+
+	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember, CalendarMonth month) {
+		Date sDate = null;
+		Date eDate = null;
+		if (schoolClassMember.getRegisterDate() != null) {
+			sDate = new Date(schoolClassMember.getRegisterDate().getTime());
+		}
+		if (schoolClassMember.getRemovedDate() != null) {
+			eDate = new Date(schoolClassMember.getRemovedDate().getTime());
+		}
+		PlacementTimes placementTimes = calculateTime(sDate, eDate, month);
+		return placementTimes;
+	}
+
+	private PlacementTimes calculateTime(Date start, Date end, CalendarMonth month){
+		IWTimestamp firstCheckDay = new IWTimestamp(start);
+		firstCheckDay.setAsDate();
+		IWTimestamp time = new IWTimestamp(month.getFirstDateOfMonth());
+		time.setAsDate();
+		if(!firstCheckDay.isLaterThan(time)){
+			firstCheckDay = time;
+		}
+		IWTimestamp lastCheckDay = new IWTimestamp(month.getLastDateOfMonth());
+		lastCheckDay.setAsDate();
+		if(end!=null){
+			time = new IWTimestamp(end.getTime ());
+			if(!lastCheckDay.isEarlierThan(time)){
+				lastCheckDay = time;
+			}
+		}
+		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
+		return placementTimes;
+	}
+	
+	public Regulation findRegulation
+		(final PaymentRecord paymentRecord, final SchoolCategory schoolCategory,
+		 final Date period) throws IDOLookupException {
+		Regulation matchedRegulation  = null;
+		final RegulationHome regulationHome = getRegulationHome ();
+		try {
+			final Collection regulations =
+					regulationHome.findRegulationsByNameNoCaseDateAndCategory
+					(paymentRecord.getPaymentText (), period,
+					 schoolCategory.getCategory ());
+			if (1 == regulations.size ()) {
+				matchedRegulation = (Regulation) regulations.iterator ().next ();
+			}
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		return matchedRegulation;
+	}
 	
 	public RegulationSpecType [] getAllRegulationSpecTypes ()
 		throws RemoteException {
@@ -1082,6 +1197,15 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	public InvoiceRecordHome getInvoiceRecordHome() {
 		try {
 			return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
+	public RegulationHome getRegulationHome() {
+		try {
+			return (RegulationHome) IDOLookup.getHome(Regulation.class);
 		}
 		catch (IDOLookupException ile) {
 			throw new IBORuntimeException(ile);
