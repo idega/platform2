@@ -157,8 +157,11 @@ public class QueryBuilder extends Block {
 				table.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 				table.setHeight(2, this.heightOfStepTable);
 				Form form = new Form();
-				if (queryFolderID > 0 && step < 5)
+				// thomas changed: queryFolder  id is always set
+				// if (queryFolderID > 0 && step < 5)
+				if (queryFolderID > 0) {
 					form.addParameter(PARAM_FOLDER_ID, queryFolderID);
+				}
 				if (queryID > 0)
 					form.addParameter(PARAM_QUERY_ID, queryID);
 				table.add(getButtons(step), 1, 3);
@@ -760,7 +763,8 @@ public class QueryBuilder extends Block {
 	public PresentationObject getStep5(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		int row = 1;
-		FileChooser folderChooser = new FileChooser(PARAM_FOLDER_ID);
+		// thomas changed: do not use the FileChooser 
+		// FileChooser folderChooser = new FileChooser(PARAM_FOLDER_ID);
 
 		TextInput queryNameInput = new TextInput(PARAM_QUERY_NAME);
 		queryNameInput.setLength(10);
@@ -775,15 +779,15 @@ public class QueryBuilder extends Block {
 		}
 		table.add(queryNameInput, 2, row);
 		row++;
-		if (this.queryFolderID > 0) {
-			ICFile currentFolder = sessionBean.getXMLFile(queryFolderID);
-			folderChooser.setSelectedFile(currentFolder);
-			table.add(iwrb.getLocalizedString("step_5_change_folder", "New folder"), 1, row);
-		}
-		else {
-			table.add(iwrb.getLocalizedString("step_5_choose_folder", "Choose folder to save in"), 1, row);
-		}
-		table.add(folderChooser, 2, row);
+//		if (this.queryFolderID > 0) {
+//			ICFile currentFolder = sessionBean.getXMLFile(queryFolderID);
+//			folderChooser.setSelectedFile(currentFolder);
+//			table.add(iwrb.getLocalizedString("step_5_change_folder", "New folder"), 1, row);
+//		}
+//		else {
+//			table.add(iwrb.getLocalizedString("step_5_choose_folder", "Choose folder to save in"), 1, row);
+//		}
+//		table.add(folderChooser, 2, row);
 		row++;
 		CheckBox templateCheck = new CheckBox(PARAM_ASTEMPLATE, "true");
 		templateCheck.setChecked(helper.isTemplate());

@@ -13,6 +13,7 @@ import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.dataquery.presentation.QueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
@@ -32,7 +33,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -63,9 +63,11 @@ public class ReportOverview extends Block {
   public static final String PDF_KEY = "pdf_key";
   public static final String EXCEL_KEY = "excel_key";
   public static final String HTML_KEY = "html_key";
-  public static final String EXECUTE_QUERY_KEY = "execute_key";
-  public static final String NEW_ITEM_KEY = "new_item_key";
+  public static final String EDIT_QUERY_KEY = "execute_key";
+
   public static final String DELETE_ITEMS_KEY = "delete_items_key";
+  
+  // not really used
   public static final String CLOSE_KEY = "close_key";
   
   public static final String DESIGN_LAYOUT_KEY = "design_layout_key";
@@ -118,7 +120,8 @@ public class ReportOverview extends Block {
 		// check html, pdf and excel buttons
 		EntityPathValueContainer executeContainer = ButtonConverter.getResultByParsing(iwc);
 		if (executeContainer.isValid())	{
-			
+			// get the chosen output format
+			parameterMap.put(CURRENT_OUTPUT_FORMAT,executeContainer.getEntityPathShortKey());
 			// get the chosen query 
 			try {
 				parameterMap.put(CURRENT_QUERY_ID, executeContainer.getEntityIdConvertToInteger());
@@ -144,8 +147,6 @@ public class ReportOverview extends Block {
 					return "";
 				}
 			}
-			// get the chosen output format
-			parameterMap.put(CURRENT_OUTPUT_FORMAT,executeContainer.getEntityPathShortKey());
 			return SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC;
 		}
 		
@@ -211,7 +212,8 @@ public class ReportOverview extends Block {
 		// new button
 		String newText = resourceBundle.getLocalizedString("ro_create", "New");
 		Link newLink = new Link(newText);
-		newLink.addParameter(NEW_ITEM_KEY, NEW_ITEM_KEY);
+		newLink.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
+		newLink.addParameter(QueryBuilder.PARAM_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
 		newLink.setAsImageButton(true);
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
@@ -224,6 +226,7 @@ public class ReportOverview extends Block {
   	Link close = new Link(closeText);
   	close.addParameter(CLOSE_KEY, CLOSE_KEY);
   	close.setAsImageButton(true);
+  	close.setOnClick("window.close()");
   	table.add(newLink,1,1);
   	table.add(delete,2,1);
   	table.add(close, 3,1);
@@ -247,9 +250,9 @@ public class ReportOverview extends Block {
 		DropDownMenuConverter dropDownLayoutConverter = new DropDownMenuConverter(form);
 		dropDownLayoutConverter.setOptionProvider(getLayoutOptionProvider());
 		dropDownLayoutConverter.setShowAlwaysDropDownMenu(true);
-		// button converter
-		String display = resourceBundle.getLocalizedString("ro_execute_query", "Execute query");
-		ButtonConverter buttonConverter = new ButtonConverter(display);
+		// edit query converter
+		String display = resourceBundle.getLocalizedString("ro_edit_query", "Edit query");
+		EditQueryConverter editQueryConverter = new EditQueryConverter(display);
 		// checkbox converter
 		ButtonConverter htmlConverter = new ButtonConverter(bundle.getImage("/shared/txt.gif"));
 		ButtonConverter pdfConverter = new ButtonConverter(bundle.getImage("/shared/pdf.gif"));
@@ -263,7 +266,7 @@ public class ReportOverview extends Block {
 		browser.setMandatoryColumnWithConverter(5, PDF_KEY, pdfConverter);
 		browser.setMandatoryColumnWithConverter(6, EXCEL_KEY, excelConverter);
 		
-		browser.setMandatoryColumnWithConverter(7, EXECUTE_QUERY_KEY, buttonConverter);
+		browser.setMandatoryColumnWithConverter(7, EDIT_QUERY_KEY, editQueryConverter);
 		return browser;
 	}		
   		
@@ -532,14 +535,14 @@ public class ReportOverview extends Block {
  		}
   }
   
-  class  OutputLinkConverter implements EntityToPresentationObjectConverter	{
+  class  EditQueryConverter implements EntityToPresentationObjectConverter	{
   	
-  	private Image image;
+  	private String display;
   	
-  	public void setImage(Image image)	{
-  		this.image = image;
+  	public EditQueryConverter(String display)	{
+  		this.display = display;
   	}
-
+  	
 		public PresentationObject getHeaderPresentationObject(
 			EntityPath entityPath,
 			EntityBrowser browser,
@@ -557,8 +560,11 @@ public class ReportOverview extends Block {
 			IWContext iwc) {
 			String shortKeyPath = path.getShortKey();
 			EntityRepresentation idoEntity = (EntityRepresentation) value;
-			Link link = new Link(image);
-			link.addParameter(shortKeyPath, idoEntity.getPrimaryKey().toString());
+			Link link = new Link(display);
+			link.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
+			link.addParameter(QueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
+			link.addParameter(QueryBuilder.PARAM_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			link.setAsImageButton(true);
 			return link;
 		}
   }
