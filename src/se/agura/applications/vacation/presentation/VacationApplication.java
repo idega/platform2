@@ -41,6 +41,17 @@ public class VacationApplication extends VacationBlock {
 
 	private String validateMessage;
 	
+	private static final String PARAMETER_VACATION_FROM_DATE = "vac_vacation_from_date";
+	private static final String PARAMETER_VACATION_TO_DATE = "vac_vacation_to_date";
+	private static final String PARAMETER_VACATION_HOURS = "vac_vacation_hours";
+	private static final String PARAMETER_VACATION_WORKING_HOURS = "vac_vacation_working_hours";
+	private static final String PARAMETER_VACATION_TYPE = "vac_vacation_type";
+	private static final String PARAMETER_VACATION_EXTRA_TEXT = "vac_vacation_extra_text";
+	
+	private static final String ACTION_NEXT = "next";
+	private static final String ACTION_PAGE_THREE = "page_three";
+  
+	
 	public void present(IWContext iwc) {
 		try {
 			String action = iwc.getParameter(PARAMETER_ACTION);

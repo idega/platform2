@@ -49,26 +49,15 @@ public abstract class VacationBlock extends Block {
 
 	protected static final String PARAMETER_ACTION = "vac_action";
 	protected static final String PARAMETER_PRIMARY_KEY_VAC = VacationConstants.PARAMETER_PRIMARY_KEY;
-	protected static final String PARAMETER_PRIMARY_KEY_VAC_TIME = "vac_time_pk";
-	protected static final String PARAMETER_PRIMARY_KEY_VAC_TYPE = "vac_type_pk";
-	protected static final String PARAMETER_VACATION_TYPE = "vac_vacation_type";
-	protected static final String PARAMETER_VACATION_FROM_DATE = "vac_vacation_from_date";
-	protected static final String PARAMETER_VACATION_TO_DATE = "vac_vacation_to_date";
-	protected static final String PARAMETER_VACATION_HOURS = "vac_vacation_hours";
-	protected static final String PARAMETER_VACATION_WORKING_HOURS = "vac_vacation_working_hours";
-	protected static final String PARAMETER_VACATION_EXTRA_TEXT = "vac_vacation_extra_text";
-	protected static final String PARAMETER_COMMENT = "vac_comment";
-	protected static final String PARAMETER_WITH_SALARY_COMPENSATION = "vac_salary_compensation";
-	protected static final String PARAMETER_FORWARD_GROUP = "vac_forward_group";
-	protected static final String PARAMETER_HANDLER = "vac_handler";
+	//protected static final String PARAMETER_PRIMARY_KEY_VAC_TIME = "vac_time_pk";
+	//protected static final String PARAMETER_PRIMARY_KEY_VAC_TYPE = "vac_type_pk";
 	
-	protected static final String ACTION_NEXT = "next";
 	protected static final String ACTION_CANCEL = "cancel";
 	protected static final String ACTION_SEND = "send";
 	protected static final String ACTION_DENIED = "denied";
 	protected static final String ACTION_APPROVED = "approved";
 	protected static final String ACTION_BACK = "back";
-	protected static final String ACTION_PAGE_THREE = "page_three";
+	
 	protected static final String ACTION_PAGE_FOUR = "page_four";
 	protected static final String ACTION_SAVE = "save";
 	protected static final String ACTION_FORWARD = "forward";

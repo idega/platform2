@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.12 2005/01/19 22:12:44 laddi Exp $ Created on
+ * $Id: VacationApprover.java,v 1.13 2005/01/20 09:00:17 anna Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,11 +34,15 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class VacationApprover extends VacationBlock {
 
 	private static final String ROLE_SALARY_ADMINISTRATION = "can_administer_salaries";
+	private static final String PARAMETER_COMMENT = "vac_comment";
+	private static final String PARAMETER_WITH_SALARY_COMPENSATION = "vac_salary_compensation";
+	private static final String PARAMETER_FORWARD_GROUP = "vac_forward_group";
+	private static final String PARAMETER_HANDLER = "vac_handler";
 	
 	private String iWidth = Table.HUNDRED_PERCENT;
 
