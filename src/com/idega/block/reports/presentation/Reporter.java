@@ -42,11 +42,10 @@ public class Reporter extends Editor{
   }
 
   private void checkCategory(ModuleInfo modinfo){
-    String prm = prefix+"category";
-    if(modinfo.getSessionAttribute(prm)!=null)
-      iCategory = ((Integer)modinfo.getSessionAttribute(prm)).intValue();
-    else if(iCategory != -1)
-      modinfo.setSessionAttribute(prm,new Integer(iCategory));
+    if(ReportService.isSessionCategory(modinfo))
+      iCategory = ReportService.getSessionCategory(modinfo);
+    else
+      ReportService.setSessionCategory(modinfo,iCategory);
   }
 
   protected void control(ModuleInfo modinfo){

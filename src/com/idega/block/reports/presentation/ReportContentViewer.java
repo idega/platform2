@@ -13,6 +13,7 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.Image;
 
 
 public class ReportContentViewer extends Editor{
@@ -50,8 +51,8 @@ public class ReportContentViewer extends Editor{
 
       if(modinfo.getParameter("start")!=null){
         listStart = Integer.parseInt(modinfo.getParameter("start"));
-        modinfo.setSessionAttribute("liststart",new Integer(listStart));
       }
+      modinfo.setSessionAttribute("liststart",new Integer(listStart));
 
       if(modinfo.getParameter("report")!=null){
         iReport = Integer.parseInt(modinfo.getParameter("report"));
@@ -156,7 +157,8 @@ public class ReportContentViewer extends Editor{
         reverse = true;
       int order = Integer.parseInt(sOrder);
 
-      OrderVector(v,order,reverse);
+      if(!(modinfo.getParameter("start")!= null))
+        OrderVector(v,order,reverse);
 
       modinfo.getSession().setAttribute(prefix+"lastorder",sOrder);
 
@@ -171,17 +173,35 @@ public class ReportContentViewer extends Editor{
     }
   }
   private ModuleObject doHeader(Report R){
-    Table T = new Table(4,2);
+    Table T2 = new Table(2,1);
+    T2.setWidth("100%");
+    T2.setColumnAlignment(1,"left");
+    T2.setColumnAlignment(2,"right");
+    Table T = new Table(2,2);
     T.add(getBodyText("Name:"),1,1);
     T.add(getBodyText("Info:"),1,2);
     T.add(getBodyText(R.getName()),2,1);
     T.add(getBodyText(R.getInfo()),2,2);
-    return T;
+    T2.add(T,1,1);
+    Table T3 = new Table(2,1);
+    Window writerWindow = new Window("Idega Report",650,500,"/reports/reportfile.jsp");
+    writerWindow.setResizable(true);
+    writerWindow.setMenubar(true);
+    Link XLS = new Link(new Image("/reports/pics/xls.gif"),writerWindow);
+    XLS.addParameter("type","xls");
+    Link PDF = new Link(new Image("/reports/pics/pdf.gif"),writerWindow);
+    PDF.addParameter("type","pdf");
+    T3.add(XLS,1,1);
+    T3.add(PDF,2,1);
+    T2.add(T3,2,1);
+    return T2;
   }
   private ModuleObject doFooter(int start,int total){
     Table T = new Table(5,1);
     T.setColor(this.DarkColor);
     T.setWidth("100%");
+    T.setWidth(1,"25%");
+    T.setWidth(5,"25%");
     T.setColumnAlignment(1,"left");
     T.setColumnAlignment(3,"center");
     T.setColumnAlignment(5,"right");
@@ -191,15 +211,14 @@ public class ReportContentViewer extends Editor{
     int laststart = lastgroup*displayNumber;
     int nextstart = start+displayNumber;
     int nextend = nextstart + displayNumber-1;
-
     if(!(start == 1)){
-      Link leftLink = new Link("<<");
+      Link leftLink = new Link("<< ");
       leftLink.addParameter("start",start-displayNumber);
       leftLink.setFontColor(this.LightColor);
       T.add(leftLink,1,1);
       T.add(getHeaderText((start-displayNumber)+"-"+(start-1)),1,1);
     }
-    if(nextstart < laststart){
+    if(nextstart <= total){
       String interval;
       if(nextend > total){
         interval = nextstart + "-" +(nextstart+ left-1);
@@ -208,12 +227,15 @@ public class ReportContentViewer extends Editor{
         interval = nextstart+"-"+(nextstart+displayNumber-1);
       }
       T.add(getHeaderText(interval),5,1);
-      Link rightLink = new Link(">>");
+      Link rightLink = new Link(" >>");
       rightLink.addParameter("start",start+displayNumber);
       rightLink.setFontColor(this.LightColor);
       T.add(rightLink,5,1);
     }
-    T.add(getHeaderText(start+"-"+(start+displayNumber-1)+":"+total),3,1);
+    if(nextend > total)
+      T.add(getHeaderText(start+"-"+(start+left-1)+" of "+total),3,1);
+    else
+      T.add(getHeaderText(start+"-"+(start+displayNumber-1)+" of "+total),3,1);
     return T;
   }
 
@@ -221,6 +243,7 @@ public class ReportContentViewer extends Editor{
     int len = content.size();
     Table T= new Table(headers.length+1 ,displayNumber+1);
     T.setWidth("100%");
+    T.setWidth(1,"30");
     T.setCellpadding(2);
     T.setCellspacing(1);
     T.setVerticalZebraColored(LightColor,MiddleColor);
@@ -236,8 +259,8 @@ public class ReportContentViewer extends Editor{
     ReportContent RC;
     int cols = headers.length;
     int index = start;
-    for(int i =0; i < displayNumber ;i++){
-
+    int end = start+displayNumber;
+    for(int i =0; index < end && index <= len;i++){
       RC = (ReportContent)content.elementAt((index)-1);
       for(int j = 0; j < cols;j++){
         T.add(getBodyText(RC.getContent(j)),j+2,i+2);
@@ -245,6 +268,7 @@ public class ReportContentViewer extends Editor{
       T.add(getBodyText(String.valueOf(index)),1,i+2);
       index++;
     }
+
     return T;
   }
 

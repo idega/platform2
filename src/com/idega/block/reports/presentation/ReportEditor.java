@@ -32,7 +32,7 @@ public class ReportEditor extends Editor{
   protected void control(ModuleInfo modinfo){
     try{
         iCategory = ReportService.getSessionCategory(modinfo);
-
+        System.err.println("category : "+iCategory);
         if(modinfo.getParameter(sAction) != null)
           sActPrm = modinfo.getParameter(sAction);
         else
@@ -79,8 +79,8 @@ public class ReportEditor extends Editor{
   }
 
   private void doMain(ModuleInfo modinfo){
-
-    int iCategory = 12;
+    this.makeView();
+    if(iCategory > 0){
     ReportCondition[] RC = ReportEntityHandler.getConditions(iCategory);
     modinfo.setSessionAttribute(prefix+"force",RC);
 
@@ -124,8 +124,11 @@ public class ReportEditor extends Editor{
     box2.setHeight(20);
     box2.selectAllOnSubmit();
     B.add(new SubmitButton("OK",sAction, String.valueOf(ACT4)));
-    this.makeView();
+
     addMain(form);
+    }
+    else
+      addMain(new Text("Nothing to show"));
   }
   protected void doChange(ModuleInfo modinfo) throws SQLException{
 
@@ -165,7 +168,7 @@ public class ReportEditor extends Editor{
     ReportMaker rm = new ReportMaker();
     String sql = rm.makeSQL(vRC);
     Report R = new Report();
-    R.setCategory(12);
+    R.setCategory(iCategory);
     R.setName(name);
     R.setInfo(info);
     R.setSQL(sql);

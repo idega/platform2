@@ -2,6 +2,10 @@ package com.idega.block.reports.business;
 
 import java.io.*;
 import java.util.*;
+import java.sql.*;
+import com.idega.block.reports.data.Report;
+import com.idega.util.database.ConnectionBroker;
+
 
 /**
  * Title:
@@ -57,6 +61,58 @@ public class ReportWriter {
   }
 
   public static boolean writePDFReport(String[] Headers,String[][] Content, OutputStream out){
+    return false;
+  }
+  public static boolean writeXLS(Report report,String realpath){
+      boolean returner = false;
+      try{
+        String[] Headers = report.getHeaders();
+        String sql = report.getSQL();
+
+        String file = realpath;
+        FileWriter out = new FileWriter(file);
+
+        char[] c  = null;
+
+        Connection Conn = com.idega.util.database.ConnectionBroker.getConnection();
+        Statement stmt = Conn.createStatement();
+        ResultSet RS  = stmt.executeQuery(sql);
+        ResultSetMetaData MD = RS.getMetaData();
+        int count = MD.getColumnCount();
+        String temp;
+        StringBuffer data = new StringBuffer();
+        for (int i = 0; i < Headers.length; i++) {
+          data.append(Headers[i]);
+          data.append("\t");
+        }
+        data.append("\n");
+        out.write(data.toString().toCharArray());
+
+        while(RS.next()){
+           data = new StringBuffer();
+          for(int i = 1; i <= count; i++){
+            temp = RS.getString(i);
+            temp = temp!=null?temp:"";
+            data.append(temp);
+            data.append("\t");
+          }
+          data.append("\n");
+          out.write(data.toString().toCharArray());
+        }
+        RS.close();
+        stmt.close();
+        ConnectionBroker.freeConnection(Conn);
+        out.close();
+
+        returner = true;
+      }
+      catch(Exception ex){
+        ex.printStackTrace();
+      }
+      return returner;
+  }
+
+  public static boolean writePDF(Report report){
     return false;
   }
 }

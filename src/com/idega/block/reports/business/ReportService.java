@@ -20,6 +20,13 @@ public class ReportService {
     return "reports.session.report";
   }
 
+  public static boolean isSessionReport(ModuleInfo modinfo){
+    if(modinfo.getSessionAttribute(getPrmName())!=null)
+      return true;
+    else
+      return false;
+  }
+
   public static void setSessionReport(ModuleInfo modinfo,Report R){
     modinfo.setSessionAttribute(getPrmName(),R );
   }
@@ -33,18 +40,28 @@ public class ReportService {
     if(modinfo.getSessionAttribute(getPrmName()) != null)
       modinfo.removeSessionAttribute(getPrmName());
   }
+  public static String categoryPrm(){
+    return "reports.category";
+  }
+
+  public static boolean isSessionCategory(ModuleInfo modinfo){
+    if(modinfo.getSessionAttribute(categoryPrm())!=null)
+      return true;
+    else
+      return false;
+  }
 
   public static int getSessionCategory(ModuleInfo modinfo){
     int r = 0;
-    if(modinfo.getSessionAttribute("reports.category")!= null)
-      r = ((Integer)modinfo.getSessionAttribute("reports.category")).intValue();
+    if(modinfo.getSessionAttribute( categoryPrm())!= null)
+      r = ((Integer)modinfo.getSessionAttribute( categoryPrm())).intValue();
     return r;
   }
   public static void setSessionCategory(ModuleInfo modinfo,int category){
-    modinfo.setSessionAttribute(getPrmName(),new Integer(category) );
+    modinfo.setSessionAttribute( categoryPrm(),new Integer(category) );
   }
   public static void removeSessionCategory(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute("reports.category") != null)
-      modinfo.removeSessionAttribute("reports.category");
+    if(modinfo.getSessionAttribute( categoryPrm()) != null)
+      modinfo.removeSessionAttribute( categoryPrm());
   }
 }

@@ -87,6 +87,7 @@ public class ReportEntityHandler {
       ri.setEntity(entity);
       ri.setInfo(info);
       ri.insert();
+
       return true;
     }
     catch (Exception ex) {
