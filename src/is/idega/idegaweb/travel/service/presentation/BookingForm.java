@@ -2046,7 +2046,8 @@ public abstract class BookingForm extends TravelManager{
 				}
 				TPosClient t = getTPosClient(iwc, gBooking);
 				// TODO IMPLEMENT CC VERIFY NUMBER
-				heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, null, price,currency, gBooking.getReferenceNumber());
+				heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
+				//heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, null, price,currency, gBooking.getReferenceNumber());
 				System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
 				Iterator iter = bookings.iterator();
 				while (iter.hasNext()) {
