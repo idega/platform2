@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.72 2004/08/27 16:12:55 joakim Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.73 2004/09/29 08:16:48 laddi Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -73,11 +73,11 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
 /**
- * Last modified: $Date: 2004/08/27 16:12:55 $ by $Author: joakim $
+ * Last modified: $Date: 2004/09/29 08:16:48 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.72 $
+ * @version $Revision: 1.73 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -821,7 +821,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		if (sendLetter)
 			messageLetter = messageBusiness.createPasswordMessage(user, loginName, newPassword);
 		if (sendEmail)
-			messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody);
+			messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody, false);
 		if ((messageLetter == null && sendLetter) || (messageEmail == null && sendEmail)) {
 			//do something: email or letter was not sent!
 			throw new CreateException("Email or letter could not be created");
