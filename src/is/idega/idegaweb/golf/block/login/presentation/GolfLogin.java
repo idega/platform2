@@ -446,7 +446,9 @@ public class GolfLogin extends GolfBlock {
 		
 		SubmitButton loginButton = new SubmitButton(localize("login.try_again","Try again"));
 		
-		myTable.add(failed,1,row++);
+		Paragraph p = new Paragraph();
+		p.add(failed);
+		myTable.add(p,1,row++);
 		myTable.add(loginButton,1,row++);
 		
 		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "tryagain"));
