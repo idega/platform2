@@ -1131,7 +1131,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 	public List orderMembers(List members, String ordered) {
 		try {
 			if (ordered.equalsIgnoreCase("alphabetical")) {
-				java.util.Collections.sort(members, new com.idega.util.GenericMemberComparator(com.idega.util.GenericMemberComparator.FIRSTLASTMIDDLE));
+				java.util.Collections.sort(members, new is.idega.idegaweb.golf.member.GenericMemberComparator(is.idega.idegaweb.golf.member.GenericMemberComparator.FIRSTLASTMIDDLE));
 			} else if (ordered.equalsIgnoreCase("handicap_low_first")) {
 				Member member;
 				String SQLString = "select m.* from member m, member_info mi where m.member_id = mi.member_id ";

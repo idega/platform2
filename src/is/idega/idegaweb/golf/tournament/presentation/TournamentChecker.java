@@ -144,7 +144,7 @@ public void checkTournament(Tournament tournament,IWResourceBundle iwrb, IWBundl
     table.mergeCells(1,row,2,row );
 
     if (members != null) {
-        java.util.Collections.sort(members,new com.idega.util.GenericMemberComparator(com.idega.util.GenericMemberComparator.FIRSTLASTMIDDLE));
+        java.util.Collections.sort(members,new is.idega.idegaweb.golf.member.GenericMemberComparator(is.idega.idegaweb.golf.member.GenericMemberComparator.FIRSTLASTMIDDLE));
 
         for (int i = 0; i < members.size(); i++) {
             ++row;

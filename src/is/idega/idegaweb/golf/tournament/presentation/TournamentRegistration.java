@@ -968,7 +968,7 @@ public void getUnionMemberList(IWContext modinfo,IWResourceBundle iwrb) throws S
 
 public List getMembersInUnion(Union union) throws SQLException{
     List members = union.getMembersInUnion();
-    java.util.Collections.sort(members,new com.idega.util.GenericMemberComparator(com.idega.util.GenericMemberComparator.FIRSTLASTMIDDLE));
+    java.util.Collections.sort(members,new is.idega.idegaweb.golf.member.GenericMemberComparator(is.idega.idegaweb.golf.member.GenericMemberComparator.FIRSTLASTMIDDLE));
     return members;
 }
 
@@ -977,7 +977,7 @@ public List getMembersInTournamentList(Tournament tournament) throws SQLExceptio
     try {
         members = com.idega.data.EntityFinder.findReverseRelated(tournament,(Member) IDOLookup.instanciateEntity(Member.class));
         if (members != null) {
-          java.util.Collections.sort(members,new com.idega.util.GenericMemberComparator(com.idega.util.GenericMemberComparator.FIRSTLASTMIDDLE));
+          java.util.Collections.sort(members,new is.idega.idegaweb.golf.member.GenericMemberComparator(is.idega.idegaweb.golf.member.GenericMemberComparator.FIRSTLASTMIDDLE));
         }
     }
     catch (Exception sql) {

@@ -7,6 +7,7 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentGroupHome;
 import is.idega.idegaweb.golf.entity.TournamentHome;
+import is.idega.idegaweb.golf.member.GenericMemberComparator;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import java.util.Collections;
@@ -23,7 +24,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.GenericMemberComparator;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 

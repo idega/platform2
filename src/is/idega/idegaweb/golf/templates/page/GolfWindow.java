@@ -229,17 +229,26 @@ public class GolfWindow extends Window {
 //    table.add(topLeft, 1, 1);
       //table.setStyleClass(1,1,"top");
     
-    Table bannerTable = new Table(3,1);
+    Table bannerTable = new Table(2,1);
     //bannerTable.setBorder(1);
     bannerTable.setCellpaddingAndCellspacing(0);
     bannerTable.setWidth(Table.HUNDRED_PERCENT);
     bannerTable.setHeight(Table.HUNDRED_PERCENT);
-    bannerTable.setColumnWidth(2,Table.HUNDRED_PERCENT);
-    bannerTable.setStyleClass("top");
-    bannerTable.setStyleClass(1,1,"top_left");
-    bannerTable.setStyleClass(2,1,"top_middle");
-    bannerTable.setStyleClass(3,1,"top_right");
+    bannerTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_LEFT);
+    bannerTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+    bannerTable.setStyleClass(1,1,"top");
+    bannerTable.setStyleClass(2,1,"top");
     
+    Table bannerTableLeft = new Table(1,1);
+    bannerTableLeft.setCellpaddingAndCellspacing(0);
+    bannerTableLeft.setStyleClass(1,1,"top_left");
+
+    Table bannerTableRight = new Table(1,1);
+    bannerTableRight.setCellpaddingAndCellspacing(0);
+    bannerTableRight.setStyleClass(1,1,"top_right");
+    
+    bannerTable.add(bannerTableLeft,1,1);
+    bannerTable.add(bannerTableRight,2,1);
     
     table.add(bannerTable,1,1);
     
