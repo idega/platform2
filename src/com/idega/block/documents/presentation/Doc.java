@@ -609,7 +609,7 @@ public class Doc extends FolderBlock implements IWBlock {
                 link.setURL(URL);
             } else if (fileID != -1) {
                 System.out.println("link.setUrl(Mediabusiness.getMediaUrl(fileID,iwc))");
-                link.setURL(MediaBusiness.getMediaURL(fileID,iwc.getApplication()));
+                link.setFile(fileID);
             } else if (pageID != -1) {
                 link.setPage(pageID);
             }
