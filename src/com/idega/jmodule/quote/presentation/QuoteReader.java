@@ -40,6 +40,7 @@ private int authorTextSize = 1;
 private int originTextSize = 1;
 private int headerSize = 21;
 private String headerFontFace = "Verdana, Arial, Helvetica, sans-serif";
+private boolean isClean = false;
 
 private Table outerTable;
 private Table myTable;
@@ -175,6 +176,9 @@ public QuoteReader(String quote_id){
 	private void drawContentTable() {
 
 		contentTable = new Table(1,2);
+                    if ( isClean ) {
+                      contentTable.resize(1,1);
+                    }
 			contentTable.setWidth(quoteWidth);
 			contentTable.setCellpadding(0);
 			contentTable.setCellspacing(0);
@@ -223,8 +227,13 @@ public QuoteReader(String quote_id){
 				headerTable.add(new Image("/pics/jmodules/boxoffice/rightcorner.gif","",17,17),3,1);
 			}
 
-		contentTable.add(headerTable,1,1);
-		contentTable.add(outerTable,1,2);
+		if ( isClean ) {
+                  contentTable.add(myTable,1,1);
+		}
+                else {
+                  contentTable.add(headerTable,1,1);
+                  contentTable.add(outerTable,1,2);
+                }
 
 	}
 
@@ -335,4 +344,8 @@ public QuoteReader(String quote_id){
 		this.headerFontFace=headerFontFace;
 
 	}
+
+        public void setClean() {
+          this.isClean = true;
+        }
 }
