@@ -215,6 +215,8 @@ public class RunRegistration extends Block {
 	private RadioButton agreeField;
 	
 	private RadioButton disagreeField;
+	
+	boolean isIcelandic = false;
 
 	public RunRegistration() {
 		super();
@@ -277,7 +279,6 @@ public class RunRegistration extends Block {
 		//TODO: remove javascript popups - put red text containing error
 		// messages...
 		iwrb = getResourceBundle(iwc);
-		boolean isIcelandic = iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale());
 
 		//step one fields begin
 		runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
@@ -459,25 +460,41 @@ public class RunRegistration extends Block {
 
 		t.setHeight(row++, 8);
 
-		t.add(addressText, column, row++);
+		t.add(addressText, column, row);
+		if (!isIcelandic) {
+			t.add(redStar, column, row++);
+		}
+		row++;
 		t.setHeight(row++, 3);
 		t.add(addressField, column, row++);
 
 		t.setHeight(row++, 8);
 
-		t.add(cityText, column, row++);
+		t.add(cityText, column, row);
+		if (!isIcelandic) {
+			t.add(redStar, column, row++);
+		}
+		row++;
 		t.setHeight(row++, 3);
 		t.add(cityField, column, row++);
 
 		t.setHeight(row++, 8);
 
-		t.add(postalText, column, row++);
+		t.add(postalText, column, row);
+		if (!isIcelandic) {
+			t.add(redStar, column, row++);
+		}
+		row++;
 		t.setHeight(row++, 3);
 		t.add(postalField, column, row++);
 
 		t.setHeight(row++, 8);
 
-		t.add(countryText, column, row++);
+		t.add(countryText, column, row);
+		if (!isIcelandic) {
+			t.add(redStar, column, row++);
+		}
+		row++;
 		t.setHeight(row++, 3);
 		t.add(countryField, column, row++);
 
@@ -498,13 +515,17 @@ public class RunRegistration extends Block {
 
 		t.setHeight(row++, 8);
 
-		t.add(emailText, column, row++);
+		t.add(emailText, column, row);
+		if (!isIcelandic) {
+			t.add(redStar, column, row++);
+		}
+		row++;
 		t.setHeight(row++, 3);
 		t.add(emailField, column, row++);
 
 		StringBuffer emailValidation = new StringBuffer();
 		emailValidation.append("function isEmailEntered() {").append("\n\t");
-		emailValidation.append("var email = findObj('"+IWMarathonConstants.PARAMETER_EMAIL+"';");
+		emailValidation.append("var email = findObj('"+IWMarathonConstants.PARAMETER_EMAIL+"');").append("\n\t");
 		emailValidation.append("if (email.value == '') {").append("\n\t\t");
 		emailValidation.append("return confirm('"+iwrb.getLocalizedString("run_reg.continue_without_email", "Are you sure you want to continue without entering an e-mail?")+"');").append("\n\t");
 		emailValidation.append("}").append("\n");
@@ -525,7 +546,11 @@ public class RunRegistration extends Block {
 
 		t.setHeight(row++, 8);
 
-		t.add(tShirtText, column, row++);
+		t.add(tShirtText, column, row);
+		if (!isIcelandic) {
+			t.add(redStar, column, row++);
+		}
+		row++;
 		t.setHeight(row++, 3);
 		t.add(tShirtField, column, row++);
 
@@ -807,6 +832,7 @@ public class RunRegistration extends Block {
 	
 	public void main(IWContext iwc) throws Exception {
 		f = new Form();
+		isIcelandic = iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale());
 		initializeTexts(iwc);
 		initializeFields(iwc);
 
