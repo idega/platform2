@@ -133,6 +133,8 @@ public class TrackerBusiness {
     if( (referer!=null) && (referer.indexOf(domainName)==-1) ){
       ReferrerStatistics stats = (ReferrerStatistics) referers.get(referer);
       if( stats == null ){
+        System.out.println("Trackerbusiness : stats is null Referer: "+referer);
+
        stats = ((is.idega.idegaweb.tracker.data.ReferrerStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(ReferrerStatistics.class)).createLegacy();
        stats.setReferrerUrl(referer);
        stats.setSessions(1);
