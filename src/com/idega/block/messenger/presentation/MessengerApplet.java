@@ -10,7 +10,6 @@ import java.net.*;
 import com.idega.block.messenger.data.Message;
 import com.idega.block.messenger.data.Packet;
 import com.idega.block.messenger.data.Property;
-import com.idega.block.messenger.business.MessageListener;
 import com.idega.presentation.awt.ImageLabel;
 
 import com.idega.presentation.awt.SingleLineItem;
@@ -24,8 +23,7 @@ import com.idega.presentation.awt.SingleLineItem;
  * @version 1.0
  */
 
-public class MessengerApplet extends Applet implements Runnable{
-  private boolean listenerStarted = false;
+public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private boolean runThread = true;
   private boolean isfirstRun = true;
   private static String FRAME_NAME= "IdegaWeb Messenger";
@@ -56,9 +54,6 @@ public class MessengerApplet extends Applet implements Runnable{
 
   private Packet packetToServlet;
   private Packet packetFromServlet;
-
-  private MessageListener listener = new MessageListener(this);;
-
 
   /**Get a parameter value*/
   public String getParameter(String key, String def) {
@@ -95,10 +90,10 @@ public class MessengerApplet extends Applet implements Runnable{
 
       MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
 
-      //listener.addMessageDialog(dialog);
-
+      dialog.addActionListener(this);
 
       SingleLineItem test = new SingleLineItem(this);
       test.setWindowToOpen(dialog);
@@ -174,9 +169,12 @@ public class MessengerApplet extends Applet implements Runnable{
           messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
           dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
+
+          messageDialog.addActionListener(this);
+
           messageDialog.setVisible(true);
-//debug
-          //listener.addMessageDialog(messageDialog);
+
+
 
         }
         else {
@@ -187,7 +185,7 @@ public class MessengerApplet extends Applet implements Runnable{
       }
   }
 
-  public void getMessagesFromDialog(MessageDialog dialog){
+  public synchronized void getMessagesFromDialog(MessageDialog dialog){
     if( packetToServlet == null ){
       packetToServlet = new Packet();
       packetToServlet.setSender(sessionId);
@@ -348,8 +346,14 @@ public class MessengerApplet extends Applet implements Runnable{
     return this.packetFromServlet;
   }
 
+  public void actionPerformed(ActionEvent e){
+    MessageDialog d = (MessageDialog) dialogs.get(Integer.toString(e.getSource().hashCode()));
+    getMessagesFromDialog(d);
+  }
+
+      /*
   public boolean keyDown(Event e, int key){
-    /*
+
     switch (key) {
       case 1004://arrow up
         bally+=0.5f;
@@ -420,7 +424,7 @@ public class MessengerApplet extends Applet implements Runnable{
         keyPressed = Integer.toString(key);
         break;
     }
-*/
+
     return true;
   }
 
@@ -447,10 +451,12 @@ public class MessengerApplet extends Applet implements Runnable{
   }
 
   public boolean mouseDrag(Event e, int x, int y){
-   /*
-    repaint();*/
+
+    repaint();
     return true;
   }
+*/
+
 
   /**
    *  Reads a text response from the servlet.
@@ -480,13 +486,13 @@ public class MessengerApplet extends Applet implements Runnable{
   }
 
 
-  public void update(Graphics g){
+/*  public void update(Graphics g){
     super.repaint();
   }
 
   public void paint(Graphics g){
   //use the update method
-  }
+  }*/
 
   /**Start the applet*/
   public void start() {
@@ -495,26 +501,16 @@ public class MessengerApplet extends Applet implements Runnable{
       runThread = true;
       t.start();
     }
-      System.out.println("starting listener");
-      listener.start();
-      listenerStarted = true;
+
   }
   /**Stop the applet*/
   public void stop() {
     if ( t != null ){
       runThread = false;
     }
-    /*
-    if ( messageDialog !=null ){
-      messageDialog.setVisible(false);
-      messageDialog.cancel();
-      messageDialog.dispose();
-      messageDialog = null;
-    }
-*/
-    if(listenerStarted) listener.stop();
 
   }
+
   /**Destroy the applet*/
   public void destroy() {
     stop();
@@ -526,7 +522,7 @@ public class MessengerApplet extends Applet implements Runnable{
     if ( t!=null ){
       t=null;
     }
-/*
+/**@todo travers through hashtable and do this
     if ( messageDialog !=null ){
       messageDialog.setVisible(false);
       messageDialog.cancel();
@@ -534,9 +530,9 @@ public class MessengerApplet extends Applet implements Runnable{
       messageDialog = null;
     }
 */
-    listener = null;
 
   }
+
   /**Get Applet information*/
   public String getAppletInfo() {
     return FRAME_NAME;

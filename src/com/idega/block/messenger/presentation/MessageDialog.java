@@ -3,6 +3,7 @@ package com.idega.block.messenger.presentation;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
+import java.util.EventListener;
 import java.net.URL;
 import com.idega.block.messenger.data.Message;
 import com.idega.presentation.awt.ImageLabel;
@@ -27,6 +28,7 @@ public class MessageDialog extends Dialog implements ActionListener{
   String lastMessageString;
   String recipientName;
   ImageLabel logo;
+  ActionListener listener;
 
   public MessageDialog(String title, Message message) {
     super(new Frame(), title, false);
@@ -105,8 +107,10 @@ public class MessageDialog extends Dialog implements ActionListener{
         messageArea.append("   "+lastMessageString+"\n");
         storeMessageString();
         replyMessage.requestFocus();
-      }
-    //}
+
+        if( listener!=null ) listener.actionPerformed(e);
+
+        }
   }
 
   public void addMessage(Message msg){
@@ -155,6 +159,14 @@ public class MessageDialog extends Dialog implements ActionListener{
     messageArea.setBounds(6, 82,iWidth,iHeight);
     replyMessage.setBounds(6, messageArea.getBounds().height + 105 ,iWidth,29);
     super.paint(g);
+  }
+
+  public void addActionListener(ActionListener listener){
+    this.listener = listener;
+  }
+
+  private ActionListener getActionListener(){
+    return listener;
   }
 
 }
