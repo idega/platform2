@@ -52,6 +52,8 @@ public class Medication extends EHealthBlock {
 	IWContext _iwc = null;
 	ICPage _fassPage = null;
 
+	private boolean showButtons = true;
+	
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
 		add(getAppointmentHistoryForm());
@@ -74,7 +76,8 @@ public class Medication extends EHealthBlock {
 		T.add(getSearchSortTable(), 1, 1);
 		T.add(getHeadingTable(), 1, 2);
 		T.add(getInfoLayer(), 1, 3);
-		T.add(getTableButtons(), 1, 4);
+		if (showButtons)
+			T.add(getTableButtons(), 1, 4);
 		
 		T.add(new Break(), 1, 3);
 		T.setHeight(1, 3, "160");		
@@ -125,7 +128,8 @@ public class Medication extends EHealthBlock {
 			String theInfo = (String) iter.next();
 			layers.add(theInfo);
 			layers.add(new Break(2));
-			layers.add(renew);
+			if (showButtons)
+				layers.add(renew);
 						
 			T.add(layers, 1, 3);
 			theRow++;
@@ -347,5 +351,8 @@ public class Medication extends EHealthBlock {
 		_fassPage = fassPage;
 	}
 	
+	public void setShowButtons(boolean showButtons){
+		this.showButtons = showButtons;
+	}
 	
 }
