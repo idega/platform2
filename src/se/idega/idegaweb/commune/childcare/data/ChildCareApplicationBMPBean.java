@@ -36,7 +36,7 @@ import javax.ejb.FinderException;
  * @version 1.0
  */
 public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements ChildCareApplication, Case {
-	private final static String ENTITY_NAME = "comm_childcare";
+	protected final static String ENTITY_NAME = "comm_childcare";
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static String CASE_CODE_KEY_DESC = "Application for child care";
 	
@@ -420,6 +420,26 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public Collection ejbFindAllCasesByStatus(String caseStatus) throws FinderException {
 		return super.ejbFindAllCasesByStatus(caseStatus);
 	}
+	
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String caseStatus) throws FinderException {
+		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, -1, -1);
+	}	
+	
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user u");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+		sql.appendAndEquals("c."+PROVIDER_ID, providerID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+
+		if (numberOfEntries == -1)
+			return idoFindPKsBySQL(sql.toString());
+		else
+			return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+	}	
 	
 	public Integer ejbFindApplicationByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException {
 		return ejbFindApplicationByChildAndChoiceNumber(((Integer)child.getPrimaryKey()).intValue(), choiceNumber);

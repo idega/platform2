@@ -21,6 +21,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 
 /**
@@ -89,8 +90,11 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Phone phone;
 		Link move;
 		SubmitButton delete;
+		
+		IWTimestamp stamp = new IWTimestamp();
+		//stamp.addDays(1);
 
-		Collection students = getBusiness().getSchoolBusiness().findStudentsInSchool(getSession().getChildCareID(), getSession().getGroupID());
+		Collection students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), stamp.getDate());
 		Iterator iter = students.iterator();
 		while (iter.hasNext()) {
 			column = 1;

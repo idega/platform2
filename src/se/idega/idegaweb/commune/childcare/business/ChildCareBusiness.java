@@ -10,7 +10,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean assignApplication(java.lang.String[] p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3) throws java.rmi.RemoteException;
  public boolean assignApplication(int p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3) throws java.rmi.RemoteException;
- public boolean assignContractToApplication(int p0,int p1,com.idega.user.data.User p2,java.util.Locale p3) throws java.rmi.RemoteException;
+ public boolean assignContractToApplication(int p0,int p1,com.idega.util.IWTimestamp validFrom,com.idega.user.data.User p2,java.util.Locale p3, boolean changeStatus) throws java.rmi.RemoteException;
  public boolean assignContractToApplication(java.lang.String[] p0,com.idega.user.data.User p1,java.util.Locale p2) throws java.rmi.RemoteException;
  public boolean cancelContract(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
  public void changePlacingDate(int p0,java.sql.Date p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -71,4 +71,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void setAsPriorityApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setAsPriorityApplication(int p0,java.lang.String p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void updatePrognosis(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getAcceptedApplicationsByProvider(int providerID) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive getContractFile(int contractFileID) throws java.rmi.RemoteException;
 }

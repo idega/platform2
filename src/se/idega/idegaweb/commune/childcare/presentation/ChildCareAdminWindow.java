@@ -56,6 +56,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_PLACE_IN_GROUP = 7;
 	public static final int METHOD_MOVE_TO_GROUP = 8;
 	public static final int METHOD_UPDATE_PROGNOSIS = 9;
+	public static final int METHOD_ALTER_CARE_TIME = 10;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -68,6 +69,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_MOVE_TO_GROUP = 8;
 	public static final int ACTION_CANCEL_CONTRACT = 9;
 	public static final int ACTION_UPDATE_PROGNOSIS = 10;
+	public static final int ACTION_ALTER_CARE_TIME = 11;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -117,6 +119,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_UPDATE_PROGNOSIS :
 				updatePrognosis(iwc);
+				break;
+			case ACTION_ALTER_CARE_TIME :
+				alterCareTime(iwc);
 				break;
 		}
 
@@ -189,6 +194,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case METHOD_UPDATE_PROGNOSIS :
 				headerTable.add(getHeader(localize("child_care.set_prognosis", "Set prognosis")));
 				contentTable.add(getUpdatePrognosisForm(iwc));
+				break;
+			case METHOD_ALTER_CARE_TIME :
+				headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
+				contentTable.add(getAlterCareTimeForm(iwc));
 				break;
 		}
 		
@@ -318,6 +327,39 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
+	private Table getAlterCareTimeForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
+		textInput.setLength(2);
+		textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+
+		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
+		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
+		table.add(textInput, 1, row++);
+		
+		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		dateInput.setDate(new IWTimestamp().getDate());
+		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+
+		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
+		table.add(dateInput, 1, row++);
+
+		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
+		table.add(placeInGroup, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
 	private Table getCreateGroupForm(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
@@ -437,6 +479,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 	}
 	
+	private void alterCareTime(IWContext iwc) throws RemoteException {
+		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
+		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
+		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
+
+		close(iwc);
+	}
+
 	private void makeOffer(IWContext iwc) throws RemoteException {
 		String messageHeader = localize("child_care.application_accepted_subject", "Child care application accepted.");
 		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
@@ -472,7 +522,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void createContract(IWContext iwc) throws RemoteException {
-		getBusiness().assignContractToApplication(_applicationID, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().assignContractToApplication(_applicationID, -1, null, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		close(iwc);
 	}
