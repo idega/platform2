@@ -38,6 +38,7 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     addAttribute(getColumnNameGroupID(),"Hópur", true, true, Integer.class, "many_to_one", ResellerStaffGroup.class);
     addAttribute(getColumnNameIsValid(),"is valid", true, true, Boolean.class);
     addAttribute(getColumnNameReferenceNumber(), "Tilvisunarnúmer", true, true, String.class);
+    addAttribute(getColumnNameTPosMerchantID(), "Viðskiptanumer", true, true, String.class);
 
     this.addManyToManyRelationShip(Address.class);
     this.addManyToManyRelationShip(Email.class);
@@ -162,12 +163,21 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     this.update();
   }
 
+  public String getTPosMerchantId() {
+    return getStringColumnValue(getColumnNameTPosMerchantID());
+  }
+
+  public void setTPosMerchantId(String id) {
+    setColumn(getColumnNameTPosMerchantID(), id);
+  }
+
   public static String getResellerTableName()         {return "SR_RESELLER";}
   public static String getColumnNameName()            {return "NAME";}
   public static String getColumnNameDescription()     {return "DESCRIPTION";}
   public static String getColumnNameGroupID()         {return "IC_GROUP_ID";}
   public static String getColumnNameIsValid()         {return "IS_VALID";}
   public static String getColumnNameReferenceNumber() {return "REFERENCE_NUMBER";}
+  public static String getColumnNameTPosMerchantID()  {return "TPOS_MERCHANT_ID";}
 
   public void update() throws SQLException {
     if (newName != null) {

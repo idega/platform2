@@ -34,6 +34,7 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
     this.addAttribute(getColumnNameAddressId(), "addressId", true, true, Address.class);
     this.addAttribute(getColumnNameTime(), "time", true, true, Timestamp.class);
     this.addAttribute(getColumnNameAddressTypeId(), "addressutýpa", true, true, Integer.class);
+    this.addAttribute(getColumnNameRefillStock() , "fylla á byrgðir", true, true, Boolean.class);
 
     this.addManyToManyRelationShip( Product.class, "SR_PRODUCT_SR_ADDRESS" );
   }
@@ -73,6 +74,10 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
     return getIntColumnValue(getColumnNameAddressTypeId());
   }
 
+  public boolean getRefillStock() {
+    return getBooleanColumnValue(getColumnNameRefillStock());
+  }
+
   public void setAddressId(int addressId) {
     setColumn(getColumnNameAddressId(), addressId);
   }
@@ -93,10 +98,16 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
     setColumn(getColumnNameAddressTypeId(), id);
   }
 
+  public void setRefillStock(boolean replenish) {
+    setColumn(getColumnNameRefillStock(), replenish);
+  }
+
+
   public static String getTravelAddressTableName() { return "SR_ADDRESS";}
   public static String getColumnNameAddressId() { return "IC_ADDRESS_ID";}
   public static String getColumnNameTime() { return "DP_AR_TIME";}
   public static String getColumnNameAddressTypeId() {return "SR_ADDRESS_TYPE_ID";}
+  public static String getColumnNameRefillStock() {return "REFILL_STOCK";}
 }
 
 

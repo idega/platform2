@@ -49,6 +49,8 @@ public class Booking extends TravelManager {
   private int contractId;
   private GeneralBooking booking;
   private int bookingId;
+  private TravelAddress travelAddress;
+  Collection travelAddressIds = null;
 
   private Product product;
   private int productId;
@@ -134,7 +136,18 @@ public class Booking extends TravelManager {
           service = tsb.getService(product);
           tour = getTourBusiness(iwc).getTour(product);
           timeframe = tsb.getTimeframe(product);
+
+          String travelAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
+          if (travelAddressId == null) {
+            List addresses = ProductBusiness.getDepartureAddresses(product, true);
+            travelAddress = (TravelAddress) addresses.get(0);
+          }else {
+            travelAddress = ((TravelAddressHome) (IDOLookup.getHomeLegacy(TravelAddress.class))).findByPrimaryKey(Integer.parseInt(travelAddressId));
+          }
+          travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, travelAddress);
         }
+
+
       }catch (ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
       }catch (TimeframeNotFoundException tfnfe) {
@@ -142,6 +155,7 @@ public class Booking extends TravelManager {
       }catch (TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
+      catch (FinderException fe) {fe.printStackTrace(System.err);}
 
       if ((reseller != null) && (product != null)){
         try {
@@ -176,14 +190,18 @@ public class Booking extends TravelManager {
         if (product != null) {
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
+    System.err.println("1 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
               contentTable.add(getContentHeader(iwc));
               contentTable.add(Text.BREAK);
+    System.err.println("2 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
               contentTable.add(getTotalTable(iwc));
+    System.err.println("3 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
               if (contentTableForm == null) {
                 contentTable.add(getContentTable(iwc));
               }else {
                 contentTable.add(contentTableForm);
               }
+    System.err.println("4 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
               contentTable.setWidth("90%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
@@ -687,12 +705,19 @@ public class Booking extends TravelManager {
            try {
           if (tsb.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
             iCount = 0;
-            iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), this.stamp);
+//            if (this.travelAddress != null) {
+              iBooked = getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) product.getPrimaryKey()).intValue(), this.stamp, null, -1, new int[]{}, travelAddressIds );
+//            }else {
+//              System.err.println("travelAddres == null");
+//            }
+//            iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), this.stamp);
             iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), this.stamp, true);
 
             try {
               ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
               ServiceDay sDay = sDayHome.create();
+
+
               sDay = sDay.getServiceDay(this.productId, stamp.getDayOfWeek());
               if (sDay != null) {
                 iCount = sDay.getMax();

@@ -30,10 +30,15 @@ public interface TravelStockroomBusiness extends com.idega.business.IBOService, 
  public com.idega.block.trade.stockroom.data.Product[] getProducts(int p0) throws java.rmi.RemoteException;
  public com.idega.block.trade.stockroom.data.Product[] getProducts(int p0,com.idega.util.idegaTimestamp p1,com.idega.util.idegaTimestamp p2) throws java.rmi.RemoteException;
  public com.idega.util.datastructures.HashtableDoubleKeyed getResellerDayHashtable(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
+ public is.idega.idegaweb.travel.data.ResellerDayHome getResellerDayHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public is.idega.idegaweb.travel.data.Service getService(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,is.idega.idegaweb.travel.business.ServiceNotFoundException, java.rmi.RemoteException;
+ public is.idega.idegaweb.travel.data.ServiceDayHome getServiceDayHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public float getSupplyStatus(int p0)throws java.sql.SQLException, java.rmi.RemoteException;
  public float getSupplyStatus(int p0,java.sql.Date p1)throws java.sql.SQLException, java.rmi.RemoteException;
  public com.idega.block.trade.stockroom.data.Timeframe getTimeframe(com.idega.block.trade.stockroom.data.Product p0)throws is.idega.idegaweb.travel.business.TimeframeNotFoundException,is.idega.idegaweb.travel.business.ServiceNotFoundException, java.rmi.RemoteException;
+ public int getTotalSeats(com.idega.block.trade.stockroom.data.Product p0,is.idega.idegaweb.travel.data.ServiceDay p1,com.idega.block.trade.stockroom.data.TravelAddress p2,com.idega.util.idegaTimestamp p3)throws com.idega.data.IDOFinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getTravelAddressIdsFromRefill(com.idega.block.trade.stockroom.data.Product p0,com.idega.block.trade.stockroom.data.TravelAddress p1)throws com.idega.data.IDOFinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getTravelAddressIdsFromRefill(com.idega.block.trade.stockroom.data.Product p0,int p1)throws javax.ejb.FinderException,com.idega.data.IDOFinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean isWithinTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0,com.idega.util.idegaTimestamp p1) throws java.rmi.RemoteException;
  public void removeResellerHashtables(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
  public void removeServiceDayHashtable(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;

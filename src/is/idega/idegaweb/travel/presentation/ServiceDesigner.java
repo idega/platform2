@@ -201,13 +201,13 @@ public class ServiceDesigner extends TravelManager {
             tc.setValue(product.getText());
           }
 
-          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra_info"));
+          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
 
           Link tfAdder = new Link(iwrb.getLocalizedImageButton("travel.timeframes","Timeframes"));
             tfAdder.addParameter(TimeframeAdder._parameterProductId, product.getID());
             tfAdder.setWindowToOpen(TimeframeAdder.class);
 
-          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure_places"));
+          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure places"));
             addAdder.addParameter(AddressAdder._parameterProductId, product.getID());
             addAdder.setWindowToOpen(AddressAdder.class);
 
@@ -229,24 +229,24 @@ public class ServiceDesigner extends TravelManager {
             serviceNameText.setText(ProductBusiness.getProductNameWithNumber(product));
 
           table.add(serviceNameText,1,row);
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,3,row);
           table.setRowColor(row, super.backgroundColor);
           ++row;
           table.add(tc,1,row);
           table.setRowColor(row, super.GRAY);
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,3,row);
           ++row;
           table.add(tfAdder,1,row);
           table.setRowColor(row, super.GRAY);
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,3,row);
           ++row;
           table.add(addAdder,1,row);
           table.setRowColor(row, super.GRAY);
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,3,row);
           ++row;
           table.add(servDaySetter,1,row);
           table.setRowColor(row, super.GRAY);
-          table.mergeCells(1,row,4,row);
+          table.mergeCells(1,row,3,row);
           ++row;
 
 
@@ -257,12 +257,12 @@ public class ServiceDesigner extends TravelManager {
           Text counter;
           idegaTimestamp timestamp;
 
-          TextInput maxUsage;
+//          TextInput maxUsage;
 
 
           for (int l = 0; l < addressesSize; l++) {
             address = (TravelAddress) addresses.get(l);
-            table.mergeCells(1,row,4,row);
+            table.mergeCells(1,row,3,row);
             table.setRowColor(row, super.backgroundColor);
             addrText = (Text) super.theBoldText.clone();
               addrText.setText(address.getName());
@@ -281,16 +281,16 @@ public class ServiceDesigner extends TravelManager {
                 priceDiscountText.setFontColor(super.WHITE);
               Text timeframeText = getTimeframeText(tFrames[k], iwc);
                 timeframeText.setFontColor(super.WHITE);
-              Text maxUsageText = super.getText(iwrb.getLocalizedString("travel.number_of_times","Number of items"));
-                maxUsageText.setFontColor(WHITE);
+//              Text maxUsageText = super.getText(iwrb.getLocalizedString("travel.number_of_times","Number of items"));
+//                maxUsageText.setFontColor(WHITE);
 
 
               table.add(catName,1,row);
               table.add(priceDiscountText,2,row);
               table.add(timeframeText,3,row);
               table.setAlignment(3, row, "right");
-              table.add(maxUsageText,4,row);
-              table.setAlignment(4, row, "right");
+//              table.add(maxUsageText,4,row);
+//              table.setAlignment(4, row, "right");
               table.setRowColor(row,super.backgroundColor);
 
               DecimalFormat df = new DecimalFormat("0.00");
@@ -308,8 +308,8 @@ public class ServiceDesigner extends TravelManager {
 
 
                   priceDiscount = new TextInput("price_discount");
-                  maxUsage = new TextInput("max_usage");
-                    maxUsage.setSize(4);
+//                  maxUsage = new TextInput("max_usage");
+//                    maxUsage.setSize(4);
 
                   if (cats[i].getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
                     infoText.setText("");
@@ -342,7 +342,7 @@ public class ServiceDesigner extends TravelManager {
                           priceDiscount.setContent(Float.toString(prices[j].getPrice()));
                         }
                         if (iMaxUsage > -1) {
-                          maxUsage = new TextInput("max_usage", Integer.toString(iMaxUsage));
+//                          maxUsage = new TextInput("max_usage", Integer.toString(iMaxUsage));
                         }
                         table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[j].getID())),1,row);//PriceCategoryID())),1,row);
                       }catch (ArrayIndexOutOfBoundsException a) {
@@ -364,9 +364,9 @@ public class ServiceDesigner extends TravelManager {
                   table.add(infoText,3,row);
 
 //                  table.setWidth(2,"150");
-                   table.setAlignment(4, row, "right");
-                    maxUsage.setSize(4);
-                  table.add(maxUsage, 4, row);
+                   table.setAlignment(3, row, "left");
+//                    maxUsage.setSize(4);
+//                  table.add(maxUsage, 4, row);
                   table.setRowColor(row,super.GRAY);
               }
 
@@ -375,8 +375,8 @@ public class ServiceDesigner extends TravelManager {
           }
 
           table.setRowColor(row,super.GRAY);
-          table.setAlignment(4,row,"right");
-          table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.ServiceAction, this.PriceCategorySave),4,row);
+          table.setAlignment(3,row,"right");
+          table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.ServiceAction, this.PriceCategorySave),3,row);
 
           add(Text.BREAK);
           add(form);

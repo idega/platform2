@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDOFinderException;
+import java.util.List;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -25,6 +27,7 @@ public class AddressAdder extends TravelWindow {
   private static String _parameterDelete = "parameterDelete";
   private static String parameterDeparture = "addressAdderDeparture";
   private static String parameterArrival = "addressAdderArrival";
+  private static String parameterRefill = "addressAdderRefill";
 
   private String sAction = "addressAdderAction";
   private String parameterSave = "addressAdderSave";
@@ -38,6 +41,7 @@ public class AddressAdder extends TravelWindow {
   private int extraFields = 3;
 
   public AddressAdder() {
+    super.setWidth(500);
     super.setTitle("idegaWeb Travel");
   }
 
@@ -90,12 +94,13 @@ public class AddressAdder extends TravelWindow {
       String[] ids = iwc.getParameterValues(_parameterAddressId);
       int counter = 0;
       String time = "";
+      String refill = "";
 
       for (int i = 0; i < name.length; i++) {
         try {
           ++counter;
           time = iwc.getParameter(parameterTime+counter);
-
+          refill = iwc.getParameter(parameterRefill+counter);
           if (ids[i].equals("-1") ) {
             if (!name[i].equals("")) {
               Address newAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
@@ -107,6 +112,11 @@ public class AddressAdder extends TravelWindow {
                 tAddress.setAddressId(newAddress.getID());
                 tAddress.setAddressTypeId(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE);
                 tAddress.setTime(new idegaTimestamp("2001-01-01 "+time));
+                if (refill.equals("Y")) {
+                  tAddress.setRefillStock(true);
+                }else {
+                  tAddress.setRefillStock(false);
+                }
                 tAddress.insert();
               tAddress.addTo(_product);
             }
@@ -120,6 +130,12 @@ public class AddressAdder extends TravelWindow {
             }else if (!name[i].equals("")) {
               TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(ids[i]));
                 tAddress.setTime(new idegaTimestamp("2001-01-01 "+time));
+                if (refill.equals("Y")) {
+                  tAddress.setRefillStock(true);
+                }else {
+                  tAddress.setRefillStock(false);
+                }
+
               Address newAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tAddress.getAddressId());
                 newAddress.setStreetName(name[i]);
                 newAddress.update();
@@ -153,42 +169,55 @@ public class AddressAdder extends TravelWindow {
       timeTxt.setText(iwrb.getLocalizedString("travel.time","Time"));
       timeTxt.setFontColor(TravelManager.WHITE);
       timeTxt.setBold(true);
+    Text refillTxt = (Text) text.clone();
+      refillTxt.setText(iwrb.getLocalizedString("travel.refill_stock","Refill stock"));
+      refillTxt.setFontColor(TravelManager.WHITE);
+      refillTxt.setBold(true);
     Text delTxt = (Text) text.clone();
       delTxt.setText(iwrb.getLocalizedString("travel.delete","delete"));
       delTxt.setFontColor(TravelManager.WHITE);
       delTxt.setBold(true);
 
     try {
-      TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(_product);
+      List addresses = ProductBusiness.getDepartureAddresses(_product, true);
+      int addressesSize = addresses.size();
+      TravelAddress tAddress;
       TextInput nameInp = new TextInput(textInputNameAddress);
+      BooleanInput refill;
       CheckBox del;
       TimeInput timeInp;
 
       table.add(nameTxt, 1, row);
       table.add(timeTxt, 2, row);
-      table.add(delTxt, 3, row);
-      table.setAlignment(3,row, "center");
+      table.add(refillTxt, 3, row);
+      table.add(delTxt, 4, row);
+      table.setAlignment(4,row, "center");
       table.setRowColor(row, TravelManager.backgroundColor);
       idegaTimestamp timestamp;
       int counter = 0;
-      for (int i = 0; i < addresses.length; i++) {
+      for (int i = 0; i < addressesSize; i++) {
         ++row;
         ++counter;
+        tAddress = (TravelAddress) addresses.get(i);
 
         nameInp = new TextInput(textInputNameAddress);
-          nameInp.setContent(addresses[i].getStreetName());
-        del = new CheckBox(this._parameterDelete+addresses[i].getID());
+          nameInp.setContent(tAddress.getStreetName());
+        del = new CheckBox(this._parameterDelete+tAddress.getID());
           del.setChecked(false);
-        timestamp = new idegaTimestamp(addresses[i].getTime());
+        timestamp = new idegaTimestamp(tAddress.getTime());
+        refill = new BooleanInput(this.parameterRefill+counter);
+          refill.setSelected(tAddress.getRefillStock());
         timeInp = new TimeInput(this.parameterTime+counter);
           timeInp.setHour(timestamp.getHour());
           timeInp.setMinute(timestamp.getMinute());
 
         table.add(nameInp, 1,row);
         table.add(timeInp, 2,row);
-        table.add(del, 3,row);
+        table.add(refill, 3, row);
+        table.add(del, 4,row);
         table.setAlignment(3,row, "center");
-        table.add(new HiddenInput(this._parameterAddressId, Integer.toString(addresses[i].getID())));
+        table.setAlignment(4,row, "center");
+        table.add(new HiddenInput(this._parameterAddressId, Integer.toString(tAddress.getID())));
 
         table.setRowColor(row, TravelManager.GRAY);
       }
@@ -199,9 +228,12 @@ public class AddressAdder extends TravelWindow {
 
         nameInp = new TextInput(textInputNameAddress);
         timeInp = new TimeInput(this.parameterTime+counter);
+        refill = new BooleanInput(this.parameterRefill+counter);
         table.add(new HiddenInput(this._parameterAddressId, "-1"));
         table.add(nameInp, 1,row);
         table.add(timeInp , 2, row);
+        table.add(refill, 3, row);
+        table.setAlignment(3,row, "center");
         table.setRowColor(row, TravelManager.GRAY);
       }
 
@@ -212,10 +244,11 @@ public class AddressAdder extends TravelWindow {
       ++row;
       table.add(closeBtn,1,row);
       table.add(saveBtn,3,row);
+      table.mergeCells(3, row, 4, row);
       table.setAlignment(3,row,"right");
       table.setRowColor(row, TravelManager.GRAY);
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
+    }catch (IDOFinderException ido) {
+      ido.printStackTrace(System.err);
       error(iwc);
     }
 

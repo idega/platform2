@@ -7,9 +7,11 @@ public class SupplierHomeImpl extends com.idega.data.IDOFactory implements Suppl
   return Supplier.class;
  }
 
+
  public Supplier create() throws javax.ejb.CreateException{
-  return (Supplier) super.idoCreate();
+  return (Supplier) super.createIDO();
  }
+
 
  public Supplier createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class SupplierHomeImpl extends com.idega.data.IDOFactory implements Suppl
 
  }
 
- public Supplier findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Supplier) super.idoFindByPrimaryKey(id);
- }
 
  public Supplier findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Supplier) super.idoFindByPrimaryKey(pk);
+  return (Supplier) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public Supplier findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (Supplier) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public Supplier findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class SupplierHomeImpl extends com.idega.data.IDOFactory implements Suppl
 	}
 
  }
+
 
 
 }

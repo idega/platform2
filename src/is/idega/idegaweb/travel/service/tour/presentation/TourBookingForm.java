@@ -1305,6 +1305,8 @@ public class TourBookingForm extends TravelManager {
 
     String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
     int iAddressId = Integer.parseInt(sAddressId);
+    Collection addressIds = getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(ProductBusiness.getProduct(_service.getID()), iAddressId);
+//    getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(ProductBusiness.getProduct(_service.getID(), ta));
     Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     int iBookingId = -1;
@@ -1373,7 +1375,8 @@ public class TourBookingForm extends TravelManager {
     int iAvailable;
     if (totalSeats > 0) {
       if (betw == 1) {
-        iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, _stamp);
+        iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
+//        iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, _stamp);
         if (iMany > iAvailable) {
           tooMany = true;
           errorDays.add(fromStamp);
@@ -1386,7 +1389,8 @@ public class TourBookingForm extends TravelManager {
           }else {
             fromStamp.addDays(1);
           }
-          iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, fromStamp);
+          iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, addressIds );
+//          iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, fromStamp);
           if (iMany > iAvailable) {
               tooMany = true;
               errorDays.add(fromStamp);

@@ -65,6 +65,7 @@ public class LyricViewer extends Block {
     Table contentTable = new Table(1,6);
     contentTable.setAlignment(1,4,"right");
 
+
     frameTable.add(contentTable);
 
     //this.add("lyric - "+iwc.getParameter(AlbumCollectionBusiness._PRM_LYRIC_ID));

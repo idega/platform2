@@ -318,6 +318,7 @@ public class TravelManager extends Block {
             }
         }
         catch (Exception e) {
+          debug(e.getMessage());
         }
 
         try {
@@ -329,6 +330,7 @@ public class TravelManager extends Block {
             }
         }
         catch (Exception e) {
+          debug(e.getMessage());
         }
 
         //theText.setFontSize(Text.FONT_SIZE_7_HTML_1);

@@ -135,27 +135,36 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   public  int getNumberOfBookingsByResellers(int serviceId, idegaTimestamp stamp) throws RemoteException {
-    return getNumberOfBookings(-1, serviceId, stamp);
+    return getNumberOfBookings(-1, serviceId, stamp, null);
   }
 
   public  int getNumberOfBookingsByResellers(int[] resellerIds, int serviceId, idegaTimestamp stamp) throws RemoteException {
     int returner = 0;
     for (int i = 0; i < resellerIds.length; i++) {
-      returner += getNumberOfBookings(resellerIds[i], serviceId, stamp);
+      returner += getNumberOfBookings(resellerIds[i], serviceId, stamp, null);
     }
     return returner;
   }
 
   public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, idegaTimestamp stamp) throws RemoteException{
-    return getNumberOfBookings(resellerId, serviceId, stamp);
+    return getNumberOfBookings(resellerId, serviceId, stamp, null);
   }
 
-  private  int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp) throws RemoteException{
+  public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, idegaTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
+    return getNumberOfBookings(resellerId, serviceId, stamp, travelAddress);
+  }
+
+  private  int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
     if (resellerId != -1) {
       try {
         Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
         Iterator iter = reseller.getChildren();
+        Product product = ProductBusiness.getProduct(serviceId);
         List items = new Vector();
+        Collection coll;
+        if (travelAddress != null) {
+          coll = ((TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class)).getTravelAddressIdsFromRefill(product,travelAddress);
+        }
         if (iter == null) {
             int[] tempInts = {reseller.getID()};
             return getGeneralBookingHome().getNumberOfBookings( tempInts , serviceId, stamp);
@@ -178,6 +187,9 @@ public class BookerBean extends IBOServiceBean implements Booker{
           }
         }
       }catch (SQLException sql) {
+        return 0;
+      }catch (IDOFinderException idoFE) {
+        idoFE.printStackTrace(System.err);
         return 0;
       }
     }else {

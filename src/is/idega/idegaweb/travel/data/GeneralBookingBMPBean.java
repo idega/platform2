@@ -25,7 +25,7 @@ import com.idega.block.trade.stockroom.data.*;
  */
 
 
-public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.GeneralBooking,is.idega.idegaweb.travel.interfaces.Booking {
+public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.GeneralBooking {
 
   public GeneralBookingBMPBean(){
           super();
@@ -328,17 +328,42 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, idegaTimestamp stamp) {
+    return ejbHomeGetNumberOfBookings(resellerIds, serviceId, stamp, null);
+  }
+
+  public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, idegaTimestamp stamp, Collection travelAddressIds) {
     int returner = 0;
     try {
         if (resellerIds == null) {
           resellerIds = new int[0];
         }
         Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
+        String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
 
         String[] many = {};
           StringBuffer sql = new StringBuffer();
             sql.append("Select sum(b."+getTotalCountColumnName()+") from "+getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
+            if (travelAddressIds != null) {
+              sql.append(", "+addressMiddleTable+" am");
+            }
+
             sql.append(" where ");
+            if (travelAddressIds != null) {
+              sql.append("am."+getIDColumnName()+" = b."+getIDColumnName());
+              sql.append(" and ");
+              sql.append("am."+TravelAddressBMPBean.getTravelAddressTableName()+"_ID in (");
+              Iterator iter = travelAddressIds.iterator();
+              while (iter.hasNext()) {
+                Object item = iter.next();
+                sql.append(item.toString());
+                if (iter.hasNext()) {
+                  sql.append(", ");
+                }
+              }
+              sql.append(") and ");
+            }
+
+//            sql.append(" where ");
             if (resellerIds.length > 0 ) {
               sql.append(" br."+reseller.getIDColumnName()+" in (");
               for (int i = 0; i < resellerIds.length; i++) {
@@ -370,9 +395,13 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-
   public int ejbHomeGetNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType, int[] productPriceIds){
+    return ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, productPriceIds, null);
+  }
+
+  public int ejbHomeGetNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
     int returner = 0;
+    StringBuffer sql = new StringBuffer();
     //Connection conn = null;
     try {
 //      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(serviceId));
@@ -383,15 +412,36 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       Timeframe timeframe = pBus.getTimeframe(ProductBusiness.getProduct(serviceId), fromStamp);
       Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
+      String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
+
       String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
       String tTable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
 
       //conn = ConnectionBroker.getConnection();
         String[] many = {};
-          StringBuffer sql = new StringBuffer();
             sql.append("Select b."+getTotalCountColumnName()+" from "+getBookingTableName()+" b");
             sql.append(","+pTable+" p,"+middleTable+" m,"+tTable+" t");
+
+            if (travelAddressIds != null) {
+              sql.append(", "+addressMiddleTable+" am");
+            }
+
             sql.append(" where ");
+            if (travelAddressIds != null) {
+              sql.append("am."+getIDColumnName()+" = b."+getIDColumnName());
+              sql.append(" and ");
+              sql.append("am."+TravelAddressBMPBean.getTravelAddressTableName()+"_ID in (");
+              Iterator iter = travelAddressIds.iterator();
+              while (iter.hasNext()) {
+                Object item = iter.next();
+                sql.append(item.toString());
+                if (iter.hasNext()) {
+                  sql.append(", ");
+                }
+              }
+              sql.append(") and ");
+            }
+
             sql.append("p."+product.getIDColumnName()+" = m."+product.getIDColumnName());
             sql.append(" and ");
             sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
@@ -428,6 +478,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         }
 
     }catch (Exception e) {
+        System.err.println(sql.toString());
         e.printStackTrace(System.err);
     }finally {
       //ConnectionBroker.freeConnection(conn);

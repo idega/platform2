@@ -7,9 +7,11 @@ public class TravelAddressHomeImpl extends com.idega.data.IDOFactory implements 
   return TravelAddress.class;
  }
 
+
  public TravelAddress create() throws javax.ejb.CreateException{
-  return (TravelAddress) super.idoCreate();
+  return (TravelAddress) super.createIDO();
  }
+
 
  public TravelAddress createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class TravelAddressHomeImpl extends com.idega.data.IDOFactory implements 
 
  }
 
- public TravelAddress findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (TravelAddress) super.idoFindByPrimaryKey(id);
- }
 
  public TravelAddress findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (TravelAddress) super.idoFindByPrimaryKey(pk);
+  return (TravelAddress) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public TravelAddress findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (TravelAddress) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public TravelAddress findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class TravelAddressHomeImpl extends com.idega.data.IDOFactory implements 
 	}
 
  }
+
 
 
 }

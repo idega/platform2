@@ -762,16 +762,92 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
 
-  private ServiceDayHome getServiceDayHome() throws RemoteException{
+  public ServiceDayHome getServiceDayHome() throws RemoteException{
     ServiceDayHome sdHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
     return sdHome;
 //    return (ServiceDay) IBOLookup.getServiceInstance(this.getIWApplicationContext(), ServiceDay.class);
   }
 
-  private ResellerDayHome getResellerDayHome() throws RemoteException{
+  public ResellerDayHome getResellerDayHome() throws RemoteException{
     ResellerDayHome rdHome = (ResellerDayHome) IDOLookup.getHome(ResellerDay.class);
     return rdHome;
 //    return (ResellerDay) IBOLookup.getServiceInstance(this.getIWApplicationContext(), ResellerDay.class);
+  }
+
+  public Collection getTravelAddressIdsFromRefill(Product product, int tAddressId) throws RemoteException, IDOFinderException, FinderException {
+    TravelAddress ta = ((TravelAddressHome) IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKey(tAddressId);
+    return getTravelAddressIdsFromRefill(product, ta);
+  }
+
+  public Collection getTravelAddressIdsFromRefill(Product product, TravelAddress tAddress) throws RemoteException, IDOFinderException {
+    List list = getTravelAddressesFromRefill(product, tAddress);
+    Collection coll = new Vector();
+    Iterator iter = list.iterator();
+    while (iter.hasNext()) {
+      TravelAddress item = (TravelAddress) iter.next();
+//      System.err.println("adding : "+item.getID());
+//      coll.add(new Integer(item.getID()));
+      coll.add(item.getPrimaryKey());
+    }
+    return coll;
+  }
+
+  private List getTravelAddressesFromRefill(Product product, TravelAddress tAddress) throws RemoteException, IDOFinderException {
+    List addresses = ProductBusiness.getDepartureAddresses(product, true);
+    int indexOf = addresses.indexOf(tAddress);
+
+    TravelAddress tAdd;
+    int startIndex = 0;
+    for (int i = indexOf; i >= 0; i--) {
+      tAdd = (TravelAddress) addresses.get(i);
+      if (tAdd.getRefillStock()) {
+        startIndex = i;
+        break;
+      }
+    }
+
+    int size = addresses.size();
+    for (int i = (indexOf+1); i < size ; i++) {
+      indexOf = i;
+      tAdd = (TravelAddress) addresses.get(i);
+      if (tAdd.getRefillStock()) {
+        --indexOf;
+        break;
+      }
+    }
+
+    Collection coll = new Vector();
+    List list = new Vector(addresses.subList(startIndex, indexOf+1));
+    if (startIndex == (indexOf+1)) {
+      list = new Vector();
+        list.add(tAddress);
+    }
+
+    return list;
+  }
+
+
+  public int getTotalSeats(Product product, ServiceDay sDay, TravelAddress tAddress, idegaTimestamp stamp) throws RemoteException, IDOFinderException{
+    Booker booker = (Booker) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Booker.class);
+    if (sDay != null) {
+      int sDayMax = sDay.getMax();
+      int temp = sDayMax;
+      List addresses = getTravelAddressesFromRefill(product, tAddress);
+//      List addresses = ProductBusiness.getDepartureAddresses(product, true);
+      TravelAddress tempAddress;
+      int addressesSize = addresses.size();
+      int bookings = 0;
+      for (int i = 0; i < addressesSize; i++) {
+        tempAddress = (TravelAddress) addresses.get(i);
+
+        /** @todo fall getNumberOfBookings() sem tekur inn í sig travelAddress....ætti að vera auðvelt... */
+
+        //bookings = booker.getNumberOfBookings();
+      }
+
+    }
+
+    return 0;
   }
 
 }

@@ -7,9 +7,11 @@ public class ResellerHomeImpl extends com.idega.data.IDOFactory implements Resel
   return Reseller.class;
  }
 
+
  public Reseller create() throws javax.ejb.CreateException{
-  return (Reseller) super.idoCreate();
+  return (Reseller) super.createIDO();
  }
+
 
  public Reseller createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class ResellerHomeImpl extends com.idega.data.IDOFactory implements Resel
 
  }
 
- public Reseller findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Reseller) super.idoFindByPrimaryKey(id);
- }
 
  public Reseller findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Reseller) super.idoFindByPrimaryKey(pk);
+  return (Reseller) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public Reseller findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (Reseller) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public Reseller findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class ResellerHomeImpl extends com.idega.data.IDOFactory implements Resel
 	}
 
  }
+
 
 
 }

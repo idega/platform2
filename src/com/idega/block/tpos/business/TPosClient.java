@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.18 2002/03/15 09:46:25 palli Exp $
+ *  $Id: TPosClient.java,v 1.19 2002/06/07 19:02:38 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -198,6 +198,10 @@ public class TPosClient {
     return (doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "1"));
   }
 
+  public String doSale(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String merchantId) throws TPosException {
+    this._merchantId = merchantId;
+    return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "1");
+  }
   /**
    * Description of the Method
    *
@@ -213,6 +217,10 @@ public class TPosClient {
     return (doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3"));
   }
 
+  public String doRefund(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String merchantId) throws TPosException {
+    this._merchantId = merchantId;
+    return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3");
+  }
   /**
    * Gets the bundleIdentifier attribute of the TPosClient object
    *

@@ -76,6 +76,7 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
 
     addAttribute(getColumnNameIsValid(),"Í notkun",true, true, Boolean.class);
 
+    addAttribute(getColumnNameTPosMerchantID(), "Viðskiptanumer", true, true, String.class);
 
 
     this.addManyToManyRelationShip(Address.class,"SR_SUPPLIER_IC_ADDRESS");
@@ -120,6 +121,7 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
 
   public static String getColumnNameIsValid() {return "IS_VALID";}
 
+  public static String getColumnNameTPosMerchantID()  {return "TPOS_MERCHANT_ID";}
 
 
   public String getEntityName(){
@@ -368,6 +370,13 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
 
   }
 
+  public String getTPosMerchantId() {
+    return getStringColumnValue(getColumnNameTPosMerchantID());
+  }
+
+  public void setTPosMerchantId(String id) {
+    setColumn(getColumnNameTPosMerchantID(), id);
+  }
 
   public Settings getSettings() throws FinderException, RemoteException, CreateException {
     Collection coll = null;

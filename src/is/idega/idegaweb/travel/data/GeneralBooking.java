@@ -1,8 +1,9 @@
 package is.idega.idegaweb.travel.data;
 
+import is.idega.idegaweb.travel.interfaces.Booking;
 import javax.ejb.*;
 
-public interface GeneralBooking extends com.idega.data.IDOEntity,is.idega.idegaweb.travel.interfaces.Booking
+public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
 {
  public void addToReseller(com.idega.block.trade.stockroom.data.Reseller p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
  public void addTravelAddress(com.idega.block.trade.stockroom.data.TravelAddress p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
