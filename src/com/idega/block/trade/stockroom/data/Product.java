@@ -5,7 +5,10 @@ import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import java.sql.SQLException;
 import java.util.List;
+import java.sql.Timestamp;
+import com.idega.util.idegaTimestamp;
 import com.idega.block.text.business.*;
+import com.idega.block.text.data.TxText;
 import is.idega.idegaweb.travel.data.Timeframe;
 
 
@@ -39,11 +42,14 @@ public class Product extends GenericEntity {
     this.addAttribute(getColumnNameIsValid(),"í notkun",true,true,Boolean.class);
     this.addAttribute(getDiscountTypeIdColumnName(), "discount type", true, true, Integer.class);
     this.addAttribute(getColumnNameNumber(), "númer", true, true, String.class);
+    this.addAttribute(getColumnNameCreationDate(), "creation date", true, true, Timestamp.class);
+    this.addAttribute(getColumnNameModificationDate(), "edit date", true, true, Timestamp.class);
 
     this.addManyToManyRelationShip(ProductCategory.class,"SR_PRODUCT_PRODUCT_CATEGORY");
     this.setNullable(getColumnNameFileId(), true);
     this.addManyToManyRelationShip(com.idega.block.text.data.LocalizedText.class, "SR_PRODUCT_LOCALIZED_TEXT");
     this.addManyToManyRelationShip(Timeframe.class ,"SR_PRODUCT_TIMEFRAME");
+    this.addManyToManyRelationShip(TxText.class);
   }
 
   public void delete() throws SQLException {
@@ -65,6 +71,8 @@ public class Product extends GenericEntity {
   public void setDefaultValues() {
     this.setIsValid(true);
     this.setDiscountTypeId(DISCOUNT_TYPE_ID_PERCENT);
+    this.setCreationDate(idegaTimestamp.getTimestampRightNow());
+    this.setModificationDate(idegaTimestamp.getTimestampRightNow());
   }
 
   public String getEntityName() {
@@ -79,6 +87,8 @@ public class Product extends GenericEntity {
   public static String getColumnNameIsValid(){return "IS_VALID";}
   public static String getDiscountTypeIdColumnName() {return "DISCOUNT_TYPE_ID";}
   public static String getColumnNameNumber() {return "PRODUCT_NUMBER";}
+  public static String getColumnNameCreationDate() {return "CREATION_DATE";}
+  public static String getColumnNameModificationDate() {return "MODIFICATION_DATE";}
 
 
   /* Setters */
@@ -119,6 +129,23 @@ public class Product extends GenericEntity {
     setColumn(getColumnNameNumber(), number);
   }
 
+  public void setCreationDate(idegaTimestamp timestamp) {
+    setCreationDate(timestamp.getTimestamp());
+  }
+
+  public void setCreationDate(Timestamp timestamp) {
+    setColumn(getColumnNameCreationDate(), timestamp);
+  }
+
+  private void setModificationDate(idegaTimestamp timestamp) {
+    setModificationDate(timestamp.getTimestamp());
+  }
+
+  private void setModificationDate(Timestamp timestamp) {
+    setColumn(getColumnNameModificationDate(), timestamp);
+  }
+
+
   /* Getters */
   public int getSupplierId(){
     return this.getIntColumnValue(getColumnNameSupplierId());
@@ -129,7 +156,7 @@ public class Product extends GenericEntity {
   }
 
   /**
-   * @depricated
+   * @deprecated
    */
   public String getProductName(){
     return ProductBusiness.getProductName(this);
@@ -137,7 +164,7 @@ public class Product extends GenericEntity {
   }
 
   /**
-   * @depricated
+   * @deprecated
    */
   public String getProdcutDescription(){
     return ProductBusiness.getProductDescription(this);
@@ -149,7 +176,7 @@ public class Product extends GenericEntity {
   }
 
   /**
-   * @depricated
+   * @deprecated
    */
   public String getName() {
     return this.getNumber() + " " +this.getProductName();
@@ -164,7 +191,6 @@ public class Product extends GenericEntity {
     return getStringColumnValue(getColumnNameNumber());
   }
 
-
   public Timeframe[] getTimeframes() throws SQLException  {
     return (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
   }
@@ -177,6 +203,28 @@ public class Product extends GenericEntity {
     else {
       return null;
     }
+  }
+
+  public Timestamp getCreationDate() {
+    return (Timestamp) getColumnValue(getColumnNameCreationDate());
+  }
+
+  public Timestamp getEditDate() {
+    return (Timestamp) getColumnValue(getColumnNameModificationDate());
+  }
+
+  public TxText getText() throws SQLException{
+    TxText[] texti = (TxText[]) this.findRelated((TxText) TxText.getStaticInstance(TxText.class));
+    if (texti.length > 0) {
+      return texti[texti.length -1];
+    }else {
+      return null;
+    }
+  }
+
+  public void update() throws SQLException{
+    setModificationDate(idegaTimestamp.getTimestampRightNow());
+    super.update();
   }
 
 }
