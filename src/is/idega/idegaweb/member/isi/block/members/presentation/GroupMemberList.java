@@ -174,6 +174,10 @@ public class GroupMemberList extends Block {
 			try {
 				String flockTrainerGroupId = flock.getMetaData("CLUBPLAYER_COACH");
 				if(flockTrainerGroupId!=null) {
+					int usInd = flockTrainerGroupId.indexOf("_");
+					if(usInd!=-1) {
+						flockTrainerGroupId = flockTrainerGroupId.substring(usInd+1);
+					}
 					System.out.println("Trainer group for flock " + flock.getName() + " has id " + flockTrainerGroupId);
 					Iterator trainerParentsIter = trainer.getParentGroups().iterator();
 					while(trainerParentsIter.hasNext()) {
