@@ -13,9 +13,11 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOException;
+import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -37,7 +39,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 	 */
 	public WorkReportMemberEditor() {
 		super();
-		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
+		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 
 	/* (non-Javadoc)
@@ -47,6 +49,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 		super.main(iwc);
 		
 		if (this.getWorkReportId() != -1){
+			//sets this step as bold, if another class calls it this will be overridden
+			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 			parseAction(iwc);
 			printForm(iwc);
 		}
@@ -154,10 +158,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 		if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			if (iwc.isParameterSet("ssn")) {
 				try {
-					getWorkReportBusiness(iwc).createEntry(getWorkReportId(), iwc.getParameter("ssn"));
+					getWorkReportBusiness(iwc).createWorkReportMember(getWorkReportId(), iwc.getParameter("ssn"),false);
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
+				} catch (CreateException e) {
+					add(new ExceptionWrapper(e));
+					e.printStackTrace();
+					
 				}
 			}
 		}

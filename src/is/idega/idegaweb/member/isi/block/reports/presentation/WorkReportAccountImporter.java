@@ -17,7 +17,7 @@ public class WorkReportAccountImporter extends WorkReportImporter {
 
 	protected WorkReportAccountImporter() {
 		super();
-		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
+		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -25,7 +25,9 @@ public class WorkReportAccountImporter extends WorkReportImporter {
 		super.main(iwc);
 		
 		if(getWorkReportFileId()!=-1){ //do nothing before we have the file id
-		
+			//sets this step as bold, if another class calls it this will be overridden
+			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+			
 			boolean success = getWorkReportBusiness(iwc).importAccountPart(getWorkReportFileId(),getWorkReportId());
 			if(success){
 				add(iwrb.getLocalizedString("WorkReportAccountImporter.import_successful","Importing yearly account info completed successfully."));
@@ -35,10 +37,6 @@ public class WorkReportAccountImporter extends WorkReportImporter {
 			}
 		}
 	}
-	
-	
-	protected String getCurrentStepNameLocalizedKey(){
-		return STEP_NAME_LOCALIZATION_KEY;
-	}
+
 
 }

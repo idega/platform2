@@ -49,7 +49,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     Collection coll;
     try {
       coll =
-        workReportBusiness.getAllWorkReportMembersForWorkReportId(
+        workReportBusiness.getAllWorkReportBoardMembersForWorkReportId(
           getWorkReportId());
     } catch (RemoteException e) {
       System.err.println("[WorkReportMemberDataEditor] Can't get members. Message was: "+ e.getMessage());

@@ -21,7 +21,7 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 
 	protected WorkReportMemberImporter() {
 		super();
-		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
+		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -29,7 +29,8 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 		super.main(iwc);
 		
 		if(getWorkReportFileId()!=-1){ //do nothing before we have the file id
-		
+			//sets this step as bold, if another class calls it this will be overridden
+			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
 			try {
 				boolean success = getWorkReportBusiness(iwc).importMemberPart(getWorkReportFileId(),getWorkReportId());

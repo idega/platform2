@@ -6,11 +6,11 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.io.File;
@@ -42,6 +42,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.caching.Cache;
 import com.idega.util.text.TextSoap;
@@ -70,8 +71,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private static final short COLUMN_MEMBER_SSN = 1;
 	private static final short COLUMN_MEMBER_STREET_NAME = 2;
 	private static final short COLUMN_MEMBER_POSTAL_CODE = 3;
-	private static final short COLUMN_BOARD_MEMBER = 4;
-	
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
@@ -180,35 +179,37 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportClubAccountRecordHome;
 	}
 	
-	public boolean createEntry(int reportID, String personalID) {
-		try {
-			User user = null;
-			try {
-				user = getUser(personalID);
-			}
-			catch (FinderException e) {
-				return false;
-			}
-			
-			Age age = new Age(user.getDateOfBirth());
+	
+	
+	public WorkReportMember createWorkReportMember(int reportID, String personalID, boolean isBoardMember) throws CreateException {
 
-			WorkReportMember member = getWorkReportMemberHome().create();
-			member.setReportId(reportID);
-			member.setName(user.getName());
-			member.setPersonalId(personalID);
-			member.setAge(age.getYears());
-			member.setUserId(((Integer)user.getPrimaryKey()).intValue());
-			if (true)
-				member.setAsMale();
-			else
-				member.setAsFemale();
-			
-			member.store();
-			return true;
+		User user = null;
+		try {
+			user = getUser(personalID);
 		}
-		catch (CreateException ce) {
-			return false;
+		catch (FinderException e) {
+			return null;
 		}
+		
+		Age age = new Age(user.getDateOfBirth());
+
+		WorkReportMember member = getWorkReportMemberHome().create();
+		member.setReportId(reportID);
+		member.setName(user.getName());
+		member.setPersonalId(personalID);
+		member.setAge(age.getYears());
+		member.setDateOfBirth( (new IWTimestamp(user.getDateOfBirth())).getTimestamp() );
+		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
+		member.setAsBoardMember(isBoardMember);
+		
+		if (true)
+			member.setAsMale();
+		else
+			member.setAsFemale();
+		
+		member.store();
+		return member;
+	
 	}
 	
 	
@@ -249,7 +250,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 	public boolean importMemberPart(int workReportFileId, int workReportId) throws WorkReportImportException{
 		
-			System.out.println("Starting member importing from excel file...");
+			System.out.println("Starting member importing from excel file for workreportid: "+workReportId);
 		
 		//clear the table first
 			deleteWorkReportClubMembersForReport(workReportId);
@@ -257,6 +258,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			WorkReportMemberHome membHome = getWorkReportMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
 			int year = report.getYearOfReport().intValue();
+			
 			//update or create the league groups so we can connect the users to them
 			createOrUpdateLeagueWorkReportGroupsForYear(year);
 		
@@ -265,12 +267,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 			HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 			
+			
 			HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
 			int firstRow = 4;
 			int lastRow = members.getLastRowNum();
 			
-			System.out.println("First row is at: "+firstRow);
-			System.out.println("Last row is at: "+lastRow);
+			//System.out.println("First row is at: "+firstRow);
+			//System.out.println("Last row is at: "+lastRow);
 			
 			//get the top row to get a list of leagues to use.
 			HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
@@ -285,41 +288,42 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					int firstCell = row.getFirstCellNum();
 					int lastCell = row.getLastCellNum();
 					
+		
+					
+					//String name = HSSFCellUtil.translateUnicodeValues(row.getCell(COLUMN_MEMBER_NAME)).getStringCellValue();
 					String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
 					String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
 					ssn = (ssn.length()<10)? "0"+ssn : ssn;
-					String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
+					String streetName = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_STREET_NAME);
 					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
-					String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+					
 					
 					try {
+						//the user must already exist in the database
 						User user = this.getUser(ssn);
-
-						
 						try {
 							membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
 						}
 						catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
 						
-							WorkReportMember member = membHome.create();
-							member.setReportId(workReportId);
-							member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
-							member.setName(name);
-							member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
-							member.setPersonalId(ssn);
-							member.setStreetName(streetName);
-							//member.setAge();
-							//member.setDateOfBirth();
+						
+							WorkReportMember member = createWorkReportMember(workReportId,ssn,false);//sets basic data
+							//member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
+							if(streetName!=null && !"".equals(streetName)){	
+								member.setStreetName(streetName);
 							
-							try {
-								PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
-								member.setPostalCode(postal);
-							}
-							catch (FinderException e3) {
-								//e3.printStackTrace();
-							} catch (RemoteException e) {
-								e.printStackTrace();
+								
+								try {
+									PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+									member.setPostalCode(postal);
+								}
+								catch (FinderException e3) {
+									//e3.printStackTrace();
+								} catch (RemoteException e) {
+									e.printStackTrace();
+								}
+							
 							}
 							
 							member.store();
@@ -413,7 +417,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					ssn = (ssn.length()<10)? "0"+ssn : ssn;
 					String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
 					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
-					String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+		
 				
 					try {
 						User user = this.getUser(ssn);
@@ -429,7 +433,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 							member.setReportId(workReportId);
 							member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
 							member.setName(name);
-							member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
+				
 							member.setPersonalId(ssn);
 							member.setStreetName(streetName);
 							//member.setAge();
@@ -529,7 +533,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						ssn = (ssn.length()<10)? "0"+ssn : ssn;
 						String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
 						String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
-						String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+						
 					
 						try {
 
@@ -545,7 +549,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 								member.setReportId(workReportId);
 								member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
 								member.setName(name);
-								member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
 								member.setPersonalId(ssn);
 								member.setStreetName(streetName);
 								//member.setAge();
@@ -645,6 +648,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		String cell = "";
 		HSSFCell myCell = row.getCell((short)columnNumber);
 		if( myCell.getCellType() == HSSFCell.CELL_TYPE_STRING){
+			//HSSFCell myCell2 = HSSFCellUtil.translateUnicodeValues(myCell);
 			cell = myCell.getStringCellValue();
 		}
 		else{

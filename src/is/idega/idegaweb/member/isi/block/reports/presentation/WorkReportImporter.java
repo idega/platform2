@@ -40,7 +40,7 @@ public class WorkReportImporter extends WorkReportSelector {
 	protected WorkReportImporter() {
 		super();
 		this.addToParametersToMaintainList(PARAM_FILE_ID);
-		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
+		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -48,6 +48,9 @@ public class WorkReportImporter extends WorkReportSelector {
 		super.main(iwc);
 		
 		if(getWorkReportId()!=-1){//do nothing before we have the work report id
+			//sets this step as bold, if another class calls it this will be overridden
+			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+			
 			if(iwc.isParameterSet(PARAM_FILE_ID)){
 				workReportFileId = Integer.parseInt(iwc.getParameter(PARAM_FILE_ID));
 			}
@@ -81,7 +84,5 @@ public class WorkReportImporter extends WorkReportSelector {
 		add(uploadForm);
 	}
 	
-	protected String getCurrentStepNameLocalizedKey(){
-		return STEP_NAME_LOCALIZATION_KEY;
-	}
+
 }

@@ -27,7 +27,7 @@ import com.idega.util.IWTimestamp;
 public class WorkReportSelector extends ClubSelector {
 	
 	protected int workReportId = -1;
-	protected IWTimestamp year = null;
+	protected int year = -1;
 	
 	protected static final String PARAM_WORK_REPORT_ID = "iwme_wr_sel_wr_id";
 	protected static final String PARAM_WORK_YEAR = "iwme_wr_sel_year";
@@ -50,16 +50,16 @@ public class WorkReportSelector extends ClubSelector {
 	}
 
 	/**
-	 * @return the timestamp for the year of the report
+	 * @return the year of the report
 	 */
-	public IWTimestamp getYear() {
+	public int getYear() {
 		return year;
 	}
 
 	/**
 	 * @param year
 	 */
-	public void setYear(IWTimestamp year) {
+	public void setYear(int year) {
 		this.year = year;
 	}
 
@@ -67,7 +67,7 @@ public class WorkReportSelector extends ClubSelector {
 		super();
 		addToParametersToMaintainList(PARAM_WORK_REPORT_ID);
 		addToParametersToMaintainList(PARAM_WORK_YEAR);
-		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
+		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -76,12 +76,15 @@ public class WorkReportSelector extends ClubSelector {
 		super.main(iwc);
 		
 		if(getClubId()!=-1){
+			//sets this step as bold, if another class calls it this will be overridden
+			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+			
 			if( iwc.isParameterSet(PARAM_WORK_YEAR) ){
 				//regionalUnionId = Integer.parseInt(PARAM_REGION_UNION_ID);
-				year = new IWTimestamp(iwc.getParameter(PARAM_WORK_YEAR));
-				System.out.println(year.toString());
+				year = Integer.parseInt(iwc.getParameter(PARAM_WORK_YEAR));
 				
-				workReportId = reportBiz.getOrCreateWorkReportIdForClubIdByYear(getClubId(),year.getYear());
+				
+				workReportId = reportBiz.getOrCreateWorkReportIdForClubIdByYear(getClubId(),year);
 			}
 			else{
 				
@@ -100,11 +103,15 @@ public class WorkReportSelector extends ClubSelector {
 		
 		reportSelectorForm.maintainParameters(getParametersToMaintain());
 		
-		DateInput dateSelector = new DateInput(PARAM_WORK_YEAR);
+		DropdownMenu dateSelector = new DropdownMenu(PARAM_WORK_YEAR);
 		IWTimestamp stamp = IWTimestamp.RightNow();
+		
 		int currentYear = stamp.getYear();
-		dateSelector.setYearRange(currentYear-1,currentYear);
-		dateSelector.setToShowDay(false);
+		int beginningYear = currentYear - 1;
+		
+		for (int i = beginningYear; i <= currentYear; i++) {
+			dateSelector.addMenuElement(i,Integer.toString(i));
+		}
 		
 		Table table = new Table(2,3);
 		table.mergeCells(1,1,2,1);

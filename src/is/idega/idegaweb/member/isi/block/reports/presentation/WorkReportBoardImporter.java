@@ -17,7 +17,7 @@ public class WorkReportBoardImporter extends WorkReportImporter {
 
 	protected WorkReportBoardImporter() {
 		super();
-		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
+		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -26,6 +26,9 @@ public class WorkReportBoardImporter extends WorkReportImporter {
 		
 		if(getWorkReportFileId()!=-1){ //do nothing before we have the file id
 		
+			//sets this step as bold, if another class calls it this will be overridden
+			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+			
 			boolean success = getWorkReportBusiness(iwc).importBoardPart(getWorkReportFileId(),getWorkReportId());
 			if(success){
 				add(iwrb.getLocalizedString("WorkReportBoardImporter.import_successful","Importing board info completed successfully."));
@@ -36,8 +39,5 @@ public class WorkReportBoardImporter extends WorkReportImporter {
 		}
 	}
 	
-	protected String getCurrentStepNameLocalizedKey(){
-		return STEP_NAME_LOCALIZATION_KEY;
-	}
 
 }

@@ -1,9 +1,13 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
+
+import javax.ejb.CreateException;
+
 
 public interface WorkReportBusiness extends com.idega.business.IBOService,is.idega.idegaweb.member.business.MemberUserBusiness
 {
- public boolean createEntry(int p0,java.lang.String p1) throws java.rmi.RemoteException;
+ public WorkReportMember createWorkReportMember(int p0,java.lang.String p1, boolean isBoardMember) throws java.rmi.RemoteException,CreateException;
  public java.util.Collection getAllWorkReportBoardMembersForWorkReportId(int p0) throws java.rmi.RemoteException;
  public java.util.Collection getAllWorkReportGroupsForYearAndType(int p0,java.lang.String p1) throws java.rmi.RemoteException;
  public java.util.Collection getAllWorkReportMembersForWorkReportId(int p0) throws java.rmi.RemoteException;
