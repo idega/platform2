@@ -11,6 +11,7 @@ import com.idega.block.reports.data.Report;
 import com.idega.block.reports.business.ReportWriter;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.io.*;
 
 
 
@@ -70,15 +71,15 @@ public class ReportFileWindow extends IWAdminWindow {
           if(type.equalsIgnoreCase("xls")){
             filename = filename+type;
             String path = filepath+filename;
-            boolean filewritten = ReportWriter.writeXLS(R,path);
-            if(filewritten)
+            MemoryFileBuffer buf = ReportWriter.writeXLS(R);
+            if(buf!=null)
               setToRedirect("/servlet/excel?&dir="+path,1);
           }
           else if(type.equalsIgnoreCase("pdf")){
             filename = filename+type;
             String path = filepath+filename;
-            boolean filewritten = ReportWriter.writePDF(R,path);
-            if(filewritten)
+            MemoryFileBuffer buf = ReportWriter.writePDF(R);
+            if(buf !=null)
               setToRedirect("/servlet/pdf?&dir="+path,1);
           }
         }

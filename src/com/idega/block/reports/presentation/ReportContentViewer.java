@@ -7,6 +7,7 @@ import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.Collections;
+import java.util.List;
 import com.idega.presentation.Editor;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.*;
@@ -26,6 +27,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
   private int iAction = 0;
   private String prefix = "rcv_";
   private Vector vReportContent;
+	private List listReportContent;
   private String sLastOrder = "0";
   private int iReport = -1;
   private int displayNumber = 20;
@@ -40,14 +42,14 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
 	private IWResourceBundle iwrb;
 
   public ReportContentViewer(){
-    vReportContent = null;
+    listReportContent = null;
   }
   public ReportContentViewer(Vector vRC){
-    vReportContent = vRC;
+    listReportContent = vRC;
   }
   public ReportContentViewer(String sql){
     ReportMaker rm = new ReportMaker();
-    vReportContent = rm.makeReport(sql);
+     listReportContent = rm.makeReport(sql);
   }
 
   public ReportContentViewer(Report R){
@@ -130,7 +132,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     if(iwc.getParameter(prmReportId) != null){
       String sql = eReport.getSQL();
       String[] headers = eReport.getHeaders();
-      Vector v = new ReportMaker().makeReport(sql);
+      List v = new ReportMaker().makeReport(sql);
       iwc.setSessionAttribute(prmContent,v);
       iwc.setSessionAttribute(prmHeaders,headers);
       if(v != null){
@@ -289,11 +291,12 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     return T;
   }
 
-  private PresentationObject doView(String[] headers,Vector content,int start){
+  private PresentationObject doView(String[] headers,List content,int start){
     int len = content.size();
     Table T;
+		int depth = (len < displayNumber ? len : displayNumber)+1;
     if(start != -1)
-      T= new Table(headers.length+1 ,displayNumber+1);
+      T= new Table(headers.length+1 ,depth+1);
     else
       T= new Table(headers.length+1 ,len+1);
 
@@ -317,7 +320,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
       int index = start;
       int end = start+displayNumber;
       for(int i =0; index < end && index <= len;i++){
-        RC = (ReportContent)content.elementAt((index)-1);
+        RC = (ReportContent)content.get((index)-1);
         for(int j = 0; j < cols;j++){
           T.add(getBodyText(RC.getContent(j)),j+2,i+2);
         }
@@ -328,7 +331,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     else {
       int clen = content.size();
       for (int i = 0; i < clen; i++) {
-        RC = (ReportContent)content.elementAt(i);
+        RC = (ReportContent)content.get(i);
         for(int j = 0; j < cols;j++){
           T.add(getBodyText(RC.getContent(j)),j+2,i+2);
         }

@@ -41,8 +41,9 @@ public class ReportViewWindow extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception{
 
     iwrb = getResourceBundle(iwc);
-    ReportContentViewer RCV = new ReportContentViewer();
-    add(RCV);
+    //ReportContentViewer RCV = new ReportContentViewer();
+
+    add(new ReportContentViewer());
     String title = iwrb.getLocalizedString("report_viewer","Report Viewer");
     setTitle(title);
     addTitle(title);

@@ -44,6 +44,7 @@ public class ReportEditorWindow extends IWAdminWindow {
 
 	private static String actDelete = "rep_delete";
 	private static String actSave = "rep_save";
+	private static String actClose = "rep_close";
 
 	public static final  String prmCategoryId = "rep_categoryid";
 	public  final static String prmDelete = "rep_deleteid";
@@ -70,6 +71,7 @@ public class ReportEditorWindow extends IWAdminWindow {
     setWidth(500);
     setHeight(460);
     setResizable(true);
+		setUnMerged();
   }
 
   protected void control(IWContext iwc){
@@ -77,6 +79,8 @@ public class ReportEditorWindow extends IWAdminWindow {
     T.setCellpadding(0);
     T.setCellspacing(0);
 
+		 // debug
+		 /*
 		System.err.println("ReportEditorWindow parameters:");
 		java.util.Enumeration E = iwc.getParameterNames();
 		while (E.hasMoreElements()) {
@@ -84,36 +88,25 @@ public class ReportEditorWindow extends IWAdminWindow {
 			System.err.println(name+" "+iwc.getParameter(name));
 		}
 		System.err.println();
+		*/
 
+		if(iCategoryId <= 0 && iwc.isParameterSet(prmCategoryId)){
+			iCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId ));
+		}
 
-    if(true){
+		if(iwc.isParameterSet(prmObjInstId)){
+			iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
+		}
+    if(isAdmin){
 			int saveInfo = getSaveInfo(iwc);
-			if(iwc.isParameterSet(prmObjInstId)){
-        iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
-        if(iObjInsId > 0 && saveInfo != SAVECATEGORY)
-          iCategoryId = ReportFinder.getObjectInstanceCategoryId(iObjInsId );
+      if(iObjInsId > 0 && saveInfo != SAVECATEGORY){
+				iCategoryId = ReportFinder.getObjectInstanceCategoryId(iObjInsId );
       }
-			else if(iCategoryId <= 0 && iwc.isParameterSet(prmCategoryId)){
-				iCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId ));
-			}
-			else
 			// Form processing
-      if(saveInfo == SAVECONTENT){
-        //processForm(iwc,iCategoryId,iContractId);
-			}
-      else if(saveInfo == SAVECATEGORY)
+			if(saveInfo == SAVECATEGORY){
         processCategoryForm(iwc,iCategoryId,iObjInsId);
-
-			if(iwc.isParameterSet(prmReportId)){
-			  add(new ReportSQLEditorWindow());
-			}
-			else if(iwc.isParameterSet(prmItems)){
-			  add(new ReportItemizer());
-			}
-			else if(iObjInsId > 0){
-			  addCategoryFields(ReportFinder.getCategory(iCategoryId),iObjInsId  );
-			}
-
+      }
+			addCategoryFields(ReportFinder.getCategory(iCategoryId),iObjInsId  );
     }
     else{
 			add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -141,6 +134,10 @@ public class ReportEditorWindow extends IWAdminWindow {
 				if(sName!=null){
 					int id = ReportBusiness.saveCategory(iCatId,iObjInsId,sName,sDesc);
 				}
+			}
+			if(iwc.isParameterSet(actClose) || iwc.isParameterSet(actClose+".x") ){
+				setParentToReload();
+				close();
 			}
 			// deleting :
 			else if(iwc.isParameterSet(actDelete) || iwc.isParameterSet(actDelete+".x") ){
@@ -204,8 +201,10 @@ public class ReportEditorWindow extends IWAdminWindow {
 			catTable.add(deleteLink,5,1);
 			}
 		}
-		SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
+		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),actClose);
     addSubmitButton(save);
+		addSubmitButton(close);
     addHiddenInput( new HiddenInput (prmObjInstId,String.valueOf(iObjInst)));
     addHiddenInput( new HiddenInput (prmFormProcess,"C"));
 

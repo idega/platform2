@@ -7,6 +7,9 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import com.idega.block.reports.data.Report;
 import com.idega.util.database.ConnectionBroker;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryOutputStream;
 
 
 /**
@@ -65,17 +68,18 @@ public class ReportWriter {
   public static boolean writePDFReport(String[] Headers,String[][] Content, OutputStream out){
     return false;
   }
-  public static boolean writeXLS(Report report,String realpath){
+  public static MemoryFileBuffer writeXLS(Report report){
       boolean returner = false;
       Connection Conn = null;
 
+			MemoryFileBuffer buffer = new MemoryFileBuffer();
+			MemoryOutputStream mos = new MemoryOutputStream(buffer);
       try{
         String[] Headers = report.getHeaders();
         String sql = report.getSQL();
 
-        String file = realpath;
-        FileWriter out = new FileWriter(file);
-
+        //String file = realpath;
+        //FileWriter out = new FileWriter(file);
         char[] c  = null;
 
         Conn = com.idega.util.database.ConnectionBroker.getConnection();
@@ -90,7 +94,7 @@ public class ReportWriter {
           data.append("\t");
         }
         data.append("\n");
-        out.write(data.toString().toCharArray());
+        mos.write(data.toString().getBytes());
 
         while(RS.next()){
            data = new StringBuffer();
@@ -101,11 +105,12 @@ public class ReportWriter {
             data.append("\t");
           }
           data.append("\n");
-          out.write(data.toString().toCharArray());
+
+          mos.write(data.toString().getBytes());
         }
         RS.close();
         stmt.close();
-        out.close();
+        mos.close();
 
         returner = true;
       }
@@ -115,21 +120,25 @@ public class ReportWriter {
       finally {
         ConnectionBroker.freeConnection(Conn);
       }
-      return returner;
+			buffer.setMimeType("application/x-msexcel");
+      return buffer;
   }
 
-  public static boolean writePDF(Report report,String realpath){
+  public static MemoryFileBuffer  writePDF(Report report){
     boolean returner = false;
     Connection Conn = null;
+
+		MemoryFileBuffer buffer = new MemoryFileBuffer();
+		MemoryOutputStream mos = new MemoryOutputStream(buffer);
 
     try {
         String[] Headers = report.getHeaders();
         int Hlen = Headers.length;
         String sql = report.getSQL();
-        String file = realpath;
+        //String file = realpath;
 
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-        PdfWriter.getInstance(document, new FileOutputStream(file));
+        PdfWriter.getInstance(document, mos);
         document.addTitle(report.getName());
         document.addAuthor("Idega Reports");
         document.addSubject(report.getInfo());
@@ -178,7 +187,7 @@ public class ReportWriter {
     finally {
       ConnectionBroker.freeConnection(Conn);
     }
-
-    return returner;
+		buffer.setMimeType("application/pdf");
+    return buffer;
   }
 }

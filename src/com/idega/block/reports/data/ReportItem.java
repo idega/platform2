@@ -35,8 +35,8 @@ public class ReportItem extends GenericEntity {
     addAttribute(getColumnNameMaintable(), "Table", true, true, java.lang.String.class);
     addAttribute(getColumnNameJoins(),"Join",true,true,java.lang.String.class);
     addAttribute(getColumnNameJoinTables(), "Join Tables", true, true, java.lang.String.class);
-    addAttribute(getColumnNameDisplayOrder(),"Display order",true,true,java.lang.String.class);
-		addAttribute(getColumnNameIsFunction(),"Is function",true,true,java.lang.Boolean.class);
+    addAttribute(getColumnNameDisplayOrder(),"Display order",true,true,java.lang.Integer.class);
+    addAttribute(getColumnNameIsFunction(),"Is function",true,true,java.lang.Boolean.class);
 
 
   }

@@ -36,9 +36,10 @@ public class ReportEntityHandler {
   public static List listOfReportItems(int iCatId){
     List L = null;
     try {
-      L = EntityFinder.findAllByColumn(new ReportItem(),ReportItem.getColumnNameCategory(),iCatId);
+      L = EntityFinder.findAllByColumnOrdered(new ReportItem(),ReportItem.getColumnNameCategory(),iCatId,ReportItem.getColumnNameDisplayOrder());
     }
     catch (SQLException ex) {
+			ex.printStackTrace();
       L = null;
     }
     return L;
@@ -54,6 +55,7 @@ public class ReportEntityHandler {
       }
     }
     catch (SQLException ex) {
+      ex.printStackTrace();
       return new ReportItem[0];
     }
   }
@@ -94,12 +96,16 @@ public class ReportEntityHandler {
   }
 
   public static List listOfReportConditions(int iCategory){
-    ReportItem[] RI = findReportItems(iCategory);
-    Vector V = new Vector(RI.length);
-    for (int i = 0; i < RI.length; i++) {
-      V.add(new ReportCondition(RI[i]));
+    List L = listOfReportItems(iCategory);
+    if(L!=null){
+      Vector V = new Vector();
+      java.util.Iterator I= L.iterator();
+      while(I.hasNext()) {
+        V.add(new ReportCondition((ReportItem)I.next()));
+      }
+      return V;
     }
-    return V;
+    return null;
   }
 
   public static boolean saveReportItem(int catid,String name,String field,String table,
@@ -128,6 +134,7 @@ public class ReportEntityHandler {
         return false;
     }
     catch (Exception ex) {
+			ex.printStackTrace();
       return false;
     }
   }

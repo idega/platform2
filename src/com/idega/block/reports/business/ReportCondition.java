@@ -22,6 +22,9 @@ import java.sql.SQLException;
   private boolean bBetween = false;
   private Integer orderNumber = null;
   private Integer colOrder = null;
+	private String sVarOne = null,sVarTwo = null;
+	private String sFunction = null;
+	private boolean bFunction = false;
 
   public ReportCondition(ReportItem Item) {
    this.Item = Item;
@@ -56,16 +59,23 @@ import java.sql.SQLException;
   }
   public String getCondition(){
     StringBuffer sb = new StringBuffer("");
+
     if(bCondition && bField){
-      if(bBetween){
+      if(sOperator.equalsIgnoreCase("BETWEEN") && sVarOne !=null && sVarTwo!=null){
         sb.append(this.sJoin);
-        sb.append(" ");
-        sb.append(" between '");
-        sb.append(sVars[0]);
-        sb.append("' and '");
-        sb.append(sVars[1]);
+        sb.append(" BETWEEN '");
+        sb.append(sVarOne);
+        sb.append("' AND '");
+        sb.append(sVarTwo);
         sb.append("'");
       }
+			else if(sOperator.equalsIgnoreCase("IN")){
+				sb.append(this.sJoin);
+        sb.append(" ");
+        sb.append(" BETWEEN '");
+        sb.append(sVarOne);
+			}
+			/* //old
       else{
         int len = this.Item.getOps().length;
         for (int i = 0; i < len; i++) {
@@ -80,13 +90,26 @@ import java.sql.SQLException;
           }
         }
       }
+			*/
     }
     this.sCondition = sb.toString();
+		if(this.Item.getConditionType().equalsIgnoreCase("I"))
+			sCondition = sCondition.replace("'".charAt(0)," ".charAt(0) );
     return this.sCondition;
   }
   public void setOperator(String[] sOps){
     this.sOps = sOps;
   }
+
+	public void setVariableOne(String sVar){
+	  this.sVarOne = sVar;
+		this.bCondition = true;
+	}
+	public void setVariableTwo(String sVar){
+	  this.sVarTwo = sVar;
+		this.bCondition = true;
+	}
+
   public void setVariable(String sVar){
     StringTokenizer st = new StringTokenizer(sVar,":");
     if(st.countTokens() == 2){
@@ -126,4 +149,32 @@ import java.sql.SQLException;
   public Integer getOrder(){
     return orderNumber;
   }
+	public String getOperator(){
+	  return sOperator;
+	}
+	public void setOperator(String sOp){
+	  sOperator = sOp;
+	}
+	public String getFunction(){
+	  return sOperator;
+	}
+	public void setFunction(String sOp){
+		bFunction = true;
+	  sOperator = sOp;
+	}
+	public boolean isFunction(){
+	  return bFunction;
+	}
+	public String getFieldFullName(){
+	  return Item.getMainTable() +"."+Item.getField();
+	}
+	public String getFieldFunction(){
+	  return getFunction()+"("+getFieldFullName()+")";
+	}
+	public String getField(){
+	  if(isFunction())
+			return getFieldFunction();
+		else
+			return getFieldFullName();
+	}
 }

@@ -6,6 +6,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.List;
 import java.util.Collections;
 import com.idega.presentation.Editor;
 import com.idega.presentation.Table;
@@ -23,7 +24,7 @@ public class ContentViewer extends PresentationObjectContainer{
   private String sActPrm = "";
   private int iAction = 0;
   private String prefix = "rcv_";
-  private Vector vContent;
+	private List listOfContent = null;
   private String sLastOrder = "0";
   private int iReport = -1;
   private int displayNumber = 20;
@@ -58,7 +59,7 @@ public class ContentViewer extends PresentationObjectContainer{
 
   public ContentViewer(){
 		clear = true;
-    vContent = null;
+		listOfContent = null;
     sTitles = null;
     LightColor = "#D7DADF";
     MiddleColor = "#9fA9B3";
@@ -72,7 +73,13 @@ public class ContentViewer extends PresentationObjectContainer{
   public ContentViewer(String[] Titles,Vector Content){
     this();
     sTitles = Titles;
-    vContent = Content;
+    this.listOfContent = Content;
+  }
+
+	public ContentViewer(String[] Titles,List listOfContent){
+    this();
+    sTitles = Titles;
+    this.listOfContent = listOfContent;
   }
 
   public void setColors(String LightColor,String MainColor,String DarkColor){
@@ -109,7 +116,7 @@ public class ContentViewer extends PresentationObjectContainer{
   }
   public void setContent(Vector Content){
 		clear = true;
-    vContent = Content;
+    listOfContent = Content;
   }
   public void setTitles(String[] Titles){
     sTitles = Titles;
@@ -167,13 +174,13 @@ public class ContentViewer extends PresentationObjectContainer{
 
     if(iwc.getSessionAttribute(prmContent+iInstId) == null){
       String[] headers = sTitles;
-      Vector v = vContent;
-      iwc.setSessionAttribute(prmContent+iInstId,v);
+      List L = listOfContent;
+      iwc.setSessionAttribute(prmContent+iInstId,L);
       iwc.setSessionAttribute(prmHeaders+iInstId,headers);
-      if(v != null){
-        add(this.doFooter(listStart,v.size()));
-        add(this.doView(headers,v,listStart));
-        add(this.doFooter(listStart,v.size()));
+      if(L != null){
+        add(this.doFooter(listStart,L.size()));
+        add(this.doView(headers,L,listStart));
+        add(this.doFooter(listStart,L.size()));
       }
       else
         add(new Text(" nothing to show"));
@@ -281,7 +288,7 @@ public class ContentViewer extends PresentationObjectContainer{
     return T;
   }
 
-  private PresentationObject doView(String[] headers,Vector content,int start){
+  private PresentationObject doView(String[] headers,List content,int start){
     int len = content.size();
     Table T;
     if(start != -1)
@@ -320,7 +327,7 @@ public class ContentViewer extends PresentationObjectContainer{
       int index = start;
       int end = start+displayNumber;
       for(int i =0; index < end && index <= len;i++){
-        C = (Content)content.elementAt((index)-1);
+        C = (Content)content.get((index)-1);
         for(int j = 0; j < cols;j++){
           T.add(getBodyObject((C.getContent(j))),j+2,i+2);
         }
@@ -331,7 +338,7 @@ public class ContentViewer extends PresentationObjectContainer{
     else {
       int clen = content.size();
       for (int i = 0; i < clen; i++) {
-        C = (Content)content.elementAt(i);
+        C = (Content)content.get(i);
         for(int j = 0; j < cols;j++){
           T.add(getBodyObject((C.getContent(j))),j+2,i+2);
         }
@@ -388,24 +395,6 @@ public class ContentViewer extends PresentationObjectContainer{
       }
     }
     return T;
-  }
-
-  private String[][] makeStrings(Vector vContent){
-    int len = vContent.size();
-    String[][] s = null;
-    if(len > 0){
-    ReportContent RC = (ReportContent) vContent.elementAt(0);
-    int cols = RC.size();
-      s = new String[len][cols];
-      for(int i = 0; i < len; i++){
-        RC = (ReportContent)vContent.elementAt(i);
-        for(int j = 0; j < cols ;j++){
-          s[i][j] = RC.getContent(j);
-          //System.err.println(s[i][j]);
-        }
-      }
-    }
-    return s;
   }
 
   public void setHeaderLinkProperties(Link linkToClonePropertiesFrom){

@@ -55,9 +55,14 @@ public class Reporter extends ReportPresentation implements IWBlock{
    super();
   }
   public Reporter(int iCategory){
-    this();
+		this();
     iCategoryId = iCategory;
+
   }
+
+	public void setReportCategoryId(int iCategory){
+	  iCategoryId = iCategory;
+	}
 
   public void setSQLEdit(boolean value){
     sqlEditAdmin = value;
@@ -65,14 +70,15 @@ public class Reporter extends ReportPresentation implements IWBlock{
 
   protected void control(IWContext iwc){
     iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
-		core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    iwb = getBundle(iwc);
+    core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
-		Table T = new Table();
-		T.setCellpadding(0);
-		T.setCellspacing(0);
-
-		if(iCategoryId <= 0){
+    Table T = new Table();
+    T.setWidth("100%");
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+    System.err.println("iCategoryid "+iCategoryId);
+    if(iCategoryId <= 0){
       String sCategoryId = iwc.getParameter(prmCategoryId );
       if(sCategoryId != null)
         iCategoryId = Integer.parseInt(sCategoryId);
@@ -84,7 +90,7 @@ public class Reporter extends ReportPresentation implements IWBlock{
       }
     }
 
-		if(isAdmin){
+    if(isAdmin){
       T.add(getAdminPart(iCategoryId,false,newobjinst,iwc),1,1);
     }
 
@@ -106,39 +112,38 @@ public class Reporter extends ReportPresentation implements IWBlock{
       }
     }
     T.add(doMain(iwc),1,2);
-    add(T);
+		form.add(T);
+    add(form);
   }
 
-	private PresentationObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst,IWContext iwc){
+  private PresentationObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst,IWContext iwc){
     Table T = new Table(3,1);
     T.setCellpadding(2);
     T.setCellspacing(2);
-
-
-		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     if(iCategoryId > 0){
       Link ne = new Link(core.getImage("/shared/create.gif","create"));
       ne.setWindowToOpen(ReportSQLEditorWindow.class);
       ne.addParameter(ReportSQLEditorWindow.prmCategoryId,iCategoryId);
-			ne.addParameter(ReportSQLEditorWindow.prmReportId,"-1");
+      //ne.addParameter(ReportSQLEditorWindow.prmReportId,"-1");
       T.add(ne,1,1);
-		  T.add(T.getTransparentCell(iwc),1,1);
+      T.add(T.getTransparentCell(iwc),1,1);
 
       Link text = new Link(core.getImage("/shared/text.gif","text"));
-			text.setWindowToOpen(ReportItemWindow.class);
+      text.setWindowToOpen(ReportItemWindow.class);
       text.addParameter(ReportItemWindow.prmCategoryId,iCategoryId);
-			//text.addParameter(ReportItemWindow.prmItems,"true");
+      //text.addParameter(ReportItemWindow.prmItems,"true");
       T.add(text,1,1);
-		  T.add(T.getTransparentCell(iwc),1,1);
+      T.add(T.getTransparentCell(iwc),1,1);
 
       Link change = new Link(core.getImage("/shared/edit.gif","edit"));
       change.setWindowToOpen(ReportEditorWindow.class);
       change.addParameter(ReportEditorWindow.prmCategoryId,iCategoryId);
-      change.addParameter(ReportEditorWindow.prmObjInstId,getICObjectInstanceID());
+      //change.addParameter(ReportEditorWindow.prmObjInstId,getICObjectInstanceID());
       T.add(change,1,1);
 
       if ( enableDelete ) {
-				T.add(T.getTransparentCell(iwc),1,1);
+        T.add(T.getTransparentCell(iwc),1,1);
         Link delete = new Link(core.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(ReportEditorWindow.class);
         delete.addParameter(ReportEditorWindow.prmDelete,iCategoryId);
@@ -158,12 +163,10 @@ public class Reporter extends ReportPresentation implements IWBlock{
   }
 
   private PresentationObject doMain(IWContext iwc){
-    Table T = new Table();
-    T.setWidth("100%");
-    T.add(getCategoryReports(iCategoryId,sqlEditAdmin),1,1);
+    PresentationObject obj = (getCategoryReports(iCategoryId,sqlEditAdmin));
     TextFontColor = DarkColor;
     fontBold = true;
-    return T;
+    return obj;
   }
 
   private PresentationObject getCategoryReports(int iCategoryId,boolean bEdit){
@@ -174,20 +177,22 @@ public class Reporter extends ReportPresentation implements IWBlock{
       T.setCellpadding(2);
       T.setCellspacing(1);
       T.setBorder(0);
-      Link lEdit =  new Link(core.getImage("/shared/create.gif"));
-      lEdit.setWindowToOpen(ReportSQLEditorWindow.class);
-      lEdit.addParameter(ReportSQLEditorWindow.prmCategoryId,iCategoryId);
+      T.setWidth("100%");
+      //Link lEdit =  new Link(core.getImage("/shared/create.gif"));
+      //lEdit.setWindowToOpen(ReportSQLEditorWindow.class);
+      //lEdit.addParameter(ReportSQLEditorWindow.prmCategoryId,iCategoryId);
 
       if(RC !=null){
         T.add(formatText(RC.getName()),2,1);
         T.add(formatText(RC.getInfo()),3,1);
       }
+
       TextFontColor = "#FFFFFF";
       int a = 2;
 
       T.setColumnAlignment(1,"right");
-      T.setWidth(3,"100%");
-      T.add(lEdit,1,2);
+      T.setWidth(3,"50%");
+      //T.add(lEdit,1,2);
       T.add(formatText(iwrb.getLocalizedString("name","Name")),2,2);
       T.add(formatText(iwrb.getLocalizedString("info","Info")),3,2);
       String prm = prefix+"chk";
@@ -257,7 +262,7 @@ public class Reporter extends ReportPresentation implements IWBlock{
   }
   private Link getAdminLink(int id,int catid){
     Link L = new Link(core.getImage("/shared/edit.gif"));//new Image("/reports/pics/edit.gif"));
-    L.setWindowToOpen(ReportEditorWindow.class);
+    L.setWindowToOpen(ReportSQLEditorWindow.class);
     L.addParameter(ReportSQLEditorWindow.prmReportId,id);
     L.addParameter(ReportSQLEditorWindow.prmCategoryId,catid);
     return L;
@@ -287,6 +292,28 @@ public class Reporter extends ReportPresentation implements IWBlock{
         catch(NumberFormatException ex){}
       }
     }
+  }
+
+	public void main(IWContext iwc){
+
+    isAdmin = iwc.hasEditPermission(this);
+		isAdmin = true;
+    control(iwc);
+  }
+
+	public synchronized Object clone() {
+    Reporter obj = null;
+    try {
+      obj = (Reporter)super.clone();
+
+	    obj.iCategoryId = iCategoryId;
+
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
   }
 
 

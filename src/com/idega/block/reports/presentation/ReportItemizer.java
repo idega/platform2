@@ -138,6 +138,9 @@ public class ReportItemizer extends ReportPresentation{
     }
     catch(Exception e){L = null;}
     Table T = new Table();
+		T.add(formatText("Name"),1,1);
+    T.add(formatText("Entity"),2,1);
+    T.add(formatText("Display order"),3,1);
     if(L != null){
       int count = L.size();
       for (int i = 0; i < count; i++) {
@@ -150,6 +153,8 @@ public class ReportItemizer extends ReportPresentation{
         link.addParameter("repitemid",RI.getID());
         link.addParameter("rep.cat.drp",iCategoryId);
         T.add(link,b++,a);
+				T.add(formatText(RI.getEntityName()),b++,a);
+				T.add(formatText(RI.getDisplayOrder()),b++,a);
       }
       T.setWidth("100%");
       T.setHorizontalZebraColored(LightColor,WhiteColor);
@@ -181,7 +186,7 @@ public class ReportItemizer extends ReportPresentation{
     String sRepItemId = iwc.getParameter("repitemid");
     Table Frame = new Table(2,1);
     Frame.setRowVerticalAlignment(1,"top");
-    Table T =  new Table(2,12);
+    Table T =  new Table(2,13);
     T.setCellpadding(2);
     T.setCellspacing(1);
     T.setHorizontalZebraColored(LightColor,WhiteColor);
@@ -200,11 +205,13 @@ public class ReportItemizer extends ReportPresentation{
     T.add(formatText("Entity Class"),1,a++);
     T.add(formatText("Information"),1,a++);
 //    T.add(formatText("Is Select"),1,a++);
+T.add(formatText("Display order"),1,a++);
 		T.add(formatText("Is Function"),1,a++);
+
 
     String s = "";
     TextInput name,field,table,joins,jointables,
-              condtype,conddata,condop,entity,info;
+              condtype,conddata,condop,entity,info,displayorder;
     HiddenInput idInput;
     CheckBox delCheck,isSelect,isFunction;
 
@@ -218,7 +225,9 @@ public class ReportItemizer extends ReportPresentation{
     condop      = new TextInput(prefix+"condop");
     entity      = new TextInput(prefix+"entity");
     info        = new TextInput(prefix+"info");
+		displayorder= new TextInput(prefix+"disorder");
 		isFunction  = new CheckBox(prefix+"function");
+
 
     if(sRepItemId != null){
       int repItemId = Integer.parseInt(sRepItemId);
@@ -235,6 +244,7 @@ public class ReportItemizer extends ReportPresentation{
           condop.setContent(ri.getConditionOperator());
           entity.setContent(ri.getEntity());
           info.setContent(ri.getInfo());
+					displayorder.setContent(String.valueOf(ri.getDisplayOrder()));
 					isFunction.setChecked(ri.getIsFunction());
           T.add(new HiddenInput("repitemid",String.valueOf(ri.getID())));
         }
@@ -255,6 +265,7 @@ public class ReportItemizer extends ReportPresentation{
     condop.setSize(tlen);
     entity.setSize(tlen);
     info.setSize(tlen);
+		displayorder.setSize(4);
 
     setStyle(name);
     setStyle(field);
@@ -266,6 +277,7 @@ public class ReportItemizer extends ReportPresentation{
     setStyle(condop);
     setStyle(entity);
     setStyle(info);
+		setStyle(displayorder);
 		setStyle( isFunction);
 
     int col = 2;
@@ -280,6 +292,7 @@ public class ReportItemizer extends ReportPresentation{
     T.add(condop,col,row++);
     T.add(entity,col,row++);
     T.add(info,col,row++);
+		T.add(displayorder,col,row++);
 		T.add(isFunction,col,row++);
 
     Frame.add(T);

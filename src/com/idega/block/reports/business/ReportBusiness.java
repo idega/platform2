@@ -20,6 +20,10 @@ public class ReportBusiness {
   public ReportBusiness() {
   }
 
+	public static ReportCategory createReportCategory(int iObjectInstanceId){
+    return saveReportCategory(-1,iObjectInstanceId,"Reports","Reports" );
+  }
+
 	public static int createCategory(int iObjectInstanceId){
     return saveCategory(-1,iObjectInstanceId,"Reports","Reports" );
   }
@@ -62,9 +66,14 @@ public class ReportBusiness {
   }
 
 	public static int saveCategory(int iCategoryId,int iObjectInstanceId,String Name,String info){
+	  return saveReportCategory(iCategoryId,iObjectInstanceId,Name,info).getID();
+	}
+
+	public static ReportCategory saveReportCategory(int iCategoryId,int iObjectInstanceId,String Name,String info){
 	  int id = -1;
+		ReportCategory cat  = null;
 		try {
-			ReportCategory cat = new ReportCategory();
+			cat = new ReportCategory();
 			boolean update = false;
 			if(iCategoryId > 0){
 			  cat = new ReportCategory(iCategoryId);
@@ -88,7 +97,7 @@ public class ReportBusiness {
 		catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		return id;
+		return cat;
 	}
 
 	public static boolean disconnectCategory(ReportCategory eCategory,int iObjectInstanceId){

@@ -36,7 +36,10 @@ public class ReportObjectHandler extends Block{
     if(Type.equalsIgnoreCase("T"))
       mo =  new TextInput(Name);
     else if(Type.equalsIgnoreCase("I")){
-      mo =  new TextInput(Name);
+			TextInput ti = new TextInput(Name);
+			ti.setAsIntegers();
+      mo =  ti;
+
     }
     else if(Type.equalsIgnoreCase("S"))
       mo =  drpEntity(Name,RC.getItem().getEntity(),RC.getItem().getField(),selected,false);
@@ -46,6 +49,48 @@ public class ReportObjectHandler extends Block{
     mo = drpValues(RC,Name,selected,true);
     return mo;
   }
+
+	public static DropdownMenu drpTypes(String name,String selected){
+		DropdownMenu drp = new DropdownMenu(name);
+		drp.addMenuElement("I","Integer");
+		drp.addMenuElement("T","Text");
+		drp.addMenuElement("S","Select All");
+		drp.addMenuElement("C","List with default");
+		drp.addMenuElement("D","List without default");
+    if(!selected.equalsIgnoreCase(""))
+      drp.setSelectedElement(selected);
+    return drp;
+	}
+
+	public static DropdownMenu drpFunctions(String name,String selected){
+		DropdownMenu drp = new DropdownMenu(name);
+		drp.addDisabledMenuElement("","--");
+		drp.addMenuElement("COUNT","COUNT");
+		drp.addMenuElement("AVG","AVERAGE");
+		drp.addMenuElement("SUM","SUM");
+		drp.addMenuElement("MAX","MAX");
+		drp.addMenuElement("MIN","MIN");
+		drp.addMenuElement("UPPER","UPPER");
+    if(!selected.equalsIgnoreCase(""))
+      drp.setSelectedElement(selected);
+    return drp;
+	}
+
+	public static DropdownMenu drpOperators(String name,String selected){
+		DropdownMenu drp = new DropdownMenu(name);
+		drp.addMenuElement("LIKE","LIKE");
+		drp.addMenuElement("=","EQUAL");
+		drp.addMenuElement("<=","LESS OR EQUAL");
+		drp.addMenuElement("<","LESS");
+		drp.addMenuElement(">=","GREATER OR EQUAL");
+		drp.addMenuElement("!=","NOT EQUAL");
+		drp.addMenuElement("!=","NOT EQUAL");
+		drp.addMenuElement("BETWEEN","BETWEEN");
+		drp.addMenuElement("IN","IN");
+    if(!selected.equalsIgnoreCase(""))
+      drp.setSelectedElement(selected);
+    return drp;
+	}
 
   public static DropdownMenu drpValues(ReportCondition RC,String Name,String selected,boolean disabledvalue){
     DropdownMenu drp = new DropdownMenu(Name);

@@ -5,6 +5,7 @@ import java.util.List;
 import com.idega.block.reports.data.*;
 import com.idega.core.data.ICObjectInstance;
 import java.sql.SQLException;
+import com.idega.core.data.ICObject;
 
 /**
  * Title:        idegaclasses
@@ -39,8 +40,11 @@ public class ReportFinder {
       }
       catch (SQLException ex) {
 
+				ex.printStackTrace();
       }
 		}
+		else
+			return ReportBusiness.createReportCategory(-1);
 		return null;
   }
 
@@ -133,6 +137,18 @@ public class ReportFinder {
     }
   }
 
+   public static List listOfReportItems(int iCatId){
+    List L = null;
+    try {
+      L = EntityFinder.findAllByColumnOrdered(new ReportItem(),ReportItem.getColumnNameCategory(),iCatId,ReportItem.getColumnNameDisplayOrder());
+    }
+    catch (SQLException ex) {
+			ex.printStackTrace();
+      L = null;
+    }
+    return L;
+  }
+
   public static List listOfEntityForObjectInstanceId( ICObjectInstance obj){
     try {
       List L = EntityFinder.findRelated(obj,new ReportCategory());
@@ -142,5 +158,15 @@ public class ReportFinder {
       return null;
     }
   }
+
+	public static List listOfDataClasses(){
+	  try {
+      return EntityFinder.findAllByColumn(new ICObject(),ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_DATA);
+    }
+    catch (SQLException ex) {
+
+    }
+		return null;
+	}
 
 }

@@ -24,21 +24,21 @@ public class ReportMaker {
   public ReportMaker(){
 
   }
-  public Vector makeReport(String sql){
-    Vector v = this.searchInDatabase(sql);
+  public List makeReport(String sql){
+    List v = this.searchInDatabase(sql);
     return v;
   }
 
-  public Vector makeReport(Vector conds){
+  public List makeReport(Vector conds){
     String sql = worker(conds);
-    Vector v = this.searchInDatabase(sql);
+    List v = this.searchInDatabase(sql);
     return v;
   }
 
-  public Vector makeReport(Vector conds,ReportCondition RCx){
-    conds.addElement(RCx);
+  public List makeReport(List conds,ReportCondition RCx){
+    conds.add(RCx);
     String sql = worker(conds);
-    Vector v = this.searchInDatabase(sql);
+    List v = this.searchInDatabase(sql);
     return v;
   }
 
@@ -46,7 +46,7 @@ public class ReportMaker {
     return worker(conds);
   }
 
-  private String worker(Vector conds){
+  private String worker(List conds){
     ReportCondition cond;
     Vector vSelect = new Vector();
     Vector vTables = new Vector();
@@ -59,59 +59,86 @@ public class ReportMaker {
     TreeMap orderMap = new TreeMap();
 
     ReportItem item;
-    for (int i = 0; i < conds.size(); i++) {
-      cond = (ReportCondition) conds.elementAt(i);
+    int length = conds.size();
+    String field;
+    for (int i = 0; i < length; i++) {
+      cond = (ReportCondition) conds.get(i);
+      field = cond.getField();
       item = cond.getItem();
-      if(cond.isSelect()){
-      if(item.getField()!= null){
-        if(!vSelect.contains(item.getMainTable()+"."+item.getField()))
-          vSelect.addElement(item.getMainTable()+"."+item.getField());
-        }
-      }
-      if(item.getMainTable()!=  null){
-        if(!vTables.contains(item.getMainTable()))
-          vTables.addElement(item.getMainTable());
-      }
 
-      String[] sa = item.getJoinTable();
-      if(sa != null){
-        for (int j = 0; j < sa.length; j++) {
-          if(!vTables.contains(sa[j])){
-            vTables.addElement(sa[j]);
+      String c = cond.getCondition();
+      boolean hascondition = c != null && c.length() > 0 ;
+
+      if(cond.isSelect() || hascondition){
+        if(cond.isSelect()){
+          System.err.println("item "+item.getName()+" is select");
+          if(field!= null){
+            if(!vSelect.contains(field)){
+              vSelect.add(field);
+            }
+          }
+          if(!cond.isFunction() && !vGroupBy.contains(field)){
+            vGroupBy.add(field);
           }
         }
-      }
-      String sJoin = item.getJoin();
-      if(sJoin.length() > 1){
-        StringTokenizer ST = new StringTokenizer(sJoin,",;");
-        while(ST.hasMoreTokens()){
-          String join = ST.nextToken();
-          if(!vJoin.contains(join))
-            vJoin.addElement(join);
-        }
-      }
-      String c = cond.getCondition();
-      if(c != null && c.length() > 0 && !vWhere.contains(c))
-        vWhere.addElement(c);
 
-      Integer order = cond.getOrder();
-      if(order != null){
-        orderMap.put(order,item.getMainTable()+"."+item.getField());
+        if(item.getMainTable()!=  null){
+          if(!vTables.contains(item.getMainTable())){
+            System.err.println("adding main table "+ item.getMainTable());
+            vTables.add(item.getMainTable());
+          }
+        }
+
+        String[] sa = item.getJoinTable();
+        if(sa != null){
+          for (int j = 0; j < sa.length; j++) {
+            if(!vTables.contains(sa[j])){
+              System.err.println("adding join table "+sa[j]);
+              vTables.add(sa[j]);
+            }
+          }
+        }
+        String sJoin = item.getJoin();
+        if(sJoin.length() > 1){
+          StringTokenizer ST = new StringTokenizer(sJoin,",;");
+          while(ST.hasMoreTokens()){
+            String join = ST.nextToken();
+            if(!vJoin.contains(join))
+              vJoin.add(join);
+          }
+        }
+
+        if(hascondition ){
+          if(!cond.isFunction() && !vWhere.contains(c))
+            vWhere.add(c);
+          else if(!vHaving.contains(c))
+            vHaving.add(c);
+        }
+
+        Integer order = cond.getOrder();
+        if(order != null){
+          orderMap.put(order,field);
+        }
       }
     }
     if(orderMap.size() > 0){
       Collection C = orderMap.values();
       vOrder.addAll(C);
     }
-    String sql = makeSQL(vSelect,vTables,vJoin,vWhere,vOrder);
+    // check Group by
+    if(vGroupBy.size() == length){
+      vGroupBy.clear();
+    }
+
+    String sql = makeSQL(vSelect,vTables,vJoin,vWhere,vOrder,vGroupBy,vHaving);
     return sql;
   }
 
-  private String makeSQL(List Select,List From,List Join,List Where,List Order){
+  private String makeSQL(List Select,List From,List Join,List Where,List Order,List GroupBy,List Having){
     ///////////////////////////
     //  Select part
     ///////////////////////////
-    StringBuffer sql = new StringBuffer("select  ");
+    StringBuffer sql = new StringBuffer("SELECT  ");
     int len = Select.size();
     for(int i = 0; i < len ; i++){
       sql.append(Select.get(i));
@@ -125,7 +152,7 @@ public class ReportMaker {
     //////////////////////
     int flen = From.size();
     if(flen > 0){
-      sql.append(" from ");
+      sql.append(" FROM ");
       for(int i = 0; i < flen ; i++){
         sql.append(From.get(i));
         if(i < flen-1)
@@ -143,12 +170,12 @@ public class ReportMaker {
     // use the join if  we have more than two tables
     //
     if(len > 0 && flen > 1){
-      sql.append(" where ");
+      sql.append(" WHERE ");
       ifwhere = true;
       for(int i = 0; i < len ; i++){
         sql.append(Join.get(i));
         if(i < len-1)
-          sql.append(" and ");
+          sql.append(" AND ");
       }
     }
     sql.append(" ");
@@ -158,13 +185,43 @@ public class ReportMaker {
     len = Where.size();
     if(len > 0 ){
       if(ifwhere)
-        sql.append(" and ");
+        sql.append(" AND ");
       else
-        sql.append(" where ");
+        sql.append(" WHERE ");
       for(int i = 0; i < len ; i++){
         sql.append(Where.get(i));
         if( i < len-1)
-          sql.append(" and ");
+          sql.append(" AND ");
+      }
+    }
+		sql.append(" ");
+    ////////////////////////
+    //  Group by part
+    ///////////////////////
+    if(GroupBy != null){
+      len = GroupBy.size();
+      if(len > 0 ){
+        sql.append( "GROUP BY ");
+        for(int i = 0; i < len ; i++){
+          sql.append(GroupBy.get(i));
+          if(i < len-1)
+            sql.append(",");
+        }
+      }
+    }
+		sql.append(" ");
+    ////////////////////////
+    //  Having part
+    ///////////////////////
+    if(Having != null){
+      len = Having.size();
+      if(len > 0 ){
+        sql.append( " HAVING ");
+        for(int i = 0; i < len ; i++){
+          sql.append(Having.get(i));
+          if(i < len-1)
+            sql.append(" AND ");
+        }
       }
     }
     sql.append(" ");
@@ -174,7 +231,7 @@ public class ReportMaker {
     if(Order != null){
       len = Order.size();
       if(len > 0 ){
-        sql.append( "order by ");
+        sql.append( "ORDER BY ");
         for(int i = 0; i < len ; i++){
           sql.append(Order.get(i));
           if(i < len-1)
