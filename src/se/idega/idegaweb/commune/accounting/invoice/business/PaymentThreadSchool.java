@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/27 11:10:44 $ by $Author: roar $
+ * Last modified: $Date: 2004/03/09 17:36:37 $ by $Author: roar $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.127 $
+ * @version $Revision: 1.128 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -743,6 +743,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				try {
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school, regularPaymentEntry.getNote());
 					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
+					User classMember = regularPaymentEntry.getUser();
+					if (classMember != null){
+						try{
+							SchoolClassMember schoolClassMember = getSchoolClassMemberHome().findLatestByUser(classMember);
+							createInvoiceRecord(paymentRecord, schoolClassMember, postingDetail, placementTimes);					
+						}catch (FinderException e) {
+							createNewErrorMessage(errorRelated, getLocalizedString("invoice.schoolClassMemberNotFound","The regular invoice pointed to a user, but the accordingly school class member was not found."));
+						}
+					}
 				}
 				catch (IDOLookupException e) {
 					createNewErrorMessage(errorRelated, getLocalizedString("invoice.IDOLookup","IDOLookup"));
