@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.5 2003/09/12 12:23:48 anders Exp $
+ * $Id: StudyPathEditor.java,v 1.6 2003/09/29 13:40:34 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,14 +9,12 @@
  */
 package se.idega.idegaweb.commune.accounting.school.presentation;
 
-/*
 import java.util.Collection;
 import java.util.Iterator;
 import java.rmi.RemoteException;
-*/
 
 import com.idega.presentation.IWContext;
-/*
+
 import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.ui.SubmitButton;
@@ -24,28 +22,25 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 
 import com.idega.block.school.data.SchoolStudyPath;
-*/
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-/*
+
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
-*/
 
 /** 
- * AgeEditor is an idegaWeb block that handles age values and
- * age regulations for children in childcare.
+ * This idegaWeb block that handles study paths for schools.
  * <p>
- * Last modified: $Date: 2003/09/12 12:23:48 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/29 13:40:34 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class StudyPathEditor extends AccountingBlock {
-/*
+
 	private final static int ACTION_DEFAULT = 0;
 	private final static int ACTION_CANCEL = 1;
 	private final static int ACTION_NEW = 3;
@@ -57,8 +52,8 @@ public class StudyPathEditor extends AccountingBlock {
 
 	private final static String PARAMETER_STUDY_PATH_CODE = PP + "study_path_code";
 	private final static String PARAMETER_DESCRIPTION = PP + "description";
+	private final static String PARAMETER_STUDY_PATH_ID = PP + "study_path_id";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
-	//private final static String PARAMETER_SEARCH = PP + "search";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
@@ -82,14 +77,12 @@ public class StudyPathEditor extends AccountingBlock {
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm_message";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
-*/
+
 	/**
 	 * @see com.idega.presentation.Block#main()
 	 */
 
 	public void init(final IWContext iwc) {
-iwc.toString();
-/*
 		try {
 			int action = parseAction(iwc);
 			switch (action) {
@@ -100,7 +93,7 @@ iwc.toString();
 					handleDefaultAction(iwc);
 					break;
 				case ACTION_NEW:
-					handleNewAction(iwc);
+					handleNewAction();
 					break;
 				case ACTION_OPEN:
 					handleOpenAction(iwc);
@@ -116,7 +109,6 @@ iwc.toString();
 		catch (Exception e) {
 			add(new ExceptionWrapper(e, this));
 		}
-*/		
 	}
 
 
@@ -124,7 +116,6 @@ iwc.toString();
 	 * Returns the action constant for the action to perform based 
 	 * on the POST parameters in the specified context.
 	 */
-/*
 	private int parseAction(IWContext iwc) {
 		int action = ACTION_DEFAULT;
 		
@@ -136,18 +127,16 @@ iwc.toString();
 			action = ACTION_SAVE;
 		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
 			action = ACTION_DELETE;
-		} else if (iwc.isParameterSet(PARAMETER_STUDY_PATH_CODE)) {
+		} else if (iwc.isParameterSet(PARAMETER_STUDY_PATH_ID)) {
 			action = ACTION_OPEN;
 		}
 
 		return action;
 	}
-*/
 
 	/*
 	 * Handles the default action for this block.
 	 */	
-/*
 	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Studievägskoder");
@@ -156,32 +145,24 @@ iwc.toString();
 		app.setButtonPanel(getButtonPanel());
 		add(app);
 	}
-*/
 
 	/*
 	 * Handles the new action for this block.
 	 */
-/*	
-	private void handleNewAction(IWContext iwc) {
-		add(getStudyPathForm(
-				getParameter(iwc, PARAMETER_STUDY_PATH_CODE),
-				getParameter(iwc, PARAMETER_DESCRIPTION),
-				null,
-				true)
-		);
+	private void handleNewAction() {
+		add(getStudyPathForm("-1", "", "", null, true));
 	}
-*/
 
 	/*
 	 * Handles the open action (link clicked in the list) for this block.
 	 */	
-/*
 	private void handleOpenAction(IWContext iwc) {
 		try {
 			StudyPathBusiness spb = getStudyPathBusiness(iwc);
-			SchoolStudyPath sp = spb.getStudyPath(getParameter(iwc, PARAMETER_STUDY_PATH_CODE));
+			SchoolStudyPath sp = spb.getStudyPath(getParameter(iwc, PARAMETER_STUDY_PATH_ID));
 			add(getStudyPathForm(
 					sp.getPrimaryKey().toString(),
+					sp.getCode(),
 					sp.getDescription(),
 					null,
 					false)
@@ -192,18 +173,17 @@ iwc.toString();
 			add(localize(e.getTextKey(), e.getDefaultText()));
 		}
 	}
-*/
 
 	/*
 	 * Handles the save action for this block.
 	 */
-/*
 	private void handleSaveAction(IWContext iwc) {
 		String errorMessage = null;
 
 		try {
 			StudyPathBusiness spb = getStudyPathBusiness(iwc);
 			spb.saveStudyPath(
+					iwc.getParameter(PARAMETER_STUDY_PATH_ID),
 					iwc.getParameter(PARAMETER_STUDY_PATH_CODE),
 					iwc.getParameter(PARAMETER_DESCRIPTION));
 		} catch (RemoteException e) {
@@ -215,6 +195,7 @@ iwc.toString();
 		
 		if (errorMessage != null) {
 			add(getStudyPathForm(
+					getParameter(iwc, PARAMETER_STUDY_PATH_ID),
 					getParameter(iwc, PARAMETER_STUDY_PATH_CODE),
 					getParameter(iwc, PARAMETER_DESCRIPTION),
 					errorMessage,
@@ -225,12 +206,10 @@ iwc.toString();
 		}
 		
 	}
-*/
 
 	/*
 	 * Handles the delete action for this block.
 	 */	
-/*
 	private void handleDeleteAction(IWContext iwc) {
 		String errorMessage = null;
 		try {
@@ -258,24 +237,20 @@ iwc.toString();
 			handleDefaultAction(iwc);
 		}
 	}
-*/
 	 
 	/*
 	 * Returns the search panel for this block.
 	 */
-/*
 	private Table getSearchPanel() {
 		Table table = new Table();
 		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
 		table.add(getLocalizedText(KEY_UPPER_SECONDARY_SCHOOL, "Gymnasieskola"), 2, 1);
 		return table;
 	}	
-*/
 	
 	/*
 	 * Returns the list of study paths.
 	 */
-/*
 	private Table getStudyPathList(IWContext iwc) {
 		Collection studyPaths = null;
 
@@ -306,7 +281,7 @@ iwc.toString();
 				list.add(sp.getDescription());
 
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna studieväg")));
-				edit.addParameter(PARAMETER_STUDY_PATH_CODE, sp.getPrimaryKey().toString());
+				edit.addParameter(PARAMETER_STUDY_PATH_ID, sp.getPrimaryKey().toString());
 				list.add(edit);
 
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_DELETE, "Radera")));
@@ -326,24 +301,21 @@ iwc.toString();
 		
 		return mainPanel;
 	}
-*/
 
 	/*
 	 * Returns the default button panel for this block.
 	 */
-/*
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
 		return bp;
 	}
-*/
 	
 	/*
 	 * Returns the application form for creating or editing a study path.
 	 */
-/*
 	private ApplicationForm getStudyPathForm(
+			String studyPathId,
 			String studyPathCode,
 			String description,
 			String errorMessage,
@@ -377,7 +349,7 @@ iwc.toString();
 		} else {
 			mainPanel.add(table, 1, 1);
 		}
-		app.addHiddenInput(PARAMETER_STUDY_PATH_CODE, studyPathCode);
+		app.addHiddenInput(PARAMETER_STUDY_PATH_ID, studyPathId);
 		if (!isNew) {
 			app.addHiddenInput(PARAMETER_EDIT, "true");
 		}
@@ -390,14 +362,11 @@ iwc.toString();
 		
 		return app;		
 	}
-*/
 
 	/*
 	 * Returns a study path business object
 	 */
-/*
 	private StudyPathBusiness getStudyPathBusiness(IWContext iwc) throws RemoteException {
 		return (StudyPathBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, StudyPathBusiness.class);
 	}	
-*/
 }
