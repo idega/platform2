@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.11 2001/08/17 17:00:57 laddi Exp $
+ * $Id: CampusContractWriter.java,v 1.12 2001/08/20 01:05:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -73,11 +73,11 @@ public class CampusContractWriter{
   public final static String TIIS = "TIS";
   public final static String TIEN = "TEN";
 
-  public static boolean writePDF(int id,IWResourceBundle iwrb,String realpath,
+  public static boolean writePDF(int[] ids,IWResourceBundle iwrb,String realpath,
   Font nameFont ,Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
     boolean returner = false;
     boolean bEntity = false;
-    if(id > 0){
+    if(ids != null &&  ids.length > 0){
       bEntity = true;
     }
     try {
@@ -96,33 +96,56 @@ public class CampusContractWriter{
         document.setFooter(footer);
 
         ContractText ct = getHeader();
+        List L = listOfTexts();
         String title = "";
         if(ct != null)
           title = ct.getText()+" \n\n";
         Paragraph cTitle = new Paragraph(title , titleFont);
-        Chapter chapter = new Chapter(cTitle, 1);
-        chapter.setNumberDepth(0);
-        Paragraph P;
-        List L = listOfTexts();
-        Hashtable H = getHashTags(id,iwrb,nameFont,tagFont,textFont);
-        if(L!=null){
-          int len = L.size();
-          for (int i = 0; i < len; i++) {
-            ContractText CT = (ContractText) L.get(i);
-            P = new Paragraph(new Phrase(CT.getName()+"\n",paragraphFont));
-            String sText = CT.getText();
-            if(bEntity &&CT.getUseTags()){
-              Phrase phrase = detagParagraph(H,sText);
-              P.add(phrase);
+        // for each contract id
+        for (int j = 0; j < ids.length; j++) {
+          bEntity = ids[j] > 0 ? true:false;
+          Chapter chapter = new Chapter(cTitle, 1);
+          chapter.setNumberDepth(0);
+          Paragraph P,P2;
+          Chapter subChapter;
+          Section subSection;
+          Phrase phrase;
+          System.err.println("inside chapter : "+ids[j]);
+          Hashtable H = getHashTags(ids[j],iwrb,nameFont,tagFont,textFont);
+          if(L!=null){
+            int len = L.size();
+            for (int i = 0; i < len; i++) {
+              ContractText CT = (ContractText) L.get(i);
+              P = new Paragraph(new Phrase(CT.getName(),paragraphFont));
+              subSection = chapter.addSection(P,0);
+
+              String sText = CT.getText();
+              if(bEntity &&CT.getUseTags()){
+                phrase = detagParagraph(H,sText);
+              }
+              else{
+                phrase = new Phrase(sText,textFont);
+              }
+              P2 = new Paragraph(phrase);
+              subSection.add(P2);
+
             }
-            else{
-              Phrase phrase = new Phrase(sText,textFont);
-              P.add(phrase);
+            if(bEntity){
+              try {
+                Contract eContract = new Contract(ids[j]);
+                if(eContract.getStatus().equalsIgnoreCase(eContract.statusCreated)){
+                  eContract.setStatusPrinted();
+                  eContract.update();
+                }
+              }
+              catch (SQLException ex) {
+
+              }
             }
-            chapter.add(P);
           }
+          document.add(chapter);
+          document.newPage();
         }
-        document.add(chapter);
         document.close();
         try {
           fos.close();
@@ -136,25 +159,19 @@ public class CampusContractWriter{
       ex.printStackTrace();
       returner = false;
     }
-    if(bEntity){
-      try {
-        Contract C = new Contract(id);
-        if(C.getStatus().equalsIgnoreCase(C.statusCreated)){
-          C.setStatusPrinted();
-          C.update();
-        }
-      }
-      catch (SQLException ex) {
-        returner = false;
-      }
-    }
     return returner;
   }
 
   public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath,
     Font nameFont, Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
-    return writePDF(-1,iwrb,realpath,nameFont, titleFont, paragraphFont, tagFont, textFont);
+    return writePDF(new int[0],iwrb,realpath,nameFont, titleFont, paragraphFont, tagFont, textFont);
   }
+  public static boolean writePDF(int id,IWResourceBundle iwrb,String realpath,
+    Font nameFont, Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
+      int[] ids = {id};
+    return writePDF(ids,iwrb,realpath,nameFont, titleFont, paragraphFont, tagFont, textFont);
+  }
+
   private static List listOfTexts(){
     List L = null;
 

@@ -273,10 +273,13 @@ public class CampusContracts extends KeyEditor{
       Image registerImage = new Image("/pics/register.gif");
       int len = L.size();
       int row = 2;
+      StringBuffer sbIDs = new StringBuffer();
       for (int i = 0; i < len; i++) {
 
         try {
           C = (Contract) L.get(i);
+          sbIDs.append(C.getID());
+          sbIDs.append(ContractFiler.prmSeperator);
           U = new User(C.getUserId().intValue());
           Ap = new Applicant(C.getApplicantId().intValue());
           A = new Apartment(C.getApartmentId().intValue());
@@ -293,6 +296,7 @@ public class CampusContracts extends KeyEditor{
         }
         catch (SQLException ex) {  ex.printStackTrace(); }
         }
+        T.add(getPDFLink(printImage,sbIDs.toString()),1,row);
         T.add(headerText(" "),1,1);
         T.add(headerText(iwrb.getLocalizedString("name","Name")),3,1);
         T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),4,1);
@@ -407,7 +411,7 @@ public class CampusContracts extends KeyEditor{
     W.setResizable(true);
     W.setMenubar(true);
     Link L = new Link(MO,W);
-    L.addParameter("contract_id",contractId);
+    L.addParameter(ContractFiler.prmOneId,contractId);
     return L;
   }
 
@@ -416,16 +420,16 @@ public class CampusContracts extends KeyEditor{
     W.setResizable(true);
     W.setMenubar(true);
     Link L = new Link(MO,W);
-    L.addParameter("contract_id",contractId);
-    L.addParameter("fname",filename);
+    L.addParameter(ContractFiler.prmOneId,contractId);
+    L.addParameter(ContractFiler.prmFileName,filename);
     return L;
   }
-   public Link getPDFLink(ModuleObject MO,String status){
-    Window W = new Window("PDF","/allocation/applicationfile.jsp");
+   public Link getPDFLink(ModuleObject MO,String ids){
+    Window W = new Window("PDF","/allocation/contractfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
     Link L = new Link(MO,W);
-    L.addParameter("app_status",status);
+    L.addParameter(ContractFiler.prmManyIds,ids);
     return L;
   }
 }

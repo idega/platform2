@@ -5,6 +5,8 @@ import com.idega.jmodule.object.Page;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.jmodule.object.ModuleInfo;
 import com.lowagie.text.Font;
+import java.util.StringTokenizer;
+import com.idega.util.idegaTimestamp;
 
 /**
  * Title:
@@ -17,6 +19,8 @@ import com.lowagie.text.Font;
 
 public class ContractFiler extends JModuleObject {
 
+  public static String prmOneId ="contract_id" ,prmTest="test",prmManyIds="many_ids";
+  public static String prmSeperator = "_",prmFileName = "fname";
   public ContractFiler() {
   }
 
@@ -43,22 +47,51 @@ public class ContractFiler extends JModuleObject {
     String path = filepath;
       Page p = getParentPage();
       //Page p = getPage();
-      if(modinfo.getParameter("contract_id")!=null){
-        int id = Integer.parseInt(modinfo.getParameter("contract_id"));
+      if(modinfo.getParameter(prmOneId)!=null){
+        int id = Integer.parseInt(modinfo.getParameter(prmOneId));
         boolean filewritten = CampusContractWriter.writePDF(id,iwrb,path+filename, nameFont,titleFont, paraFont, tagFont, textFont);
+
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filename,1);
         else
           add("failed");
 
       }
-      else if(modinfo.getParameter("test")!=null){
+      else if(modinfo.getParameter(prmTest)!=null){
 
         boolean filewritten = CampusContractWriter.writeTestPDF(iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filetest,1);
         else
           add("failed");
+      }
+      else if(modinfo.getParameter(prmManyIds)!=null){
+        System.err.println(prmManyIds);
+        String values = modinfo.getParameter(prmManyIds);
+        StringTokenizer st = new StringTokenizer(values,prmSeperator);
+        int[] ids = new int[st.countTokens()];
+        for (int i = 0; i < ids.length; i++) {
+          String token = st.nextToken();
+          ids[i] = Integer.parseInt(token);
+        }
+        /*
+        idegaTimestamp it = idegaTimestamp.RightNow();
+        StringBuffer f = new StringBuffer();
+        f.append(it.getMonth());
+        f.append(it.getDay());
+        f.append(it.getHour());
+        f.append(it.getMinute());
+        f.append(it.getSecond());
+        f.append(".pdf");
+        String fname = f.toString();
+        */
+
+        boolean filewritten = CampusContractWriter.writePDF(ids,iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
+        if(filewritten)
+          p.setToRedirect("/servlet/pdf?&dir="+path+filetest,1);
+        else
+          add("failed");
+
       }
       else{add("nothing");}
       p.setParentToReload();
