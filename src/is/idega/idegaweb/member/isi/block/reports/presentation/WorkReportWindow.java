@@ -410,7 +410,16 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		//B.12
 		Text statistics = formatHeadline(iwrb.getLocalizedString("workreportwindow.statistics", "Statistics"));
 
-		Table stats = new Table(1,12);
+		Table stats = new Table(2,12);
+		stats.setColumnWidth(1,"20");
+		stats.mergeCells(1,1,2,1);
+		stats.mergeCells(1,3,2,3);
+		stats.mergeCells(1,5,2,5);
+		stats.mergeCells(1,7,2,7);
+		stats.mergeCells(1,9,2,9);
+		stats.mergeCells(1,11,2,11);
+		
+		
 		
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.leagues", "Leagues")),1,1);
 		
@@ -423,8 +432,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_1_reportname");
 		b12_1_1.setStyleClass(styledLink);
 		
-		stats.add(b12_1_1,1,2);
-		stats.addBreak(1,2);
+		stats.add(b12_1_1,2,2);
+		stats.addBreak(2,2);
 		
 		LinkContainer b12_1_2 = new LinkContainer();
 		b12_1_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_2_reportname", "Players per reg.uni. -/+ 16"), false));
@@ -434,8 +443,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_2_reportname");
 		b12_1_2.setStyleClass(styledLink);
 		
-		stats.add(b12_1_2,1,2);
-		stats.addBreak(1,2);
+		stats.add(b12_1_2,2,2);
+		stats.addBreak(2,2);
 		
 		LinkContainer b12_1_3 = new LinkContainer();
 		b12_1_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_3_reportname", "Players per league -/+ 16"), false));
@@ -445,8 +454,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_3_reportname");
 		b12_1_3.setStyleClass(styledLink);
 		
-		stats.add(b12_1_3,1,2);
-		stats.addBreak(1,2);
+		stats.add(b12_1_3,2,2);
+		stats.addBreak(2,2);
 		
 		LinkContainer b12_1_4 = new LinkContainer();
 		b12_1_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_4_reportname", "Compare player stats with previous year"), false));
@@ -456,7 +465,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_4_reportname");
 		b12_1_4.setStyleClass(styledLink);
 		
-		stats.add(b12_1_4,1,2);
+		stats.add(b12_1_4,2,2);
 		
 			
 		
@@ -470,7 +479,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_1_reportname");
 		b12_2_1.setStyleClass(styledLink);
 		
-		stats.add(b12_2_1,1,4);
+		stats.add(b12_2_1,2,4);
 		
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.clubs", "Clubs")),1,5);
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.accounts", "Accounts")),1,7);
