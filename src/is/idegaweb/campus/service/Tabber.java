@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.28 2001/11/08 15:40:40 aron Exp $
+ * $Id: Tabber.java,v 1.29 2001/11/09 10:58:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -136,7 +136,7 @@ public class Tabber extends Block {
       CampusLinkFactory CF = new CampusLinkFactory();
 
       Image finance = iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif");
-      Link Link1 = CF.getLink(CF.ADM_FINANCE,finance);
+      Link Link1 = CF.getLink(finance,CF.ADM_FINANCE,CampusAdminPage.class);
       Link1.addParameter(strAction,ACT20);
 
       Image habitants = iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants1.gif");
