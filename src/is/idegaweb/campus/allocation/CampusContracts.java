@@ -70,7 +70,7 @@ public class CampusContracts extends PresentationObjectContainer{
     for (int i = 0; i < prmArray.length; i++) {
       if(iwc.getParameter(prmArray[i])!=null){
       sValues[i] = (iwc.getParameter(prmArray[i]));
-      iwc.setSessionAttribute(sessConPrm,sValues[i]);
+      iwc.setSessionAttribute(sessArray[i],sValues[i]);
       }
       else if(iwc.getSessionAttribute(sessArray[i])!=null){
         sValues[i] = ((String)iwc.getSessionAttribute(sessArray[i]));
@@ -282,8 +282,11 @@ public class CampusContracts extends PresentationObjectContainer{
           Ap = new Applicant(C.getApplicantId().intValue());
           A = new Apartment(C.getApartmentId().intValue());
           T.add(Edit.formatText(i+1),col++,row);
-          //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated))
-          T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
+          if(C.getStatus().equalsIgnoreCase(Contract.statusCreated) || C.getStatus().equalsIgnoreCase(Contract.statusPrinted) )
+            T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col,row);
+          else if(C.getStatus().equalsIgnoreCase(Contract.statusSigned))
+            T.add(getReSignLink(printImage,C.getID()),col,row);
+          col++;
           if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted) || C.getStatus().equalsIgnoreCase(Contract.statusSigned)  )
             T.add(getSignedLink(registerImage,C.getID()),col,row);
           col++;
@@ -395,13 +398,16 @@ public class CampusContracts extends PresentationObjectContainer{
 
 
   public Link getSignedLink(PresentationObject MO,int contractId){
-    //ContractSignWindow W = new ContractSignWindow();
-    //Window W = new Window("Signature","/allocation/contractsign.jsp");
-    //W.setResizable(true);
-    //W.setMenubar(true);
     Link L = new Link(MO);
     L.setWindowToOpen(ContractSignWindow.class);
     L.addParameter("signed_id",contractId);
+    return L;
+  }
+
+   public Link getReSignLink(PresentationObject MO,int contractId){
+    Link L = new Link(MO);
+    L.setWindowToOpen(ContractReSignWindow.class);
+    L.addParameter("contract_id",contractId);
     return L;
   }
 

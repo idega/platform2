@@ -27,7 +27,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
 
-import is.idegaweb.campus.entity.ContractAccountApartment;
 import is.idegaweb.campus.allocation.ContractFinder;
 import is.idegaweb.campus.entity.Contract;
 
@@ -193,6 +192,7 @@ public class CampusEntryGroups extends PresentationObjectContainer {
       T.add(Edit.formatText(iwrb.getLocalizedString("entry_from","Entries from")),3,1);
       T.add(Edit.formatText(iwrb.getLocalizedString("entry_to","Entries to")),4,1);
       T.add(Edit.formatText(iwrb.getLocalizedString("file_name","File name")),5,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("real_count","Real count")),6,1);
       //T.add(Edit.formatText(sRollBack),4,1);
 
 
@@ -208,6 +208,7 @@ public class CampusEntryGroups extends PresentationObjectContainer {
         T.add(Edit.formatText(EG.getEntryIdFrom()),col++,row);
         T.add(Edit.formatText(EG.getEntryIdTo()),col++,row);
         T.add(Edit.formatText(EG.getFileName()),col++,row);
+        T.add(Edit.formatText(CampusAssessmentBusiness.getGroupEntryCount(EG)),col++,row);
 
         /*
         Link R = new Link(iwb.getImage("rollback.gif"));

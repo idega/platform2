@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.22 2001/10/05 08:05:43 tryggvil Exp $
+ * $Id: Tabber.java,v 1.23 2001/10/09 22:49:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,11 +22,14 @@ import java.io.IOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idegaweb.campus.allocation.CampusAllocation;
-import is.idegaweb.campus.tariffs.CampusFinance;
+import is.idegaweb.campus.finance.presentation.CampusFinance;
+
+//import is.idegaweb.campus.tariffs.CampusFinance;
 import is.idegaweb.campus.templates.CampusPage;
 import com.idega.idegaweb.IWMainApplication;
 import java.util.List;
 import java.util.Iterator;
+
 
 /**
  *
@@ -88,6 +91,7 @@ public class Tabber extends Block {
           iwc.setSessionAttribute(strAction,sAct);
         }
       }
+
       if(eUser !=null && getPermissionHash(iwc)){
 
         if(PermissionHash.containsValue("administrator") )
@@ -126,21 +130,27 @@ public class Tabber extends Block {
       //LinkTable.setWidth("100%");
       LinkTable.setAlignment("right");
 
-      String lang = "IS";
 
-      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif"),"/finance/index.jsp");
+      CampusLinkFactory CF = new CampusLinkFactory();
+
+      Image finance = iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif");
+      Link Link1 = CF.getLink(CF.ADM_FINANCE,finance);
       Link1.addParameter(strAction,ACT20);
 
-      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants1.gif"),"/tenant/habitants.jsp");
+      Image habitants = iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants1.gif");
+      Link Link2 = CF.getLink(CF.ADM_HABITANTS,habitants);
       Link2.addParameter(strAction,ACT21);
 
-      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif"),"/allocation/index.jsp");
+      Image allocation = iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif");
+      Link Link3 = CF.getLink(CF.ADM_ALLOCATION,allocation);
       Link3.addParameter(strAction,ACT22);
 
-      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif"),"/building/index.jsp");
+      Image apartments = iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif");
+      Link Link4 = CF.getLink(CF.ADM_APARTMENTS,apartments);
       Link4.addParameter(strAction,ACT23);
 
-      Link Link5 = new Link(iwrb.getImage(iAct == ACT24?"/tabs/announcements.gif":"/tabs/announcements1.gif"),"/main/announcements.jsp");
+      Image announce = iwrb.getImage(iAct == ACT24?"/tabs/announcements.gif":"/tabs/announcements1.gif");
+      Link Link5 = CF.getLink(CF.ADM_ANNOUNCE,announce );
       Link5.addParameter(strAction,ACT24);
 
       LinkTable.add(Link1,1,1);
@@ -159,7 +169,7 @@ public class Tabber extends Block {
       LinkTable.setCellspacing(0);
       LinkTable.setAlignment("right");
 
-      String lang = "IS";
+
 
 
       Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif"),"/finance/index.jsp");
@@ -183,18 +193,22 @@ public class Tabber extends Block {
       //LinkTable.setWidth("100%");
       LinkTable.setAlignment("right");
 
-      String lang = "IS";
+      CampusLinkFactory CF = new CampusLinkFactory();
 
-      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/my_profile.gif":"/tabs/my_profile1.gif"),"/tenant/index.jsp");
+      Image profile = iwrb.getImage(iAct == ACT20?"/tabs/my_profile.gif":"/tabs/my_profile1.gif");
+      Link Link1 =  CF.getLink(CF.TEN_PROFILE,profile);
       Link1.addParameter(strAction,ACT20);
 
-      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/finance.gif":"/tabs/finance1.gif"),"/tenant/accountview.jsp");
+      Image finance = iwrb.getImage(iAct == ACT21?"/tabs/finance.gif":"/tabs/finance1.gif");
+      Link Link2 = CF.getLink(CF.TEN_FINANCE,finance);
       Link2.addParameter(strAction,ACT21);
 
-      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/habitants.gif":"/tabs/habitants1.gif"),"/index2.jsp");
+      Image habitants = iwrb.getImage(iAct == ACT22?"/tabs/habitants.gif":"/tabs/habitants1.gif");
+      Link Link3 = CF.getLink(CF.TEN_HABITANTS,habitants);
       Link3.addParameter(strAction,ACT22);
 
-      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/announcements.gif":"/tabs/announcements1.gif"),"/main/announcements.jsp");
+      Image announce = iwrb.getImage(iAct == ACT23?"/tabs/announcements.gif":"/tabs/announcements1.gif");
+      Link Link4 = CF.getLink(CF.TEN_ANNOUNCE,announce );
       Link4.addParameter(strAction,ACT23);
 
 
@@ -215,7 +229,7 @@ public class Tabber extends Block {
       //LinkTable.setWidth("100%");
       LinkTable.setAlignment("right");
 
-      String lang = "IS";
+
 
       Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/waitinglist.gif":"/tabs/waitinglist1.gif"),"/index2.jsp");
       Link1.addParameter(strAction,ACT20);

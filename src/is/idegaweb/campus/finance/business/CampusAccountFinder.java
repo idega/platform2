@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Vector;
 import com.idega.data.EntityFinder;
 import is.idegaweb.campus.entity.ContractAccountApartment;
+import is.idegaweb.campus.entity.ContractAccounts;
 import is.idegaweb.campus.entity.TariffIndex;
 
 /**
@@ -54,6 +55,16 @@ public class CampusAccountFinder  {
     catch (SQLException ex) {
       return null;
     }
+  }
+
+  public static List listOfContractAccounts(){
+   try {
+     return EntityFinder.findAll(new ContractAccounts());
+   }
+   catch (SQLException ex) {
+    ex.printStackTrace();
+    return null;
+   }
   }
 
   public static int countAccounts(String accType){

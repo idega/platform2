@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.5 2001/10/02 12:42:14 aron Exp $
+ * $Id: ContractBusiness.java,v 1.6 2001/10/09 22:49:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,7 +34,9 @@ import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.util.List;
 import java.util.Iterator;
+import com.idega.util.idegaTimestamp;
 import com.idega.util.SendMail;
+import com.idega.block.application.data.Application;
 
 /**
  * Title:
@@ -74,6 +76,7 @@ public  class ContractBusiness {
         }
 
         deleteFromWaitingList(eContract);
+        changeApplicationStatus( eContract);
 
         if(sendMail){
           sendMail(iUserId,login,pass,iwrb);
@@ -120,6 +123,25 @@ public  class ContractBusiness {
     //int validDays = today.getDaysBetween(today,new idegaTimestamp(eContract.getValidTo()));
     LoginDBHandler.createLogin(iUserId,login,pass);
     //LoginDBHandler.createLogin(iUserId,login,passwd,new Boolean(true),today,validDays,new Boolean(false),new Boolean(true),new Boolean(false),"");
+  }
+
+  public static void changeApplicationStatus(Contract eContract)throws SQLException{
+    String status = Application.statusSigned;
+    List L = null;
+    try {
+       L = EntityFinder.findAllByColumn(new Application(),Application.getColumnNameApplicantId(),eContract.getApplicantId().intValue());
+
+    }
+    catch (SQLException ex) {
+
+    }
+    if(L!=null){
+      while(L.iterator().hasNext()){
+        Application A = (Application) L.iterator().next();
+        A.setStatusSigned();
+        A.update();
+      }
+    }
   }
 
   public static void deleteFromWaitingList(Contract eContract){
@@ -169,6 +191,32 @@ public  class ContractBusiness {
       catch (Exception ex) {
         ex.printStackTrace();
       }
+    }
+  }
+
+  public static void endContract(int iContractId,idegaTimestamp movingDate,String info){
+    try {
+      Contract C = new Contract(iContractId );
+      C.setMovingDate(movingDate.getSQLDate());
+      C.setResignInfo(info);
+      C.setStatusEnded();
+      C.update();
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace( );
+    }
+  }
+
+  public static void resignContract(int iContractId,idegaTimestamp movingDate,String info){
+    try {
+      Contract C = new Contract(iContractId );
+      C.setMovingDate(movingDate.getSQLDate());
+      C.setResignInfo(info);
+      C.setStatusResigned();
+      C.update();
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
     }
   }
 }

@@ -78,7 +78,8 @@ public abstract class PhoneFinder {
     sql.append(Account.getEntityTableName());
     sql.append(" a ,");
     sql.append(AccountPhone.getEntityTableName());
-    sql.append(" p where a.fin_account_id = ap.fin_account_id");
+    sql.append(" p where a.fin_account_id = p.fin_account_id");
+    System.err.println (sql.toString());
     try {
       return EntityFinder.findAll(new Account(),sql.toString());
     }

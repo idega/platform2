@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.8 2001/07/18 11:42:51 aron Exp $
+ * $Id: Contract.java,v 1.9 2001/10/09 22:49:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import com.idega.data.GenericEntity;
 import java.sql.Date;
 import java.lang.IllegalStateException;
 import java.sql.SQLException;
+import com.idega.util.idegaTimestamp;
 
 /**
  *
@@ -27,6 +28,9 @@ public class Contract extends GenericEntity {
   private static final String validTo_ = "valid_to";
   private static final String status_ = "status";
   private static final String applicantId_ = "app_applicant_id";
+  private static final String resignInfo_ = "resign_info";
+  private static final String statusDate_ = "status_date";
+  private static final String movingDate_ = "moving_date";
 
   public static final String statusCreated = "C";
   public static final String statusPrinted = "P";
@@ -34,6 +38,7 @@ public class Contract extends GenericEntity {
   public static final String statusRejected = "R";
   public static final String statusTerminated = "T";
   public static final String statusEnded = "E";
+  public static final String statusResigned = "U";
 
   public static String getStatusColumnName(){return status_;}
   public static String getApplicantIdColumnName(){return applicantId_;}
@@ -41,6 +46,9 @@ public class Contract extends GenericEntity {
   public static String getValidFromColumnName(){return validFrom_;}
   public static String getApartmentIdColumnName(){return apartmentId_;}
   public static String getUserIdColumnName(){return userId_;}
+  public static String getResignInfoColumnName(){return resignInfo_ ;}
+  public static String getStatusDateColumnName(){return movingDate_ ;}
+  public static String getMovingDateColumnName(){return movingDate_ ;}
   public static String getContractEntityName(){return name_;}
 
   public Contract() {
@@ -51,20 +59,21 @@ public class Contract extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(userId_,"User id",true,true,"java.lang.Integer","one-to-many","com.idega.core.ICUser");
-    addAttribute(apartmentId_,"Apartment id",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Apartment");
-    addAttribute(applicantId_,"Applicant id",true,true,"java.lang.Integer","one-to-one","com.idega.block.application.data.Applicant");
-    addAttribute(validFrom_,"Valid from",true,true,"java.sql.Date");
-    addAttribute(validTo_,"Valid to",true,true,"java.sql.Date");
-    addAttribute(status_,"Status",true,true,"java.lang.String");
+    addAttribute(userId_,"User id",true,true,java.lang.Integer.class,"one-to-many",com.idega.core.ICUser.class);
+    addAttribute(apartmentId_,"Apartment id",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.building.data.Apartment.class);
+    addAttribute(applicantId_,"Applicant id",true,true,java.lang.Integer.class,"one-to-one",com.idega.block.application.data.Applicant.class);
+    addAttribute(validFrom_,"Valid from",true,true,java.sql.Date.class);
+    addAttribute(validTo_,"Valid to",true,true,java.sql.Date.class);
+    addAttribute(statusDate_,"Resign date",true,true,java.sql.Date.class);
+    addAttribute(movingDate_,"Moving date",true,true,java.sql.Date.class);
+    addAttribute(status_,"Status",true,true,java.lang.String.class);
+    addAttribute(resignInfo_,"Resign info",true,true,java.lang.String.class,4000);
     setMaxLength(status_,1);
   }
 
   public String getEntityName() {
     return(name_);
   }
-
-
 
   public void setUserId(int id) {
     setColumn(userId_,id);
@@ -117,14 +126,41 @@ public class Contract extends GenericEntity {
     return((Date)getColumnValue(validTo_));
   }
 
+  public void setMovingDate(Date date) {
+    setColumn(movingDate_,date);
+  }
+
+  public Date getMovingDate(){
+    return (Date) getColumnValue(movingDate_ );
+  }
+
+  public void setStatusDate(Date date) {
+    setColumn(statusDate_,date);
+  }
+
+  public Date getStatusDate(){
+    return (Date) getColumnValue(statusDate_ );
+  }
+
+  public String getResignInfo(){
+    return getStringColumnValue( resignInfo_);
+  }
+
+  public void setResignInfo(String info){
+     setColumn(resignInfo_ , info);
+  }
+
   public void setStatus(String status) throws IllegalStateException {
     if ((status.equalsIgnoreCase(statusCreated)) ||
         (status.equalsIgnoreCase(statusEnded)) ||
         (status.equalsIgnoreCase(statusRejected)) ||
         (status.equalsIgnoreCase(statusSigned)) ||
         (status.equalsIgnoreCase(statusTerminated))||
-        (status.equalsIgnoreCase(statusPrinted)))
+        (status.equalsIgnoreCase(statusResigned))||
+        (status.equalsIgnoreCase(statusPrinted))){
       setColumn(status_,status);
+      setStatusDate(idegaTimestamp.RightNow().getSQLDate());
+    }
     else
       throw new IllegalStateException("Undefined state : " + status);
   }
@@ -148,5 +184,8 @@ public class Contract extends GenericEntity {
   }
   public void setStatusPrinted() {
     setStatus(statusPrinted);
+  }
+  public void setStatusResigned(){
+    setStatus(statusResigned);
   }
 }

@@ -147,7 +147,7 @@ public class CampusAssessmentBusiness  {
                 cAttribute = sAttribute.charAt(0);
                 // If All
                 if(cAttribute == cAll){
-                  Amount = insertEntry(vEntries,eTariff,user,iRoundId,paydate,iCashierId);
+                  Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
                 }
                 // other than all
                 else{
@@ -157,27 +157,27 @@ public class CampusAssessmentBusiness  {
                     switch (cAttribute) {
                       case cType: // Apartment type
                         if(iAttributeId == user.getApartmentTypeId())
-                          Amount = insertEntry(vEntries,eTariff,user,iRoundId,paydate,iCashierId);
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
                       break;
                       case cCategory  : // Apartment category
                         if(iAttributeId == user.getApartmentCategoryId())
-                          Amount = insertEntry(vEntries,eTariff,user,iRoundId,paydate,iCashierId);
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
                       break;
                       case cBuilding  : // Building
                         if(iAttributeId == user.getBuildingId())
-                          Amount = insertEntry(vEntries,eTariff,user,iRoundId,paydate,iCashierId);
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
                       break;
                       case cFloor     : // Floor
                         if(iAttributeId == user.getFloorId())
-                          Amount = insertEntry(vEntries,eTariff,user,iRoundId,paydate,iCashierId);
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
                       break;
                       case cComplex   : // Complex
                         if(iAttributeId == user.getComplexId())
-                          Amount = insertEntry(vEntries,eTariff,user,iRoundId,paydate,iCashierId);
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
                       break;
                       case cApartment : // Apartment
                         if(iAttributeId == user.getApartmentId())
-                          Amount = insertEntry(vEntries,eTariff,user,iRoundId,paydate,iCashierId);
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
                       break;
                     }// switch
                   } // attribute check
@@ -223,10 +223,13 @@ public class CampusAssessmentBusiness  {
   }
 
   public static AssessmentRound assessPhones(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId,int iCashierId)throws CampusFinanceException{
-    List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
-    if(listOfUsers != null){
-      Iterator I = listOfUsers.iterator();
-      ContractAccountApartment user;
+    //List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
+    List listOfAccounts = CampusAccountFinder.listOfContractAccounts();
+    if(listOfAccounts != null){
+      //System.err.println("phoneaccounts :"+listOfUsers.size());
+
+      Iterator I = listOfAccounts.iterator();
+      ContractAccounts accounts;
       AssessmentRound AR = null;
 
       int iRoundId = -1;
@@ -260,24 +263,37 @@ public class CampusAssessmentBusiness  {
             AccountPhoneEntry ape;
             AccountKey AK = new AccountKey(iAccountKeyId);
             while (I.hasNext()) {
-              user = (ContractAccountApartment)I.next();
-              Account eAccount = new Account(user.getAccountId());
+              accounts = (ContractAccounts)I.next();
+              Account eFinanceAccount = new Account(accounts.getPhoneAccountId());
+              Account ePhoneAccount = new Account(accounts.getPhoneAccountId());
               totalAmount = 0;
               float Amount = 0;
-              List PhoneEntries = AccountManager.listOfPhoneEntries(eAccount.getID(),idegaTimestamp.RightNow(),AccountPhoneEntry.statusRead);
+              List PhoneEntries = AccountManager.listOfUnBilledPhoneEntries(accounts.getPhoneAccountId(),null,idegaTimestamp.RightNow());
               if(PhoneEntries != null){
                 Iterator it = PhoneEntries.iterator();
+                AccountEntry AE = insertKreditEntry(accounts.getFinanceAccountId(),iRoundId,paydate,0,AK,iCashierId);
                 while(it.hasNext()){
                   ape = (AccountPhoneEntry) it.next();
                   Amount = ape.getPrice();
                   totalAmount += Amount;
+                  ape.setAccountEntryId(AE.getID());
+                  ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+                  ape.update();
                 }
-                Amount = insertKreditEntry(user,iRoundId,paydate,totalAmount,AK,iCashierId);
-                totals += totalAmount*-1;
-                eAccount.setBalance(eAccount.getBalance()+Amount);
-                eAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-                eAccount.update();
+                AE.setPrice(totalAmount);
+                AE.update();
+                totals += totalAmount;
+                eFinanceAccount.setBalance(eFinanceAccount.getBalance()+AE.getPrice());
+                System.err.print(eFinanceAccount.getBalance());
+                System.err.print("+"+AE.getPrice());
+                eFinanceAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+
+                eFinanceAccount.update();
+                System.err.println("="+eFinanceAccount.getBalance());
                 iAccountCount++;
+              }
+              else{
+               // System.err.println("no phone entries for account "+accounts.getPhoneAccountId());
               }
             }
             AR.setTotals((float)(totals));
@@ -293,6 +309,13 @@ public class CampusAssessmentBusiness  {
             catch(javax.transaction.SystemException ex) {
               ex.printStackTrace();
             }
+            try {
+              AR.delete();
+            }
+            catch (Exception ex2) {
+              ex2.printStackTrace();
+
+            }
             e.printStackTrace();
             throw new CampusFinanceException();
           }
@@ -302,10 +325,10 @@ public class CampusAssessmentBusiness  {
 
   }
 
-  private static float insertEntry(Vector V,Tariff T,ContractAccountApartment U,int iRoundId,idegaTimestamp itPaydate,int iCashierId)
+  private static float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,idegaTimestamp itPaydate,int iCashierId)
   throws SQLException{
     AccountEntry AE = new AccountEntry();
-    AE.setAccountId(U.getAccountId());
+    AE.setAccountId(iAccountId);
     AE.setAccountKeyId(T.getAccountKeyId());
     AE.setCashierId(iCashierId);
     AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
@@ -328,9 +351,9 @@ public class CampusAssessmentBusiness  {
     */
   }
 
-  private static float insertKreditEntry(ContractAccountApartment U,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key,int iCashierId) throws SQLException{
+  private static AccountEntry insertKreditEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key,int iCashierId) throws SQLException{
     AccountEntry AE = new AccountEntry();
-    AE.setAccountId(U.getAccountId());
+    AE.setAccountId(iAccountId);
     AE.setAccountKeyId(key.getID());
     AE.setCashierId(iCashierId);
     AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
@@ -341,7 +364,7 @@ public class CampusAssessmentBusiness  {
     AE.setStatus(AE.statusCreated);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
-    return AE.getPrice();
+    return AE;
   }
 
   public static void groupEntriesWithSQL(idegaTimestamp from, idegaTimestamp to) throws CampusFinanceException{
@@ -490,6 +513,38 @@ public class CampusAssessmentBusiness  {
           throw new CampusFinanceException();
         }
       }//if EG null
+    }
+  }
+
+  public static int getGroupEntryCount(EntryGroup entryGroup){
+    int count = 0;
+    if(entryGroup !=null ){
+      StringBuffer sql = new StringBuffer("select count(*) from ");
+      sql.append(AccountEntry.getEntityTableName());
+      sql.append(" where ");
+      sql.append(AccountEntry.getEntryGroupIdColumnName());
+      sql.append(" = ");
+      sql.append(entryGroup.getID());
+      //System.err.println(sql.toString());
+      try {
+        count = entryGroup.getNumberOfRecords(sql.toString());
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+        count = 0;
+      }
+    }
+    return count;
+  }
+
+  public static void updateAllAccounts(){
+    String sql = "update fin_account f set f.balance = (select sum(price) from fin_acc_entry  f2 where f2.fin_account_id = f.fin_account_id)";
+    try {
+
+      SimpleQuerier.execute(sql);
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
     }
   }
 

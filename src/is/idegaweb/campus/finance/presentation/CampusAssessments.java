@@ -27,7 +27,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
 
-import is.idegaweb.campus.entity.ContractAccountApartment;
 import is.idegaweb.campus.allocation.ContractFinder;
 import is.idegaweb.campus.entity.Contract;
 
@@ -54,7 +53,7 @@ public class CampusAssessments extends PresentationObjectContainer {
   public final char cType = 't';
   public final char cApartment = 'p';
 
-  private int iCashierId = -1;
+  private int iCashierId = 1;
 
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
