@@ -266,6 +266,7 @@ private String headerTextColor = "#FFFFFF";
 
 			Window scorecardWindow = new Window("Skoða skorkort",650,475,"/handicap/handicap_skor.jsp?");
 			Window updateWindow = new Window("Skoða skorkort",600,600,"/handicap/handicap.jsp?");
+			Window updateWindow2 = new Window("Skrá tölfræði",600,350,"/handicap/handicap_statistics.jsp?");
 
 			Link tengill = new Link(new Image("/pics/handicap/eye.gif","Sjá skorkort",13,13),scorecardWindow);
 				tengill.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
@@ -273,11 +274,17 @@ private String headerTextColor = "#FFFFFF";
 			Link update = new Link(new Image("/pics/handicap/pad.gif","Breyta skorkorti",11,13),updateWindow);
 				update.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
+			Link update2 = new Link(new Image("/pics/handicap/pad.gif","Skrá tölfræði",11,13),updateWindow2);
+				update2.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
+
 			myTable.add(tengill,11,a+3);
 			myTable.addText("&nbsp;",11,a+3);
 			if ( canWrite && tournament_name.length() == 0 ) {
                           myTable.add(update,11,a+3);
 			}
+                        if ( !isAdmin && tournament_name.length() > 0 ) {
+                          myTable.add(update2,11,a+3);
+                        }
 			if ( isAdmin || member_id.equalsIgnoreCase("1") ) {
 				myTable.addText("&nbsp;",11,a+3);
 				myTable.add(eyda,11,a+3);
