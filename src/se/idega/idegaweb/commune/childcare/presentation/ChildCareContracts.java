@@ -150,6 +150,8 @@ public class ChildCareContracts extends ChildCareBlock {
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 						
+						if (!isCancelled){						
+						
 						if (isNotYetActive) {
 							showComment = true;
 							hasComment = true;
@@ -208,19 +210,26 @@ public class ChildCareContracts extends ChildCareBlock {
 							else
 								table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
 						}
+						row++;
+					}
+						
 					}
 					else {
 						table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
 						table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
+						row++;
 					}
-					row++;
-				}
+					
+					
+				
+			}
 				table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 			}
+		
 			if (showComment) {
 				table.setHeight(row++, 2);
 				if (showNotActiveComment) {
