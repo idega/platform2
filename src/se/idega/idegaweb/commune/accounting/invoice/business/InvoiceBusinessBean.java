@@ -52,11 +52,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/02 09:31:37 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 12:01:32 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.72 $
+ * @version $Revision: 1.73 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -521,7 +521,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			paymentHeader.store ();
 		}
 		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
-		paymentRecord.setCreatedBy (createdBy);
+		paymentRecord.setCreatedBy (null != createdBy ? createdBy : "");
 		paymentRecord.setDateCreated (dateCreated);
 		paymentRecord.setPaymentHeader (paymentHeader);
 		paymentRecord.setPaymentText (ruleText);
@@ -529,6 +529,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		paymentRecord.setPeriod (period);
 		paymentRecord.setTotalAmount (null != totalAmount ? totalAmount.intValue ()
 																	: 0);
+		// VAT should be evaluated by a method that TL is developing
+		// until that method is developed, set VAT to zero /SN
+		paymentRecord.setTotalAmountVAT (0);
 		paymentRecord.setPieceAmount (null != pieceAmount ? pieceAmount.intValue ()
 																	: 0);
 		if (null != vatType) {
