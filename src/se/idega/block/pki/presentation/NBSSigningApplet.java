@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import se.nexus.nbs.sdk.NBSMessageHttp;
 
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 
@@ -20,6 +21,12 @@ import com.idega.presentation.PresentationObject;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class NBSSigningApplet extends PresentationObject {
+	
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}		
+		
 	NBSMessageHttp _nbsMessageHttp = null;
 	
 	private final static String BIDT_JAR_PATH_PROPERTY = "bidt_jar_path";	
