@@ -32,8 +32,10 @@ public class BirthYearDropDownMenu extends DropDownMenuInputHandler {
 		for (int i = currentYear; i >= beginningYear; i--) {
 			addMenuElement(i, Integer.toString(i));
 		}
-		
-		setSelectedElement(" ");
+		String selectedElement = getSelectedElementValue();
+		if (selectedElement == null || selectedElement.length() == 0) {
+			setSelectedElement(" ");
+		}
 	}
 	
 	/**

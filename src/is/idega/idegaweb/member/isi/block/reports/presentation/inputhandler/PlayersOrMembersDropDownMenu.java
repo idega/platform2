@@ -26,7 +26,10 @@ public class PlayersOrMembersDropDownMenu extends DropDownMenuInputHandler  {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		this.addMenuElement(MEMBERS, iwrb.getLocalizedString("PlayersOrMembersDropDownMenu.members", "Members"));
 		this.addMenuElement(PLAYERS, iwrb.getLocalizedString("PlayersOrMembersDropDownMenu.players", "Players"));
-		this.setSelectedElement(MEMBERS);
+		String selectedElement = getSelectedElementValue();
+		if (selectedElement == null || selectedElement.length() == 0) {
+			this.setSelectedElement(MEMBERS);
+		}
 	}
 
 

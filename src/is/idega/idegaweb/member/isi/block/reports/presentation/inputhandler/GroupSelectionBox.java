@@ -199,10 +199,9 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	 *      java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-		String stringValue = (String) value;
 		this.setName(name);
-		if (stringValue != null) {
-			this.setContent(stringValue);
+		if (value != null) {
+			this.setContent(value);
 		}
 		return this;
 	}

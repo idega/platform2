@@ -27,7 +27,10 @@ public class OrderByGroupPersonDateDropDownMenu extends DropDownMenuInputHandler
 		this.addMenuElement(NAME_ORDER, iwrb.getLocalizedString("OrderByGroupPersonDateDropDownMenu.name_order", "Name"));
 		this.addMenuElement(GROUP_NAME_ORDER, iwrb.getLocalizedString("OrderByGroupPersonDateDropDownMenu.group_name_order", "Group name"));
 		this.addMenuElement(ENTRY_DATE_ORDER, iwrb.getLocalizedString("OrderByGroupPersonDateDropDownMenu.entry_date_order", "Entry date"));
-		this.setSelectedElement(NAME_ORDER);
+		String selectedElement = getSelectedElementValue();
+		if (selectedElement == null || selectedElement.length() == 0) {
+			this.setSelectedElement(NAME_ORDER);
+		}
 	}
 
 

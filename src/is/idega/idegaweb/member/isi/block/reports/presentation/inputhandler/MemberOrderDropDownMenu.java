@@ -28,7 +28,10 @@ public class MemberOrderDropDownMenu extends DropDownMenuInputHandler  {
 		this.addMenuElement(NAME_ORDER, iwrb.getLocalizedString("MemberOrderDropDownMenu.name_order", "Name"));
 		this.addMenuElement(ADDRESS_ORDER, iwrb.getLocalizedString("MemberOrderDropDownMenu.address_order", "Address"));
 		this.addMenuElement(POSTAL_CODE_ORDER, iwrb.getLocalizedString("MemberOrderDropDownMenu.postal_code_order", "Postal code"));
-		this.setSelectedElement(POSTAL_CODE_ORDER);
+		String selectedElement = getSelectedElementValue();
+		if (selectedElement == null || selectedElement.length() == 0) {
+			this.setSelectedElement(POSTAL_CODE_ORDER);
+		}
 	}
 
 

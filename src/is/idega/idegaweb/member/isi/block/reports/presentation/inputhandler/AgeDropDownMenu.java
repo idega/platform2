@@ -31,10 +31,13 @@ public class AgeDropDownMenu extends DropDownMenuInputHandler {
 		for (int i = youngest; i <= oldest; i++) {
 			addMenuElement(i, Integer.toString(i));
 		}
-		if(default_age==-1) {
-			setSelectedElement(" ");
-		} else {
-			setSelectedElement(default_age);
+		String selectedElement = getSelectedElementValue();
+		if (selectedElement == null || selectedElement.length() == 0) {
+			if(default_age==-1) {
+				setSelectedElement(" ");
+			} else {
+				setSelectedElement(default_age);
+			}
 		}
 	}
 

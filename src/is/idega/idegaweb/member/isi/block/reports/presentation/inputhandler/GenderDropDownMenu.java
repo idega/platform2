@@ -26,7 +26,10 @@ public class GenderDropDownMenu extends DropDownMenuInputHandler {
 		this.addMenuElement(MALE, iwrb.getLocalizedString("GenderDropdownmenu.male", "Male"));
 		this.addMenuElement(FEMALE, iwrb.getLocalizedString("GenderDropdownmenu.female", "Female"));
 		this.addMenuElement(BOTH, iwrb.getLocalizedString("GenderDropdownmenu.both", "Both"));
-		this.setSelectedElement(BOTH);
+		String selectedElement = getSelectedElementValue();
+		if (selectedElement == null || selectedElement.length() == 0) {
+			this.setSelectedElement(BOTH);
+		}
 	}
 	
 	/**
