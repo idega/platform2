@@ -1,40 +1,5 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import is.idega.experimental.pdftest.PDFTest;
-
-import java.awt.Color;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldBMPBean;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
-import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
-import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
-
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -52,11 +17,13 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
+import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -67,13 +34,46 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import is.idega.experimental.pdftest.PDFTest;
+import java.awt.Color;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldBMPBean;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
+import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/02/02 10:12:47 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/02 14:27:53 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -98,67 +98,67 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	
 	public Map sendCheckAmountLists(User currentUser, IWResourceBundle iwrb, String schoolCategoryPK) {
 		final Map result = new TreeMap ();
-		final Map filesSentByEmail = new TreeMap ();
-		final Map filesSentByPapermail = new TreeMap ();
-		final Map noMailSentSinceNoPaymentRecords = new TreeMap ();
+		final Collection filesSentByEmail = new TreeSet ();
+		final Collection filesSentByPapermail = new TreeSet ();
+		final Collection noMailSentSinceNoPaymentRecords = new TreeSet ();
 		result.put (FILES_SENT_BY_EMAIL_KEY, filesSentByEmail);
 		result.put (FILES_SENT_BY_PAPERMAIL_KEY, filesSentByPapermail);
 		result.put (NO_MAIL_SENT_SINCE_NO_PAYMENT_RECORDS_KEY,
 								noMailSentSinceNoPaymentRecords);
-
 		try {
-			SchoolCategory schoolCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(schoolCategoryPK);
-			
-			Collection schools = ((SchoolHome) IDOLookup.getHome(School.class)).findAllByCategory(schoolCategory);
-			
+			SchoolCategory schoolCategory
+					= getSchoolCategoryHome ().findByPrimaryKey (schoolCategoryPK);
+			Collection schools = getSchoolHome ().findAllByCategory (schoolCategory);
 			Font titleFont = new Font(Font.HELVETICA);
 			titleFont.setSize(12);
 			Font tagFont = new Font(Font.HELVETICA);
 			tagFont.setSize(12);
 			Font textFont = new Font(Font.HELVETICA);
 			textFont.setSize(9);
-			School school;
-			long startTime = System.currentTimeMillis ();
 			if (schools != null && !schools.isEmpty()) {
+				final MemoryFileBuffer buffer = new MemoryFileBuffer();
+				final OutputStream outStream = new MemoryOutputStream(buffer);
+				final DocumentBusiness docBusiness = getDocumentBusiness ();
+
+				final Document document = new Document(PageSize.A4,docBusiness.getPointsFromMM(30), docBusiness.getPointsFromMM(30), docBusiness.getPointsFromMM(0), docBusiness.getPointsFromMM(0));
+				final PdfWriter writer = PdfWriter.getInstance(document, outStream);
+				writer.setViewerPreferences(PdfWriter.PageModeUseThumbs | PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn | PdfWriter.FitWindow | PdfWriter.CenterWindow);
+				document.addCreationDate();
+				document.open();
 				MessageBusiness mBusiness = getMessageBusiness ();
-				Iterator schoolIter = schools.iterator();
-				while (schoolIter.hasNext()) {
-					school = (School) schoolIter.next();
-					File file;
-					try {
-						file = createExternalCheckAmountList (schoolCategory, school);
-					} catch (NoPaymentRecordsFoundException e) {
-						noMailSentSinceNoPaymentRecords.put (school.getName (),
-																						 new Integer (-1));
-						long elapsedTime = System.currentTimeMillis () - startTime;
-						long totalSeconds = elapsedTime / 1000;
-						long minutes = totalSeconds / 60;
-						long seconds = totalSeconds % 60;
-						log ("# Check amount lists: E-mail=" + filesSentByEmail.size ()
-								 + ", Papermail=" + filesSentByPapermail.size ()
-								 + ", No payments=" + noMailSentSinceNoPaymentRecords.size ()
-								 + " (" + minutes + ":" + seconds + " minutes) " + elapsedTime);
-						continue;
-					}
-					Collection emailReceivers = findEmailReceiversAndNotifyThem(iwrb, currentUser, school, mBusiness);
-					
-					if (emailReceivers.isEmpty ()) {
-						ICFile icFile = sendPaperMail(iwrb, currentUser, school, mBusiness, file);
-						filesSentByPapermail.put (school.getName (),
-																			icFile.getPrimaryKey ());
+				for (Iterator schoolIter = schools.iterator(); schoolIter.hasNext();) {
+					final School school = (School) schoolIter.next();
+					final PaymentRecord[] records
+							= getLockedPaymentRecords(schoolCategory, school);
+					Collection emailReceivers = findEmailReceiversAndNotifyThem
+							(iwrb, currentUser, school, mBusiness);					
+					if (0 >= records.length) {
+						noMailSentSinceNoPaymentRecords.add (school.getName ());
+					} else if (emailReceivers.isEmpty ()) {
+						addToPaperMail(writer, document, schoolCategory, school, records, docBusiness);
+						filesSentByPapermail.add (school.getName ());
 					} else {
-						sendEmails(iwrb, school, mBusiness, file, emailReceivers);
-						filesSentByEmail.put (school.getName (), new Integer (-1));					
+						sendEmail(iwrb, schoolCategory, school, records, emailReceivers, mBusiness);
+						filesSentByEmail.add (school.getName ());
 					}
-					file.delete();
-					long elapsedTime = System.currentTimeMillis () - startTime;
-					long totalSeconds = elapsedTime / 1000;
-					long minutes = totalSeconds / 60;
-					long seconds = totalSeconds % 60;
-					log ("# Check amount lists: E-mail=" + filesSentByEmail.size ()
-							 + ", Papermail=" + filesSentByPapermail.size ()
-							 + ", No payments=" + noMailSentSinceNoPaymentRecords.size ()
-							 + " (" + minutes + ":" + seconds + " minutes) " + elapsedTime);
+					document.close();
+					final ICFileHome icFileHome = (ICFileHome) getIDOHome(ICFile.class);
+					final ICFile icFile = icFileHome.create();
+					final InputStream inStream = new MemoryInputStream(buffer);
+					icFile.setFileValue(inStream);
+					icFile.setMimeType("application/x-pdf");
+					icFile.setName("checkamountlist.pdf");
+					icFile.setFileSize(buffer.length());
+					icFile.store();
+					//result.put (CHECK_AMOUNT_FILE_KEY, icFile.getPrimaryKey());
+					PrintedLetterMessage plm
+							= (PrintedLetterMessage) getPrintedLetterMessageHome ().create();
+					plm.setSubject(iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT) + " " + schoolCategory);
+					plm.setMessageData(icFile);
+					plm.setOwner(currentUser);
+					//mBusiness.flagMessageAsUnPrinted(currentUser, plm);
+					mBusiness.flagMessageAsPrinted(currentUser, plm);
+					plm.store();
 				}
 			}
 			
@@ -166,6 +166,48 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			e.printStackTrace();
 		}	
 		return result;
+	}
+
+	private void sendEmail(IWResourceBundle iwrb, SchoolCategory schoolCategory, final School school, final PaymentRecord[] records, Collection emailReceivers, MessageBusiness mBusiness) throws FileNotFoundException, DocumentException, Exception, RemoteException, FinderException, IOException {
+		FileOutputStream fileOut;
+		File file = new File (getTitle (school.getPrimaryKey()) + ".pdf");
+		fileOut = new FileOutputStream(file);
+		Document outerDocument = PDFTest.getLetterDocumentTemplate();
+		PdfWriter writer = PdfWriter.getInstance(outerDocument, fileOut);
+		outerDocument.open();
+		DocumentBusiness docBus = getDocumentBusiness ();
+		outerDocument.newPage();
+		docBus.createDefaultLetterHeader (outerDocument, getAddressString
+																			(school),	writer);						
+		final PdfPTable outerTable
+				= getExternalContentTable(schoolCategory, records);
+		outerDocument.add (outerTable);        
+		outerDocument.close();
+		writer.close();
+		fileOut.close();
+		for (Iterator i = emailReceivers.iterator(); i.hasNext();) {
+			Email email = (Email) i.next();
+			if (mBusiness.getIfCanSendEmail()) {
+				mBusiness.sendMessage
+						(email.getEmailAddress(),
+						 iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY,
+																		 CHECK_AMOUNT_LIST_DEFAULT) + " - "
+						 +school.getName() + " "
+						 + yearAndMonthFormatter.format (new java.util.Date ()), "",
+						 file);
+			}
+		}
+		file.delete();
+	}
+
+	private void addToPaperMail(final PdfWriter writer, final Document document, SchoolCategory schoolCategory, final School school, final PaymentRecord[] records, final DocumentBusiness docBusiness) throws DocumentException, BadElementException, MalformedURLException, IOException, RemoteException, FinderException, Exception {
+		document.newPage();
+		docBusiness.createHeaderDate(document,writer,IWTimestamp.RightNow().getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale()));
+		docBusiness.createLogoContent(document);
+		docBusiness.createAddressContent(getAddressString	(school),writer);
+		docBusiness.createNewlinesContent(document);
+		document.add(getExternalContentTable(schoolCategory, records));
+		docBusiness.createCommuneFooter(writer);
 	}
 
 	private Collection findEmailReceiversAndNotifyThem(IWResourceBundle iwrb, User currentUser, School school, MessageBusiness mBusiness) throws IBOLookupException, RemoteException, FinderException {
@@ -186,76 +228,12 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return emailReceivers;
 	}
 
-	private void sendEmails(IWResourceBundle iwrb, School school, MessageBusiness mBusiness, File file, Collection emails) throws RemoteException {
-		Email email;
-		for (Iterator i = emails.iterator(); i.hasNext();) {
-			email = (Email) i.next();
-			if (mBusiness.getIfCanSendEmail()) {
-				mBusiness.sendMessage
-						(email.getEmailAddress(),
-						 iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY,
-																		 CHECK_AMOUNT_LIST_DEFAULT) + " - "
-						 +school.getName() + " "
-						 + yearAndMonthFormatter.format (new java.util.Date ()), "",
-						 file);
-			}
-		}
-	}
-
-	private ICFile sendPaperMail(IWResourceBundle iwrb, User currentUser, School school, MessageBusiness mBusiness, File file) throws IDOLookupException, CreateException, FileNotFoundException, RemoteException {
-		ICFileHome icFileHome = (ICFileHome) IDOLookup.getHome(ICFile.class); 
-		ICFile icFile = icFileHome.create();
-		icFile.setFileValue(new FileInputStream(file.getAbsoluteFile()));
-		icFile.setMimeType("application/x-pdf");
-		icFile.setName(file.getName());
-		icFile.store();
-		
-		PrintedLetterMessageHome plmHome = (PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessage.class);
-		PrintedLetterMessage plm = (PrintedLetterMessage) plmHome.create();
-		plm.setSubject(iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT) + " " + school.getName ());
-		plm.setMessageData(icFile);
-		plm.setOwner(currentUser);
-		//mBusiness.flagMessageAsUnPrinted(currentUser, plm);
-		mBusiness.flagMessageAsPrinted(currentUser, plm);
-		plm.store();
-		return icFile;
-	}
-
 	private String getTitle (final Object schoolId) {
 		return "CheckbeloppsLista_" + schoolId + "_"
 				+ IWTimestamp.RightNow ().getDate ();
 	}
 
-	private File createExternalCheckAmountList (SchoolCategory schoolCategory, School school) throws Exception {
-
-		// find payment records
-		PaymentHeaderHome phHome = (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
-		PaymentRecordHome prHome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
-		Collection paymentHeaders = phHome.findBySchoolAndSchoolCategoryPKAndStatus(school.getPrimaryKey(), schoolCategory.getPrimaryKey(), "L");
-		PaymentRecord [] records = new PaymentRecord [0];
-		if (paymentHeaders != null && !paymentHeaders.isEmpty()) {
-			final Collection recordCollection
-					= prHome.findByPaymentHeaders(paymentHeaders);
-			if (recordCollection != null && !recordCollection.isEmpty()) {
-				records = (PaymentRecord []) recordCollection.toArray (records);
-			}
-		}
-		if (0 >= records.length) {
-			throw new NoPaymentRecordsFoundException ();
-		}
-
-		// create pdf file
-		FileOutputStream fileOut;
-		File file = new File (getTitle (school.getPrimaryKey()) + ".pdf");
-		fileOut = new FileOutputStream(file);
-		Document outerDocument = PDFTest.getLetterDocumentTemplate();
-		PdfWriter writer = PdfWriter.getInstance(outerDocument, fileOut);
-		outerDocument.open();
-		DocumentBusiness docBus = getDocumentBusiness ();
-		outerDocument.newPage();
-		docBus.createDefaultLetterHeader (outerDocument, getAddressString (school),
-																			writer);
-		
+	private PdfPTable getExternalContentTable(SchoolCategory schoolCategory, PaymentRecord[] records) throws RemoteException, FinderException {
 		// add content to document
 		final PdfPTable outerTable = new PdfPTable (1);
 		outerTable.setWidthPercentage (100f);
@@ -270,13 +248,22 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		addPhrase (outerTable, "\n");
 		final PdfPTable summaryTable = getSummaryTable(records, false);
 		outerTable.addCell (summaryTable);
-		outerDocument.add (outerTable);        
+		return outerTable;
+	}
 
-		// close and return document
-		outerDocument.close();
-		writer.close();
-		fileOut.close();
-		return file;
+	private PaymentRecord[] getLockedPaymentRecords(SchoolCategory schoolCategory, School school) throws FinderException, IDOLookupException {
+		Collection paymentHeaders
+				= getPaymentHeaderHome ().findBySchoolAndSchoolCategoryPKAndStatus
+				(school.getPrimaryKey(), schoolCategory.getPrimaryKey(), "L");
+		PaymentRecord [] records = new PaymentRecord [0];
+		if (paymentHeaders != null && !paymentHeaders.isEmpty()) {
+			final Collection recordCollection
+					= getPaymentRecordHome ().findByPaymentHeaders(paymentHeaders);
+			if (recordCollection != null && !recordCollection.isEmpty()) {
+				records = (PaymentRecord []) recordCollection.toArray (records);
+			}
+		}
+		return records;
 	}
 
 	private String getAddressString (final School school) {
@@ -465,9 +452,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 							 dateAndTimeFormatter.format (new java.util.Date ()));
 		if (isInternal) {
 			try {
-				final SchoolHome schoolHome
-						=	(SchoolHome) IDOLookup.getHome (School.class);
-				final School school	= schoolHome.findByPrimaryKey (providerId);
+				final School school	= getSchoolHome ().findByPrimaryKey (providerId);
 				addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
 									 + ": ");
 				addPhrase (headerTable, school.getName ());
@@ -593,10 +578,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	
 	private String getSchoolCategoryName (final String schoolCategoryId) {
 		try {
-			final SchoolCategoryHome categoryHome
-					=	(SchoolCategoryHome) IDOLookup.getHome (SchoolCategory.class);
 			final SchoolCategory category
-					= categoryHome.findByPrimaryKey (schoolCategoryId);
+					= getSchoolCategoryHome ().findByPrimaryKey (schoolCategoryId);
 			return localize (category.getLocalizedKey (), category.getName ());
 		} catch (Exception dummy) {
 			return "";
@@ -606,6 +589,14 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	private InvoiceBusiness getInvoiceBusiness () {
 		try {
 			return (InvoiceBusiness) getServiceInstance (InvoiceBusiness.class);
+		}	catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+ 
+	private DocumentBusiness getDocumentBusiness () {
+		try {
+			return (DocumentBusiness) getServiceInstance (DocumentBusiness.class);
 		}	catch (RemoteException e) {
 			throw new IBORuntimeException(e);
 		}
@@ -635,12 +626,27 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		}
 	}
  
-	private DocumentBusiness getDocumentBusiness () {
-		try {
-			return (DocumentBusiness) getServiceInstance (DocumentBusiness.class);
-		}	catch (RemoteException e) {
-			throw new IBORuntimeException(e);
-		}
+	private SchoolCategoryHome getSchoolCategoryHome ()
+		throws IDOLookupException {
+		return (SchoolCategoryHome) IDOLookup.getHome (SchoolCategory.class);
+	}
+ 
+	private PaymentRecordHome getPaymentRecordHome () throws IDOLookupException {
+		return (PaymentRecordHome) IDOLookup.getHome (PaymentRecord.class);
+	}
+ 
+	private PaymentHeaderHome getPaymentHeaderHome () throws IDOLookupException {
+		return (PaymentHeaderHome) IDOLookup.getHome (PaymentHeader.class);
+	}
+ 
+	private PrintedLetterMessageHome getPrintedLetterMessageHome ()
+		throws IDOLookupException {
+		return (PrintedLetterMessageHome)
+				IDOLookup.getHome (PrintedLetterMessage.class);
+	}
+ 
+	private SchoolHome getSchoolHome () throws IDOLookupException {
+		return (SchoolHome) IDOLookup.getHome (School.class);
 	}
  
 	private String localize(String textKey, String defaultText) {
@@ -652,8 +658,5 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		final IWBundle bundle
 				= app.getBundle (AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER);
 		return bundle.getResourceBundle (app.getSettings ().getDefaultLocale ());
-	}
-
-	private static class NoPaymentRecordsFoundException extends Exception {
 	}
 }

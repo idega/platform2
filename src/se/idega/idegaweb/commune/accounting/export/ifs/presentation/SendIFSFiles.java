@@ -8,6 +8,7 @@
 package se.idega.idegaweb.commune.accounting.export.ifs.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -20,7 +21,6 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 
 /**
  * @author palli
@@ -96,24 +96,15 @@ public class SendIFSFiles extends AccountingBlock {
 			col++;
 			int row = 1;
 			final String mapKey = "" + i.next ();
-			final Map fileMap = (Map) filesMaps.get (mapKey);
+			final Collection files = (Collection) filesMaps.get (mapKey);
 			table.setRowColor(row, getHeaderColor ());
 			table.add (getSmallHeader (localize (mapKey, mapKey)), col, row);
-			for (Iterator j = fileMap.keySet ().iterator (); j.hasNext ();) {
+			for (Iterator j = files.iterator (); j.hasNext ();) {
 				row++;
 				table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 													 : getZebraColor2 ());
 				final String providerName = "" + j.next ();
-				final int fileId
-						= ((Integer) fileMap.get (providerName)).intValue ();
-				if (0 < fileId) {
-					final Link viewLink = new Link (providerName);
-					viewLink.setFile (fileId);
-					viewLink.setTarget ("letter_window_" + fileId);
-					table.add (viewLink, col, row);
-				} else {
-					table.add (getSmallText (providerName), col, row);
-				}
+				table.add (getSmallText (providerName), col, row);
 				if (row > numberedRowsCount) {
 					numberedRowsCount = row;
 					table.setAlignment (1, numberedRowsCount,

@@ -15,6 +15,7 @@ public interface InvoiceStrings {
 	String CANCEL_DEFAULT = "Avbryt";
 	String CANCEL_KEY = PREFIX + "cancel";
 	String CHECK_AMOUNT_DEFAULT = "Checkbelopp";
+	String CHECK_AMOUNT_FILE_KEY = PREFIX + "check_amount_file";
 	String CHECK_AMOUNT_KEY = PREFIX + "check_amount";
 	String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
 	String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
