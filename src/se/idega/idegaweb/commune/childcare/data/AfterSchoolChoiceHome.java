@@ -12,6 +12,7 @@ public interface AfterSchoolChoiceHome extends com.idega.data.IDOHome
  public java.util.Collection findAllCasesByProviderAndStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException;
  public AfterSchoolChoice findByChildAndChoiceNumberAndSeason(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2)throws javax.ejb.FinderException;
  public AfterSchoolChoice findByChildAndChoiceNumberAndSeason(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.String[] p3)throws javax.ejb.FinderException;
+ public AfterSchoolChoice findByChildAndProviderAndSeason(int p0,int p1,int p2,java.lang.String[] p3)throws javax.ejb.FinderException;
  public java.util.Collection findByChildAndSeason(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException;
 
 }

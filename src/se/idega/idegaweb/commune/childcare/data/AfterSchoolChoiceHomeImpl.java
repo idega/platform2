@@ -62,6 +62,13 @@ public AfterSchoolChoice findByChildAndChoiceNumberAndSeason(java.lang.Integer p
 	return this.findByPrimaryKey(pk);
 }
 
+public AfterSchoolChoice findByChildAndProviderAndSeason(int p0,int p1,int p2,java.lang.String[] p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((AfterSchoolChoiceBMPBean)entity).ejbFindByChildAndProviderAndSeason(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public java.util.Collection findByChildAndSeason(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindByChildAndSeason(p0,p1);

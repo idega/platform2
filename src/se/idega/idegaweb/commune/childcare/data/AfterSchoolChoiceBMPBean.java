@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.7 2003/11/05 22:25:02 laddi Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.8 2003/12/05 14:05:34 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -85,6 +85,20 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendAndEquals("c."+SCHOOL_SEASON, seasonID.intValue());
 		sql.appendAndEquals("c."+CHOICE_NUMBER,choiceNumber.intValue());
 		sql.appendAndEquals("c."+CHILD_ID,childID.intValue());
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
+
+		return super.idoFindOnePKByQuery(sql);
+	}
+	
+	public Object ejbFindByChildAndProviderAndSeason(int childID, int providerID, int seasonID, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+SCHOOL_SEASON, seasonID);
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);

@@ -73,6 +73,16 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		}
 	}
 	
+	public AfterSchoolChoice findChoicesByChildAndProviderAndSeason(int childID, int providerID, int seasonID) throws FinderException {
+		try {
+			String[] caseStatus = { getCaseStatusPreliminary().getStatus() };
+			return getAfterSchoolChoiceHome().findByChildAndProviderAndSeason(childID, providerID, seasonID, caseStatus);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+	
 	public boolean acceptAfterSchoolChoice(Object afterSchoolChoiceID, User performer) {
 		AfterSchoolChoice choice = null;
 		try {
