@@ -72,6 +72,7 @@ public class GolferTab extends UserTab {
 //		main club
 		User user = getUser();
 		uuid = user.getUniqueId();
+		
 		String mainClubAbbreviation = (mainClubAbbrFromRequest!=null)?mainClubAbbrFromRequest : user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 		List mainSelected = new ArrayList();
 		if(mainClubAbbreviation!=null && !"".equals(mainClubAbbreviation)){
@@ -227,6 +228,11 @@ public class GolferTab extends UserTab {
 		this.add(table, 1, 1);
 		
 		int row = 1;
+		// UUID login
+		User user = getUser();
+		if(user!=null){
+			uuid = user.getUniqueId();
+		}
 		
 		LoginByUUIDLink loginByUUIDLink = new LoginByUUIDLink();
 		loginByUUIDLink.setToUseCurrentUsersUUID(true);
@@ -239,6 +245,8 @@ public class GolferTab extends UserTab {
 			loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
 		}
 		table.add(loginByUUIDLink,1,row);
+		// UUID login ends
+		
 		row++;
 		
 		if(!fieldValues.isEmpty()){
