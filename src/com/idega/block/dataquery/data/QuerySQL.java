@@ -35,6 +35,7 @@ public class QuerySQL {
   private Map entityQueryEntity = new HashMap();
   // select fields
   private Map fieldQueryField = new HashMap();
+  private List fieldOrder = new ArrayList();
   // conditions
   private List conditions = new ArrayList();
   
@@ -58,6 +59,18 @@ public class QuerySQL {
     {
       return query.toSQLString();
     }
+  }
+  
+  public List getDisplayNames() {
+    List displayNames = new ArrayList();
+    Iterator fieldOrderIterator = fieldOrder.iterator();
+    while (fieldOrderIterator.hasNext())  {
+      String fieldName  = (String) fieldOrderIterator.next();
+      QueryFieldPart field = (QueryFieldPart) fieldQueryField.get(fieldName);
+      String display = field.getDisplay(); 
+      displayNames.add(display);
+    }
+    return displayNames;
   }
 
   private void setSourceEntity(QueryHelper queryHelper) {
@@ -92,6 +105,7 @@ public class QuerySQL {
       QueryFieldPart field = (QueryFieldPart) fieldIterator.next();
       String name = field.getName();
       fieldQueryField.put(name, field);
+      fieldOrder.add(name);
     }
   }
   
@@ -114,9 +128,10 @@ public class QuerySQL {
     setConditions(queryHelper);
 
     // set fields (select clause)
-    Iterator fieldIterator = fieldQueryField.values().iterator();
+    Iterator fieldIterator = fieldOrder.iterator(); 
     while (fieldIterator.hasNext()) {
-      QueryFieldPart queryField = (QueryFieldPart) fieldIterator.next();
+      String name = (String) fieldIterator.next();
+      QueryFieldPart queryField = (QueryFieldPart) fieldQueryField.get(name);
       String[] columns = queryField.getColumns();
       String entity = queryField.getEntity();
       // alias test
@@ -126,7 +141,7 @@ public class QuerySQL {
       // note that this entity is used
       usedEntities.add(entity);
       StringBuffer entityWithDot = new StringBuffer(entity).append(DOT);
-      // add table name to each column
+      // add alias name to each column
       int i;
       for (i=0; i < columns.length ; i++) {
         String column = columns[i];

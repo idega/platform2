@@ -85,7 +85,8 @@ public class QueryResult implements JRDataSource {
     return (QueryResultField) fields.get(id);
   }
   
-  public QueryResultField getField(int orderNumber) {
+  public QueryResultField getFieldByOrderNumber(int orderNumber) {
+    orderNumber--;
     if (orderNumber < 0 || orderNumber >= fieldOrder.size()) {
       return null;
     }

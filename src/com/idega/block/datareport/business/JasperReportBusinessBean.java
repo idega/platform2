@@ -46,6 +46,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   private static String HTML_FILE_EXTENSION = "html";
   private static String PDF_FILE_EXTENSION = "pdf";
   private static String EXCEL_FILE_EXTENSION = "xls";
+  
+  private static String REPORT_COLUMN_PARAMETER_NAME = "Column_";
   private static char DOT = '.';
   
   public JasperPrint getReport(JRDataSource dataSource, Map parameterMap, JasperDesign design) throws JRException {
@@ -55,7 +57,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   
   public JasperPrint printSynchronizedReport(QueryResult dataSource, Map parameterMap, JasperDesign design) {
     JasperPrint print;
-    synchronizeResultAndDesign(dataSource, design);
+    synchronizeResultAndDesign(dataSource, parameterMap, design);
     // henceforth we treat the QueryResult as a JRDataSource, 
     // therefore we reset the QueryResult to prepare it 
     dataSource.resetDataSource(); // resets only the DataSource functionality (sets the pointer to the first row)
@@ -154,16 +156,16 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     return uri.toString();
   }
 
-  public void synchronizeResultAndDesign(QueryResult result, JasperDesign reportDesign)  {
+  public void synchronizeResultAndDesign(QueryResult result, Map parameterMap, JasperDesign reportDesign)  {
     List designFieldsToRemove = new ArrayList();
     // get fields of the report design
     List fields = reportDesign.getFieldsList();
-    int orderNumber = 0;
+    int orderNumber = 1;
     Iterator iterator = fields.iterator();
     while (iterator.hasNext())  {
       JRField jrField = (JRField) iterator.next();
       String designFieldId = jrField.getName();
-      QueryResultField field = result.getField(orderNumber++);
+      QueryResultField field = result.getFieldByOrderNumber(orderNumber);
       // sometimes the design provides more fields than necessary
       if (field == null) {
         // note the design field
@@ -171,7 +173,12 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       }
       else {
         result.mapDesignIdToFieldId(designFieldId, field.getId());
+        String display = field.getValue(QueryResultField.DISPLAY);
+        StringBuffer buffer = new StringBuffer(REPORT_COLUMN_PARAMETER_NAME);
+        buffer.append(orderNumber);
+        parameterMap.put(buffer.toString(), display);
       }
+      orderNumber++;
     }
     removeFields(designFieldsToRemove, reportDesign);
   }

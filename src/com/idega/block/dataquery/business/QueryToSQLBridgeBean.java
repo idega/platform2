@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultCell;
@@ -24,13 +25,14 @@ import com.idega.util.database.ConnectionBroker;
  */
 public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBridge {
   
-  public String createSQLStatement(QueryHelper queryHelper)  {
+  public QuerySQL createQuerySQL(QueryHelper queryHelper)  {
     QuerySQL querySQL = new QuerySQL();
     querySQL.initialize(queryHelper);
-    return querySQL.getSQLStatement();
+    return querySQL;
   }
   
-  public QueryResult executeStatement(String sqlQuery) throws SQLException {
+  /** @param displayNames - list of strings, allowed to be null */
+  public QueryResult executeStatement(String sqlQuery, List displayNames) throws SQLException {
     Connection connection = ConnectionBroker.getConnection();
     Statement statement = null;
     ResultSet resultSet = null;
@@ -50,6 +52,8 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
         QueryResultField field = new QueryResultField(Integer.toString(i));
         // field.setValue(QueryResultField.TYPE, columnClass);
         field.setValue(QueryResultField.COLUMN, columnName);
+        // set display name
+        setDisplayName(field, i, displayNames);
         queryResult.addField(field);
       }
       int numberOfRow = 1;
@@ -78,5 +82,17 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
       ConnectionBroker.freeConnection(connection);
       return queryResult;
     }
+  }
+  
+  private void setDisplayName(QueryResultField field, int index, List displayNames)  {
+    if (displayNames == null || index > displayNames.size())  {
+      return;
+    }
+    // index within a list starts with 0 not 1
+    String display = (String) displayNames.get(index - 1);
+    if (display == null || display.length() == 0) {
+      return;
+    }
+    field.setValue(QueryResultField.DISPLAY, display);
   }
 }

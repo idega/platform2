@@ -4,11 +4,13 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
+import com.idega.block.dataquery.data.QuerySQL;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.ICTreeNode;
@@ -485,13 +487,15 @@ public class ReportLayoutChooser extends Block {
     // get the sql statement
     QueryToSQLBridge bridge = getQueryToSQLBridge();
     try {
-      String sqlStatement = bridge.createSQLStatement(queryHelper);
+      QuerySQL query = bridge.createQuerySQL(queryHelper);
+      String sqlStatement = query.getSQLStatement();
       if (sqlStatement.length() == 0) {
         return resourceBundle.getLocalizedString("report_la_print_error_query_problem", "A problem with the selected query occurred.");
       }
       // execute sql statement
       // sqlStatement = "SELECT FIRST_NAME FROM IC_USER";
-      queryResult = bridge.executeStatement(sqlStatement);
+      List displayNames = query.getDisplayNames();
+      queryResult = bridge.executeStatement(sqlStatement, displayNames);
     }
     catch (RemoteException rm) {
       System.err.println("[ReportLayoutChooser]: can't get QueryToSqlBridge. Mesage is: " + rm.getMessage());
@@ -527,17 +531,19 @@ public class ReportLayoutChooser extends Block {
     try {
       JasperDesign design = reportBusiness.getDesign(designId);
       // synchronize design and result
-      JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, parameterMap, design);
+      Map designParameters = new HashMap();
+      designParameters.put(REPORT_HEADLINE_KEY, parameterMap.get(REPORT_HEADLINE_KEY));
+      JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, design);
       if (parameterMap.get(HTML_REPORT_KEY).equals(SELECTED_VALUE)) {
-        String uri = reportBusiness.getHtmlReport(print, "test");
+        String uri = reportBusiness.getHtmlReport(print, "report");
         parameterMap.put(HTML_LINK_KEY, uri);
       }
       if (parameterMap.get(PDF_REPORT_KEY).equals(SELECTED_VALUE)) {
-        String uri = reportBusiness.getPdfReport(print, "test");
+        String uri = reportBusiness.getPdfReport(print, "report");
         parameterMap.put(PDF_LINK_KEY, uri);
       }
       if (parameterMap.get(EXCEL_REPORT_KEY).equals(SELECTED_VALUE)) {
-        String uri = reportBusiness.getExcelReport(print, "test");
+        String uri = reportBusiness.getExcelReport(print, "report");
         parameterMap.put(EXCEL_LINK_KEY, uri);
       }
     }

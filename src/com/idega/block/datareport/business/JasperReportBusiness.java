@@ -10,5 +10,5 @@ public interface JasperReportBusiness extends com.idega.business.IBOService
  public java.lang.String getRealPathToReportFile(java.lang.String p0,java.lang.String p1) throws java.rmi.RemoteException;
  public dori.jasper.engine.JasperPrint getReport(dori.jasper.engine.JRDataSource p0,java.util.Map p1,dori.jasper.engine.design.JasperDesign p2)throws dori.jasper.engine.JRException, java.rmi.RemoteException;
  public dori.jasper.engine.JasperPrint printSynchronizedReport(com.idega.block.dataquery.data.QueryResult p0,java.util.Map p1,dori.jasper.engine.design.JasperDesign p2) throws java.rmi.RemoteException;
- public void synchronizeResultAndDesign(com.idega.block.dataquery.data.QueryResult p0,dori.jasper.engine.design.JasperDesign p1) throws java.rmi.RemoteException;
+ public void synchronizeResultAndDesign(com.idega.block.dataquery.data.QueryResult p0,java.util.Map p1,dori.jasper.engine.design.JasperDesign p2) throws java.rmi.RemoteException;
 }
