@@ -225,6 +225,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		table.add(threadsText, 2, 1);
 		table.add(updatedText, 3, 1);
 		table.setRowColor(1, _headingColor);
+		table.setRowPadding(1, 2);
 
 		Vector list = new Vector();
 		list.addAll(this.getCategories());
