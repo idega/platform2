@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.1 2001/08/17 09:31:14 palli Exp $
+ * $Id: ApplicationFormHelper.java,v 1.2 2001/08/29 22:51:41 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,9 +44,11 @@ public class ApplicationFormHelper {
     modinfo.setSessionAttribute("applicant",applicant);
   }
 
-  public static boolean saveDataToDB(ModuleInfo modinfo) {
+  public static String saveDataToDB(ModuleInfo modinfo) {
     Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
     Application application = (Application)modinfo.getSessionAttribute("application");
+
+    String string = "";
 
     try {
       applicant.insert();
@@ -56,14 +58,14 @@ public class ApplicationFormHelper {
     }
     catch(SQLException e) {
       System.err.println(e.toString());
-      return(false);
+      return(null);
     }
     finally {
       modinfo.removeSessionAttribute("applicant");
       modinfo.removeSessionAttribute("application");
     }
 
-    return(true);
+    return(string);
   }
 
   public static void saveSubject(ModuleInfo modinfo) {

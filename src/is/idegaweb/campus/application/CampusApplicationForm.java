@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.17 2001/08/22 09:50:32 laddi Exp $
+ * $Id: CampusApplicationForm.java,v 1.18 2001/08/29 22:56:09 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -105,8 +105,9 @@ public class CampusApplicationForm extends ApplicationForm {
     }
     else if (status == statusAppliedFor_) {
       CampusApplicationFormHelper.saveAppliedFor(modinfo);
-      if (CampusApplicationFormHelper.saveDataToDB(modinfo))
-        doDone();
+      String cypher = CampusApplicationFormHelper.saveDataToDB(modinfo);
+      if ( cypher != null)
+        doDone(cypher);
       else
         doError();
     }

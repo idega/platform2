@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.9 2001/08/21 22:44:17 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.10 2001/08/29 22:51:45 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ public class ApplicationForm extends ModuleObjectContainer {
     }
     else if (status == statusGeneralInfo_) {
       ApplicationFormHelper.saveApplicantInformation(modinfo);
-      if (ApplicationFormHelper.saveDataToDB(modinfo))
+      if (ApplicationFormHelper.saveDataToDB(modinfo) != null)
         doDone();
       else
         doError();
@@ -243,6 +243,10 @@ public class ApplicationForm extends ModuleObjectContainer {
 
   protected void doDone() {
     add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð"));
+  }
+
+  protected void doDone(String cypher) {
+    add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð")+". "+iwrb_.getLocalizedString("applicationReferenceNumber","Tilvísunarnúmer þitt er")+": "+cypher);
   }
 
   protected void doError() {

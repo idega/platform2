@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.6 2001/08/29 22:14:37 laddi Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.7 2001/08/29 22:55:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -127,8 +127,8 @@ public class ReferenceNumberInfo extends ModuleObjectContainer {
                          iwrb_.getLocalizedString("appOnList","on the waiting list")),1,row);
           }
           refTable.add(Text.getBreak(),1,row);
-          row++;
         }
+        row++;
 
         if (wl == null) { //Ekki búið að úthluta
           Text notAllocated = new Text("&nbsp;*&nbsp;"+iwrb_.getLocalizedString("appNotYetAssigned","Apartments have not yet been allocated"));

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.1 2001/08/17 09:31:29 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.2 2001/08/29 22:56:06 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -77,13 +77,15 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
   /**
    *
    */
-  public static boolean saveDataToDB(ModuleInfo modinfo) {
+  public static String saveDataToDB(ModuleInfo modinfo) {
     Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
     Application application = (Application)modinfo.getSessionAttribute("application");
     CampusApplication campusApplication = (CampusApplication)modinfo.getSessionAttribute("campusapplication");
     Applied applied1 = (Applied)modinfo.getSessionAttribute("applied1");
     Applied applied2 = (Applied)modinfo.getSessionAttribute("applied2");
     Applied applied3 = (Applied)modinfo.getSessionAttribute("applied3");
+
+    String cypher = "";
 
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
 
@@ -118,13 +120,18 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       while (id.length() < 6)
         id = "0" + id;
 
-      String cypher = ct.doCyper(id,key);
+      cypher = ct.doCyper(id,key);
 
-
+      String receiver = "aron@idega.is";
+      String e_mail = campusApplication.getEmail();
+      if ( e_mail != null ) {
+        if ( e_mail.length() > 0 ) {
+          receiver = e_mail;
+        }
+      }
 
       String body = new String("Umsókn þín hefur verið skráð. Tilvísunarnúmer þitt er : " + cypher);
-
-      SendMail.send("admin@campus.is","aron@idega.is","","palli@idega.is","mail.idega.is","Umsókn skráð",body);
+      SendMail.send("admin@campus.is",receiver,"","palli@idega.is","mail.idega.is","Umsókn skráð",body);
 
       t.commit();
       modinfo.removeSessionAttribute("applicant");
@@ -143,10 +150,10 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
         ex.printStackTrace();
       }
       e.printStackTrace();
-      return(false);
+      return(null);
     }
 
-    return(true);
+    return(cypher);
   }
 
   /**
