@@ -113,8 +113,15 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	public Collection ejbFindAllStudyPaths() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-//		sql.appendOrderBy(COLUMN_CODE);
+		sql.appendOrderBy(COLUMN_CODE);
 		return idoFindPKsByQuery(sql);
+	}
+
+	public Integer ejbFindByCode(String code) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsQuoted(COLUMN_CODE, code);
+		return (Integer) idoFindOnePKByQuery(sql);
 	}
 
 	public Collection ejbHomeFindStudyPaths(School school) throws IDOLookupException, IDORelationshipException, FinderException {

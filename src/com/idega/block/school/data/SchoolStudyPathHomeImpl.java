@@ -20,6 +20,13 @@ public java.util.Collection findAllStudyPaths()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public SchoolStudyPath findByCode(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolStudyPathBMPBean)entity).ejbFindByCode(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public SchoolStudyPath findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (SchoolStudyPath) super.findByPrimaryKeyIDO(pk);
  }
