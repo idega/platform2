@@ -38,6 +38,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public final static String SCHOOL = "school_id";
 	public final static String COLUMN_LOCKED_DATE = "locked_date";
 	public final static String COLUMN_READY_DATE = "ready_date";
+	public final static String COLUMN_SUB_GROUP = "sub_group";
 
 	public final static String SCHOOL_CLASS_YEAR = "sch_school_class_year";
 	public final static String SCHOOL_CLASS_TEACHER = "sch_school_class_teacher";
@@ -58,6 +59,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
     addAttribute(COLUMN_LOCKED,"Ready",true,true,String.class,1);
 		addAttribute(COLUMN_READY_DATE,"Ready date",true,true,Timestamp.class);
 		addAttribute(COLUMN_LOCKED_DATE,"Ready date",true,true,Timestamp.class,1);
+		addAttribute(COLUMN_SUB_GROUP,"Is a sub group",true,true,Boolean.class);
     
     addManyToManyRelationShip(SchoolYear.class, SCHOOL_CLASS_YEAR);
 		addManyToManyRelationShip(User.class, SCHOOL_CLASS_TEACHER);
@@ -193,6 +195,14 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	
 	public Timestamp getLockedDate() {
 		return (Timestamp) getColumnValue(COLUMN_LOCKED_DATE);
+	}
+
+	public void setIsSubGroup(boolean isSubGroup) {
+		setColumn(COLUMN_SUB_GROUP, isSubGroup);
+	}
+	
+	public boolean getIsSubGroup() {
+		return getBooleanColumnValue(COLUMN_SUB_GROUP, false);
 	}
 
   public Collection ejbFindBySchool(School school)throws FinderException ,RemoteException{

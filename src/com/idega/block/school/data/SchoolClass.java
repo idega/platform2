@@ -7,6 +7,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public void addTeacher(com.idega.user.data.User p0)throws com.idega.data.IDOAddRelationshipException;
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedUsers()throws com.idega.data.IDORelationshipException;
+ public boolean getIsSubGroup();
  public boolean getLocked();
  public java.sql.Timestamp getLockedDate();
  public java.lang.String getName();
@@ -29,6 +30,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public void removeFromUser()throws com.idega.data.IDORemoveRelationshipException;
  public void removeSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDORemoveRelationshipException;
  public void removeTeacher(com.idega.user.data.User p0)throws com.idega.data.IDORemoveRelationshipException;
+ public void setIsSubGroup(boolean p0);
  public void setLocked(boolean p0);
  public void setLockedDate(java.sql.Timestamp p0);
  public void setReady(boolean p0);
