@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.Collection;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import javax.transaction.TransactionManager;
 import com.idega.transaction.IdegaTransactionManager;
@@ -184,7 +185,11 @@ public class PhoneFinanceHandler implements FinanceHandler{
             AR.setTariffGroupId(iTariffGroupId);
             AR.setType(getAccountType());
             AR.insert();
-            iRoundId = AR.getID();
+            try {
+							iRoundId = ((Integer)AR.getPrimaryKey()).intValue();
+						}
+						catch (RemoteException e) {
+						}
           }
           catch (SQLException ex) {
             ex.printStackTrace();
@@ -430,6 +435,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
   }
 
   private static AccountEntry insertEntry(int iAccountId,int iRoundId,IWTimestamp itPaydate,float nettoamount,AccountKey key,TariffKey tkey,int iCashierId) throws SQLException{
+System.out.println("iRoundId = " + iRoundId);
     AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(key.getID());
