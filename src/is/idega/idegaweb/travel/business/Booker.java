@@ -679,11 +679,14 @@ public class Booker {
         if (index == 0) cont = false;
       }
     }else {
+      System.err.println("Booker : list.size() = "+list.size());
       while (cont) {
         --index;
+        System.err.println("Booker : --index = "+index);
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), new idegaTimestamp(booking.getBookingDate()));
         if (betw != numberOfDays) {
+          System.err.println("Booker : getting subList("+(index+1)+", "+(list.size()-1)+"");
           list = list.subList(index+1, list.size()-1);
           cont = false;
         }
@@ -692,13 +695,20 @@ public class Booker {
       }
 
       index = 0;
-      cont = true;
+      if (list.size() == 1 ) {
+        cont=false;
+      }else {
+        cont=true;
+      }
 
+      System.err.println("Booker : list.size() = "+list.size());
       while (cont) {
         ++index;
+        System.err.println("Booker : ++index = "+index);
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(booking.getBookingDate()), new idegaTimestamp(book.getBookingDate()));
         if (betw != numberOfDays) {
+          System.err.println("Booker : getting subList("+(index+1)+", "+(list.size()-1)+"");
           list = list.subList(0, index-1);
 //          list = list.subList(mainIndex, index-1);
           cont = false;
