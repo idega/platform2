@@ -148,10 +148,13 @@ public class ContractEditor extends ChildCareBlock {
 			
 			
 			DateInput from = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
+			IWTimestamp stamp = IWTimestamp.RightNow();
+			from.setYearRange(stamp.getYear()-2, stamp.getYear()+3);
 			if (contract.getValidFromDate() != null) {
 				from.setDate(contract.getValidFromDate());
 			}
 			DateInput cancelled = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCELLED_DATE));
+			cancelled.setYearRange(stamp.getYear()-2, stamp.getYear()+3);
 			if (contract.getTerminatedDate() != null) {
 				cancelled.setDate(contract.getTerminatedDate());
 			}
@@ -359,11 +362,10 @@ public class ContractEditor extends ChildCareBlock {
 					table.add(viewContract, column++, row);
 					
 					table.setWidth(column, row, 12);
-					if (getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue()) < 2) {
-						table.add(editLink, column++, row);
-						table.add(Text.NON_BREAKING_SPACE);
-						table.add(deleteLink, column++, row);
-					}
+					table.add(editLink, column++, row);
+					table.add(Text.NON_BREAKING_SPACE);
+					table.setWidth(column, row, 12);
+					table.add(deleteLink, column++, row);
 				}
 				else {
 					table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
