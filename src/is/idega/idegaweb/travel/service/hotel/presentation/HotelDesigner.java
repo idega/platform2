@@ -234,11 +234,6 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       TextInput numberOfUnits = new TextInput( PARAMETER_NUMBER_OF_UNITS );
       TextInput maxPerUnit = new TextInput( PARAMETER_MAX_PER_UNIT );
 
-	  if (_roomTypes == null) {
-		  System.out.println("1 _roomTypes == null");
-	  } else {
-		  System.out.println("1 _roomTypes.size() = "+_roomTypes.size());
-	  }
 			DropdownMenu roomTypes = new DropdownMenu( _roomTypes, PARAMETER_ROOM_TYPE_ID );
 
       DropdownMenu discountType = new DropdownMenu( PARAMETER_DISCOUNT_TYPE );
