@@ -139,10 +139,11 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     TextEditorConverter textEditorConverter = new TextEditorConverter();
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter statusDropDownMenuConverter = getConverterForStatus(resourceBundle);
-    //EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle);
+    EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle);
     
     // define path short keys and map corresponding converters
     Object[] columns = {
+      "league", leagueDropDownMenuConverter,
       "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.STATUS", statusDropDownMenuConverter,
       "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.NAME", textEditorConverter,
       "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.PERSONAL_ID", textEditorConverter,
