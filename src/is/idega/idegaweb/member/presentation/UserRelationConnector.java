@@ -11,6 +11,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -33,6 +34,7 @@ import com.idega.user.data.GroupRelationType;
 import com.idega.user.data.GroupRelationTypeHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.URLUtil;
 /**
  * GroupRelationConnector used to add or remove user relations to found/chosen user
  * @author aron 
@@ -47,11 +49,15 @@ public class UserRelationConnector extends Window {
 	public static final String PARAM_ACTION = "action";
 	public static final String PARAM_TYPE = "type";
 	public static final String PARAM_REVERSE_TYPE = "rtype";
+	public static final String PARAM_RELOAD_PAGE_ID = "rldpage";
+	public static final String PARAM_RELOAD_USER_PRM_NAME ="rlduidprmnm";
 	public static final int ACTION_ATTACH = 1;
 	public static final int ACTION_DETACH = 2;
 	public static final int ACTION_SAVE = 3;
 	protected int action = -1;
 	protected Integer userID = null;
+	protected Integer parentPageID = null;
+	protected String userIDParameterName = null;
 	protected User user = null;
 	protected User relatedUser = null;
 	protected String type = null, rtype = null;
@@ -135,6 +141,10 @@ public class UserRelationConnector extends Window {
 			searcher.maintainParameter(new Parameter(PARAM_TYPE, type));
 		if (rtype != null)
 			searcher.maintainParameter(new Parameter(PARAM_REVERSE_TYPE, rtype));
+		if(parentPageID!=null)
+			searcher.maintainParameter(new Parameter(PARAM_RELOAD_PAGE_ID,parentPageID.toString()));
+		if(userIDParameterName!=null)
+			searcher.maintainParameter(new Parameter(PARAM_RELOAD_USER_PRM_NAME,userIDParameterName));
 		searcher.setUniqueIdentifier(searchIdentifer);
 		searcher.setOwnFormContainer(false);
 
@@ -226,6 +236,10 @@ public class UserRelationConnector extends Window {
 			form.maintainParameter(PARAM_TYPE);
 		if (rtype != null)
 			form.maintainParameter(PARAM_REVERSE_TYPE);
+		if(parentPageID!=null)
+			form.maintainParameter(PARAM_RELOAD_PAGE_ID);
+		if(userIDParameterName!=null)
+			form.maintainParameter(PARAM_RELOAD_USER_PRM_NAME);
 		form.add(mainTable);
 		add(form);
 
@@ -282,6 +296,10 @@ public void process(IWContext iwc) throws RemoteException {
 	user = getUser(iwc);
 	type = iwc.getParameter(PARAM_TYPE);
 	rtype = iwc.getParameter(PARAM_REVERSE_TYPE);
+	if(iwc.isParameterSet(PARAM_RELOAD_PAGE_ID))
+		parentPageID = Integer.valueOf(iwc.getParameter(PARAM_RELOAD_PAGE_ID));
+	if(iwc.isParameterSet(PARAM_RELOAD_USER_PRM_NAME))
+		userIDParameterName =iwc.getParameter(PARAM_RELOAD_USER_PRM_NAME);
 	if (iwc.isParameterSet(PARAM_ACTION)) {
 		int action = Integer.parseInt(iwc.getParameter(PARAM_ACTION));
 		Integer relatedUserID =
@@ -295,8 +313,16 @@ public void process(IWContext iwc) throws RemoteException {
 				removeRelation(iwc, (Integer) user.getPrimaryKey(), relatedUserID, type, rtype);
 				break;
 		}
-		setParentToReload();
-		close();
+		if(parentPageID!=null && userIDParameterName!=null){
+			URLUtil URL = new URLUtil(BuilderLogic.getInstance().getIBPageURL(iwc, parentPageID.intValue()));
+			URL.addParameter(userIDParameterName, userID.toString());
+			setParentToRedirect(URL.toString());
+			close();
+		}
+		else{
+			setParentToReload();
+			close();
+		}
 	}
 
 }

@@ -59,7 +59,7 @@ public class CitizenEditor extends UserEditor {
 		int row = 1;
 		relationsTable.setCellspacing(4);
 		if (user != null) {
-			CommuneUserBusiness userService = getCommuneUserService(iwc);
+			//CommuneUserBusiness userService = getCommuneUserService(iwc);
 			MemberFamilyLogic familyService = getFamilyService(iwc);
 			//partner handling
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.spouse", "Spouse")), 1, row);
@@ -209,7 +209,7 @@ public class CitizenEditor extends UserEditor {
 			row = childrowstart;
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.custody_children", "Custody children")), 5, row);
 			try {
-				children = userService.getMemberFamilyLogic().getChildrenInCustodyOf(user);
+				children = familyService.getChildrenInCustodyOf(user);
 				if (children != null && !children.isEmpty()) {
 					for (Iterator iter = children.iterator(); iter.hasNext();) {
 						User child = (User) iter.next();
@@ -275,6 +275,8 @@ public class CitizenEditor extends UserEditor {
 	 */
 	protected void presentateButtonRegister(IWContext iwc) {
 		try {
+			int pageID = getParentPageID();
+			Integer thisPageID = pageID>0 ?new Integer(pageID):null;
 			Table bTable = new Table(3,2);
 			MemberFamilyLogic logic = getFamilyService(iwc);
 			Integer userID = (Integer) user.getPrimaryKey();
@@ -287,7 +289,7 @@ public class CitizenEditor extends UserEditor {
 					iwrb.getLocalizedString("mbe.register_spouse", "Register spouse"),
 					userID,
 					logic.getSpouseRelationType(),
-					null);
+					null,thisPageID);
 			bTable.add(spouseButton,1,1);
 			SubmitButton mateButton =
 				getConnectorButton(
@@ -295,7 +297,7 @@ public class CitizenEditor extends UserEditor {
 					iwrb.getLocalizedString("mbe.register_mate", "Register mate"),
 					userID,
 					logic.getCohabitantRelationType(),
-					null);
+					null,thisPageID);
 			bTable.add(mateButton,1,2);
 			//Image regCustodian = iwrb.getLocalizedImageButton("mbe.register_custodian","Register custodian");
 			//regCustodian.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_custodian","Try to attach a custodian relationship to user"));
@@ -307,7 +309,7 @@ public class CitizenEditor extends UserEditor {
 					iwrb.getLocalizedString("mbe.register_parent", "Register parent"),
 					userID,
 					logic.getChildRelationType(),
-					logic.getParentRelationType());
+					logic.getParentRelationType(),thisPageID);
 			bTable.add(parentButton,2,1);
 			SubmitButton custodianButton =
 				getConnectorButton(
@@ -315,7 +317,7 @@ public class CitizenEditor extends UserEditor {
 					iwrb.getLocalizedString("mbe.register_custodian", "Register custodian"),
 					userID,
 					logic.getChildRelationType(),
-					logic.getCustodianRelationType());
+					logic.getCustodianRelationType(),thisPageID);
 			bTable.add(custodianButton,2,2);
 			//Image regChild = iwrb.getLocalizedImageButton("mbe.register_child","Register child");
 			//regChild.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_child","Try to attach a child relationship to user"));
@@ -327,7 +329,7 @@ public class CitizenEditor extends UserEditor {
 					iwrb.getLocalizedString("mbe.register_parential_child", "Register parential child"),
 					userID,
 					logic.getParentRelationType(),
-					logic.getChildRelationType());
+					logic.getChildRelationType(),thisPageID);
 			bTable.add(childButton,3,1);
 			SubmitButton custodyChildButton =
 				getConnectorButton(
@@ -335,7 +337,7 @@ public class CitizenEditor extends UserEditor {
 					iwrb.getLocalizedString("mbe.register_custody_child", "Register custody child"),
 					userID,
 					logic.getCustodianRelationType(),
-					logic.getChildRelationType());
+					logic.getChildRelationType(),thisPageID);
 			bTable.add(custodyChildButton,3,2);
 			addButton(bTable);
 		}

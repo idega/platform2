@@ -67,6 +67,7 @@ import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
 import com.idega.util.IWTimestamp;
+import com.idega.util.URLUtil;
 /**
  * The <code>UserEditor</code> handles user relations and addresses.
  * It contains a configurable unstrict user search. If more than one
@@ -108,6 +109,7 @@ public class UserEditor extends Block {
 	//public static final String PRM_USER_ID = UserSearcher.PRM_USER_ID; //"ic_user_id";
 	protected static final String PRM_SAVE = "mbe_save";
 	protected static final String PRM_NEW_USER = "mbe_newuser";
+	protected static final String PRM_USER_ID ="mbe_userid";
 	/** The userID is the handled users ID. */
 	protected Integer userID = null;
 	/** The user currently handled */
@@ -417,6 +419,8 @@ public class UserEditor extends Block {
 	 * @param iwc
 	 */
 	protected void presentateButtonRegister(IWContext iwc) {
+		int pageID = getParentPageID();
+		Integer thisPageID = pageID>0 ?new Integer(pageID):null;
 		for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
 			String type = (String) iter.next();
 			SubmitButton registerButton =
@@ -425,7 +429,7 @@ public class UserEditor extends Block {
 					(iwrb.getLocalizedString("mbe.register_as_" + type, "Register as " + type)),
 					(Integer) user.getPrimaryKey(),
 					type,
-					null);
+					null,thisPageID);
 			addButton(registerButton);
 		}
 	}
@@ -462,7 +466,7 @@ public class UserEditor extends Block {
 	 * @param object
 	 * @return
 	 */
-	protected Link getConnectorLink(Integer roleUserID, String type, String reverseType, PresentationObject object) {
+	protected Link getConnectorLink(Integer roleUserID, String type, String reverseType, PresentationObject object,Integer editorPageID) {
 		Link registerLink = new Link(object);
 		registerLink.setWindowToOpen(connectorWindowClass);
 		registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, roleUserID.toString());
@@ -470,6 +474,9 @@ public class UserEditor extends Block {
 			registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
 		if (reverseType != null)
 			registerLink.addParameter(UserRelationConnector.PARAM_REVERSE_TYPE, reverseType);
+		if(editorPageID!=null)
+			registerLink.addParameter(UserRelationConnector.PARAM_RELOAD_PAGE_ID,editorPageID.toString());
+		registerLink.addParameter(UserRelationConnector.PARAM_RELOAD_USER_PRM_NAME,PRM_USER_ID);
 		return registerLink;
 	}
 	/**
@@ -486,16 +493,23 @@ public class UserEditor extends Block {
 		String display,
 		Integer roleUserID,
 		String type,
-		String reverseType) {
+		String reverseType,Integer editorPageID) {
 		SubmitButton button = new SubmitButton(display);
-		String URL = Window.getWindowURL(connectorWindowClass, iwc);
-		URL += "&" + UserRelationConnector.PARAM_USER_ID + "=" + roleUserID.toString();
+		URLUtil URL = new URLUtil(Window.getWindowURL(connectorWindowClass, iwc));
+		//String URL = Window.getWindowURL(connectorWindowClass, iwc);
+		URL.addParameter(UserRelationConnector.PARAM_USER_ID ,roleUserID.toString());
+		//URL += "&" + UserRelationConnector.PARAM_USER_ID + "=" + roleUserID.toString();
 		if (type != null)
-			URL += "&" + UserRelationConnector.PARAM_TYPE + "=" + type;
+			URL.addParameter(UserRelationConnector.PARAM_TYPE,type);
+			//URL += "&" + UserRelationConnector.PARAM_TYPE + "=" + type;
 		if (reverseType != null)
-			URL += "&" + UserRelationConnector.PARAM_REVERSE_TYPE + "=" + reverseType;
+			URL.addParameter(UserRelationConnector.PARAM_REVERSE_TYPE,reverseType);
+			//URL += "&" + UserRelationConnector.PARAM_REVERSE_TYPE + "=" + reverseType;
+		if(editorPageID!=null)
+			URL.addParameter(UserRelationConnector.PARAM_RELOAD_PAGE_ID,editorPageID.toString());
+		URL.addParameter(UserRelationConnector.PARAM_RELOAD_USER_PRM_NAME,PRM_USER_ID);
 		button.setOnClick(
-			"javascript:" + Window.getCallingScriptString(connectorWindowClass, URL, true, iwc) + ";return false;");
+			"javascript:" + Window.getCallingScriptString(connectorWindowClass, URL.toString(), true, iwc) + ";return false;");
 		button.setStyleClass(buttonStyleName);
 		return button;
 	}
@@ -1241,6 +1255,16 @@ public class UserEditor extends Block {
 	}
 	
 	public void initUser(IWContext iwc) {
+		if(iwc.isParameterSet(PRM_USER_ID)){
+			Integer uid = Integer.valueOf(iwc.getParameter(PRM_USER_ID));
+			try {
+				user = getUserService(iwc).getUser(uid);
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+			
 	}
 	private void initRelationTypes(IWContext iwc) throws RemoteException {
 	}
