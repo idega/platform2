@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.18 2004/06/25 11:45:07 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.19 2004/06/28 10:51:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -54,6 +54,7 @@ import com.idega.block.finance.business.AccountManager;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
+import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.UserBusiness;
@@ -166,7 +167,17 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	 */
 	public void addUserToTenantGroup(Integer groupID, User user) throws FinderException, RemoteException {
 		Group group = getUserService().getGroupHome().findByPrimaryKey(groupID);
-		group.addGroup(user);
+		int userGroupID = user.getGroupID();
+		String oldGroupId[] = new String[0];
+		try {
+			oldGroupId = SimpleQuerier.executeStringQuery("select user_representative from ic_user where ic_user_id = "+user.getPrimaryKey().toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(oldGroupId[0]!=null)
+			userGroupID = Integer.parseInt(oldGroupId[0]);
+			
+		group.addGroup(userGroupID);
 	}
 
 	public void changeApplicationStatus(Contract eContract) throws Exception {
