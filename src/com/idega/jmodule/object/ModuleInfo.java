@@ -617,6 +617,14 @@ public String getRequestURI(){
   return getRequest().getRequestURI();
 }
 
+public String getServerName(){
+  return getRequest().getServerName();
+}
+
+public int getServerPort() {
+  return getRequest().getServerPort();
+}
+
 public PrintWriter getWriter()throws IOException{
     if(cacheWriter==null){
       return getResponse().getWriter();
