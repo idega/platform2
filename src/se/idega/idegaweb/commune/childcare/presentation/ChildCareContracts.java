@@ -66,11 +66,11 @@ public class ChildCareContracts extends ChildCareBlock {
 				created = new IWTimestamp(contract.getCreatedDate());
 				validFrom = new IWTimestamp(contract.getValidFromDate());
 				
-				viewContract = new Link(getEditIcon(localize("child_care.view_contract","View contract")));
+				viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
 				viewContract.setFile(application.getContractFileId());
 				viewContract.setTarget(Link.TARGET_NEW_WINDOW);
 				
-				alterCareTime = new Link(this.getDeleteIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
+				alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
 				alterCareTime.setWindowToOpen(ChildCareWindow.class);
 				alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
 				alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
