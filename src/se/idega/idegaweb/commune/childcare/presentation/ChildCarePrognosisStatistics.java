@@ -5,12 +5,14 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.presentation.IWContext;
@@ -47,7 +49,10 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), 6, 1);
 		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), 7, 1);
 
-		List providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare()));
+		SchoolBusiness sb = getBusiness().getSchoolBusiness();
+		Collection c = sb.findAllSchoolsByType(getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare());
+		c = sb.getHomeCommuneSchools(c);		
+		List providers = new Vector(c);
 		if (providers != null && !providers.isEmpty()) {
 			School school;
 			ChildCarePrognosis prognosis;
