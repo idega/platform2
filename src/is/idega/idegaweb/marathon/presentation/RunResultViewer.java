@@ -124,7 +124,7 @@ public class RunResultViewer extends Block {
 			}
 		}
 
-		Form form = (Form) iwc.getApplicationAttribute("run_result_cache_" + runPK + "_" + year != null ? year.getPrimaryKey() + "_" : "" + distance != null ? distance.getPrimaryKey() + "_" : "" + sortBy);
+		Form form = (Form) iwc.getApplicationAttribute("run_result_cache_" + runPK + "_" + (year != null ? year.getPrimaryKey() + "_" : "") + (distance != null ? distance.getPrimaryKey() + "_" : "") + sortBy);
 		
 		if (form == null) {
 			form = new Form();
@@ -167,7 +167,7 @@ public class RunResultViewer extends Block {
 			}
 			
 			form.add(table);
-			iwc.setApplicationAttribute("run_result_cache_" + runPK + "_" + year != null ? year.getPrimaryKey() + "_" : "" + distance != null ? distance.getPrimaryKey() + "_" : "" + sortBy, form);
+			iwc.setApplicationAttribute("run_result_cache_" + runPK + "_" + (year != null ? year.getPrimaryKey() + "_" : "") + (distance != null ? distance.getPrimaryKey() + "_" : "") + sortBy, form);
 		}
 		add(form);
 	}
@@ -208,22 +208,24 @@ public class RunResultViewer extends Block {
 			
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
-				row = insertRunGroupIntoTable(table, row, "group_" + runGroup.getName());
 	
 				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
-				List runs = getRunsForRunners(runners);
-				sortRuns(runs);
-				Iterator runIter = runs.iterator();
-				int num = 1;
-				while (runIter.hasNext()) {
-					Run run = (Run) runIter.next();
-					row = insertRunIntoTable(table, row, run, num);
-					num++;
-					
-					if (!runIter.hasNext()) {
-						table.setHeight(row++, 2);
+				if (runners.size() > 0) {
+					List runs = getRunsForRunners(runners);
+					sortRuns(runs);
+					row = insertRunGroupIntoTable(table, row, "group_" + runGroup.getName());
+					Iterator runIter = runs.iterator();
+					int num = 1;
+					while (runIter.hasNext()) {
+						Run run = (Run) runIter.next();
+						row = insertRunIntoTable(table, row, run, num);
+						num++;
+						
+						if (!runIter.hasNext()) {
+							table.setHeight(row++, 2);
+						}
 					}
-				}
+					}
 			}
 		}
 		catch (Exception e) {
@@ -360,7 +362,7 @@ public class RunResultViewer extends Block {
 
 		Country country = null;
 		try {
-			getRunBiz().getCountryByNationality(run.getUserNationality());
+			country = getRunBiz().getCountryByNationality(run.getUserNationality());
 		}
 		catch (RemoteException re) {
 			log(re);
