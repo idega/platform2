@@ -282,9 +282,9 @@ public class Register extends Block {
 		String done = _iwrb.getLocalizedString("register.done", "Registration finished.");
 		T.add(done, 1, row++);
 		
-		CloseButton close =
-			new CloseButton(_iwrb.getLocalizedImageButton("close", "Close"));
-		T.add(close, 1, row++);
+		//CloseButton close =
+		//	new CloseButton(_iwrb.getLocalizedImageButton("close", "Close"));
+		//T.add(close, 1, row++);
 		
 		return T;
 	}
