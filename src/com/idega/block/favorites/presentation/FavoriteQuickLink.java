@@ -12,14 +12,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.favorites.business.FavoritesBusiness;
 import com.idega.block.favorites.data.Favorite;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -30,28 +23,17 @@ import com.idega.user.data.User;
 /**
  * @author Anna
  */
-public class FavoriteQuickLink extends Block {
+public class FavoriteQuickLink extends FavoriteBlock {
 
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.favorites";
 	private static final String PARAMETER_QUICK_LINK = "quick_link_url";
 	
 	private int iSpaceBetween = -1;
 
-	private IWResourceBundle iwrb;
 	private User user;
 
-	private FavoritesBusiness getBusiness(IWApplicationContext iwc) {
-		try {
-			return (FavoritesBusiness) IBOLookup.getServiceInstance(iwc, FavoritesBusiness.class);
-		}
-		catch (IBOLookupException ible) {
-			throw new IBORuntimeException(ible);
-		}
-	}
-
-	public void main(IWContext iwc) throws Exception {
+	public void present(IWContext iwc) {
 		user = iwc.getCurrentUser();
-		iwrb = getResourceBundle(iwc);
 
 		add(getQuickLinks(iwc));
 	}
@@ -77,8 +59,8 @@ public class FavoriteQuickLink extends Block {
 		form.add(table);
 		int column = 1;
 
-		DropdownMenu quickLinks = new DropdownMenu(PARAMETER_QUICK_LINK);
-		Link go = new Link(iwrb.getLocalizedString("go", "Go!"));
+		DropdownMenu quickLinks = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_QUICK_LINK));
+		Link go = getLink(getResourceBundle().getLocalizedString("go", "Go!"));
 		go.setURL("javascript:" + getScriptCaller(PARAMETER_QUICK_LINK));
 
 		Iterator iter = quickLinkList.iterator();

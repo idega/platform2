@@ -7,6 +7,7 @@
 package com.idega.block.favorites.presentation;
 
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -25,6 +26,8 @@ import com.idega.user.data.User;
  */
 public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 
+	private static final String PARAMETER_ADD_PAGE = "fav_add_page";
+	
 	String currentName = null;
 	String currentURL = null;
 	User currentUser;
@@ -58,6 +61,11 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 		}
 		currentName = currentPage.getName();
 		currentUser = iwc.getCurrentUser();
+		
+		if (iwc.isParameterSet(PARAMETER_ADD_PAGE)) {
+			Object[] arguments = { currentName };
+			getParentPage().setAlertOnLoad(MessageFormat.format(getResourceBundle().getLocalizedString("added_page_to_favorites", "Added page {0}Êto your intranet favorites"), arguments));
+		}
 	}
 
 	private Image getImage() {
@@ -66,6 +74,7 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 
 	private Link getLink() {
 		Link favoriteLink = new Link(getBundle().getImage("enabled.jpg"));
+		favoriteLink.addParameter(PARAMETER_ADD_PAGE, "true");
 		favoriteLink.setEventListener(this.getClass());
 		return favoriteLink;
 	}

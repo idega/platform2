@@ -1,5 +1,5 @@
 /*
- * $Id: FavoriteList.java,v 1.2 2004/11/05 14:15:16 laddi Exp $
+ * $Id: FavoriteList.java,v 1.3 2004/11/26 08:41:56 laddi Exp $
  * Created on 5.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,7 +30,7 @@ import com.idega.user.data.User;
  * Last modified: 5.11.2004 09:47:02 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 	
@@ -63,12 +63,10 @@ public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 			table.setCellspacing(0);
 			int row = 1;
 	
-			Text title = new Text(getResourceBundle().getLocalizedString("favorite.title", "Title"));
-			title.setBold();
-			Text URL = new Text(getResourceBundle().getLocalizedString("favorite.url", "Url"));
-			URL.setBold();
+			Text title = getHeader(getResourceBundle().getLocalizedString("favorite.title", "Title"));
+			Text URL = getHeader(getResourceBundle().getLocalizedString("favorite.url", "Url"));
 			
-			Text text = new Text(Text.NON_BREAKING_SPACE + "|" + Text.NON_BREAKING_SPACE);
+			Text text = getText(Text.NON_BREAKING_SPACE + "|" + Text.NON_BREAKING_SPACE);
 			
 			table.add(title, 1, row);
 			table.add(URL, 2, row);
@@ -84,7 +82,7 @@ public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 					Favorite element = (Favorite) iter.next();
 					String URI = element.getURL();
 					
-					link = new Link(element.getName());
+					link = getLink(element.getName());
 					if (URI != null) {
 						try {
 							if (favoriteType.equals(getBusiness(iwc).getFavoriteTypeInternet()) && URI.indexOf("http://") == -1) {
@@ -97,17 +95,19 @@ public class FavoriteList extends FavoriteBlock implements IWPageEventListener {
 						link.setURL(URI);
 					}
 					
-					edit = new Link(getResourceBundle().getLocalizedString("favorite.edit", "Edit"));
+					edit = getLink(getResourceBundle().getLocalizedString("favorite.edit", "Edit"));
 					edit.addParameter(PARAMETER_ACTION, ACTION_EDIT);
 					edit.addParameter(PARAMETER_PRIMARY_KEY, element.getPrimaryKey().toString());
+					edit.setToolTip(getResourceBundle().getLocalizedString("favorite.edit_tooltip", "Edit this favorite."));
 	
-					delete = new Link(getResourceBundle().getLocalizedString("favorite.delete", "Delete"));
+					delete = getLink(getResourceBundle().getLocalizedString("favorite.delete", "Delete"));
 					delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 					delete.addParameter(PARAMETER_PRIMARY_KEY, element.getPrimaryKey().toString());
 					delete.setEventListener(getClass());
+					delete.setToolTip(getResourceBundle().getLocalizedString("favorite.delete_tooltip", "Delete this favorite."));
 	
 					table.add(link, 1, row);
-					table.add(element.getURL(), 2, row);
+					table.add(getText(element.getURL()), 2, row);
 					table.setCellpaddingLeft(1, row, 0);
 					table.setCellpaddingRight(3, row, 0);
 					table.add(edit, 3, row);

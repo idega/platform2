@@ -1,5 +1,5 @@
 /*
- * $Id: FavoriteTypeNavigator.java,v 1.1 2004/11/05 13:26:10 laddi Exp $
+ * $Id: FavoriteTypeNavigator.java,v 1.2 2004/11/26 08:41:56 laddi Exp $
  * Created on 5.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.idega.presentation.text.Text;
  * Last modified: 5.11.2004 09:37:06 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventListener {
 
@@ -32,7 +32,7 @@ public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventL
 	 * @see com.idega.block.favorites.presentation.FavoriteBlock#present(com.idega.presentation.IWContext)
 	 */
 	protected void present(IWContext iwc) {
-		Text text = new Text(Text.NON_BREAKING_SPACE + "|" + Text.NON_BREAKING_SPACE);
+		Text text = getText(Text.NON_BREAKING_SPACE + "|" + Text.NON_BREAKING_SPACE);
 		try {
 			add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.intranet", "Intranet favorites"), getBusiness(iwc).getFavoriteTypeIntranet()));
 			add(text);
@@ -51,7 +51,7 @@ public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventL
 				return new Text(name);
 			}
 			else {
-				Link link = new Link(name);
+				Link link = getLink(name);
 				link.setEventListener(FavoriteTypeNavigator.class);
 				link.addParameter(PARAMETER_FAVORITE_TYPE, favoriteType);
 				return link;

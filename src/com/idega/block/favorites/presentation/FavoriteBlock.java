@@ -1,5 +1,5 @@
 /*
- * $Id: FavoriteBlock.java,v 1.1 2004/11/05 13:26:10 laddi Exp $
+ * $Id: FavoriteBlock.java,v 1.2 2004/11/26 08:41:56 laddi Exp $
  * Created on 4.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,13 +20,18 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.RadioButton;
 
 
 /**
  * Last modified: 4.11.2004 15:53:08 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class FavoriteBlock extends Block {
 
@@ -46,6 +51,12 @@ public abstract class FavoriteBlock extends Block {
 
 	private IWBundle iwb;
 	private IWResourceBundle iwrb;
+	
+	private String iTextStyleClass;
+	private String iLinkStyleClass;
+	private String iHeaderStyleClass;
+	private String iInputStyleClass;
+	private String iRadioStyleClass;
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -93,5 +104,89 @@ public abstract class FavoriteBlock extends Block {
 	 */
 	protected IWResourceBundle getResourceBundle() {
 		return iwrb;
+	}
+	
+	protected Text getHeader(String string) {
+		Text text = new Text(string);
+		if (iHeaderStyleClass != null) {
+			text.setStyleClass(iHeaderStyleClass);
+		}
+		return text;
+	}
+	
+	protected Text getText(String string) {
+		Text text = new Text(string);
+		if (iTextStyleClass != null) {
+			text.setStyleClass(iTextStyleClass);
+		}
+		return text;
+	}
+	
+	protected Link getLink(String string) {
+		Link link = new Link(string);
+		if (iLinkStyleClass != null) {
+			link.setStyleClass(iLinkStyleClass);
+		}
+		return link;
+	}
+	
+	protected InterfaceObject getInput(InterfaceObject input) {
+		if (iInputStyleClass != null) {
+			input.setStyleClass(iInputStyleClass);
+		}
+		return input;
+	}
+	
+	protected RadioButton getRadioButton(String name, String value) {
+		RadioButton button = new RadioButton(name, value);
+		if (iRadioStyleClass != null) {
+			button.setStyleClass(iRadioStyleClass);
+		}
+		return button;
+	}
+	
+	protected CheckBox getCheckBox(String name, String value) {
+		CheckBox box = new CheckBox(name, value);
+		if (iRadioStyleClass != null) {
+			box.setStyleClass(iRadioStyleClass);
+		}
+		return box;
+	}
+	
+	/**
+	 * @param headerStyleClass The headerStyleClass to set.
+	 */
+	public void setHeaderStyleClass(String headerStyleClass) {
+		iHeaderStyleClass = headerStyleClass;
+	}
+	/**
+	 * @param inputStyleClass The inputStyleClass to set.
+	 */
+	public void setInputStyleClass(String inputStyleClass) {
+		iInputStyleClass = inputStyleClass;
+	}
+	/**
+	 * @param linkStyleClass The linkStyleClass to set.
+	 */
+	public void setLinkStyleClass(String linkStyleClass) {
+		iLinkStyleClass = linkStyleClass;
+	}
+	/**
+	 * @param radioStyleClass The radioStyleClass to set.
+	 */
+	public void setRadioStyleClass(String radioStyleClass) {
+		iRadioStyleClass = radioStyleClass;
+	}
+	/**
+	 * @param radioStyleClass The checkStyleClass to set.
+	 */
+	public void setCheckStyleClass(String checkStyleClass) {
+		iRadioStyleClass = checkStyleClass;
+	}
+	/**
+	 * @param textStyleClass The textStyleClass to set.
+	 */
+	public void setTextStyleClass(String textStyleClass) {
+		iTextStyleClass = textStyleClass;
 	}
 }

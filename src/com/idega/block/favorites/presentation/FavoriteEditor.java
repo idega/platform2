@@ -46,77 +46,80 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 				log(re);
 			}
 			
-			Form form = new Form();
-			if (action.equals(ACTION_EDIT) && iwc.isParameterSet(PARAMETER_PRIMARY_KEY)) {
-				form.addParameter(PARAMETER_PRIMARY_KEY, iwc.getParameter(PARAMETER_PRIMARY_KEY));
-			}
-			form.addParameter(PARAMETER_ACTION, ACTION_SAVE);
-			form.addParameter(PARAMETER_FAVORITE_TYPE, favoriteType);
-			form.setEventListener(getClass());
-			//form.setMethod("get");
-	
-			Favorite favorite = null;
-			if (action.equals(ACTION_EDIT) && iwc.isParameterSet(PARAMETER_PRIMARY_KEY)) {
-				try {
-					favorite = getBusiness(iwc).getFavorite(new Integer(iwc.getParameter(PARAMETER_PRIMARY_KEY)));
-				}
-				catch (FinderException fe) {
-					//Nothing found
-				}
-				catch (RemoteException re) {
-					log(re);
-				}
-			}
-	
-			TextInput linkName = new TextInput(PARAMETER_NAME);
-			if (favorite != null) {
-				linkName.setContent(favorite.getName());
-			}
-			
-			TextInput URL = new TextInput(PARAMETER_URL);
-			if (favorite != null) {
-				URL.setContent(favorite.getURL());
-				if (!canEdit) {
-					form.addParameter(PARAMETER_URL, favorite.getURL());
-				}
-			}
-			URL.setDisabled(!canEdit);
-			
-			CheckBox quickLink = new CheckBox(PARAMETER_QUICK_LINK, "true");
-			if (favorite != null) {
-				quickLink.setChecked(favorite.isQuickLink());
-			}
-			
-			Link save = new Link(getResourceBundle().getLocalizedString("favorite.save", "Save"));
-			save.setToFormSubmit(form);
-	
-			Table editTable = new Table(4, 2);
-			editTable.setWidth(iWidth);
-			editTable.setWidth(4, Table.HUNDRED_PERCENT);
-			editTable.setAlignment(4, 2, Table.HORIZONTAL_ALIGN_RIGHT);
-			editTable.setCellpadding(iCellpadding);
-			editTable.setCellspacing(0);
-			int row = 1;
-	
-			editTable.setCellpaddingLeft(1, row, 0);
-			editTable.add(getResourceBundle().getLocalizedString("favorite.link_name", "Title"), 1, row);
-			editTable.add(linkName, 2, row++);
-
-			editTable.setCellpaddingLeft(1, row, 0);
-			editTable.setCellpaddingRight(4, row, 0);
-			editTable.add(getResourceBundle().getLocalizedString("favorite.url", "Url"), 1, row);
-			editTable.add(URL, 2, row);
-			editTable.add(quickLink, 3, row);
-			editTable.add(Text.getNonBrakingSpace(), 3, row);
-			editTable.add(getResourceBundle().getLocalizedString("favorite.quick_link", "Quick link"), 3, row);
-			editTable.setNoWrap(3, row);
-			
 			if (canEdit || action.equals(ACTION_EDIT)) {
-				editTable.add(save, 4, row);
-			}
+				Form form = new Form();
+				if (action.equals(ACTION_EDIT) && iwc.isParameterSet(PARAMETER_PRIMARY_KEY)) {
+					form.addParameter(PARAMETER_PRIMARY_KEY, iwc.getParameter(PARAMETER_PRIMARY_KEY));
+				}
+				form.addParameter(PARAMETER_ACTION, ACTION_SAVE);
+				form.addParameter(PARAMETER_FAVORITE_TYPE, favoriteType);
+				form.setEventListener(getClass());
+				//form.setMethod("get");
+		
+				Favorite favorite = null;
+				if (action.equals(ACTION_EDIT) && iwc.isParameterSet(PARAMETER_PRIMARY_KEY)) {
+					try {
+						favorite = getBusiness(iwc).getFavorite(new Integer(iwc.getParameter(PARAMETER_PRIMARY_KEY)));
+					}
+					catch (FinderException fe) {
+						//Nothing found
+					}
+					catch (RemoteException re) {
+						log(re);
+					}
+				}
+		
+				TextInput linkName = (TextInput) getInput(new TextInput(PARAMETER_NAME));
+				if (favorite != null) {
+					linkName.setContent(favorite.getName());
+				}
+				
+				TextInput URL = (TextInput) getInput(new TextInput(PARAMETER_URL));
+				if (favorite != null) {
+					URL.setContent(favorite.getURL());
+					if (!canEdit) {
+						form.addParameter(PARAMETER_URL, favorite.getURL());
+					}
+				}
+				URL.setDisabled(!canEdit);
+				
+				CheckBox quickLink = getCheckBox(PARAMETER_QUICK_LINK, "true");
+				if (favorite != null) {
+					quickLink.setChecked(favorite.isQuickLink());
+				}
+				
+				Link save = getLink(getResourceBundle().getLocalizedString("favorite.save", "Save"));
+				save.setToFormSubmit(form);
+				save.setToolTip(getResourceBundle().getLocalizedString("favorite.save_tooltip", "Saves the current information."));
+		
+				Table editTable = new Table(4, 2);
+				editTable.setWidth(iWidth);
+				editTable.setWidth(4, Table.HUNDRED_PERCENT);
+				editTable.setAlignment(4, 2, Table.HORIZONTAL_ALIGN_RIGHT);
+				editTable.setCellpadding(iCellpadding);
+				editTable.setCellspacing(0);
+				int row = 1;
+		
+				editTable.setCellpaddingLeft(1, row, 0);
+				editTable.add(getHeader(getResourceBundle().getLocalizedString("favorite.link_name", "Title")), 1, row);
+				editTable.add(linkName, 2, row++);
 	
-			form.add(editTable);
-			add(form);
+				editTable.setCellpaddingLeft(1, row, 0);
+				editTable.setCellpaddingRight(4, row, 0);
+				editTable.add(getHeader(getResourceBundle().getLocalizedString("favorite.url", "Url")), 1, row);
+				editTable.add(URL, 2, row);
+				editTable.add(quickLink, 3, row);
+				editTable.add(Text.getNonBrakingSpace(), 3, row);
+				editTable.add(getText(getResourceBundle().getLocalizedString("favorite.quick_link", "Quick link")), 3, row);
+				editTable.setNoWrap(3, row);
+				
+				if (canEdit || action.equals(ACTION_EDIT)) {
+					editTable.add(save, 4, row);
+				}
+		
+				form.add(editTable);
+				add(form);
+			}
 		}
 		else {
 			add("No user logged on...");
