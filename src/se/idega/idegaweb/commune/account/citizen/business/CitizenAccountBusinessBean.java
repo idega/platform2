@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.76 2004/11/04 08:02:52 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.77 2004/11/16 19:29:39 aron Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -44,8 +44,6 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneBMPBean;
 import com.idega.core.contact.data.PhoneHome;
@@ -74,11 +72,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2004/11/04 08:02:52 $ by $Author: laddi $
+ * Last modified: $Date: 2004/11/16 19:29:39 $ by $Author: aron $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.76 $
+ * @version $Revision: 1.77 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -129,7 +127,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				}
 			}
 			application.setPhoneHome(phoneHome);
-			if (email != null)
+			if (!"".equals(email))
 				application.setEmail(email);
 			if (phoneWork != null)
 				application.setPhoneWork(phoneWork);
@@ -505,12 +503,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final Address address
 					= createAddress(user, communeId, isSweden, streetName, careOf,
 													postalCode, postalName);
-			createEmail(applicant, user);
-			final Phone homePhone
-					= createPhone(user, PhoneBMPBean.getHomeNumberID(),
-												applicant.getPhoneHome());
-			createPhone (user, PhoneBMPBean.getMobileNumberID(),
-									 applicant.getPhoneWork());
+			//createEmail(applicant, user);
+			userBusiness.storeUserEmail(user,applicant.getEmail(),false);
+			
+			final Phone homePhone= createPhone(user, PhoneBMPBean.getHomeNumberID(),applicant.getPhoneHome());
+			createPhone (user, PhoneBMPBean.getMobileNumberID(),applicant.getPhoneWork());
+			//userBusiness.updateUserHomePhone(user,applicant.getPhoneHome());
+			//userBusiness.updateUserWorkPhone(user,applicant.getPhoneWork());
 
 			final FamilyLogic familyLogic = (FamilyLogic) getServiceInstance(FamilyLogic.class);
 			User cohabitant = null;
@@ -557,12 +556,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		}
 	}
 
+	/* userbusiness method used instead
 	private void createEmail(final CitizenAccount applicant, final User user) throws CreateException, IDOLookupException, IDOAddRelationshipException {
 		final Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
 		email.setEmailAddress(applicant.getEmail());
 		email.store();
 		user.addEmail(email);
-	}
+	}*/
 
 	private void createChild
 		(final String ssn, final GenderHome genderHome, final PIDChecker pidChecker,
