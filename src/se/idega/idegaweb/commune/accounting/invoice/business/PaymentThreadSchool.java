@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/03/09 17:36:37 $ by $Author: roar $
+ * Last modified: $Date: 2004/03/16 11:03:33 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.128 $
+ * @version $Revision: 1.129 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -528,29 +528,31 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		final Date startDate = resource.getStartDate();
 		final Date endDate = resource.getEndDate();
 		final PlacementTimes placementTimes = calculateTime(startDate, endDate);
-		School school = schoolClassMember.getSchoolClass().getSchool();
-		
-		Collection regulationForResourceArray = getRegulationForResourceArray(regBus, schoolClassMember, resource, provider);
-//		int regSize = regulationForResourceArray.size();
-
-//		errorRelated.append("# of Regulations "+regSize);
-
-		for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
-			try {
-				Regulation regulation = (Regulation) i.next();
-				errorRelated.append(getLocalizedString("invoice.Regulation","Regulation")+":"+regulation.getName());
-				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
-				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
-				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
-				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes, startDate, endDate);
-			}
-			catch (BruttoIncomeException e) {
-				//Who cares!!!
-			}
-			catch (LowIncomeException e) {
-
+		if(placementTimes.getDays() > 0){
+			School school = schoolClassMember.getSchoolClass().getSchool();
+			
+			Collection regulationForResourceArray = getRegulationForResourceArray(regBus, schoolClassMember, resource, provider);
+	//		int regSize = regulationForResourceArray.size();
+	
+	//		errorRelated.append("# of Regulations "+regSize);
+	
+			for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
+				try {
+					Regulation regulation = (Regulation) i.next();
+					errorRelated.append(getLocalizedString("invoice.Regulation","Regulation")+":"+regulation.getName());
+					PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
+					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+					String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
+					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
+					createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes, startDate, endDate);
+				}
+				catch (BruttoIncomeException e) {
+					//Who cares!!!
+				}
+				catch (LowIncomeException e) {
+	
+				}
 			}
 		}
 	}
