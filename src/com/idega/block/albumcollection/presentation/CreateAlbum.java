@@ -10,7 +10,7 @@ import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.SubmitButton;
-
+import com.idega.presentation.text.Text;
 
 /**
  * Title:        AlbumCollection
@@ -45,6 +45,23 @@ public class CreateAlbum extends IWAdminWindow {
 
   public PresentationObject getElementsOredered(IWContext iwc){
     Table contentTable = new Table();
+
+    //
+    Table nameTable = new Table(2,3);
+    nameTable.add(new Text(),1,1);
+    nameTable.add(this._fieldName,2,1);
+    nameTable.add(new Text(),1,1);
+    nameTable.add(this._fieldAlbumType,2,2);
+    nameTable.add(new Text(),1,1);
+    nameTable.add(this._fieldPublishingDay,2,3);
+
+    contentTable.add(nameTable,1,1);
+
+    Table t2 = new Table(2,2);
+    t2.add(this._fieldAuthors,1,2);
+    t2.add(this._fieldPerformers,2,2);
+
+    contentTable.add(t2,1,2);
 
 
 
