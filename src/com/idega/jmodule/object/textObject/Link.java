@@ -206,9 +206,10 @@ public String getAttributeString(ModuleInfo modinfo){
 public void main(ModuleInfo modinfo)throws Exception{
   if(ObjectType.equals("Window")){
 
-    String sessionParameterName=com.idega.servlet.WindowOpener.storeWindow(modinfo,myWindow);
-    addParameter(sessionStorageName,sessionParameterName);
-
+    if(myWindow.getURL(modinfo).indexOf(IWMainApplication.windowOpenerURL)!=-1){
+      String sessionParameterName=com.idega.servlet.WindowOpener.storeWindow(modinfo,myWindow);
+      addParameter(sessionStorageName,sessionParameterName);
+    }
     //String sessionParameterName=this.getID();
     //addParameter(sessionStorageName,sessionParameterName);
     //modinfo.setSessionAttribute(sessionParameterName,myWindow);
@@ -668,6 +669,10 @@ public void print(ModuleInfo modinfo)throws Exception{
 
   public void setEventListener(String eventListenerClassName){
     this.addParameter(new Parameter(IWMainApplication.IdegaEventListenerClassParameter,IWMainApplication.getEncryptedClassName(eventListenerClassName)));
+  }
+
+  public void sendToControllerFrame(){
+    this.setTarget(IWConstants.IW_CONTROLLER_FRAME_NAME);
   }
 
 }
