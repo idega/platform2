@@ -3,7 +3,7 @@ package com.idega.block.trade.stockroom.data;
 import java.sql.*;
 import com.idega.data.GenericEntity;
 import com.idega.core.data.*;
-import com.idega.jmodule.employment.EmployeeGroup;
+import com.idega.block.employment.data.EmployeeGroup;
 
 /**
  * Title:        IW Trade
