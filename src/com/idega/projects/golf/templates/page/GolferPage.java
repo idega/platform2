@@ -447,7 +447,12 @@ public class GolferPage extends Page{
     news.getHeadlineProxy().setFontSize(1);
     news.showNewsCollectionButton(false);
     news.setCollectionImage("collection.gif");
-    news.setShowImages(false);
+
+    //only hide images when in category view
+    if( modinfo.getParameter("news_id") == null ){
+      news.setShowImages(false);
+    }
+
     news.setShowOnlyDates(true);
     news.setHeadlineAsLink(true);
     //homeTable.addBreak(1,1);
