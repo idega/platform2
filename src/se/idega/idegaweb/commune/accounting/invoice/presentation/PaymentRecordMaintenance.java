@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/10 21:03:04 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/10 21:45:58 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.64 $
+ * @version $Revision: 1.65 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -313,13 +313,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 					= getPeriodParameter (context, START_PERIOD_KEY);
 			final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
 			records = business.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
-					(schoolCategory, providerId,
-					 new java.sql.Date
-					 (startPeriod != null ? startPeriod.getTime ()
-						: System.currentTimeMillis ()),
-					 new java.sql.Date
-					 (endPeriod != null ? endPeriod.getTime ()
-						: System.currentTimeMillis ()));
+					(schoolCategory, providerId, new Date (startPeriod.getTime ()),
+					 new Date (endPeriod.getTime ()));
 		}
 		final String title = localize
 				(CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT);
@@ -392,8 +387,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addCancelButton (htmlTable, 1, 3, ACTION_SHOW_PAYMENT);
 		final Form form = new Form ();
 		form.maintainParameter (PROVIDER_KEY);
-		form.maintainParameter (START_PERIOD_KEY);
-		form.maintainParameter (END_PERIOD_KEY);
+		//		form.maintainParameter (START_PERIOD_KEY);
+		//		form.maintainParameter (END_PERIOD_KEY);
 		form.setOnSubmit("return checkInfoForm()");
 		form.add (htmlTable);
 		final Table formTable = createTable (1);
@@ -459,9 +454,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addPhrase (headerTable, getSchoolCategoryName (context,
 																									 schoolCategoryId));
 		addPhrase (headerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": ");
-		final String period
-				= (null != startPeriod ? getFormattedPeriod (startPeriod) : "") + " - "
-				+ (null != endPeriod ? getFormattedPeriod (endPeriod) : "");
+		final String period	= (getFormattedPeriod (startPeriod)) + " - "
+				+ (getFormattedPeriod (endPeriod));
 		addPhrase (headerTable, period);
 		addPhrase (headerTable, localize (PRINT_DATE_KEY, PRINT_DATE_DEFAULT)
 							 + ": ");
@@ -610,7 +604,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		if (null != vatAmount) record.setTotalAmountVAT
 															 (vatAmount.floatValue ());
 		record.setChangedBy (getSignature (currentUser));
-		record.setDateChanged (new java.sql.Date (System.currentTimeMillis ()));
+		record.setDateChanged (new Date (System.currentTimeMillis ()));
 		if (null != period) record.setPeriod (period);
 		if (null != doublePosting) record.setDoublePosting (doublePosting);
 		if (null != ownPosting) record.setOwnPosting (ownPosting);
@@ -860,13 +854,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
 			final PaymentRecord [] records = business
 					.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
-					(schoolCategory, providerId,
-					 new java.sql.Date
-					 (startPeriod != null ? startPeriod.getTime ()
-						: System.currentTimeMillis ()),
-					 new java.sql.Date
-					 (endPeriod != null ? endPeriod.getTime ()
-						: System.currentTimeMillis ()));
+					(schoolCategory, providerId, new Date (startPeriod.getTime ()),
+					 new Date (endPeriod.getTime ()));
 			table.setHeight (row++, 12);
 			table.mergeCells (1, row, columnCount, row);
 			final ButtonPanel buttonPanel = new ButtonPanel (this);
@@ -1546,18 +1535,24 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static Date getPeriodParameter (final IWContext context,
 																					final String key) {
 		final String rawString = context.getParameter (key);
-		if (null == rawString || rawString.length () != 4) return null;
-		try {
-			final int year = Integer.parseInt (rawString.substring (0, 2))
-					+ 2000;
-			final int month = Integer.parseInt (rawString.substring (2, 4))
-					+ Calendar.JANUARY - 1;
-			final Calendar calendar = Calendar.getInstance ();
-			calendar.set (year, month, 1, 0, 0);
-			return new Date (calendar.getTimeInMillis ());
-		} catch (final NumberFormatException exception) {
-			return null;
+		final Date sessionPeriod = (Date) context.getSessionAttribute (key);
+		Date result = null != sessionPeriod ? sessionPeriod
+				: new Date (System.currentTimeMillis ());
+		if (null != rawString && 4 == rawString.length ()) {
+			try {
+				final int year = Integer.parseInt (rawString.substring (0, 2))
+						+ 2000;
+				final int month = Integer.parseInt (rawString.substring (2, 4))
+						+ Calendar.JANUARY - 1;
+				final Calendar calendar = Calendar.getInstance ();
+				calendar.set (year, month, 1, 0, 0);
+				result = new Date (calendar.getTimeInMillis ());
+			} catch (final NumberFormatException exception) {
+				// no problem, stick with current time
+			}
 		}
+		context.setSessionAttribute (key, result);
+		return result;
 	}
 	
 	/**
