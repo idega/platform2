@@ -98,7 +98,7 @@ public class Booker {
 
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select sum(b."+GeneralBooking.getTotalCountColumnName()+") from "+GeneralBooking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(Booking.class,Reseller.class)+" br");
+            sql.append("Select sum(b."+GeneralBooking.getTotalCountColumnName()+") from "+GeneralBooking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
             sql.append(" where ");
             sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
             sql.append(" and ");

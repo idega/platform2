@@ -44,6 +44,7 @@ public class TourBookingForm extends TravelManager {
   private int _resellerId;
 
   int available = is.idega.idegaweb.travel.presentation.Booking.available;
+  int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
 
   public static String BookingAction = "booking_action";
   private String BookingParameter = "booking";
@@ -84,7 +85,7 @@ public class TourBookingForm extends TravelManager {
       table.setColumnAlignment(3,"right");
       table.setColumnAlignment(4,"left");
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), true);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
 
       if (pPrices.length > 0) {
           int row = 1;
@@ -801,17 +802,21 @@ public class TourBookingForm extends TravelManager {
 
     int iAvailable = available;
 
+    System.err.println("CHECKING BOOKING");
+
     if (sAvailable != null)
       iAvailable = Integer.parseInt(sAvailable);
 
-    if (iAvailable != available) {
+    System.err.println("...sAvailable = "+sAvailable +" vs "+available);
+    if (iAvailable != this.availableIfNoLimit) {
+      System.err.println("...i ef....");
       String many;
       int iMany = 0;
       ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
-            form.maintainParameter("priceCategory"+i);
             many = iwc.getParameter("priceCategory"+i);
+            System.err.println("..."+pPrices[i].getName()+": "+many);
             if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
                 manys[i] = Integer.parseInt(many);
                 iMany += Integer.parseInt(many);
@@ -819,13 +824,14 @@ public class TourBookingForm extends TravelManager {
                 manys[i] = 0;
             }
         }
-        form.add(new HiddenInput("numberOfSeats", Integer.toString(iMany)));
+        //form.add(new HiddenInput("numberOfSeats", Integer.toString(iMany)));
 
       if (iMany > iAvailable) {
           tooMany = true;
       }
     }
 
+    System.err.println("...TooMany = "+tooMany);
 
     if (tooMany) {
       Table table = new Table();

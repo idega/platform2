@@ -67,7 +67,8 @@ public class Booking extends TravelManager {
 
   public static String parameterUpdateBooking = "bookinUpdateBooking";
 
-  public static int available = -1234;
+  public static final int availableIfNoLimit = -1234;
+  public static int available = availableIfNoLimit;
 
   private idegaTimestamp stamp;
 
@@ -176,7 +177,7 @@ public class Booking extends TravelManager {
           form.add(contentTable);
         }
         else {
-          form.add("TEMP - Veldu ferð");
+          form.add(iwrb.getLocalizedString("travel.select_a_product","Select a product"));
         }
 
 
@@ -692,16 +693,17 @@ public class Booking extends TravelManager {
 
     TourBookingForm tbf = new TourBookingForm(iwc, product);
     try {
-//      if (product != null)  tbf.setProduct(product);
+      System.err.println("IN HANDLE INSTERT");
       if (reseller != null) tbf.setReseller(reseller);
-//      if (tour != null)     tbf.setTour(tour);
       tbf.setTimestamp(stamp);
 
-      if (displayForm) {
+      int returner = tbf.handleInsert(iwc);
+
+      if (displayForm && returner != -1) {
         displayForm(iwc);
       }
 
-      return tbf.handleInsert(iwc);
+      return returner;
     }catch (Exception e) {
       e.printStackTrace(System.err);
 
