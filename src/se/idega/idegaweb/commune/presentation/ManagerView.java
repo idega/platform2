@@ -47,12 +47,12 @@ public class ManagerView extends CommuneBlock {
 	}
 	public void add(PresentationObject po) {
 		if (mainTable == null) {
-			mainTable = new Table(2,1);
-			mainTable.setCellpadding(14);
+			mainTable = new Table(3,1);
+			mainTable.setCellpadding(0);
 			mainTable.setCellspacing(0);
-			//mainTable.setColor(getBackgroundColor());
+			mainTable.setWidth(2, "20");
 			mainTable.setWidth(400);
-			mainTable.setHeight(500);
+			mainTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		}
 		mainTable.add(po);
 	}
@@ -61,7 +61,6 @@ public class ManagerView extends CommuneBlock {
 		return action;
 	}
 	private void viewManagerInfo(IWContext iwc) throws Exception {
-		//add(getLocalizedHeader("managerview.my_cases", "My cases"));
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
 		add(new Break(2));
 		User manager = null;
@@ -73,9 +72,6 @@ public class ManagerView extends CommuneBlock {
 			catch(Exception e){
 			}
 			if (managerSelected) {
-				
-				
-				
 				Table leftTable = new Table(1,7);
 				mainTable.add(leftTable,1,1);
 				
@@ -103,10 +99,10 @@ public class ManagerView extends CommuneBlock {
 					image.setWidth(100);
 					picture=image;
 				}
-				mainTable.add(picture,2,1);
+				mainTable.add(picture,3,1);
 				
-				String sManagerName = manager.getName();
-				Text tManagerName = getHeader(sManagerName);
+				String sManagerName = manager.getNameLastFirst(true);
+				Text tManagerName = getSmallHeader(sManagerName);
 				leftTable.add(tManagerName,1,1);
 				
 				String sWorkGroup = getWorkGroupName(manager,iwc);
