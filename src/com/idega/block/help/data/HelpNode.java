@@ -13,6 +13,7 @@ import com.idega.core.ICTreeNode;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -107,6 +108,10 @@ public class HelpNode implements ICTreeNode {
 	 */
 	public String getNodeName() {
 		return _name;
+	}
+	
+	public String getNodeName(Locale locale) {
+		return getNodeName();
 	}
 
 	/**
