@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.2 2003/09/17 16:28:13 anders Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.3 2003/09/22 12:06:57 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,19 +13,22 @@ import com.idega.data.GenericEntity;
 
 import com.idega.block.school.data.School;
 
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2003/09/17 16:28:13 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/22 12:06:57 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 
 	private static final String ENTITY_NAME = "cacc_provider_acc_prop";
 
 	private static final String COLUMN_SCHOOL_ID = "school_id";
+	private static final String COLUMN_PROVIDER_TYPE_ID = "provider_type_id";
 	private static final String COLUMN_STATISTICS_TYPE = "statistics_type";
 	private static final String COLUMN_PAYMENT_BY_INVOICE = "payment_by_invoice";
 	private static final String COLUMN_POSTGIRO = "postgiro";
@@ -54,6 +57,8 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		addOneToOneRelationship(getIDColumnName(), School.class);
 		setAsPrimaryKey (getIDColumnName(), true);
 
+		addAttribute(COLUMN_PROVIDER_TYPE_ID, "Provider type (foreign key)", true, true, 
+				Integer.class, "many-to-one", ProviderType.class);
 		addAttribute(COLUMN_STATISTICS_TYPE, "Provider statistics type (foreign key)", true, true, 
 				String.class, "many-to-one", ProviderStatisticsType.class);
 		addAttribute(COLUMN_PAYMENT_BY_INVOICE, "Invoice yes/no", true, true, Boolean.class);
@@ -65,6 +70,18 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 	
 	public School getSchool() {
 		return (School) getColumnValue(COLUMN_SCHOOL_ID);	
+	}
+
+	public int getSchoolId() {
+		return getIntColumnValue(COLUMN_SCHOOL_ID);	
+	}
+	
+	public ProviderType getProviderType() {
+		return (ProviderType) getColumnValue(COLUMN_PROVIDER_TYPE_ID);	
+	}
+
+	public int getProviderTypeId() {
+		return getIntColumnValue(COLUMN_PROVIDER_TYPE_ID);	
 	}
 
 	public String getStatisticsType() {
@@ -93,6 +110,10 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 
 	public void setSchoolId(int id) { 
 		setColumn(COLUMN_SCHOOL_ID, id); 
+	}
+
+	public void setProviderTypeId(int id) { 
+		setColumn(COLUMN_PROVIDER_TYPE_ID, id); 
 	}
 
 	public void setStatisticsType(String type) { 

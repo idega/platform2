@@ -9,7 +9,10 @@ public interface ProviderAccountingProperties extends com.idega.data.IDOEntity
  public java.lang.String getOwnPosting();
  public boolean getPaymentByInvoice();
  public java.lang.String getPostgiro();
+ public se.idega.idegaweb.commune.accounting.regulations.data.ProviderType getProviderType();
+ public int getProviderTypeId();
  public com.idega.block.school.data.School getSchool();
+ public int getSchoolId();
  public java.lang.String getStatisticsType();
  public void initializeAttributes();
  public void setBankgiro(java.lang.String p0);
@@ -17,6 +20,7 @@ public interface ProviderAccountingProperties extends com.idega.data.IDOEntity
  public void setOwnPosting(java.lang.String p0);
  public void setPaymentByInvoice(boolean p0);
  public void setPostgiro(java.lang.String p0);
+ public void setProviderTypeId(int p0);
  public void setSchoolId(int p0);
  public void setStatisticsType(java.lang.String p0);
 }

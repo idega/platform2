@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.4 2003/09/22 08:47:40 anders Exp $
+ * $Id: ProviderEditor.java,v 1.5 2003/09/22 12:06:58 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -45,6 +45,9 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsTypeHo
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderException;
 
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -54,10 +57,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/22 08:47:40 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/22 12:06:58 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -85,6 +88,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String PARAMETER_SCHOOL_YEAR_ID = PP + "school_year_id";	
 	private final static String PARAMETER_ORGANIZATION_NUMBER = PP + "organization_number";
 	private final static String PARAMETER_EXTRA_PROVIDER_ID = PP + "extra_provider_id";
+	private final static String PARAMETER_PROVIDER_TYPE_ID = PP + "provider_type_id";
 	private final static String PARAMETER_SCHOOL_MANAGEMENT_TYPE_ID = PP + "school_management_type_id";
 	private final static String PARAMETER_TERMINATION_DATE = PP + "termination_date";
 	private final static String PARAMETER_COMMUNE_ID = PP + "commune_id";
@@ -118,6 +122,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_SCHOOL_AREA = KP + "school_area";
 	private final static String KEY_ORGANIZATION_NUMBER = KP + "organization_number";
 	private final static String KEY_EXTRA_PROVIDER_ID = KP + "extra_provider_id";
+	private final static String KEY_PROVIDER_TYPE = KP + "provider_type";
 	private final static String KEY_SCHOOL_MANAGEMENT_TYPE = KP + "school_management_type";
 	private final static String KEY_TERMINATION_DATE = KP + "termination_date";
 	private final static String KEY_COMMUNE = KP + "commune";
@@ -128,6 +133,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_BANKGIRO = KP + "bankgiro";
 	private final static String KEY_STATISTICS_TYPE = KP + "statistics_type";
 	private final static String KEY_SCHOOL_AREA_SELECTOR_HEADER = KP + "school_area_selector_header";
+	private final static String KEY_PROVIDER_TYPE_SELECTOR_HEADER = KP + "school_provider_type_selector_header";
 	private final static String KEY_SCHOOL_MANAGEMENT_TYPE_SELECTOR_HEADER = KP + "school_management_type_selector_header";
 	private final static String KEY_STATISTICS_TYPE_SELECTOR_HEADER = KP + "statistics_type_selector_header";
 	private final static String KEY_COMMUNE_SELECTOR_HEADER = KP + "commune_selector_header";
@@ -211,7 +217,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */	
 	private void handleNewAction(IWContext iwc) {
 		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", "-1", 
-				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
+				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
 	}
 
 	/*
@@ -261,6 +267,7 @@ public class ProviderEditor extends AccountingBlock {
 					schoolTypeMap,
 					school.getOrganizationNumber(),
 					school.getExtraProviderId(),
+					"" + provider.getProviderTypeId(),
 					"" + school.getManagementTypeId(),
 					"" + school.getTerminationDate(),
 					"" + school.getCommuneId(),
@@ -306,6 +313,7 @@ public class ProviderEditor extends AccountingBlock {
 					getSchoolTypeMap(iwc),
 					getParameter(iwc, PARAMETER_ORGANIZATION_NUMBER),
 					getParameter(iwc, PARAMETER_EXTRA_PROVIDER_ID),
+					getParameter(iwc, PARAMETER_PROVIDER_TYPE_ID),
 					getParameter(iwc, PARAMETER_SCHOOL_MANAGEMENT_TYPE_ID),
 					parseDate(getParameter(iwc, PARAMETER_TERMINATION_DATE)),
 					getParameter(iwc, PARAMETER_COMMUNE_ID),
@@ -341,6 +349,7 @@ public class ProviderEditor extends AccountingBlock {
 					getSchoolTypeMap(iwc),
 					getParameter(iwc, PARAMETER_ORGANIZATION_NUMBER),
 					getParameter(iwc, PARAMETER_EXTRA_PROVIDER_ID),
+					getParameter(iwc, PARAMETER_PROVIDER_TYPE_ID),
 					getParameter(iwc, PARAMETER_SCHOOL_MANAGEMENT_TYPE_ID),
 					getParameter(iwc, PARAMETER_TERMINATION_DATE),
 					getParameter(iwc, PARAMETER_COMMUNE_ID),
@@ -489,6 +498,7 @@ public class ProviderEditor extends AccountingBlock {
 			Map schoolTypeMap,
 			String organizationNumber,
 			String extraProviderId,
+			String providerTypeId,
 			String schoolManagementTypeId,
 			String terminationDate,
 			String communeId,
@@ -591,6 +601,8 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(getTextInput(PARAMETER_ORGANIZATION_NUMBER, organizationNumber, 100), 2, row++);
 		table.add(getSmallHeader(localize(KEY_EXTRA_PROVIDER_ID, "Provider id")), 1, row);
 		table.add(getTextInput(PARAMETER_EXTRA_PROVIDER_ID, extraProviderId, 100), 2, row++);
+		table.add(getSmallHeader(localize(KEY_PROVIDER_TYPE, "Provider type")), 1, row);
+		table.add(getProviderTypeDropdownMenu(iwc, PARAMETER_PROVIDER_TYPE_ID, providerTypeId), 2, row++);
 		table.add(getSmallHeader(localize(KEY_SCHOOL_MANAGEMENT_TYPE, "School management type")), 1, row);
 		table.add(getSchoolManagementTypeDropdownMenu(iwc, PARAMETER_SCHOOL_MANAGEMENT_TYPE_ID, schoolManagementTypeId), 2, row++);
 		table.add(getSmallHeader(localize(KEY_TERMINATION_DATE, "Termination date")), 1, row);
@@ -699,6 +711,30 @@ public class ProviderEditor extends AccountingBlock {
 				menu.setSelectedElement(selectedId);
 			}
 		}		
+		return menu;	
+	}
+	
+	/*
+	 * Returns a DropdownMenu for provider types. 
+	 */
+	private DropdownMenu getProviderTypeDropdownMenu(IWContext iwc, String name, String selectedIndex) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
+		menu.addMenuElement(0, localize(KEY_PROVIDER_TYPE_SELECTOR_HEADER, "Choose provider type"));
+		try {
+			Collection c = getRegulationsBusiness(iwc).findAllProviderTypes();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					ProviderType pt = (ProviderType) iter.next();
+					menu.addMenuElement("" + (((Integer) pt.getPrimaryKey()).intValue()), 
+							localize(pt.getLocalizationKey(), pt.getLocalizationKey()));
+				}
+				if (selectedIndex != null) {
+					menu.setSelectedElement(selectedIndex);
+				}
+			}
+		} catch (RemoteException e) {}
+
 		return menu;	
 	}
 	
@@ -917,4 +953,11 @@ public class ProviderEditor extends AccountingBlock {
 		}
 		return pb;
 	}	
+
+	/*
+	 * Returns a regulations business object
+	 */
+	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
+		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
+	}
 }

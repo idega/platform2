@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.3 2003/09/22 08:46:54 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.4 2003/09/22 12:06:57 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/09/22 08:46:54 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/22 12:06:57 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -88,6 +88,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			Map schoolTypeMap,
 			String organizationNumber,
 			String extraProviderId,
+			String providerTypeId,
 			String schoolManagementTypeId,
 			java.sql.Date terminationDate,
 			String communeId,
@@ -169,6 +170,10 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			pap.setPaymentByInvoice(getBoolean(paymentByInvoice).booleanValue());
 			pap.setPostgiro(postgiro);
 			pap.setBankgiro(bankgiro);
+			int ptId = getInt(providerTypeId);
+			if (ptId > 0) {
+				pap.setProviderTypeId(ptId);
+			}
 			if (!statisticsType.equals("")) {
 				pap.setStatisticsType(statisticsType);
 			}
