@@ -373,8 +373,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
    doLayout();
    Component[] comps = getComponents();
    for (int i = 0; i < comps.length; i++) {
-        comps[i].paintAll(getGraphics());
     comps[i].repaint();
+    comps[i].paintAll(getGraphics());
    }
 
     repaint();
