@@ -36,11 +36,11 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
   public HotelBusinessBean() {
   }
 
-  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId) throws Exception{
-    return updateHotel(-1, supplierId, fileId, name, number, description, numberOfUnits, maxPerUnit, isValid, discountTypeId);
+  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId, int roomTypeId) throws Exception{
+    return updateHotel(-1, supplierId, fileId, name, number, description, numberOfUnits, maxPerUnit, isValid, discountTypeId, roomTypeId);
   }
 
-  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId) throws Exception{
+  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId, int roomTypeId) throws Exception{
     int productId = -1;
 
     if (serviceId == -1) {
@@ -56,6 +56,9 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       hotel = hHome.findByPrimaryKey(new Integer(productId));
       hotel.setNumberOfUnits(numberOfUnits);
       hotel.setMaxPerUnit( maxPerUnit );
+      if (roomTypeId > 0) {
+      	hotel.setRoomTypeId(roomTypeId);
+      }
       hotel.store();
     }catch (FinderException fe) {
       /** create hotel */
@@ -63,6 +66,9 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       hotel.setPrimaryKey(new Integer(productId));
       hotel.setNumberOfUnits(numberOfUnits);
       hotel.setMaxPerUnit( maxPerUnit );
+		  if (roomTypeId > 0) {
+				hotel.setRoomTypeId(roomTypeId);
+	  	}
       hotel.store();
     }
 
