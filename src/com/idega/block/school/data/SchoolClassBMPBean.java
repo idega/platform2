@@ -325,9 +325,18 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	return ejbFindBySeasonAndYear(((Integer)schoolSeason.getPrimaryKey()).intValue(),((Integer)schoolYear.getPrimaryKey()).intValue());
   }
 	
-  public Collection ejbFindBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID,int seasonID,boolean showSubGroups)throws FinderException{
+  public Collection ejbFindBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID,int seasonID,boolean showSubGroups,boolean showNonSeasonGroups)throws FinderException{
   	IDOQuery query = idoQueryGetSelect().appendWhereEquals(SCHOOL,schoolID).appendAndEquals(SCHOOLTYPE,schoolTypeID);
-  	if(seasonID>0)
+  	if(showNonSeasonGroups){
+  		if(seasonID>0){
+  			query.appendAnd().appendLeftParenthesis().appendEquals(SEASON,seasonID);
+  			query.appendOrIsNull(SEASON).appendRightParenthesis();
+  		}
+  		else{
+  			query.appendAndIsNull(SEASON);
+  		}
+  	}
+  	else if(seasonID>0)
   		query.appendAndEquals(SEASON,seasonID);
   	if(!showSubGroups)
   		query.appendAndEquals(COLUMN_SUB_GROUP,false);
