@@ -198,7 +198,11 @@ public class ContentBusiness {
 				Iterator I = listOfFiles.iterator();
 				while (I.hasNext()) {
 					ICFile file = (ICFile) I.next();
-					eContent.addFileToContent(file);
+					try {
+						eContent.addFileToContent(file);
+					} catch (IDOAddRelationshipException e) {
+						// ICFile is already connected to Content
+					}
 				}
 			}
 
