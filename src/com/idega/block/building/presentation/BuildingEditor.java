@@ -609,7 +609,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     T.add(formatText(iwrb.getLocalizedString("name","Name")),1,2);
     T.add(name,1,3);
     T.add(formatText(iwrb.getLocalizedString("text","Text")),2,2);
-    T.add(makeTextInput(iTextId),3,2);
+    T.add(makeTextInput(iTextId),2,3);
     T.add(formatText(iwrb.getLocalizedString("info","Info")),1,4);
     T.mergeCells(1,5,2,5);
     T.add( makeTextArea(sInfo),1,5);
