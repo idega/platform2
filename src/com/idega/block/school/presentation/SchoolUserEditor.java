@@ -251,14 +251,14 @@ public class SchoolUserEditor extends Block {
 			}
 			
 			/** ATH SETJA USERA I GROUPUR, SEM HAEGT ER AD SETJA IB_PAGE_ID A.... EKKI GLEYMA THESSU */
-			/** VIRKAR !!! HURRA */ 
+			/** VIRKAR !!! HURRA  
 			String rui = iwc.getParameter("repp_user_id");
 			contTable.add("rui : " +rui , 1, 7);
 			UserChooser uc = new UserChooser("repp_user_id");
 			uc.setValidUserPks(users);
 			contTable.add(uc, 1, 7);
-			
-			
+			*/
+						
 			/** Empty User field */
 			Table table = this.getUserForm();
 
