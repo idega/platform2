@@ -22,11 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
 import javax.ejb.FinderException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.NoUserAddressException;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
@@ -43,7 +41,6 @@ import se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 import se.idega.idegaweb.commune.printing.data.PrintDocumentsHome;
-
 import com.idega.block.process.data.Case;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.file.data.ICFile;
@@ -205,7 +202,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 
 			addrString.append(user.getName());
 			addrString.append("\n");
-			Address addr = getSnailMailAddress(user);
+			Address addr = getPostalAddress(user);
 			if (addr != null) {
 				addrString.append(addr.getStreetAddress());
 				addrString.append("\n");
@@ -236,8 +233,8 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
      * @throws RemoteException
      * @throws NoUserAddressException
      */
-    private Address getSnailMailAddress(User user) throws RemoteException, NoUserAddressException  {
-        return getUserBusiness().getSnailMailAddress(user);
+    private Address getPostalAddress(User user) throws RemoteException, NoUserAddressException  {
+        return getUserBusiness().getPostalAddress(user);
     }
 
     public Collection getPrintedDocuments() throws FinderException {
