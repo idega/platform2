@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.11 2001/08/24 17:45:06 aron Exp $
+ * $Id: Tabber.java,v 1.12 2001/08/27 15:17:49 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -122,19 +122,19 @@ public class Tabber extends JModuleObject {
 
       String lang = "IS";
 
-      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/financial.gif":"/tabs/financial1.gif"),"/finance/index.jsp");
+      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif"),"/finance/index.jsp");
       Link1.addParameter(strAction,ACT20);
 
-      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/residents.gif":"/tabs/residents1.gif"),"/main/manager.jsp");
+      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants1.gif"),"/main/manager.jsp");
       Link2.addParameter(strAction,ACT21);
 
-      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/allocation.gif":"/tabs/allocation1.gif"),"/allocation/index.jsp");
+      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif"),"/allocation/index.jsp");
       Link3.addParameter(strAction,ACT22);
 
-      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/apartment.gif":"/tabs/apartment1.gif"),"/building/index.jsp");
+      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif"),"/building/index.jsp");
       Link4.addParameter(strAction,ACT23);
 
-      Link Link5 = new Link(iwrb.getImage(iAct == ACT24?"/tabs/announce.gif":"/tabs/announce1.gif"),"/main/announcements.jsp");
+      Link Link5 = new Link(iwrb.getImage(iAct == ACT24?"/tabs/announcements.gif":"/tabs/announcements1.gif"),"/main/announcements.jsp");
       Link5.addParameter(strAction,ACT24);
 
       LinkTable.add(Link1,1,1);
@@ -156,10 +156,10 @@ public class Tabber extends JModuleObject {
       String lang = "IS";
 
 
-      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/financial.gif":"/tabs/financial1.gif"),"/finance/index.jsp");
-      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/residents.gif":"/tabs/residents1.gif"),"/main/manager.jsp");
-      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/allocation.gif":"/tabs/allocation1.gif"),"/allocation/index.jsp");
-      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/apartment.gif":"/tabs/apartment1.gif"),"/building/index.jsp");
+      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif"),"/finance/index.jsp");
+      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants.gif"),"/main/manager.jsp");
+      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate.gif"),"/allocation/index.jsp");
+      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif"),"/building/index.jsp");
 
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,1,1);
@@ -179,16 +179,16 @@ public class Tabber extends JModuleObject {
 
       String lang = "IS";
 
-      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/apartment.gif":"/tabs/apartment1.gif"),"/tenant/index.jsp");
+      Link Link1 = new Link(iwrb.getImage(iAct == ACT20?"/tabs/my_profile.gif":"/tabs/my_profile1.gif"),"/tenant/index.jsp");
       Link1.addParameter(strAction,ACT20);
 
-      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/financial.gif":"/tabs/financial1.gif"),"/tenant/accountview.jsp");
+      Link Link2 = new Link(iwrb.getImage(iAct == ACT21?"/tabs/finance.gif":"/tabs/finance.gif"),"/tenant/accountview.jsp");
       Link2.addParameter(strAction,ACT21);
 
-      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/residents.gif":"/tabs/residents1.gif"),"/index2.jsp");
+      Link Link3 = new Link(iwrb.getImage(iAct == ACT22?"/tabs/habitants.gif":"/tabs/habitants1.gif"),"/index2.jsp");
       Link3.addParameter(strAction,ACT22);
 
-      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/announce.gif":"/tabs/announce1.gif"),"/main/announcements.jsp");
+      Link Link4 = new Link(iwrb.getImage(iAct == ACT23?"/tabs/announcements.gif":"/tabs/announcements1.gif"),"/main/announcements.jsp");
       Link4.addParameter(strAction,ACT23);
 
 
