@@ -16,7 +16,8 @@ private HeaderTable mainTable;
 private Table innerTable;
 private String headerColor;
 private String mainColor;
-
+private Image headerImage;
+private boolean goneThrough_main=false;
 
 	public TournamentBox(){
 		this("Mót");
@@ -28,10 +29,30 @@ private String mainColor;
 
 
 	public TournamentBox(Image headerImage){
+                this.headerImage=headerImage;
 		initialize(headerImage);
-
-
 	}
+
+
+        /**
+         * Workaround so that this object doesn't call the main() function of HeaderTable
+         */
+        public void _main(ModuleInfo modinfo) throws Exception {
+          if(!goneThrough_main){
+              goneThrough_main=true;
+              super._main(modinfo);
+          }
+        }
+
+        /*public void main(ModuleInfo modinfo){
+          empty();
+          if(headerImage==null){
+            initialize(header);
+          }
+          else{
+            initialize(headerImage);
+          }
+        }*/
 
         public void initialize(Object obj){
               mainTable = new HeaderTable();
@@ -54,53 +75,77 @@ private String mainColor;
 
                 Tournament[] recent = null;
                 Tournament[] coming = null;
+                int row = 1;
 
                 try {
-                  recent = TournamentController.getLastTournaments(3);
-                  coming = TournamentController.getNextTournaments(3);
+                    recent = TournamentController.getLastClosedTournaments(5);
+//                  recent = TournamentController.getLastTournaments(3);
+                  coming = TournamentController.getTournamentToday();
+//                  coming = TournamentController.getNextTournaments(3);
                 }
                 catch (Exception e) {
                 }
 
-                Text nextones=new Text("Næstu mót:");
+                Text nextones=new Text("Mót í dag:");
                   nextones.setFontSize(1);
                   nextones.setBold();
                   nextones.setFontFace("Verdana,Arial,sans-serif");
-                innerTable.add(nextones,1,1);
+                innerTable.add(nextones,1,row);
 
                 if(coming!= null){
                   for (int i = 0; i < coming.length; i++) {
+                    ++row;
                     Link link = new Link(coming[i].getName(),"/tournament/tournamentinfo.jsp");
                       link.setFontSize(1);
                       link.addParameter("tournament_id",coming[i].getID());
-                    innerTable.add(link,1,i+2);
+                    innerTable.add(link,1,row);
+                  }
+                  if ( coming.length == 0 ) {
+                      ++row;
+                     Text noCom = new Text("Engin mót í dag");
+                      noCom.setFontSize(1);
+                      innerTable.add(noCom,1,row);
                   }
 
+                }else{
+                    ++row;
+                   Text noCom = new Text("Engin mót í dag");
+                    noCom.setFontSize(1);
+                    innerTable.add(noCom,1,row);
                 }
-                Text lastones=new Text("Síðustu mót:");
+
+
+                ++row;
+                innerTable.addText("",1,row);
+                innerTable.setHeight(row,"10");
+
+                ++row;
+                Text lastones=new Text("Nýjustu úrslit:");
                   lastones.setFontSize(1);
                   lastones.setBold();
                   lastones.setFontFace("Verdana,Arial,sans-serif");
-                innerTable.add(lastones,1,6);
-                innerTable.addText("",1,5);
-                innerTable.setHeight(5,"10");
+                innerTable.add(lastones,1,row);
                 if(recent!= null){
                   for (int i = 0; i < recent.length; i++) {
+                    ++row;
                     Link link = new Link(recent[i].getName(),"/tournament/tournamentinfo.jsp");
                       link.setFontSize(1);
                       link.addParameter("tournament_id",recent[i].getID());
-                    innerTable.add(link,1,i+7);
+                      link.addParameter("action","viewFinalScore");
+                    innerTable.add(link,1,row);
                   }
                   if ( recent.length == 0 ) {
+                      ++row;
                      Text noLast = new Text("Engin mót búin");
                       noLast.setFontSize(1);
-                      innerTable.add(noLast,1,7);
+                      innerTable.add(noLast,1,row);
                   }
                 }
                 else {
+                ++row;
                  Text noLast = new Text("Engin mót búin");
                   noLast.setFontSize(1);
-                  innerTable.add(noLast,1,7);
+                  innerTable.add(noLast,1,row);
                 }
 
         }

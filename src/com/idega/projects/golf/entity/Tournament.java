@@ -26,11 +26,7 @@ public class Tournament extends GolfEntity{
 	public void initializeAttributes(){
 
 		addAttribute(getIDColumnName());
-
 		addAttribute("name","Nafn móts",true,true,"java.lang.String");
-		//addAttribute("handicap_min","Lágmarksforgjöf",false,false,"java.lang.Float");
-		//addAttribute("handicap_max","Hámarksforgjöf",false,false,"java.lang.Float");
-		//addAttribute("registration_form","Skráningarform",false,false,"java.lang.String");
                 addAttribute("registration_type","Skráningarform",false,false,"java.lang.String");
 		addAttribute("union_id","Haldið á vegum",true,true,"java.lang.Integer","many-to-one","com.idega.projects.golf.entity.Union");
 		addAttribute("field_id","Völlur",true,true,"java.lang.Integer","many-to-one","com.idega.projects.golf.entity.Field");
@@ -38,17 +34,29 @@ public class Tournament extends GolfEntity{
 		addAttribute("group_tournament","Flokkamót",true,true,"java.lang.Boolean");
 		addAttribute("open_tournament","Opið mót",true,true,"java.lang.Boolean");
 		addAttribute("tournament_type_id","Keppnisform",true,true,"java.lang.Integer","many-to-one","com.idega.projects.golf.entity.TournamentType");
-
 		addAttribute("registration_fee","Skráningargjald",true,true,"java.lang.Integer");
 		addAttribute("creation_date","Búið til",false,false,"java.sql.Timestamp");
 		addAttribute("start_time","Mót byrjar",true,true,"java.sql.Timestamp");
-		//addAttribute("end_time","Endar",false,false,"java.sql.Timestamp");
 		addAttribute("number_of_days","Lengd í dögum",true,true,"java.lang.Integer");
 		addAttribute("rounds","Fjöldi hringja",true,true,"java.lang.Integer");
                 addAttribute("holes","Fjöldi hola á hring",true,true,"java.lang.Integer");
 		addAttribute("last_registration_date","Síðasti skráningardagur",true,true,"java.sql.Timestamp");
 	        addAttribute("tournament_form_id","Tegund",true,true,"java.lang.Integer","many-to-one","com.idega.projects.golf.entity.TournamentForm");
                 addAttribute("extra_text","Upplýsingatexti",false,false,"java.lang.String",4000);
+
+		// added 3.4.2001
+		addAttribute("direct_registration","Skrá beint í rástima",true,true,"java.lang.Boolean");
+		addAttribute("number_in_group","Fjöldi í holli",true,true,"java.lang.Integer");
+		addAttribute("interval","Bið milli ráshopa",true,true,"java.lang.Integer");
+
+		// added 25.4.2001
+		addAttribute("FIRST_REGISTRATION_DATE","Fyrsti skráningardagur",true,true,"java.sql.Timestamp");
+		addAttribute("max_handicap","Hámarksforgjöf karla",true,true,"java.lang.Float");
+		// added 27.4.2001
+		addAttribute("max_female_handicap","Hámarksforgjöf kvenna",true,true,"java.lang.Float");
+		// added 15.6.2001
+		addAttribute("closed","Gert upp",true,true,"java.lang.Boolean");
+		addAttribute("closed_date","Gert upp hvenær",true,true,"java.sql.Timestamp");
 
                 // added 3.4.2001
                 addAttribute("direct_registration","Skrá beint í rástima",true,true,"java.lang.Boolean");
@@ -84,7 +92,9 @@ public class Tournament extends GolfEntity{
                 setNumberOfHoles(18);
                 setMaxHandicap(36);
                 setMaxFemaleHandicap(36);
-        }
+                setIsClosed(false);
+
+    }
 
 	public String getEntityName(){
 		return "tournament";
@@ -497,6 +507,7 @@ public class Tournament extends GolfEntity{
             return getTournamentGroupId(member.getID());
         }
 
+
 	public int getTournamentGroupId(int member_id)throws SQLException{
 		Connection conn= null;
 		Statement Stmt= null;
@@ -523,6 +534,65 @@ public class Tournament extends GolfEntity{
                 return returner;
 
 	}
+
+
+	public int getPosition(Member member) throws SQLException {
+		return getPosition(member.getID());
+	}
+
+	public int getPosition(int member_id)throws SQLException{
+		Connection conn= null;
+		Statement Stmt= null;
+                int returner = -1;
+		try{
+                    conn = this.getConnection();
+                    Stmt=conn.createStatement();
+
+                    ResultSet RS = Stmt.executeQuery("Select TOURNAMENT_POSITION from TOURNAMENT_MEMBER where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
+                    if (RS.next()) {
+                        returner = RS.getInt("TOURNAMENT_POSITION");
+                    }
+
+		}
+		finally{
+			if (Stmt != null){
+				Stmt.close();
+			}
+			if (conn != null){
+				freeConnection(conn);
+			}
+		}
+
+                return returner;
+
+	}
+
+
+
+	public void setPosition(Member member, int position) throws SQLException{
+		setPosition(member.getID(),position);
+	}
+
+	public void setPosition(int member_id, int position) throws SQLException{
+		Connection conn= null;
+		Statement Stmt= null;
+		try{
+                    conn = this.getConnection();
+                    Stmt=conn.createStatement();
+
+                    Stmt.executeUpdate("UPDATE TOURNAMENT_MEMBER set tournament_position = "+position+" where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
+
+		}
+		finally{
+			if (Stmt != null){
+				Stmt.close();
+			}
+			if (conn != null){
+				freeConnection(conn);
+			}
+		}
+	}
+
 
 	public int getTournamentMemberUnionId(Member member)throws SQLException{
             return getTournamentMemberUnionId(member.getID());
@@ -606,6 +676,22 @@ public class Tournament extends GolfEntity{
             setColumn("interval",interval);
         }
 
+
+        public void setIsClosed(boolean isClosed) {
+            setColumn("closed",isClosed);
+        }
+
+        public boolean getIsClosed() {
+            return getBooleanColumnValue("closed");
+        }
+
+	public void setClosedDate(Timestamp closedDate){
+		setColumn("closed_date",closedDate);
+	}
+
+        public Timestamp getClosedDate() {
+            return (Timestamp) getColumnValue("closed_date");
+        }
 
 	//todo :
 	//change the update function so it changes as well the tournament_round table
