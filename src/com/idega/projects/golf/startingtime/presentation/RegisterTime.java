@@ -496,16 +496,14 @@ public void main(ModuleInfo modinfo) throws Exception {
       this.close();
     }else{
 
-
-      String date = modinfo.getSession().getAttribute("date").toString();
-      //String field_id = modinfo.getSession().getAttribute("field_id").toString();
-      currentField = modinfo.getSession().getAttribute("field_id").toString();
-      currentUnion = modinfo.getSession().getAttribute("union_id").toString();
-
-
       boolean keepOn = true;
-
       try{
+        String date = modinfo.getSession().getAttribute("date").toString();
+        //String field_id = modinfo.getSession().getAttribute("field_id").toString();
+        currentField = modinfo.getSession().getAttribute("field_id").toString();
+        currentUnion = modinfo.getSession().getAttribute("union_id").toString();
+
+
         currentMember = Integer.toString(com.idega.projects.golf.login.business.LoginBusiness.getMember(modinfo).getID());
         currentDay = new idegaTimestamp(date);
       }catch(Exception e){

@@ -59,7 +59,11 @@ public class TeeTimeBusiness{
     return ((Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE union_id = " + union_id ))[0].getID();
   }*/
   public synchronized int getFirstField(String union_id)throws SQLException{
-    return ((Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE union_id = " + union_id + " AND  ONLINE_STARTINGTIME='Y' " ))[0].getID();
+    try{
+      return ((Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE union_id = " + union_id + " AND  ONLINE_STARTINGTIME='Y' " ))[0].getID();
+    }catch(ArrayIndexOutOfBoundsException e){
+      return -1;
+    }
   }
 
   // ##%%##%%##%%#%%## var að breyta DESC til að fa fyrstu menn fyrst, kanna hvort virkar eftir að Innskraning virkar
@@ -91,7 +95,11 @@ public class TeeTimeBusiness{
 
   public synchronized StartingtimeFieldConfig getFieldConfig(int field_id, String date)throws SQLException{
     StartingtimeFieldConfig[] temp = (StartingtimeFieldConfig[])fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " WHERE begin_date <= '"+ date +" 23:59:59.0' and field_id = " + field_id + " ORDER BY begin_date DESC");
-    return temp[0];
+    try{
+      return temp[0];
+    }catch(ArrayIndexOutOfBoundsException e){
+      return null;
+    }
   }
 
   public synchronized StartingtimeFieldConfig getFieldConfig(int field_id, idegaTimestamp date)throws SQLException{
