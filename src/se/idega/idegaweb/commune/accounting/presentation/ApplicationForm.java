@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.5 2003/08/24 06:50:02 anders Exp $
+ * $Id: ApplicationForm.java,v 1.6 2003/08/25 14:41:24 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,15 +13,16 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 
 /**
  * A generic form for Check & Peng presentation blocks.
  * 
  * <p>
- * Last modified: $Date: 2003/08/24 06:50:02 $
+ * Last modified: $Date: 2003/08/25 14:41:24 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ApplicationForm extends AccountingBlock {
 
@@ -95,6 +96,15 @@ public class ApplicationForm extends AccountingBlock {
 	 */
 	public void setButtonPanel(ButtonPanel buttonPanel) {
 		table.add(buttonPanel, 1, 4);
+	}
+	
+	/**
+	 * Adds a hidden input to this application form.
+	 * @param parameter the hidden input parameter name
+	 * @param value the hidden input parameter va?ue
+	 */
+	public void addHiddenInput(String parameter, String value) {
+		table.add(new HiddenInput(parameter, value), 1, 4);
 	}
 }
  

@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.5 2003/08/23 21:02:38 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.6 2003/08/25 14:41:24 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/08/23 21:02:38 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 14:41:24 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -90,6 +90,14 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 		return (ProviderType) getColumnValue(COLUMN_PROVIDER_TYPE_ID);	
 	}
 
+	public int getPaymentFlowTypeId() {
+		return getIntColumnValue(COLUMN_PAYMENT_FLOW_TYPE_ID);	
+	}
+
+	public int getProviderTypeId() {
+		return getIntColumnValue(COLUMN_PROVIDER_TYPE_ID);	
+	}
+
 	public void setPeriodFrom(Date from) { 
 		setColumn(COLUMN_PERIOD_FROM, from); 
 	}
@@ -122,6 +130,9 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
+		sql.appendOrderBy();
+		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
+		sql.appendCommaDelimited(s);
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
@@ -135,13 +146,21 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	public Collection ejbFindByPeriod(Date from, Date to) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_PERIOD_FROM);
-		sql.appendGreaterThanOrEqualsSign();
-		sql.append("'" + from + "'");
-		sql.appendAnd();
-		sql.append(COLUMN_PERIOD_FROM);
-		sql.appendLessThanOrEqualsSign();		
-		sql.append("'" + to + "'");
+		if (from != null) {
+			sql.appendWhere(COLUMN_PERIOD_FROM);
+			sql.appendGreaterThanOrEqualsSign();
+			sql.append("'" + from + "'");
+			if (to != null) {
+				sql.appendAnd();
+				sql.append(COLUMN_PERIOD_FROM);
+				sql.appendLessThanOrEqualsSign();		
+				sql.append("'" + to + "'");
+			}
+		} else if (to != null) {
+			sql.appendWhere(COLUMN_PERIOD_FROM);
+			sql.appendLessThanOrEqualsSign();		
+			sql.append("'" + to + "'");
+		}
 		sql.appendOrderBy();
 		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
 		sql.appendCommaDelimited(s);
