@@ -1,31 +1,49 @@
 package se.idega.idegaweb.commune.school.presentation;
 
-import com.idega.block.school.business.*;
-import com.idega.block.school.data.*;
-import com.idega.business.IBOLookup;
-import com.idega.core.location.data.Address;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.user.data.User;
 import is.idega.idegaweb.member.presentation.UserSearcher;
+
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+
 import javax.ejb.FinderException;
 import javax.servlet.http.HttpSession;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
+
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolYear;
+import com.idega.block.school.data.SchoolYearHome;
+import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Address;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
 
 /**
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/09 12:46:24 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/09 14:54:15 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
