@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.23 2001/08/08 00:42:18 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.24 2001/08/08 00:56:48 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -286,7 +286,7 @@ public class GolfMainJSPModulePage extends MainPage {
         unionText.setFontSize(1);
         unionText.setFontColor("#666666");
 
-        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.jmodule.news.data.NewsCategory")).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
+        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttributes.class)).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
 
         int union_id = 0;
 
