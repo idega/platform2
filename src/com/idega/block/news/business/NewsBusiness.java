@@ -2,6 +2,7 @@ package com.idega.block.news.business;
 
 
 
+import java.rmi.RemoteException;
 import java.sql.*;
 
 import com.idega.presentation.IWContext;
@@ -558,7 +559,7 @@ public class NewsBusiness{
 
 */
 
-  public static ICCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
+  public static ICCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId)throws RemoteException{
 
     return CategoryBusiness.getInstance().saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,((com.idega.block.news.data.NewsCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(NewsCategory.class)).createLegacy().getCategoryType());
 
@@ -664,7 +665,7 @@ public class NewsBusiness{
 
 */
 
-  public static int createNewsCategory(int iObjectInstanceId){
+  public static int createNewsCategory(int iObjectInstanceId)throws RemoteException{
 
     return saveNewsCategory(-1,"News","News",iObjectInstanceId ).getID();
 

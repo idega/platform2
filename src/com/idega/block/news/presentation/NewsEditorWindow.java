@@ -3,6 +3,8 @@ package com.idega.block.news.presentation;
 
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.block.news.business.*;
+
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -270,10 +272,12 @@ private IWResourceBundle iwrb;
     if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
       if(sName!=null){
         //System.err.println("saving CATId = "+iCatId +" ObjInstId = "+iObjInsId);
+        try{
         NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
         if(iMoveCat > 0){
           NewsBusiness.moveNewsBetweenCategories(iCatId,iMoveCat);
         }
+        }catch(RemoteException ex){ex.printStackTrace();}
       }
     }
     else if(iwc.getParameter(actDelete)!=null || iwc.getParameter(actDelete+".x")!=null ){
