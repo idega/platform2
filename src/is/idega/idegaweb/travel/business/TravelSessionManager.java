@@ -12,6 +12,7 @@ public interface TravelSessionManager extends com.idega.business.IBOSession
  public com.idega.core.user.data.User getUser() throws java.rmi.RemoteException;
  public com.idega.block.trade.stockroom.data.Reseller getReseller() throws java.rmi.RemoteException;
  public void setSupplier(com.idega.block.trade.stockroom.data.Supplier p0) throws java.rmi.RemoteException;
+ public void clearAll() throws java.rmi.RemoteException;
  public com.idega.idegaweb.IWResourceBundle getIWResourceBundle() throws java.rmi.RemoteException;
  public com.idega.block.trade.stockroom.data.Supplier getSupplier() throws java.rmi.RemoteException;
  public void clearLocale() throws java.rmi.RemoteException;

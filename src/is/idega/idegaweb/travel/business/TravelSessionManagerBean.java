@@ -35,6 +35,19 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
   public TravelSessionManagerBean() {
   }
 
+  public void clearLocale() {
+    _locale = null;
+    _localeId = -1;
+    _iwrb = null;
+  }
+
+  public void clearAll() {
+    clearLocale();
+    _supplier = null;
+    _reseller = null;
+    _userId = -1;
+    _user = null;
+  }
 
   public User getUser() {
     if (_user == null) {
@@ -46,7 +59,9 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
 
   public int getUserId() {
     if (_userId == -1) {
-      _userId = getUser().getID();
+      if (getUser() != null) {
+        _userId = getUser().getID();
+      }
     }
     return _userId;
   }
@@ -65,11 +80,6 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
     return _localeId;
   }
 
-  public void clearLocale() {
-    _locale = null;
-    _localeId = -1;
-    _iwrb = null;
-  }
   public IWResourceBundle getIWResourceBundle() {
     if (_iwrb == null) {
       _iwrb = getIWBundle().getResourceBundle(getLocale());

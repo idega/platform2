@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.util.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.data.IDOLookup;
-import com.idega.business.IBOLookup;
 import java.util.Vector;
 import com.idega.data.IDOFinderException;
 import com.idega.presentation.Block;
@@ -64,6 +63,10 @@ public class ServiceOverview extends TravelManager {
     super.add(mo);
   }
 
+
+  public void repps() {
+
+  }
 
   public void main(IWContext iwc) throws Exception{
       super.main(iwc);
@@ -194,9 +197,6 @@ public class ServiceOverview extends TravelManager {
       Link book;
       Link edit;
 
-
-
-      Supplier supplier = super.getSupplier();
 
       if (supplier != null) {
         List products = ProductBusiness.getProducts(supplier.getID());

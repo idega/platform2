@@ -34,7 +34,7 @@ public class LoginPage extends TravelManager {
     bundle = super.getBundle();
     iwrb = super.getResourceBundle();
 
-    super.getTravelSessionManager(iwc).clearLocale();
+    super.getTravelSessionManager(iwc).clearAll();
 
     insertLogin(iwc);
   }
