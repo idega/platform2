@@ -233,11 +233,14 @@ public class RunResultViewer extends Block {
 			
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
+			
+			Run runner;
+			RunGroup runnerGroup;
 			Iterator iterator = runs.iterator();
 			while (iterator.hasNext()) {
-				Run runner = (Run) iterator.next();
+				runner = (Run) iterator.next();
 				if (runner.getRunGroupName() != null && runner.getRunGroupName().trim().length() > 0) {
-					RunGroup runnerGroup = (RunGroup) runGroups.get(runner.getRunGroupName());
+					runnerGroup = (RunGroup) runGroups.get(runner.getRunGroupName());
 					if (runnerGroup == null) {
 						runnerGroup = new RunGroup(runner.getRunGroupName());
 						runGroups.put(runner.getRunGroupName(), runnerGroup);
@@ -250,16 +253,22 @@ public class RunResultViewer extends Block {
 			Collections.sort(groupList, new RunGroupComparator(map));
 
 			iterator = groupList.iterator();
+			Run run;
+			int num = 1;
+			int count = 0;
+			Iterator runIter;
+			Collection runnersInRunGroup;
+			RunGroup runGroup;
 			while (iterator.hasNext()) {
-				RunGroup runGroup = (RunGroup) iterator.next();
-				Collection runnersInRunGroup = map.getCollection(runGroup);
+				runGroup = (RunGroup) iterator.next();
+				runnersInRunGroup = map.getCollection(runGroup);
 				row = insertRunGroupIntoTable(table, row, runGroup.getGroupName() + " - " + runGroup.getCounter().toString());
 
-				Iterator runIter = runnersInRunGroup.iterator();
-				int num = 1;
-				int count = 0;
+				runIter = runnersInRunGroup.iterator();
+				num = 1;
+				count = 0;
 				while (runIter.hasNext()) {
-					Run run = (Run) runIter.next();
+					run = (Run) runIter.next();
 					if (count < 3) {
 						num = runs.indexOf(run);
 						row = insertRunIntoTable(table, row, run, num, count+1);
