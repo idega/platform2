@@ -3310,9 +3310,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 			double mwn = (
 													((double)mc) /
-													((double) (mChangeTotal>0?mChangeTotal:(mc!=0?mc:1)))
+													((double) (mThisYearTotal>0?mThisYearTotal:(mc!=0?mc:1)))
 													) * 100.0
-														* (((mc!=0 && mChangeTotal!=0) && (mc>=mChangeTotal))?1.0:-1.0);
+													* (((mc!=0 && mThisYearTotal!=0) && (mc>=mThisYearTotal))?1.0:-1.0);
 			
 			String value = format.format(mwn);
 			rd.addData(membersAnnualChangePercentOfTotal, value);
@@ -3322,9 +3322,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			
 			double pwn = (
 													((double)pc) /
-													((double) (pChangeTotal>0?pChangeTotal:(pc!=0?pc:1)))
-													) * 100.0
-													  * (((pc!=0 && pChangeTotal!=0) && (pc>=pChangeTotal))?1.0:-1.0);
+													((double) (pThisYearTotal>0?pThisYearTotal:(pc!=0?pc:1)))
+													)  * 100.0
+													* (((pc!=0 && pThisYearTotal!=0) && (pc>=pThisYearTotal))?1.0:-1.0);
 			
 			value = format.format(pwn);
 			rd.addData(playersAnnualChangePercentOfTotal, value);
