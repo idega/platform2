@@ -89,6 +89,7 @@ public class NewsReader extends Block implements IWBlock{
   private Text informationProxy  = new Text();
 
 
+	private static String prmFromPage = "nwr_from_page";
   private static String prmDelete = "nwr_delete";
   private static String prmEdit = "nwr_edit";
   private static String prmNew = "nwr_new";
@@ -157,14 +158,30 @@ public class NewsReader extends Block implements IWBlock{
   private void checkCategories(){
 
   }
+	/** @todo take out when instanceId handler is used */
+	private String getInstanceIDString(IWContext iwc){
+		if(viewPageId > 0 || iwc.isParameterSet(prmFromPage))
+			return "";
+		else
+			return String.valueOf(getICObjectInstanceID());
+	}
+
+	private Parameter getFromPageParameter(){
+	  return new Parameter(prmFromPage,"true");
+	}
+
+	private void checkFromPage(Link link){
+	  if(viewPageId > 0)
+			link.addParameter(getFromPageParameter());
+	}
 
   private void control(IWContext iwc){
     Locale locale = iwc.getCurrentLocale();
 		 String sNewsId = null;
 		if(viewNews)
-      sNewsId = iwc.getParameter(prmMore+getICObjectInstanceID());
+      sNewsId = iwc.getParameter(prmMore+getInstanceIDString(iwc));
     NewsCategory newsCategory = null;
-		String prm = prmListCategory+getICObjectInstanceID();
+		String prm = prmListCategory+getInstanceIDString(iwc);
 		boolean info = false;
 		if(iwc.isParameterSet(prm)){
 		  if(iwc.getParameter(prm).equalsIgnoreCase("true"))
@@ -202,8 +219,10 @@ public class NewsReader extends Block implements IWBlock{
         else if(info){
           T.add(getCategoryList(newsCategory,locale,iwc),1,1);
         }
-        else
-          T.add(publishNews(iwc,newsCategory,locale,iwc.isParameterSet(prmCollection+getICObjectInstanceID())),1,1);
+        else{
+					String cprm = prmCollection+getInstanceIDString(iwc);
+					T.add(publishNews(iwc,newsCategory,locale,iwc.isParameterSet(cprm)),1,1);
+        }
       }
     }
     else{
@@ -226,11 +245,11 @@ public class NewsReader extends Block implements IWBlock{
       T.add(ne,1,1);
 		  T.add(T.getTransparentCell(iwc),1,1);
       Link list = new Link(iwb.getImage("/shared/info.gif"));
-			list.addParameter(prmObjIns,getICObjectInstanceID());
+			checkFromPage(list);
       if(!info)
-        list.addParameter(prmListCategory+getICObjectInstanceID(),"true");
+        list.addParameter(prmListCategory+getInstanceIDString(iwc),"true");
 			else
-				list.addParameter(prmListCategory+getICObjectInstanceID(),"false");
+				list.addParameter(prmListCategory+getInstanceIDString(iwc),"false");
       T.add(list,1,1);
 		  T.add(T.getTransparentCell(iwc),1,1);
       Link change = new Link(core.getImage("/shared/edit.gif"));
@@ -360,7 +379,8 @@ public class NewsReader extends Block implements IWBlock{
     T.add(infoTable,1,3);
 
     Link moreLink = new Link(iwrb.getImage("more.gif"));
-    moreLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
+		checkFromPage(moreLink);
+    moreLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
     T.add(moreLink, 1, 4);
     if(isAdmin){
       T.add(getNewsAdminPart(news,iwc),1,4);
@@ -385,6 +405,7 @@ public class NewsReader extends Block implements IWBlock{
 		}
     NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT ,cellPadding,cellSpacing,firstTableColor,secondTableColor);
 		int count = NewsFinder.countNewsInCategory(newsCategory.getID());
+		System.err.println(" news count "+count);
     boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
     if(L!=null){
       int len = L.size();
@@ -408,12 +429,19 @@ public class NewsReader extends Block implements IWBlock{
 			if(showNewsCollectionButton){
 			  if(len < count && !collection){
 				  Link collectionLink = new Link(iwrb.getImage("collection.gif"));
+					checkFromPage(collectionLink);
 				  collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
-				  collectionLink.addParameter(prmCollection+getICObjectInstanceID(),"true");
+				  collectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"true");
 				  T.add(collectionLink);
 			  }
 			  else if(collection){
-			    T.add(new BackButton(iwrb.getImage("back.gif")));
+					T.add(new BackButton(iwrb.getImage("back.gif")));
+					/*
+					Link nonCollectionLink = new Link(iwrb.getImage("back.gif"));
+					nonCollectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
+					nonCollectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"false");
+			    T.add(nonCollectionLink);
+					*/
 				}
 			}
 			// Finish objectsbetween
@@ -425,7 +453,6 @@ public class NewsReader extends Block implements IWBlock{
           T.add((PresentationObject)iter.next(),sObjectAlign );
         }
       }
-
     }
     else{
       T.add(new Text(iwrb.getLocalizedString("no_news","No News")));
@@ -515,7 +542,8 @@ public class NewsReader extends Block implements IWBlock{
 			//  add news
 			if(!showAll && showMoreButton){
 				Link moreLink = new Link(iwrb.getImage("more.gif"));
-				moreLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
+				checkFromPage(moreLink);
+				moreLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
 				if(viewPageId > 0)
 					moreLink.setPage(viewPageId);
 				T.add(moreLink, 1, 4);
@@ -533,7 +561,8 @@ public class NewsReader extends Block implements IWBlock{
 
 			if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
-				headlineLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
+				checkFromPage(headlineLink);
+				headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
 				T.add(headlineLink, 1, 2);
@@ -562,7 +591,8 @@ public class NewsReader extends Block implements IWBlock{
 			T.add("&nbsp;&nbsp",2,1);
 		  if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
-				headlineLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
+				checkFromPage(headlineLink);
+				headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
 				T.add(headlineLink, headlineCol, 1);

@@ -355,10 +355,10 @@ public class NewsFinder {
 	public static int	countNewsInCategory(int iCategoryId){
 		try {
 			NwNews news = (NwNews)NwNews.getStaticInstance(NwNews.class);
-			return news.getNumberOfRecords(news.getColumnNameNewsCategoryId(),String.valueOf(iCategoryId));
+			return news.getNumberOfRecords(news.getColumnNameNewsCategoryId(),iCategoryId);
 		}
 		catch (SQLException ex) {
-
+		  ex.printStackTrace();
 		}
 		return 0;
 
