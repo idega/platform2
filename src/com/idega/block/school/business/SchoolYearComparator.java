@@ -1,5 +1,6 @@
 package com.idega.block.school.business;
 
+import java.text.Collator;
 import java.util.Comparator;
 
 import com.idega.block.school.data.SchoolType;
@@ -40,6 +41,8 @@ public class SchoolYearComparator implements Comparator {
 		
 		if (returner == 0)
 			returner = compareAge(schoolYear1.getSchoolYearAge(), schoolYear2.getSchoolYearAge());
+		if (returner == 0)
+			returner = Collator.getInstance().compare(schoolYear1.getSchoolYearName(), schoolYear2.getSchoolYearName());
 
 		return returner;
 	}
