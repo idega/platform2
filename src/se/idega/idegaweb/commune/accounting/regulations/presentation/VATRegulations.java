@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.3 2003/08/18 14:45:16 anders Exp $
+ * $Id: VATRegulations.java,v 1.4 2003/08/19 10:35:45 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,16 +14,18 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.IWContext;
 
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import se.idega.idegaweb.commune.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 
 /**
  * VATRegulations is an idegaWeb block that handles VAT values and
  * regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/18 14:45:16 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/19 10:35:45 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VATRegulations extends CommuneBlock {
 
@@ -33,6 +35,7 @@ public class VATRegulations extends CommuneBlock {
 
 	private final static String KEY_PREFIX = "vat_regulations."; 
 	
+	private final static String KEY_TITLE = KEY_PREFIX + "title";
 	private final static String KEY_PERIOD = KEY_PREFIX + "period";
 	private final static String KEY_DESCRIPTION = KEY_PREFIX + "description";
 	private final static String KEY_VAT_PERCENT = KEY_PREFIX + "vat_percent";
@@ -78,16 +81,18 @@ public class VATRegulations extends CommuneBlock {
 	 * Adds the default form to the block.
 	 */	
 	private void viewDefaultForm(IWContext iwc) {
-		Form form = new Form();
-		form.add(getVATList());	
-		add(form);
+		ApplicationForm app = new ApplicationForm();
+		app.setTitle(localize(KEY_TITLE, "Momssats"));
+		app.setMainPanel(getVATList());
+		app.setButtonPanel(getButtonPanel());
+		add(app);
 	}
 	
 	/*
 	 * Returns the VATList
 	 */
 	private ListTable getVATList() {
-		ListTable list = new ListTable(this, 5);
+		ListTable list = new ListTable(5);
 		list.setHeader(localize(KEY_PERIOD, "Period"), 1);
 		list.setHeader(localize(KEY_DESCRIPTION, "Benämning"), 2);
 		list.setHeader(localize(KEY_VAT_PERCENT, "Procentsats"), 3);
@@ -111,5 +116,15 @@ public class VATRegulations extends CommuneBlock {
 		list.add("Privat");
 		
 		return list;
+	}
+	
+	/*
+	 * Returns the button panel for this block
+	 */
+	private ButtonPanel getButtonPanel() {
+		ButtonPanel bp = new ButtonPanel();
+		bp.addButton("Save", "save", "true");
+		bp.addButton("Delete", "delete", "true");
+		return bp;
 	}
 }
