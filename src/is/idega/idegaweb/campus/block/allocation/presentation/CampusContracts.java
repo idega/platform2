@@ -224,7 +224,7 @@ public class CampusContracts extends Block{
     }
     drp.addMenuElement(ContractFinder.NAME,iwrb.getLocalizedString("name","Name"));
     drp.addMenuElement(ContractFinder.SSN,iwrb.getLocalizedString("ssn","Socialnumber"));
-    drp.addMenuElement(ContractFinder.APARTMENT,iwrb.getLocalizedString("ssn","Socialnumber"));
+    drp.addMenuElement(ContractFinder.APARTMENT,iwrb.getLocalizedString("apartment","Apartment"));
     drp.addMenuElement(ContractFinder.FLOOR,iwrb.getLocalizedString("floor","Floor"));
     drp.addMenuElement(ContractFinder.BUILDING,iwrb.getLocalizedString("building","Building"));
     drp.addMenuElement(ContractFinder.COMPLEX,iwrb.getLocalizedString("complex","Complex"));
