@@ -7,9 +7,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -18,6 +21,7 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.PersonalIDFormatter;
 
 /**
@@ -25,9 +29,20 @@ import com.idega.util.PersonalIDFormatter;
  */
 public abstract class CommuneUserFinder extends CommuneBlock {
 
-	private String PARAMETER_SEARCH = "cul_search";
-	private String searchString;
+	private static final String SEARCH_PERSONAL_ID = "usrch_search_pid";
+	private static final String SEARCH_LAST_NAME = "usrch_search_lname";
+	private static final String SEARCH_MIDDLE_NAME = "usrch_search_mname";
+	private static final String SEARCH_FIRST_NAME = "usrch_search_fname";
+	
+	private static final String PARAMETER_FIRST_NAME = "cul_pfn";
+	private static final String PARAMETER_MIDDLE_NAME = "cul_pmn";
+	private static final String PARAMETER_LAST_NAME = "cul_pln";
+	private static final String PARAMETER_PERSONAL_ID = "cul_pid";
+	private static final String PARAMETER_SEARCH = "cul_search";
 
+	private boolean multipleInputs = false;
+	private Collection users = null;
+	
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
@@ -36,9 +51,23 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 		drawForm(iwc);		
 	}
 	
-	private void parseAction(IWContext iwc) {
-		if (iwc.isParameterSet(PARAMETER_SEARCH))
-			searchString = iwc.getParameter(PARAMETER_SEARCH);
+	private void parseAction(IWContext iwc) throws RemoteException {
+		if (iwc.isParameterSet(PARAMETER_SEARCH)) {
+			String searchString = iwc.getParameter(PARAMETER_SEARCH);
+			users = getUserBusiness(iwc).findUsersBySearchString(searchString);
+		} else if (iwc.isParameterSet(PARAMETER_FIRST_NAME) || iwc.isParameterSet(PARAMETER_MIDDLE_NAME) || iwc.isParameterSet(PARAMETER_LAST_NAME) || iwc.isParameterSet(PARAMETER_PERSONAL_ID)) {
+			String first = iwc.getParameter(PARAMETER_FIRST_NAME);
+			String middle = iwc.getParameter(PARAMETER_MIDDLE_NAME);
+			String last = iwc.getParameter(PARAMETER_LAST_NAME);
+			String pid = iwc.getParameter(PARAMETER_PERSONAL_ID);
+			UserHome home = (UserHome) IDOLookup.getHome(User.class);
+			try {
+				users = home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true, false);
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+			
+		}
 	}
 	
 	private void drawForm(IWContext iwc) {
@@ -48,8 +77,9 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 		table.setHeight(2, 18);
 		
 		table.add(getSearchForm(), 1, 1);
-		if (searchString != null)
+		if (users != null) {
 			table.add(getUserForm(iwc), 1, 3);
+		}
 		
 		add(table);
 	}
@@ -57,18 +87,48 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 	private Form getSearchForm() {
 		Form form = new Form();
 		
-		Table table = new Table(1,4);
+		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setHeight(3, 6);
 		form.add(table);
-		
-		table.add(getSmallHeader(localize("commune.enter_search_string","Enter search string")+":"), 1, 1);
-		
-		TextInput searchInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_SEARCH));
-		searchInput.setLength(40);
-		searchInput.keepStatusOnAction(true);
-		table.add(searchInput, 1, 2);
+
+
+		if (this.multipleInputs) {
+			int column = 1;
+			table.add(getSmallHeader(localize(SEARCH_PERSONAL_ID, "Personal ID")), column, 1);
+			TextInput pidInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_PERSONAL_ID));
+			pidInput.setLength(10);
+			pidInput.keepStatusOnAction(true);
+			table.add(pidInput, column++, 2);
+			
+			++column;
+			table.add(getSmallHeader(localize(SEARCH_LAST_NAME, "Last name")), column, 1);
+			TextInput lastNameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_LAST_NAME));
+			lastNameInput.setLength(10);
+			lastNameInput.keepStatusOnAction(true);
+			table.add(lastNameInput, column++, 2);
+			
+			++column;
+			table.add(getSmallHeader(localize(SEARCH_MIDDLE_NAME, "Middle name")), column, 1);
+			TextInput middleNameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_MIDDLE_NAME));
+			middleNameInput.setLength(10);
+			middleNameInput.keepStatusOnAction(true);
+			table.add(middleNameInput, column++, 2);
+
+			++column;
+			table.add(getSmallHeader(localize(SEARCH_FIRST_NAME, "First name")), column, 1);
+			TextInput firstNameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_FIRST_NAME));
+			firstNameInput.setLength(10);
+			firstNameInput.keepStatusOnAction(true);
+			table.add(firstNameInput, column++, 2);
+		} else {
+			table.add(getSmallHeader(localize("commune.enter_search_string","Enter search string")+":"), 1, 1);
+			TextInput searchInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_SEARCH));
+			searchInput.setLength(40);
+			searchInput.keepStatusOnAction(true);
+			table.add(searchInput, 1, 2);
+		}
 		
 		SubmitButton searchButton = (SubmitButton) this.getButton(new SubmitButton(getSearchSubmitDisplay()));
 		table.add(searchButton, 1, 4);
@@ -89,7 +149,6 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 		form.add(table);
 		
 		try {
-			Collection users = getUserBusiness(iwc).findUsersBySearchString(searchString);
 			if (!users.isEmpty()) {
 				User user;
 				RadioButton radio;
@@ -154,5 +213,9 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 
 	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+	
+	public void setUsesMultipleInputs(boolean multipleInputs) {
+		this.multipleInputs = multipleInputs;
 	}
 }
