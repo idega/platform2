@@ -111,6 +111,17 @@ public void addRadioButton(int value,Text DisplayString, boolean isSelected){
   }
 }
 
+public void addRadioButton(int value,Text DisplayString, boolean isSelected, String textStyle, String buttonStyle){
+  RadioButton button = new RadioButton(name,Integer.toString(value));
+  button.setAttribute("style",buttonStyle);
+  DisplayString.setFontStyle(textStyle);
+  buttons.add(button);
+  texts.add(DisplayString);
+  if(isSelected){
+    button.setSelected();
+  }
+}
+
 public void addRadioButton(String value, boolean isSelected){
   RadioButton button = new RadioButton(name,value);
   buttons.add(button);
