@@ -99,15 +99,16 @@ public class TournamentResultsDetailed extends JModuleObject {
         }
 
         if ( size <= 1 ) {
-
           r.calculateCompareInfo();
         }
-        myTable.mergeCells(1,row+2,22,row+2);
-        myTable.addText("",1,row+2);
-        //myTable.setColor(1,row+2,"#2C4E3B");
-        myTable.setHeight(1,row+2,"5");
-        getMemberScore(r,row);
-        row += 3;
+
+        if ( r.getDismissal() == 0 || r.getDismissal() == 15 ) {
+          myTable.mergeCells(1,row+2,22,row+2);
+          myTable.addText("",1,row+2);
+          myTable.setHeight(1,row+2,"5");
+          getMemberScore(r,row);
+          row += 3;
+        }
       }
 
       for ( int a = 2; a <= myTable.getColumns(); a++ ) {
@@ -150,8 +151,7 @@ public class TournamentResultsDetailed extends JModuleObject {
                 rip.calculateCompareInfo();
                 difference = rip.getDifference();
             }
-            Text pastDifference = (Text) blackText.clone();
-              pastDifference.setText(getDifference(difference));
+            Text pastDifference = getDifference(difference);
               myTable.add(pastDifference,1,row+1);
           }
         }
