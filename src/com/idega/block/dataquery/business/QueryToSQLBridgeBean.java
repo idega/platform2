@@ -6,10 +6,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
@@ -107,7 +105,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
   	while (currentQuery.hasPreviousQuery())	{
   		currentQuery = currentQuery.previousQuery();
   	}
-  	Map queryTableNames = new HashMap();
+  	//Map queryTableNames = new HashMap();
   	do {
   		if (currentQuery.hasNextQuery())	{
    			// mark the generated table
