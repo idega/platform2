@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.16 2002/11/04 09:33:34 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.17 2002/11/04 11:27:47 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -59,7 +59,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}
 
     public boolean insertApplication
-        (final String name, final String pid, final Date date,
+        (final String name, final int genderId, final String pid,
+         final Date date,
          final String email, final String phoneHome, final String phoneWork,
          final String custodian1Pid, final String custodian1CivilStatus,
          final String custodian2Pid, final String custodian2CivilStatus,
@@ -70,6 +71,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                     IDOLookup.getHome(CitizenAccount.class);
 			final CitizenAccount application = citizenAccountHome.create ();
 			application.setApplicantName (name != null ? name : "");
+			application.setGenderId (genderId);
 			application.setPID (pid != null ? pid : "");
             application.setBirthDate (date);
 			application.setPhoneHome (phoneHome != null ? phoneHome : "");
@@ -97,7 +99,18 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return true;
     }
 
-
+    public Gender [] getGenders () throws RemoteException {
+        final GenderHome home = (GenderHome) IDOLookup.getHome (Gender.class);
+        try {
+            final Collection genderCollection = home.findAllGenders ();
+            final Gender [] genders
+                    = (Gender []) genderCollection.toArray (new Gender [0]);
+            return genders;
+        } catch (Exception e) {
+            e.printStackTrace ();
+            throw new RemoteException (e.getMessage ());
+        }
+    }
 
 	public User getUser(String pid) {
 		User user = null;

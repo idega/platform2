@@ -24,6 +24,7 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     String getStreet () throws RemoteException;
     String getZipCode () throws RemoteException;
     String getCity () throws RemoteException;
+    int getGenderId () throws RemoteException;
 
     void setApplicantName (String name)throws RemoteException;
     void setEmail (String email) throws RemoteException;
@@ -38,4 +39,5 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     void setStreet (String street) throws RemoteException;
     void setZipCode (String zipCode) throws RemoteException;
     void setCity (String city) throws RemoteException;
+    void setGenderId (int id) throws RemoteException;
 }

@@ -1,7 +1,7 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
 import com.idega.business.IBOService;
-import com.idega.user.data.User;
+import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import javax.ejb.*;
 import se.idega.idegaweb.commune.account.business.AccountBusiness;
@@ -14,12 +14,13 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
     CitizenAccount getAccount (int p0)
         throws RemoteException,FinderException, RemoteException;
     List getListOfUnapprovedApplications () throws RemoteException;
+    Gender [] getGenders () throws RemoteException;
     User getUser (String p0) throws RemoteException;
     boolean insertApplication
         (User user, String pid, String email, String phoneHome,
          String phoneWork) throws RemoteException;
     boolean insertApplication
-        (String name, String pid, Date birthDate, String email,
+        (String name, int genderId, String pid, Date birthDate, String email,
          String phoneHome, String phoneWork,
          String custodian1Pid, String custodian1CivilStatus,
          String custodian2Pid, String custodian2CivilStatus,

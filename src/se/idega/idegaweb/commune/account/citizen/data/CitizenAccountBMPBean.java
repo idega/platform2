@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.7 2002/11/04 09:33:34 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.8 2002/11/04 11:27:47 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,13 @@
  */
 package se.idega.idegaweb.commune.account.citizen.data;
 
+import com.idega.user.data.Gender;
 import com.idega.block.process.data.*;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.*;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
-import java.sql.Timestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -42,6 +43,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
     protected final static String STREET = "street";
     protected final static String ZIP_CODE = "zipCode";
     protected final static String CITY = "city";
+    protected final static String GENDER_ID = "gender_id";
 
 	public void initializeAttributes() {
 		addAttribute (getIDColumnName());
@@ -49,6 +51,8 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		addAttribute (EMAIL, "E-mail", true, true, String.class, 40);
 		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
 		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
+       	addAttribute (GENDER_ID, "Gender", true, true, Integer.class,
+                      "many-to-one", Gender.class);
 		addAttribute (PID, "PID", true, true, String.class, 40);
         addAttribute (BIRTH_DATE, "Date of birth", Timestamp.class);
         addAttribute (CUSTODIAN1_PID, "custodian1_pid", true, true,
@@ -131,6 +135,10 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
         return getStringColumnValue (CITY);
     }
 
+    public int getGenderId () {
+        return getIntColumnValue (GENDER_ID);
+    }
+
 
     // set methods for bean properties
 
@@ -186,6 +194,10 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
     
     public void setCity (final String city) throws RemoteException {
         setColumn (CITY, city);
+    }
+    
+    public void setGenderId (final int genderId) throws RemoteException {
+        setColumn (GENDER_ID, genderId);
     }
     
 	/**

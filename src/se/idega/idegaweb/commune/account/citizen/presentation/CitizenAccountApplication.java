@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.9 2002/11/04 09:33:34 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.10 2002/11/04 11:27:47 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,8 @@ import com.idega.business.IBOLookup;
 import com.idega.presentation.*;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.*;
-import com.idega.user.data.User;
+import com.idega.user.data.*;
+import java.rmi.RemoteException;
 import java.util.*;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -36,7 +37,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String PARAM_BIRTH_YEAR = "caa_birth_year";
 	private final static String PARAM_BIRTH_MONTH = "caa_birth_month";
 	private final static String PARAM_BIRTH_DAY = "caa_birth_day";
-	private final static String PARAM_GENDER = "caa_pid";
+	private final static String PARAM_GENDER = "caa_gender";
 	private final static String PARAM_EMAIL = "caa_email";
 	private final static String PARAM_PHONE_HOME = "caa_phone_home";
 	private final static String PARAM_PHONE_WORK = "caa_phone_work";
@@ -72,10 +73,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private boolean _isError = false;
 	private Vector _errorMsg = null;
 
-
-	public CitizenAccountApplication() {
-	}
-
 	public void main(IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
 
@@ -102,23 +99,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 		final DropdownMenu yearInput = new DropdownMenu (PARAM_BIRTH_YEAR);
         final Calendar rightNow = Calendar.getInstance();
         final int currentYear = rightNow.get (Calendar.YEAR);
-        for (int year = currentYear - 110; year <= currentYear; year++) {
-            final String yearAsString = new Integer (year).toString ();
-            yearInput.addMenuElementFirst (yearAsString, yearAsString);
-        }
-        inputTable.add (yearInput, 1, 2);
-        final DropdownMenu monthInput = new DropdownMenu (PARAM_BIRTH_MONTH);
-        for (int month = 12; month >= 1; month--) {
-            final String monthAsString = new Integer (month).toString ();
-            monthInput.addMenuElementFirst (monthAsString, monthAsString);
-        }
-        inputTable.add (monthInput, 1, 2);
-        final DropdownMenu dayInput = new DropdownMenu (PARAM_BIRTH_DAY);
-        for (int day = 31; day >= 1; day--) {
-            final String dayAsString = new Integer (day).toString ();
-            dayInput.addMenuElementFirst (dayAsString, dayAsString);
-        }
-        inputTable.add (dayInput, 1, 2);
+        addDropdownInput (iwc, PARAM_BIRTH_YEAR, currentYear - 110, currentYear,
+                          inputTable, 1, 2);
+        addDropdownInput (iwc, PARAM_BIRTH_MONTH, 12, 1, inputTable, 1, 2);
+        addDropdownInput (iwc, PARAM_BIRTH_DAY, 31, 1, inputTable, 1, 2);
         addSingleInput (iwc, PARAM_PID, "Personnummer", inputTable, 4,
                         _isPIDError, 1, 1);
         addSingleInput (iwc, PARAM_EMAIL, "E-post", inputTable, 40,
@@ -129,6 +113,51 @@ public class CitizenAccountApplication extends CommuneBlock {
                         inputTable, 20, false, 2, 3);
     }
 
+    private void addDropdownInput
+        (final IWContext iwc, final String paramId, final int startId,
+         final int stopId, final Table inputTable, final int col,
+         final int row) {
+        final boolean forward = startId < stopId;
+        final DropdownMenu dropdown = new DropdownMenu (paramId);
+        int i = startId;
+        while (forward ? i <= stopId : i >= stopId) {
+            final String iAsString = new Integer (i).toString ();
+            dropdown.addMenuElementFirst (iAsString, iAsString);
+            i += (forward ? 1 : -1);
+        }
+		if (iwc.isParameterSet (paramId)) {
+		   dropdown.setSelectedElement (iwc.getParameter (paramId));
+        }
+        inputTable.add (dropdown, col, row);
+    }
+                                   
+    private void addGenderDropdownInput
+        (final IWContext iwc, final Table inputTable, final int col,
+         final int row) {
+        final String subject = localize (PARAM_GENDER, "Kön");
+        final Text text = getSmallText (subject);
+        inputTable.add (text, col, row);
+        try {
+            final CitizenAccountBusiness business
+                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+                    (iwc, CitizenAccountBusiness.class);
+            final Gender [] genders = business.getGenders ();
+            final DropdownMenu dropdown = new DropdownMenu (PARAM_GENDER);
+            for (int i = 0; i < genders.length; i++) {
+                final String nameInDb = genders [i].getName ();
+                final String name = localize ("caa_" + nameInDb, nameInDb);
+                final String id = genders [i].getPrimaryKey ().toString ();
+                dropdown.addMenuElementFirst (id, name);
+            }
+            if (iwc.isParameterSet (PARAM_GENDER)) {
+                dropdown.setSelectedElement (iwc.getParameter (PARAM_GENDER));
+            }
+            inputTable.add (dropdown, col, row + 1);
+        } catch (RemoteException e) {
+            e.printStackTrace ();
+        }
+    }
+                                   
     private void addSingleInput
         (final IWContext iwc, final String paramId, final String defaultText,
          final Table inputTable, final int maxLength, final boolean isError,
@@ -159,10 +188,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 		inputTable.add(submitButton, 2, row);
     }
 
-	private void viewUnknownCitizenApplicationForm(IWContext iwc) {
+	private void viewUnknownCitizenApplicationForm (IWContext iwc) {
 		Form accountForm = new Form();
 
-		Table inputTable = new Table(2, 15);
+		Table inputTable = new Table(2, 17);
 		inputTable.setCellspacing(2);
 		inputTable.setCellpadding(4);
 		inputTable.setColor(getBackgroundColor());
@@ -171,31 +200,32 @@ public class CitizenAccountApplication extends CommuneBlock {
 
         addSingleInput (iwc, PARAM_NAME, "Namn", inputTable, 40, false, 1, 5);
         addSingleInput (iwc, PARAM_STREET, "Gatuadress", inputTable, 40, false,
-                        2, 5);
+                        1, 7);
+        addGenderDropdownInput (iwc, inputTable, 2, 7);
         addSingleInput (iwc, PARAM_ZIP_CODE, "Postnummer", inputTable, 40,
-                        false, 1, 7);
+                        false, 1, 9);
         addSingleInput (iwc, PARAM_CITY, "Postadress", inputTable, 40, false, 2,
-                        7);
+                        9);
 
         final Text custodianHeader1
                 = getLocalizedHeader (CUSTODIAN1_KEY, "Vårdnadshavare 1");
 
-        inputTable.add (custodianHeader1, 1, 9);
+        inputTable.add (custodianHeader1, 1, 11);
         addSingleInput (iwc, PARAM_CUSTODIAN1_PID, "Personnummer", inputTable,
-                        40, false, 1, 10);
+                        40, false, 1, 12);
         addSingleInput (iwc, PARAM_CUSTODIAN1_CIVIL_STATUS, "Civilstånd",
-                        inputTable, 40, false, 2, 10);
+                        inputTable, 40, false, 2, 12);
 
         final Text custodianHeader2
                 = getLocalizedHeader (CUSTODIAN2_KEY, "Vårdnadshavare 2");
-        inputTable.add (custodianHeader2, 1, 12);
+        inputTable.add (custodianHeader2, 1, 14);
         addSingleInput (iwc, PARAM_CUSTODIAN2_PID, "Personnummer", inputTable,
-                        40, false, 1, 13);
+                        40, false, 1, 15);
         addSingleInput (iwc, PARAM_CUSTODIAN2_CIVIL_STATUS, "Civilstånd",
-                        inputTable, 40, false, 2, 13);
+                        inputTable, 40, false, 2, 15);
 
         addSubmitButton (iwc, PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT,
-                         "Submit application", inputTable, 15);
+                         "Submit application", inputTable, 17);
 
 		if (_isError) {
 			if (_errorMsg != null) {
@@ -321,11 +351,13 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
     private void submitUnknownCitizenForm (final IWContext iwc) {
-		final String name = iwc.getParameter(PARAM_NAME);
-		final String pid = iwc.getParameter(PARAM_PID);
-		final String phoneHome = iwc.getParameter(PARAM_PHONE_HOME);
-		final String email = iwc.getParameter(PARAM_EMAIL);
-		final String phoneWork = iwc.getParameter(PARAM_PHONE_WORK);
+		final String name = iwc.getParameter (PARAM_NAME);
+        final int genderId
+                = new Integer (iwc.getParameter (PARAM_GENDER)).intValue ();
+		final String pid = iwc.getParameter (PARAM_PID);
+		final String phoneHome = iwc.getParameter (PARAM_PHONE_HOME);
+		final String email = iwc.getParameter (PARAM_EMAIL);
+		final String phoneWork = iwc.getParameter (PARAM_PHONE_WORK);
         final String custodian1Pid = iwc.getParameter (PARAM_CUSTODIAN1_PID);
         final String custodian1CivilStatus
                 = iwc.getParameter (PARAM_CUSTODIAN1_CIVIL_STATUS);
@@ -381,7 +413,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             final Calendar birthDate = Calendar.getInstance ();
             birthDate.set (year, month - 1, day);
 			isInserted = business.insertApplication
-                    (name, ssn, birthDate.getTime (), email,
+                    (name, genderId, ssn, birthDate.getTime (), email,
                      phoneHome, phoneWork,
                      custodian1Pid, custodian1CivilStatus, custodian2Pid,
                      custodian2CivilStatus, street, zipCode, city);
