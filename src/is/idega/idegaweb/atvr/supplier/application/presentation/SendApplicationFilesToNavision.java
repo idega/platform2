@@ -62,7 +62,7 @@ public class SendApplicationFilesToNavision extends Block {
 				}
 				
 				IWTimestamp now = new IWTimestamp();
-				String fileName = "navision_" + now.toString() + ".csv";
+				String fileName = "n_" + now.getDateString("ddMMyyHHmmss") + ".csv";
 				
 				FileWriter writer = new FileWriter(fileLocation + fileName);
 				Iterator it = col.iterator();
