@@ -153,9 +153,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setCustodianId(((Integer)custodian.getPrimaryKey()).intValue());
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
-                        // SN: posting not applicable in invoice header anymore
-						// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
-						// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						System.out.println("Store Invoice Header with Category '"+invoiceHeader.getSchoolCategoryID());
 						System.out.println("and custodian "+invoiceHeader.getCustodianId());
@@ -451,9 +448,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setCustodianId(custodianID);
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
-                  // SN: posting not applicable in invoice header anymore
-						// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
-						// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						invoiceHeader.store();
 						createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
@@ -467,7 +461,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.setInvoiceHeader(invoiceHeader);
 					invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
 
-					invoiceRecord.setProviderId(regularInvoiceEntry.getSchool());
+					invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
 					invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
 					invoiceRecord.setDays(days);
 					invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
@@ -732,7 +726,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		//set the reference to payment record (utbetalningsposten)
-		invoiceRecord.setPaymentRecordId(paymentRecord);
+		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting);
 	}
 
@@ -766,7 +760,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws MissingMandatoryFieldException
 	 */
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
-		invoiceRecord.setProviderId(school);
+		invoiceRecord.setProvider(school);
         //		invoiceRecord.setContractId(contract.getContractID());
 		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMmeber());
 		invoiceRecord.setRuleText(postingDetail.getTerm());

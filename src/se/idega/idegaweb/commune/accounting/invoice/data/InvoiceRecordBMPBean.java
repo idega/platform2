@@ -87,8 +87,14 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public int getPaymentRecordId() {
 		return getIntColumnValue(COLUMN_PAYMENT_RECORD_ID);
 	}
+	public PaymentRecord getPaymentRecord() {
+		return (PaymentRecord) getColumnValue(COLUMN_PAYMENT_RECORD_ID);
+	}
 	public int getProviderId() {
 		return getIntColumnValue(COLUMN_PROVIDER_ID);
+	}
+	public School getProvider() {
+		return (School) getColumnValue(COLUMN_PROVIDER_ID);
 	}
 	public int getSchoolClassMemberId() {
 		return getIntColumnValue(COLUMN_SCHOOL_CLASS_MEMBER_ID);
@@ -176,13 +182,13 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setPaymentRecordId(int i) {
 		setColumn(COLUMN_PAYMENT_RECORD_ID, i);
 	}
-	public void setPaymentRecordId(PaymentRecord p) {
+	public void setPaymentRecord(PaymentRecord p) {
 		setColumn(COLUMN_PAYMENT_RECORD_ID, p);
 	}
 	public void setProviderId(int i) {
 		setColumn(COLUMN_PROVIDER_ID, i);
 	}
-	public void setProviderId(School s) {
+	public void setProvider(School s) {
 		setColumn(COLUMN_PROVIDER_ID, s);
 	}
 	public void setSchoolClassMemberId(int i) {

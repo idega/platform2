@@ -13,6 +13,7 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
@@ -57,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/11 08:48:38 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/11 10:59:58 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -273,7 +274,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
                                + "\n  SchoolYear "+schoolClassMember.getSchoolYear().getName()
                                );
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
-			createPaymentRecord(postingDetail, postings[0], postings[1]);
+            final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1]);
+            createInvoiceRecord (record, schoolClassMember,
+                                 postingDetail.getAmount ());
 			SchoolType schoolType = null;
 			//Find the oppen verksamhet and fritidsklubb
 			try {
@@ -313,7 +316,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}
 		}
 	}
-    
+
 	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource) throws EJBException, RemoteException, FinderException, PostingException, CreateException, IDOLookupException {
 		dispTime("Found resource " + resource.getResource().getResourceName()+
                  "\nschClassMem "+schoolClassMember.getPrimaryKey()+

@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -37,6 +38,8 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -160,6 +163,47 @@ public abstract class BillingThread extends Thread{
 		return paymentRecord;
 	}
 	
+    protected InvoiceRecord createInvoiceRecord
+        (final PaymentRecord paymentRecord, final SchoolClassMember placement,
+         final float pieceAmount) throws RemoteException, CreateException {
+        final InvoiceRecord result = getInvoiceRecordHome ().create ();
+        result.setAmount (months * pieceAmount);
+        result.setCreatedBy (BATCH_TEXT);
+        result.setDateCreated (new Date (System.currentTimeMillis()));
+        result.setDays (days);
+        if (null != paymentRecord) result.setPaymentRecord (paymentRecord);
+        if (null != placement) {
+            result.setSchoolClassMember (placement);
+            final Timestamp startPlacementDate = placement.getRegisterDate ();
+            final Timestamp endPlacementDate = placement.getRemovedDate ();
+            if (null != startPlacementDate) {
+                result.setPeriodStartPlacement
+                        (new Date (startPlacementDate.getTime()));
+            }
+            if (null != endPlacementDate) {
+                result.setPeriodEndPlacement
+                        (new Date (endPlacementDate.getTime()));
+            }
+            if (null != startTime) {
+                result.setPeriodStartCheck(startTime.getDate ());
+            }
+            if (null != endTime) {
+                final long lastDay
+                        = endTime.getTime ().getTime () - (24 * 60 * 60 * 1000);
+                result.setPeriodEndCheck (new Date (lastDay));
+            }
+            final SchoolType schoolType = placement.getSchoolType ();
+            if (null != schoolType) result.setSchoolType (schoolType);
+        }
+        /*
+        result.setRegSpecTypeId(int p0);
+        result.setRegSpecType(se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType p0);
+        result.setRuleText(java.lang.String p0);
+        */
+        result.store ();
+        return result;
+    }
+    
 	/**
 	 * Creates the VATpostings for private providers
 	 */
