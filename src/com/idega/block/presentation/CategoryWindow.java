@@ -238,7 +238,7 @@ public class CategoryWindow extends IWAdminWindow {
     int row = 1;
     int col = 1;
     T.add(formatText(iwrb.getLocalizedString("name","Name")),2,row);
-    //T.add(formatText(iwrb.getLocalizedString("info","Info")),2,row);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),3,row);
     T.add(formatText(iwrb.getLocalizedString("use","Use")),1,row);
     row++;
     TextInput name = new TextInput("name");
@@ -299,7 +299,7 @@ public class CategoryWindow extends IWAdminWindow {
     }
     if(!formAdded){
        T.add(name,2,row);
-       //T.add(info,2,row);
+       T.add(info,3,row);
     }
     else{
       Link li = new Link(iwrb.getLocalizedImageButton("new","New"));
