@@ -292,7 +292,6 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		sql.append(" and ssy.sch_school_year_id = ");
 		sql.append(yearID);
 
-		System.out.println(sql.toString());
 		return super.idoFindPKsBySQL(sql.toString());
 		
 	}
