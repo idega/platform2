@@ -85,22 +85,6 @@ public class BannerFinder {
     }
   }
 
-  public static BannerEntity getObjectInstanceFromID(int ICObjectInstanceID){
-    try {
-      ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
-      List L = EntityFinder.findRelated(ICObjInst,BannerEntity.getStaticInstance(BannerEntity.class));
-      if(L!= null){
-        return (BannerEntity) L.get(0);
-      }
-      else
-        return null;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return null;
-    }
-  }
-
   public static List getAdsInBanner(BannerEntity banner,int userID) {
     try {
       List list = null;

@@ -5,6 +5,7 @@ import com.idega.block.poll.data.*;
 import java.sql.SQLException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
+import com.idega.core.business.ICObjectBusiness;
 import java.util.List;
 
 /**
@@ -36,37 +37,9 @@ public class PollFinder {
     return poll;
   }
 
-  public static int getObjectInstanceID(ICObjectInstance eObjectInstance){
-    try {
-      List L = EntityFinder.findRelated(eObjectInstance,new PollEntity());
-      if(L!= null){
-        return ((PollEntity) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -2;
-
-    }
-  }
-
-  public static int getObjectInstanceIdFromID(int pollID){
-    try {
-      PollEntity poll = new PollEntity(pollID);
-      List L = EntityFinder.findRelated(poll,new ICObjectInstance());
-      if(L!= null){
-        return ((ICObjectInstance) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -1;
-
-    }
+  public static int getRelatedEntityId(ICObjectInstance eObjectInstance){
+    ICObjectBusiness bis = ICObjectBusiness.getInstance();
+    return bis.getRelatedEntityId(eObjectInstance,PollEntity.class);
   }
 
   public static PollEntity getObjectInstanceFromID(int ICObjectInstanceID){

@@ -31,7 +31,7 @@ public class MailAccount extends Account {
   }
 
   public void initializeAttributes() {
-    this.doInitializeAttributes();
+    super.initializeAttributes();
     addAttribute(USER_ID , "User", true, false, Integer.class, "many_to_one", User.class);
     addAttribute(USER_NAME , "User name", true, true, String.class);
     addManyToManyRelationShip(Mailinglist.class);

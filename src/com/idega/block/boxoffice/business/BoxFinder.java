@@ -113,22 +113,6 @@ public class BoxFinder {
     }
   }
 
-  public static BoxEntity getObjectInstanceFromID(int ICObjectInstanceID){
-    try {
-      ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
-      List L = EntityFinder.findRelated(ICObjInst,BoxEntity.getStaticInstance(BoxEntity.class));
-      if(L!= null){
-        return (BoxEntity) L.get(0);
-      }
-      else
-        return null;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return null;
-    }
-  }
-
   public static List getCategoriesInBox(BoxEntity box,int userID) {
     try {
       List list = null;

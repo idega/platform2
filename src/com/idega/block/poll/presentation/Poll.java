@@ -105,7 +105,7 @@ private int _layout = RADIO_BUTTON_VIEW;
       if(sPollID != null)
         _pollID = Integer.parseInt(sPollID);
       else if(getICObjectInstanceID() > 0){
-        _pollID = PollFinder.getObjectInstanceID(getICObjectInstance());
+        _pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
         if(_pollID <= 0 ){
           _newObjInst = true;
           PollBusiness.savePoll(_pollID,-1,getICObjectInstanceID(),null);
@@ -114,7 +114,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     }
 
     if ( _newObjInst ) {
-      _pollID = PollFinder.getObjectInstanceID(new ICObjectInstance(getICObjectInstanceID()));
+      _pollID = PollFinder.getRelatedEntityId(new ICObjectInstance(getICObjectInstanceID()));
     }
 
     if(_pollID > 0) {
@@ -601,6 +601,7 @@ private int _layout = RADIO_BUTTON_VIEW;
 /**@todo finish this for all states**/
   protected String getCacheState(IWContext iwc, String cacheStatePrefix, String locale, boolean edit){
     String returnString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
+
     if( returnString == null ) returnString = "";
     else {
       returnString+= iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION);
@@ -608,6 +609,16 @@ private int _layout = RADIO_BUTTON_VIEW;
       invalidateCache(iwc);
 
     }
+
+    try {
+      _pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+
+
+
     return  cacheStatePrefix+String.valueOf(PollBusiness.canVote(iwc,_pollID))+returnString;
   }
 }

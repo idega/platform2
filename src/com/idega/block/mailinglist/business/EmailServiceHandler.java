@@ -346,9 +346,9 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
     //The inbox has not been opened in this session.
     if (iwc.getSessionAttribute("inboxmanager") == null){
       //temporarily
-      String host = "";
-      String user = "";
-      String password = "";
+      String host = "mail.idega.is";
+      String user = "eiki";
+      String password = "p1par";
       int post = 110;
       URLName url = new URLName("pop3", host, 110, "", user, password);
       inboxManager = new InboxManager(url);

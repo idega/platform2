@@ -24,9 +24,8 @@ public class Mailinglist extends Account {
   }
 
   public void initializeAttributes() {
-    this.doInitializeAttributes();
+    super.initializeAttributes();
     addAttribute(MAILINGLIST_NAME , "Mailinglist name", true, true, String.class);
-    addManyToManyRelationShip(MailAccount.class);
   }
 
   public String getEntityName() {

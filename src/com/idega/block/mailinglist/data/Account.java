@@ -39,7 +39,8 @@ public abstract class Account extends GenericEntity {
     super(id);
   }
 
-  protected void doInitializeAttributes(){
+
+  public void initializeAttributes(){
     addAttribute(getIDColumnName());
     addAttribute(CREATION_DATE , "creation date", true, false, Timestamp.class);
 
@@ -57,11 +58,6 @@ public abstract class Account extends GenericEntity {
     addAttribute(POP3_PASSWORD, "POP3 password", true, true, String.class);
   }
 
-  public abstract void initializeAttributes();
-
-  public abstract String getEntityName();
-
-  public abstract String getName();
 
   public String getEmail(){
     return ((!isNull(EMAIL)) ? getStringColumnValue(EMAIL) : "");
