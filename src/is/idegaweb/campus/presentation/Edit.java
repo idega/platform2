@@ -66,6 +66,7 @@ public class Edit {
     return T;
   }
 
+
   public static void setStyle(InterfaceObject O){
     O.setAttribute("style",styleAttribute);
   }
