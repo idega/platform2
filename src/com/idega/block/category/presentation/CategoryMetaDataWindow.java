@@ -271,7 +271,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 			String key = iwc.getParameter(PARAMETER_NAME);
 			if (key != null && iwc.isParameterSet(PARAMETER_VALUE) && iwc.isParameterSet(PARAMETER_TYPE)) {
 				if (updateName != null) {
-					_category.renameMetaData(updateName, key);
+					_category.renameMetaData(updateName, key, iwc.getParameter(PARAMETER_VALUE));
 				} else {
 					_category.addMetaData(key, iwc.getParameter(PARAMETER_VALUE), iwc.getParameter(PARAMETER_TYPE));
 				}
