@@ -201,8 +201,6 @@ public class ContractReSignWindow extends Window{
   }
 
   private void doReSignContract(IWContext iwc){
-    System.out.println("saving shit!!!!!!");
-
     int id = Integer.parseInt(iwc.getParameter("contract_id"));
     int usid = Integer.parseInt(iwc.getParameter("us_id"));
     String sInfo = iwc.getParameter("resign_info");
