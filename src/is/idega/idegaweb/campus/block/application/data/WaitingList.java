@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.3 2001/11/30 18:22:45 palli Exp $
+ * $Id: WaitingList.java,v 1.4 2001/12/05 13:07:10 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,15 +20,19 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class WaitingList extends GenericEntity {
-  private static final String name_ = "cam_waiting_list";
-  private static final String complexId_ = "bu_complex_id";
-  private static final String apartmentTypeId_ = "bu_apartment_type_id";
-  private static final String applicantId_ = "app_applicant_id";
-  private static final String order_ = "ordered";
-  private static final String type_ = "list_type";
-  private static final String choiceNumber_ = "choice_number";
-  private static final String lastConfirmation_ = "last_confirmation";
-  private static final String numberOfRejections_ = "number_of_rejections";
+  private static final String _name = "cam_waiting_list";
+  private static final String _complexId = "bu_complex_id";
+  private static final String _apartmentTypeId = "bu_apartment__typeid";
+  private static final String _applicantId = "app_applicant_id";
+  private static final String _order = "ordered";
+  private static final String _type = "list_type";
+  private static final String _choiceNumber = "choice_number";
+  private static final String _lastConfirmation = "last_confirmation";
+  private static final String _numberOfRejections = "number_of_rejections";
+  private static final String _removedFromList = "removed_from_list";
+
+  private static final String YES = "Y";
+  private static final String NO = "N";
 
   public WaitingList() {
     super();
@@ -40,139 +44,161 @@ public class WaitingList extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(complexId_,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
-    addAttribute(apartmentTypeId_,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
-    addAttribute(applicantId_,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
-    addAttribute(order_,"Order",true,true,"java.lang.Integer");
-    addAttribute(type_,"Waiting list type",true,true,"java.lang.String");
-    addAttribute(choiceNumber_,"Choice number",true,true,"java.lang.Integer");
-    addAttribute(lastConfirmation_,"Last confirmation date",true,true,"java.sql.Timestamp");
-    addAttribute(numberOfRejections_,"Number of rejections",true,true,"java.lang.Integer");
-    setMaxLength(type_,1);
+    addAttribute(_complexId,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
+    addAttribute(_apartmentTypeId,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
+    addAttribute(_applicantId,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
+    addAttribute(_order,"Order",true,true,"java.lang.Integer");
+    addAttribute(_type,"Waiting list type",true,true,"java.lang.String");
+    addAttribute(_choiceNumber,"Choice number",true,true,"java.lang.Integer");
+    addAttribute(_lastConfirmation,"Last confirmation date",true,true,"java.sql.Timestamp");
+    addAttribute(_numberOfRejections,"Number of rejections",true,true,"java.lang.Integer");
+    addAttribute(_removedFromList,"Removed from list",true,true,"java.lang.String");
+    setMaxLength(_type,1);
+    setMaxLength(_removedFromList,1);
   }
 
   public String getEntityName() {
-    return(name_);
+    return(_name);
   }
 
   public static String getEntityTableName(){
-    return name_;
+    return _name;
   }
 
   public static String getComplexIdColumnName() {
-    return(complexId_);
+    return(_complexId);
   }
 
   public static String getApartmentTypeIdColumnName() {
-    return(apartmentTypeId_);
+    return(_apartmentTypeId);
   }
 
   public static String getApplicantIdColumnName() {
-    return(applicantId_);
+    return(_applicantId);
   }
 
   public static String getTypeColumnName() {
-    return(type_);
+    return(_type);
   }
 
   public static String getOrderColumnName() {
-    return(order_);
+    return(_order);
   }
 
   public static String getChoiceNumberColumnName() {
-    return(choiceNumber_);
+    return(_choiceNumber);
   }
 
   public static String getLastConfirmationColumnName() {
-    return(lastConfirmation_);
+    return(_lastConfirmation);
   }
 
   public static String getNumberOfRejectionsColumnName() {
-    return(numberOfRejections_);
+    return(_numberOfRejections);
   }
 
+  public static String getRemovedFromListColumnName() {
+    return(_removedFromList);
+  }
 
   public void setComplexId(int id) {
-    setColumn(complexId_,id);
+    setColumn(_complexId,id);
   }
 
   public Integer getComplexId() {
-    return(getIntegerColumnValue(complexId_));
+    return(getIntegerColumnValue(_complexId));
   }
 
   public void setApartmentTypeId(int id) {
-    setColumn(apartmentTypeId_,id);
+    setColumn(_apartmentTypeId,id);
   }
 
   public void setApartmentTypeId(Integer id) {
-    setColumn(apartmentTypeId_,id);
+    setColumn(_apartmentTypeId,id);
   }
 
   public Integer getApartmentTypeId() {
-    return(getIntegerColumnValue(apartmentTypeId_));
+    return(getIntegerColumnValue(_apartmentTypeId));
   }
 
   public void setApplicantId(int id) {
-    setColumn(applicantId_,id);
+    setColumn(_applicantId,id);
   }
 
   public void setApplicantId(Integer id) {
-    setColumn(applicantId_,id);
+    setColumn(_applicantId,id);
   }
 
   public Integer getApplicantId() {
-    return(getIntegerColumnValue(applicantId_));
+    return(getIntegerColumnValue(_applicantId));
   }
 
   public void setType(String type) {
-    setColumn(type_,type);
+    setColumn(_type,type);
   }
 
   public String getType() {
-    return(getStringColumnValue(type_));
+    return(getStringColumnValue(_type));
   }
 
   public void setOrder(int order) {
-    setColumn(order_,order);
+    setColumn(_order,order);
   }
 
   public void setOrder(Integer order) {
-    setColumn(order_,order);
+    setColumn(_order,order);
   }
 
   public Integer getOrder() {
-    return(getIntegerColumnValue(order_));
+    return(getIntegerColumnValue(_order));
   }
 
   public void setLastConfirmationDate(Timestamp date) {
-    setColumn(lastConfirmation_,date);
+    setColumn(_lastConfirmation,date);
   }
 
   public Timestamp getLastConfirmationDate() {
-    return((Timestamp)getColumnValue(lastConfirmation_));
+    return((Timestamp)getColumnValue(_lastConfirmation));
   }
 
   public void setNumberOfRejections(int count) {
-    setColumn(numberOfRejections_,count);
+    setColumn(_numberOfRejections,count);
   }
 
   public void setNumberOfRejections(Integer count) {
-    setColumn(numberOfRejections_,count);
+    setColumn(_numberOfRejections,count);
   }
 
   public int getNumberOfRejections() {
-    return(getIntColumnValue(numberOfRejections_));
+    return(getIntColumnValue(_numberOfRejections));
   }
 
   public void setChoiceNumber(int choice) {
-    setColumn(choiceNumber_,choice);
+    setColumn(_choiceNumber,choice);
   }
 
   public void setChoiceNumber(Integer choice) {
-    setColumn(choiceNumber_,choice);
+    setColumn(_choiceNumber,choice);
   }
 
   public Integer getChoiceNumber() {
-    return(getIntegerColumnValue(choiceNumber_));
+    return(getIntegerColumnValue(_choiceNumber));
+  }
+
+  public boolean getRemovedFromList() {
+    String removed = getStringColumnValue(_removedFromList);
+    if ((removed == null) || (removed.equals(NO)))
+      return(false);
+    else if (removed.equals(YES))
+      return(true);
+    else
+      return(false);
+  }
+
+  public void setRemovedFromList(String removed) {
+    if ((removed != null) && (removed.equalsIgnoreCase(YES)))
+      setColumn(_removedFromList,YES);
+    else
+      setColumn(_removedFromList,NO);
   }
 }
