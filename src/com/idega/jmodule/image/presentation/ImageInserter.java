@@ -66,6 +66,7 @@ public ImageInserter(int imageId, String imSessionImageName) {
       Link imageAdmin = new Link(image,insertNewsImageWindow);
         imageAdmin.addParameter("submit","new");
         imageAdmin.addParameter("im_image_session_name",imSessionImageName);
+        if ( imageId != -1 )  imageAdmin.addParameter("image_id",imageId);
 
       HiddenInput hidden = new HiddenInput(imSessionImageName,imageId+"");
       CheckBox insertImage = new CheckBox("insertImage","Y");
