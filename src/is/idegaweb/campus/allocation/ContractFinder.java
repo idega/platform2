@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.2 2001/07/13 00:08:45 aron Exp $
+ * $Id: ContractFinder.java,v 1.3 2001/07/13 11:05:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,15 @@ public abstract class ContractFinder {
   public static List listOfContracts(){
     try {
       return(EntityFinder.findAll(new Contract()));
+    }
+    catch(SQLException e){
+      return(null);
+    }
+  }
+
+  public static List listOfStatusContracts(String S){
+    try {
+      return(EntityFinder.findAllByColumn(new Contract(),Contract.getStatusColumnName(),S));
     }
     catch(SQLException e){
       return(null);

@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.6 2001/07/13 00:08:35 aron Exp $
+ * $Id: Contract.java,v 1.7 2001/07/13 11:05:43 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,6 +34,14 @@ public class Contract extends GenericEntity {
   public static final String statusTerminated = "T";
   public static final String statusEnded = "E";
 
+  public static String getStatusColumnName(){return status_;}
+  public static String getApplicantIdColumnName(){return applicantId_;}
+  public static String getValidToColumnName(){return validTo_;}
+  public static String getValidFromColumnName(){return validFrom_;}
+  public static String getApartmentIdColumnName(){return apartmentId_;}
+  public static String getUserIdColumnName(){return userId_;}
+  public static String getContractEntityName(){return name_;}
+
   public Contract() {
   }
   public Contract(int id) throws SQLException {
@@ -55,29 +63,7 @@ public class Contract extends GenericEntity {
     return(name_);
   }
 
-  public String getUserIdColumnName() {
-    return(userId_);
-  }
 
-  public String getApplicantIdColumnName(){
-    return(applicantId_);
-  }
-
-  public String getApartmentIdColumnName() {
-    return(apartmentId_);
-  }
-
-  public String getValidFromColumnName() {
-    return(validFrom_);
-  }
-
-  public String getValidToColumnName() {
-    return(validTo_);
-  }
-
-  public String getStatusColumnName() {
-    return(status_);
-  }
 
   public void setUserId(int id) {
     setColumn(userId_,id);
