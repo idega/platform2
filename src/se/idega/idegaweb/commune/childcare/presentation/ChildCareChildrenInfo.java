@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareChildrenInfo.java,v 1.1 2005/02/16 11:12:05 laddi Exp $
+ * $Id: ChildCareChildrenInfo.java,v 1.2 2005/03/30 07:57:26 laddi Exp $
  * Created on 31.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/02/16 11:12:05 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/30 07:57:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChildCareChildrenInfo extends ChildCareBlock {
 	
@@ -193,7 +193,10 @@ public class ChildCareChildrenInfo extends ChildCareBlock {
 	private int addContractToTable(IWContext iwc, Table table, ChildCareContract contract, int row) {
 		int column = 1;
 		
-		SchoolClassMember member = contract.getSchoolClassMember(); 
+		SchoolClassMember member = contract.getSchoolClassMember();
+		if (member == null) {
+			return row;
+		}
 		School school = member.getSchoolClass().getSchool();
 		IWTimestamp created = new IWTimestamp(contract.getCreatedDate());
 		IWTimestamp validFrom = new IWTimestamp(contract.getValidFromDate());
