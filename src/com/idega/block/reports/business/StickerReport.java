@@ -80,8 +80,11 @@ public class StickerReport {
           parag = new Paragraph();
 
           for(int i = 1; i <= Hlen; i++){
-            if(!RS.wasNull())
-              parag.add(new Chunk(RS.getString(i),fonts[i-1]));
+          	String s = RS.getString(i);
+            //if(!RS.wasNull())
+          	if(s!=null)
+          		parag.add(new Chunk(s,fonts[i-1]));
+          		//parag.add(new Chunk(RS.getString(i),fonts[i-1]));
             parag.add(endstrings[i-1]);
           }
           list.add(parag);

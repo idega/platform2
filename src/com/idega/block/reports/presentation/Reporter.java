@@ -273,7 +273,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
   }
 
   private Link getLink(int id,int catid){
-    Link L = new Link(core.getImage("/shared/view.gif"));// Image("/reports/pics/view.gif"));
+    Link L = new Link(core.getImage("/shared/edit.gif"));// Image("/reports/pics/view.gif"));
     L.setWindowToOpen(ReportViewWindow.class);
     L.addParameter(PRM_REPORTID,id);
     L.addParameter(PRM_CATEGORYID,catid);
@@ -290,7 +290,8 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
 
   public static Link getPrintLink(IWApplicationContext iwac,Image image,int iReportId,int iReportInfoId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow(iwac));
+    L.setURL(iwac.getIWMainApplication().getMediaServletURI()+"report.pdf");
+    L.setTarget(Link.TARGET_BLANK_WINDOW);
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmReportInfoId,iReportInfoId);
@@ -300,7 +301,8 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
 
   public static Link getTXTLink(IWApplicationContext iwac,Image image,int iReportId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow(iwac));
+    L.setURL(iwac.getIWMainApplication().getMediaServletURI()+"report.txt");
+    L.setTarget(Link.TARGET_BLANK_WINDOW);
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.TXT);
@@ -310,7 +312,8 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
 
  public static Link getPDFLink(IWApplicationContext iwac,Image image,int iReportId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow(iwac));
+    L.setURL(iwac.getIWMainApplication().getMediaServletURI()+"report.pdf");
+    L.setTarget(Link.TARGET_BLANK_WINDOW);
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.PDF);
@@ -320,7 +323,8 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
 
   public static Link getXLSLink(IWApplicationContext iwac,Image image,int iReportId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow(iwac));
+    L.setURL(iwac.getIWMainApplication().getMediaServletURI()+"report.xls");
+    L.setTarget(Link.TARGET_BLANK_WINDOW);
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.XLS);
