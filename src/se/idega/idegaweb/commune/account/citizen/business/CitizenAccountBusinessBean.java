@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.18 2002/11/06 10:00:32 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.19 2002/11/06 10:46:15 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,9 +29,12 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
 
-	public boolean insertApplication(User performer, String pid, String email, String phoneHome, String phoneWork) {
+	public boolean insertApplication (User performer, String pid, String email,
+                                      String phoneHome, String phoneWork) {
 		try {
-			CitizenAccount application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
+			CitizenAccount application =
+                    ((CitizenAccountHome) IDOLookup.getHome
+                     (CitizenAccount.class)).create();
 			application.setPID(pid);
 			if (performer != null)
 				application.setOwner(performer);
@@ -44,9 +47,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 			application.store();
 
-			int applicationID = ((Integer) application.getPrimaryKey()).intValue();
+			int applicationID
+                    = ((Integer) application.getPrimaryKey()).intValue();
 			if (acceptApplicationOnCreation) {
-                //				acceptApplication(applicationID, performer);
+                acceptApplication(applicationID, performer);
 			}
 		}
 		catch (Exception e) {

@@ -71,40 +71,54 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	 * Also adds the citizen to the Commune Root Group.
 	 */
 	public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID)
-		throws CreateException, RemoteException
-	{
+		throws CreateException, RemoteException {
 		return createCitizenByPersonalIDIfDoesNotExist
                 (firstName, middleName, lastName, personalID, null, null);
 	}
-	public User createCitizenByPersonalIDIfDoesNotExist(
-		String firstName,
-		String middleName,
-		String lastName,
-		String personalID,
-		Gender gender,
-		IWTimestamp dateOfBirth)
-		throws CreateException, RemoteException
-	{
-		User user;
-		try
-		{
-			user = getUserBusiness().getUserHome().findByPersonalID(personalID);
-			StringBuffer fullName = new StringBuffer();
-			firstName = (firstName == null) ? "" : firstName;
-			middleName = (middleName == null) ? "" : middleName;
-			lastName = (lastName == null) ? "" : lastName;
-			fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
-			user.setFullName(fullName.toString());
-            // user.setGender((Integer) gender.getPrimaryKey());
-			// user.setDateOfBirth(dateOfBirth.getDate());
-			//Sets the user in the correct primary group (Commune Root Users)
-			user.setPrimaryGroup(getRootCitizenGroup());
-			user.store();
-		} catch (FinderException ex) {
-			user = createCitizen (firstName, middleName, lastName, personalID, gender, dateOfBirth);
-		}
+
+	public User createCitizenByPersonalIDIfDoesNotExist
+        (final String firstName, final String middleName, final String lastName,
+         final String personalID, final Gender gender,
+         final IWTimestamp dateOfBirth)
+		throws CreateException, RemoteException {
+
+		User user = null;
+		try {
+            final UserBusiness business = getUserBusiness();
+            final UserHome home = business.getUserHome();
+			user = home.findByPersonalID (personalID);
+        } catch (final FinderException e) {
+            // nothing, since the case of "not find" is in finally clause
+        } finally {
+            if (user == null) {
+                final StringBuffer fullName = new StringBuffer();
+                if (firstName != null && firstName.trim ().length () > 0) {
+                    fullName.append (firstName.trim ());
+                }
+                if (middleName != null && middleName.trim ().length () > 0) {
+                    fullName.append (fullName.length () > 0 ? " " : "");
+                    fullName.append (middleName.trim ());
+                }
+                if (lastName != null && lastName.trim ().length () > 0) {
+                    fullName.append (fullName.length () > 0 ? " " : "");
+                    fullName.append (lastName.trim ());
+                }
+                user.setFullName(fullName.toString());
+                user.setGender((Integer) gender.getPrimaryKey());
+                user.setDateOfBirth(dateOfBirth.getDate());
+                try {
+                    user.setPrimaryGroup(getRootCitizenGroup());
+                } catch (final FinderException e) {
+                    e.printStackTrace ();
+                }
+                user.store();
+                user = createCitizen (firstName, middleName, lastName,
+                                      personalID, gender, dateOfBirth);
+            }
+        }
 		return user;
 	}
+
 	/**
 	 * Creates a new Commune Administrator with a firstname,middlename, lastname and personalID where middlename and personalID can be null
 	 */
