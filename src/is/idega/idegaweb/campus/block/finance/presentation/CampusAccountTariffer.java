@@ -59,6 +59,7 @@ public class CampusAccountTariffer extends AccountTariffer {
 		T.setUseBottom(false);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setTitlesVertical(true);
+		if(getAccountId()!=null){
 		try {
 			ContractAccountApartment caa =getContractAccountApartmentHome().findByAccount(getAccountId());
 			T.add(getHeader(localize("apartment","Apartment")),1,1);
@@ -76,6 +77,7 @@ public class CampusAccountTariffer extends AccountTariffer {
 			e.printStackTrace();
 		} catch (RemoteException e) {
 		e.printStackTrace();
+		}
 		}
 
 		
