@@ -12,7 +12,7 @@ import com.idega.data.IDOLookup;
 public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
 
     private static final String ENTITY_NAME = "vp_topcategory";
-    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_ID = ENTITY_NAME + "_id";
 	private static final String COLUMN_NAME = "name";
 
 	public String getEntityName() {

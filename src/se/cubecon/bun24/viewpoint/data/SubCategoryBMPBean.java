@@ -12,7 +12,7 @@ import com.idega.user.data.Group;
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
     private static final String ENTITY_NAME = "vp_subcategory";
-    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_ID = ENTITY_NAME + "_id";
 	private static final String COLUMN_NAME = "name";
     private static final String COLUMN_TOPCATEGORY_ID = "topcategory_id";
     private static final String COLUMN_HANDLERGROUP_ID = "handlergroup_id";
