@@ -16,7 +16,6 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -34,7 +33,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -51,7 +49,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.servlet.http.HttpServletRequest;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -67,11 +64,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/02/04 19:22:38 $ by $Author: laddi $
+ * Last modified: $Date: 2004/02/05 13:16:11 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -320,47 +317,10 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 													 null, false);
 	}
 
-	public MediaWritable getInternalCheckAmountListStream
+	public MemoryFileBuffer getInternalCheckAmountListBuffer
 		(final String schoolCategoryId, final Integer providerId,
-		 final Date startPeriod, final Date endPeriod) {
-		return new MediaWritable () {
-				public String getMimeType () { return "application/pdf"; }
-
-				public void init (final HttpServletRequest httpservletrequest,
-													final IWMainApplication iwmainapplication) {}
-				
-				public void writeTo (final OutputStream outputStream) {
-					try {
-						final MemoryFileBuffer buffer = getInternalCheckAmountListBuffer
-								(schoolCategoryId, providerId, startPeriod, endPeriod);
-						final MemoryInputStream mis = new MemoryInputStream (buffer);
-						final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-						while (mis.available() > 0) {	baos.write(mis.read());	}
-						baos.writeTo (outputStream);
-					} catch (Exception e) {
-						e.printStackTrace ();
-					}
-				}
-			};
-	}
-
-	public int createInternalCheckAmountList
-		(final String schoolCategoryId, final Integer providerId,
-		 final Date startPeriod, final Date endPeriod) throws RemoteException,
-																													FinderException {
-		try {
-			final MemoryFileBuffer buffer = getInternalCheckAmountListBuffer(schoolCategoryId, providerId, startPeriod, endPeriod);
-			final int docId = getInvoiceBusiness ().generatePdf
-					(localize (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
-					 buffer);
-			return docId;
-		} catch (DocumentException e) {
-			e.printStackTrace ();
-			throw new RemoteException (e.getMessage ());
-		}
-	}
-
-	MemoryFileBuffer getInternalCheckAmountListBuffer(final String schoolCategoryId, final Integer providerId, final Date startPeriod, final Date endPeriod) throws RemoteException, DocumentException, FinderException {
+		 final Date startPeriod, final Date endPeriod, final boolean isShowPosting)
+		throws RemoteException, DocumentException, FinderException {
 		PaymentRecord [] records = new PaymentRecord [0];
 		if (null != schoolCategoryId && null != providerId) {
 			records = getInvoiceBusiness ()
@@ -397,21 +357,23 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		addPhrase (outerTable, "\n");
 		final PdfPTable summaryTable = getSummaryTable(records, true);
 		outerTable.addCell (summaryTable);
-		addPhrase (outerTable, "\n");
-		addPhrase (outerTable,
-							 localize (OWN_POSTING_KEY, OWN_POSTING_DEFAULT) + ":");
-		final PostingBusiness postingBusiness = getPostingBusiness ();
-		final PdfPTable ownPostingTable
-				= getPostingTable (records, true, postingBusiness);
-		outerTable.addCell (ownPostingTable);
-		addPhrase (outerTable, "");
-		addPhrase (outerTable,
-							 localize (DOUBLE_POSTING_KEY, DOUBLE_POSTING_DEFAULT) + ":");
-		final PdfPTable doublePostingTable = getPostingTable (records, false,
-																														 postingBusiness);
-		outerTable.addCell (doublePostingTable);
+		if (isShowPosting) {
+			addPhrase (outerTable, "\n");
+			addPhrase (outerTable,
+								 localize (OWN_POSTING_KEY, OWN_POSTING_DEFAULT) + ":");
+			final PostingBusiness postingBusiness = getPostingBusiness ();
+			final PdfPTable ownPostingTable
+					= getPostingTable (records, true, postingBusiness);
+			outerTable.addCell (ownPostingTable);
+			addPhrase (outerTable, "");
+			addPhrase (outerTable,
+								 localize (DOUBLE_POSTING_KEY, DOUBLE_POSTING_DEFAULT) + ":");
+			final PdfPTable doublePostingTable = getPostingTable (records, false,
+																														postingBusiness);
+			outerTable.addCell (doublePostingTable);
+		}
 		document.add (outerTable);        
-		
+			
 		// close document
 		document.close ();
 		return buffer;

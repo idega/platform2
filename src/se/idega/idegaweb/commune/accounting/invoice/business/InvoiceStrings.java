@@ -23,6 +23,10 @@ public interface InvoiceStrings {
 	String CHECK_AMOUNT_LIST_SENT_KEY = PREFIX + "check_amount_list_sent";
 	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_DEFAULT = "Checkbeloppslistan har skickats till alla berörda parter";
 	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_KEY = PREFIX + "check_amount_list_sent_to_all_parties";
+	String CHECK_AMOUNT_LIST_WITHOUT_POSTING_DEFAULT = "Checkbeloppslista utan kontering";
+	String CHECK_AMOUNT_LIST_WITHOUT_POSTING_KEY = PREFIX + "check_amount_list_without_posting";
+	String CHECK_AMOUNT_LIST_WITH_POSTING_DEFAULT = "Checkbeloppslista med kontering";
+	String CHECK_AMOUNT_LIST_WITH_POSTING_KEY = PREFIX + "check_amount_list_with_posting";
 	String CHECK_PERIOD_DEFAULT = "Checkperiod";
 	String CHECK_PERIOD_KEY = PREFIX + "check_period";
 	String CREATED_SIGNATURE_KEY = PREFIX + "created_signature";
@@ -85,6 +89,7 @@ public interface InvoiceStrings {
 	String PLACEMENT_REMOVED_KEY = "placement_removed";
 	String POSTGIRO_DEFAULT = "Postgiro";
 	String POSTGIRO_KEY = PREFIX + "postgiro";
+	String POSTING_KEY = PREFIX + "posting";
 	String PRICE_PER_MONTH_DEFAULT = "Pris/mån";
 	String PRICE_PER_MONTH_KEY = PREFIX + "price_per_month";
 	String PRINT_DATE_DEFAULT = "Utskriftsdatum";

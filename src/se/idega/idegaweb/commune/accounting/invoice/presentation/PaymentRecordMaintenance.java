@@ -15,6 +15,10 @@ import com.idega.block.school.data.SchoolUserHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.io.MediaWritable;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -27,8 +31,12 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.LocaleUtil;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -40,6 +48,8 @@ import java.util.Iterator;
 import java.util.Set;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
@@ -69,11 +79,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/04 13:41:04 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/05 13:16:11 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.93 $
+ * @version $Revision: 1.94 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -170,25 +180,51 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	
 	private void generateCheckAmountListPdf (final IWContext context)
 		throws RemoteException, FinderException {
+		/*
 		final String schoolCategory = getSession().getOperationalField ();
 		final Integer providerId = getProviderIdParameter (context);
 		final Date startPeriod
 				= getPeriodParameter (context, START_PERIOD_KEY);
 		final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
-		final CheckAmountBusiness business = getCheckAmountBusiness (context);
+		final CheckAmountBusiness business = getCheckAmountBusiness ();
 		final int fileId = business.createInternalCheckAmountList
 				(schoolCategory, providerId, startPeriod, endPeriod);
-		
+*/		
 		// create link		
-		final Link viewLink
-				= new Link("Öppna checkbeloppslista i Acrobat Reader");
-		viewLink.setFile (fileId);
-		viewLink.setTarget ("letter_window_" + fileId);
-
+		CheckAmountListWriter.outerObject = this;
+		Link link1 = new Link
+				(localize (CHECK_AMOUNT_LIST_WITHOUT_POSTING_KEY,
+									 CHECK_AMOUNT_LIST_WITHOUT_POSTING_DEFAULT));
+		link1.setWindow(getFileWindow());
+		link1.addParameter (MediaWritable.PRM_WRITABLE_CLASS,
+													 IWMainApplication.getEncryptedClassName
+													 (CheckAmountListWriter.class));
+		link1.addParameter (PROVIDER_KEY, context.getParameter (PROVIDER_KEY));
+		link1.addParameter (START_PERIOD_KEY,
+													 context.getParameter (START_PERIOD_KEY));
+		link1.addParameter (END_PERIOD_KEY,
+													 context.getParameter (END_PERIOD_KEY));
+		Link link2 = new Link (localize (CHECK_AMOUNT_LIST_WITH_POSTING_KEY,
+																		 CHECK_AMOUNT_LIST_WITH_POSTING_DEFAULT));
+		link2.setWindow(getFileWindow());
+		link2.addParameter (MediaWritable.PRM_WRITABLE_CLASS,
+													 IWMainApplication.getEncryptedClassName
+													 (CheckAmountListWriter.class));
+		link2.addParameter (PROVIDER_KEY, context.getParameter (PROVIDER_KEY));
+		link2.addParameter (START_PERIOD_KEY,
+													 context.getParameter (START_PERIOD_KEY));
+		link2.addParameter (END_PERIOD_KEY,
+													 context.getParameter (END_PERIOD_KEY));
+		link2.addParameter (POSTING_KEY, true + "");
+		int row = 1;
 		final Table htmlTable = createTable (1);
-		htmlTable.add (viewLink, 1, 1);
-		htmlTable.setHeight (2, 12);
-		addCancelButton (htmlTable, 1, 3, ACTION_SHOW_PAYMENT);
+		htmlTable.add ("<ul><li>", 1, row);
+		htmlTable.add (link1, 1, row);
+		htmlTable.add ("</li><li>", 1, row);
+		htmlTable.add (link2, 1, row);
+		htmlTable.add ("</li></ul>", 1, row++);
+		htmlTable.setHeight (row++, 12);
+		addCancelButton (htmlTable, 1, row++, ACTION_SHOW_PAYMENT);
 		final Form form = new Form ();
 		form.maintainParameter (PROVIDER_KEY);
 		form.setOnSubmit("return checkInfoForm()");
@@ -199,13 +235,24 @@ public class PaymentRecordMaintenance extends AccountingBlock
 													formTable));
 	}
 
+	private Window getFileWindow() {
+		Window w = new Window
+				(localize("school.class", "School class"),
+				 getIWApplicationContext ().getApplication ().getMediaServletURI ());
+		w.setResizable(true);
+		w.setMenubar(true);
+		w.setHeight(400);
+		w.setWidth(500);
+		return w;
+	}
+
 	private void removePayment (final IWContext context)
 		throws RemoteException, FinderException, RemoveException {
 		// find payment header
 		final PaymentHeader header = getPaymentHeader (context);
 
 		// remove header
-		getInvoiceBusiness (context).removePaymentHeader (header);
+		getInvoiceBusiness ().removePaymentHeader (header);
 	}
 	
 	private void removeRecord (final IWContext context)
@@ -214,7 +261,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final PaymentRecord record = getPaymentRecord (context);
 
 		// remove record
-		getInvoiceBusiness (context).removePaymentRecord (record);
+		getInvoiceBusiness ().removePaymentRecord (record);
 
 		// re-render
 		showPayment (context);
@@ -289,7 +336,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
 		addStyledInput (map, VAT_AMOUNT_KEY, record.getTotalAmountVAT ());
 		
-		final InvoiceBusiness business = getInvoiceBusiness (context);
+		final InvoiceBusiness business = getInvoiceBusiness ();
 		final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
 				(business.getAllRegulationSpecTypes ());
 		map.put (REGULATION_SPEC_TYPE_KEY, regulationSpecTypeDropdown);
@@ -298,10 +345,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			regulationSpecTypeDropdown.setSelectedElement (regulationSpecType);
 		}
 		final PresentationObject ownPostingForm = getPostingParameterForm
-				(context, OWN_POSTING_KEY, record.getOwnPosting ());
+				(OWN_POSTING_KEY, record.getOwnPosting ());
 		map.put (OWN_POSTING_KEY, ownPostingForm);
 		final PresentationObject doublePostingForm = getPostingParameterForm
-				(context, DOUBLE_POSTING_KEY, record.getDoublePosting ());
+				(DOUBLE_POSTING_KEY, record.getDoublePosting ());
 		map.put (DOUBLE_POSTING_KEY, doublePostingForm);
 		final DropdownMenu vatRuleDropdown = getLocalizedDropdownForVAT
 				(business.getAllVATRuleRegulations());
@@ -351,10 +398,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
 		addSmallText (map, DATE_CREATED_KEY, record.getDateCreated ());
 		map.put (DOUBLE_POSTING_KEY,
-						 getPostingListTable (context, record.getDoublePosting ()));
+						 getPostingListTable (record.getDoublePosting ()));
 		addSmallText (map, NOTE_KEY, record.getNotes ());
 		map.put (OWN_POSTING_KEY,
-						 getPostingListTable (context, record.getOwnPosting ()));
+						 getPostingListTable (record.getOwnPosting ()));
 		addSmallText (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
 		addSmallPeriodText (map, PERIOD_KEY, record.getPeriod ());
 		addSmallText (map, PIECE_AMOUNT_KEY,
@@ -367,7 +414,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final String ruleSpecType = record.getRuleSpecType ();
 		addSmallText (map, REGULATION_SPEC_TYPE_KEY,  ruleSpecType, ruleSpecType);
 		if (0 < record.getVATRuleRegulationId ()) {
-			final InvoiceBusiness business = getInvoiceBusiness (context);
+			final InvoiceBusiness business = getInvoiceBusiness ();
 			final Regulation vatRule
 					= business.getVATRuleRegulation(record.getVATRuleRegulationId ());
 			final String ruleName = vatRule.getLocalizationKey();
@@ -398,10 +445,9 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		renderRecordDetailsOrForm (context, map);
 	}
 	
-	private SchoolCategory getSchoolCategory
-		(final IWContext context, final String schoolCategoryId)
+	private SchoolCategory getSchoolCategory (final String schoolCategoryId)
     throws RemoteException, FinderException {
-		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
+		final SchoolBusiness schoolBusiness = getSchoolBusiness ();
 		final SchoolCategoryHome categoryHome
 				= schoolBusiness.getSchoolCategoryHome ();
 		return categoryHome.findByPrimaryKey (schoolCategoryId);
@@ -410,8 +456,8 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	private void showRecordDetails (final IWContext context)
 		throws RemoteException, FinderException {
 		// get business objects
-		final InvoiceBusiness business = getInvoiceBusiness (context);
-		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
+		final InvoiceBusiness business = getInvoiceBusiness ();
+		final SchoolBusiness schoolBusiness = getSchoolBusiness ();
 		
 		// get home objects
 		final InvoiceRecordHome home = business.getInvoiceRecordHome ();
@@ -420,7 +466,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final PaymentRecord record = getPaymentRecord (context);
 		final PaymentHeader header = record.getPaymentHeader ();
 		final SchoolCategory category
-				= getSchoolCategory (context, header.getSchoolCategoryID ());
+				= getSchoolCategory (header.getSchoolCategoryID ());
 		final School school = schoolBusiness.getSchool
 				(new Integer (header.getSchoolID ()));
 		final Collection invoiceRecords
@@ -447,12 +493,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 									getFormattedPeriod (record.getPeriod ()));
 		table.setHeight (row++, 6);
 		table.mergeCells (1, row, table.getColumns (), row);
-		table.add (getDetailedPaymentRecordListTable
-							 (context, invoiceRecords), 1, row++);
+		table.add (getDetailedPaymentRecordListTable (invoiceRecords), 1, row++);
 		table.setHeight (row++, 6);
 		table.mergeCells (1, row, table.getColumns (), row);
-		table.add (getDetailedPaymentRecordSummaryTable
-							 (context, invoiceRecords), 1, row++);
+		table.add (getDetailedPaymentRecordSummaryTable (invoiceRecords), 1, row++);
 		table.setHeight (row++, 6);
 		table.mergeCells (1, row, table.getColumns (), row);
 		table.add (new HiddenInput (PROVIDER_KEY, school.getPrimaryKey () + ""), 1,
@@ -486,7 +530,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final String schoolCategory = getSession().getOperationalField ();
 		final Integer providerId = getProviderIdParameter (context);
 		if (null != schoolCategory && null != providerId) {
-			final InvoiceBusiness business = getInvoiceBusiness (context);
+			final InvoiceBusiness business = getInvoiceBusiness ();
 			final Date startPeriod
 					= getPeriodParameter (context, START_PERIOD_KEY);
 			final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
@@ -539,19 +583,18 @@ public class PaymentRecordMaintenance extends AccountingBlock
 					outerTable));
 	}
 
-	private boolean hasCurrentSchoolCategoryFlowInAndFlowOut
-		(final IWContext context) throws RemoteException, FinderException {
+	private boolean hasCurrentSchoolCategoryFlowInAndFlowOut ()
+		throws RemoteException, FinderException {
 		final String schoolCategory = getSession().getOperationalField ();
 		if (null == schoolCategory) return false;
 		final ExportDataMapping mapping
-				= getExportBusiness (context).getExportDataMapping (schoolCategory);
+				= getExportBusiness ().getExportDataMapping (schoolCategory);
 		if (null == mapping) return false;
 		return mapping.getCashFlowIn () && mapping.getCashFlowOut ();
 	}
 
 	private Table getDetailedPaymentRecordListTable
-		(final IWContext context, final Collection invoiceRecords)
-		throws RemoteException {
+		(final Collection invoiceRecords)	throws RemoteException {
 		// set up header row
 		final String [][] columnNames =
 				{{ SSN_KEY, SSN_DEFAULT },
@@ -574,7 +617,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		row++;
 		
 		//render
-		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
+		final SchoolBusiness schoolBusiness = getSchoolBusiness ();
 		final SchoolClassMemberHome memberHome
 				= schoolBusiness.getSchoolClassMemberHome ();
 		for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
@@ -587,13 +630,12 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	}
 	
 	private Table getDetailedPaymentRecordSummaryTable
-		(final IWContext context, final Collection invoiceRecords)
-		throws RemoteException {
+		(final Collection invoiceRecords)	throws RemoteException {
 		final Set placements = new HashSet ();
 		final Set individuals = new HashSet ();
 		long totalAmountVatExcluded = 0;
 		// get home object
-		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
+		final SchoolBusiness schoolBusiness = getSchoolBusiness ();
 		final SchoolClassMemberHome home
 				= schoolBusiness.getSchoolClassMemberHome ();
 		
@@ -801,7 +843,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final boolean userIsSchoolManager
 				= null != getSchoolByLoggedInUser (context);
 		final boolean isFlowInAndOut
-				= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
+				= hasCurrentSchoolCategoryFlowInAndFlowOut ();
 		final boolean isRecordEditAllowed = isPreliminaryRecord (record)
 				&& !(isFlowInAndOut && isCheck (regSpecType)) && !userIsSchoolManager;
 		final String [][] showRecordLinkParameters = isRecordEditAllowed
@@ -847,7 +889,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	
 	private PaymentRecord getPaymentRecord (final IWContext context)
 		throws RemoteException, FinderException {
-		final InvoiceBusiness business = getInvoiceBusiness (context);
+		final InvoiceBusiness business = getInvoiceBusiness ();
 		final Integer recordId = getIntegerParameter (context,
 																									PAYMENT_RECORD_KEY);
 		final PaymentRecordHome recordHome = business.getPaymentRecordHome ();
@@ -856,7 +898,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	
 	private PaymentHeader getPaymentHeader (final IWContext context)
 		throws RemoteException, FinderException {
-		final InvoiceBusiness business = getInvoiceBusiness (context);
+		final InvoiceBusiness business = getInvoiceBusiness ();
 		if (!context.isParameterSet (PAYMENT_HEADER_KEY)) {
 			return getPaymentRecord (context).getPaymentHeader ();
 		}
@@ -875,7 +917,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		setColumnWidthsEqual (table);
 		int row = 2;
 		int col = 1;
-		addOperationalFieldRow (table, context, header, row++);
+		addOperationalFieldRow (table, header, row++);
 		col = 1;
 		addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
 		table.mergeCells (col, row, table.getColumns (), row);
@@ -1011,9 +1053,9 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	private String getPostingString (final IWContext context,
 																	 final String postingKey)
 		throws RemoteException {
-		final PostingBusiness business = getPostingBusiness (context);
+		final PostingBusiness business = getPostingBusiness ();
 		final StringBuffer result = new StringBuffer ();
-		final PostingField [] fields = getCurrentPostingFields (context);
+		final PostingField [] fields = getCurrentPostingFields ();
 		for (int i = 0; i < fields.length; i++) {
 			final PostingField field = fields [i];
 			final String key = postingKey + (i + 1);
@@ -1028,11 +1070,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	}
 	
 	private ListTable getPostingParameterForm
-		(final IWContext context, final String key, final String value)
-		throws RemoteException {
+		(final String key, final String value) throws RemoteException {
 		final String postingString = value != null && !value.equals (null + "")
 				? value : "";
-		final PostingField [] fields = getCurrentPostingFields (context);
+		final PostingField [] fields = getCurrentPostingFields ();
 		final ListTable postingInputs = new ListTable (this, fields.length);
 		int offset = 0;
 		for (int i = 0; i < fields.length; i++) {
@@ -1071,6 +1112,43 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		return createMainTable (localize (headerKey, headerDefault), content);
 	}
 	
+	public static class CheckAmountListWriter	implements MediaWritable {
+		private static PaymentRecordMaintenance outerObject;
+		private Integer providerId;
+		private Date startPeriod;
+		private Date endPeriod;
+		private boolean isShowPosting;
+
+		public String getMimeType () { return "application/pdf"; }
+
+		public void init (final HttpServletRequest request,
+											final IWMainApplication dummy) {
+			providerId = getProviderIdParameter (request);
+			startPeriod	= getPeriodParameter (request, START_PERIOD_KEY);
+			endPeriod = getPeriodParameter (request, END_PERIOD_KEY);
+			isShowPosting = null != request.getParameter (POSTING_KEY);
+		}
+		
+		public void writeTo (OutputStream outputStream) throws IOException {
+			try {
+				final String schoolCategoryId
+						= outerObject.getSession().getOperationalField ();
+				final CheckAmountBusiness checkAmountBusiness
+						= outerObject.getCheckAmountBusiness ();
+				final MemoryFileBuffer buffer
+						= checkAmountBusiness.getInternalCheckAmountListBuffer
+						(schoolCategoryId, providerId, startPeriod, endPeriod,
+						 isShowPosting);
+				final MemoryInputStream mis = new MemoryInputStream (buffer);
+				final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
+				while (mis.available() > 0) {	baos.write(mis.read());	}
+				baos.writeTo (outputStream);
+			} catch (Exception e) {
+				e.printStackTrace ();
+			}
+		}
+	}
+
 	private void addPresentation
 		(final Table table, final java.util.Map map, final String key,
 		 final int col, final int row) {
@@ -1169,8 +1247,13 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	 */
 	private static Date getPeriodParameter (final IWContext context,
 																					final String key) {
-		final String rawString = context.getParameter (key);
-		final Date sessionPeriod = (Date) context.getSessionAttribute (key);
+		return getPeriodParameter(context.getRequest (), key);
+	}
+	
+	private static Date getPeriodParameter(final HttpServletRequest request, final String key) {
+		final String rawString = request.getParameter (key);
+		final HttpSession session = request.getSession ();
+		final Date sessionPeriod = (Date) session.getAttribute (key);
 		Date result = null != sessionPeriod ? sessionPeriod
 				: new Date (System.currentTimeMillis ());
 		if (null != rawString && 4 == rawString.length ()) {
@@ -1186,22 +1269,27 @@ public class PaymentRecordMaintenance extends AccountingBlock
 				// no problem, stick with current time
 			}
 		}
-		context.setSessionAttribute (key, result);
+		session.setAttribute (key, result);
 		return result;
 	}
-	
+
 	private static Integer getProviderIdParameter (final IWContext context) {
+		return getProviderIdParameter(context.getRequest ());
+	}
+	
+	private static Integer getProviderIdParameter(final HttpServletRequest request) {
 		Integer result = null;
-		final String postedString = context.getParameter (PROVIDER_KEY);
+		final String postedString = request.getParameter (PROVIDER_KEY);
+		final HttpSession session = request.getSession ();
 		try {
 			result = new Integer (postedString);
 		} catch (final Exception exception) {
-			result = (Integer) context.getSessionAttribute (PROVIDER_KEY);
+			result = (Integer) session.getAttribute (PROVIDER_KEY);
 		}
-		context.setSessionAttribute (PROVIDER_KEY, result);
+		session.setAttribute (PROVIDER_KEY, result);
 		return result;
 	}
-	
+
 	/**
 	 * Returns a styled table with content placed properly
 	 *
@@ -1264,11 +1352,9 @@ public class PaymentRecordMaintenance extends AccountingBlock
 								(endDate == null ? now : endDate)), col, row);
 	}
 	
-	private String getSchoolCategoryName (final IWContext context,
-																				final String schoolCategoryId) {
+	private String getSchoolCategoryName (final String schoolCategoryId) {
 		try {
-			final SchoolCategory category
-					= getSchoolCategory (context, schoolCategoryId);
+			final SchoolCategory category	= getSchoolCategory (schoolCategoryId);
 			return localize (category.getLocalizedKey (), category.getName ());
 		} catch (Exception dummy) {
 			return "";
@@ -1278,7 +1364,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	private void addProviderDropdown
 		(final IWContext context, final Table table, final int row)
 		throws RemoteException {
-		final SchoolBusiness business = getSchoolBusiness (context);
+		final SchoolBusiness business = getSchoolBusiness ();
 		int col = 1;
 		addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
 		final String schoolCategory = getSession ().getOperationalField ();
@@ -1365,8 +1451,8 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			final String schoolCategoryId
 					= "" + schoolCategoryIds.iterator ().next ();
 			if (null != schoolCategoryId && 0 < schoolCategoryId.length ()) {
-				addSmallText (table, getSchoolCategoryName
-											(context, schoolCategoryId), col++, row);
+				addSmallText (table, getSchoolCategoryName (schoolCategoryId), col++,
+											row);
 				getSession ().setOperationalField (schoolCategoryId);
 			}
 		} else {
@@ -1384,14 +1470,14 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	}
 	
 	private void addOperationalFieldRow
-		(final Table table, final IWContext context, final PaymentHeader header,
-		 final int row) throws RemoteException {
+		(final Table table, final PaymentHeader header, final int row)
+		throws RemoteException {
 		int col = 1;
 		addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
 										MAIN_ACTIVITY_DEFAULT, ":");
 		table.mergeCells (col, row, table.getColumns () - 1, row);
-		addSmallText (table, getSchoolCategoryName
-									(context, header.getSchoolCategoryID ()), col++, row);
+		addSmallText (table, getSchoolCategoryName (header.getSchoolCategoryID ()),
+									col++, row);
 		final String schoolCategory = header.getSchoolCategoryID ();
 		if (null != schoolCategory && 0 < schoolCategory.length ()) {
 			getSession ().setOperationalField (schoolCategory);
@@ -1426,10 +1512,9 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		add ("Det inträffade ett fel. Försök igen senare.");
 	}
 	
-	private ListTable getPostingListTable (final IWContext context,
-																				 final String postingString) 
+	private ListTable getPostingListTable (final String postingString) 
 		throws RemoteException {
-		final PostingField [] fields = getCurrentPostingFields (context);
+		final PostingField [] fields = getCurrentPostingFields ();
 		final ListTable result = new ListTable (this, fields.length);
 		int offset = 0;
 		for (int i = 0; i < fields.length; i++) {
@@ -1448,9 +1533,8 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		return a < b ? a : b;
 	}
 	
-	private PostingField [] getCurrentPostingFields (final IWContext context)
-		throws RemoteException {
-		final PostingBusiness business = getPostingBusiness (context);
+	private PostingField [] getCurrentPostingFields () throws RemoteException {
+		final PostingBusiness business = getPostingBusiness ();
 		final Date now = new Date (System.currentTimeMillis ());
 		final Collection fields = business.getAllPostingFieldsByDate (now);
 		final PostingField [] array = new PostingField [0];
@@ -1458,8 +1542,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 				: array;
 	}
 	
-	private TextInput getStyledWideInput (final String key,
-																				final String value) {
+	private TextInput getStyledWideInput (final String key, final String value) {
 		final TextInput input = getStyledInput (key, value);
 		input.setLength (48);
 		return input;
@@ -1569,12 +1652,12 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final User user = context.getCurrentUser ();
 		School school = null;
 		if (null != user) {
-			final SchoolUserBusiness business = getSchoolUserBusiness (context);
+			final SchoolUserBusiness business = getSchoolUserBusiness ();
 			try {
 				final Collection schoolIds = business.getSchools (user);
 				if (!schoolIds.isEmpty  ()) {
 					final Object schoolId = schoolIds.iterator ().next ();
-					school = getSchoolBusiness (context).getSchool (schoolId);
+					school = getSchoolBusiness ().getSchool (schoolId);
 				}
 			} catch (FinderException e) {
 				// no problem, no school found
@@ -1607,39 +1690,33 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		createPaymentPage = page;
 	}
 
-	private SchoolUserBusiness getSchoolUserBusiness
-		(final IWContext context) throws RemoteException {
+	private SchoolUserBusiness getSchoolUserBusiness () throws RemoteException {
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance
-				(context, SchoolUserBusiness.class);	
+				(getIWApplicationContext (), SchoolUserBusiness.class);	
 	}
 	
-	SchoolBusiness getSchoolBusiness
-		(final IWContext context) throws RemoteException {
+	private SchoolBusiness getSchoolBusiness () throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance
-				(context, SchoolBusiness.class);	
+				(getIWApplicationContext (), SchoolBusiness.class);	
 	}
 	
-	private ExportBusiness getExportBusiness
-		(final IWContext context) throws RemoteException {
+	private ExportBusiness getExportBusiness () throws RemoteException {
 		return (ExportBusiness) IBOLookup.getServiceInstance
-				(context, ExportBusiness.class);	
+				(getIWApplicationContext (), ExportBusiness.class);	
 	}
 	
-	private PostingBusiness getPostingBusiness
-		(final IWContext context) throws RemoteException {
+	private PostingBusiness getPostingBusiness () throws RemoteException {
 		return (PostingBusiness) IBOLookup.getServiceInstance
-				(context, PostingBusiness.class);	
+				(getIWApplicationContext (), PostingBusiness.class);	
 	}
 	
-	private InvoiceBusiness getInvoiceBusiness
-		(final IWContext context) throws RemoteException {
+	private InvoiceBusiness getInvoiceBusiness () throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance
-				(context, InvoiceBusiness.class);	
+				(getIWApplicationContext (), InvoiceBusiness.class);	
 	}
 	
-	private CheckAmountBusiness getCheckAmountBusiness
-		(final IWContext context) throws RemoteException {
+	private CheckAmountBusiness getCheckAmountBusiness () throws RemoteException {
 		return (CheckAmountBusiness) IBOLookup.getServiceInstance
-				(context, CheckAmountBusiness.class);	
+				(getIWApplicationContext (), CheckAmountBusiness.class);
 	}
 }
