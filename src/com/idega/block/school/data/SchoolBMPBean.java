@@ -205,11 +205,11 @@ public class SchoolBMPBean extends GenericEntity implements School {
 	}
 
 	public Collection ejbFindAllBySchoolArea(int areaId) throws javax.ejb.FinderException {
-		return super.idoFindPKsBySQL("select * from " + SCHOOL + " where " + SCHOOLAREA + " = " + areaId);
+		return super.idoFindPKsBySQL("select * from " + SCHOOL + " where " + SCHOOLAREA + " = " + areaId + " order by " + NAME);
 	}
 
 	public Collection ejbFindAllSchools() throws javax.ejb.FinderException {
-		return super.idoFindAllIDsBySQL();
+		return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by "+NAME);
 	}
 
 	public void addSchoolTypes(int[] ids) {
