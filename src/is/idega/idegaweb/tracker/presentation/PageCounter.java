@@ -1,5 +1,8 @@
 package is.idega.idegaweb.tracker.presentation;
 
+import com.idega.data.IDOLookup;
+import com.idega.builder.data.IBPageHome;
+import com.idega.builder.data.IBPage;
 import java.util.*;
 import com.idega.presentation.Block;
 import com.idega.presentation.*;
@@ -26,6 +29,7 @@ public class PageCounter extends Block {
   private boolean showTotalPS = false;//show total page session
   private boolean showReferers = false;//show referers
   private boolean showUserAgents = false;//show user agents
+  private boolean showPageList= false;//show page list
   private boolean update = true;//update the stats(true) or just showing stats(false)
   private Map ipFilter = new HashMap();/**clone**/
 
@@ -64,11 +68,33 @@ public class PageCounter extends Block {
       add(hits3);
     }
 
+    if(showPageList){
+      //referers
+      Table page = new Table();
+      int y = 1;
+      page.add("Page name",1,y);
+      page.add("Count",2,y);
 
+      ArrayList pageHits =  TrackerBusiness.getPageHitsArrayListSortedBySessions();
+
+      Iterator pageList = pageHits.iterator();
+      PageStatistics item;
+      IBPageHome pHome = (IBPageHome)IDOLookup.getHome(IBPage.class);
+      IBPage thePage;
+      while (pageList.hasNext()) {
+        item = (PageStatistics) pageList.next();
+        thePage = pHome.findByPrimaryKey(new Integer(item.getID()));
+        page.add(thePage.getName(),1,++y);
+        page.add(String.valueOf(item.getSessions()),2,y);
+      }
+
+      add(page);
+
+      addBreak();
+    }
 
     if(showReferers){
       //referers
-      debug("Sorting referers");
       Table refs = new Table();
       int y = 1;
       refs.add("Referer url",1,y);
@@ -85,8 +111,6 @@ public class PageCounter extends Block {
       }
 
      add(refs);
-
-      debug("added referers");
 
      addBreak();
     }
@@ -140,6 +164,10 @@ public class PageCounter extends Block {
 
   public void setShowAgents(boolean show){
     showUserAgents = show;
+  }
+
+  public void setShowPageList(boolean show){
+    showPageList = show;
   }
 
   public void setIpFilterNumber(String ipNumber){

@@ -159,6 +159,36 @@ public class TrackerBusiness {
     return list;
   }
 
+  public static ArrayList getPageHitsArrayList(){
+    ArrayList list = new ArrayList();
+
+    if( pageHits!=null ){
+      Iterator iter = pageHits.keySet().iterator();
+        while (iter.hasNext()) {
+          PageStatistics item = (PageStatistics) pageHits.get((String)iter.next());
+          list.add(item);
+        }
+    }
+
+    return list;
+  }
+
+  public static ArrayList getPageHitsArrayListSortedBySessions(){
+    PageComparator comparer = new PageComparator(PageComparator.ORDER_BY_SESSIONS);
+    return comparer.sortedArrayList(getPageHitsArrayList());
+  }
+
+  public static ArrayList getPageHitsArrayListReverseSortedBySessions(){
+    PageComparator comparer = new PageComparator(PageComparator.REVERSE_ORDER_BY_SESSIONS);
+    return comparer.sortedArrayList(getPageHitsArrayList());
+  }
+
+  public static ArrayList getPageHitsArrayListSortedByURL(){
+    PageComparator comparer = new PageComparator(PageComparator.ORDER_BY_PAGE_NAME);
+    return comparer.sortedArrayList(getPageHitsArrayList());
+  }
+
+
   public static ArrayList getRefererArrayListSortedBySessions(){
     RefererComparator comparer = new RefererComparator(RefererComparator.ORDER_BY_SESSIONS);
     return comparer.sortedArrayList(getRefererArrayList());
