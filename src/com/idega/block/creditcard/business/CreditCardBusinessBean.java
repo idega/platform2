@@ -84,16 +84,11 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 
 		CreditCardMerchant merchant = getCreditCardMerchant(supplier, stamp);
 		CreditCardClient client = getCreditCardClient(merchant);
-		
-		if (client != null) {
-			return client;
-		}
-		
-		// Default
-		return new TPosClient(getIWApplicationContext());
+
+		return client;
 	}
 	
-	private CreditCardClient getCreditCardClient(CreditCardMerchant merchant) throws Exception {
+	public CreditCardClient getCreditCardClient(CreditCardMerchant merchant) throws Exception {
 		if (merchant != null && merchant.getType() != null) {
 			if (CreditCardMerchant.MERCHANT_TYPE_TPOS.equals(merchant.getType())) {
 				return new TPosClient(getIWApplicationContext(), merchant);
@@ -106,7 +101,9 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 				return new KortathjonustanCreditCardClient(getIWApplicationContext(), hostName, Integer.parseInt(hostPort), keystore, keystorePass, merchant);
 			}
 		}
-		return null;
+		
+		// Default client
+		return  new TPosClient(getIWApplicationContext());
 	}
 
 	public CreditCardMerchant getCreditCardMerchant(Supplier supplier, IWTimestamp stamp) {
@@ -357,7 +354,19 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 	}
 	
 	public boolean getUseCVC(CreditCardClient client) {
-		return (client instanceof KortathjonustanCreditCardClient);
+		return !(client instanceof TPosClient);
 	}
 	
+	public boolean getUseCVC(CreditCardMerchant merchant) {
+		if (merchant != null) {
+			return !CreditCardMerchant.MERCHANT_TYPE_TPOS.equals(merchant.getType());
+		}
+		return false;
+	}
+		
+	public boolean getUseCVC(Supplier supplier, IWTimestamp stamp) {
+		return getUseCVC(getCreditCardMerchant(supplier, stamp));
+	}
+
+
 }
