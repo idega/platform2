@@ -385,11 +385,9 @@ public class ProductBusiness {
     }
   }
 
-  /**
-   * @deprecated
-   */
   public static List getProducts(int supplierId) {
-      List products = null;
+    //return getProducts(supplierId, null);
+      List products = new Vector();;
 
       try {
 	String pTable = Product.getProductEntityName();
@@ -402,12 +400,13 @@ public class ProductBusiness {
 	  sqlQuery.append(" AND ").append(pTable).append(".").append(Product.getColumnNameSupplierId()).append(" = ").append(supplierId);
 	  sqlQuery.append(" order by ").append(Product.getColumnNameNumber());
 
-	products =EntityFinder.findAll(Product.getStaticInstance(Product.class),sqlQuery.toString());
-      }catch(SQLException sql) {
+	products = EntityFinder.getInstance().findAll(Product.class,sqlQuery.toString());
+      }catch(IDOFinderException sql) {
 	sql.printStackTrace(System.err);
       }
 
       return products;
+
   }
 
 

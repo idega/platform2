@@ -75,17 +75,20 @@ public class SupplierManager {
       return supp;
 
     }else {
-      SupplierStaffGroup sGroup = new SupplierStaffGroup();
       Supplier supp = new Supplier();
-
-      sGroup.setName(name);
-      sGroup.insert();
-
       supp.setName(name);
       supp.setDescription(description);
-      supp.setGroupId(sGroup.getID());
       supp.setIsValid(true);
       supp.insert();
+
+      String sName = name+"_"+supp.getID();
+
+      SupplierStaffGroup sGroup = new SupplierStaffGroup();
+      sGroup.setName(sName);
+      sGroup.insert();
+
+
+
 
       UserBusiness uBus = new UserBusiness();
       User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,idegaTimestamp.RightNow(),null);
@@ -96,7 +99,7 @@ public class SupplierManager {
       int[] userIDs = {user.getID()};
 
       AccessControl ac = new AccessControl();
-      int permissionGroupID = ac.createPermissionGroup(name+permissionGroupNameExtention, SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, "", userIDs ,null);
+      int permissionGroupID = ac.createPermissionGroup(sName+permissionGroupNameExtention, SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, "", userIDs ,null);
 
       //sGroup.addTo(PermissionGroup.class, permissionGroupID);
 
@@ -125,6 +128,10 @@ public class SupplierManager {
         pCategory.setName("Price");
         pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
       pCategory.insert();
+
+
+      supp.setGroupId(sGroup.getID());
+      supp.update();
 
       return supp;
     }
@@ -160,7 +167,7 @@ public class SupplierManager {
 
 
   public static PermissionGroup getPermissionGroup(Supplier supplier) throws SQLException{
-    String name = supplier.getName() + permissionGroupNameExtention;
+    String name = supplier.getName()+"_"+supplier.getID() + permissionGroupNameExtention;
     String description = SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION ;
 
     PermissionGroup pGroup = null;
@@ -171,20 +178,35 @@ public class SupplierManager {
       }
     }
 
+    if (listi == null) {
+      listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), supplier.getName()+permissionGroupNameExtention, PermissionGroup.getGroupDescriptionColumnName(), description);
+      if (listi != null)
+      if (listi.size() > 0) {
+        pGroup = (PermissionGroup) listi.get(listi.size()-1);
+      }
+    }
+
     return pGroup;
   }
 
   public static SupplierStaffGroup getSupplierStaffGroup(Supplier supplier) throws SQLException {
-    String name = supplier.getName();
+    String name = supplier.getName()+"_"+supplier.getID();
     SupplierStaffGroup sGroup = null;
-
+    System.err.println("trying ... "+name);
     List listi = EntityFinder.findAllByColumn((SupplierStaffGroup) SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class), SupplierStaffGroup.getNameColumnName(), name);
     if (listi != null) {
       if (listi.size() > 0) {
         sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
       }
     }
-
+    if (listi == null) {
+      System.err.println("trying ... "+supplier.getName());
+      listi = EntityFinder.findAllByColumn((SupplierStaffGroup) SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class), SupplierStaffGroup.getNameColumnName(), supplier.getName());
+      if (listi != null)
+      if (listi.size() > 0) {
+        sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
+      }
+    }
     return sGroup;
   }
 

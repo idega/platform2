@@ -171,10 +171,10 @@ public class Reseller extends TreeableEntity {
   public void update() throws SQLException {
     if (newName != null) {
       PermissionGroup pGroup = ResellerManager.getPermissionGroup(this);
-        pGroup.setName(newName+ResellerManager.permissionGroupNameExtention);
+        pGroup.setName(newName+"_"+this.getID()+ResellerManager.permissionGroupNameExtention);
         pGroup.update();
       ResellerStaffGroup sGroup = ResellerManager.getResellerStaffGroup(this);
-        sGroup.setName(newName);
+        sGroup.setName(newName+"_"+this.getID());
         sGroup.update();
       setColumn(getColumnNameName(),newName);
       newName = null;

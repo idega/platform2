@@ -130,7 +130,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
 //      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
       if (serviceId == -1)
-      System.err.println("Tour Business : UpdateTour() - serviceID == -1");
+//      System.err.println("Tour Business : UpdateTour() - serviceID == -1");
 
       if (serviceId != -1)
       try {
@@ -409,7 +409,7 @@ public class TourBusiness extends TravelStockroomBusiness {
       if (tempList != null) {
         returner = tempList;
       }else {
-        System.err.println("TourBusiness : getDepartDays : "+fromStamp+ " - " +toStamp);
+//        System.err.println("TourBusiness : getDepartDays : "+fromStamp+ " - " +toStamp);
         for (int i = 0; i < frames.length; i++) {
 
           boolean yearly = frames[i].getIfYearly();

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -89,7 +90,7 @@ public class Contracts extends TravelManager {
           addResellers(iwc);
           selectReseller(iwc);
         }else if (action.equals(this.parameterViewContract)) {
-          add(viewContract(iwc, new Product(Integer.parseInt(iwc.getParameter(this.parameterProductId)))));
+          add(viewContract(iwc, ProductBusiness.getProduct(Integer.parseInt(iwc.getParameter(this.parameterProductId)))));
         }else if (action.equals(this.parameterViewProducts)) {
           assignReseller(iwc);
           //add(viewProducts(iwc));
@@ -474,7 +475,7 @@ public class Contracts extends TravelManager {
 
           String userName = iwc.getParameter("reseller_user_name");
           String passOne = iwc.getParameter("reseller_password_one");
-          String passTwo = iwc.getParameter("reseller_password_one");
+          String passTwo = iwc.getParameter("reseller_password_two");
 //                  tm.begin();
           boolean isUpdate = false;
           if (resellerId != -1) isUpdate = true;
@@ -550,7 +551,7 @@ public class Contracts extends TravelManager {
               resellerCreation(resellerId);
 
           }else {
-            if (passOne.equals(passTwo)) {
+            if (passOne.equals(passTwo) && !LoginDBHandler.isLoginInUse(userName)) {
 
                 Vector phoneIDS = new Vector();
                 if (phone.length() > 0) {
@@ -596,7 +597,16 @@ public class Contracts extends TravelManager {
                 resellers = getResellers();
                 this.selectReseller(iwc);
             }else {
-                add(iwrb.getLocalizedString("travel.passwords_not_the_same","PASSWORDS not the same"));
+              if (LoginDBHandler.isLoginInUse(userName)) {
+                add(iwrb.getLocalizedString("username_in_use","Username in use"));
+                add(Text.BREAK);
+              }
+              if (!passOne.equals(passTwo)) {
+                add(iwrb.getLocalizedString("passwords_not_the_same","Passwords not the same"));
+                add(Text.BREAK);
+              }
+              add(Text.BREAK);
+              add(new BackButton(iwrb.getImage("buttons/back.gif")));
             }
           }
         tm.commit();

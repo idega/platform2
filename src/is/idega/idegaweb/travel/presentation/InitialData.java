@@ -616,7 +616,9 @@ public class InitialData extends TravelManager {
 
           String userName = iwc.getParameter("supplier_user_name");
           String passOne = iwc.getParameter("supplier_password_one");
-          String passTwo = iwc.getParameter("supplier_password_one");
+          String passTwo = iwc.getParameter("supplier_password_two");
+
+
 
 
               boolean isUpdate = false;
@@ -693,7 +695,7 @@ public class InitialData extends TravelManager {
               }
               else {
 //                  tm.begin();
-                  if (passOne.equals(passTwo)) {
+                  if (passOne.equals(passTwo) && !LoginDBHandler.isLoginInUse(userName)) {
 
                       Vector phoneIDS = new Vector();
                       if (phone.length() > 0) {
@@ -710,7 +712,6 @@ public class InitialData extends TravelManager {
                         faxPhone.insert();
                         phoneIDS.add(new Integer(faxPhone.getID()));
                       }
-
 
                       int[] phoneIds = new int[phoneIDS.size()];
                       for (int i = 0; i < phoneIDS.size(); i++) {
@@ -735,7 +736,16 @@ public class InitialData extends TravelManager {
 
                       this.displayForm(iwc);
                   }else {
-                      add("TEMP - PASSWORD not the same");
+                    if (LoginDBHandler.isLoginInUse(userName)) {
+                      add(iwrb.getLocalizedString("username_in_use","Username in use"));
+                      add(Text.BREAK);
+                    }
+                    if (!passOne.equals(passTwo)) {
+                      add(iwrb.getLocalizedString("passwords_not_the_same","Passwords not the same"));
+                      add(Text.BREAK);
+                    }
+                    add(Text.BREAK);
+                    add(new BackButton(iwrb.getImage("buttons/back.gif")));
 
                   }
               }
@@ -964,7 +974,7 @@ public class InitialData extends TravelManager {
           boolean isUpdate = false;
           if (resellerId != -1) isUpdate = true;
 
-          System.err.println(name+" : "+description+" : "+address+" : "+phone+" : "+fax+" : "+email);
+//          System.err.println(name+" : "+description+" : "+address+" : "+phone+" : "+fax+" : "+email);
 
 
           if (isUpdate) {

@@ -101,7 +101,7 @@ public class Service extends GenericEntity{
 
       try {
 
-      product = new Product(this.getID());
+      product = ProductBusiness.getProduct(this.getID());
 
       }catch (SQLException sql) {
 

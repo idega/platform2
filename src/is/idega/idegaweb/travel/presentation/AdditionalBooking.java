@@ -83,7 +83,7 @@ public class AdditionalBooking extends TravelWindow {
         this.isCorrection = true;
       }
         service = new Service(Integer.parseInt(iwc.getParameter(this.parameterServiceId)));
-        product = new Product(service.getID());
+        product = ProductBusiness.getProduct(service.getID());
         stamp = new idegaTimestamp(iwc.getParameter(this.parameterDate));
         timeframe = ProductBusiness.getTimeframe(product, stamp);
     }catch (SQLException sql) {

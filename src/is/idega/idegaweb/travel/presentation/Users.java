@@ -54,16 +54,6 @@ public class Users extends TravelManager {
   public void main(IWContext iwc) throws Exception{
     super.main(iwc);
     init();
-/*    if (!handleInsert(iwc)) {
-      Form form = getUserCreation(iwc);
-      if (form == null) {
-        System.err.println("Form == null");
-      }else {
-        System.err.println("Form != null");
-      }
-      add(form);
-    }
-*/
   }
 
   private void init(){
@@ -256,6 +246,7 @@ public class Users extends TravelManager {
     Text tName = getText(_iwrb.getLocalizedString("travel.name","Name"));
     Text tLogin = getText(_iwrb.getLocalizedString("travel.user_name","User name"));
     Text tPassword = getText(_iwrb.getLocalizedString("travel.password","Password"));
+    Text tPassword2= getText(_iwrb.getLocalizedString("travel.retype","Retype"));
     Text tAdmin = getText(_iwrb.getLocalizedString("travel.administrator","Administrator"));
 
     SubmitButton btnSave = new SubmitButton(_iwrb.getImage("buttons/save.gif"), this.sAction, this.parameterSaveUser);
@@ -282,7 +273,11 @@ public class Users extends TravelManager {
     table.setVerticalAlignment(1, row, "top");
     table.add(tPassword, 1, row);
     table.add(iPassOne, 2, row);
-    table.add("<br>", 2, row);
+
+    ++row;
+    table.setRowColor(row, super.GRAY);
+    table.setVerticalAlignment(1, row, "top");
+    table.add(tPassword2, 1, row);
     table.add(iPassTwo, 2, row);
 
     ++row;
@@ -384,22 +379,28 @@ public class Users extends TravelManager {
       form.add(table);
 
     int row = 1;
-    table.add(getText(_iwrb.getLocalizedString("travel.error","Error")),1,row);
+    table.add(getTextWhite(_iwrb.getLocalizedString("travel.error","Error")),1,row);
 
     if (loginInUse) {
       ++row;
-      table.add(getText(_iwrb.getLocalizedString("travel.login_in_use","Login in use")), 1, row);
+      table.add(getTextWhite(_iwrb.getLocalizedString("travel.login_in_use","Login in use")), 1, row);
     }
 
     if (!passwordsOK) {
       ++row;
-      table.add(getText(_iwrb.getLocalizedString("travel.passwords_not_the_same","Password not the same")), 1, row);
+      table.add(getTextWhite(_iwrb.getLocalizedString("travel.passwords_not_the_same","Password not the same")), 1, row);
     }
 
-    if (!userCreated) {
-      ++row;
-      table.add(getText(_iwrb.getLocalizedString("travel.user_not_created","User not created")), 1, row);
-    }
+//    if (!userCreated) {
+//      ++row;
+//      table.add(getTextWhite(_iwrb.getLocalizedString("travel.user_not_created","User not created")), 1, row);
+//    }
+
+    ++row;
+    ++row;
+    Link backLink = new Link(_iwrb.getImage("buttons/back.gif"));
+      backLink.setOnClick("history.go(-1)");
+    table.add(backLink, 1,row);
 
     return form;
   }

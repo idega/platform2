@@ -47,10 +47,10 @@ public class Product extends GenericEntity {
    *@exception  SQLException  Description of the Exception
    *@deprecated
    */
+
   public Product( int id ) throws SQLException {
     super( id );
   }
-
 
   /**
    *  Description of the Method
@@ -242,7 +242,6 @@ public class Product extends GenericEntity {
    */
   public void setFileId( Integer id ) {
     if (id == null) {
-      System.err.println("Removing fileID : " +id);
       this.removeFromColumn(getColumnNameFileId());
     }else {
       this.setColumn( getColumnNameFileId(), id );

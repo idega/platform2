@@ -1,5 +1,8 @@
 package com.idega.block.trade.stockroom.business;
 
+import javax.transaction.SystemException;
+import com.idega.transaction.IdegaTransactionManager;
+import javax.transaction.TransactionManager;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 import com.idega.core.user.business.UserBusiness;
@@ -35,19 +38,50 @@ public class ResellerManager {
   public ResellerManager() {
   }
 
-  public void deleteReseller(int id)throws Exception{
-      Reseller res = new Reseller(id);
-        res.delete();
-  }
-/*
-  public static Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-      return createReseller(resellerId, name, null,null, description, addressIds, phoneIds, emailIds);
+  /**
+   * @deprecated
+   */
+  public boolean deleteReseller(int id) {
+    try {
+      return deleteReseller(new Reseller(id));
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return false;
+    }
   }
 
-  public static Reseller createReseller(String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-    return createReseller(-1, name, userName, password, description, addressIds, phoneIds, emailIds);
+  public static boolean deleteReseller(Reseller reseller) {
+    TransactionManager tm = IdegaTransactionManager.getInstance();
+    try {
+      tm.begin();
+      reseller.setIsValid(false);
+      reseller.update();
+      List users = getUsers(reseller);
+      if (users != null) {
+        for (int i = 0; i < users.size(); i++) {
+          LoginDBHandler.deleteUserLogin( ((User) users.get(i)).getID() );
+        }
+      }
+      PermissionGroup pGroup = getPermissionGroup(reseller);
+        pGroup.setName(pGroup.getName()+"_deleted");
+        pGroup.update();
+
+      ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
+        sGroup.setName(sGroup.getName()+"_deleted");
+        sGroup.update();
+      tm.commit();
+      return true;
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+      try {
+        tm.rollback();
+      }catch (SystemException se) {
+        se.printStackTrace(System.err);
+      }
+      return false;
+    }
   }
-*/
+
   public static Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
       return createReseller(resellerId, null, name, null,null, description, addressIds, phoneIds, emailIds);
   }
@@ -94,18 +128,16 @@ public class ResellerManager {
         cyph.getKey(10);
         check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+Reseller.getResellerTableName()+" where "+Reseller.getColumnNameReferenceNumber()+" = '"+key+"'");
       }
-
-      ResellerStaffGroup sGroup = new ResellerStaffGroup();
-
-      sGroup.setName(name);
-      sGroup.insert();
-
       reseller.setName(name);
       reseller.setDescription(description);
-      reseller.setGroupId(sGroup.getID());
       reseller.setIsValid(true);
       reseller.setReferenceNumber(key);
       reseller.insert();
+
+      ResellerStaffGroup sGroup = new ResellerStaffGroup();
+      sGroup.setName(name+"_"+reseller.getID());
+      sGroup.insert();
+
 
       if (parentReseller != null) {
         parentReseller.addChild(reseller);
@@ -121,10 +153,7 @@ public class ResellerManager {
 
 
       AccessControl ac = new AccessControl();
-      int permissionGroupID = ac.createPermissionGroup(name+permissionGroupNameExtention, permissionGroupDescription, "", userIDs ,null);
-
-
-      //sGroup.addTo(PermissionGroup.class, permissionGroupID);
+      int permissionGroupID = ac.createPermissionGroup(name+"_"+reseller.getID()+permissionGroupNameExtention, permissionGroupDescription, "", userIDs ,null);
 
       if(addressIds != null){
         for (int i = 0; i < addressIds.length; i++) {
@@ -144,31 +173,19 @@ public class ResellerManager {
         }
       }
 
+      reseller.setGroupId(sGroup.getID());
+      reseller.update();
+
       return reseller;
     }
   }
 
   public static void invalidateReseller(Reseller reseller) throws SQLException {
-    reseller.setIsValid(false);
-    reseller.update();
-    List users = getUsers(reseller);
-    if (users != null) {
-      for (int i = 0; i < users.size(); i++) {
-        LoginDBHandler.deleteUserLogin( ((User) users.get(i)).getID() );
-      }
+    if (!deleteReseller(reseller)) {
+      throw new SQLException("InvalidateReseller");
     }
-    PermissionGroup pGroup = getPermissionGroup(reseller);
-      pGroup.setName(pGroup.getName()+"_deleted");
-      pGroup.update();
-
-    ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
-      sGroup.setName(sGroup.getName()+"_deleted");
-      sGroup.update();
   }
-/*  public static void invalidateReseller(Reseller reseller) throws SQLException {
-    reseller.setIsValid(false);
-    reseller.update();
-  }*/
+
 
   public static void validateReseller(Reseller reseller) throws SQLException {
     reseller.setIsValid(true);
@@ -558,7 +575,7 @@ public class ResellerManager {
   }
 
   public static PermissionGroup getPermissionGroup(Reseller reseller) throws SQLException{
-    String name = reseller.getName() + permissionGroupNameExtention;
+    String name = reseller.getName()+"_"+reseller.getID() + permissionGroupNameExtention;
     String description = permissionGroupDescription;
 
     PermissionGroup pGroup = null;
@@ -568,18 +585,35 @@ public class ResellerManager {
         pGroup = (PermissionGroup) listi.get(listi.size()-1);
       }
     }
+    if (listi == null) {
+      listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), reseller.getName()+ permissionGroupNameExtention, PermissionGroup.getGroupDescriptionColumnName(), description  );
+      if (listi != null) {
+        if (listi.size() > 0) {
+          pGroup = (PermissionGroup) listi.get(listi.size()-1);
+        }
+      }
+    }
 
     return pGroup;
   }
 
   public static ResellerStaffGroup getResellerStaffGroup(Reseller reseller) throws SQLException {
-    String name = reseller.getName();
+    String name = reseller.getName()+"_"+reseller.getID();
     ResellerStaffGroup sGroup = null;
 
     List listi = EntityFinder.findAllByColumn((ResellerStaffGroup) ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class), ResellerStaffGroup.getNameColumnName(), name);
     if (listi != null) {
       if (listi.size() > 0) {
         sGroup = (ResellerStaffGroup) listi.get(listi.size()-1);
+      }
+    }
+
+    if (listi == null) {
+      listi = EntityFinder.findAllByColumn((ResellerStaffGroup) ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class), ResellerStaffGroup.getNameColumnName(), reseller.getName());
+      if (listi != null) {
+        if (listi.size() > 0) {
+          sGroup = (ResellerStaffGroup) listi.get(listi.size()-1);
+        }
       }
     }
 
@@ -669,7 +703,7 @@ public class ResellerManager {
         users.addAll(temp);
       }
     }
-    System.err.println("Ur iter");
+//    System.err.println("Ur iter");
     return users;
   }
 
