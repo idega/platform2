@@ -123,7 +123,7 @@ public class UserHistoryTab extends UserTab {
 		boolean checkNeeded = !(isAdmin || isSameUser);
 		System.out.println("User " + viewingUser.getName() + " is viewing user " + viewedUser.getName() + ", checkNeede=" + checkNeeded);
 		
-		Collection groupRelations = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(getUserId(),"GROUP_PARENT");
+		Collection groupRelations = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroupOrderedByInitiationDate(getUserId(),"GROUP_PARENT");
 		if(checkNeeded) {
 			groupRelations = getFilteredGroupRelations(iwc, Collections.unmodifiableCollection(groupRelations), viewingUser);
 		}
