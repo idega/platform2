@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.block.finance.presentation;
 
+import is.idega.idegaweb.campus.business.CampusSettings;
 import is.idega.idegaweb.campus.data.AccountEntriesReportBMPBean;
 import is.idega.idegaweb.campus.data.AccountEntryReport;
 import is.idega.idegaweb.campus.data.AccountEntryReportBMPBean;
@@ -43,7 +44,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.1
  */
 
-public class CampusTariffReports extends Finance implements Campus{
+public class CampusTariffReports extends Finance {
 
   private IWResourceBundle iwrb;
   
@@ -68,7 +69,7 @@ public class CampusTariffReports extends Finance implements Campus{
   }
 
   public String getBundleIdentifier(){
-    return this.CAMPUS_BUNDLE_IDENTIFIER;
+    return CampusSettings.IW_BUNDLE_IDENTIFIER;
   }
 
   public void main(IWContext iwc)throws java.rmi.RemoteException{

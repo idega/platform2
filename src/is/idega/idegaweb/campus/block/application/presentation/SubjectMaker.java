@@ -1,25 +1,21 @@
 package is.idega.idegaweb.campus.block.application.presentation;
 
-
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.sql.SQLException;
 import java.util.List;
 
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.data.ApplicationSubject;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.util.Edit;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 /**
@@ -32,14 +28,11 @@ import com.idega.util.LocaleUtil;
  */
 
 
-public class SubjectMaker extends Block{
+public class SubjectMaker extends CampusBlock{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final String strAction = "fin_action";
   protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+  
 
 
   public String getLocalizedNameKey(){
@@ -50,9 +43,7 @@ public class SubjectMaker extends Block{
     return "Subjects";
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+ 
 
   protected void control(IWContext iwc){
 
@@ -67,7 +58,7 @@ public class SubjectMaker extends Block{
         this.add(makeInputTable());
       }
       else
-        this.add(new Text(iwrb.getLocalizedString("access_denied","Access Denied")));
+        this.add(getNoAccessObject(iwc));
 
   }
 
@@ -96,8 +87,8 @@ public class SubjectMaker extends Block{
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
     ExpireDate.setDate(IWTimestamp.RightNow().getSQLDate());
     SubmitButton SaveButton = new SubmitButton("save","Save");
-    T.add(iwrb.getLocalizedString("description", "Description") +" :",1,1);
-    T.add(iwrb.getLocalizedString("expiredate", "Expiredate") +" :",2,1);
+    T.add(getHeader(localize("description", "Description")) +" :",1,1);
+    T.add(getHeader(localize("expiredate", "Expiredate")) +" :",2,1);
     T.add(Description,1,2);
     T.add(ExpireDate,2,2);
     T.add(SaveButton,3,2);
@@ -156,8 +147,6 @@ public class SubjectMaker extends Block{
 
    public void main(IWContext iwc){
     isAdmin = iwc.hasEditPermission(this);
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
     control(iwc);
   }
 

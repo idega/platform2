@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.49 2003/08/08 14:12:30 aron Exp $
+ * $Id: CampusApprover.java,v 1.50 2004/06/04 17:37:15 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,8 @@ import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
 import is.idega.idegaweb.campus.data.ApplicationSubjectInfo;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
+
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -40,6 +41,7 @@ import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.business.BuildingFinder;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -55,6 +57,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -62,14 +65,16 @@ import com.idega.util.IWTimestamp;
 
 /**
  *
+ * @author <a href="mail
+
+/**
+ *
  * @author <a href="mailto:aron@idega.is">Aron</a>
  * @version 1.0
  */
-public class CampusApprover extends Block {
+public class CampusApprover extends CampusBlock {
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
-	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
-	protected IWResourceBundle iwrb;
-	protected IWBundle iwb;
+	
 	private int iSubjectId = -1,iGlobalSize = 50;
 	private String sGlobalStatus = "S", sGlobalOrder = null;
 	private ListIterator iterator = null;
@@ -95,8 +100,7 @@ public class CampusApprover extends Block {
 
 	protected void control(IWContext iwc) {
 		//debugParameters(iwc);
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		
 		boolean infoCheck = true;
 		listOfSubjects = ApplicationFinder.listOfSubject();
 		if (iwc.getSessionAttribute("iterator") != null) {
@@ -147,7 +151,7 @@ public class CampusApprover extends Block {
 
 			if (iwc.getParameter(sView) != null) {
 				int id = Integer.parseInt(iwc.getParameter(sView));
-				add(makeApplicationTable(id, false, iwc, iwrb));
+				add(makeApplicationTable(id, false, iwc));
 			}
 			else if (iwc.getParameter("application_id") != null) {
 				int id = Integer.parseInt(iwc.getParameter("application_id"));
@@ -174,17 +178,17 @@ public class CampusApprover extends Block {
 					}
 				*/
 				if (bEdit) {
-					add(makeApplicationForm(id, bEdit, iwc, iwrb));
+					add(makeApplicationForm(id, bEdit, iwc));
 				}
 				else {
-					add(makeApplicationTable(id, bEdit, iwc, iwrb));
+					add(makeApplicationTable(id, bEdit, iwc));
 				}
 			}
 			else if (iwc.getParameter("new_app") != null && iwc.getParameter("new_app").equals("true")) {
-				add(makeApplicationForm(-1, true, iwc, iwrb));
+				add(makeApplicationForm(-1, true, iwc));
 			}
 			else if (iwc.getParameter("new2") != null) {
-				add(makeApplicationForm(-1, true, iwc, iwrb));
+				add(makeApplicationForm(-1, true, iwc));
 			}
 			else if (infoCheck) {
 				add(subjectForm());
@@ -192,12 +196,12 @@ public class CampusApprover extends Block {
 			}
 			else {
 				add(subjectForm());
-				add(makeApplicantTable(iwc, iwrb));
+				add(makeApplicantTable(iwc));
 			}
 		}
 
 		else
-			add(Edit.formatText(iwrb.getLocalizedString("access_denied", "Access denied")));
+			add(getNoAccessObject(iwc));
 		//add(String.valueOf(iSubjectId));
 	}
 
@@ -291,7 +295,7 @@ public class CampusApprover extends Block {
 			CampusApplicationHome CAHome = null;
 			CampusApplication CA = null;
 
-			CAHome = (CampusApplicationHome) com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class);
+			CAHome = (CampusApplicationHome) IDOLookup.getHomeLegacy(CampusApplication.class);
 			java.util.Collection coll = CAHome.findAllByApplicationId(((Integer) A.getPrimaryKeyValue()).intValue());
 			if (coll != null) {
 				java.util.Iterator it = coll.iterator();
@@ -408,30 +412,30 @@ public class CampusApprover extends Block {
 		return returnid;
 	}
 
-	public PresentationObject makeApplicantTable(IWContext iwc, IWResourceBundle iwrb) {
+	public PresentationObject makeApplicantTable(IWContext iwc) {
 
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth("100%");
 		
 		T.setTitlesHorizontal(true);
 
 		int row = 1;
 		int col = 1;
-		Image printImage = iwb.getImage("print.gif");
-		Image viewImage = iwb.getImage("view.gif");
-		Image trashImage = iwb.getImage("trashcan.gif");
-		T.add(headerText(iwrb.getLocalizedString("nr", "Nr")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("prior", "Pr")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("refnum", "Ref. num")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("name", "Name")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("ssn", "Socialnumber")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("legal_residence", "Legal Residence")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("residence", "Residence")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("po", "PO")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("phone", "Residence phone")), col++, row);
-		T.add(headerText(iwrb.getLocalizedString("mobile_phone", "Mobile phone")), col++, row);
-		//T.add(headerText(iwrb.getLocalizedString("v","V")),col++,row);
-		//T.add(headerText(iwrb.getLocalizedString("p","P")),col++,row);
+		Image printImage = getBundle().getImage("print.gif");
+		Image viewImage = getBundle().getImage("view.gif");
+		Image trashImage = getBundle().getImage("trashcan.gif");
+		T.add(headerText(localize("nr", "Nr")), col++, row);
+		T.add(headerText(localize("prior", "Pr")), col++, row);
+		T.add(headerText(localize("refnum", "Ref. num")), col++, row);
+		T.add(headerText(localize("name", "Name")), col++, row);
+		T.add(headerText(localize("ssn", "Socialnumber")), col++, row);
+		T.add(headerText(localize("legal_residence", "Legal Residence")), col++, row);
+		T.add(headerText(localize("residence", "Residence")), col++, row);
+		T.add(headerText(localize("po", "PO")), col++, row);
+		T.add(headerText(localize("phone", "Residence phone")), col++, row);
+		T.add(headerText(localize("mobile_phone", "Mobile phone")), col++, row);
+		//T.add(headerText(localize("v","V")),col++,row);
+		//T.add(headerText(localize("p","P")),col++,row);
 		/*
 		Table T = new Table();
 		  T.setCellpadding(2);
@@ -453,12 +457,12 @@ public class CampusApprover extends Block {
 			if(iGlobalSize>0 && iGlobalSize<=len){
 				len = iGlobalSize;
 			}
-			T.addTitle(iwrb.getLocalizedString("applicants", "Applicants")+" "+iwrb.getLocalizedString("showing","showing")
-			+" "+len+" "+iwrb.getLocalizedString("of","of")+" "+L.size());
+			T.addTitle(localize("applicants", "Applicants")+" "+localize("showing","showing")
+			+" "+len+" "+localize("of","of")+" "+L.size());
 
 			boolean showcan = false;
 			if (sGlobalStatus.equals(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED)) {
-				T.add(headerText(iwrb.getLocalizedString("g", "g")), col++, row);
+				T.add(headerText(localize("g", "g")), col++, row);
 				showcan = true;
 			}
 
@@ -502,25 +506,25 @@ public class CampusApprover extends Block {
 				if (a != null && a.getID() != -1)
 					cypher = ReferenceNumberFinder.getInstance(iwc).lookup(a.getID());
 
-				T.add(Edit.formatText(String.valueOf(i + 1)), col++, row);
+				T.add(getText(String.valueOf(i + 1)), col++, row);
 				if (CA == null)
-					T.add(Edit.formatText("A"), col++, row);
+					T.add(getText("A"), col++, row);
 				else if(CA.getPriorityLevel()!=null){
-					T.add(Edit.formatText(CA.getPriorityLevel()), col++, row);
+					T.add(getText(CA.getPriorityLevel()), col++, row);
 				}
 				else {
 					col++;
 				}
 					
-				T.add(Edit.formatText(cypher), col++, row);
+				T.add(getText(cypher), col++, row);
 				String Name = A.getFirstName() + " " + A.getMiddleName() + " " + A.getLastName();
-				T.add(Edit.formatText(Name), col++, row);
-				T.add(Edit.formatText(A.getSSN() != null ? A.getSSN() : ""), col++, row);
-				T.add(Edit.formatText(A.getLegalResidence() != null ? A.getLegalResidence() : ""), col++, row);
-				T.add(Edit.formatText(A.getResidence() != null ? A.getResidence() : ""), col++, row);
-				T.add(Edit.formatText(A.getPO() != null ? A.getPO() : ""), col++, row);
-				T.add(Edit.formatText(A.getResidencePhone() != null ? A.getResidencePhone() : ""), col++, row);
-				T.add(Edit.formatText(A.getMobilePhone() != null ? A.getMobilePhone() : ""), col++, row);
+				T.add(getText(Name), col++, row);
+				T.add(getText(A.getSSN() != null ? A.getSSN() : ""), col++, row);
+				T.add(getText(A.getLegalResidence() != null ? A.getLegalResidence() : ""), col++, row);
+				T.add(getText(A.getResidence() != null ? A.getResidence() : ""), col++, row);
+				T.add(getText(A.getPO() != null ? A.getPO() : ""), col++, row);
+				T.add(getText(A.getResidencePhone() != null ? A.getResidencePhone() : ""), col++, row);
+				T.add(getText(A.getMobilePhone() != null ? A.getMobilePhone() : ""), col++, row);
 				T.add((getPDFLink(printImage, A.getID())), col++, row);
 				T.add(getApplicationLink(viewImage, a.getID()), col++, row);
 				T.add(getTrashLink(trashImage, a.getID()), col, row);
@@ -534,31 +538,31 @@ public class CampusApprover extends Block {
 			int lastrow = len+2;
 			T.mergeCells(1,lastrow,lastcol,lastrow);
 			T.setRowColor(lastrow,Edit.colorRed);
-			T.add(Edit.formatText(" "),1,lastrow);
+			T.add(getText(" "),1,lastrow);
 			T.setHeight(lastrow,Edit.bottomBarThickness);
 			T.add(getPDFLink(printImage,sGlobalStatus,iSubjectId),1,++row);
 			*/
 		}
 		else {
-			T.add(Edit.formatText(iwrb.getLocalizedString("no_applications", "No applications in database")));
+			T.add(getHeader(localize("no_applications", "No applications in database")));
 		}
 		return T;
 	}
 
 	public PresentationObject makeSubjectStatisticsTable(IWContext iwc) {
 
-		DataTable DT = new DataTable();
-		DT.addTitle(iwrb.getLocalizedString("subject_info", "Subject Info"));
+		DataTable DT = getDataTable();
+		DT.addTitle(localize("subject_info", "Subject Info"));
 		DT.setTitlesHorizontal(true);
 		int row = 1, col = 1;
-		DT.add(Edit.formatText(iwrb.getLocalizedString("subject", "Subject")), col++, row);
-		DT.add(Edit.formatText(iwrb.getLocalizedString("count", "Count")), col++, row);
-		DT.add(Edit.formatText(iwrb.getLocalizedString("status", "Status")), col++, row);
+		DT.add(getHeader(localize("subject", "Subject")), col++, row);
+		DT.add(getHeader(localize("count", "Count")), col++, row);
+		DT.add(getHeader(localize("status", "Status")), col++, row);
 
-		DT.add(Edit.formatText(iwrb.getLocalizedString("last_submission", "Last in")), col++, row);
-		DT.add(Edit.formatText(iwrb.getLocalizedString("first_submission", "First in")), col++, row);
-		DT.add(Edit.formatText(iwrb.getLocalizedString("last_changed", "Last change")), col++, row);
-		DT.add(Edit.formatText(iwrb.getLocalizedString("first_change", "First Change")), col++, row);
+		DT.add(getHeader(localize("last_submission", "Last in")), col++, row);
+		DT.add(getHeader(localize("first_submission", "First in")), col++, row);
+		DT.add(getHeader(localize("last_changed", "Last change")), col++, row);
+		DT.add(getHeader(localize("first_change", "First Change")), col++, row);
 
 		col = 1;
 		row++;
@@ -571,16 +575,16 @@ public class CampusApprover extends Block {
 				while (iter.hasNext()) {
 
 					info = (ApplicationSubjectInfo) iter.next();
-					Link subjLink = new Link(Edit.formatText(info.getSubjectName()));
+					Link subjLink = new Link(getText(info.getSubjectName()));
 					subjLink.addParameter("app_subject_id", info.getSubjectId());
 					subjLink.addParameter("global_status", info.getStatus());
 					DT.add(subjLink, col++, row);
-					DT.add(Edit.formatText(info.getNumber()), col++, row);
-					DT.add(Edit.formatText(getStatus(info.getStatus())), col++, row);
-					DT.add(Edit.formatText(df.format((Date) info.getLastSubmission())), col++, row);
-					DT.add(Edit.formatText(df.format((Date) info.getFirstSubmission())), col++, row);
-					DT.add(Edit.formatText(df.format((Date) info.getLastChange())), col++, row);
-					DT.add(Edit.formatText(df.format((Date) info.getFirstChange())), col++, row);
+					DT.add(getText(String.valueOf(info.getNumber())), col++, row);
+					DT.add(getText(getStatus(info.getStatus())), col++, row);
+					DT.add(getText(df.format((Date) info.getLastSubmission())), col++, row);
+					DT.add(getText(df.format((Date) info.getFirstSubmission())), col++, row);
+					DT.add(getText(df.format((Date) info.getLastChange())), col++, row);
+					DT.add(getText(df.format((Date) info.getFirstChange())), col++, row);
 					row++;
 					col = 1;
 
@@ -598,7 +602,7 @@ public class CampusApprover extends Block {
 		return DT;
 	}
 
-	public PresentationObject makeApplicationTable(int id, boolean bEdit, IWContext iwc, IWResourceBundle iwrb) {
+	public PresentationObject makeApplicationTable(int id, boolean bEdit, IWContext iwc) {
 		Form theForm = new Form();
 		theForm.add(new HiddenInput("application_id", String.valueOf(id)));
 		try {
@@ -657,21 +661,21 @@ public class CampusApprover extends Block {
 				//OuterFrame.setWidth(1,"550");
 
 				Table Left = new Table(1, 3);
-				Left.add(getViewApplicant(eApplicant, eCampusApplication, iwrb), 1, 1);
-				Left.add(getViewSpouse(spouse, eCampusApplication, iwrb), 1, 2);
-				Left.add(getViewChildren(children, eCampusApplication, iwrb), 1, 3);
+				Left.add(getViewApplicant(eApplicant, eCampusApplication), 1, 1);
+				Left.add(getViewSpouse(spouse, eCampusApplication), 1, 2);
+				Left.add(getViewChildren(children, eCampusApplication), 1, 3);
 
 				Table Middle = new Table(1, 4);
 				Middle.add(getViewApplication(eApplication), 1, 1);
-				Middle.add(getViewApartment(eCampusApplication, L, iwc, iwrb), 1, 2);
-				Middle.add(getViewApartmentExtra(eCampusApplication, iwc, iwrb), 1, 3);
-				Middle.add(getOtherInfo(eCampusApplication, iwc, iwrb, false), 1, 3);
+				Middle.add(getViewApartment(eCampusApplication, L, iwc), 1, 2);
+				Middle.add(getViewApartmentExtra(eCampusApplication, iwc), 1, 3);
+				Middle.add(getOtherInfo(eCampusApplication, iwc, false), 1, 3);
 
 				Table Right = new Table(1, 3);
-				//Right.add(getRemoteControl(iwrb),1,1);
-				Right.add(getSubjectControl(iwrb, eApplication), 1, 1);
-				Right.add(getKnobs(iwrb), 1, 2);
-				Right.add(getButtons(eApplication, eApplication.getStatus(), eCampusApplication.getPriorityLevel(), bEdit, iwrb), 1, 3);
+				//Right.add(getRemoteControl(getResourceBundle()),1,1);
+				Right.add(getSubjectControl(getResourceBundle(), eApplication), 1, 1);
+				Right.add(getKnobs(getResourceBundle()), 1, 2);
+				Right.add(getButtons(eApplication, eApplication.getStatus(), eCampusApplication.getPriorityLevel(), bEdit), 1, 3);
 
 				OuterFrame.add(Left, 1, 1);
 				OuterFrame.add(Middle, 2, 1);
@@ -690,7 +694,7 @@ public class CampusApprover extends Block {
 		return theForm;
 	}
 
-	public PresentationObject makeApplicationForm(int id, boolean bEdit, IWContext iwc, IWResourceBundle iwrb) {
+	public PresentationObject makeApplicationForm(int id, boolean bEdit, IWContext iwc) {
 		Form theForm = new Form();
 		theForm.add(new HiddenInput("application_id", String.valueOf(id)));
 		try {
@@ -754,23 +758,23 @@ public class CampusApprover extends Block {
 			//OuterFrame.setWidth(1,"550");
 
 			Table Left = new Table(1, 3);
-			Left.add(getFieldsApplicant(eApplicant, eCampusApplication, iwrb), 1, 1);
-			Left.add(getFieldsSpouse(spouse, eCampusApplication, iwrb), 1, 2);
-			Left.add(getFieldsChildren(children, eCampusApplication, iwrb), 1, 3);
+			Left.add(getFieldsApplicant(eApplicant, eCampusApplication), 1, 1);
+			Left.add(getFieldsSpouse(spouse, eCampusApplication), 1, 2);
+			Left.add(getFieldsChildren(children, eCampusApplication), 1, 3);
 
 			Table Middle = new Table(1, 4);
 			Middle.add(getViewApplication(eApplication), 1, 1);
-			Middle.add(getFieldsApartment(eCampusApplication, L, iwc, iwrb), 1, 2);
-			Middle.add(getFieldsApartmentExtra(eCampusApplication, iwc, iwrb), 1, 3);
-			Middle.add(getOtherInfo(eCampusApplication, iwc, iwrb, true), 1, 4);
+			Middle.add(getFieldsApartment(eCampusApplication, L, iwc), 1, 2);
+			Middle.add(getFieldsApartmentExtra(eCampusApplication, iwc), 1, 3);
+			Middle.add(getOtherInfo(eCampusApplication, iwc, true), 1, 4);
 
 			Table Right = new Table(1, 3);
-			//Right.add(getRemoteControl(iwrb),1,1);
-			Right.add(getSubjectControl(iwrb, eApplication), 1, 1);
-			Right.add(getKnobs(iwrb), 1, 2);
+			//Right.add(getRemoteControl(getResourceBundle()),1,1);
+			Right.add(getSubjectControl(getResourceBundle(), eApplication), 1, 1);
+			Right.add(getKnobs(getResourceBundle()), 1, 2);
 			String status = eApplication != null ? eApplication.getStatus() : "";
 			String pStatus = eCampusApplication != null ? eCampusApplication.getPriorityLevel() : "";
-			Right.add(getButtons(eApplication, status, pStatus, bEdit, iwrb), 1, 3);
+			Right.add(getButtons(eApplication, status, pStatus, bEdit), 1, 3);
 
 			OuterFrame.add(Left, 1, 1);
 			OuterFrame.add(Middle, 2, 1);
@@ -787,35 +791,35 @@ public class CampusApprover extends Block {
 		return theForm;
 	}
 
-	public PresentationObject getViewApplicant(Applicant eApplicant, CampusApplication eCampusApplication, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	public PresentationObject getViewApplicant(Applicant eApplicant, CampusApplication eCampusApplication) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("applicant", "Applicant"));
+		T.addTitle(localize("applicant", "Applicant"));
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("ssn", "Socialnumber")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("legal_residence", "Legal Residence")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("residence", "Residence")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("po", "PO")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("phone", "Residence phone")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("mobile_phone", "Mobile phone")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("email", "Email")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("faculty", "Faculty")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("studytrack", "Study Track")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("study_begins", "Study begins")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("study_ends", "Study ends")), col, row++);
-		//T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
+		T.add(getHeader(localize("name", "Name")), col, row++);
+		T.add(getHeader(localize("ssn", "Socialnumber")), col, row++);
+		T.add(getHeader(localize("legal_residence", "Legal Residence")), col, row++);
+		T.add(getHeader(localize("residence", "Residence")), col, row++);
+		T.add(getHeader(localize("po", "PO")), col, row++);
+		T.add(getHeader(localize("phone", "Residence phone")), col, row++);
+		T.add(getHeader(localize("mobile_phone", "Mobile phone")), col, row++);
+		T.add(getHeader(localize("email", "Email")), col, row++);
+		T.add(getHeader(localize("faculty", "Faculty")), col, row++);
+		T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
+		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
+		T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
+		//T.add(getHeader(localize("income","Income")),col,row++);
 
 		col = 2;
 		row = 1;
-		T.add(Edit.formatText(eApplicant.getFullName()), col, row++);
-		T.add(Edit.formatText(eApplicant.getSSN()), col, row++);
-		T.add(Edit.formatText(eApplicant.getLegalResidence()), col, row++);
-		T.add(Edit.formatText(eApplicant.getResidence()), col, row++);
-		T.add(Edit.formatText(eApplicant.getPO()), col, row++);
-		T.add(Edit.formatText(eApplicant.getResidencePhone()), col, row++);
-		T.add(Edit.formatText(eApplicant.getMobilePhone()), col, row++);
+		T.add(getText(eApplicant.getFullName()), col, row++);
+		T.add(getText(eApplicant.getSSN()), col, row++);
+		T.add(getText(eApplicant.getLegalResidence()), col, row++);
+		T.add(getText(eApplicant.getResidence()), col, row++);
+		T.add(getText(eApplicant.getPO()), col, row++);
+		T.add(getText(eApplicant.getResidencePhone()), col, row++);
+		T.add(getText(eApplicant.getMobilePhone()), col, row++);
 		String email = eCampusApplication.getEmail();
 		try{
 			javax.mail.internet.InternetAddress emailAddress = new javax.mail.internet.InternetAddress(email);
@@ -824,73 +828,72 @@ public class CampusApprover extends Block {
 			email = null;
 		}
 		if(email!=null){	
-			T.add(new Link(Edit.formatText(email), "mailto:" + email), col, row++);
+			T.add(new Link(getText(email), "mailto:" + email), col, row++);
 		}
 		else{
-			Text noEmailText = new Text(iwrb.getLocalizedString("no_email","No email address"));
+			Text noEmailText = new Text(localize("no_email","No email address"));
 			noEmailText.setFontColor("#FF0000");
 			noEmailText.setBold();
 			T.add(noEmailText, col, row++);
 		}
-		T.add(Edit.formatText(eCampusApplication.getFaculty()), col, row++);
-		T.add(Edit.formatText(eCampusApplication.getStudyTrack()), col, row++);
+		T.add(getText(eCampusApplication.getFaculty()), col, row++);
+		T.add(getText(eCampusApplication.getStudyTrack()), col, row++);
 		String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
 		String endMonth = (eCampusApplication.getStudyEndMonth().toString());
-		T.add(Edit.formatText(beginMonth + " " + eCampusApplication.getStudyBeginYear().intValue()), col, row++);
-		T.add(Edit.formatText(endMonth + " " + eCampusApplication.getStudyEndYear().intValue()), col, row++);
-		// T.add(Edit.formatText(eCampusApplication.getIncome().intValue()),col,row);
+		T.add(getText(beginMonth + " " + eCampusApplication.getStudyBeginYear().intValue()), col, row++);
+		T.add(getText(endMonth + " " + eCampusApplication.getStudyEndYear().intValue()), col, row++);
+		// T.add(getText(eCampusApplication.getIncome().intValue()),col,row);
 
 		return T;
 	}
 
-	public PresentationObject getFieldsApplicant(Applicant eApplicant, CampusApplication eCampusApplication, IWResourceBundle iwrb) {
+	public PresentationObject getFieldsApplicant(Applicant eApplicant, CampusApplication eCampusApplication) {
 		int year = IWTimestamp.RightNow().getYear();
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("applicant", "Applicant"));
+		T.addTitle(localize("applicant", "Applicant"));
 
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("ssn", "Socialnumber")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("legal_residence", "Legal Residence")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("residence", "Residence")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("po", "PO")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("phone", "Residence phone")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("mobile_phone", "Mobile phone")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("email", "Email")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("faculty", "Faculty")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("studytrack", "Study Track")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("study_begins", "Study begins")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("study_ends", "Study ends")), col, row++);
-		//T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
+		T.add(getHeader(localize("name", "Name")), col, row++);
+		T.add(getHeader(localize("ssn", "Socialnumber")), col, row++);
+		T.add(getHeader(localize("legal_residence", "Legal Residence")), col, row++);
+		T.add(getHeader(localize("residence", "Residence")), col, row++);
+		T.add(getHeader(localize("po", "PO")), col, row++);
+		T.add(getHeader(localize("phone", "Residence phone")), col, row++);
+		T.add(getHeader(localize("mobile_phone", "Mobile phone")), col, row++);
+		T.add(getHeader(localize("email", "Email")), col, row++);
+		T.add(getHeader(localize("faculty", "Faculty")), col, row++);
+		T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
+		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
+		T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
+		//T.add(getHeader(localize("income","Income")),col,row++);
 
 		col = 2;
 		row = 1;
 
-		TextInput tiFullName = new TextInput("ti_full");
-		Edit.setStyle(tiFullName);
-		TextInput tiSsn = new TextInput("ti_ssn");
-		Edit.setStyle(tiSsn);
-		TextInput tiLegRes = new TextInput("ti_legres");
-		Edit.setStyle(tiLegRes);
-		TextInput tiRes = new TextInput("ti_res");
-		Edit.setStyle(tiRes);
-		TextInput tiPo = new TextInput("ti_po");
-		Edit.setStyle(tiPo);
-		TextInput tiResPho = new TextInput("ti_respho");
-		Edit.setStyle(tiResPho);
-		TextInput tiMobPho = new TextInput("ti_mobpho");
-		Edit.setStyle(tiMobPho);
-		TextInput tiEmail = new TextInput("ti_email");
-		String needEmail = iwrb.getLocalizedString("warning_provide_email","No email address is supplied");
+		TextInput tiFullName = getTextInput("ti_full");
+		
+		TextInput tiSsn = getTextInput("ti_ssn");
+		TextInput tiLegRes = getTextInput("ti_legres");
+		
+		TextInput tiRes =getTextInput("ti_res");
+		
+		TextInput tiPo = getTextInput("ti_po");
+		
+		TextInput tiResPho = getTextInput("ti_respho");
+		
+		TextInput tiMobPho = getTextInput("ti_mobpho");
+		
+		TextInput tiEmail = getTextInput("ti_email");
+		String needEmail = localize("warning_provide_email","No email address is supplied");
 		tiEmail.setAsEmail(needEmail);
 		tiEmail.setAsNotEmpty(needEmail);
-		Edit.setStyle(tiEmail);
-		TextInput tiFac = new TextInput("ti_facult");
-		Edit.setStyle(tiFac);
-		TextInput tiTrack = new TextInput("ti_track");
-		Edit.setStyle(tiTrack);
+	
+		TextInput tiFac = getTextInput("ti_facult");
+		
+		TextInput tiTrack = getTextInput("ti_track");
+		
 		/*
 		TextInput tiIncome= new TextInput("ti_income");
 		Edit.setStyle(tiIncome);
@@ -940,10 +943,6 @@ public class CampusApprover extends Block {
 		DropdownMenu drBY = intDrop("dr_by", beginYear, year - 10, year + 10);
 		DropdownMenu drEY = intDrop("dr_ey", endYear, year - 10, year + 10);
 
-		Edit.setStyle(drBM);
-		Edit.setStyle(drEM);
-		Edit.setStyle(drBY);
-		Edit.setStyle(drEY);
 		T.add(drBM, col, row);
 		T.add(drBY, col, row++);
 		T.add(drEM, col, row);
@@ -1021,54 +1020,54 @@ public class CampusApprover extends Block {
 		}
 	}
 
-	public PresentationObject getViewSpouse(Applicant spouse, CampusApplication eCampusApplication, IWResourceBundle iwrb) {
+	public PresentationObject getViewSpouse(Applicant spouse, CampusApplication eCampusApplication) {
 		int year = IWTimestamp.RightNow().getYear();
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("spouse", "Spouse"));
+		T.addTitle(localize("spouse", "Spouse"));
 		int col = 1;
 		int row = 1;
 
 		if (spouse != null) {
-			T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), col, row++);
-			T.add(Edit.formatText(iwrb.getLocalizedString("ssn", "Socialnumber")), col, row++);
-			T.add(Edit.formatText(iwrb.getLocalizedString("school", "School")), col, row++);
-			T.add(Edit.formatText(iwrb.getLocalizedString("studytrack", "Study Track")), col, row++);
-			T.add(Edit.formatText(iwrb.getLocalizedString("study_begins", "Study begins")), col, row++);
-			T.add(Edit.formatText(iwrb.getLocalizedString("study_ends", "Study ends")), col, row++);
-			//T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
+			T.add(getHeader(localize("name", "Name")), col, row++);
+			T.add(getHeader(localize("ssn", "Socialnumber")), col, row++);
+			T.add(getHeader(localize("school", "School")), col, row++);
+			T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
+			T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
+			T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
+			//T.add(getHeader(localize("income","Income")),col,row++);
 			col = 2;
 			row = 1;
 
-			T.add(Edit.formatText(spouse.getName()), col, row++);
-			T.add(Edit.formatText(spouse.getSSN()), col, row++);
-			T.add(Edit.formatText(eCampusApplication.getSpouseSchool()), col, row++);
-			T.add(Edit.formatText(eCampusApplication.getSpouseStudyTrack()), col, row++);
+			T.add(getText(spouse.getName()), col, row++);
+			T.add(getText(spouse.getSSN()), col, row++);
+			T.add(getText(eCampusApplication.getSpouseSchool()), col, row++);
+			T.add(getText(eCampusApplication.getSpouseStudyTrack()), col, row++);
 			String beginMonth = (eCampusApplication.getSpouseStudyBeginMonth().toString());
 			String endMonth = (eCampusApplication.getSpouseStudyEndMonth().toString());
-			T.add(Edit.formatText(beginMonth + " " + eCampusApplication.getSpouseStudyBeginYear().intValue()), col, row++);
-			T.add(Edit.formatText(endMonth + " " + eCampusApplication.getSpouseStudyEndYear().intValue()), col, row++);
-			//T.add(Edit.formatText(eCampusApplication.getSpouseIncome().intValue()),col,row);
+			T.add(getText(beginMonth + " " + eCampusApplication.getSpouseStudyBeginYear().intValue()), col, row++);
+			T.add(getText(endMonth + " " + eCampusApplication.getSpouseStudyEndYear().intValue()), col, row++);
+			//T.add(getText(eCampusApplication.getSpouseIncome().intValue()),col,row);
 
 		}
 
 		return T;
 	}
 
-	public PresentationObject getFieldsSpouse(Applicant spouse, CampusApplication eCampusApplication, IWResourceBundle iwrb) {
+	public PresentationObject getFieldsSpouse(Applicant spouse, CampusApplication eCampusApplication) {
 		int year = IWTimestamp.RightNow().getYear();
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("spouse", "Spouse"));
+		T.addTitle(localize("spouse", "Spouse"));
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("ssn", "Socialnumber")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("school", "School")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("studytrack", "Study Track")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("study_begins", "Study begins")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("study_ends", "Study ends")), col, row++);
-		//T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
+		T.add(getHeader(localize("name", "Name")), col, row++);
+		T.add(getHeader(localize("ssn", "Socialnumber")), col, row++);
+		T.add(getHeader(localize("school", "School")), col, row++);
+		T.add(getHeader(localize("studytrack", "Study Track")), col, row++);
+		T.add(getHeader(localize("study_begins", "Study begins")), col, row++);
+		T.add(getHeader(localize("study_ends", "Study ends")), col, row++);
+		//T.add(getHeader(localize("income","Income")),col,row++);
 		col = 2;
 		row = 1;
 
@@ -1087,10 +1086,12 @@ public class CampusApprover extends Block {
 			//	System.err.println("spouse "+spouse.getID());
 			tiSpName.setContent(spouse.getName());
 			tiSpSsn.setContent(spouse.getSSN());
+			if(eCampusApplication.getSpouseSchool()!=null)
 			tiSpSchl.setContent(eCampusApplication.getSpouseSchool());
+			if(eCampusApplication.getSpouseStudyTrack()!=null)
 			tiSpStTr.setContent(eCampusApplication.getSpouseStudyTrack());
 			//tiSPIncome.setContent(eCampusApplication.getSpouseIncome().toString());
-
+			
 			beginMonth = eCampusApplication.getSpouseStudyBeginMonth().toString();
 			endMonth = eCampusApplication.getSpouseStudyEndMonth().toString();
 			beginYear = eCampusApplication.getSpouseStudyBeginYear().toString();
@@ -1098,10 +1099,7 @@ public class CampusApprover extends Block {
 			T.add(new HiddenInput("ti_sp_id", String.valueOf(spouse.getID())));
 		}
 
-		Edit.setStyle(tiSpName);
-		Edit.setStyle(tiSpSsn);
-		Edit.setStyle(tiSpSchl);
-		Edit.setStyle(tiSpStTr);
+	
 		//Edit.setStyle(tiSPIncome);
 
 		T.add(tiSpName, col, row++);
@@ -1113,10 +1111,7 @@ public class CampusApprover extends Block {
 		DropdownMenu drEM = intDrop("dr_sp_em", endMonth, 1, 12);
 		DropdownMenu drBY = intDrop("dr_sp_by", beginYear, year - 10, year + 10);
 		DropdownMenu drEY = intDrop("dr_sp_ey", endYear, year - 10, year + 10);
-		Edit.setStyle(drBM);
-		Edit.setStyle(drEM);
-		Edit.setStyle(drBY);
-		Edit.setStyle(drEY);
+		
 		T.add(drBM, col, row);
 		T.add(drBY, col, row++);
 		T.add(drEM, col, row);
@@ -1184,10 +1179,10 @@ public class CampusApprover extends Block {
 		}
 	}
 
-	public PresentationObject getViewChildren(Vector children, CampusApplication eCampusApplication, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	public PresentationObject getViewChildren(Vector children, CampusApplication eCampusApplication) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("children", "Children"));
+		T.addTitle(localize("children", "Children"));
 		T.setUseTitles(false);
 		int col = 1;
 		int row = 1;
@@ -1196,17 +1191,17 @@ public class CampusApprover extends Block {
 			Applicant child;
 			for (int i = 0; i < children.size(); i++) {
 				child = (Applicant) children.get(i);
-				T.add(Edit.formatText(child.getName()), 1, row);
-				T.add(Edit.formatText(child.getSSN()), 2, row++);
+				T.add(getText(child.getName()), 1, row);
+				T.add(getText(child.getSSN()), 2, row++);
 			}
 		}
 		return T;
 	}
 
-	public PresentationObject getFieldsChildren(Vector children, CampusApplication eCampusApplication, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	public PresentationObject getFieldsChildren(Vector children, CampusApplication eCampusApplication) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("children", "Children"));
+		T.addTitle(localize("children", "Children"));
 		T.setUseTitles(false);
 		int col = 1;
 		int row = 1;
@@ -1214,13 +1209,12 @@ public class CampusApprover extends Block {
 		int childcount = children != null ? children.size() : 0;
 		count = Math.max(count, childcount);
 		for (int i = 0; i < count; i++) {
-			TextInput childName = new TextInput("child_name" + i);
-			TextInput childBirth = new TextInput("child_birth" + i);
+			TextInput childName = getTextInput("child_name" + i);
+			TextInput childBirth = getTextInput("child_birth" + i);
 			childName.setLength(30);
 			childBirth.setLength(10);
 			childBirth.setMaxlength(10);
-			Edit.setStyle(childName);
-			Edit.setStyle(childBirth);
+			
 			T.add(childName, 1, i + 1);
 			T.add(childBirth, 2, i + 1);
 			if (childcount > i) {
@@ -1274,51 +1268,51 @@ public class CampusApprover extends Block {
 		}
 	}
 
-	public PresentationObject getViewApartment(CampusApplication eCampusApplication, List lApplied, IWContext iwc, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	public PresentationObject getViewApartment(CampusApplication eCampusApplication, List lApplied, IWContext iwc) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("applied", "Applied"));
+		T.addTitle(localize("applied", "Applied"));
 		int col = 1;
 		int row = 1;
 		if (lApplied != null) {
 			int len = lApplied.size();
 			for (int i = 0; i < len; i++) {
 				Applied A = (Applied) lApplied.get(i);
-				T.add(Edit.formatText(i + 1), 1, row);
-				T.add(Edit.formatText((BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName())), 2, row++);
+				T.add(getText(String.valueOf(i + 1)), 1, row);
+				T.add(getText((BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName())), 2, row++);
 			}
 		}
 		return T;
 	}
 
-	public PresentationObject getViewApartmentExtra(CampusApplication eCampusApplication, IWContext iwc, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	public PresentationObject getViewApartmentExtra(CampusApplication eCampusApplication, IWContext iwc) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("requests", "Requests"));
+		T.addTitle(localize("requests", "Requests"));
 		int col = 1;
 		int row = 1;
 
-		T.add(Edit.formatText(iwrb.getLocalizedString("housingfrom", "Housing from")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("wantfurniture", "Wants furniture")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("onwaitinglist", "On waitinglist")), col, row++);
+		T.add(getHeader(localize("housingfrom", "Housing from")), col, row++);
+		T.add(getHeader(localize("wantfurniture", "Wants furniture")), col, row++);
+		T.add(getHeader(localize("onwaitinglist", "On waitinglist")), col, row++);
 		col = 2;
 		row = 1;
 		IWTimestamp iT = new IWTimestamp(eCampusApplication.getHousingFrom());
-		T.add(Edit.formatText(iT.getLocaleDate(iwc)), col, row++);
+		T.add(getHeader(iT.getLocaleDate(iwc)), col, row++);
 		if (eCampusApplication.getWantFurniture())
-			T.add(Edit.formatText("X"), col, row++);
+			T.add(getHeader("X"), col, row++);
 		if (eCampusApplication.getOnWaitinglist())
-			T.add(Edit.formatText("X"), col, row++);
+			T.add(getHeader("X"), col, row++);
 		return T;
 	}
 
-	public PresentationObject getOtherInfo(CampusApplication eCampusApplication, IWContext iwc, IWResourceBundle iwrb, boolean editable) {
-		DataTable T = new DataTable();
+	public PresentationObject getOtherInfo(CampusApplication eCampusApplication, IWContext iwc, boolean editable) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("otherinfo", "Other info"));
+		T.addTitle(localize("otherinfo", "Other info"));
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("comment", "Comment")), col, row);
+		T.add(getHeader(localize("comment", "Comment")), col, row);
 
 		String comment = null;
 
@@ -1328,7 +1322,7 @@ public class CampusApprover extends Block {
 
 		col = 2;
 		row = 1;
-		TextArea commentArea = new TextArea("ap_comment", comment);
+		TextArea commentArea = getTextArea("ap_comment", comment,35,5);
 		if (editable) {
 			commentArea.setReadOnly(false);
 			commentArea.setHeight(5);
@@ -1340,7 +1334,7 @@ public class CampusApprover extends Block {
 		}
 
 		//    commentArea
-		Edit.setStyle(commentArea);
+		
 		T.add(commentArea, col, row);
 
 		return T;
@@ -1348,7 +1342,7 @@ public class CampusApprover extends Block {
 
 	public DropdownMenu drpTypes(Vector v, String name, String selected, boolean firstEmpty) {
 		DropdownMenu drpTypes = new DropdownMenu(name);
-		Edit.setStyle(drpTypes);
+		
 		if (firstEmpty)
 			drpTypes.addMenuElementFirst("-1", "-");
 		for (int i = 0; i < v.size(); i++) {
@@ -1359,10 +1353,10 @@ public class CampusApprover extends Block {
 		return drpTypes;
 	}
 
-	public PresentationObject getFieldsApartment(CampusApplication eCampusApplication, List lApplied, IWContext iwc, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	public PresentationObject getFieldsApartment(CampusApplication eCampusApplication, List lApplied, IWContext iwc) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("applied", "Applied"));
+		T.addTitle(localize("applied", "Applied"));
 		int col = 1;
 		int row = 1;
 		String sOne = "-1", sTwo = "-1", sThree = "-3";
@@ -1391,29 +1385,26 @@ public class CampusApprover extends Block {
 		DropdownMenu drpOne = drpTypes(vAprtType, "drp_one", sOne, false);
 		DropdownMenu drpTwo = drpTypes(vAprtType, "drp_two", sTwo, true);
 		DropdownMenu drpThree = drpTypes(vAprtType, "drp_three", sThree, true);
-		Edit.setStyle(drpOne);
-		Edit.setStyle(drpTwo);
-		Edit.setStyle(drpThree);
-
-		T.add(Edit.formatText(1), 1, row);
+		
+		T.add(getHeader(String.valueOf(1)), 1, row);
 		T.add(drpOne, 2, row++);
-		T.add(Edit.formatText(2), 1, row);
+		T.add(getHeader(String.valueOf(2)), 1, row);
 		T.add(drpTwo, 2, row++);
-		T.add(Edit.formatText(3), 1, row);
+		T.add(getHeader(String.valueOf(3)), 1, row);
 		T.add(drpThree, 2, row++);
 
 		return T;
 	}
 
-	public PresentationObject getFieldsApartmentExtra(CampusApplication eCampusApplication, IWContext iwc, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	public PresentationObject getFieldsApartmentExtra(CampusApplication eCampusApplication, IWContext iwc) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("requests", "Requests"));
+		T.addTitle(localize("requests", "Requests"));
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("housingfrom", "Housing from")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("wantfurniture", "Wants furniture")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("onwaitinglist", "On waitinglist")), col, row++);
+		T.add(getHeader(localize("housingfrom", "Housing from")), col, row++);
+		T.add(getHeader(localize("wantfurniture", "Wants furniture")), col, row++);
+		T.add(getHeader(localize("onwaitinglist", "On waitinglist")), col, row++);
 
 		IWTimestamp iT = new IWTimestamp();
 		if (eCampusApplication != null) {
@@ -1423,12 +1414,10 @@ public class CampusApprover extends Block {
 		row = 1;
 		DateInput diRentFrom = new DateInput("ap_rentfrom", true);
 		diRentFrom.setDate(iT.getSQLDate());
-		diRentFrom.setStyleAttribute("style", Edit.styleAttribute);
+		
 		T.add(diRentFrom, col, row++);
-		CheckBox chkFurni = new CheckBox("ap_furni", "true");
-		Edit.setStyle(chkFurni);
-		CheckBox chkWait = new CheckBox("ap_wait", "true");
-		Edit.setStyle(chkWait);
+		CheckBox chkFurni = getCheckBox("ap_furni", "true");
+		CheckBox chkWait = getCheckBox("ap_wait", "true");
 
 		if (eCampusApplication != null) {
 			chkFurni.setChecked(eCampusApplication.getWantFurniture());
@@ -1579,47 +1568,45 @@ public class CampusApprover extends Block {
 	}
 
 	public PresentationObject getViewApplication(Application eApplication) {
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("application", "Application"));
+		T.addTitle(localize("application", "Application"));
 
 		int row = 1;
 		int col = 1;
 
-		T.add(Edit.formatText(iwrb.getLocalizedString("submitted", "Submitted")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("changed", "Status change")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("status", "Status")), col, row++);
+		T.add(getHeader(localize("submitted", "Submitted")), col, row++);
+		T.add(getHeader(localize("changed", "Status change")), col, row++);
+		T.add(getHeader(localize("status", "Status")), col, row++);
 		col++;
 		row = 1;
 		if (eApplication != null) {
-			T.add(Edit.formatText(eApplication.getSubmitted().toString()), col, row++);
-			T.add(Edit.formatText(eApplication.getStatusChanged().toString()), col, row++);
-			T.add(Edit.formatText(getStatus(eApplication.getStatus())), col, row++);
+			T.add(getText(eApplication.getSubmitted().toString()), col, row++);
+			T.add(getText(eApplication.getStatusChanged().toString()), col, row++);
+			T.add(getText(getStatus(eApplication.getStatus())), col, row++);
 		}
 		return T;
 	}
 
 	private PresentationObject getRemoteControl(IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("extra", "Extra"));
+		T.addTitle(localize("extra", "Extra"));
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("tax_return", "Tax return")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("study_progress", "Study progress")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("choice1", "Choice 1")), col, row++);
-		T.add(Edit.formatText(iwrb.getLocalizedString("choice2", "Choice 2")), col, row++);
+		T.add(getHeader(localize("tax_return", "Tax return")), col, row++);
+		T.add(getHeader(localize("study_progress", "Study progress")), col, row++);
+		T.add(getHeader(localize("choice1", "Choice 1")), col, row++);
+		T.add(getHeader(localize("choice2", "Choice 2")), col, row++);
 		col++;
 		row = 1;
-		TextInput units = new TextInput("unit");
+		TextInput units = getTextInput("unit");
 		units.setLength(1);
-		Edit.setStyle(units);
-		CheckBox choice1 = new CheckBox("choice1");
-		Edit.setStyle(choice1);
-		CheckBox choice2 = new CheckBox("choice2");
-		Edit.setStyle(choice2);
-		CheckBox choice3 = new CheckBox("choice3");
-		Edit.setStyle(choice3);
+		
+		CheckBox choice1 = getCheckBox("choice1","true");
+		CheckBox choice2 = getCheckBox("choice2","true");
+		CheckBox choice3 = getCheckBox("choice3","true");
+		
 		T.add(choice1, col, row++);
 		T.add(units, col, row++);
 		T.add(choice2, col, row++);
@@ -1629,12 +1616,12 @@ public class CampusApprover extends Block {
 	}
 
 	private PresentationObject getSubjectControl(IWResourceBundle iwrb, Application app) {
-		DataTable T = new DataTable();
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("subject", "Subject"));
+		T.addTitle(localize("subject", "Subject"));
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("current_subject", "Current Subject")), col, row++);
+		T.add(getHeader(localize("current_subject", "Current Subject")), col, row++);
 
 		col++;
 		row = 1;
@@ -1649,32 +1636,47 @@ public class CampusApprover extends Block {
 		return T;
 	}
 
-	private PresentationObject getButtons(Application eApplication, String sStatus, String sPriority, boolean bEdit, IWResourceBundle iwrb) {
-		DataTable T = new DataTable();
+	private PresentationObject getButtons(Application eApplication, String sStatus, String sPriority, boolean bEdit) {
+		DataTable T = getDataTable();
 		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("control", "Control"));
+		T.addTitle(localize("control", "Control"));
 		int row = 1;
 		int col = 1;
 		if (eApplication != null) {
-			DropdownMenu status = statusDrop("status_drop", sStatus);
+			
+			T.add(headerText(localize("priority","Priority")),col,row++);
+			Table letterTable = new Table(6,2);
+			String[] priorities = {"A","B","C","D","E","T"};
+			for (int i = 0; i < priorities.length; i++) {
+				RadioButton rb = new RadioButton("priority_drop",priorities[i]);
+				if(priorities[i].equalsIgnoreCase(sPriority)){
+					rb.setSelected();
+				}
+				letterTable.add(headerText(priorities[i]),i+1,1);
+				letterTable.add(rb,i+1,2);
+			}
+				
+			T.add(letterTable,col,row++);
+			
+			//DropdownMenu status = statusDrop("status_drop", sStatus);
 			//status.setToSubmit();
-			Edit.setStyle(status);
-			T.add(status, col, row);
+			//Edit.setStyle(status);
+			//T.add(status, col, row);
 
-			DropdownMenu priority = priorityDrop("priority_drop", sPriority);
-			Edit.setStyle(priority);
-			T.add(priority, col, row);
+			//DropdownMenu priority = priorityDrop("priority_drop", sPriority);
+			//Edit.setStyle(priority);
+			//T.add(priority, col, row);
 		}
 		if (bEdit) {
-			SubmitButton view = new SubmitButton(iwrb.getLocalizedImageButton("view", "View"), "viewer", "View");
-			T.add(view, col, row);
+			SubmitButton view = new SubmitButton(getResourceBundle().getLocalizedImageButton("view", "View"), "viewer", "View");
+			T.add(view, col, row++);
 		}
 		else {
-			SubmitButton edit = new SubmitButton(iwrb.getLocalizedImageButton("edit", "Edit"), "editor", "Edit");
-			T.add(edit, col, row);
+			SubmitButton edit = new SubmitButton(getResourceBundle().getLocalizedImageButton("edit", "Edit"), "editor", "Edit");
+			T.add(edit, col, row++);
 		}
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save", "Save");
-		T.add(save, col, row);
+		SubmitButton save = new SubmitButton(getResourceBundle().getLocalizedImageButton("save", "Save"), "save", "Save");
+		T.add(save, col, row++);
 		return T;
 	}
 
@@ -1684,17 +1686,17 @@ public class CampusApprover extends Block {
 
 		if (iterator != null) {
 			if (iterator.hasPrevious()) {
-				Link lLast = new Link(iwrb.getImage("back.gif"));
+				Link lLast = new Link(getResourceBundle().getImage("back.gif"));
 				lLast.addParameter(sView, "-2");
 				T.add(lLast, 1, 1);
 			}
 			if (iterator.hasNext()) {
-				Link lNext = new Link(iwrb.getImage("next.gif"));
+				Link lNext = new Link(getResourceBundle().getImage("next.gif"));
 				lNext.addParameter(sView, "-4");
 				T.add(lNext, 5, 1);
 			}
 		}
-		Link lList = new Link(iwb.getImage("list.gif"));
+		Link lList = new Link(getBundle().getImage("list.gif"));
 		T.add(lList, 3, 1);
 		T.setCellpadding(1);
 		T.setCellspacing(1);
@@ -1724,27 +1726,25 @@ public class CampusApprover extends Block {
 		DropdownMenu status = statusDrop("global_status", sGlobalStatus);
 		DropdownMenu order = orderDrop("global_order", sGlobalOrder);
 		DropdownMenu sizeMenu = sizeDrop("global_size",iGlobalSize);
-		SubmitButton New = new SubmitButton(iwrb.getLocalizedImageButton("new", "New"), "new_app", "true");
-		SubmitButton Info = new SubmitButton(iwrb.getLocalizedImageButton("info", "Info"), "subj_info", "true");
+		SubmitButton New = (SubmitButton) getSubmitButton("new_app", "true","New","new");
+		SubmitButton Info = (SubmitButton) getSubmitButton("subj_info", "true","Info","info");
 		//SubmitButton New = new SubmitButton("new","New");
 		//    SubmitButton New2 = new SubmitButton("new2","New transfer");
 		drp.setToSubmit();
 		status.setToSubmit();
 		order.setToSubmit();
 		sizeMenu.setToSubmit();
-		Edit.setStyle(status);
-		Edit.setStyle(order);
-		Edit.setStyle(New);
-		Edit.setStyle(sizeMenu);
-		DataTable T = new DataTable();
-		T.addTitle(iwrb.getLocalizedString("filter", "Filter"));
+		
+		
+		DataTable T = getDataTable();
+		T.addTitle(localize("filter", "Filter"));
 		T.setTitlesHorizontal(true);
 		int col = 1;
 		int row = 1;
-		T.add(Edit.formatText(iwrb.getLocalizedString("subject", "Subject")), col++, row);
-		T.add(Edit.formatText(iwrb.getLocalizedString("status", "Status")), col++, row);
-		T.add(Edit.formatText(iwrb.getLocalizedString("order", "Order")), col++, row);
-		T.add(Edit.formatText(iwrb.getLocalizedString("viewsize", "View size")), col++, row);
+		T.add(getHeader(localize("subject", "Subject")), col++, row);
+		T.add(getHeader(localize("status", "Status")), col++, row);
+		T.add(getHeader(localize("order", "Order")), col++, row);
+		T.add(getHeader(localize("viewsize", "View size")), col++, row);
 		row++;
 		col = 1;
 		T.add(drp, col++, row);
@@ -1765,8 +1765,8 @@ public class CampusApprover extends Block {
 	private DropdownMenu subjectDrop(String selected) {
 		List L = listOfSubjects;
 		DropdownMenu drp = new DropdownMenu("app_subject_id");
-		drp.addMenuElement(-1, iwrb.getLocalizedString("subject", "Subject"));
-		drp.addMenuElement(-99, iwrb.getLocalizedString("all_subject", "All"));
+		drp.addMenuElement(-1, localize("subject", "Subject"));
+		drp.addMenuElement(-99, localize("all_subject", "All"));
 		if (L != null) {
 			ApplicationSubject AS;
 			int len = L.size();
@@ -1774,7 +1774,7 @@ public class CampusApprover extends Block {
 				AS = (ApplicationSubject) L.get(i);
 				drp.addMenuElement(AS.getID(), AS.getName());
 			}
-			Edit.setStyle(drp);
+		
 			if (selected.equals("-1")) {
 				this.iSubjectId = ((ApplicationSubject) L.get(0)).getID();
 				drp.setSelectedElement(String.valueOf(iSubjectId));
@@ -1790,19 +1790,19 @@ public class CampusApprover extends Block {
 		char c = status.charAt(0);
 		switch (c) {
 			case 'S' :
-				r = iwrb.getLocalizedString("submitted", "Submitted");
+				r = localize("submitted", "Submitted");
 				break;
 			case 'A' :
-				r = iwrb.getLocalizedString("approved", "Approved");
+				r = localize("approved", "Approved");
 				break;
 			case 'R' :
-				r = iwrb.getLocalizedString("rejected", "Rejected");
+				r = localize("rejected", "Rejected");
 				break;
 			case 'C' :
-				r = iwrb.getLocalizedString("contracted", "Contract");
+				r = localize("contracted", "Contract");
 				break;
 			case 'G' :
-				r = iwrb.getLocalizedString("garbage", "Garbage");
+				r = localize("garbage", "Garbage");
 				break;
 		}
 		return r;
@@ -1855,12 +1855,12 @@ public class CampusApprover extends Block {
 		DropdownMenu drp = new DropdownMenu(name);
 		Applicant A = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
 
-		drp.addMenuElement("-1", iwrb.getLocalizedString("submitted", "Submitted"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getFullnameOrderValue(), iwrb.getLocalizedString("name", "Name"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(), iwrb.getLocalizedString("ssn", "Socialnumber"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getLegalResidenceColumnName(), iwrb.getLocalizedString("legal_residence", "Legal Residence"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(), iwrb.getLocalizedString("residence", "Residence"));
-		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(), iwrb.getLocalizedString("phone", "Residence phone"));
+		drp.addMenuElement("-1", localize("submitted", "Submitted"));
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getFullnameOrderValue(), localize("name", "Name"));
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(), localize("ssn", "Socialnumber"));
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getLegalResidenceColumnName(), localize("legal_residence", "Legal Residence"));
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(), localize("residence", "Residence"));
+		drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(), localize("phone", "Residence phone"));
 		drp.setSelectedElement(selected);
 		return drp;
 	}
@@ -1873,7 +1873,7 @@ public class CampusApprover extends Block {
 	}
 
 	public Text headerText(String text) {
-		return Edit.formatText(text);
+		return getHeader(text);
 		/*
 		Text T = new Text(text);
 		T.setBold();

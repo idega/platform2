@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.23 2003/11/21 19:01:26 tryggvil Exp $
+ * $Id: CampusApplicationForm.java,v 1.24 2004/06/04 17:37:14 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,14 @@
  *
  */
 package is.idega.idegaweb.campus.block.application.presentation;
+
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
+import is.idega.idegaweb.campus.presentation.CampusTypeWindow;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Vector;
 
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.presentation.ApplicationForm;
@@ -33,15 +41,6 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
-import is.idega.idegaweb.campus.presentation.CampusTypeWindow;
-import is.idega.idegaweb.campus.presentation.Edit;
-
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Vector;
-
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -65,7 +64,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
 	private static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
 
-	protected Text _required = Edit.formatText(" * ", true);
+	protected String _required = ("* ");
 	protected Text _info = null;
 
 	/**
@@ -172,15 +171,15 @@ public class CampusApplicationForm extends ApplicationForm {
 		DropdownMenu aprtType = new DropdownMenu("aprtType");
 		if (iwc.isParameterSet("aprtType"))
 			aprtType.setSelectedElement(iwc.getParameter("aprtType"));
-		Edit.setStyle(aprtType);
+		
 		DropdownMenu aprtType2 = new DropdownMenu("aprtType2");
 		if (iwc.isParameterSet("aprtType2"))
 			aprtType2.setSelectedElement(iwc.getParameter("aprtType2"));
-		Edit.setStyle(aprtType2);
+		
 		DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
 		if (iwc.isParameterSet("aprtType3"))
 			aprtType3.setSelectedElement(iwc.getParameter("aprtType3"));
-		Edit.setStyle(aprtType3);
+		
 		aprtType.addDisabledMenuElement("-1", "");
 		aprtType2.addMenuElement("-1", "");
 		aprtType3.addMenuElement("-1", "");
@@ -194,7 +193,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
 		Form form = new Form();
 		DataTable t = new DataTable();
-		Edit.setStyle(t);
+		
 
 		String text1 = _iwrb.getLocalizedString("firstChoice", "Fyrsta val");
 		String text2 = _iwrb.getLocalizedString("secondChoice", "Anna? val");
@@ -208,11 +207,11 @@ public class CampusApplicationForm extends ApplicationForm {
 		form.add(t);
 
 		t.addTitle(_iwrb.getLocalizedString("applied", "H?sn??i sem s?tt er um"));
-		Text label = Edit.formatText(text1);
+		Text label = getHeader(text1);
 		if (wrongParameters.contains("aprtType"))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, 1);
-		t.add(Edit.formatText(_required, true), 1, 1);
+		t.add(getHeader(_required), 1, 1);
 		t.add(aprtType, 2, 1);
 
 		Image apartmentImage = _iwb.getImage("list.gif", _iwrb.getLocalizedString("get_apartment", "Click for information about apartment"));
@@ -239,7 +238,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			}
 		}
 
-		t.add(Edit.formatText(text2), 1, 2);
+		t.add(getHeader(text2), 1, 2);
 		t.add(aprtType2, 2, 2);
 		if (_apartment2 > -1) {
 			try {
@@ -255,7 +254,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			}
 		}
 
-		t.add(Edit.formatText(text3), 1, 3);
+		t.add(getHeader(text3), 1, 3);
 		t.add(aprtType3, 2, 3);
 		if (_apartment3 > -1) {
 			try {
@@ -314,19 +313,19 @@ public class CampusApplicationForm extends ApplicationForm {
 		IWTimestamp today = IWTimestamp.RightNow();
 		int fromYear = today.getYear() - 7;
 		int toYear = today.getYear() + 7;
-		Edit.setStyle(textTemplate);
+		
 
 		Form form = new Form();
 		DataTable t = new DataTable();
-		Edit.setStyle(t);
+		
 
 		String text1 = _iwrb.getLocalizedString("applicationSubject", "Ums?kn um");
 		String text2 = _iwrb.getLocalizedString("apartmentType", "Tegund ?b??ar");
 
 		DropdownMenu subject = new DropdownMenu(subjects, "subject");
-		Edit.setStyle(subject);
+		
 		DropdownMenu aprtCat = new DropdownMenu(categories, "aprtCat");
-		Edit.setStyle(aprtCat);
+	
 		Image back = _iwrb.getImage("back.gif");
 		back.setMarkupAttribute("onClick", "history.go(-1)");
 		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));
@@ -334,33 +333,33 @@ public class CampusApplicationForm extends ApplicationForm {
 		form.add(t);
 
 		t.addTitle(_iwrb.getLocalizedString("applicationSubjectTitle", "Veldu tegund ums?knar"));
-		t.add(Edit.formatText(text1, true), 1, 1);
-		t.add(Edit.formatText(_required, true), 1, 1);
+		t.add(getHeader(text1), 1, 1);
+		t.add(getHeader(_required), 1, 1);
 		t.add(subject, 2, 1);
-		t.add(Edit.formatText(text2, true), 1, 2);
-		t.add(Edit.formatText(_required, true), 1, 2);
+		t.add(getHeader(text2), 1, 2);
+		t.add(getHeader(_required), 1, 2);
 		t.add(aprtCat, 2, 2);
 
 		List residences = CampusApplicationFinder.listOfResidences();
 		List occupations = CampusApplicationFinder.listOfSpouseOccupations();
 		DropdownMenu resSelect = new DropdownMenu(residences, "currentResidence");
-		Edit.setStyle(resSelect);
+		
 		DropdownMenu occSelect = new DropdownMenu(occupations, "spouseOccupation");
-		Edit.setStyle(occSelect);
+		
 		DateInput studyBegin = new DateInput("studyBegin");
-		Edit.setStyle(studyBegin);
+	
 		studyBegin.setToShowDay(false);
 		studyBegin.setYearRange(fromYear, toYear);
 		DateInput studyEnd = new DateInput("studyEnd");
-		Edit.setStyle(studyEnd);
+		
 		studyEnd.setToShowDay(false);
 		studyEnd.setYearRange(fromYear, toYear);
 		DateInput spouseStudyBegin = new DateInput("spouseStudyBegin");
-		Edit.setStyle(spouseStudyBegin);
+		
 		spouseStudyBegin.setToShowDay(false);
 		spouseStudyBegin.setYearRange(fromYear, toYear);
 		DateInput spouseStudyEnd = new DateInput("spouseStudyEnd");
-		Edit.setStyle(spouseStudyEnd);
+		
 		spouseStudyEnd.setToShowDay(false);
 		spouseStudyEnd.setYearRange(fromYear, toYear);
 
@@ -385,7 +384,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		String labelInfo = _iwrb.getLocalizedString("info", "A?rar uppl?singar");
 
 		TextInput textInputTemplate = new TextInput();
-		Edit.setStyle(textInputTemplate);
+		
 
 		TextInput inputFaculty = (TextInput) textInputTemplate.clone();
 		inputFaculty.setName("faculty");
@@ -448,8 +447,7 @@ public class CampusApplicationForm extends ApplicationForm {
 				childName.setContent(iwc.getParameter("childname" + i));
 			if (iwc.isParameterSet("childbirth" + i))
 				childBirth.setContent(iwc.getParameter("childbirth" + i));
-			Edit.setStyle(childName);
-			Edit.setStyle(childBirth);
+		
 			childName.setLength(40);
 			childBirth.setLength(10);
 			childBirth.setMaxlength(10);
@@ -459,7 +457,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		childrenTable.add(new HiddenInput("children_count", String.valueOf(children)));
 
 		TextArea inputExtraInfo = new TextArea("extra_info");
-		Edit.setStyle(inputExtraInfo);
+		
 		inputExtraInfo.setHeight(4);
 		inputExtraInfo.setWidth(30);
 
@@ -472,101 +470,101 @@ public class CampusApplicationForm extends ApplicationForm {
 		input16.setToCurrentDate();
 
 		DataTable t2 = new DataTable();
-		Edit.setStyle(t2);
+		
 		form.add(t2);
 
 		t2.addTitle(_iwrb.getLocalizedString("otherInfo", "A?rar uppl?singar um ums?kjanda"));
 		int row = 1;
-		Text label = Edit.formatText(labelStudyBegin, true);
+		Text label = getHeader(labelStudyBegin);
 		if (wrongParameters.contains("studyBegin"))
 			label.setFontColor("#ff0000");
 		t2.add(label, 1, row);
-		t2.add(Edit.formatText(_required, true), 1, row);
+		t2.add(getHeader(_required), 1, row);
 		t2.add(studyBegin, 2, row);
 		row++;
 
-		label = Edit.formatText(labelStudyEnd, true);
+		label = getHeader(labelStudyEnd);
 		if (wrongParameters.contains("studyEnd"))
 			label.setFontColor("#ff0000");
 		t2.add(label, 1, row);
-		t2.add(_required, 1, row);
+		t2.add(getHeader(_required), 1, row);
 		t2.add(studyEnd, 2, row);
 		row++;
 
-		label = Edit.formatText(labelFaculty, true);
+		label = getHeader(labelFaculty);
 		if (wrongParameters.contains("faculty"))
 			label.setFontColor("#ff0000");
 		t2.add(label, 1, row);
-		t2.add(_required, 1, row);
+		t2.add(getHeader(_required), 1, row);
 		t2.add(inputFaculty, 2, row);
 		row++;
 
-		label = Edit.formatText(labelStudyTrack, true);
+		label = getHeader(labelStudyTrack);
 		if (wrongParameters.contains("studyTrack"))
 			label.setFontColor("#ff0000");
 		t2.add(label, 1, row);
-		t2.add(_required, 1, row);
+		t2.add(getHeader(_required), 1, row);
 		t2.add(inputTrack, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelCurrentRes, true), 1, row);
-		t2.add(_required, 1, row);
+		t2.add(getHeader(labelCurrentRes), 1, row);
+		t2.add(getHeader(_required), 1, row);
 		t2.add(resSelect, 2, row);
 		t2.add(inputResInfo, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelSpouseName), 1, row);
+		t2.add(getHeader(labelSpouseName), 1, row);
 		t2.add(inputSpouseName, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelSpouseSSN), 1, row);
+		t2.add(getHeader(labelSpouseSSN), 1, row);
 		t2.add(inputSpouseSSN, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelSpouseSchool), 1, row);
+		t2.add(getHeader(labelSpouseSchool), 1, row);
 		t2.add(inputSpouseSchool, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelSpouseTrack), 1, row);
+		t2.add(getHeader(labelSpouseTrack), 1, row);
 		t2.add(inputSpouseTrack, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelSpouseBegin), 1, row);
+		t2.add(getHeader(labelSpouseBegin), 1, row);
 		t2.add(spouseStudyBegin, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelSpouseEnd), 1, row);
+		t2.add(getHeader(labelSpouseEnd), 1, row);
 		t2.add(spouseStudyEnd, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelSpouseOcc), 1, row);
+		t2.add(getHeader(labelSpouseOcc), 1, row);
 		t2.add(occSelect, 2, row);
 		row++;
-		t2.add(Edit.formatText(labelChildren), 1, row);
+		t2.add(getHeader(labelChildren), 1, row);
 		t2.add(childrenTable, 2, row);
 		row++;
 
-		label = Edit.formatText(labelHousingFrom, true);
+		label = getHeader(labelHousingFrom);
 		if (wrongParameters.contains("wantHousingFrom"))
 			label.setFontColor("#ff0000");
 		t2.add(label, 1, row);
-		t2.add(_required, 1, row);
+		t2.add(getHeader(_required), 1, row);
 		t2.add(input16, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelContact), 1, row);
+		t2.add(getHeader(labelContact), 1, row);
 		t2.add(inputContact, 2, row);
 		row++;
 
-		label = Edit.formatText(labelEmail, true);
+		label = getHeader(labelEmail);
 		if (wrongParameters.contains("email"))
 			label.setFontColor("#ff0000");
 		t2.add(label, 1, row);
-		t2.add(_required, 1, row);
+		t2.add(getHeader(_required), 1, row);
 		t2.add(inputEmail, 2, row);
 		row++;
 
-		t2.add(Edit.formatText(labelInfo), 1, row);
+		t2.add(getHeader(labelInfo), 1, row);
 		t2.add(inputExtraInfo, 2, row);
 		row++;
 
@@ -597,29 +595,29 @@ public class CampusApplicationForm extends ApplicationForm {
 
 		try {
 			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
-			ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(type);
+			ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKey(new Integer(type));
 			_apartment1 = room.getID();
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
 				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
-				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(type);
+				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKey(new Integer(type));
 				_apartment2 = room.getID();
 			}
 
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
 				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
-				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(type);
+				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKey(new Integer(type));
 				_apartment3 = room.getID();
 			}
 		}
-		catch (SQLException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void main(IWContext iwc) {
 		_iwrb = getResourceBundle(iwc);
-		_info = Edit.formatText(_iwrb.getLocalizedString("mustFillOut", "* Stj?rnumerkt sv??i ver?ur a? fylla ?t"));
+		_info = getHeader(_iwrb.getLocalizedString("mustFillOut", "* Stj?rnumerkt sv??i ver?ur a? fylla ?t"));
 
 		control(iwc);
 	}
@@ -651,19 +649,19 @@ public class CampusApplicationForm extends ApplicationForm {
 		if (iwc.isParameterSet(APP_FIRST_NAME))
 			firstName.setContent(iwc.getParameter(APP_FIRST_NAME));
 		firstName.setLength(40);
-		Edit.setStyle(firstName);
+		
 		TextInput middleName = (TextInput) textInputTemplate.clone();
 		middleName.setName(APP_MIDDLE_NAME);
 		if (iwc.isParameterSet(APP_MIDDLE_NAME))
 			middleName.setContent(iwc.getParameter(APP_MIDDLE_NAME));
 		middleName.setLength(40);
-		Edit.setStyle(middleName);
+	
 		TextInput lastName = (TextInput) textInputTemplate.clone();
 		lastName.setName(APP_LAST_NAME);
 		if (iwc.isParameterSet(APP_LAST_NAME))
 			lastName.setContent(iwc.getParameter(APP_LAST_NAME));
 		lastName.setLength(40);
-		Edit.setStyle(lastName);
+		
 
 		TextInput ssn = (TextInput) textInputTemplate.clone();
 		ssn.setAsIcelandicSSNumber();
@@ -672,103 +670,103 @@ public class CampusApplicationForm extends ApplicationForm {
 			ssn.setContent(iwc.getParameter(APP_SSN));
 		ssn.setLength(10);
 		ssn.setMaxlength(10);
-		Edit.setStyle(ssn);
+		
 		TextInput legalResidence = (TextInput) textInputTemplate.clone();
 		legalResidence.setName(APP_LEGAL_RESIDENCE);
 		if (iwc.isParameterSet(APP_LEGAL_RESIDENCE))
 			legalResidence.setContent(iwc.getParameter(APP_LEGAL_RESIDENCE));
 		legalResidence.setLength(40);
-		Edit.setStyle(legalResidence);
+		
 		TextInput residence = (TextInput) textInputTemplate.clone();
 		residence.setName(APP_RESIDENCE);
 		if (iwc.isParameterSet(APP_RESIDENCE))
 			residence.setContent(iwc.getParameter(APP_RESIDENCE));
 		residence.setLength(40);
-		Edit.setStyle(residence);
+		
 		TextInput phone = (TextInput) textInputTemplate.clone();
 		phone.setName(APP_PHONE);
 		if (iwc.isParameterSet(APP_PHONE))
 			phone.setContent(iwc.getParameter(APP_PHONE));
 		phone.setLength(8);
-		Edit.setStyle(phone);
+		
 		TextInput po = (TextInput) textInputTemplate.clone();
 		po.setName(APP_PO);
 		if (iwc.isParameterSet(APP_PO))
 			po.setContent(iwc.getParameter(APP_PO));
 		po.setLength(3);
-		Edit.setStyle(po);
+		
 		TextInput mobile = (TextInput) textInputTemplate.clone();
 		mobile.setName(APP_PHONE);
 		if (iwc.isParameterSet(APP_PHONE))
 			mobile.setContent(iwc.getParameter(APP_PHONE));
 		mobile.setLength(8);
-		Edit.setStyle(mobile);
+		
 
 		int row = 1;
 		t.addTitle(heading);
-		Text label = Edit.formatText(firstNameLabel, true);
+		Text label = getHeader(firstNameLabel);
 		if (wrongParameters.contains(APP_FIRST_NAME))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, row);
-		t.add(_required, 1, row);
+		t.add(getHeader(_required), 1, row);
 		t.add(firstName, 2, row);
 		row++;
-		label = Edit.formatText(middleNameLabel);
+		label = getHeader(middleNameLabel);
 		t.add(label, 1, row);
 		t.add(middleName, 2, row);
 		row++;
-		label = Edit.formatText(lastNameLabel, true);
+		label = getHeader(lastNameLabel);
 		if (wrongParameters.contains(APP_LAST_NAME))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, row);
-		t.add(_required, 1, row);
+		t.add(getHeader(_required), 1, row);
 		t.add(lastName, 2, row);
 		row++;
-		label = Edit.formatText(ssnLabel, true);
+		label = getHeader(ssnLabel);
 		if (wrongParameters.contains(APP_SSN))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, row);
-		t.add(_required, 1, row);
+		t.add(getHeader(_required), 1, row);
 		t.add(ssn, 2, row);
 		row++;
-		label = Edit.formatText(legalResidenceLabel, true);
+		label = getHeader(legalResidenceLabel);
 		if (wrongParameters.contains(APP_LEGAL_RESIDENCE))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, row);
-		t.add(_required, 1, row);
+		t.add(getHeader(_required), 1, row);
 		t.add(legalResidence, 2, row);
 		row++;
-		label = Edit.formatText(residenceLabel, true);
+		label = getHeader(residenceLabel);
 		if (wrongParameters.contains(APP_RESIDENCE))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, row);
-		t.add(_required, 1, row);
+		t.add(getHeader(_required), 1, row);
 		t.add(residence, 2, row);
 		row++;
-		label = Edit.formatText(phoneLabel, true);
+		label = getHeader(phoneLabel);
 		if (wrongParameters.contains(APP_PHONE))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, row);
-		t.add(_required, 1, row);
+		t.add(getHeader(_required), 1, row);
 		t.add(phone, 2, row);
 		row++;
-		label = Edit.formatText(poLabel, true);
+		label = getHeader(poLabel);
 		if (wrongParameters.contains(APP_PO))
 			label.setFontColor("#ff0000");
 		t.add(label, 1, row);
-		t.add(_required, 1, row);
+		t.add(getHeader(_required), 1, row);
 		t.add(po, 2, row);
 		row++;
-		label = Edit.formatText(mobileLabel);
+		label = getHeader(mobileLabel);
 		t.add(label, 1, row);
 		//t.add(_required,1,row);
 		t.add(mobile, 2, row);
 		row++;
 		CheckBox acceptance = new CheckBox("acceptor");
 
-		Text disclaimer = Edit.formatText(_iwrb.getLocalizedString("disclaimer", "Ums?kjandi heimilar St?dentag?r?um a? s?kja uppl?singar um skr?ningu e?a n?msframvindu til H?sk?la ?slands, eignarst??u fasteigna til Fasteignarmats r?kisins og fj?lskyldust?r? e?a barnafj?lda til Hagstofu ?slands."));
+		Text disclaimer = getHeader(_iwrb.getLocalizedString("disclaimer", "Ums?kjandi heimilar St?dentag?r?um a? s?kja uppl?singar um skr?ningu e?a n?msframvindu til H?sk?la ?slands, eignarst??u fasteigna til Fasteignarmats r?kisins og fj?lskyldust?r? e?a barnafj?lda til Hagstofu ?slands."));
 		t.add(acceptance, 1, row);
-		Text accReq = (Text) _required.clone();
+		Text accReq = getHeader(_required);
 		if (wrongParameters.contains("acceptor")) {
 			accReq.setFontColor("#ff0000");
 			accReq.setText("  *  ");
@@ -860,5 +858,15 @@ public class CampusApplicationForm extends ApplicationForm {
 		if (aprt == null || aprt.length() == 0 || aprt.equals("-1"))
 			wrongParameters.add("aprtType");
 		return wrongParameters;
+	}
+	
+	public Text getHeader(String text){
+		Text t = new Text(text);
+		t.setBold();
+		return t;
+	}
+	
+	public Text getText(String text){
+		return new Text(text);
 	}
 }
