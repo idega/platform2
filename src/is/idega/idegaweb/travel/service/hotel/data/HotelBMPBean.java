@@ -84,6 +84,10 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
   	return coll;
   }
   
+  public int getRoomTypeId() {
+  	return getIntColumnValue(getColumnNameRoomTypeId());
+  }
+  
   public void setRoomTypeIds(int[] roomTypeIds) throws IDORemoveRelationshipException, IDOAddRelationshipException {
   	this.idoRemoveFrom(RoomType.class);
   	if (roomTypeIds != null && roomTypeIds.length > 0) {

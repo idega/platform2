@@ -8,6 +8,10 @@ public interface Hotel extends com.idega.data.IDOEntity
  public void addRoomTypeId(int p0)throws com.idega.data.IDOAddRelationshipException;
  public java.util.Collection getHotelTypes()throws com.idega.data.IDORelationshipException;
  public int getMaxPerUnit();
+ /**
+  * @deprecated
+  */
+ public int getRoomTypeId();
  public int getNumberOfUnits();
  public float getRating();
  public java.util.Collection getRoomTypes()throws com.idega.data.IDORelationshipException;
