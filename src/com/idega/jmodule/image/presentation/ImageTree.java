@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ImageTree extends JModuleObject{
 
-private String width="100%";
+private String width = "100%";
+private boolean showAll = true;
 
 public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
 
@@ -36,15 +37,18 @@ public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
         if (catagory.length > 0) {
           for (int i = 0 ; i < catagory.length ; i++ ) {
             findNodes(items,catagory[i].getID(),1,new ImageCatagory(),1);
-            images = (ImageEntity[])catagory[i].findRelated(new ImageEntity());
 
-            if (images != null) {
-              if (images.length > 0 ) {
-                  intArr = (Integer[])(items.lastElement());
-                  pos = intArr[1].intValue()+1;
-                for (int j = 0 ; j < images.length ; j++) {
-                  if (images[j].getParentId()== -1 ) {
-                    findNodes(items,images[j].getID(),pos,new ImageEntity(),2);
+            if ( showAll ) {
+              images = (ImageEntity[])catagory[i].findRelated(new ImageEntity());
+
+              if (images != null) {
+                if (images.length > 0 ) {
+                    intArr = (Integer[])(items.lastElement());
+                    pos = intArr[1].intValue()+1;
+                  for (int j = 0 ; j < images.length ; j++) {
+                    if (images[j].getParentId()== -1 ) {
+                      findNodes(items,images[j].getID(),pos,new ImageEntity(),2);
+                    }
                   }
                 }
               }
@@ -87,6 +91,11 @@ public String getWidth(){
 public void setWidth(String width){
   this.width =  width;
 }
+
+public void setShowAll(boolean showAll){
+  this.showAll =  showAll;
+}
+
 public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
 HttpServletRequest request = modinfo.getRequest();
   Table table = new Table();
@@ -153,11 +162,13 @@ HttpServletRequest request = modinfo.getRequest();
         else {
           idLink.addParameter("open_catagory_id",""+id);
         }
-        table.add(openLink,pos,row);
 
           idLink.addParameter("image_catagory_id",""+id);
         table.setHeight(row,"25");
-        table.addText(" ",pos,row);
+        if ( showAll ) {
+          table.add(openLink,pos,row);
+        }
+        table.addText("&nbsp;",pos,row);
         table.add(idLink,pos,row);
         table.setBackgroundImage(pos,row,new Image(color_0));
       }

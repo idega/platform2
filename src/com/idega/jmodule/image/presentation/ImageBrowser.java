@@ -15,6 +15,8 @@ import com.idega.util.text.*;
 public class ImageBrowser extends JModuleObject{
 
 private String width="100%";
+private boolean showAll = false;
+private boolean refresh = false;
 
   public void main(ModuleInfo modinfo)throws Exception{
     add(getBrowserTable(modinfo));
@@ -26,6 +28,14 @@ private String width="100%";
 
   public void setWidth(String width){
     this.width =  width;
+  }
+
+  public void setShowAll(boolean showAll){
+    this.showAll =  showAll;
+  }
+
+  public void refresh(){
+    this.refresh=true;
   }
 
   private Form getBrowserTable(ModuleInfo modinfo) throws SQLException {
@@ -70,6 +80,10 @@ private String width="100%";
 
     ImageTree tree = new ImageTree();
       tree.setWidth("150");
+      tree.setShowAll(showAll);
+      if ( refresh ) {
+        tree.deleteModule(modinfo);
+      }
 
     imageTable.add(tree,1,1);
 
@@ -148,15 +162,31 @@ private String width="100%";
     boolean isQuery = true;
     boolean allCategories = false;
 
+    String category_id = modinfo.getRequest().getParameter("catagory_id");
+      if ( category_id.equalsIgnoreCase("0") ) {
+        allCategories = true;
+      }
+
     String searchString = modinfo.getRequest().getParameter("searchString");
       if ( searchString == null || searchString.equalsIgnoreCase("") ) {
         searchString = "";
         isQuery = false;
       }
-    String category_id = modinfo.getRequest().getParameter("catagory_id");
-      if ( category_id.equalsIgnoreCase("0") ) {
-        allCategories = true;
+    String queryString = "select * from image,image_image_catagory where image.image_id=image_image_catagory.image_id and image_image_catagory.image_catagory_id="+category_id+" and ";
+    if ( allCategories ) {
+      queryString = "select * from image where ";
+    }
+
+    StringTokenizer tokens = new StringTokenizer(searchString);
+    while ( tokens.hasMoreTokens() ) {
+      String token = tokens.nextToken();
+      queryString += "(image_text like '%"+token+"%' or image_name like'%"+token+"%')";
+      if ( tokens.hasMoreTokens() ) {
+        queryString += " and ";
       }
+    }
+
+    //add(queryString);
 
     Table myTable = new Table(1,1);
       myTable.setCellpadding(0);
@@ -170,11 +200,11 @@ private String width="100%";
       ImageEntity[] image;
 
       if ( allCategories ) {
-         image = (ImageEntity[]) (new ImageEntity()).findAll("select * from image where image_text like '%"+searchString+"%' or image_name like '%"+searchString+"%'");
+         image = (ImageEntity[]) (new ImageEntity()).findAll(queryString);
       }
 
       else {
-         image = (ImageEntity[]) (new ImageEntity()).findAll("select * from image,image_image_catagory where image_image_catagory.image_catagory_id="+category_id+" and image.image_id=image_image_catagory.image_id and image.image_text like '%"+searchString+"%'  or image.image_name like '%"+searchString+"%'");
+         image = (ImageEntity[]) (new ImageEntity()).findAll(queryString);
       }
 
       if ( image.length > 0 ) {
