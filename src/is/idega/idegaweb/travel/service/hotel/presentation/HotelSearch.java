@@ -115,13 +115,13 @@ public class HotelSearch extends AbstractSearchForm {
 			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
 			int mapSize = map.size();
 			String foundString = "";
-/*			if (map != null) {
+			if (map != null) {
 				foundString = "Found "+mapSize+" match";
 				if (mapSize != 1) foundString += "es !<br>";
 			} else {
 				foundString = getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>";
 			}
-*/			
+			
 			if (mapSize > 0) {
 				add(foundString);
 			}
