@@ -33,7 +33,9 @@ public class Apartment extends GenericEntity {
     addAttribute(getImageIdColumnName(),"Mynd",true,true,"java.lang.Integer");
     addAttribute(getUnavailableUntilColumnName(),"Frosin",true,true,"java.sql.Date");
     addAttribute(getSerieColumnName(),"Serie",true,true,"java.lang.String",2);
-    super.setMaxLength("info",5000);
+    addAttribute(getStatusColumnName(),"Status",true,true,"java.lang.String");
+    setMaxLength("info",5000);
+    setMaxLength(getStatusColumnName(),1);
   }
   public String getEntityName() {
     return getNameTableName();
@@ -47,7 +49,11 @@ public class Apartment extends GenericEntity {
   public static String getRentableColumnName(){return "rentable"; }
   public static String getUnavailableUntilColumnName(){return "unavailable_until"; }
   public static String getSerieColumnName(){return "serie";}
+  public static String getStatusColumnName(){return "status";}
 
+  public final static String AVAILABLE = "A";
+  public final static String RENTED = "R";
+  public final static String FROZEN = "F";
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());
@@ -108,5 +114,28 @@ public class Apartment extends GenericEntity {
   }
   public void setSerie(String serie){
     setColumn(getSerieColumnName(),serie);
+  }
+
+  public String getStatus() {
+    return(getStringColumnValue(getStatusColumnName()));
+  }
+
+  public void setStatus(String status) {
+    if (status.equalsIgnoreCase(FROZEN) || status.equalsIgnoreCase(RENTED) || status.equalsIgnoreCase(AVAILABLE))
+      setColumn(getStatusColumnName(),status);
+    else
+      System.err.println("Undefined status :" + status);
+  }
+
+  public void setStatusFrozen() {
+    setStatus(FROZEN);
+  }
+
+  public void setStatusAvailable() {
+    setStatus(AVAILABLE);
+  }
+
+  public void setStatusRented() {
+    setStatus(RENTED);
   }
 }
