@@ -41,9 +41,12 @@ import com.idega.core.data.ICTreeNode;
 import com.idega.core.data.IWTreeNode;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOStoreException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -245,14 +248,18 @@ public class ReportQueryBuilder extends Block {
 				//System.err.println("this step is before process" + step);+
 				processForm(iwc);
 				//System.err.println("this step is after process" + step);
-				Table table = new Table(1, 3);
+				Table table = new Table();
+				table.setStyleClass("main");
 				form = new Form();
 				// thomas changed: queryFolder  id is always set
 				// if (queryFolderID > 0 && step < 5)
 				if (userQueryID > 0) {
 					form.addParameter(PARAM_QUERY_ID, userQueryID);
 				}
-				table.add(getButtons(step), 1, 3);
+				table.mergeCells(1,1,2,1);
+				table.mergeCells(1,2,2,2);
+				table.add(getHelpTable(step,expertMode),1,3);
+				table.add(getButtons(step), 2, 3);
 				form.addParameter(PARAM_STEP, step);
 				// thomas added:
 				// this parameter serves as a flag for the outer window to continue showing the wizard
@@ -296,7 +303,7 @@ public class ReportQueryBuilder extends Block {
 				table.add(getStep(iwc), 1, 2);
 				table.setColor(1, 2, stepTableColor);
 				table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
-				table.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
+				table.setAlignment(2, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 				table.setHeight(2, this.heightOfStepTable);
 				form.add(table);
 				add(form);
@@ -1662,6 +1669,25 @@ public class ReportQueryBuilder extends Block {
 //		}
 		return T;
 	}
+	private Table getHelpTable(int currentStep, boolean expertMode) {
+		Table helpTable = new Table();
+		helpTable.setCellpadding(5);
+		helpTable.setCellspacing(0);
+		Help help = null;
+		String expert = "";
+		if(expertMode) {
+			expert = "expert";
+		}
+		else {
+			expert = "simple";
+		}
+		help = getHelp("help." + currentStep + expert);
+		
+		helpTable.add(help,1,1);
+		
+		return helpTable;
+		
+	}
 	
 	public void main(IWContext iwc) throws Exception {
 		debugParameters(iwc);
@@ -1958,6 +1984,17 @@ public class ReportQueryBuilder extends Block {
 		}
 
 	}
+	public Help getHelp(String helpTextKey) {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = iwc.getIWMainApplication().getBundle("com.idega.block.dataquery");
+	 	Help help = new Help();
+	 	Image helpImage = iwb.getImage("help.gif");//.setSrc("/idegaweb/bundles/com.idega.user.bundle/resources/help.gif");
+ 	  help.setHelpTextBundle("com.idega.block.dataquery");
+	  help.setHelpTextKey(helpTextKey);
+	  help.setImage(helpImage);
+	  return help;
+	}
+
 
   private InputHandler getInputHandler(QueryFieldPart fieldPart) {
   	InputHandler inputHandler = null;
