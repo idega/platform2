@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/02 09:31:37 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 10:24:21 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.102 $
+ * @version $Revision: 1.103 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -397,7 +397,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		
 		// close and store document
 		document.close ();
-		
+
+		// create link		
 		final int docId = business.generatePdf
 				(localize (INVOICE_COMPILATION_KEY,
 									 INVOICE_COMPILATION_DEFAULT), buffer);

@@ -73,11 +73,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/02 10:01:12 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 10:24:21 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.52 $
+ * @version $Revision: 1.53 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -367,7 +367,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		document.add (outerTable);        
 		// close and store document
 		document.close ();
-		
+
+		// create link		
 		final int docId = getInvoiceBusiness (context).generatePdf
 				(localize (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
 				 buffer);
@@ -375,8 +376,21 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				= new Link("Öppna checkbeloppslista i Acrobat Reader");
 		viewLink.setFile (docId);
 		viewLink.setTarget ("letter_window_" + docId);
-		add (createMainTable (CHECK_AMOUNT_LIST_KEY,
-													CHECK_AMOUNT_LIST_DEFAULT, viewLink));
+
+		final Table htmlTable = createTable (1);
+		htmlTable.add (viewLink, 1, 1);
+		htmlTable.setHeight (2, 12);
+		addCancelButton (htmlTable, 1, 3, ACTION_SHOW_PAYMENT);
+		final Form form = new Form ();
+		form.maintainParameter (PROVIDER_KEY);
+		form.maintainParameter (START_PERIOD_KEY);
+		form.maintainParameter (END_PERIOD_KEY);
+		form.setOnSubmit("return checkInfoForm()");
+		form.add (htmlTable);
+		final Table formTable = createTable (1);
+		formTable.add (form, 1, 1);
+		add (createMainTable (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT,
+													formTable));
 	}
 	
 	private PdfPTable getPostingPdfTable
