@@ -1,15 +1,13 @@
 package com.idega.jmodule.image.presentation;
 
 /**
- * Title: ImageViewer
+ * Title:
  * Description:
- * Copyright:    Copyright (c) 2001
- * Company: idega
- * @author Eirikur Hrafnsson, eiki@idega.is
- * @version 1.0
- *
+ * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * Company:      idega
+  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @version 1.1
  */
-
 
 import java.sql.*;
 import java.util.*;
