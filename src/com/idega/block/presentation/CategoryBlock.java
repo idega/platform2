@@ -1,8 +1,15 @@
 package com.idega.block.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.category.business.CategoryBusiness;
 import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.business.CategoryService;
 import com.idega.core.category.data.ICCategory;
 import com.idega.core.category.data.ICCategoryHome;
 import com.idega.data.IDOLookup;
@@ -172,4 +179,43 @@ public abstract class CategoryBlock extends Block {
 	public ICCategoryHome getCategoryHome() throws RemoteException {
 		return (ICCategoryHome) IDOLookup.getHome(ICCategory.class);
 	}
+	
+	public boolean copyBlock(int newInstanceID,DPTCopySession copySession) {
+		CategoryFinder finder = CategoryFinder.getInstance();
+		List categories = finder.listOfCategoryForObjectInstanceId(getICObjectInstanceID());
+		if(categories != null) {
+			try {
+				CategoryBusiness cb = CategoryBusiness.getInstance();
+				CategoryService service = (CategoryService) IBOLookup.getServiceInstance(copySession.getIWApplicationContext(),CategoryService.class);
+				int[] catIDs = new int[categories.size()];
+				int catIDIndex = 0;
+				for (Iterator iter = categories.iterator(); iter.hasNext();) {
+					try {
+						ICCategory category = (ICCategory) iter.next();
+						ICCategory newCategory = (ICCategory)copySession.getNewValue(CategoryBlock.class,category);
+						if(newCategory==null) {
+							newCategory = cb.createCategory(newInstanceID,getCategoryType(),category.getName(),category.getDescription());
+							copySession.setNewValue(CategoryBlock.class,category,newCategory);
+							service.storeCategoryToParent(newCategory.getID(),category.getID());
+							catIDs[catIDIndex++] = newCategory.getID();
+						}else {
+							catIDs[catIDIndex++] = newCategory.getID();
+							service.storeCategoryToParent(newCategory.getID(),category.getID());
+						}
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
+				cb.saveRelatedCategories(newInstanceID,catIDs);
+			} catch (IBOLookupException e) {
+				e.printStackTrace();
+				return false;
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
+	
 }
