@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.15 2003/04/15 12:12:52 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.16 2003/04/16 11:29:04 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -40,9 +40,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
 	
-	public final static String STATUS_UBEH = "UBEH";
+//	public final static String STATUS_UBEH = "UBEH";
+	public final static String STATUS_BVJD = "BVJD";
 	
-	private String prmChildId = CitizenChildren.getChildIDParameterName();	
+	private String CHILD_ID = CitizenChildren.getChildIDParameterName();	
 	
 
 
@@ -56,6 +57,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Form form = new Form();
 		Table layoutTbl = new Table(3, 5);
 		//layoutTbl.mergeCells(1, 1, 2, 1); //merging upper two cells
+
 		
 		switch(parseAction(iwc)){
 			case CCConstants.ACTION_SUBMIT_1: 
@@ -442,8 +444,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Collection applications = null;
 
 		try {
-			int childId = Integer.parseInt(iwc.getParameter(prmChildId));
-			applications = getChildCareBusiness(iwc).getApplicationsForChild(childId);
+			String childId = (String) iwc.getSessionAttribute(CHILD_ID);
+			if (childId == null){
+				childId = iwc.getParameter(CHILD_ID);
+				iwc.setSessionAttribute(CHILD_ID, childId);
+			}
+			
+			applications = getChildCareBusiness(iwc).getApplicationsForChild(Integer.parseInt(childId));
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (NumberFormatException e) { //parameter not a number

@@ -7,7 +7,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
  * This class is used to sort ChildCareApplication object according to their
  * choice number and granted status.
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ComparableApp.java,v 1.2 2003/03/07 12:54:40 laddi Exp $
+ * @version $Id: ComparableApp.java,v 1.3 2003/04/16 11:29:26 roar Exp $
  * @since 12.2.2003 
  */
 class ComparableApp implements Comparable {
@@ -37,18 +37,18 @@ class ComparableApp implements Comparable {
 			int diff = _app.getChoiceNumber() - app.getChoiceNumber();
 			
 			if (_grantedFirst){
-				if (_app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_UBEH)){ /**@TODO: is this correct status? */
+				if (_app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_BVJD)){ /**@TODO: is this correct status? */
 					return  -1;
-				} else if (app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_UBEH)){
+				} else if (app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_BVJD)){
 					return  1;
 				} else {
 					return diff;
 				}
 				
 			} else {
-				if (diff == 0 && _app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_UBEH)){ /**@TODO: is this correct status? */
+				if (diff == 0 && _app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_BVJD)){ /**@TODO: is this correct status? */
 					return  -1;
-				} else if (diff == 0 && app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_UBEH)){
+				} else if (diff == 0 && app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_BVJD)){
 					return  1;
 				} else {
 					return diff;

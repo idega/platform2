@@ -62,7 +62,7 @@ class ChildCarePlaceOfferTable2 extends Table{
 			String name = app.getProvider().getName();
 				
 			String offerText = "";
-			boolean offer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_UBEH); /**@TODO: is this correct status?*/
+			boolean offer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_BVJD); /**@TODO: is this correct status?*/
 			//The granted application (offer) is the first in the iterati
 			if (offer) {
 					//The granted application (offer) is the first in the iteratin.
