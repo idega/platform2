@@ -59,7 +59,7 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
   public void setName(String name) {
     newName = name;
 
-    setColumn(getColumnNameName(), name);
+    //setColumn(getColumnNameName(), name);
   }
 
   public String getDescription() {

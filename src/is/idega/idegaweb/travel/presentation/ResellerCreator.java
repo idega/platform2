@@ -595,8 +595,7 @@ public class ResellerCreator extends TravelManager {
     Table table = getTable();
     int row = 1;
     form.add(table);
-    TimestampInput inp = new TimestampInput();
-      inp.sety
+
 
     table.add(getHeaderText(iwrb.getLocalizedString("travel.suppliers","Suppliers")), 1, row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.remove","Remove")), 2, row);

@@ -585,6 +585,7 @@ public class ResellerManager {
         pGroup = (PermissionGroup) listi.get(listi.size()-1);
       }
     }
+
     if (listi == null) {
       listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), reseller.getName()+ permissionGroupNameExtention, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description  );
       if (listi != null) {
@@ -593,7 +594,6 @@ public class ResellerManager {
         }
       }
     }
-
     return pGroup;
   }
 
