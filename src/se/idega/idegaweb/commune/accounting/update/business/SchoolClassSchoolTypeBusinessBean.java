@@ -70,10 +70,11 @@ implements SchoolClassSchoolTypeBusiness {
 								schoolTypeId = year.getSchoolTypeId();
 							}
 							if(schoolTypeId==-1){
+								String str = "Several schooltypes for Class="+schoolClass.getName()+"  School="+provider.getName();
 								for(int i=0; i<schoolTypes.size();i++){
-									addMessage("Several schooltypes for Class="+schoolClass.getName()+"  School="+provider.getName()+"  SchoolType="+
-											((SchoolType)schoolTypes.get(i)).getName()+"  PK="+schoolClass.getPrimaryKey());
+									str += "\n<br>\t - SchoolType="+((SchoolType)schoolTypes.get(i)).getName()+"  PK="+schoolClass.getPrimaryKey();
 								}
+								addMessage(str);
 							}
 
 						} else {
@@ -187,7 +188,7 @@ implements SchoolClassSchoolTypeBusiness {
 							Iterator iter = members.iterator();
 							while(iter.hasNext()){
 								SchoolClassMember mem = (SchoolClassMember)iter.next();
-								str += "\n\t\t - SchoolClassMemberId="+mem.getPrimaryKey();
+								str += "\n<br>\t - SchoolClassMemberId="+mem.getPrimaryKey();
 							}
 
 							addMessage(str);
