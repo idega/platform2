@@ -94,7 +94,6 @@ public class Booking extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception {
-  	System.out.println("[Booking] TEST");
       super.main(iwc);
       initialize(iwc);
 
@@ -823,7 +822,6 @@ public class Booking extends TravelManager {
 //      if (reseller != null) tbf.setReseller(reseller);
       bf.setTimestamp(stamp);
       if (_booking != null)  {
-      	System.out.println("[Booking] booking != null");
       	bf.setBooking(_booking);
       	bf.setTimestamp(new IWTimestamp(_booking.getBookingDate()));	
       }
