@@ -17,12 +17,14 @@ import java.util.TreeMap;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
@@ -51,18 +53,22 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
   private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
+  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
+
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
+  private static final String CHECK_BOX = "checkBox";
+  // 'protected' because the inner class uses this constant
   protected static final String LEAGUE = "league";
 
-  private static final String HOME_PAGE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.HOME_PAGE";
+  private static final String HOME_PAGE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.HOME_PAGE";
   private static final String PERSONAL_ID = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.PERSONAL_ID";
   private static final String STREET_NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.STREET_NAME";
   private static final String POSTAL_CODE_ID = "com.idega.core.data.PostalCode.POSTAL_CODE_ID|POSTAL_CODE";
   private static final String FIRST_PHONE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.FIRST_PHONE";
-  private static final String SECOND_PHONE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.SECCOND_PHONE";
+  private static final String SECOND_PHONE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.SECOND_PHONE";
   private static final String FAX = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.FAX";
   private static final String EMAIL = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.EMAIL";
   
@@ -104,8 +110,20 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   }
   
   private String parseAction(IWContext iwc) {
-    // does the user want to edit a new entry?
     String action = "";
+    // does the user want to delete an existings entries?
+    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
+      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
+      if (! entriesToDelete.isEmpty())  {
+        deleteWorkReportDivisionBoard(entriesToDelete, iwc);
+        // !! do nothing else !!
+        // do not modify entry
+        // do not create an entry
+        return action;
+      }
+    }
+    // does the user want to edit a new entry?
+
     if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
       action = ACTION_SHOW_NEW_ENTRY;
     }  
@@ -200,9 +218,12 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     mainTable.add(browser, 1,1);
     PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
       getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
-    mainTable.add(newEntryButton,1,2);
-    return mainTable;
-    
+    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+    Table buttonTable = new Table(2,1);
+    buttonTable.add(newEntryButton,1,1);
+    buttonTable.add(deleteEntriesButton,2,1);
+    mainTable.add(buttonTable,1,2);
+    return mainTable;    
   }
   
   private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
@@ -218,15 +239,25 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     button.setAsImageButton(true);
     return button;
   }    
+
+  private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
+    String deleteEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_remove_entries", "Remove");
+    SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }  
+
  
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     // define converter
+    CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
     
     // define path short keys and map corresponding converters
     Object[] columns = {
+      CHECK_BOX, checkBoxConverter,
       LEAGUE, leagueDropDownMenuConverter,
       HOME_PAGE, textEditorConverter,
       PERSONAL_ID, textEditorConverter,
@@ -302,7 +333,58 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     converter.maintainParameters(getParametersToMaintain());
     return converter;
   }    
+
+  /** business method: delete WorkReportBoardMembers.
+   * @param ids - List of primaryKeys (Integer)
+   */
+  private void deleteWorkReportDivisionBoard(List ids, IWContext iwc) {
+    Iterator iterator = ids.iterator();
+    while (iterator.hasNext())  {
+      Integer id = (Integer) iterator.next();
+      WorkReportDivisionBoard board = findWorkReportDivisionBoard(id, iwc);
+      if (board != null) {
+        try {
+          board.remove();
+        }
+        catch (RemoveException ex) {
+          System.err.println(
+            "[WorkReportDivisionBoardEditor]: Can't remove WorkReportDivisionBoard. Message is: "
+              + ex.getMessage());
+          ex.printStackTrace(System.err);
+          // do nothing
+        }
+      }
+    }
+    
+  }
+
+  /** business method: find
+   * @param primaryKey
+   * @return desired WorkReportDivisionBoard or null if not found
+   */
+  private WorkReportDivisionBoard findWorkReportDivisionBoard(Integer primaryKey, IWContext iwc) {
+    WorkReportDivisionBoard board = null;
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      board = workReportBusiness.getWorkReportDivisionBoardHome().findByPrimaryKey(primaryKey);
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard.");
+    }
+    catch (FinderException ex)  {
+      System.err.println(
+      "[WorkReportDivisionBoardEditor]: Can't find WorkReportDivisionBoard. Message is: "
+        + ex.getMessage());
+      ex.printStackTrace(System.err);
+    }  
+    return board;
+  }
   
+  // business method: create
   private WorkReportDivisionBoard createWorkReportDivisionBoard()  {
     WorkReportDivisionBoard workReportDivisionBoard = null;
     try {
@@ -319,28 +401,16 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     workReportDivisionBoard.store();
     return workReportDivisionBoard;
   }
-  
+
+  // business method: update  
   private void updateWorkReportDivisionBoard(EntityPathValueContainer valueContainer, IWContext iwc)  {
     // precondition: value container is valid, that is its method isValid() returns true.
     // get the corresponding entity
     Integer id = valueContainer.getEntityId();
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-    WorkReportDivisionBoard board = null;
-    try {
-      board = workReportBusiness.getWorkReportDivisionBoardHome().findByPrimaryKey(id);
-    }
-    catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard.");
-    }
-    catch (FinderException ex)  {
-      System.err.println(
-      "[WorkReportDivisionBoardEditor]: Can't find WorkReportDivisionBoard. Message is: "
-        + ex.getMessage());
-      ex.printStackTrace(System.err);
+    WorkReportDivisionBoard board = findWorkReportDivisionBoard(id, iwc);
+    if (board == null)  {
+      return;
     }
     setValuesOfWorkReportDivisionBoard(valueContainer, board, workReportBusiness);
     board.store();

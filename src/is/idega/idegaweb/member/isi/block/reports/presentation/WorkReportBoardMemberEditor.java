@@ -132,9 +132,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         return action;
       }
     }
-      
-    // does the user want to edit a new entry?
-
+   // does the user want to edit a new entry?
     if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
       action = ACTION_SHOW_NEW_ENTRY;
     }  
