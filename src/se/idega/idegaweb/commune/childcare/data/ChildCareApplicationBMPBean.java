@@ -581,7 +581,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
 		return (Integer) idoFindOnePKByQuery(sql);
@@ -646,7 +646,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		if (caseCode != null) {
-			sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
 		}
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendOrderBy(CHOICE_NUMBER);
@@ -778,7 +778,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		if (caseStatus != null)
 			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		if (sortBy == SORT_DATE_OF_BIRTH) {
 			sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
 			sql.appendAnd().append("u.date_of_birth").appendGreaterThanOrEqualsSign().append(fromDate);
