@@ -19,6 +19,8 @@ import com.idega.block.finance.business.FinanceObject;
 import com.idega.block.finance.presentation.Finance;
 import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.presentation.BusyBar;
+import com.idega.io.UploadFile;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.SQLException;
@@ -44,7 +46,7 @@ public class PhoneFiles extends Finance {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   protected boolean isAdmin = false;
-  private String dir = "/phone/upload/";
+  private String dir = "phone"+File.separator+"upload";
 
   private String sessConPrm = "sess_con_status";
 
@@ -61,7 +63,7 @@ public class PhoneFiles extends Finance {
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
-    T.setWidth("100%");
+    T.setWidth(T.HUNDRED_PERCENT);
     if(isAdmin){
       //T.add(Edit.headerText(iwrb.getLocalizedString("phone_files","Phone Files"),3),1,1);
       T.add(makeLinkTable(  1),1,2);
@@ -70,10 +72,12 @@ public class PhoneFiles extends Finance {
         iAction = Integer.parseInt(iwc.getParameter(sAction ));
       }
       switch (iAction) {
-        case ACT1 : T.add(getReadTable(iwc),1,3);     break;
-        case ACT2 : T.add(getProcessTable(iwc),1,3);  break;
-        default: T.add(getFileTable(iwc),1,3);        break;
+        case ACT1 : T.add(getReadTable(iwc),1,3);    break;
+        case ACT2 : T.add(getProcessTable(iwc),1,3); T.add(getFileUploader(iwc),1,4); break;
+        case ACT3 : uploadFile(iwc);
+        default: T.add(getFileTable(iwc),1,3);T.add(getFileUploader(iwc),1,4);        break;
       }
+      
     }
     else
       T.add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -84,11 +88,11 @@ public class PhoneFiles extends Finance {
    protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
-    LinkTable.setWidth("100%");
+    LinkTable.setWidth(LinkTable.HUNDRED_PERCENT);
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
     LinkTable.setColor(Edit.colorDark);
-    LinkTable.setWidth(last,"100%");
+    LinkTable.setWidth(last,LinkTable.HUNDRED_PERCENT);
 
     return LinkTable;
   }
@@ -132,7 +136,7 @@ public class PhoneFiles extends Finance {
 
     String fileName = iwc.getParameter("filename");
     if(fileName != null){
-      String filePath = iwc.getApplication().getRealPath(dir+fileName);
+      String filePath = iwc.getApplication().getApplicationRealPath()+dir+File.separator+fileName;
       new PhoneFileHandler().processFile(filePath);
     }
     return getFileTable(iwc);
@@ -158,12 +162,14 @@ public class PhoneFiles extends Finance {
     T.add(Edit.formatText(iwrb.getLocalizedString("line_count","Count")),7,1);
     T.add(Edit.formatText(iwrb.getLocalizedString("phone_numbers","Numbers")),8,1);
     T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount")),9,1);
+	int row = 2;
     Map M = mapOfReadFilesByFileName() ;
     try{
-      File F = new File(iwc.getApplication().getRealPath("/phone/upload"));
+      File F = new File(iwc.getApplication().getApplicationRealPath()+dir);
       PhoneFilenameFilter filter = new PhoneFilenameFilter();
       File[] Fs = F.listFiles(filter);
-      if(Fs.length > 0){
+      
+      if(Fs!=null && Fs.length > 0){
         List allFiles = java.util.Arrays.asList(Fs);
         Vector all = new Vector(allFiles);
         Vector unreadFiles = new Vector(allFiles);
@@ -177,7 +183,7 @@ public class PhoneFiles extends Finance {
         String name;
         PhoneFileInfo info;
         java.text.NumberFormat NF = java.text.NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
-        int row = 2;
+        
         Link V;
 
 
@@ -186,8 +192,8 @@ public class PhoneFiles extends Finance {
         while(read.hasNext()){
           F = (File) read.next();
           name = F.getName();
-          V = new Link("V");
-          Window W = new Window("","/phone/upload/"+name);
+          V = new Link(iwb.getImage("view.gif"));
+          Window W = new Window("",dir+File.separator+name);
           W.setResizable(true);
           V.setWindow(W);
           T.add(V,1,row);
@@ -211,8 +217,8 @@ public class PhoneFiles extends Finance {
         while(unread.hasNext()){
           F = (File) unread.next();
           name = F.getName();
-          V = new Link("V");
-          Window W = new Window("","/phone/upload/"+name);
+          V = new Link(iwb.getImage("view.gif"));
+          Window W = new Window("",dir+File.separator+name);
           W.setResizable(true);
           V.setWindow(W);
           T.add(V,1,row);
@@ -230,7 +236,8 @@ public class PhoneFiles extends Finance {
         }
       }
       else{
-        T.add(iwrb.getLocalizedString("no_files","No files"));
+      	T.getContentTable().mergeCells(1,row,T.getContentTable().getColumns(),row);
+        T.add(Edit.formatText(iwrb.getLocalizedString("no_files","No files")),1,row);
       }
     }
     catch(Exception e){
@@ -265,7 +272,39 @@ public class PhoneFiles extends Finance {
     }
     return H;
   }
-
+  
+  private PresentationObject getFileUploader(IWContext iwc) {
+	Form form = new Form();
+	form.setMultiPart();
+	form.add(new HiddenInput(sAction, String.valueOf(ACT3)));
+	FileInput chooser = new FileInput();
+	SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("commit","commit"));
+  	Table T = new Table();
+  	T.add(new Text(iwrb.getLocalizedString("upload_file","Upload file")),1,1);
+  	T.add(chooser,2,1);
+  	T.add(new Text(iwrb.getLocalizedString("new_file_name","New file name")),3,1);
+  	T.add(new TextInput("new_file_name"),4,1);
+  	T.add(confirm,5,1);
+  	form.add(T);
+	return form;
+	}
+	
+	public void uploadFile(IWContext iwc){
+		UploadFile file = iwc.getUploadedFile();
+		String fileName  = file.getName(); 
+		String newParent = iwc.getApplication().getApplicationRealPath()+dir;
+		String newFileName =	newParent+File.separator+fileName; 
+		String changedFileName = iwc.getMultipartParameter("new_file_name");
+		if(changedFileName !=null && !"".equals(changedFileName)){
+			fileName = changedFileName;
+			debug("New phone file name was supplied");	
+		}
+			
+		if(file.renameTo(new File(newParent,fileName)))
+			debug("New phone file was uploaded");
+		
+	}
+	
 
   public void main(IWContext iwc){
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
