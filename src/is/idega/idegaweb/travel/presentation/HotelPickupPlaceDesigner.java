@@ -182,7 +182,9 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     table.setRowColor(row,super.GRAY);
     SubmitButton lSave = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction, this.parameterSaveHotelPickupPlaceInfo);
     table.mergeCells(1,row,3,row);
-    table.add(lSave,1,row);
+    if (super.isInPermissionGroup) {
+      table.add(lSave,1,row);
+    }
     table.setColumnAlignment(1,"center");
     table.setColumnAlignment(3,"center");
     table.setAlignment(1,row,"right");

@@ -162,6 +162,19 @@ public class SupplierManager {
   public static void invalidateSupplier(Supplier supplier) throws SQLException {
     supplier.setIsValid(false);
     supplier.update();
+    List users = getUsers(supplier);
+    if (users != null) {
+      for (int i = 0; i < users.size(); i++) {
+        LoginDBHandler.deleteUserLogin( ((User) users.get(i)).getID() );
+      }
+    }
+    PermissionGroup pGroup = getPermissionGroup(supplier);
+      pGroup.setName(pGroup.getName()+"_deleted");
+      pGroup.update();
+
+    SupplierStaffGroup sGroup = getSupplierStaffGroup(supplier);
+      sGroup.setName(sGroup.getName()+"_deleted");
+      sGroup.update();
   }
 
   public static void validateSupplier(Supplier supplier) throws SQLException {
@@ -176,7 +189,7 @@ public class SupplierManager {
     String description = SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION ;
 
     PermissionGroup pGroup = null;
-    List listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), name, PermissionGroup.getGroupDescriptionColumnName(), description  );
+    List listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), name, PermissionGroup.getGroupDescriptionColumnName(), description);
     if (listi != null) {
       if (listi.size() > 0) {
         pGroup = (PermissionGroup) listi.get(listi.size()-1);
@@ -200,12 +213,51 @@ public class SupplierManager {
     return sGroup;
   }
 
-  public static void addUser(Supplier supplier, User user) throws SQLException{
+  public static void addUser(Supplier supplier, User user, boolean addToPermissionGroup) throws SQLException{
     PermissionGroup pGroup = getPermissionGroup(supplier);
     SupplierStaffGroup sGroup = getSupplierStaffGroup(supplier);
-    pGroup.addUser(user);
+    if (addToPermissionGroup)
+      pGroup.addUser(user);
     sGroup.addUser(user);
   }
 
+  public static List getUsersInPermissionGroup(Supplier supplier) {
+    try {
+      PermissionGroup pGroup = getPermissionGroup(supplier);
+      List users = UserBusiness.getUsersInGroup(pGroup);
+      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      return users;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  public static List getUsersNotInPermissionGroup(Supplier supplier) {
+    try {
+      List allUsers = getUsers(supplier);
+      PermissionGroup pGroup = getPermissionGroup(supplier);
+      List permUsers = getUsersInPermissionGroup(supplier);
+
+      allUsers.removeAll(permUsers);
+
+      return allUsers;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  public static List getUsers(Supplier supplier) {
+    try {
+      SupplierStaffGroup sGroup = getSupplierStaffGroup(supplier);
+      List users = UserBusiness.getUsersInGroup(sGroup);
+      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      return users;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
+  }
 
 } // Class SupplierManager

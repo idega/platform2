@@ -46,8 +46,10 @@ public class InitialData extends TravelManager {
 
   private static String parameterSupplierId = "supplier_id";
 
-  private static String supplierView = "supplierView";
+  private static String dropdownView = "dropdownView";
+
   private static String parameterViewSupplierInfo = "supplierViewInfo";
+  private static String parameterViewResellerInfo = "resellerViewInfo";
   private static String parameterViewHotelPickup = "parameteViewHotelPickup";
   private static String parameterViewPriceCategories = "parameteViewPriceCategories";
   private static String parameterCreditCardRefund = "parameterCreditcardRefund";
@@ -98,21 +100,29 @@ public class InitialData extends TravelManager {
       reseller = super.getReseller();
   }
 
-  private Form getSupplierDropdownForm(IWContext iwc) {
+  private Form getDropdownForm(IWContext iwc) {
     Form form = new Form();
     Table table = new Table(1,1);
       table.setWidth("90%");
       form.add(table);
 
-      DropdownMenu menu = new DropdownMenu(this.supplierView);
+      DropdownMenu menu = new DropdownMenu(this.dropdownView);
+
+    if (supplier != null) {
         menu.addMenuElement(this.parameterViewSupplierInfo, iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
         menu.addMenuElement(this.parameterViewHotelPickup, iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
         menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.refunds","Refunds"));
         menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
-      menu.setToSubmit();
+    }else if (reseller != null) {
+        menu.addMenuElement(this.parameterViewResellerInfo, iwrb.getLocalizedString("travel.reseller_information","Reseller information"));
+        menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
+    }else {
+        menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
+    }
+    menu.setToSubmit();
 
-      String selected = iwc.getParameter(this.supplierView);
+      String selected = iwc.getParameter(this.dropdownView);
       if (selected != null) {
         menu.setSelectedElement(selected);
       }
@@ -127,10 +137,10 @@ public class InitialData extends TravelManager {
       String action = iwc.getParameter(this.sAction);
         if (action == null) action = "";
 
+        add(getDropdownForm(iwc));
+        String selected = iwc.getParameter(this.dropdownView);
         if (supplier != null) {
 
-            add(getSupplierDropdownForm(iwc));
-            String selected = iwc.getParameter(this.supplierView);
             if (selected == null)  selected = this.parameterViewSupplierInfo;
             Form form = null;
             if (selected.equals(this.parameterViewSupplierInfo)) {
@@ -163,6 +173,7 @@ public class InitialData extends TravelManager {
             }else if (selected.equals(this.parameterUsers)) {
               try {
                 Users users = new Users(iwc);
+                users.maintainParameter(this.dropdownView, selected);
                 form = users.handleInsert(iwc);
               }catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -172,18 +183,34 @@ public class InitialData extends TravelManager {
             }
 
             if (form != null) {
-            form.maintainParameter(this.supplierView);
+            form.maintainParameter(this.dropdownView);
             add(form);
             }
         }else if (reseller != null) {
-          System.err.println(action +" = "+ this.parameterUpdateReseller);
+          if (selected == null)  selected = this.parameterViewResellerInfo;
+          Form form = new Form();
+          if (selected.equals(this.parameterViewResellerInfo)) {
+
             if (action.equals(this.parameterUpdateReseller)) {
               String sResellerId = iwc.getParameter(this.parameterResellerId);
               saveReseller(iwc,Integer.parseInt(sResellerId));
             }
-            Form form = new Form();
               form = getResellerCreation(reseller.getID());
-            add(form);
+          }else if (selected.equals(this.parameterUsers)) {
+            try {
+              Users users = new Users(iwc);
+              form = users.handleInsert(iwc);
+            }catch (Exception e) {
+              e.printStackTrace(System.err);
+              form = new Form();
+            }
+          }else {
+            form = new Form();
+          }
+          if (form != null) {
+          form.maintainParameter(this.dropdownView);
+          add(form);
+          }
         }else {
             if (action.equals("")) {
               Table extra = new Table();
@@ -538,8 +565,10 @@ public class InitialData extends TravelManager {
         table.setAlignment(1,row,"left");
         table.add(lBack,1,row);
       }
-      table.setAlignment(2,row,"right");
-      table.add(submit,2,row);
+      if (isInPermissionGroup || isSuperAdmin) {
+        table.setAlignment(2,row,"right");
+        table.add(submit,2,row);
+      }
       table.setRowColor(row,super.GRAY);
 
 
@@ -893,7 +922,9 @@ public class InitialData extends TravelManager {
       table.setAlignment(1,row,"left");
       table.add(back,1,row);
       table.setAlignment(2,row,"right");
-      table.add(submit,2,row);
+      if (super.isInPermissionGroup) {
+        table.add(submit,2,row);
+      }
       table.setRowColor(row,super.GRAY);
 
 

@@ -7,7 +7,9 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.util.*;
+import java.util.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.service.tour.business.*;
@@ -135,6 +137,8 @@ public class TourBookingForm extends TravelManager {
               city.setSize(textInputSizeLg);
           TextInput country = new TextInput("country");
               country.setSize(textInputSizeMd);
+
+          DropdownMenu usersDrop = null;
 
 
           ++row;
@@ -302,6 +306,23 @@ public class TourBookingForm extends TravelManager {
             table.add(tReferenceNumber,2,row);
             table.add(tiReferenceNumber,3,row);
           }
+
+          if (super.user != null) {
+            ++row;
+            List users = null;
+            if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
+            if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
+            if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+            usersDrop = new DropdownMenu(users, "ic_user");
+            usersDrop.setSelectedElement(Integer.toString(super.userId));
+
+            Text tUser = (Text) theText.clone();
+              tUser.setFontColor(WHITE);
+              tUser.setText(iwrb.getLocalizedString("travel.user","User"));
+            table.add(tUser, 1, row);
+            table.add(usersDrop, 2 ,row);
+          }
+
           //else if ( (_reseller == null) && (supplier == null) ) {
 
           // Virkar, vantar HTTPS
@@ -363,7 +384,13 @@ public class TourBookingForm extends TravelManager {
               }
             }
 
+            if (usersDrop != null) {
+              usersDrop.setSelectedElement(Integer.toString(_booking.getUserId()));
+            }
+
           }
+
+
 
           ++row;
           if (_booking != null) {
@@ -778,6 +805,27 @@ public class TourBookingForm extends TravelManager {
             table.setAlignment(3,row,"right");
             table.setAlignment(4,row,"right");
 
+
+            if (super.user != null) {
+              ++row;
+              table.mergeCells(1,row,6,row);
+              table.add(hr,1,row);
+
+              ++row;
+              List users = null;
+              if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
+              if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
+              if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+              DropdownMenu usersDrop = new DropdownMenu(users, "ic_user");
+              usersDrop.setSelectedElement(Integer.toString(super.userId));
+
+              Text tUser = (Text) theBoldText.clone();
+                tUser.setFontColor(WHITE);
+                tUser.setText(iwrb.getLocalizedString("travel.user","User"));
+              table.setAlignment(1,row, "right");
+              table.add(tUser, 1, row);
+              table.add(usersDrop, 2 ,row);
+            }
             ++row;
             table.mergeCells(1,row,6,row);
             table.add(hr,1,row);
@@ -953,6 +1001,9 @@ public class TourBookingForm extends TravelManager {
       String roomNumber = iwc.getParameter("room_number");
       String referenceNumber = iwc.getParameter("reference_number");
 
+      String sUserId = iwc.getParameter("ic_user");
+      if (sUserId == null) sUserId = "-1";
+
       String ccNumber = iwc.getParameter(this.parameterCCNumber);
       String ccMonth = iwc.getParameter(this.parameterCCMonth);
       String ccYear = iwc.getParameter(this.parameterCCYear);
@@ -1026,9 +1077,9 @@ public class TourBookingForm extends TravelManager {
         }
 
         if (iBookingId == -1) {
-          lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, bookingType, areaCode, paymentType);
+          lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId);
         }else {
-          lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType);
+          lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId);
         }
 
         /*

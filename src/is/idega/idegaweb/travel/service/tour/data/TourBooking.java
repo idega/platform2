@@ -206,20 +206,19 @@ public class TourBooking extends GenericEntity implements Booking{
   public String getReferenceNumber() {
     return _booking.getReferenceNumber();
   }
-/*
-  public void setEstimatedSeatsUsed(int seats) {
-    _booking.setEstimatedSeatsUsed(seats);
+  public int getUserId() {
+    return _booking.getUserId();
   }
 
-  public int getEstimatedSeatsUsed() {
-    return _booking.getEstimatedSeatsUsed();
+  public void setUserId(int userId) {
+    _booking.setUserId(userId);
   }
 
-  public void setDiscountTypeId(int discountTypeId) {
-    _booking.setDiscountTypeId(discountTypeId);
+  public int getOwnerId() {
+    return _booking.getOwnerId();
   }
-  public int getDiscountTypeId() {
-    return _booking.getDiscountTypeId();
+
+  public void setOwnerId(int ownerId) {
+    _booking.setOwnerId(ownerId);
   }
-*/
 }

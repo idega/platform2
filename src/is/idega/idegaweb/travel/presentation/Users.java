@@ -11,6 +11,9 @@ import com.idega.core.accesscontrol.business.*;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.*;
 import java.sql.SQLException;
+import java.util.*;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.accesscontrol.data.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -29,13 +32,20 @@ public class Users extends TravelManager {
   private IWBundle _bundle;
 
   private String sAction = "usersAction";
+  private String parameterNewUser = "usersNewUser";
   private String parameterSaveUser = "usersSaveUser";
+  private String parameterDeleteUser = "usersDeleteUsers";
+  private String parameterUpdateUser = "usersUpdateUsers";
+  private String paramaterUserID = "usersUserID";
 
   private String parameterName = "usersName";
   private String parameterLogin = "usersLogin";
   private String parameterPasswordOne = "usersPasswordOne";
   private String parameterPasswordTwo = "usersPasswordTwo";
+  private String parameterAdministrator = "usersAdministrator";
 
+  private List parameterNames = new Vector();
+  private List parameterValues= new Vector();
 
   public Users(IWContext iwc) throws Exception{
     main(iwc);
@@ -65,26 +75,157 @@ public class Users extends TravelManager {
   }
 
 
-  public Form handleInsert(IWContext iwc) {
+  public Form handleInsert(IWContext iwc) throws SQLException{
     String action = iwc.getParameter(this.sAction);
     if (action == null) {
+      return getUserList(iwc);
+    }else if (action.equals(this.parameterNewUser)) {
       return getUserCreation(iwc);
     }else if (action.equals(this.parameterSaveUser)) {
       return saveUser(iwc);
+    }else if (action.equals(this.parameterUpdateUser)) {
+      return updateUser(iwc);
+    }else if (action.equals(this.parameterDeleteUser)) {
+      return deleteUser(iwc);
     }else {
       return null;
     }
 
   }
 
-  private Text getText(String content) {
+  private Text getTextWhite(String content) {
     Text text = (Text) super.theText.clone();
       text.setText(content);
     return text;
   }
 
-  private Form getUserCreation(IWContext iwc) {
+  private Text getText(String content) {
+    Text text = getTextWhite(content);
+      text.setFontColor(super.BLACK);
+    return text;
+  }
+
+  private Form getUserList(IWContext iwc) {
     Form form = new Form();
+    Table table = new Table();
+      table.setColor(super.WHITE);
+      table.setCellpadding(1);
+      table.setCellspacing(1);
+      table.setWidth("50%");
+
+    List users = null;
+    if (_reseller != null) users = ResellerManager.getUsersInPermissionGroup(_reseller);
+    if (_supplier != null) users = SupplierManager.getUsersInPermissionGroup(_supplier);
+    if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+
+
+    User user;
+    Link update;
+    Link delete;
+    int row = 1;
+
+    Text tUsers = getTextWhite(_iwrb.getLocalizedString("travel.users","Users"));
+      tUsers.setBold(true);
+    table.add(tUsers,1,row);
+    table.add(getTextWhite(""), 2, row);
+    table.setRowColor(row, super.backgroundColor );
+
+    ++row;
+    Text admins = getText(_iwrb.getLocalizedString("travel.administrators","Administrators"));
+      admins.setBold(true);
+    table.add(admins, 1, row);
+    table.setRowColor(row, super.GRAY);
+
+    for (int i = 0; i < users.size(); i++) {
+      ++row;
+      table.setRowColor(row, super.GRAY);
+      user = (User) users.get(i);
+
+      table.add(getText(user.getName()), 1, row);
+      if (isInPermissionGroup) {
+        update = new Link(_iwrb.getImage("buttons/update.gif"));
+          update.addParameter(this.sAction, this.parameterUpdateUser);
+          update.addParameter(this.paramaterUserID, user.getID());
+
+        delete = new Link(_iwrb.getImage("buttons/delete.gif"));
+          delete.addParameter(this.sAction, this.parameterDeleteUser);
+          delete.addParameter(this.paramaterUserID, user.getID());
+
+        for (int j = 0; j < this.parameterNames.size(); j++) {
+          update.addParameter((String) parameterNames.get(j), (String) parameterValues.get(j));
+          delete.addParameter((String) parameterNames.get(j), (String) parameterValues.get(j));
+        }
+
+
+        table.add(update, 2, row);
+        table.add(getText(Text.NON_BREAKING_SPACE), 2, row);
+        table.add(delete, 2, row);
+      }
+      table.setAlignment(1, row, "left");
+      table.setAlignment(2, row, "right");
+    }
+
+    if (_reseller != null) users = ResellerManager.getUsersNotInPermissionGroup(_reseller);
+    if (_supplier != null) users = SupplierManager.getUsersNotInPermissionGroup(_supplier);
+    if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+
+    ++row;
+    Text staff = getText(_iwrb.getLocalizedString("travel.staff","Staff"));
+      staff.setBold(true);
+    table.add(staff, 1, row);
+    table.setRowColor(row, super.GRAY);
+
+    for (int i = 0; i < users.size(); i++) {
+      ++row;
+      table.setRowColor(row, super.GRAY);
+      user = (User) users.get(i);
+
+      table.add(getText(user.getName()), 1, row);
+      if (isInPermissionGroup) {
+        update = new Link(_iwrb.getImage("buttons/update.gif"));
+          update.addParameter(this.sAction, this.parameterUpdateUser);
+          update.addParameter(this.paramaterUserID, user.getID());
+
+        delete = new Link(_iwrb.getImage("buttons/delete.gif"));
+          delete.addParameter(this.sAction, this.parameterDeleteUser);
+          delete.addParameter(this.paramaterUserID, user.getID());
+
+        for (int j = 0; j < this.parameterNames.size(); j++) {
+          update.addParameter((String) parameterNames.get(j), (String) parameterValues.get(j));
+          delete.addParameter((String) parameterNames.get(j), (String) parameterValues.get(j));
+        }
+
+
+        table.add(update, 2, row);
+        table.add(getText(Text.NON_BREAKING_SPACE), 2, row);
+        table.add(delete, 2, row);
+      }
+      table.setAlignment(1, row, "left");
+      table.setAlignment(2, row, "right");
+    }
+
+
+
+    if (isInPermissionGroup) {
+      ++row;
+      table.setRowColor(row, super.GRAY);
+      table.add(new SubmitButton(_iwrb.getImage("buttons/new.gif"),this.sAction, this.parameterNewUser),1,row);
+    }
+
+      form.add(table);
+    return form;
+  }
+
+  private Form getUserCreation(IWContext iwc) throws SQLException{
+    return getUserCreation(iwc, -1);
+  }
+  private Form getUserCreation(IWContext iwc, int userId) throws SQLException{
+    Form form = new Form();
+
+    User user = null;
+    if (userId != -1) {
+      user = new User(userId);
+    }
 
     Table table = new Table();
       form.add(table);
@@ -96,15 +237,37 @@ public class Users extends TravelManager {
     TextInput iLogin = new TextInput(this.parameterLogin);
     PasswordInput iPassOne = new PasswordInput(this.parameterPasswordOne);
     PasswordInput iPassTwo = new PasswordInput(this.parameterPasswordTwo);
+    CheckBox iAdmin = new CheckBox(this.parameterAdministrator);
+      iAdmin.setChecked(false);
+
+    if (user != null) {
+      iName.setContent(user.getName());
+      LoginTable lt = LoginDBHandler.getUserLogin(userId);
+      if (lt != null) {
+        iLogin.setContent(lt.getUserLogin());
+      }else {
+        iLogin.setContent("error");
+      }
+      iAdmin.setChecked(super.isInPermissionGroup(iwc, user));
+      form.addParameter(this.paramaterUserID, userId);
+    }
+
 
     Text tName = getText(_iwrb.getLocalizedString("travel.name","Name"));
     Text tLogin = getText(_iwrb.getLocalizedString("travel.user_name","User name"));
     Text tPassword = getText(_iwrb.getLocalizedString("travel.password","Password"));
+    Text tAdmin = getText(_iwrb.getLocalizedString("travel.administrator","Administrator"));
 
     SubmitButton btnSave = new SubmitButton(_iwrb.getImage("buttons/save.gif"), this.sAction, this.parameterSaveUser);
 //    ResetButton clrButton = new ResetButton(_iwrb.getImage("buttons/delete.gif"));
 
     int row = 1;
+    table.add(this.getTextWhite(_iwrb.getLocalizedString("travel.new_user","New user")),1,row);
+    table.setAlignment(1, row, "center");
+    table.mergeCells(1,row,2,row);
+    table.setRowColor(row, super.backgroundColor);
+
+    ++row;
     table.add(tName, 1, row);
     table.add(iName, 2, row);
     table.setRowColor(row, super.GRAY);
@@ -119,13 +282,19 @@ public class Users extends TravelManager {
     table.setVerticalAlignment(1, row, "top");
     table.add(tPassword, 1, row);
     table.add(iPassOne, 2, row);
-//    table.add(Text.BREAK, 2, row);
+    table.add("<br>", 2, row);
     table.add(iPassTwo, 2, row);
+
+    ++row;
+    table.add(tAdmin,1,row);
+    table.add(iAdmin,2,row);
+    table.setRowColor(row, super.GRAY);
 
     ++row;
     table.setRowColor(row, super.GRAY);
 //    table.add(clrButton, 1, row);
     table.add(btnSave, 2, row);
+    table.setAlignment(2, row, "right");
 
     return form;
   }
@@ -135,6 +304,9 @@ public class Users extends TravelManager {
     String login = iwc.getParameter(this.parameterLogin);
     String passOne = iwc.getParameter(this.parameterPasswordOne);
     String  passTwo = iwc.getParameter(this.parameterPasswordTwo);
+    String admin = iwc.getParameter(this.parameterAdministrator);
+
+    String userId = iwc.getParameter(this.paramaterUserID);
 
     boolean inUse = true;
     boolean passwordsOK = false;
@@ -146,19 +318,46 @@ public class Users extends TravelManager {
     if (login != null) {
       if (!login.equals(""))
         inUse = LoginDBHandler.isLoginInUse(login);
+        if (userId != null) {
+          LoginTable lt = LoginDBHandler.getUserLogin(Integer.parseInt(userId));
+          if (lt != null) {
+            if (lt.getUserLogin().equals(login)) {
+              inUse = false;
+            }
+          }
+        }
     }
 
     if (!inUse && passwordsOK) {
       try {
         UserBusiness ub = new UserBusiness();
-        User user = ub.insertUser(name, "", "", name, "staff", null, null, null);
-        LoginDBHandler.createLogin(user.getID(), login, passOne);
+        User user = null;
+
+        boolean isAdmin = false;
+        if (admin != null) isAdmin = true;
+
+        if (userId == null) {
+          user = ub.insertUser(name, "", "", name, "staff", null, null, null);
+          LoginDBHandler.createLogin(user.getID(), login, passOne);
+        }else {
+          user = new User(Integer.parseInt(userId));
+          ub.updateUser(user.getID(), name, "", "", name, "staff", null, null, null);
+          LoginTable lt = LoginDBHandler.getUserLogin(Integer.parseInt(userId));
+          if (lt == null) {
+            LoginDBHandler.createLogin(user.getID(), login, passOne);
+          }else {
+            LoginDBHandler.updateLogin(user.getID(), login, passOne);
+          }
+          removeUserFromAllGroups(user);
+        }
+
+
 
         if (_reseller != null) {
-          ResellerManager.addUser(_reseller, user);
+          ResellerManager.addUser(_reseller, user, isAdmin);
         }
         if (_supplier != null) {
-          SupplierManager.addUser(_supplier, user);
+          SupplierManager.addUser(_supplier, user, isAdmin);
         }
 
         return getSuccessForm(iwc);
@@ -199,15 +398,47 @@ public class Users extends TravelManager {
   }
 
   private Form getSuccessForm(IWContext iwc) {
-    Form form = new Form();
-    Table table = new Table();
-      form.add(table);
+    return getUserList(iwc);
+  }
 
-    int row = 1;
-    table.add(getText(_iwrb.getLocalizedString("travel.user_created","User created")), 1, row);
+  private Form updateUser(IWContext iwc) throws SQLException{
+    try {
+      String userId = iwc.getParameter(this.paramaterUserID);
+      return getUserCreation(iwc, Integer.parseInt(userId));
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+      return getUserCreation(iwc);
+    }
+  }
 
+  private Form deleteUser(IWContext iwc) {
+    String userId = iwc.getParameter(this.paramaterUserID);
+    try {
+      User user = new User(Integer.parseInt(userId));
+      com.idega.core.accesscontrol.business.LoginDBHandler.deleteUserLogin(user.getID());
+      removeUserFromAllGroups(user);
+      add(getText(_iwrb.getLocalizedString("travel.operation_successful","Operation successful")));
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
+    }
+    return getUserList(iwc);
+  }
 
-    return form;
+  public static void removeUserFromAllGroups(User user) throws SQLException{
+    List groups = com.idega.core.user.business.UserBusiness.getUserGroups(user);
+    if (groups != null) {
+      GenericGroup group;
+      for (int i = 0; i < groups.size(); i++) {
+        group = (GenericGroup) groups.get(i);
+        group.removeUser(user);
+      }
+    }
+  }
+
+  public void maintainParameter(String parameterName, String parameterValue) {
+    parameterNames.add(parameterName);
+    parameterValues.add(parameterValue);
   }
 
 }

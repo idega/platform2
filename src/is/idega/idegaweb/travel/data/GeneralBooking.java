@@ -45,8 +45,9 @@ public class GeneralBooking extends GenericEntity implements Booking{
     addAttribute(getPaymentTypeIdColumnName(), "Gerð greiðslu", true, true, Integer.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
     addAttribute(getReferenceNumberColumnName(), "reference number", true, true, String.class);
-//    addAttribute(getEstimatedSeatsUsedColumnName(), "estimated seats used", true, true, Integer.class);
-//   addAttribute(getDiscountTypeIdColumnName(), "discount type", true, true, Integer.class);
+    addAttribute(getOwnerIdColumnName(), "owner id", true, true, Integer.class);
+    addAttribute(getUserIdColumnName(), "user id", true, true, Integer.class);
+
     this.addManyToManyRelationShip(Reseller.class);
   }
 
@@ -198,23 +199,23 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public String getReferenceNumber() {
     return getStringColumnValue(getReferenceNumberColumnName());
   }
-/*
-  public void setEstimatedSeatsUsed(int seats) {
-    setColumn(getEstimatedSeatsUsedColumnName(), seats);
+
+  public int getUserId() {
+    return getIntColumnValue(getUserIdColumnName());
   }
 
-  public int getEstimatedSeatsUsed() {
-    return getIntColumnValue(getEstimatedSeatsUsedColumnName());
+  public void setUserId(int userId) {
+    setColumn(getUserIdColumnName(), userId);
   }
 
-  public void setDiscountTypeId(int discountTypeId) {
-    setColumn(getDiscountTypeIdColumnName(), discountTypeId);
+  public int getOwnerId() {
+    return getIntColumnValue(getOwnerIdColumnName());
   }
 
-  public int getDiscountTypeId() {
-    return getIntColumnValue(getDiscountTypeIdColumnName());
+  public void setOwnerId(int ownerId) {
+    setColumn(getOwnerIdColumnName(), ownerId);
   }
-*/
+
   public void insert() throws SQLException {
     CypherText cyph = new CypherText();
     String key = cyph.getKey(16);
@@ -239,8 +240,8 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public static String getPaymentTypeIdColumnName() {return "PAYMENT_TYPE";}
   public static String getIsValidColumnName() {return "IS_VALID";}
   public static String getReferenceNumberColumnName() {return "REFERENCE_NUMBER";}
-//  public static String getEstimatedSeatsUsedColumnName() {return "ESTIMATED_SEATS_USED";}
-//  public static String getDiscountTypeIdColumnName() {return "DISCOUNT_TYPE_ID";}
+  public static String getOwnerIdColumnName() {return "OWNER_ID";}
+  public static String getUserIdColumnName() {return "IC_USER_ID";}
 
 
 }

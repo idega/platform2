@@ -545,11 +545,52 @@ public class ResellerManager {
     return sGroup;
   }
 
-  public static void addUser(Reseller reseller, User user) throws SQLException{
+  public static void addUser(Reseller reseller, User user, boolean addToPermissionGroup) throws SQLException{
     PermissionGroup pGroup = getPermissionGroup(reseller);
     ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
-    pGroup.addUser(user);
+    if (addToPermissionGroup)
+      pGroup.addUser(user);
     sGroup.addUser(user);
+  }
+
+
+  public static List getUsersInPermissionGroup(Reseller reseller) {
+    try {
+      PermissionGroup pGroup = getPermissionGroup(reseller);
+      List users = UserBusiness.getUsersInGroup(pGroup);
+      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      return users;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  public static List getUsersNotInPermissionGroup(Reseller reseller) {
+    try {
+      List allUsers = getUsers(reseller);
+      PermissionGroup pGroup = getPermissionGroup(reseller);
+      List permUsers = getUsersInPermissionGroup(reseller);
+
+      allUsers.removeAll(permUsers);
+
+      return allUsers;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  public static List getUsers(Reseller reseller) {
+    try {
+      ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
+      List users = UserBusiness.getUsersInGroup(sGroup);
+      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+      return users;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
   }
 
 

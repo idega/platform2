@@ -203,6 +203,13 @@ public class TourDesigner extends TravelManager {
       Text imgText = (Text) theBoldText.clone();
           imgText.setText(iwrb.getLocalizedString("travel.image","Image"));
 
+      table.add(descText,1,row);
+      table.add(description, 2,row);
+      table.setVerticalAlignment(1,row,"top");
+      table.setVerticalAlignment(2,row,"top");
+
+      ++row;
+
       ImageInserter imageInserter = new ImageInserter("design_image_id");
       if (service != null) {
           Product product = service.getProduct();
@@ -406,7 +413,7 @@ public class TourDesigner extends TravelManager {
           table.add(par2);
 
           name.setContent(service.getName());
-//          description.setContent(service.getDescription());
+          description.setContent(service.getDescription());
           active_from.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
           active_to.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
           active_yearly.setSelected(timeframe.getIfYearly());

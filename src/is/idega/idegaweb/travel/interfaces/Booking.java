@@ -26,9 +26,6 @@ public interface Booking {
   public static final int PAYMENT_TYPE_ID_CASH = 2;
   public static final int PAYMENT_TYPE_ID_VOUCHER = 3;
 
-//  public static final int DISCOUNT_TYPE_ID_AMOUNT = 0;
-//  public static final int DISCOUNT_TYPE_ID_PERCENT = 1;
-
   public String getName();
   public void setName(String name);
 
@@ -77,13 +74,13 @@ public interface Booking {
 
   public void setReferenceNumber(String number);
   public String getReferenceNumber();
-/*
-  public void setEstimatedSeatsUsed(int seats);
-  public int getEstimatedSeatsUsed();
 
-  public void setDiscountTypeId(int discountTypeId);
-  public int getDiscountTypeId();
-*/
+  public int getUserId();
+  public void setUserId(int userId);
+
+  public int getOwnerId();
+  public void setOwnerId(int ownerId);
+
   public void insert() throws SQLException;
   public void update() throws SQLException;
   public void delete() throws SQLException;

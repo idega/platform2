@@ -9,9 +9,14 @@ import com.idega.idegaweb.IWResourceBundle;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.presentation.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import com.idega.block.login.presentation.Login;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.data.*;
+import com.idega.block.login.business.*;
+import com.idega.core.user.data.User;
+import java.util.List;
 
 public class TravelManager extends Block {
 
@@ -22,6 +27,8 @@ public class TravelManager extends Block {
 
     private Supplier supplier;
     private Reseller reseller;
+    public User user;
+    public int userId = -1;
 
     private boolean oldLogin = false;
 
@@ -60,6 +67,9 @@ public class TravelManager extends Block {
     protected static String parameterInitialData = "lInitialData";
     protected static String parameterUpdatePassword = "lUpdatePassword";
     protected static String parameterHome = "lHome";
+
+    protected boolean isInPermissionGroup = false;
+    protected boolean isSuperAdmin = false;
 
     public static String theTextStyle = "font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";";
     public static String theBoldTextStyle = "font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;";
@@ -220,6 +230,7 @@ public class TravelManager extends Block {
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
 
+            if (this.isInPermissionGroup)
             table.add(lDesign,1,1);
             table.add(lMyTrip,1,1);
             table.add(lOverview,1,1);
@@ -276,6 +287,13 @@ public class TravelManager extends Block {
     public void initializer(IWContext iwc) {
         bundle = getBundle(iwc);
         iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
+        user = LoginBusiness.getUser(iwc);
+        if (user != null) {
+          userId = user.getID();
+          isSuperAdmin = iwc.isSuperAdmin();
+        }
+
+
 
         try {
             int supplierId = TravelStockroomBusiness.getUserSupplierId(iwc);
@@ -320,6 +338,8 @@ public class TravelManager extends Block {
         //theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         //theSmallBoldText.setBold();
         theSmallBoldText.setFontColor(this.textColor);
+
+        this.isInPermissionGroup = this.isInPermissionGroup(iwc);
     }
 
     public void add(PresentationObject mo) {
@@ -355,4 +375,35 @@ public class TravelManager extends Block {
       return _iwrb.getImage("images/picture.gif");
     }
 
+
+    protected boolean isInPermissionGroup(IWContext iwc) {
+      return isInPermissionGroup(iwc, user);
+    }
+
+    protected boolean isInPermissionGroup(IWContext iwc, User user) {
+      if (user != null) {
+        PermissionGroup pGroup = null;
+        try {
+          if (reseller != null) {
+            pGroup = ResellerManager.getPermissionGroup(reseller);
+          }
+          else if (supplier != null) {
+            pGroup = SupplierManager.getPermissionGroup(supplier);
+          }
+
+          if (pGroup != null) {
+            com.idega.core.business.UserGroupBusiness ugb = new com.idega.core.business.UserGroupBusiness();
+            List allUsers = ugb.getUsersContained(pGroup);
+            if (allUsers != null) {
+              return allUsers.contains(user);
+            }
+          }
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }
+
+      }
+      return false;
+
+    }
 }

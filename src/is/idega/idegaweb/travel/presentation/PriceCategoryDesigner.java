@@ -162,7 +162,9 @@ public class PriceCategoryDesigner extends TravelManager {
       table.setColumnAlignment(6,"center");
       table.setWidth(1,row-1,"15");
       table.setAlignment(1,row,"right");
-      table.add(lSave,1,row);
+      if (super.isInPermissionGroup) {
+        table.add(lSave,1,row);
+      }
 
 
       return form;
