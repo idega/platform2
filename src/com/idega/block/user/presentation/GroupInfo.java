@@ -19,6 +19,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -93,7 +94,7 @@ public class GroupInfo extends Block {
 			try {
 				Address addr = _biz.getGroupAddress(iwc, group);
 				if(addr!=null) {
-					address = addr.getName();
+					address = addr.getStreetAddress() + ", " + addr.getPostalCode().getPostalCode() + " " + addr.getCity();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -127,12 +128,12 @@ public class GroupInfo extends Block {
 			}
 		}
 		if(_showEmails) {
-			Table emails = getEmailTable(group);
-			if(_showEmptyFields || (emails!=null && emails.getRows()>0)) {
+			PresentationObject emails = getEmailLinkList(group);
+			if(_showEmptyFields || (emails!=null)) {
 				Text emailsLabel = new Text(_iwrb.getLocalizedString("email", "Email: "));
 				emailsLabel.setStyle(_textLabelStyle);
 				table.add(emailsLabel, 2, row);
-				if(emails.getRows()>0) {
+				if(emails!=null) {
 					table.add(emails, 3, row++);
 				}
 			}
@@ -190,29 +191,38 @@ public class GroupInfo extends Block {
 	}
 	
 	/**
-	 * Gets a table containing user's emails
+	 * Gets a comma separate list of user's emails, as links
 	 * @param user The user
-	 * @return The user's emails in a Table
+	 * @return The user's emails in comma separated list of links
 	 */
-	private Table getEmailTable(Group group) {
-		Table table = new Table();
-		int row = 1;
+	private PresentationObject getEmailLinkList(Group group) {
+		PresentationObjectContainer container = new PresentationObjectContainer();
+		//int row = 1;
 		try {
-			Iterator addressIter = group.getEmails().iterator();
-			while(addressIter.hasNext()) {
-				String address = (String) addressIter.next();
-				if(address==null || address.length()==0) {
-					continue;
+			// @TODO use email list from business bean
+			Iterator emailIter = group.getEmails().iterator();
+			if(emailIter==null || !emailIter.hasNext()) {
+				// no emails for group
+				System.out.println("No emails for group " + group.getName());
+				return null;
+			}
+			boolean isFirst = true;
+			while(emailIter.hasNext()) {
+				if(isFirst) {
+					isFirst = false;
+				} else {
+					container.add(", ");
 				}
+				String address = (String) emailIter.next();
 				Link link = new Link(address);
 				link.setURL("mailto:" + address);
 				link.setSessionId(false);
-				table.add(link, 1, row++);
+				container.add(link);
 			}
 		} catch(Exception e) {
-			// don't give a pair of donkeys kiddneys, most likely means there are no emails for user
+			System.out.println("Exception getting emails for group " + group.getName() + ", no emails shown");
 		}
-		return table;
+		return container;
 	}
 	
 	public String getBundleIdentifier() {
