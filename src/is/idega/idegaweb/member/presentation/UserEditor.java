@@ -1132,11 +1132,13 @@ public class UserEditor extends Block {
 					|| isNewValue(iwc, prm_primary_group_id)) {
 					String pid = null, first = null, middle = null, last = null;
 					Integer groupID = null;
+					boolean legalState = false;
 					if (isNewValue(iwc, prm_personal_id) ){
 						if(isValidPersonalID(iwc.getParameter(prm_personal_id))) {
 							pid = iwc.getParameter(prm_personal_id);
 						}
 						else if(warnIfPersonalIDIsIllegal){
+							legalState = false;
 							String mainPostalExists =
 							iwrb.getLocalizedString(
 									"mbe.warning.personal_id_illegal",
@@ -1158,7 +1160,8 @@ public class UserEditor extends Block {
 						if (groupID.intValue() <= 0)
 							groupID = null;
 					}
-					userService.updateUser(user, first, middle, last, null, null, null, pid, null, groupID);
+					if(legalState)
+						userService.updateUser(user, first, middle, last, null, null, null, pid, null, groupID);
 				}
 			}
 			catch (EJBException e3) {
