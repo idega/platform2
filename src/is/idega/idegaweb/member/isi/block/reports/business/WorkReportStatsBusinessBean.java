@@ -112,6 +112,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_ADDRESS = "WorkReportStatsBusiness.address";
 	private static final String LOCALIZED_POSTALCODE = "WorkReportStatsBusiness.postalcode";
 	private static final String LOCALIZED_EMAIL = "WorkReportStatsBusiness.email";
+	private static final String LOCALIZED_MEMBERS = "WorkReportStatsBusiness.members";
+	private static final String LOCALIZED_PLAYERS = "WorkReportStatsBusiness.players";
 	
 	
 	// names of reportable fields
@@ -177,6 +179,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_ADDRESS = "address";
 	private static final String FIELD_NAME_POSTALCODE = "postalcode";
 	private static final String FIELD_NAME_EMAIL = "email";
+	private static final String FIELD_NAME_MEMBERS = "members";
+	private static final String FIELD_NAME_PLAYERS = "palyers";
+	
 	
 	/**
 	 *  
@@ -3992,12 +3997,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 		
-		ReportableField memberCount = new ReportableField(FIELD_NAME_ALL_MEMBERS_AGES, Integer.class);
-		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		ReportableField memberCount = new ReportableField(FIELD_NAME_MEMBERS, Integer.class);
+		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS, "all"), currentLocale);
 		reportCollection.addField(memberCount);
 
-		ReportableField playerCount = new ReportableField(FIELD_NAME_ALL_AGES, Integer.class);
-		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		ReportableField playerCount = new ReportableField(FIELD_NAME_PLAYERS, Integer.class);
+		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS, "all"), currentLocale);
 		reportCollection.addField(playerCount);
 		
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
@@ -4099,8 +4104,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			age2 =age1;
 		}
 		
-		System.out.println("showClubs=" + showClubs + ", gender=" + gender + ", age1=" + age1 + ", age2=" + age2);
-		
 		boolean filterByAge = (age1==0 && age2==123);
 		
 		//initialize stuff
@@ -4127,18 +4130,18 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 
-		ReportableField memberCount = new ReportableField(FIELD_NAME_ALL_MEMBERS_AGES, Integer.class);
-		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		ReportableField memberCount = new ReportableField(FIELD_NAME_MEMBERS, Integer.class);
+		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS, "all"), currentLocale);
 		reportCollection.addField(memberCount);
 
-		ReportableField playerCount = new ReportableField(FIELD_NAME_ALL_AGES, Integer.class);
-		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		ReportableField playerCount = new ReportableField(FIELD_NAME_PLAYERS, Integer.class);
+		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS, "all"), currentLocale);
 		reportCollection.addField(playerCount);
 
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), null);
 		Map leagueStatsMap = new TreeMap();
 		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
-		//Iterating through workreports and creating report data 
+		//Iterating through workreports and creating report data
 		Iterator iter = clubs.iterator();
 		while (iter.hasNext()) {
 			//the club
