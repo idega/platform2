@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.23 2003/09/22 17:10:35 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.24 2003/09/24 16:59:05 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -89,7 +89,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				"  Actual: "+first.length());
 			}
 		} catch (Exception e) {
-			//TODO (JJ) Throw own exception
 			System.out.println("Error: The postingt definition and the posting strings did not match.");
 			System.out.println("First posting string: '"+first+"'");
 			System.out.println("Second posting string:'"+second+"'");
@@ -133,13 +132,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				}
 				readPointer += fieldLength;
 			}
-		} catch (RemoteException e) {
-			System.out.println("Error: The postingt definition and the posting strings did not match.");
-			System.out.println("First posting string: '"+postingString+"'");
-			System.out.println("Date for posting rule: "+date.toString());
-			e.printStackTrace();
-			throw new PostingException("posting.exception","malformated posting field encountered");
-		} catch (FinderException e) {
+		} catch (Exception e) {
 			System.out.println("Error: The postingt definition and the posting strings did not match.");
 			System.out.println("First posting string: '"+postingString+"'");
 			System.out.println("Date for posting rule: "+date.toString());

@@ -4,8 +4,10 @@ import com.idega.user.data.User;
 
 
 /**
+ * Is used to set sibling orders by age to children in childcare.
+ * 
  * @author Joakim
- *
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusinessBean#getSiblingOrder(ChildCareContract)
  */
 public class SortableSibling implements Comparable{
 	private User sibling;
@@ -17,7 +19,7 @@ public class SortableSibling implements Comparable{
 		sibling = u;
 	}	
 	
-	/* (non-Javadoc)
+	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(Object o) {
@@ -37,5 +39,4 @@ public class SortableSibling implements Comparable{
 	public void setSibling(User user) {
 		sibling = user;
 	}
-
 }
