@@ -1,6 +1,6 @@
 package is.idega.idegaweb.tracker.presentation;
 
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.IWContext;
 import is.idega.idegaweb.tracker.business.TrackerBusiness;
@@ -16,7 +16,7 @@ import java.util.HashMap;
  * @version 1.0
  */
 
-public class PageCounter extends PresentationObjectContainer {
+public class PageCounter extends Block {
   private boolean cph = true;
   private boolean cps = false;
   private boolean tph = false;
@@ -32,7 +32,7 @@ public class PageCounter extends PresentationObjectContainer {
   }
 
   public void main(IWContext iwc) throws Exception{
-    if(update && updateStats(iwc.getRequest().getRemoteAddr())){
+    if( (update) && (updateStats(iwc.getRemoteIpAddress())) ){
       TrackerBusiness.runThroughTheStatsMachine(iwc);
     }
 
@@ -99,5 +99,19 @@ public class PageCounter extends PresentationObjectContainer {
     if(ip==null) return true;
     else return false;//dont update
   }
+
+ public synchronized Object clone() {
+    PageCounter obj = null;
+    try {
+      obj = (PageCounter)super.clone();
+      obj.ipFilter = this.ipFilter;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
 
 }
