@@ -2,6 +2,7 @@ package com.idega.block.documents.business;
 
 
 
+import com.idega.block.documents.data.DocLinkBMPBean;
 import com.idega.block.documents.data.DocLink;
 
 import com.idega.builder.data.IBPage;
@@ -60,15 +61,15 @@ public class DocFinder {
 
     public static IBPage getPage(int pageID) {
 
-        try {
+	try {
 
-            return ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageID);
+	    return ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageID);
 
-        } catch (SQLException e) {
+	} catch (SQLException e) {
 
-            return ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+	    return ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
 
-        }
+	}
 
     }
 
@@ -90,15 +91,15 @@ public class DocFinder {
 
     public static ICFile getFile(int fileID) {
 
-        try {
+	try {
 
-            return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileID);
+	    return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileID);
 
-        } catch (SQLException e) {
+	} catch (SQLException e) {
 
-            return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+	    return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
 
-        }
+	}
 
     }
 
@@ -164,15 +165,15 @@ public class DocFinder {
 
     public static ICInformationFolder getFolder(int folderID) {
 
-        try {
+	try {
 
-            return ((com.idega.core.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
+	    return ((com.idega.core.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
 
-        } catch (SQLException ex) {
+	} catch (SQLException ex) {
 
-            return null;
+	    return null;
 
-        }
+	}
 
     }
 
@@ -194,15 +195,15 @@ public class DocFinder {
 
     public static ICInformationCategory getCategory(int infoCatID) {
 
-        try {
+	try {
 
-            return ((com.idega.core.data.ICInformationCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationCategory.class)).findByPrimaryKeyLegacy(infoCatID);
+	    return ((com.idega.core.data.ICInformationCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationCategory.class)).findByPrimaryKeyLegacy(infoCatID);
 
-        } catch (SQLException e) {
+	} catch (SQLException e) {
 
-            return null;
+	    return null;
 
-        }
+	}
 
     }
 
@@ -224,19 +225,19 @@ public class DocFinder {
 
     public static DocLink getLink(int boxLinkID) {
 
-        try {
+	try {
 
-            DocLink link = ((com.idega.block.documents.data.DocLinkHome)com.idega.data.IDOLookup.getHomeLegacy(DocLink.class)).findByPrimaryKeyLegacy(boxLinkID);
+	    DocLink link = ((com.idega.block.documents.data.DocLinkHome)com.idega.data.IDOLookup.getHomeLegacy(DocLink.class)).findByPrimaryKeyLegacy(boxLinkID);
 
-            return link;
+	    return link;
 
-        } catch (SQLException e) {
+	} catch (SQLException e) {
 
-            e.printStackTrace();
+	    e.printStackTrace();
 
-            return null;
+	    return null;
 
-        }
+	}
 
     }
 
@@ -290,29 +291,29 @@ public class DocFinder {
 
     public static int getObjectInstanceIdFromID(int folderID) {
 
-        try {
+	try {
 
-            ICInformationFolder box = ((com.idega.core.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
+	    ICInformationFolder box = ((com.idega.core.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(folderID);
 
-            List L = EntityFinder.findRelated(box, ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
+	    List L = EntityFinder.findRelated(box, ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
 
-            if (L != null) {
+	    if (L != null) {
 
-                return ((ICObjectInstance) L.get(0)).getID();
+		return ((ICObjectInstance) L.get(0)).getID();
 
-            } else {
+	    } else {
 
-                return -1;
+		return -1;
 
-            }
+	    }
 
-        } catch (SQLException ex) {
+	} catch (SQLException ex) {
 
-            ex.printStackTrace();
+	    ex.printStackTrace();
 
-            return -1;
+	    return -1;
 
-        }
+	}
 
     }
 
@@ -334,29 +335,29 @@ public class DocFinder {
 
     public static ICInformationFolder getObjectInstanceFromID(int ICObjectInstanceID) {
 
-        try {
+	try {
 
-            ICObjectInstance ICObjInst = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ICObjectInstanceID);
+	    ICObjectInstance ICObjInst = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ICObjectInstanceID);
 
-            List L = EntityFinder.findRelated(ICObjInst, com.idega.core.data.ICInformationFolderBMPBean.getStaticInstance(ICInformationFolder.class));
+	    List L = EntityFinder.findRelated(ICObjInst, com.idega.core.data.ICInformationFolderBMPBean.getStaticInstance(ICInformationFolder.class));
 
-            if (L != null) {
+	    if (L != null) {
 
-                return (ICInformationFolder) L.get(0);
+		return (ICInformationFolder) L.get(0);
 
-            } else {
+	    } else {
 
-                return null;
+		return null;
 
-            }
+	    }
 
-        } catch (SQLException ex) {
+	} catch (SQLException ex) {
 
-            ex.printStackTrace();
+	    ex.printStackTrace();
 
-            return null;
+	    return null;
 
-        }
+	}
 
     }
 
@@ -522,26 +523,61 @@ public class DocFinder {
 
     public static DocLink[] getLinksInFolderCategory(InformationFolder folder, InformationCategory infoCat) {
 
-        try {
+	try {
 
-            DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
+	    DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
 
-            DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFolderID(), Integer.toString(folder.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCatID(), Integer.toString(infoCat.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCreationDate() + " desc", "=", "=");
+	    DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFolderID(), Integer.toString(folder.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCatID(), Integer.toString(infoCat.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCreationDate() + " desc", "=", "=");
 
-            if (links != null) {
+	    if (links != null) {
 
-                return links;
+		return links;
 
-            }
+	    }
 
-            return null;
+	    return null;
 
-        } catch (Exception e) {
+	} catch (Exception e) {
 
-            return null;
+	    return null;
 
-        }
+	}
 
+    }
+
+    public static DocLink[] getLinksInFolder(InformationFolder folder) {
+	try {
+	    DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
+	    DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFolderID(), Integer.toString(folder.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCreationDate() + " desc");
+	    if (links != null) {
+		return links;
+	    }
+	    return null;
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    public static int getNumberOfLinksInFolderCategory(InformationFolder folder, InformationCategory infoCat) {
+      try {
+	DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
+	int returnInt = staticLink.getNumberOfRecords("select count(*) from "+DocLinkBMPBean.getEntityTableName()+" where "+DocLinkBMPBean.getColumnNameFolderID()+" = "+Integer.toString(folder.getID())+" and "+DocLinkBMPBean.getColumnNameCatID()+" = "+Integer.toString(infoCat.getID()));
+	return returnInt;
+      }
+      catch (Exception e) {
+	return 0;
+      }
+    }
+
+    public static int getNumberOfLinksInFolder(InformationFolder folder) {
+      try {
+	DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
+	int returnInt = staticLink.getNumberOfRecords("select count(*) from "+DocLinkBMPBean.getEntityTableName()+" where "+DocLinkBMPBean.getColumnNameFolderID()+" = "+Integer.toString(folder.getID()));
+	return returnInt;
+      }
+      catch (Exception e) {
+	return 0;
+      }
     }
 
 
@@ -560,25 +596,25 @@ public class DocFinder {
 
     public static DocLink[] getLinksInCategory(InformationCategory infoCat) {
 
-        try {
+	try {
 
-            DocLink[] links = null;
+	    DocLink[] links = null;
 
-            // (DocLink[]) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class).findAllByColumnOrdered(infoCat.getColumnNameDocCategoryID(),Integer.toString(infoCat.getID()),com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCreationDate()+" desc","=");
+	    // (DocLink[]) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class).findAllByColumnOrdered(infoCat.getColumnNameDocCategoryID(),Integer.toString(infoCat.getID()),com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCreationDate()+" desc","=");
 
-            if (links != null) {
+	    if (links != null) {
 
-                return links;
+		return links;
 
-            }
+	    }
 
-            return null;
+	    return null;
 
-        } catch (Exception e) {
+	} catch (Exception e) {
 
-            return null;
+	    return null;
 
-        }
+	}
 
     }
 
