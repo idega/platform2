@@ -9,7 +9,7 @@ package is.idega.idegaweb.member.isi.block.accounting.data;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.ejb.FinderException;
 
@@ -289,15 +289,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		return idoFindPKsByQuery(sql);		
 	}
 	
-	public Collection ejbFindAllDivisionsBelongingToClub(int clubID) throws FinderException {
-		IDOQuery sql = idoQuery();
-		String tableName = this.getEntityName();
-		sql.appendSelectAllFrom(tableName);
-		sql.appendWhereEquals(COLUMN_CLUB_ID, clubID);
-		System.out.println(sql.toString());
-		return idoFindIDsBySQL(sql.toString());
-	}
-	
 	/**
 	 * @param dateFrom
 	 * @param dateTo
@@ -318,6 +309,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
 		sql.appendWhere().append(COLUMN_TYPE).appendIn("'A','M'");
+		sql.appendBetweenDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
 		sql.appendOrderBy(ordering);
 		return idoFindIDsBySQL(sql.toString());
 	}

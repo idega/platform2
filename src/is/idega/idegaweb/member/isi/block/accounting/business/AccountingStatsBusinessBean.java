@@ -8,12 +8,13 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import com.idega.block.datareport.util.FieldsComparator;
 import com.idega.block.datareport.util.ReportableCollection;
@@ -24,6 +25,7 @@ import com.idega.business.IBOSessionBean;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -123,13 +125,12 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //then for each get its leagues and the count for
 		 //each age and create a row and insert into an ordered map by league
 		 //then iterate the map and insert into the final report collection.
-		 Collection clubs = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(dateFromFilter, dateToFilter, regionalUnionsFilter, regionalUnionsFilter);
+		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(dateFromFilter, dateToFilter, regionalUnionsFilter, regionalUnionsFilter);
 		 //List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, false);
 		 Map financeEntriesByDivisions = new TreeMap();
 		 
-		 /*
 		 //Iterating through workreports and creating report data 
-		 Iterator iter = clubs.iterator();
+		 Iterator iter = finEntries.iterator();
 		 while (iter.hasNext()) {
 			 //the club
 			 FinanceEntry financeEntry = (FinanceEntry) iter.next();
@@ -138,41 +139,36 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 String divisionIdentifier = financeEntry.getDivision().getName();
 			 
 			 try {
-			 	Collection leagues = report.getLeagues();
-			 	Iterator iterator = leagues.iterator();
-			 	while (iterator.hasNext()) {
-			 		WorkReportGroup league = (WorkReportGroup) iterator.next();
-			 		
-			 		if (!leagueGroupIdList.contains(league.getGroupId()) ) {
-			 			continue; //don't process this one, go to next
-			 		}
+			 	Group division = financeEntry.getDivision();	
+			 		//if (!leagueGroupIdList.contains(league.getGroupId()) ) {
+			 		//	continue; //don't process this one, go to next
+			 		//}
 			 		//create a new ReportData for each row
 			 		ReportableData data = new ReportableData();
 			 		//					add the data to the correct fields/columns
 			 		
-			 		data.addData(clubName, cName);
-			 		data.addData(regionalUnionAbbreviation, regUniIdentifier );
+			 		data.addData(divisionString, divisionIdentifier );
+			 		data.addData(groupString, groupIdentifier );
 			 		//					get the stats
 			 		//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
 			 		
-			 		data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-			 		data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-			 		data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-			 		data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
+			 		//data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
+			 		//data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
+			 		//data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
+			 		//data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
 			 		
-			 	String leagueText = getLeagueIdentifier(league);
+			 	//String leagueText = getLeagueIdentifier(league);
 			 		
-			 		data.addData(leagueString, leagueText);
+			 	//	data.addData(leagueString, leagueText);
 			 		
 			 		
-			 		List statsForLeague = (List) workReportsByLeagues.get(league.getPrimaryKey());
-			 		if (statsForLeague == null)
-			 			statsForLeague = new Vector();
-			 		statsForLeague.add(data);
-			 		workReportsByLeagues.put(league.getPrimaryKey(), statsForLeague);
-			 	}
+			 		List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
+			 		if (statsForDivision == null)
+			 			statsForDivision = new Vector();
+			 		statsForDivision.add(data);
+			 		financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
 			 }
-			 catch (IDOException e) {
+			 catch (Exception e) {
 			 	e.printStackTrace();
 			 }
 		 } 
@@ -180,16 +176,15 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
 		 while (statsDataIter.hasNext()) {
 		 
-		 Map regMap = (Map) financeEntriesByDivisions.get(statsDataIter.next());
-		 
-		 // don't forget to add the row to the collection
-		 reportCollection.addAll(regMap.values());
+		 	 List datas = (List) financeEntriesByDivisions.get(statsDataIter.next());
+		  	 // don't forget to add the row to the collection
+		 	 reportCollection.addAll(datas);
 		 }
 	
 		 ReportableField[] sortFields = new ReportableField[] {groupString, divisionString};
 		 Comparator comparator = new FieldsComparator(sortFields);
 		 Collections.sort(reportCollection, comparator);
-		 */
+		 
 		 //finished return the collection
 		return reportCollection;
 	}

@@ -20,7 +20,7 @@ public interface AccountingBusiness extends com.idega.business.IBOService
  public java.util.Collection findAllValidTariffByGroup(java.lang.String p0) throws java.rmi.RemoteException;
  public com.idega.user.data.Group findClubForGroup(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public com.idega.user.data.Group findDivisionForGroup(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
- public java.util.Collection getFinanceEntriesByDateIntervalDivisionsAndGroups(java.util.Date p0,java.util.Date p1,java.util.Collection p2,java.util.Collection p3) throws java.rmi.RemoteException;
+ public java.util.Collection getFinanceEntriesByDateIntervalDivisionsAndGroups(java.sql.Date p0,java.sql.Date p1,java.util.Collection p2,java.util.Collection p3) throws java.rmi.RemoteException;
  public is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound insertAssessmentRound(java.lang.String p0,com.idega.user.data.Group p1,com.idega.user.data.Group p2,com.idega.user.data.Group p3,com.idega.user.data.User p4,java.sql.Timestamp p5,java.sql.Timestamp p6,boolean p7,java.sql.Timestamp p8,java.sql.Timestamp p9) throws java.rmi.RemoteException;
  public boolean insertCreditCard(com.idega.user.data.Group p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,com.idega.user.data.User p6) throws java.rmi.RemoteException;
  public boolean insertCreditCard(com.idega.user.data.Group p0,com.idega.user.data.Group p1,is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,com.idega.user.data.User p6) throws java.rmi.RemoteException;

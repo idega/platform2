@@ -770,7 +770,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 	
-	public Collection getFinanceEntriesByDateIntervalDivisionsAndGroups(java.util.Date dateFrom, java.util.Date dateTo, Collection regionalUnionsFilter, Collection clubsFilter){
+	public Collection getFinanceEntriesByDateIntervalDivisionsAndGroups(java.sql.Date dateFrom, java.sql.Date dateTo, Collection regionalUnionsFilter, Collection clubsFilter){
 		try {
 			return getFinanceEntryHome().findAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(dateFrom,dateTo,regionalUnionsFilter,clubsFilter);
 		}
