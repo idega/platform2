@@ -557,19 +557,25 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
 		table.add(textInput, 1, row++);
 		
+		IWTimestamp stamp = new IWTimestamp();
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		if (archive != null) {
 			IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
 			validFrom.addDays(1);
 			dateInput.setDate(validFrom.getDate());
-			dateInput.setEarliestPossibleDate(validFrom.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+			if (validFrom.isEarlierThan(stamp))
+				dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+			else
+				dateInput.setEarliestPossibleDate(validFrom.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
 			if (archive.getTerminatedDate() != null) {
 				IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
 				dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
 			}
 		}
-		else
+		else {
 			dateInput.setDate(new IWTimestamp().getDate());
+			dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+		}
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);

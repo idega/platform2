@@ -1384,7 +1384,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				sendMessageToParents(application, subject, body);
 			}
 			else {
-				application.store();
+				changeCaseStatus(application, application.getCaseStatus().getStatus(), user);
 
 				String subject = getLocalizedString("child_care.alter_caretime_subject", "A contract with changed care time has been created", locale);
 				String body = getLocalizedString("child_care.alter_caretime_body", "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}", locale);
@@ -2435,6 +2435,33 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (FinderException e) {
 			return null;
+		}
+	}
+	
+	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
+		try {
+			return getCaseLogsByCaseAndDatesAndStatusChange("MBANBOP", fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
+		}
+		catch (FinderException e) {
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getCaseLogAlteredContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
+		try {
+			return getCaseLogsByCaseAndDatesAndStatusChange("MBANBOP", fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
+		}
+		catch (FinderException e) {
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getCaseLogTerminatedContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
+		try {
+			return getCaseLogsByCaseAndDatesAndStatusChange("MBANBOP", fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
+		}
+		catch (FinderException e) {
+			return new ArrayList();
 		}
 	}
 	
