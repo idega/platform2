@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/01 19:45:41 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 07:35:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.77 $
+ * @version $Revision: 1.78 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -387,7 +387,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         // close and store document
         document.close ();
 
-        final int docId = business.generatePdf (buffer);
+        final int docId = business.generatePdf
+                (localize (INVOICE_COMPILATION_KEY,
+                           INVOICE_COMPILATION_DEFAULT), buffer);
         final Link viewLink
                 = new Link("Öppna fakturaunderlaget i Acrobat Reader");
         viewLink.setFile (docId);
@@ -1349,9 +1351,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		= FontFactory.getFont (FontFactory.HELVETICA, 9);
     
     private void addPhrase (final PdfPTable table, final String string) {
-        if (null != string) {
-            table.addCell (new Phrase (new Chunk (string, SANSSERIF_FONT)));
-        }
+        table.addCell (new Phrase (new Chunk (null != string ? string : "",
+                                              SANSSERIF_FONT)));
     }
 
     private void addPresentation

@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/30 20:21:09 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 07:35:22 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.57 $
+ * @version $Revision: 1.58 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -85,7 +85,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 
-    public int generatePdf (final MemoryFileBuffer buffer)
+    public int generatePdf (final String title, final MemoryFileBuffer buffer)
         throws RemoteException {
         try {
             final InputStream inStream = new MemoryInputStream (buffer);
@@ -94,7 +94,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             final ICFile file = icFileHome.create ();
             file.setFileValue (inStream);
             file.setMimeType ("application/x-pdf");
-            file.setName ("invoice.pdf");
+            file.setName (title + ".pdf");
             file.setFileSize (buffer.length ());
             file.store ();
             return ((Integer) file.getPrimaryKey()).intValue();

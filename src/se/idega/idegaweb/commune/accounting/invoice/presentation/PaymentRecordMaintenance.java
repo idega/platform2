@@ -8,6 +8,8 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.business.IBOLookup;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -20,6 +22,18 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import java.awt.Color;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -50,11 +64,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/01 20:49:58 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 07:35:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -63,6 +77,8 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
 public class PaymentRecordMaintenance extends AccountingBlock {
     public static final String PREFIX = "cacc_payrec_";
 
+    private static final String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
+    private static final String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
     private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
     private static final String ADJUSTMENT_DATE_DEFAULT = "Just.datum";
     private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
@@ -168,12 +184,16 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             ACTION_SHOW_RECORD_DETAILS = 1,
             ACTION_SHOW_EDIT_RECORD_FORM = 2,
             ACTION_SHOW_RECORD = 3,
-            ACTION_SAVE_RECORD = 4;
+            ACTION_SAVE_RECORD = 4,
+            ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 5;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
     private static final SimpleDateFormat dateFormatter
         = new SimpleDateFormat ("yyyy-MM-dd");
+	private final static Font SANSSERIF_FONT
+		= FontFactory.getFont (FontFactory.HELVETICA, 9);
+    
     
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
@@ -213,6 +233,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                     saveRecord (context);
                     break;
                     
+                case ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF:
+                    generateCheckAmountListPdf (context);
+                    break;
+                    
                 default:
                     showPayment (context);
 					break;					
@@ -222,7 +246,94 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             logUnexpectedException (context, exception);
 		}
 	}
+
+    private void addPhrase (final PdfPTable table, final String string) {
+        table.addCell (new Phrase (new Chunk (null != string ? string : "",
+                                              SANSSERIF_FONT)));
+    }
     
+	private static float mmToPoints (final float mm) {
+		return mm*72/25.4f;
+	}
+
+	private void generateCheckAmountListPdf (final IWContext context)
+        throws RemoteException, FinderException, DocumentException {
+        final Document document = new Document
+                (PageSize.A4, mmToPoints (20), mmToPoints (20),
+                 mmToPoints (20), mmToPoints (20));
+        final MemoryFileBuffer buffer = new MemoryFileBuffer ();
+        final OutputStream outStream = new MemoryOutputStream (buffer);
+        final PdfWriter writer = PdfWriter.getInstance (document, outStream);
+        writer.setViewerPreferences
+                (PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
+                 PdfWriter.PageModeUseNone | PdfWriter.FitWindow
+                 | PdfWriter.CenterWindow);
+        final String title = localize
+                (CHECK_AMOUNT_LIST_KEY,
+                 CHECK_AMOUNT_LIST_DEFAULT) + " " + 1;
+        document.addTitle (title);
+        document.addCreationDate ();
+        document.open ();
+        
+        // add content to document
+        final PdfPTable outerTable = new PdfPTable (1);
+        outerTable.setWidthPercentage (100f);
+        outerTable.getDefaultCell ().setBorder (0);
+        addPhrase (outerTable, title);
+        addPhrase (outerTable, "\n");
+        final String [][] columnNames =
+                {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
+                 { PLACEMENT_KEY, PLACEMENT_DEFAULT },
+                 { NO_OF_PLACEMENTS_KEY, NO_OF_PLACEMENTS_DEFAULT },
+                 { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT },
+                 { NOTE_KEY, NOTE_DEFAULT }};
+        final PdfPTable table = new PdfPTable
+                (new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f });
+		table.setWidthPercentage (100f);
+        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+        table.getDefaultCell ().setBorder (0);
+        for (int i = 0; i < columnNames.length; i++) {
+            addPhrase (table, localize (columnNames [i][0],
+                                        columnNames [i][1]));
+        }
+        table.setHeaderRows (1);  // this is the end of the table header
+        final PaymentRecord [] records = (PaymentRecord [])
+                context.getSessionAttribute (PAYMENT_HEADER_KEY);
+        final Color lightBlue = new Color (0xf4f4f4);
+        for (int i = 0; i < records.length; i++) {
+            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
+                                                        : lightBlue);
+            final PaymentRecord record = records [i];
+            final Date period = record.getPeriod ();
+            final String periodText = null != period
+                    ? getFormattedPeriod (period) : "";
+            addPhrase (table, record.getStatus () + "");
+            addPhrase (table, periodText);
+            addPhrase (table, record.getPaymentText ());
+            table.getDefaultCell ().setHorizontalAlignment
+                    (Element.ALIGN_RIGHT);
+            addPhrase (table, record.getPlacements () + "");
+            addPhrase (table, ((long) record.getTotalAmount ()) + "");
+            table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+            addPhrase (table, record.getNotes ());
+        }
+        outerTable.addCell (table);
+        document.add (outerTable);        
+
+        // close and store document
+        document.close ();
+
+        final int docId = getInvoiceBusiness (context).generatePdf
+                (localize (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
+                 buffer);
+        final Link viewLink
+                = new Link("Öppna checkbeloppslista i Acrobat Reader");
+        viewLink.setFile (docId);
+        viewLink.setTarget ("letter_window_" + docId);
+        add (createMainTable (CHECK_AMOUNT_LIST_KEY,
+                              CHECK_AMOUNT_LIST_DEFAULT, viewLink));
+    }
+
     private void saveRecord (final IWContext context)
         throws RemoteException, FinderException {
         // get updated values
@@ -487,6 +598,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final String providerId = context.getParameter (PROVIDER_KEY);
         if (null != schoolCategory && null != providerId
             && 0 < providerId.length ()) {
+            table.setAlignment (table.getColumns (), 2,
+                                Table.HORIZONTAL_ALIGN_RIGHT);
+        table.add (getSubmitButton (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
+                                    CHECK_AMOUNT_LIST_KEY,
+                                    CHECK_AMOUNT_LIST_DEFAULT),
+                   table.getColumns (), 2);
             final Date startPeriod = getPeriodParameter (context,
                                                          START_PERIOD_KEY);
             final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
@@ -496,6 +613,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                     (schoolCategory, new Integer (providerId),
                      new java.sql.Date (startPeriod.getTime ()),
                      new java.sql.Date (endPeriod.getTime ()));
+            context.setSessionAttribute (PAYMENT_HEADER_KEY, records);
             table.mergeCells (1, row, table.getColumns (), row);
             if (0 < records.length) {
                 table.add (getPaymentRecordListTable (records), 1, row++);
@@ -1243,7 +1361,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                         MAIN_ACTIVITY_DEFAULT, ":");
         String operationalField = getSession ().getOperationalField ();
         operationalField = operationalField == null ? "" : operationalField;
-        table.mergeCells (col, row, table.getColumns (), row);
+        table.mergeCells (col, row, table.getColumns () - 1, row);
         final OperationalFieldsMenu dropdown = new OperationalFieldsMenu ();
         if (context.isParameterSet (ACTION_KEY)) {
             dropdown.setParameter (LAST_ACTION_KEY,
@@ -1260,7 +1378,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         int col = 1;
         addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
                         MAIN_ACTIVITY_DEFAULT, ":");
-        table.mergeCells (col, row, table.getColumns (), row);
+        table.mergeCells (col, row, table.getColumns () - 1, row);
         addSmallText (table, getSchoolCategoryName (context, header), col++,
                       row);
         final String schoolCategory = header.getSchoolCategoryID ();
