@@ -163,7 +163,7 @@ public class ClubInfoBar extends Block {
 		}
 		Group mainBoard = null;
 		if(boardsGroup!=null) {
-			Iterator iter = boardsGroup.getChildren();
+			Iterator iter = boardsGroup.getChildrenIterator();
 			while(iter.hasNext()) {
 				Group child = (Group) iter.next();
 				if(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(child.getGroupType())) {

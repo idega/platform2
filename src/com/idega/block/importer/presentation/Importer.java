@@ -341,7 +341,7 @@ public class Importer extends StyledIWAdminWindow {
 				Iterator files;
 				String sortBy = iwc.getParameter(PARAMETER_SORT_BY);
 				if (sortBy == null || sortBy.equals("")) {
-					files = folder.getChildren();
+					files = folder.getChildrenIterator();
 				} else {
 					files = folder.getChildren(sortBy);
 				}

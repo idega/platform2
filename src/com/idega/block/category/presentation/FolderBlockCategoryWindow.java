@@ -409,7 +409,7 @@ public class FolderBlockCategoryWindow extends IWAdminWindow {
 				}
 				row++;
 				if (cat.getChildCount() > 0)
-					fillTable(cat.getChildren(), T, chosenId, coll, name, info, order, level + 1);
+					fillTable(cat.getChildrenIterator(), T, chosenId, coll, name, info, order, level + 1);
 			}
 			trans = null;
 		}

@@ -286,7 +286,7 @@ import com.idega.util.IWTimestamp;
 					campusApplication = getCampusApplicationHome().findByPrimaryKey(campusApplicationID);
 					application = campusApplication.getApplication();
 					applicant = application.getApplicant();
-					Iterator iter = applicant.getChildren();
+					Iterator iter = applicant.getChildrenIterator();
 					if (iter != null) {
 						Applicant a;
 						while (iter.hasNext()) {

@@ -64,7 +64,7 @@ public class ForumBusiness {
 	}
 
 	private void getChildren(List list, ICTreeNode node) {
-		Iterator iter = node.getChildren();
+		Iterator iter = node.getChildrenIterator();
 		if (iter != null) {
 			while (iter.hasNext()) {
 				ForumData thread = (ForumData) iter.next();

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.61 2004/08/11 15:00:25 aron Exp $
+ * $Id: CampusApprover.java,v 1.62 2004/09/06 19:45:32 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -472,7 +472,7 @@ public class CampusApprover extends CampusBlock {
 			if (eApplication != null && eApplicant != null) {
 				Applicant spouse = null;
 				Vector children = null;
-				java.util.Iterator iter = eApplicant.getChildren();
+				java.util.Iterator iter = eApplicant.getChildrenIterator();
 				if (iter != null) {
 					Applicant a;
 					while (iter.hasNext()) {
@@ -654,7 +654,7 @@ public class CampusApprover extends CampusBlock {
 			
 			Collection L = null;
 			if (eApplication != null && eApplicant != null) {
-				java.util.Iterator iter = eApplicant.getChildren();
+				java.util.Iterator iter = eApplicant.getChildrenIterator();
 				if (iter != null) {
 					Applicant a;
 					while (iter.hasNext()) {

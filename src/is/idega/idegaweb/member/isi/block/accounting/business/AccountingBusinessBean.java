@@ -246,7 +246,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             }
 
             if (applyToChildren) {
-                Iterator children = group.getChildren();
+                Iterator children = group.getChildrenIterator();
                 if (children != null) {
                     while (children.hasNext()) {
                         Group child = (Group) children.next();

@@ -17,7 +17,7 @@ public interface Union extends com.idega.data.IDOLegacyEntity,com.idega.util.dat
  public com.idega.core.data.ICTreeNode getChildAtIndex(int p0);
  public int getChildCount();
  public java.util.Iterator getChildren(java.lang.String p0);
- public java.util.Iterator getChildren();
+ public java.util.Iterator getChildrenIterator();
  public java.util.List getGroups(java.lang.String p0);
  public com.idega.user.data.Group getICGroup();
  public java.util.List getInActiveMembers();

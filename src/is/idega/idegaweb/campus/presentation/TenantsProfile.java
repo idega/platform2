@@ -172,7 +172,7 @@ public class TenantsProfile extends CampusBlock {
       	user = contract.getUser();
         _applicant = contract.getApplicant();
         // Spouse and childs
-        java.util.Iterator iter = _applicant.getChildren();
+        java.util.Iterator iter = _applicant.getChildrenIterator();
         if(iter !=null){
           String status;
           while(iter.hasNext()){

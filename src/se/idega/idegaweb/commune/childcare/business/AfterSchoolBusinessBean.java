@@ -104,7 +104,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			AfterSchoolChoice choice = getAfterSchoolChoice(afterSchoolChoiceID);
 			changeCaseStatus(choice, getCaseStatusDenied().getStatus(), performer);
 
-			Iterator children = choice.getChildren();
+			Iterator children = choice.getChildrenIterator();
 			if (children != null) {
 				while (children.hasNext()) {
 					choice = (AfterSchoolChoice) children.next();

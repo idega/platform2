@@ -98,7 +98,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		table.setNoWrap(column, row);
 		table.add(getLocalizedSmallHeader("child_care.mimetype","Mimetype"), column++, row++);
 		
-		Iterator iter = statisticsFolder.getChildren();
+		Iterator iter = statisticsFolder.getChildrenIterator();
 		if (iter != null) {
 			while (iter.hasNext()) {
 				column = 1;

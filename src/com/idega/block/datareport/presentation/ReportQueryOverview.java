@@ -394,7 +394,7 @@ public class ReportQueryOverview extends Block {
 					optionMap = new LinkedHashMap();
 					optionMap.put("-1", dynamicLayout);
 					if(designFolder!=null){
-		  				Iterator iterator = designFolder.getChildren();
+		  				Iterator iterator = designFolder.getChildrenIterator();
 		  				if (iterator != null) {
 		  					while (iterator.hasNext())	{
 		  						ICTreeNode node = (ICTreeNode) iterator.next();

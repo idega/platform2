@@ -97,7 +97,7 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 				column = 1;
 
 				if (productCatalog.isCategoryExpanded(pCat)) {
-					row = listCategories(productCatalog, pCat.getChildren(), table, spacer, row, column, spaceBetween, (level +1));
+					row = listCategories(productCatalog, pCat.getChildrenIterator(), table, spacer, row, column, spaceBetween, (level +1));
 				}
 			}
 			catch (Exception e) {

@@ -242,7 +242,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}		
 			else{
 				
-				fillQuestionTree(iwc,cat.getChildren(),T,QandATable);
+				fillQuestionTree(iwc,cat.getChildrenIterator(),T,QandATable);
 			}
 			
 			if(!headerAdded){

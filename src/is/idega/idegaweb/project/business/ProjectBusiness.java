@@ -519,7 +519,7 @@ public class ProjectBusiness {
   private static void collectSubpages( List l, ICTreeNode node){
     if(node != null){
       l.add(node);
-      Iterator tmp = node.getChildren();
+      Iterator tmp = node.getChildrenIterator();
       if(tmp != null){
         while (tmp.hasNext()) {
           collectSubpages(l,(ICTreeNode)tmp.next());

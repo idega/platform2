@@ -68,7 +68,7 @@ public class DivisionSelectionBox extends GroupSelectionBox  {
 			divisions.add(group);
 		}
 
-		Iterator it = group.getChildren();
+		Iterator it = group.getChildrenIterator();
 		if (it != null) {
 			while (it.hasNext()) {
 				Group child = (Group) it.next();

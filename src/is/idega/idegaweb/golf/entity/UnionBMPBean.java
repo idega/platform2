@@ -160,7 +160,7 @@ public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,I
 /**
  * Returns the children of the reciever as an Iterator. Returns null if no children found
  */
-public Iterator getChildren(){
+public Iterator getChildrenIterator(){
   try{
   List list = EntityFinder.findAll(this,"select * from union_,union_tree where union_.union_id=union_tree.child_union_id and union_tree.union_id='"+this.getID()+"'");
   if(list != null){

@@ -43,9 +43,9 @@ public class HelpNode implements ICTreeNode {
 	}
 
 	/**
-	 * @see com.idega.core.ICTreeNode#getChildren()
+	 * @see com.idega.core.ICTreeNode#getChildrenIterator()
 	 */
-	public Iterator getChildren() {
+	public Iterator getChildrenIterator() {
 		if (_children != null)
 			return _children.iterator();
 		else

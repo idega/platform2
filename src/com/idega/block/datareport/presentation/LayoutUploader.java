@@ -183,7 +183,7 @@ public class LayoutUploader extends Block {
 	private PresentationObject getDropDownOfLayouts(String key, ICFile designFolder, IWContext iwc) {
 		SortedMap sortedMap = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		DropdownMenu drp = new DropdownMenu(key);
-		Iterator iterator = designFolder.getChildren();
+		Iterator iterator = designFolder.getChildrenIterator();
 		if (iterator != null) {
 			while (iterator.hasNext()) {
 				ICTreeNode node = (ICTreeNode) iterator.next();
@@ -239,7 +239,7 @@ public class LayoutUploader extends Block {
 		Collection existingNames = null;
 		if(designFolder!=null){
 			existingNames = new ArrayList();
-			Iterator iterator = designFolder.getChildren();	
+			Iterator iterator = designFolder.getChildrenIterator();	
 			if (iterator != null) {
 				while (iterator.hasNext())	{
 					ICTreeNode node = (ICTreeNode) iterator.next();

@@ -142,7 +142,7 @@ public class AssessmentRoundThread extends Thread {
 		}
 		
 		if (includeChildren) {
-			Iterator it = group.getChildren();
+			Iterator it = group.getChildrenIterator();
 			if (it != null) {
 				while (it.hasNext()) {
 					Group child = (Group) it.next();

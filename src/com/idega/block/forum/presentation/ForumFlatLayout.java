@@ -27,7 +27,7 @@ public class ForumFlatLayout extends Forum {
 		if (thread != null) {
 			row = super.displaySelectedForum(iwc, table, row, thread);
 			
-			Iterator iter = thread.getChildren();
+			Iterator iter = thread.getChildrenIterator();
 			while (iter != null && iter.hasNext()) {
 				row = this.displaySelectedForum(iwc, table, row, (ForumData) iter.next());
 			}

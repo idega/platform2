@@ -26,7 +26,7 @@ public class ApplicantFamily {
 	
 	public ApplicantFamily(Applicant applicant){
 		setApplicant(applicant);
-		java.util.Iterator iter = applicant.getChildren();
+		java.util.Iterator iter = applicant.getChildrenIterator();
         if(iter !=null){
           String status;
           while(iter.hasNext()){

@@ -7,7 +7,7 @@ public interface ICInformationCategory extends TreeableEntity,com.idega.block.ca
 {
  public void addCategoryToInstance(int p0)throws java.sql.SQLException;
  public int getChildCount();
- public java.util.Iterator getChildren();
+ public java.util.Iterator getChildrenIterator();
  public java.util.Iterator getChildren(java.lang.String p0);
  public java.sql.Timestamp getCreated();
  public boolean getDeleted();

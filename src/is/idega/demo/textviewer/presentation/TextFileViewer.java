@@ -56,7 +56,7 @@ public class TextFileViewer extends Block {
       parseAction(iwc);
       if(this.aGettingFileFolder){
         if(this.getFilesFolder()!=null){
-          Iterator iter = getFilesFolder().getChildren();
+          Iterator iter = getFilesFolder().getChildrenIterator();
           while (iter.hasNext()) {
             ICFile file = (ICFile)iter.next();
             Link link = new Link(file.getName());

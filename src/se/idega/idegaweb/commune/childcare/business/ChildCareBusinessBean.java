@@ -1081,7 +1081,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			sendMessageToParents(application, subject, message);
 
 			if (isAfterSchoolApplication(application)) {
-				Iterator iter = application.getChildren();
+				Iterator iter = application.getChildrenIterator();
 				if (iter != null) {
 					while (iter.hasNext()) {
 						Case element = (Case) iter.next();
@@ -1449,7 +1449,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			sendMessageToParents(application, subject, message);
 
 			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
-				Iterator iter = application.getChildren();
+				Iterator iter = application.getChildrenIterator();
 				while (iter.hasNext()) {
 					Case element = (Case) iter.next();
 					if (element instanceof ChildCareApplication) {
@@ -1657,7 +1657,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				sendMessageToProvider(application, subject, body);
 
 				if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
-					Iterator iter = application.getChildren();
+					Iterator iter = application.getChildrenIterator();
 					while (iter.hasNext()) {
 						Case element = (Case) iter.next();
 						if (element instanceof ChildCareApplication) {
@@ -1769,7 +1769,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		sendMessageToProvider(application, subject, body);
 
 		if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
-			Iterator iter = application.getChildren();
+			Iterator iter = application.getChildrenIterator();
 			while (iter.hasNext()) {
 				Case element = (Case) iter.next();
 				if (element instanceof ChildCareApplication) {

@@ -11,7 +11,7 @@ public interface ForumData extends TreeableEntity,IDOLegacyEntity
  public java.lang.String getUserEMail();
  public int getUserID();
  public java.lang.String getThreadBody();
- public java.util.Iterator getChildren();
+ public java.util.Iterator getChildrenIterator();
  public java.lang.String getThreadSubject();
  public void setUserID(int p0);
  public java.lang.String getUserName();

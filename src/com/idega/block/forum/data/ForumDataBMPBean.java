@@ -155,7 +155,7 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
       setColumn(getColumnNameValid(),"N");
   }
 
-  public Iterator getChildren(){
+  public Iterator getChildrenIterator(){
     Iterator iter = super.getChildren(getColumnNameThreadDate());
     return iter;
   }

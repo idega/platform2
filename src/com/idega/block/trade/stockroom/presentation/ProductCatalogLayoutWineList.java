@@ -55,7 +55,7 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 
 		Iterator iter = null;
 		if (productCategory != null) {
-			iter = productCategory.getChildren();
+			iter = productCategory.getChildrenIterator();
 			hasParameterSet = true;
 			Text categoryText = productCatalog.getCategoryText(productCategory.getName());
 			if (productCatalog._headerFontStyle != null)

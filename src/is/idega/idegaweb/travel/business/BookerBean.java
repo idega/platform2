@@ -214,7 +214,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
     if (resellerId != -1) {
       try {
 				Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
-        Iterator iter = reseller.getChildren();
+        Iterator iter = reseller.getChildrenIterator();
         Product product = getProductBusiness().getProduct(serviceId);
         List items = new Vector();
         Collection coll;
