@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.7 2001/07/04 18:11:54 tryggvil Exp $
+ * $Id: Table.java,v 1.8 2001/07/09 16:18:28 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,6 +35,8 @@ public class Table extends ModuleObjectContainer {
   private boolean isResizable;
 
   private boolean cellsAreMerged;
+
+  private static final String COLOR_ATTRIBUTE="bgcolor";
 
   /**
    * Constructor that defaults with 1 column and 1 row
@@ -319,19 +321,19 @@ public class Table extends ModuleObjectContainer {
 
 
   public void setColor(int xpos,int ypos, String s){
-    setAttribute(xpos,ypos,"bgcolor",s);
+    setAttribute(xpos,ypos,COLOR_ATTRIBUTE,s);
   }
 
   public void setColor(int xpos,int ypos, IWColor s){
-    setAttribute(xpos,ypos,"bgcolor",s.getHexColorString());
+    setAttribute(xpos,ypos,COLOR_ATTRIBUTE,s.getHexColorString());
   }
 
   public void setRowColor(int ypos, String s){
-    setRowAttribute(ypos,"bgcolor",s);
+    setRowAttribute(ypos,COLOR_ATTRIBUTE,s);
   }
 
   public void setColumnColor(int xpos,String s){
-    setColumnAttribute(xpos,"bgcolor",s);
+    setColumnAttribute(xpos,COLOR_ATTRIBUTE,s);
   }
 
   public void setWidth(int xpos,String s){
@@ -679,10 +681,37 @@ public class Table extends ModuleObjectContainer {
 
   }
 
+  /**
+   * index lies from [0,xlength-1] , puts in yindex=0
+   */
+  public Object set(int index,ModuleObject o){
+    return set(index,0,o);
+  }
+
+
+  /**
+   * xindex lies from [0,xlength-1],yindex lies from [0,ylength-1]
+   */
+  public Object set(int xindex,int yindex, ModuleObject o){
+    return set(xindex,0,0,o);
+  }
+
+  /**
+   * xindex lies from 0,[xlength-1],yindex lies from [0,ylength-1],innercontainerindex lies from [0,lengthofcontainer-1]
+   */
+  public Object set(int xindex,int yindex, int innercontainerindex,ModuleObject o){
+    //return set(index,0,o);
+    ModuleObjectContainer moc = theObjects[xindex][yindex];
+    if(moc==null){
+      moc = new ModuleObjectContainer();
+      theObjects[xindex][yindex]=moc;
+    }
+    return moc.set(innercontainerindex,o);
+  }
+
 
   public List getAllContainingObjects(){
     Vector theReturn = new Vector();
-
     for (int x = 0;x<theObjects.length;x++){
       for(int y = 0; y < theObjects[x].length;y++){
         if (theObjects[x][y] != null){
@@ -1013,15 +1042,14 @@ public boolean isEmpty(int x, int y){
     try {
       obj = (Table)super.clone();
       if (this.theObjects != null) {
-       obj.theObjects=new ModuleObjectContainer[cols][rows];
+        obj.theObjects=new ModuleObjectContainer[cols][rows];
 	for (int x = 0;x<theObjects.length;x++){
 		for(int y = 0; y < theObjects[x].length;y++){
-			if (theObjects[x][y] != null){
-				obj.theObjects[x][y]=(ModuleObjectContainer)this.theObjects[x][y].clone();
+			if (this.theObjects[x][y] != null){
+				obj.theObjects[x][y]=(ModuleObjectContainer)((ModuleObjectContainer)this.theObjects[x][y]).clone();
 			}
 		}
 	}
-
       }
       obj.cols = this.cols;
       obj.rows = this.rows;
@@ -1050,9 +1078,40 @@ public boolean isEmpty(int x, int y){
     ModuleObjectContainer cont = theObjects[x-1][y-1];
     if(cont==null){
       cont = new ModuleObjectContainer();
+      theObjects[x-1][y-1] = cont ;
       cont.setParentObject(this);
     }
     return cont;
+  }
+
+
+  public boolean remove(ModuleObject obj){
+    if(theObjects!=null){
+      for (int x = 0;x<theObjects.length;x++){
+              for(int y = 0; y < theObjects[x].length;y++){
+			if (theObjects[x][y] != null){
+				if(theObjects[x][y].remove(obj)){
+                                  return true;
+                                }
+			}
+		}
+	}
+    }
+    return false;
+  }
+
+  /**
+   * Returns the color of a Cell.
+   * Returns NULL if no color set
+   */
+  public String getColor(int xpos,int ypos){
+    ModuleObjectContainer cont = theObjects[xpos-1][ypos-1];
+    if(cont==null){
+      return null;
+    }
+    else{
+      return cont.getAttribute(COLOR_ATTRIBUTE);
+    }
   }
 
 }

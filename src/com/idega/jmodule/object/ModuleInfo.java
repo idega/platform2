@@ -667,6 +667,10 @@ private Map getWeakHashMap(){
   return map;
 }
 
+public void setContentType(String contentType){
+  Response.setContentType(contentType);
+}
+
 }
 
 

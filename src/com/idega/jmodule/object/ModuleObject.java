@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.11 2001/07/04 18:11:54 tryggvil Exp $
+ * $Id: ModuleObject.java,v 1.12 2001/07/09 16:18:28 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -160,7 +160,7 @@ public class ModuleObject extends Object implements Cloneable {
       return (String)this.attributes.get((Object)attributeName);
     }
     else {
-      return "";
+      return null;
     }
   }
 

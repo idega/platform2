@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.7 2001/07/04 18:11:54 tryggvil Exp $
+ * $Id: ModuleObjectContainer.java,v 1.8 2001/07/09 16:18:28 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -210,10 +210,11 @@ public class ModuleObjectContainer extends ModuleObject {
     //Workaround for JRun - JRun has hardcoded content type text/html in JSP pages
     //if(this.doPrint(modinfo)){
     if (modinfo.getLanguage().equals("WML")) {
-      modinfo.getResponse().setContentType("text/vnd.wap.wml");
+      modinfo.setContentType("text/vnd.wap.wml");
     }
     if (!isEmpty()) {
-      for (int index = 0; index < numberOfObjects(); index++) {
+      int numberofObjects = numberOfObjects();
+      for (int index = 0; index < numberofObjects; index++) {
         ModuleObject tempobj = objectAt(index);
         try {
           if (tempobj != null) {
@@ -404,15 +405,45 @@ public class ModuleObjectContainer extends ModuleObject {
     ModuleObjectContainer obj = null;
     try {
       obj = (ModuleObjectContainer)super.clone();
-      if (this.theObjects != null) {
-          obj.setObjects((Vector)this.theObjects.clone());
+      //if(!(this instanceof Table)){
+        if (this.theObjects != null) {
+            //obj.setObjects((Vector)this.theObjects.clone());
+            obj.theObjects=(Vector)this.theObjects.clone();
+            ListIterator iter = obj.theObjects.listIterator();
+            while (iter.hasNext()) {
+              int index = iter.nextIndex();
+              Object item = iter.next();
+              //Object item = obj.theObjects.elementAt(index);
+              if(item instanceof ModuleObjectContainer){
+                obj.theObjects.set(index,((ModuleObjectContainer)item).clone());
+              }
+            }
+        //}
       }
     }
     catch(Exception ex) {
       ex.printStackTrace(System.err);
     }
-
     return obj;
+  }
+
+  public boolean remove(ModuleObject obj){
+    if(theObjects!=null){
+      if(theObjects.remove(obj)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * index lies from 0,length-1
+   */
+  public Object set(int index,ModuleObject o){
+    if(theObjects==null){
+     theObjects = new Vector();
+    }
+    return theObjects.set(index,o);
   }
 
 
