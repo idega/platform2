@@ -426,6 +426,7 @@ public class CampusAllocator extends KeyEditor{
         contractDateFrom = new idegaTimestamp(C.getValidFrom());
       }
       else if(ATP!=null){
+        // Period checking
         System.err.println("ATP exists");
         boolean first = ATP.hasFirstPeriod();
         boolean second = ATP.hasSecondPeriod();
@@ -455,6 +456,10 @@ public class CampusAllocator extends KeyEditor{
           contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
           contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
         }
+        if(dayBuffer > 0){
+        contractDateFrom.addDays(dayBuffer);
+        }
+        // end of Period checks
       }
       // are the System Properties set
       else if(SysProps !=null){
@@ -465,9 +470,7 @@ public class CampusAllocator extends KeyEditor{
         contractDateTo = new idegaTimestamp();
         contractDateFrom = new idegaTimestamp();
       }
-      if(dayBuffer > 0){
-        contractDateFrom.addDays(dayBuffer);
-      }
+
 
       dateFrom.setDate(contractDateFrom.getSQLDate());
       dateTo.setDate(contractDateTo.getSQLDate());

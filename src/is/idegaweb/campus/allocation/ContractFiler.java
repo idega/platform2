@@ -32,7 +32,8 @@ public class ContractFiler extends JModuleObject {
     String filename = "contract.pdf";
     String filetest = "test.pdf";
     Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
-    Font nameFont = new Font(Font.HELVETICA, 10, Font.BOLD);
+    Font paraFont = new Font(Font.HELVETICA, 10, Font.BOLD);
+    Font nameFont = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
     Font tagFont = new Font(Font.HELVETICA,9,Font.BOLDITALIC);
     Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
 
@@ -44,7 +45,7 @@ public class ContractFiler extends JModuleObject {
       //Page p = getPage();
       if(modinfo.getParameter("contract_id")!=null){
         int id = Integer.parseInt(modinfo.getParameter("contract_id"));
-        boolean filewritten = CampusContractWriter.writePDF(id,iwrb,path+filename, titleFont, nameFont, tagFont, textFont);
+        boolean filewritten = CampusContractWriter.writePDF(id,iwrb,path+filename, nameFont,titleFont, paraFont, tagFont, textFont);
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filename,1);
         else
@@ -53,7 +54,7 @@ public class ContractFiler extends JModuleObject {
       }
       else if(modinfo.getParameter("test")!=null){
 
-        boolean filewritten = CampusContractWriter.writeTestPDF(iwrb,path+filetest, titleFont, nameFont, tagFont, textFont);
+        boolean filewritten = CampusContractWriter.writeTestPDF(iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filetest,1);
         else
