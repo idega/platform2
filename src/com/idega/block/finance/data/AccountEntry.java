@@ -54,7 +54,7 @@ public interface AccountEntry extends com.idega.data.IDOEntity,com.idega.block.f
  public Integer getInvoiceNumber();
  public void setInvoiceNumber(Integer invoiceNumber);
  public Date getFinalDueDate();
- public void setFinalDueDate(Timestamp finalDueDate);
+ public void setFinalDueDate(Date finalDueDate);
  public int getUserId();
  public void setUserId(int userId);
  public Timestamp getDisallowanceDate();
