@@ -235,6 +235,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
   public  Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException{
     return getBookings(products, new int[]{}, fromStamp, toStamp, columnName, columnValue);
   }
+
   public  Booking[] getBookings(List products, int[] bookingTypeIds, idegaTimestamp fromStamp, idegaTimestamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException {
     if (products != null) {
       int[] ids = new int[products.size()];
@@ -243,13 +244,18 @@ public class BookerBean extends IBOServiceBean implements Booker{
         prod = (Product) products.get(i);
         ids[i] = prod.getID();
       }
-      return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue));
+      return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null));
     }
     return new Booking[]{};
   }
 
+
   public  Booking[] getBookings(int serviceId, idegaTimestamp stamp) throws RemoteException, FinderException{
-    return getBookings(serviceId,stamp,new int[]{});
+    return getBookings(serviceId, stamp);
+  }
+
+  public  Booking[] getBookings(int serviceId, idegaTimestamp stamp, TravelAddress address) throws RemoteException, FinderException{
+    return getBookings(new int[]{serviceId},stamp, null, new int[]{}, address);
   }
 
   public  Booking[] getBookings(int serviceId, idegaTimestamp stamp, int bookingTypeId) throws RemoteException, FinderException{
@@ -265,7 +271,10 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   public  Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds) throws RemoteException, FinderException{
-    return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null, null));
+    return getBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null);
+  }
+  public  Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds, TravelAddress address) throws RemoteException, FinderException{
+    return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null, null, address));
   }
 
 
@@ -430,12 +439,19 @@ public class BookerBean extends IBOServiceBean implements Booker{
     }else {
       int myIndex = list.indexOf(booking);
       list = cleanList(list, booking, myIndex, numberOfDays);
+      if (list.size() == 0) {
+        list.add(booking);
+      }
     }
 
     return list;
   }
 
   private  List cleanList(List list, Booking booking, int mainIndex, int numberOfDays) throws RemoteException {
+    //System.err.println("mainIndex : "+mainIndex);
+    //System.err.println("numberOfDays : "+numberOfDays);
+
+
     Booking book;
     int betw = 1;
     int index = mainIndex;
@@ -443,8 +459,11 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
     idegaTimestamp tempStamp = new idegaTimestamp(booking.getBookingDate());
 
+    System.err.println("starting cleaning...");
+
     if (mainIndex == 0) {
       while (cont) {
+      //System.err.println("...1");
         ++index;
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));
@@ -457,11 +476,15 @@ public class BookerBean extends IBOServiceBean implements Booker{
       }
     }else if (mainIndex == list.size() -1) {
       while (cont) {
+        //System.err.println("...2");
         --index;
+        //System.err.println("index : "+index);
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
+        //System.err.println("betw : "+betw);
         if (betw != numberOfDays) {
           list = list.subList(index+1, mainIndex);
+          //System.err.println("list.size() : "+list.size());
           cont = false;
         }
         if (index == 0) cont = false;
@@ -469,6 +492,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
       }
     }else {
       while (cont) {
+        //System.err.println("...3");
         --index;
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
@@ -490,6 +514,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
       }
 
       while (cont) {
+        //System.err.println("...4");
         ++index;
         book = (Booking) list.get(index);
         betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));

@@ -716,6 +716,8 @@ public class BookingOverview extends TravelManager {
           }
 
 
+          TravelAddress[] trAddresses = ProductBusiness.getDepartureAddresses(product);
+
           Link link;
           // ------------------ INQUERIES ------------------------
           Link answerLink = new Link(iwrb.getLocalizedImageButton("travel.answer","Answer"),is.idega.idegaweb.travel.presentation.Booking.class);
@@ -761,82 +763,94 @@ public class BookingOverview extends TravelManager {
 
           }
 
+          List addresses = ProductBusiness.getDepartureAddresses(product, true);
+          TravelAddress trAddress;
+          int addressesSize = addresses.size();
+          for (int g = 0; g < addressesSize; g++) {
+            ++row;
+            trAddress = (TravelAddress) addresses.get(g);
+            table.mergeCells(1, row, 2, row);
+            table.add(getHeaderText(trAddress.getName()), 1, row);
+            table.setRowColor(row, super.backgroundColor);
 
-          // ------------------ BOOKINGS ------------------------
-          Link changeLink = new Link(iwrb.getImage("buttons/change.gif"),is.idega.idegaweb.travel.presentation.Booking.class);
-          Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
-            deleteLink.setWindowToOpen(BookingDeleterWindow.class);
-          Booking[] bookings = {};
-          GeneralBooking booking;
-          int[] bNumbers;
 
-          if (this.supplier != null) {
-            bookings = getBooker(iwc).getBookings(((Integer) this.service.getPrimaryKey()).intValue(), currentStamp);
-          }else if (this.reseller != null) {
-            Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(reseller.getID(), service.getID(), currentStamp);
-            bookings = getBooker(iwc).collectionToBookingsArray(coll);
-          }
 
-          Object serviceType;
-          User bUser;
-          Reseller bReseller;
-          for (int i = 0; i < bookings.length; i++) {
-              ++row;
-              booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(bookings[i].getPrimaryKey());
-              serviceType = getBooker(iwc).getServiceType(this.service.getID());
+            // ------------------ BOOKINGS ------------------------
+            Link changeLink = new Link(iwrb.getImage("buttons/change.gif"),is.idega.idegaweb.travel.presentation.Booking.class);
+            Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
+              deleteLink.setWindowToOpen(BookingDeleterWindow.class);
+            Booking[] bookings = {};
+            GeneralBooking booking;
+            int[] bNumbers;
 
-              Tname = (Text) super.theSmallBoldText.clone();
-                Tname.setText(bookings[i].getName());
-              bNumbers = getBooker(iwc).getMultipleBookingNumber(booking);
-              if ( bNumbers[0] != 0 ) {
-                Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
-              }
-              Temail = (Text) super.theSmallBoldText.clone();
-                Temail.setText(bookings[i].getEmail());
-              Tbooked = (Text) super.theSmallBoldText.clone();
-                Tbooked.setText(Integer.toString(bookings[i].getTotalCount()));
+            if (this.supplier != null) {
+              bookings = getBooker(iwc).getBookings(((Integer) this.service.getPrimaryKey()).intValue(), currentStamp, trAddress);
+            }else if (this.reseller != null) {
+              Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(reseller.getID(), service.getID(), currentStamp);
+              bookings = getBooker(iwc).collectionToBookingsArray(coll);
+            }
 
-              Tname.setFontColor(super.BLACK);
-              Temail.setFontColor(super.BLACK);
-              Tbooked.setFontColor(super.BLACK);
+            Object serviceType;
+            User bUser;
+            Reseller bReseller;
+            for (int i = 0; i < bookings.length; i++) {
+                ++row;
+                booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(bookings[i].getPrimaryKey());
+                serviceType = getBooker(iwc).getServiceType(this.service.getID());
 
-              TbookedBy = (Text) super.theSmallBoldText.clone();
-                TbookedBy.setFontColor(super.BLACK);
-              if (bookings[i].getUserId() != -1) {
-                bUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
-                bReseller = ResellerManager.getReseller(bUser);
-                  TbookedBy.setText(bUser.getName());
-                  if (bReseller != null) {
-                    if (this.reseller != bReseller) {
-                      TbookedBy.addToText(" ( "+bReseller.getName()+" ) ");
+                Tname = (Text) super.theSmallBoldText.clone();
+                  Tname.setText(bookings[i].getName());
+                bNumbers = getBooker(iwc).getMultipleBookingNumber(booking);
+                if ( bNumbers[0] != 0 ) {
+                  Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
+                }
+                Temail = (Text) super.theSmallBoldText.clone();
+                  Temail.setText(bookings[i].getEmail());
+                Tbooked = (Text) super.theSmallBoldText.clone();
+                  Tbooked.setText(Integer.toString(bookings[i].getTotalCount()));
+
+                Tname.setFontColor(super.BLACK);
+                Temail.setFontColor(super.BLACK);
+                Tbooked.setFontColor(super.BLACK);
+
+                TbookedBy = (Text) super.theSmallBoldText.clone();
+                  TbookedBy.setFontColor(super.BLACK);
+                if (bookings[i].getUserId() != -1) {
+                  bUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
+                  bReseller = ResellerManager.getReseller(bUser);
+                    TbookedBy.setText(bUser.getName());
+                    if (bReseller != null) {
+                      if (this.reseller != bReseller) {
+                        TbookedBy.addToText(" ( "+bReseller.getName()+" ) ");
+                      }
                     }
-                  }
-              }else {
-                  TbookedBy.setText(iwrb.getLocalizedString("travel.online","Online"));
-              }
+                }else {
+                    TbookedBy.setText(iwrb.getLocalizedString("travel.online","Online"));
+                }
 
-              link = VoucherWindow.getVoucherLink(bookings[i]);
-                link.setText(Tname);
+                link = VoucherWindow.getVoucherLink(bookings[i]);
+                  link.setText(Tname);
 
-              table.mergeCells(2, row, 5, row);
-              table.add(link, 1, row);
-              table.add(Temail, 2, row);
-              table.setAlignment(3, row, "left");
-              table.add(Tbooked, 6, row);
-              table.add(TbookedBy, 8, row);
+                table.mergeCells(2, row, 5, row);
+                table.add(link, 1, row);
+                table.add(Temail, 2, row);
+                table.setAlignment(3, row, "left");
+                table.add(Tbooked, 6, row);
+                table.add(TbookedBy, 8, row);
 
-              table.setRowColor(row, super.GRAY);
+                table.setRowColor(row, super.GRAY);
 
-              link = (Link) changeLink.clone();
-                link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
-                link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,bookings[i].getID());
-              table.add(link, 9, row);
-              table.add(Text.NON_BREAKING_SPACE,9,row);
+                link = (Link) changeLink.clone();
+                  link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
+                  link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,bookings[i].getID());
+                table.add(link, 9, row);
+                table.add(Text.NON_BREAKING_SPACE,9,row);
 
-              link = (Link) deleteLink.clone();
-                link.addParameter(BookingDeleterWindow.bookingIdParameter,bookings[i].getID());
-              table.add(link, 9, row);
+                link = (Link) deleteLink.clone();
+                  link.addParameter(BookingDeleterWindow.bookingIdParameter,bookings[i].getID());
+                table.add(link, 9, row);
 
+            }
           }
 
         ++row;

@@ -69,6 +69,7 @@ public class TourBookingForm extends TravelManager {
 
   public static String parameterFromDate = "bookingFromDate";
   public static String parameterManyDays = "bookingManyDays";
+  private String parameterOnlineBooking = "pr_onl_bking";
 
 
   public static final int errorTooMany = -1;
@@ -632,6 +633,7 @@ public class TourBookingForm extends TravelManager {
 
   private Form getPublicBookingFormPrivate(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
     Form form = new Form();
+      form.addParameter(this.parameterOnlineBooking, "true");
     Table table = new Table();
       table.setCellpadding(0);
       table.setCellspacing(6);
@@ -1274,6 +1276,7 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(this.sAction);
       form.maintainParameter(this.parameterInquiry);
       form.maintainParameter(parameterFromDate);
+      form.maintainParameter(this.parameterOnlineBooking);
       if (withBookingAction)
       form.maintainParameter(this.BookingAction);
       ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, false);
@@ -1317,7 +1320,16 @@ public class TourBookingForm extends TravelManager {
       }
     }
 
-    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, false);
+    String sOnline = iwc.getParameter(this.parameterOnlineBooking);
+    boolean onlineOnly = false;
+    if (sOnline != null && sOnline.equals("true")) {
+      onlineOnly = true;
+    }else if (sOnline != null && sOnline.equals("false")) {
+      onlineOnly = false;
+    }
+
+
+    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {
@@ -1568,11 +1580,18 @@ public class TourBookingForm extends TravelManager {
       int iHotelId;
 
 
+      String sOnline = iwc.getParameter(this.parameterOnlineBooking);
+      boolean onlineOnly = false;
+      if (sOnline != null && sOnline.equals("true")) {
+        onlineOnly = true;
+      }else if (sOnline != null && sOnline.equals("false")) {
+        onlineOnly = false;
+      }
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
       if (tFrame != null) {
-        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, true);
+        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
       }
       int lbookingId = -1;
 

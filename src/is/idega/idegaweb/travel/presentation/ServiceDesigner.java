@@ -318,7 +318,7 @@ public class ServiceDesigner extends TravelManager {
                       priceDiscount.setSize(6);
                       infoText.setText("%");
                       infoText.addToText(Text.NON_BREAKING_SPACE);
-                      infoText.addToText(iwrb.getLocalizedString("travel.of","of"));
+                      infoText.addToText(iwrb.getLocalizedString("travel.discount_of","discount of"));
                       infoText.addToText(Text.NON_BREAKING_SPACE);
                       infoText.addToText(((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(cats[i].getParentId()).getName());
                     }catch (SQLException sql) {

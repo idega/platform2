@@ -437,26 +437,43 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
 
-  public Collection ejbFindBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue) throws FinderException{
+  public Collection ejbFindBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
     Collection returner = null;
     StringBuffer sql = new StringBuffer();
 
-    sql.append("Select * from "+getBookingTableName());
-    sql.append(" where "+getServiceIDColumnName()+" in (");
+
+    String addressMiddleTable = "";
+    boolean useAddress = false;
+    if (address != null) {
+      addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBookingBMPBean.class, TravelAddress.class);
+      useAddress = true;
+    }
+
+    sql.append("Select * from "+getBookingTableName()+" b");
+    if (useAddress) {
+      sql.append(" , "+addressMiddleTable+" am");
+    }
+    sql.append(" where b."+getServiceIDColumnName()+" in (");
     for (int i = 0; i < serviceIds.length; i++) {
       if (i > 0) sql.append(", ");
       sql.append(serviceIds[i]);
     }
     sql.append(") and ");
-    sql.append(getIsValidColumnName()+" = 'Y'");
+    if (useAddress) {
+      sql.append("am."+TravelAddressBMPBean.getTravelAddressTableName()+"_id = "+address.getPrimaryKey().toString());
+      sql.append(" and ");
+      sql.append("b."+this.getIDColumnName() +" = am."+this.getIDColumnName());
+      sql.append(" and ");
+    }
+    sql.append("b."+getIsValidColumnName()+" = 'Y'");
     if (fromStamp != null && toStamp == null) {
       sql.append(" and ");
-      sql.append(getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
+      sql.append("b."+getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
     }else if (fromStamp != null && toStamp != null) {
       sql.append(" and ");
-      sql.append(getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+      sql.append("b."+getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
       sql.append(" and ");
-      sql.append(getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"'");
+      sql.append("b."+getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"'");
     }
     if (bookingTypeIds != null) {
       if (bookingTypeIds.length > 0 ) {
@@ -464,14 +481,14 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         for (int i = 0; i < bookingTypeIds.length; i++) {
           if (bookingTypeIds[i] != -1) {
             if (i > 0) sql.append(" OR ");
-            sql.append(getBookingTypeIDColumnName()+" = "+bookingTypeIds[i]);
+            sql.append("b."+getBookingTypeIDColumnName()+" = "+bookingTypeIds[i]);
           }
         }
         sql.append(") ");
       }
     }
     if (columnName != null && columnValue != null) {
-      sql.append(" and ").append(columnName).append(" = '").append(columnValue).append("'");
+      sql.append(" and ").append("b."+columnName).append(" = '").append(columnValue).append("'");
     }
 
     sql.append(" order by "+getBookingDateColumnName());
