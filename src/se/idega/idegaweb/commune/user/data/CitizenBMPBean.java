@@ -44,17 +44,17 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 	}
 	
 	public Collection ejbFindAllCitizensRegisteredToSchool(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode,Date currentDate) throws FinderException, IDOLookupException{
-		//select usr.* from ic_user usr, sch_class_member sch where usr.DATE_OF_BIRTH>='1993-01-01' AND usr.DATE_OF_BIRTH<='1993-10-02' and sch.ic_user_id=usr.ic_user_id and sch.register_date <='2003-01-23' and (sch.removed_date is null  or sch.removed_date > '2003-01-23')
+		//select usr.* from ic_user usr, sch_class_member sch where usr.DATE_OF_BIRTH>='1993-01-01' AND usr.DATE_OF_BIRTH<='1993-10-02' and sch.ic_user_id=usr.ic_user_id and sch.register_date <='2003-01-23' and (sch.removed_date is null  or sch.removed_date > '2003-01-23') order by usr.last_name, usr.first_name, usr.middle_name
 
 		try {
 			//preparing
 			IDOEntityDefinition schClassMemberDef = IDOLookup.getEntityDefinitionForClass(SchoolClassMember.class);
-			IDOEntityDefinition thisDef = this.getEntityDefinition();
+			IDOEntityDefinition usrDef = IDOLookup.getEntityDefinitionForClass(User.class);
 			  	
 			String[] tables = new String[2];
 			String[] variables = new String[2];
 			//table name
-			tables[0] = thisDef.getSQLTableName();
+			tables[0] = usrDef.getSQLTableName();
 			//as variable
 			variables[0] = "usr";
 			//table name
@@ -93,7 +93,7 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			query.appendEqualSign();
 			query.append(variables[0]);
 			query.append(".");
-			query.append(thisDef.getPrimaryKeyDefinition().getField().getSQLFieldName());
+			query.append(usrDef.getPrimaryKeyDefinition().getField().getSQLFieldName());
 			
 			
 			
@@ -121,6 +121,14 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			query.appendGreaterThanSign();
 			query.append(currentDate);
 			query.appendRightParenthesis();
+			
+			//order by usr.last_name, usr.first_name, usr.middle_name
+			String[] order = new String[3];
+			order[0] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_LAST_NAME).getSQLFieldName();
+			order[1] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_MIDDLE_NAME).getSQLFieldName();
+			order[2] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_MIDDLE_NAME).getSQLFieldName();
+			query.appendOrderBy(order); 
+			  	
 			  	
 			System.out.println("SQL -> "+this.getClass()+":"+query);
 			return idoFindPKsByQuery(query); 
@@ -243,6 +251,14 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			subQuery.appendInCollection(classes);
 			
 			query.appendNotIn(subQuery);
+			
+			//order by usr.last_name, usr.first_name, usr.middle_name
+			String[] order = new String[3];
+			order[0] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_LAST_NAME).getSQLFieldName();
+			order[1] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_MIDDLE_NAME).getSQLFieldName();
+			order[2] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_MIDDLE_NAME).getSQLFieldName();
+			query.appendOrderBy(order); 
+
 			
 			System.out.println("SQL -> "+this.getClass()+":"+query);
 					
