@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.4 2004/12/14 07:18:05 laddi Exp $
+ * $Id: MeetingReportCertifier.java,v 1.5 2005/01/24 14:24:44 anna Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
@@ -62,7 +62,6 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 	
 	private Form getCertifyingForm(IWContext iwc) {
 		MeetingFee fee = getMeetingFee(iwc);
-		
 		Form form = new Form();
 		try {
 			form.add(getCertifyingTable(iwc, fee));
@@ -70,12 +69,14 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		catch(RemoteException re) {
 			log(re);
 		}
+    
 		form.add(new Break());
 		form.add(getRejectButton());
 		form.add(getEditButton(iEditPage, PARAMETER_MEETING_FEE_ID, fee.getPrimaryKey().toString()));
 		form.add(getNextButton());
-		
+		form.maintainParameter(PARAMETER_MEETING_FEE_ID);
 		return form;
+    
 	}
 	
 	
