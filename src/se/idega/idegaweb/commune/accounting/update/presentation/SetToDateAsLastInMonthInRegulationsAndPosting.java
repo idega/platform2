@@ -50,7 +50,7 @@ public class SetToDateAsLastInMonthInRegulationsAndPosting extends AccountingBlo
 	 */
 	private boolean handleAction(IWContext iwc) {
 		if(iwc.isParameterSet(PARAM_SAVE)){
-			handleSave(iwc);
+			handleSave();
 			add("Done!");
 			return false;
 		}
@@ -60,7 +60,7 @@ public class SetToDateAsLastInMonthInRegulationsAndPosting extends AccountingBlo
 	/**
 	 * @param iwc
 	 */
-	private void handleSave(IWContext iwc) {
+	private void handleSave() {
 		try {
 			Iterator iterator;
 			Collection regulations = getRegulationHome().findAllRegulations();
