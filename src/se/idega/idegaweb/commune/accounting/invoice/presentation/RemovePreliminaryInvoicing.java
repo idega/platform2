@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.Date;
 
 import javax.ejb.RemoveException;
 
@@ -19,6 +18,8 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InputContainer;
+import com.idega.util.CalendarMonth;
+import com.idega.util.IWTimestamp;
 
 /**
  * Makes it possible to remove all preliminary billing and invoicing information 
@@ -71,17 +72,19 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 	 */
 	private void handleAction(String schoolCategory, IWContext iwc) {
 		if(iwc.isParameterSet(PARAM_SAVE)){
-			handleSave(schoolCategory, iwc);
+			String date = iwc.getParameter(PARAM_MONTH);
+			CalendarMonth month = new CalendarMonth(new IWTimestamp(date));
+			handleSave(schoolCategory, month, iwc);
 		}
 	}
 	
 	/**
 	 * @param iwc
 	 */
-	private void handleSave(String schoolCategory, IWContext iwc) {
+	private void handleSave(String schoolCategory, CalendarMonth month, IWContext iwc) {
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-			invoiceBusiness.removePreliminaryInvoice(new Date(System.currentTimeMillis()), schoolCategory);
+			invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
 			add(this.localize(PREFIX+"records_removed","Records have been removed."));
 		} catch (RemoveException e) {
 			add(this.localize(PREFIX+"There_are_records_with_status_'Locked'_and/or_'History',_therefore_deletes_are_not_allowed","There are records with status 'Locked' and/or 'History', therefore deletes are not allowed."));
