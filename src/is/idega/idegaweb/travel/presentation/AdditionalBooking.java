@@ -198,7 +198,7 @@ public class AdditionalBooking extends TravelWindow {
         if (isCorrection) {
           bookingTypeId = Booking.BOOKING_TYPE_ID_CORRECTION;
         }
-        bookingId = Booker.Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"");
+        bookingId = Booker.Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"",Booking.PAYMENT_TYPE_ID_CASH);
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {

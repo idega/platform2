@@ -8,6 +8,7 @@ import com.idega.util.*;
 import com.idega.util.text.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.text.DecimalFormat;
+import com.idega.block.calendar.business.CalendarBusiness;
 
 import com.idega.core.data.Address;
 import com.idega.block.trade.stockroom.data.*;
@@ -38,6 +39,8 @@ public class PublicBooking extends Block  {
   Supplier supplier;
   int productId = -1;
 
+  private idegaTimestamp stamp;
+  private String parameterProductId = LinkGenerator.parameterProductId;
   private DecimalFormat df = new DecimalFormat("0.00");
   private Text text = new Text("");
   private Text boldText = new Text("");
@@ -63,7 +66,17 @@ public class PublicBooking extends Block  {
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
 
-    String sProductId = iwc.getParameter(LinkGenerator.parameterProductId);
+    String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+    String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+    String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+    if (year != null && month != null && day != null) {
+      stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+    }else {
+      stamp = idegaTimestamp.RightNow();
+    }
+
+
+    String sProductId = iwc.getParameter(this.parameterProductId);
     if (sProductId != null) {
       try {
 
@@ -113,13 +126,10 @@ public class PublicBooking extends Block  {
   private void displayForm(IWContext iwc) {
       Table table = new Table(2,3);
         table.setWidth("90%");
-        table.setHeight("90%");
         table.setAlignment("center");
         table.setCellspacing(1);
         table.setColor(TravelManager.WHITE);
         table.setBorder(0);
-
-
 
       Image background = bundle.getImage("images/sb_background.gif");
       table.setBackgroundImage(1, 2, background);
@@ -131,6 +141,18 @@ public class PublicBooking extends Block  {
       table.setHeight(1, "20");
       table.setHeight(3, "20");
       table.setWidth(2, "20");
+
+
+      try {
+        String action = iwc.getParameter(TourBookingForm.BookingAction);
+        if (action != null) {
+          TourBookingForm tbf = new TourBookingForm(iwc);
+            tbf.setProduct(product);
+            System.err.println("Created booking_id = "+tbf.handleInsert(iwc));
+        }
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
 
 
       table.add(leftTop(iwc),1,1);
@@ -149,6 +171,7 @@ public class PublicBooking extends Block  {
     try {
       CalendarHandler ch = new CalendarHandler(iwc);
         ch.setProduct(product);
+        ch.addParameterToLink(this.parameterProductId, productId);
       table.add(ch.getCalendarTable(iwc));
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -289,7 +312,10 @@ public class PublicBooking extends Block  {
       TourBookingForm tbf = new TourBookingForm(iwc);
         tbf.setProduct(product);
 
-      return tbf.getPublicBookingForm();
+        Form form = tbf.getPublicBookingForm(stamp);
+          form.maintainParameter(this.parameterProductId);
+
+      return form;
     }catch (Exception e) {
       e.printStackTrace(System.err);
       return new Form();

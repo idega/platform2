@@ -41,6 +41,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
     addAttribute(getDateOfBookingColumnName(), "Hvenær bókun á sér stað", true, true, java.sql.Timestamp.class);
     addAttribute(getPostalCodeColumnName(), "Póstnúmer", true, true, String.class);
     addAttribute(getAttendanceColumnName(), "Mæting", true, true, Integer.class);
+    addAttribute(getPaymentTypeIdColumnName(), "Gerð greiðslu", true, true, Integer.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
 
     this.addManyToManyRelationShip(Reseller.class);
@@ -50,6 +51,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public void setDefaultValues() {
       this.setIsValid(true);
       this.setAttendance(-1000);
+      this.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
   }
 
 
@@ -165,6 +167,14 @@ public class GeneralBooking extends GenericEntity implements Booking{
     return getIntColumnValue(getAttendanceColumnName());
   }
 
+  public void setPaymentTypeId(int id) {
+    setColumn(getPaymentTypeIdColumnName(), id);
+  }
+
+  public int getPaymentTypeId() {
+    return getIntColumnValue(getPaymentTypeIdColumnName());
+  }
+
   public boolean getIsValid() {
     return getBooleanColumnValue(getIsValidColumnName());
   }
@@ -191,6 +201,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public static String getDateOfBookingColumnName() {return "DATE_OF_BOOKING";}
   public static String getPostalCodeColumnName() {return "POSTAL_CODE";}
   public static String getAttendanceColumnName() {return "ATTENDANCE";}
+  public static String getPaymentTypeIdColumnName() {return "PAYMENT_TYPE";}
   public static String getIsValidColumnName() {return "IS_VALID";}
 
 

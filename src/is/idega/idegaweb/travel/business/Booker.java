@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.presentation.ui.*;
 import java.sql.SQLException;
 import com.idega.data.EntityControl;
 import com.idega.data.SimpleQuerier;
@@ -11,6 +12,7 @@ import is.idega.idegaweb.travel.data.GeneralBooking;
 import com.idega.util.database.ConnectionBroker;
 import java.sql.Connection;
 import is.idega.idegaweb.travel.interfaces.Booking;
+import com.idega.idegaweb.*;
 
 import is.idega.idegaweb.travel.service.tour.data.*;
 /**
@@ -27,19 +29,19 @@ public class Booker {
   public Booker() {
   }
 
-  public static int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
+  public static int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType);
   }
 
-  public static int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode);
+  public static int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType);
   }
 
-  public static int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode);
+  public static int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType) throws SQLException {
+    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType);
   }
 
-  private static int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+  private static int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId) throws SQLException {
     Booking booking = null;
     int returner = bookingId;
     Object type = getServiceType(serviceId);
@@ -57,7 +59,7 @@ public class Booker {
         booking.setEmail(email);
         booking.setName(name);
         booking.setPostalCode(postalCode);
-
+        booking.setPaymentTypeId(paymentTypeId);
         booking.setTelephoneNumber(telephoneNumber);
         booking.setTotalCount(totalCount);
       booking.insert();
@@ -76,6 +78,7 @@ public class Booker {
         booking.setEmail(email);
         booking.setName(name);
         booking.setPostalCode(postalCode);
+        booking.setPaymentTypeId(paymentTypeId);
         booking.setTelephoneNumber(telephoneNumber);
         booking.setTotalCount(totalCount);
       booking.update();
@@ -286,6 +289,9 @@ public class Booker {
     }
   }
 
+  /**
+   * @todo finna betri stað
+   */
   private static Object getServiceType(int serviceId) {
     Object object;
     try {
@@ -295,5 +301,16 @@ public class Booker {
       return null;
     }
   }
+
+  public static DropdownMenu getPaymentTypes(IWResourceBundle iwrb) {
+    DropdownMenu menu = new DropdownMenu("payment_type");
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_NO_PAYMENT, iwrb.getLocalizedString("travel.unpaid","Unpaid"));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CASH, iwrb.getLocalizedString("travel.cash","Cash"));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CREDIT_CARD ,iwrb.getLocalizedString("travel.credit_card","Credit card"));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_VOUCHER ,iwrb.getLocalizedString("travel.voucher","Voucher"));
+      menu.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+    return menu;
+  }
+
 
 }

@@ -21,6 +21,10 @@ public interface Booking {
   public static final int BOOKING_TYPE_ID_ADDITIONAL_BOOKING = 5;
   public static final int BOOKING_TYPE_ID_CORRECTION = 6;
 
+  public static final int PAYMENT_TYPE_ID_NO_PAYMENT = 0;
+  public static final int PAYMENT_TYPE_ID_CREDIT_CARD = 1;
+  public static final int PAYMENT_TYPE_ID_CASH = 2;
+  public static final int PAYMENT_TYPE_ID_VOUCHER = 3;
 
   public String getName();
   public void setName(String name);
@@ -61,6 +65,9 @@ public interface Booking {
 
   public void setAttendance(int attendance);
   public int getAttendance();
+
+  public void setPaymentTypeId(int type);
+  public int getPaymentTypeId();
 
   public boolean getIsValid();
   public void setIsValid(boolean isValid);

@@ -700,10 +700,17 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public static List getDepartureDays(IWContext iwc, Product product) {
-    return getDepartureDays(iwc, product, null, null);
+    return getDepartureDays(iwc, product, null, null, true);
+  }
+
+  public static List getDepartureDays(IWContext iwc, Product product, boolean showPast) {
+    return getDepartureDays(iwc, product, null, null, showPast);
   }
 
   public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp from, idegaTimestamp to) {
+    return getDepartureDays(iwc, product, from, to, true);
+  }
+  public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp from, idegaTimestamp to, boolean showPast) {
     List returner = new Vector();
     try {
       Service service = new Service(product.getID());
@@ -715,6 +722,16 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       idegaTimestamp stamp = new idegaTimestamp(from);
       idegaTimestamp temp;
+
+      if (!showPast) {
+        idegaTimestamp now = idegaTimestamp.RightNow();
+        if (now.isLaterThan(from) && to.isLaterThan(now)) {
+          stamp = new idegaTimestamp(now);
+        }else if (now.isLaterThan(from) && now.isLaterThan(to)) {
+          stamp = new idegaTimestamp(to);
+        }
+      }
+
 
       int[] weekDays = ServiceDay.getDaysOfWeek(product.getID());
 

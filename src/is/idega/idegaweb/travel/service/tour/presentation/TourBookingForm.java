@@ -367,12 +367,18 @@ public class TourBookingForm extends TravelManager {
       return form;
   }
 
-  public Form getPublicBookingForm() {
+  public Form getPublicBookingForm(idegaTimestamp stamp) {
     Form form = new Form();
     Table table = new Table();
       table.setCellpadding(0);
       table.setCellspacing(2);
       form.add(table);
+
+      if (stamp != null) {
+        form.addParameter("year",stamp.getYear());
+        form.addParameter("month",stamp.getMonth());
+        form.addParameter("day",stamp.getDay());
+      }
 
       ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), true);
 
@@ -618,6 +624,7 @@ public class TourBookingForm extends TravelManager {
             table.setColumnAlignment(2,"left");
             table.setColumnAlignment(3,"right");
             table.setColumnAlignment(4,"left");
+            table.setAlignment(4,row,"right");
         }
     return form;
   }
@@ -695,7 +702,6 @@ public class TourBookingForm extends TravelManager {
 
   public int handleInsert(IWContext iwc) throws Exception{
     String action = iwc.getParameter(this.BookingAction);
-      System.err.println("ACTION "+action);
     if (action.equals(this.BookingParameter)) {
       return checkBooking(iwc);
     }else if (action.equals(this.parameterBookAnyway)) {
@@ -734,7 +740,12 @@ public class TourBookingForm extends TravelManager {
 
       try {
         _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
-      }catch (NumberFormatException n) {}
+      }catch (NumberFormatException n) {
+        System.err.println("YEAR  : "+year);
+        System.err.println("MONTH : "+month);
+        System.err.println("DAY   : "+day);
+        n.printStackTrace(System.err);
+      }
 
       String sBookingId = iwc.getParameter(this.parameterBookingId);
       System.err.println("sBookingId "+sBookingId);
@@ -772,23 +783,52 @@ public class TourBookingForm extends TravelManager {
           iHotelId = -1;
         }
 
+        int paymentType = Booking.PAYMENT_TYPE_ID_NO_PAYMENT;
+        int bookingType = Booking.BOOKING_TYPE_ID_ONLINE_BOOKING;
+
+        if (ccNumber != null) {
+          paymentType = Booking.PAYMENT_TYPE_ID_CREDIT_CARD;
+        }else {
+          if (supplier != null) {
+            paymentType = Booking.PAYMENT_TYPE_ID_NO_PAYMENT;
+          }else if (_reseller != null) {
+            paymentType = Booking.PAYMENT_TYPE_ID_VOUCHER;
+          }
+        }
+
+        if (supplier != null) {
+          bookingType = Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING;
+        }else if (_reseller != null) {
+          displayFormInternal= true;
+          bookingType = Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING;
+        }else {
+          bookingType = Booking.BOOKING_TYPE_ID_ONLINE_BOOKING;
+        }
+
+        if (iBookingId == -1) {
+          lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, bookingType, areaCode, paymentType);
+        }else {
+          lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType);
+        }
+
+        /*
         if (supplier != null) {
           if (iBookingId == -1) {
             System.err.println("1");
-            lbookingId = TourBooker.BookBySupplier(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode);
+            lbookingId = TourBooker.BookBySupplier(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
           }else {
             System.err.println("2");
-            lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode);
+            lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
           }
             displayFormInternal = true;
         }else if (_reseller != null) {
             if (_reseller.getReferenceNumber().equals(referenceNumber)) {
               if (iBookingId == -1) {
             System.err.println("3");
-                lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode);
+                lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode, Booking.PAYMENT_TYPE_ID_VOUCHER);
               }else {
             System.err.println("4");
-                lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode);
+                lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_VOUCHER);
               }
               _reseller.addTo(GeneralBooking.class, iBookingId);
               displayFormInternal= true;
@@ -796,12 +836,12 @@ public class TourBookingForm extends TravelManager {
         }else if ((supplier == null) && (_reseller == null) ) {
             // if (Median.isCCValid(ccNumber,ccMonth, ccYear));
           if (supplierId == null) {
-            iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
+            iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode, Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
           }else { // Supplier booked with cc number :)
-            iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
+            iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,areaCode, Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
           }
         }
-
+        */
         returner = iBookingId;
 
         if (lbookingId != -1) {

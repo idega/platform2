@@ -23,18 +23,18 @@ public class TourBooker extends Booker {
   }
 
 
-  public static int BookBySupplier(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    int _bookingId = Booker.Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
+  public static int BookBySupplier(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType) throws SQLException {
+    int _bookingId = Booker.Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType);
     return Book(_bookingId, hotelPickupPlaceId, roomNumber);
   }
 
-  public static int Book(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
-    int _bookingId = Booker.Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode);
+  public static int Book(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType) throws SQLException {
+    int _bookingId = Booker.Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType);
     return Book(_bookingId, hotelPickupPlaceId, roomNumber);
   }
 
-  public static int updateBooking(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    int _bookingId = Booker.updateBooking(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount,  postalCode);
+  public static int updateBooking(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType) throws SQLException {
+    int _bookingId = Booker.updateBooking(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount,  postalCode, paymentType);
     return Book(_bookingId, hotelPickupPlaceId, roomNumber);
   }
 

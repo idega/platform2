@@ -48,9 +48,13 @@ public class CalendarHandler extends TravelManager {
   private Reseller _reseller;
   private idegaTimestamp _fromStamp;
   private idegaTimestamp _toStamp;
+  private Class _class = Booking.class;
 
   private int _productId;
   private int _resellerId;
+
+  private Vector parameterName  = new Vector();
+  private Vector parameterValue = new Vector();
 
   public CalendarHandler(IWContext iwc) throws Exception{
     super.main(iwc);
@@ -112,6 +116,10 @@ public class CalendarHandler extends TravelManager {
       sm.setTimestamp(_fromStamp);
       this.timeframeCheck();
 
+      for (int i = 0; i < parameterName.size(); i++) {
+        sm.addParameterToLink((String) parameterName.get(i), (String) parameterValue.get(i));
+      }
+
 
       Table table = new Table(4,6);
           table.setBorder(0);
@@ -156,62 +164,62 @@ public class CalendarHandler extends TravelManager {
         dec.setFontStyle("text-decoration: none;");
         dec.setText(cal.getShortNameOfMonth(12,iwc).substring(0,3));
 
-      Link lJan = new Link(jan,Booking.class);
+      Link lJan = new Link(jan,_class);
         lJan.setBold();
         lJan.addParameter("year",_fromStamp.getYear());
         lJan.addParameter("month",1);
         lJan.addParameter("day",_fromStamp.getDate());
-      Link lFeb = new Link(feb,Booking.class);
+      Link lFeb = new Link(feb,_class);
         lFeb.setBold();
         lFeb.addParameter("year",_fromStamp.getYear());
         lFeb.addParameter("month",2);
         lFeb.addParameter("day",_fromStamp.getDate());
-      Link lMar = new Link(mar,Booking.class);
+      Link lMar = new Link(mar,_class);
         lMar.setBold();
         lMar.addParameter("year",_fromStamp.getYear());
         lMar.addParameter("month",3);
         lMar.addParameter("day",_fromStamp.getDate());
-      Link lApr = new Link(apr,Booking.class);
+      Link lApr = new Link(apr,_class);
         lApr.setBold();
         lApr.addParameter("year",_fromStamp.getYear());
         lApr.addParameter("month",4);
         lApr.addParameter("day",_fromStamp.getDate());
-      Link lMay = new Link(may,Booking.class);
+      Link lMay = new Link(may,_class);
         lMay.setBold();
         lMay.addParameter("year",_fromStamp.getYear());
         lMay.addParameter("month",5);
         lMay.addParameter("day",_fromStamp.getDate());
-      Link lJun = new Link(jun,Booking.class);
+      Link lJun = new Link(jun,_class);
         lJun.setBold();
         lJun.addParameter("year",_fromStamp.getYear());
         lJun.addParameter("month",6);
         lJun.addParameter("day",_fromStamp.getDate());
-      Link lJul = new Link(jul,Booking.class);
+      Link lJul = new Link(jul,_class);
         lJul.setBold();
         lJul.addParameter("year",_fromStamp.getYear());
         lJul.addParameter("month",7);
         lJul.addParameter("day",_fromStamp.getDate());
-      Link lAug = new Link(aug,Booking.class);
+      Link lAug = new Link(aug,_class);
         lAug.setBold();
         lAug.addParameter("year",_fromStamp.getYear());
         lAug.addParameter("month",8);
         lAug.addParameter("day",_fromStamp.getDate());
-      Link lSep = new Link(sep,Booking.class);
+      Link lSep = new Link(sep,_class);
         lSep.setBold();
         lSep.addParameter("year",_fromStamp.getYear());
         lSep.addParameter("month",9);
         lSep.addParameter("day",_fromStamp.getDate());
-      Link lOct = new Link(oct,Booking.class);
+      Link lOct = new Link(oct,_class);
         lOct.setBold();
         lOct.addParameter("year",_fromStamp.getYear());
         lOct.addParameter("month",10);
         lOct.addParameter("day",_fromStamp.getDate());
-      Link lNov = new Link(nov,Booking.class);
+      Link lNov = new Link(nov,_class);
         lNov.setBold();
         lNov.addParameter("year",_fromStamp.getYear());
         lNov.addParameter("month",11);
         lNov.addParameter("day",_fromStamp.getDate());
-      Link lDec = new Link(dec,Booking.class);
+      Link lDec = new Link(dec,_class);
         lDec.setBold();
         lDec.addParameter("year",_fromStamp.getYear());
         lDec.addParameter("month",12);
@@ -229,8 +237,6 @@ public class CalendarHandler extends TravelManager {
       table.add(lOct,2,3);
       table.add(lNov,3,3);
       table.add(lDec,4,3);
-
-
 
 
       int month = _fromStamp.getMonth();
@@ -252,7 +258,7 @@ public class CalendarHandler extends TravelManager {
           depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
         }
       }else {
-          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product);
+          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, false);
       }
 
 
@@ -405,4 +411,16 @@ public class CalendarHandler extends TravelManager {
     _toStamp = new idegaTimestamp(toStamp);
   }
 
-}
+  public void setClassToLinkTo(Class classToLinkTo) {
+    _class = classToLinkTo;
+  }
+
+  public void addParameterToLink(String name, int value) {
+    addParameterToLink(name, Integer.toString(value));
+  }
+  public void addParameterToLink(String name, String value) {
+    parameterName.add(name);
+    parameterValue.add(value);
+  }
+
+  }

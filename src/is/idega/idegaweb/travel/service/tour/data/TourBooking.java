@@ -191,4 +191,12 @@ public class TourBooking extends GenericEntity implements Booking{
     return _booking.getBookingEntries();
   }
 
+  public void setPaymentTypeId(int type) {
+    _booking.setPaymentTypeId(type);
+  }
+
+  public int getPaymentTypeId() {
+    return _booking.getPaymentTypeId();
+  }
+
 }

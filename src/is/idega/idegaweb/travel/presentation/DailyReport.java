@@ -352,7 +352,7 @@ public class DailyReport extends TravelManager {
       Booking[] bookings = TourBooker.getBookings(product.getID(),stamp,bookingTypeIds);
 
       String theColor = super.GRAY;
-
+      DropdownMenu payType;
       BookingEntry[] entries;
       int iBookingId = 0;
       table.setRowColor(row,super.backgroundColor);
@@ -377,17 +377,19 @@ public class DailyReport extends TravelManager {
             nameText.setText(bookings[i].getName());
 
           payTypeText = (Text) smallText.clone();
-          iBookingId = bookings[i].getBookingTypeID();
-
+          payType = (DropdownMenu) Booker.getPaymentTypes(iwrb).clone();
+            payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
+          iBookingId = bookings[i].getPaymentTypeId();
+/*
           switch (iBookingId) {
-            case Booking.BOOKING_TYPE_ID_ONLINE_BOOKING :
+            case Booking.PAYMENT_TYPE_ID_CREDIT_CARD :
                 payTypeText.setText(iwrb.getLocalizedString("travel.credit_card","Credit card"));
               break;
-            case Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING :
-                payTypeText.setText(iwrb.getLocalizedString("travel.voucher_reseller","Voucher - Reseller"));
+            case Booking.PAYMENT_TYPE_ID_CASH :
+                payTypeText.setText(iwrb.getLocalizedString("travel.cash","Cash"));
             break;
-            case Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING :
-                payTypeText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
+            case Booking.PAYMENT_TYPE_ID_NO_PAYMENT :
+                payTypeText.setText(iwrb.getLocalizedString("travel.unpaid","Unpaid"));
             break;
             case Booking.BOOKING_TYPE_ID_INQUERY_BOOKING :
                 payTypeText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
@@ -396,7 +398,7 @@ public class DailyReport extends TravelManager {
                 payTypeText.setText("");
             break;
           }
-
+*/
 
           bookedText = (Text) smallText.clone();
             bookedText.setText(Integer.toString(ibookings));
@@ -416,7 +418,7 @@ public class DailyReport extends TravelManager {
 
           table.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,row);
           table.add(nameText,1,row);
-          table.add(payTypeText,2,row);
+          table.add(payType,2,row);
           table.add(bookedText,3,row);
           table.add(attTextBox,4,row);
           table.add(amountText,5,row);
@@ -787,17 +789,24 @@ public class DailyReport extends TravelManager {
   private void update(IWContext iwc) {
     String[] booking_ids = (String[]) iwc.getParameterValues("booking_id");
     String[] attendance  = (String[]) iwc.getParameterValues("attendance");
+    String[] pay_type    = (String[]) iwc.getParameterValues("payment_type");
 
     Booking booking;
     if (booking_ids != null)
     for (int i = 0; i < booking_ids.length; i++) {
       try {
         booking = new GeneralBooking(Integer.parseInt(booking_ids[i]));
-        booking.setAttendance(Integer.parseInt(attendance[i]));
+        try {
+          booking.setAttendance(Integer.parseInt(attendance[i]));
+        }catch (NumberFormatException n) {
+          booking.setAttendance(0);
+        }
+        try {
+          booking.setPaymentTypeId(Integer.parseInt(pay_type[i]));
+        }catch (NumberFormatException n) {}
         booking.update();
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
-      }catch (NumberFormatException n) {
       }
     }
 
