@@ -9,7 +9,7 @@ import com.idega.core.data.ICFile;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
-import com.idega.jmodule.image.presentation.ImageInserter;
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.IWBlock;
 import com.idega.block.banner.data.*;
 import com.idega.block.banner.business.*;
