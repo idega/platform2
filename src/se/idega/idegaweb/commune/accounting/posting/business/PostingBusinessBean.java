@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.27 2003/10/02 22:22:43 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.28 2003/10/09 13:19:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -155,7 +155,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		if (ps == null) {
 			return "";
 		}
-		return trim(ps.substring(readPointer, readPointer + fieldLength), field);
+		try {
+			return trim(ps.substring(readPointer, readPointer + fieldLength), field);
+		} catch (StringIndexOutOfBoundsException e) {
+			return "";
+		}
+
 	}
 
 	/**
@@ -583,6 +588,31 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			return null;
 		}
 	}
+
+
+
+	/**
+	 * Gets a posting field length for a specific date and field number
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingField# 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString# 
+	 * @return int length of field 
+	 * @author Kjell
+	 */
+	public int getPostingFieldByDateAndFieldNo(Date date, int fieldNo) {
+		try {
+			PostingStringHome psHome = getPostingStringHome();
+			PostingFieldHome pfHome = getPostingFieldHome();
+			PostingString ps = psHome.findPostingStringByDate(date); 
+			int psID = Integer.parseInt(ps.getPrimaryKey().toString());
+			PostingField pf = (PostingField) pfHome.findFieldByPostingStringAndFieldNo(psID, fieldNo);
+			return pf.getLen();				
+		} catch (RemoteException e) {
+			return 0;
+		} catch (FinderException e) {
+			return 0;
+		}
+	}
+
 
 	/**
 	 * Gets a posting fields for a specific date

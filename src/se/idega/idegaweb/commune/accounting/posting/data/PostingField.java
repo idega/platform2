@@ -1,7 +1,7 @@
 package se.idega.idegaweb.commune.accounting.posting.data;
 
 
-public interface PostingField extends com.idega.data.IDOEntity,com.idega.data.IDOLegacyEntity
+public interface PostingField extends com.idega.data.IDOEntity
 {
  public java.lang.String getFieldTitle();
  public boolean getIsMandatory();

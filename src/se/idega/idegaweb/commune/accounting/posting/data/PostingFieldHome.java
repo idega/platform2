@@ -6,5 +6,6 @@ public interface PostingFieldHome extends com.idega.data.IDOHome
  public PostingField create() throws javax.ejb.CreateException;
  public PostingField findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAllFieldsByPostingString(int p0)throws javax.ejb.FinderException;
+ public PostingField findFieldByPostingStringAndFieldNo(int p0,int p1)throws javax.ejb.FinderException;
 
 }

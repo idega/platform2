@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.22 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: PostingParameterList.java,v 1.23 2003/10/09 13:19:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.22 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: PostingParameterList.java,v 1.23 2003/10/09 13:19:08 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -253,15 +253,19 @@ public class PostingParameterList extends AccountingBlock {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					}
 
-					list.add(p.getPostingString().substring(0, 7));
-					list.add(p.getDoublePostingString().substring(0, 7));
+					// Check this out
+					// added a new thingy in the business getting a specific fields length
+					// Its useful (Kelly)
+					int accountLength = pBiz.getPostingFieldByDateAndFieldNo(_currentFromDate, 1);						
+					list.add(p.getPostingString().substring(0, accountLength));
+					list.add(p.getDoublePostingString().substring(0, accountLength));
 
 
 					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
 					edit.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
 					edit.setPage(_editPage);
 					list.add(edit);
-
+					
 					Link copy = new Link(getCopyIcon(localize(KEY_BUTTON_COPY, "Kopiera")));
 					copy.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
 					copy.addParameter(PARAM_MODE_COPY, "1");

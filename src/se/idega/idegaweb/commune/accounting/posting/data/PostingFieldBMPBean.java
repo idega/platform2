@@ -1,5 +1,5 @@
 /*
- * $Id: PostingFieldBMPBean.java,v 1.5 2003/09/30 10:41:43 joakim Exp $
+ * $Id: PostingFieldBMPBean.java,v 1.6 2003/10/09 13:19:08 kjell Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -134,6 +134,16 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField
 		sql.appendOrderBy(COLUMN_ORDER_NR);
 
 		return idoFindPKsByQuery(sql);
+	}		
+	
+	// added by kelly
+	public Object ejbFindFieldByPostingStringAndFieldNo(int PostingStringId, int fieldNo) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CP_POSTING_STRING_ID, PostingStringId);
+		sql.appendAndEquals(COLUMN_ORDER_NR, fieldNo);
+		
+		return idoFindOnePKByQuery(sql);
 	}		
 	
 }
