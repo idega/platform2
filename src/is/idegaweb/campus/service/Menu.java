@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.4 2001/07/12 21:25:44 laddi Exp $
+ * $Id: Menu.java,v 1.5 2001/07/13 16:19:48 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -153,6 +153,7 @@ public class Menu extends JModuleObject{
     Link link5 = new Link(menu5);
     link5.setURL(getUrl(ACT5));
     link5.addParameter(strAction,ACT5);
+    link5.addParameter(TextControl.strAction,"14");
     LinkTable.add(link5,1,row);
     row++;
 
@@ -191,7 +192,7 @@ public class Menu extends JModuleObject{
       case ACT2:  url = "/main/text.jsp";            break;
       case ACT3:  url = "/main/apply.jsp";           break;
       case ACT4:  url = "/main/apartments.jsp";      break;
-      case ACT5:  url = "/main/links.jsp";           break;
+      case ACT5:  url = "/main/text.jsp";            break;
       case ACT6:  url = "/main/english.jsp";         break;
       case ACT7:  url = "/index2.jsp";               break;
       case ACT8:  url = "/main/text.jsp";            break;
