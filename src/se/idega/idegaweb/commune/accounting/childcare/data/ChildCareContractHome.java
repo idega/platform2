@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareContractHome.java,v 1.1 2004/10/07 13:41:48 thomas Exp $
+ * $Id: ChildCareContractHome.java,v 1.2 2004/10/08 14:45:18 thomas Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/07 13:41:48 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/08 14:45:18 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ChildCareContractHome extends IDOHome {
     public ChildCareContract create() throws javax.ejb.CreateException;
@@ -62,7 +62,7 @@ public interface ChildCareContractHome extends IDOHome {
      */
     public ChildCareContract findValidContractByApplication(int applicationID,
             Date date) throws FinderException;
-
+    
     /**
      * @see se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractBMPBean#ejbFindValidContractByProvider
      */
@@ -75,6 +75,12 @@ public interface ChildCareContractHome extends IDOHome {
     public ChildCareContract findApplicationByContract(int contractID)
             throws FinderException;
 
+    /**
+     * @see se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractBMPBean#ejbFindValidContractByChild
+     */
+    public ChildCareContract findValidContractByChild(int childID) 
+    		throws FinderException;
+    
     /**
      * @see se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractBMPBean#ejbFindValidContractByChild
      */

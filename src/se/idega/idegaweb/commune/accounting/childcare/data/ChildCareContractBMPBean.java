@@ -18,6 +18,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 import com.idega.util.TimePeriod;
 
 /**
@@ -292,7 +293,12 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CONTRACT_ID, contractID);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}	
-
+	
+	public Integer ejbFindValidContractByChild(int childID) throws FinderException {
+		IWTimestamp stamp = new IWTimestamp();
+		return ejbFindValidContractByChild(childID, stamp.getDate());
+	}
+	
 	public Integer ejbFindValidContractByChild(int childID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
