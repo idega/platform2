@@ -51,6 +51,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private int _threadID = -1;
 	private boolean _isAdmin = false;
 	private boolean _hasAddPermission = true;
+	private boolean _hasReplyPermission = true;
 	private boolean _hasDeletePermission = false;
 	private String _attribute;
 	private int _iLocaleID;
@@ -91,7 +92,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private String _threadName;
 	private String _linkName;
 
-	private static String AddPermisson = "add";
+	protected static String AddPermission = "add";
+	protected static String ReplyPermission = "reply";
+	
 	protected final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.forum";
 	protected IWResourceBundle _iwrb;
 	protected IWBundle _iwb;
@@ -130,11 +133,18 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return iwc.hasEditPermission(this);
 	}
 	
+	public boolean hasAddPermission(IWContext iwc) {
+		return iwc.hasPermission(AddPermission, this);
+	}
+	
+	public boolean hasReplyPermission(IWContext iwc) {
+		return iwc.hasPermission(ReplyPermission, this);
+	}
+	
 	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		_iwb = getBundle(iwc);
 		_iwcb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		_hasAddPermission = iwc.hasPermission(AddPermisson, this);
 
 		_isAdmin = iwc.hasEditPermission(this);
 		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
@@ -142,6 +152,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 		getParameters(iwc);
 		_hasDeletePermission = hasDeletePermission(iwc);
+		_hasAddPermission = hasAddPermission(iwc);
+		_hasReplyPermission = hasReplyPermission(iwc);
+
 		forumBusiness = new ForumBusiness();
 
 		_myTable = new Table();
@@ -602,7 +615,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		replyImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 		table.add(replyImage, column, 1);
 
-		if (_hasAddPermission) {
+		if (_hasReplyPermission) {
 			Link reply = new Link(_iwrb.getLocalizedString("reply", "Reply"));
 			reply.setStyle(_linkName);
 			reply.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
@@ -902,7 +915,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 
 	public void registerPermissionKeys() {
-		registerPermissionKey(AddPermisson);
+		registerPermissionKey(AddPermission);
+		registerPermissionKey(ReplyPermission);
 	}
 
 	public boolean getMultible() {
