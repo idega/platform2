@@ -6,11 +6,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.data.CreditCardInformation;
 import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.core.accesscontrol.data.PermissionGroup;
@@ -24,6 +22,11 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
  * Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
@@ -304,7 +307,15 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 	}
 	
 	public Collection ejbFindAllByGroupID(int groupID) throws FinderException {
-		return this.idoFindAllIDsByColumnBySQL(getColumnNameGroupID(), Integer.toString(groupID));
+		Table table = new Table(this);
+		Column groupColumn = new Column(table, getColumnNameGroupID());
+		Column validColumn = new Column(table, getColumnNameIsValid());
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(groupColumn, MatchCriteria.EQUALS, groupID));
+		query.addCriteria(new MatchCriteria(validColumn, MatchCriteria.EQUALS, true));
+		System.out.println(query.toString());
+		return this.idoFindPKsBySQL(query.toString());
 	}
 }
 
