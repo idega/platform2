@@ -1509,7 +1509,7 @@ public class IFSFileCreationThread extends Thread {
                     }
 
                     if (iRec.getAmount() != 0.0f) {
-                        long am = AccountingUtil.roundAmount(iRec.getAmount());
+                        long am = AccountingUtil.roundAmount(-1 * iRec.getAmount());
                         total += am;
                         String postingType = null;
 
