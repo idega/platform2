@@ -643,7 +643,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			reply.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getID());
 			reply.setWindowToOpen(ForumThreadEditor.class);
 
-			table.add(replyImageLink, column++, 1);
+			table.add(replyImageLink, column, 1);
 			table.add(reply, column++, 1);
 		}
 		else {
