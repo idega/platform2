@@ -199,17 +199,32 @@ public class Scorecard extends GolfEntity{
 
         public void delete() throws SQLException{
 
-            Stroke[] strokes = (Stroke[]) (Stroke.getStaticInstance("com.idega.projects.golf.entity.Stroke")).findAllByColumn("SCORECARD_ID",""+this.getID());
-            for (int i = 0; i < strokes.length; i++) {
-                strokes[i].delete();
+            //com.idega.data.EntityBulkUpdater bulk = new com.idega.data.EntityBulkUpdater();
+
+            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
+            Stroke.getStaticInstance("com.idega.projects.golf.entity.Stroke").deleteMultiple("scorecard_id",Integer.toString(this.getID())); //.findAllByColumn("SCORECARD_ID",this.getID());
+            /*for (int i = 0; i < strokes.length; i++) {
+               bulk.add(strokes[i],com.idega.data.EntityBulkUpdater.delete);
+                //strokes[i].delete();
+            }*/
+
+            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
+            Statistic.getStaticInstance("com.idega.projects.golf.entity.Statistic").deleteMultiple("scorecard_id",Integer.toString(this.getID())); //.findAllByColumn("scorecard_id",this.getID());
+            /*for (int i = 0; i < statistics.length; i++) {
+                //statistics[i].delete();
+                bulk.add(statistics[i],com.idega.data.EntityBulkUpdater.delete);
             }
 
-            Statistic[] statistics = (Statistic[]) (Statistic.getStaticInstance("com.idega.projects.golf.entity.Statistic")).findAllByColumn("scorecard_id",""+this.getID());
-            for (int i = 0; i < statistics.length; i++) {
-                statistics[i].delete();
+            try {
+              bulk.execute();
             }
+            catch (Exception e) {
+              e.printStackTrace(System.out);
+            }*/
 
+            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
             super.delete();
+            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
         }
 
 }
