@@ -124,31 +124,40 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	}
 	
 	protected String getStatusString(ChildCareApplication application) throws RemoteException {
-		String status = application.getStatus();
+		char status = application.getApplicationStatus();
 		
-		if (status.equals(getBusiness().getCaseStatusCancelled().getStatus())) {
+		if (status == getBusiness().getStatusCancelled()) {
 			return localize("child_care.status_cancelled","Cancelled");
 		}
-		else if (status.equals(getBusiness().getCaseStatusContract().getStatus())) {
+		else if (status == getBusiness().getStatusContract()) {
 			return localize("child_care.status_contract","Contract");
 		}
-		else if (status.equals(getBusiness().getCaseStatusDenied().getStatus())) {
+		else if (status == getBusiness().getStatusRejected()) {
 			return localize("child_care.status_rejected","Rejected");
 		}
-		else if (status.equals(getBusiness().getCaseStatusGranted().getStatus())) {
+		else if (status == getBusiness().getStatusAccepted()) {
 			return localize("child_care.status_accepted","Accepted");
 		}
-		else if (status.equals(getBusiness().getCaseStatusInactive().getStatus())) {
-			return localize("child_care.status_inactive","Inactive");
+		else if (status == getBusiness().getStatusMoved()) {
+			return localize("child_care.status_moved","Moved");
 		}
-		else if (status.equals(getBusiness().getCaseStatusOpen().getStatus())) {
+		else if (status == getBusiness().getStatusSentIn()) {
 			return localize("child_care.status_open","Open");
 		}
-		else if (status.equals(getBusiness().getCaseStatusPreliminary().getStatus())) {
+		else if (status == getBusiness().getStatusParentsAccept()) {
 			return localize("child_care.status_parents_accept","Parents accept");
 		}
-		else if (status.equals(getBusiness().getCaseStatusReady().getStatus())) {
+		else if (status == getBusiness().getStatusReady()) {
 			return localize("child_care.status_ready","Ready");
+		}
+		else if (status == getBusiness().getStatusNotAnswered()) {
+			return localize("child_care.status_not_answered","Not answered");
+		}
+		else if (status == getBusiness().getStatusPriority()) {
+			return localize("child_care.status_priority","Priority");
+		}
+		else if (status == getBusiness().getStatusNewChoice()) {
+			return localize("child_care.status_new_choice","New Choice");
 		}
 		
 		return "";
