@@ -209,7 +209,7 @@ public class NewProductApplicationBMPBean extends GenericEntity implements NewPr
 		return (Timestamp)getColumnValue(APPLICATION_SENT);
 	}
 	
-	public float getPrice(float price) {
+	public float getPrice() {
 		return getFloatColumnValue(PRICE);
 	}
 	

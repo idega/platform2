@@ -23,7 +23,7 @@ public interface NewProductApplication extends com.idega.data.IDOEntity
  public void setPrice(float p0);
  public void setDescription(java.lang.String p0);
  public void setQuantity(java.lang.String p0);
- public float getPrice(float p0);
+ public float getPrice();
  public java.lang.String getWeigth();
  public void setSupplier(com.idega.core.user.data.User p0);
  public java.lang.String getStrength();
