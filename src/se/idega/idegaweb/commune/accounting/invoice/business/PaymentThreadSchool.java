@@ -71,11 +71,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/26 15:39:08 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/27 14:18:18 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.110 $
+ * @version $Revision: 1.111 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -706,7 +706,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			errorRelated.append("Study path ID " + schoolClassMember.getStudyPathId());
 			try {
 				SchoolStudyPath schoolStudyPath = ((SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class)).findByPrimaryKey(new Integer(schoolClassMember.getStudyPathId()));
-				errorRelated.append("Study path " + schoolStudyPath.getDescription());
+				errorRelated.append("Study path code " + schoolStudyPath.getCode());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
