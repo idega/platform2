@@ -528,7 +528,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c.provider_id", providerID);
 		if (ssn != null && ! ssn.equals("")){
 			sql.appendAndEquals("p.user_id", "u.ic_user_id");
-			sql.appendAndEqualsQuoted("u.personal_id", ssn);
+			sql.appendAnd().append("u.personal_id").appendLike().appendWithinSingleQuotes( ssn);
 		}
 		if (msgId != null && ! msgId.equals("")){
 			sql.appendAndEqualsQuoted("m.msg_letter_message_id", msgId);
@@ -572,7 +572,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c.school_id", providerID);
 		if (ssn != null && ! ssn.equals("")){
 			sql.appendAndEquals("p.user_id", "u.ic_user_id");
-			sql.appendAndEqualsQuoted("u.personal_id", ssn);
+			sql.appendAnd().append("u.personal_id").appendLike().appendWithinSingleQuotes( ssn);
 		}
 		if (msgId != null && ! msgId.equals("")){
 			sql.appendAndEqualsQuoted("m.msg_letter_message_id", msgId);
