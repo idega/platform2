@@ -44,7 +44,7 @@ public class UpdateHandicap {
             int tee_id = 0;
             double tournamentHandicap = 0;
 
-            Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date > '"+stampur.toSQLDateString()+"' order by scorecard_date");
+            Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null order by scorecard_date");
 
             System.out.println("Total scorecards: "+scorecard.length);
             if ( scorecard.length > 0 ) {
