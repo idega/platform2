@@ -1711,6 +1711,10 @@ private String getLeagueIdentifier(WorkReportGroup league) {
 	//.append("  ")
 	//.append( (league.getName()!=null)? league.getName() : "");
 	String leagueText=league.toString();
+	
+	if("".equals(leagueText)){
+		leagueText = (league.getName()!=null)? league.getName() : "";
+	}
 	return leagueText;
 }
 
@@ -1721,7 +1725,11 @@ private String getRegionalUnionIdentifier(WorkReport report) {
 	.append( (report.getRegionalUnionAbbreviation()!=null)? report.getRegionalUnionAbbreviation() : "");
 	//.append("  ")
 	//.append( (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "");
-	return ruBuf.toString();
+	String regText = ruBuf.toString();
+	if("".equals(regText)){
+		regText = (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "";
+	}
+	return regText;
 }
 
 }
