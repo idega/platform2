@@ -101,7 +101,7 @@ public class MailUserBean {
      * session setter method.
      */
     public void setSession(Session s) {
-        this.session = session;
+        this.session = s;
     }
 
     /**

@@ -75,7 +75,7 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
   }
 
   public void setServerType(String serviceType){
-    this.serverType = serverType;
+    this.serverType = serviceType;
   }
 
   public String getServerType(){

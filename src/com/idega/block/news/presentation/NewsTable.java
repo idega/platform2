@@ -90,7 +90,7 @@ public class NewsTable extends PresentationObjectContainer {
 
   public NewsTable(int iLayout){
 
-    iLayout = iLayout ;
+    this.iLayout = iLayout ;
 
   }
 
@@ -98,7 +98,7 @@ public class NewsTable extends PresentationObjectContainer {
 
   public NewsTable(int iLayout,int iNumberOfObjects){
 
-    iLayout = iLayout ;
+    this.iLayout = iLayout ;
 
     iPlannedObjectCount = iNumberOfObjects;
 
@@ -108,7 +108,7 @@ public class NewsTable extends PresentationObjectContainer {
 
 	public NewsTable(int iLayout,int cellPadding,int cellSpacing,String firstColor,String secondColor){
 
-    iLayout = iLayout ;
+    this.iLayout = iLayout ;
 
 		this.cellPadding = cellPadding;
 

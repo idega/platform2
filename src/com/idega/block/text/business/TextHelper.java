@@ -54,7 +54,7 @@ public class TextHelper{
 
   public void setContentHelper(ContentHelper eContentHelper){
 
-    eContentHelper = eContentHelper;
+    this.eContentHelper = eContentHelper;
 
   }
 

@@ -118,13 +118,13 @@ import com.idega.idegaweb.IWResourceBundle;
 
   public void setMenuColor(String MenuColor){
 
-    this.sMenuColor = sMenuColor;
+    this.sMenuColor = MenuColor;
 
   }
 
   public void setItemColor(String ItemColor){
 
-    this.sItemColor = sItemColor;
+    this.sItemColor = ItemColor;
 
   }
 
