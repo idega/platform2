@@ -11,6 +11,14 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.message.data.PrintMessage;
+import se.idega.idegaweb.commune.message.data.PrintMessageHome;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
+import se.idega.idegaweb.commune.presentation.ColumnList;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
+
 import com.idega.business.IBORuntimeException;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -28,14 +36,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
-
-import se.idega.idegaweb.commune.message.data.PrintMessage;
-import se.idega.idegaweb.commune.message.data.PrintMessageHome;
-import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
-import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
-import se.idega.idegaweb.commune.presentation.ColumnList;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
  * PrintMessageViewer
@@ -73,6 +73,7 @@ public class PrintMessageViewer extends CommuneBlock {
 	protected static final String LOCALE_LAST = "eventlist.last";
 	protected static final String LOCALE_NEXT = "eventlist.next";
 	protected static final String LOCALE_MSGID_INT = "eventlist.msgid_int";
+	protected static final String LOCALE_BULK_MESSAGE = "eventlist.bulk_message";
 	public boolean showTypesAsDropdown = false;
 	private String currentType = "";
 	private IWTimestamp today = IWTimestamp.RightNow();
@@ -202,21 +203,30 @@ public class PrintMessageViewer extends CommuneBlock {
 	}
 	private void viewMessages(String[] ids) throws FinderException {
 		
-		Collection selectedLetters = getPrintedLetter().findLetters(ids);
-	
-		Iterator iter = selectedLetters.iterator();
-		
-		while (iter.hasNext()) {
-			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
-			int fileID = createPrintableMessage(msg);
+		if (_iwc.isParameterSet("prv_bulk")){ //bulk
+			int fileID = createPrintableBulkMessage(ids);
 			if(fileID!=-1) {
 				//System.out.println("adding link for pdf");
-				Link viewLink = new Link(msg.getSubject() + "  (" + msg.getOwner().getName() + ")");
+				Link viewLink = new Link(getLocalizedString(LOCALE_BULK_MESSAGE, "bulk message", _iwc));
 				viewLink.setFile(fileID);
 				add(viewLink);
 				addBreak();
-			} else {
-				//System.out.println("Could not create pdf, no link added");
+			} 		
+		}else {
+			Collection selectedLetters = getPrintedLetter().findLetters(ids);
+			Iterator iter = selectedLetters.iterator();
+			while (iter.hasNext()) {
+				PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
+				int fileID = createPrintableMessage(msg);
+				if(fileID!=-1) {
+					//System.out.println("adding link for pdf");
+					Link viewLink = new Link(msg.getSubject() + "  (" + msg.getOwner().getName() + ")");
+					viewLink.setFile(fileID);
+					add(viewLink);
+					addBreak();
+				} else {
+					//System.out.println("Could not create pdf, no link added");
+				}
 			}
 		}
 	}
@@ -244,6 +254,46 @@ public class PrintMessageViewer extends CommuneBlock {
 		}
 		return -1;
 	}
+	
+		
+	private int createPrintableBulkMessage(String[] msgIds) {
+		try {
+			DocumentBusiness docBiz = getDocumentBusiness();
+			//String userName = _iwc.getCurrentUser().getName();
+			StringBuffer ids = new StringBuffer();
+			for (int i = 0; i < msgIds.length; i++){
+				ids.append(msgIds[i]);
+				ids.append('-');
+			}
+			String fileName = "EventListLetter-" + ids + _iwc.getCurrentLocaleId() + ".pdf";
+			
+			ICFile file = null;
+			try {
+				file = getICFileHome().findByFileName(fileName);
+				//System.out.println("found pdf file " + fileName);
+			} catch(FinderException e) {
+				// ok, just means we need to create this file
+			}
+			if(file==null) {
+				//System.out.println("creating pdf file " + fileName);
+				return docBiz.writeBulkPDF(msgIds,
+						_iwc.getCurrentUser(),
+						fileName,
+						_iwc.getCurrentLocale(),
+						"DEFA",
+						true,
+						false,
+						true);
+			} else {
+				//System.out.println("Using existing pdf");
+				return Integer.parseInt(file.getPrimaryKey().toString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+		
 	private DocumentBusiness getDocumentBusiness() throws RemoteException {
 		return (DocumentBusiness) com.idega.business.IBOLookup.getServiceInstance(
 			_iwc,
@@ -391,7 +441,13 @@ public class PrintMessageViewer extends CommuneBlock {
 					"printdoc.print",
 					"Print"));
 		print = (SubmitButton) getButton(print);
-		T.add(print, 1, 1);
+		
+		CheckBox bulk = new CheckBox("prv_bulk");
+
+		T.add(bulk, 1, 1);
+		T.add(getLocalizedHeader("printdoc.create_bulk_letter", "Bulk letter"), 2, 1);
+		
+		T.add(print, 3, 1);
 		return T;
 	}
 	private PresentationObject getCursorLinks(int totalsize, int cursor, String cursorPrm, int step) {
