@@ -59,12 +59,12 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements ImportFil
   private ArrayList failedRecords = new ArrayList();
 
 
-  private final int COLUMN_PERSONAL_ID = 1;
-  private final int COLUMN_NAME = 2;  
-  private final int COLUMN_ADDRESS = 3;
-  private final int COLUMN_POSTAL_CODE = 4;
-  private final int COLUMN_PHONE_NUMBER = 5;
-  private final int COLUMN_EMAIL = 6;
+  private final int COLUMN_PERSONAL_ID = 0;
+  private final int COLUMN_NAME = 1;  
+  private final int COLUMN_ADDRESS = 2;
+  private final int COLUMN_POSTAL_CODE = 3;
+  private final int COLUMN_PHONE_NUMBER = 4;
+  private final int COLUMN_EMAIL = 5;
   
   private Gender male;
   private Gender female;
