@@ -72,6 +72,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private static final short COLUMN_MEMBER_STREET_NAME = 2;
 	private static final short COLUMN_MEMBER_POSTAL_CODE = 3;
 	
+	private static final short COLUMN_BOARD_MEMBER_NAME = 2;
+	private static final short COLUMN_BOARD_MEMBER_SSN = 3;
+	private static final short COLUMN_BOARD_MEMBER_STREET_NAME = 4;
+	private static final short COLUMN_BOARD_MEMBER_POSTAL_CODE = 5;
+	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
 	/**
@@ -253,7 +258,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			System.out.println("Starting member importing from excel file for workreportid: "+workReportId);
 		
 		//clear the table first
-			deleteWorkReportClubMembersForReport(workReportId);
+			deleteWorkReportMembersForReport(workReportId);
 		
 			WorkReportMemberHome membHome = getWorkReportMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
@@ -376,16 +381,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		UserTransaction transaction;
 		
-			System.out.println("Starting member importing from excel file...");
+			System.out.println("Starting board and division importing from excel file...");
 		
-			deleteWorkReportClubMembersForReport(workReportId);
+			deleteWorkReportBoardMembersForReport(workReportId);
 	
 			WorkReportMemberHome membHome = getWorkReportMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
 			int year = report.getYearOfReport().intValue();
 			createOrUpdateLeagueWorkReportGroupsForYear(year);
 			
-			report.setMemberFileId(workReportFileId);
+			report.setBoardFileId(workReportFileId);
 			report.store();
 		
 
@@ -393,82 +398,66 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		
 			HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
-			int firstRow = 4;
+			int firstRow = 6;
 			int lastRow = members.getLastRowNum();
 		
 			System.out.println("First row is at: "+firstRow);
 			System.out.println("Last row is at: "+lastRow);
 		
-			//get the top row to get a list of leagues to use.
-			HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
-			Map leaguesMap = getLeaguesMapFromRow(headerRow,year);
+			
 		
-		
+		boolean keepOnReading = true;
 			//iterate through the rows that contain the actual data and create the records in the database
-			for (int i = (firstRow+1); i <= lastRow; i++) {
+		int i = firstRow;
+			while ( keepOnReading) {
+			
 				HSSFRow row = (HSSFRow) members.getRow(i);
 			
 				if(row!=null){
 					int firstCell = row.getFirstCellNum();
 					int lastCell = row.getLastCellNum();
 				
-					String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
-					String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
+					String name = row.getCell(COLUMN_BOARD_MEMBER_NAME).getStringCellValue();
+					if(name.indexOf("##")!=-1){
+						keepOnReading = false;
+					} 
+					
+					String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_SSN);
 					ssn = (ssn.length()<10)? "0"+ssn : ssn;
-					String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
-					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
+					String streetName = row.getCell(COLUMN_BOARD_MEMBER_STREET_NAME).getStringCellValue();
+					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_POSTAL_CODE);
 		
 				
 					try {
+						//the user must already exist in the database
 						User user = this.getUser(ssn);
-
-					
 						try {
+							//TODO EIKI find board member
 							membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
 						}
 						catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-					
-							WorkReportMember member = membHome.create();
-							member.setReportId(workReportId);
-							member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
-							member.setName(name);
-				
-							member.setPersonalId(ssn);
-							member.setStreetName(streetName);
-							//member.setAge();
-							//member.setDateOfBirth();
-						
-							try {
-								PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
-								member.setPostalCode(postal);
+							WorkReportMember member = createWorkReportMember(workReportId,ssn,false);//sets basic data
+							member.setAsBoardMember( true);
+							
+							if(streetName!=null && !"".equals(streetName)){	
+								member.setStreetName(streetName);
+								
+									
+								try {
+									PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+									member.setPostalCode(postal);
+								}
+								catch (FinderException e3) {
+									//e3.printStackTrace();
+								} catch (RemoteException e) {
+									e.printStackTrace();
+								}
+								
 							}
-							catch (FinderException e3) {
-								//e3.printStackTrace();
-							} catch (RemoteException e) {
-								e.printStackTrace();
-							}
-						
+								
 							member.store();
 						
-							//find which leagues the member belongs to
-							//and create the many to many connections
-							for (int j = 5; j <  lastCell ; j++) {
-								HSSFCell leagueCell = row.getCell((short)j);
-							
-								if(leagueCell !=null){
-									WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
-									if(league!=null){
-										try {
-											league.addMember(member);
-										}
-										catch (IDOAddRelationshipException e5) {
-											e5.printStackTrace();
-										}
-									}
-								}
-							
-							}
 						}
 					}
 					catch (EJBException e1) {
@@ -483,6 +472,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						System.err.println("User not found for ssn : "+ssn);
 					}
 				}
+				
+				i++;
+				
 			}
 				
 			return true;
@@ -494,14 +486,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 				System.out.println("Starting member importing from excel file...");
 			
-				deleteWorkReportClubMembersForReport(workReportId);
+				deleteWorkReportMembersForReport(workReportId);
 				
 				WorkReportMemberHome membHome = getWorkReportMemberHome();
 				WorkReport report = getWorkReportById(workReportId);
 				int year = report.getYearOfReport().intValue();
 				createOrUpdateLeagueWorkReportGroupsForYear(year);
 		
-				report.setMemberFileId(workReportFileId);
+				report.setAccountFileId(workReportFileId);
 				report.store();
 			
 
@@ -613,9 +605,36 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	/**
 	 * @param report
 	 */
-	private void deleteWorkReportClubMembersForReport(int reportId) {
+	private void deleteWorkReportMembersForReport(int reportId) {
 		try {
 			Collection members = getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(reportId);
+			Iterator iter = members.iterator();
+			
+			while (iter.hasNext()) {
+				WorkReportMember memb = (WorkReportMember) iter.next();
+				try {
+					memb.remove();
+				}
+				catch (EJBException e1) {
+					e1.printStackTrace();
+				}
+				catch (RemoveException e1) {
+					e1.printStackTrace();
+				}
+			}
+			
+		}
+		catch (FinderException e) {
+			//do nothing because its empty
+		}
+	}
+	
+	/**
+	 * @param report
+	 */
+	private void deleteWorkReportBoardMembersForReport(int reportId) {
+		try {
+			Collection members = getWorkReportMemberHome().findAllWorkReportBoardMembersByWorkReportId(reportId);
 			Iterator iter = members.iterator();
 			
 			while (iter.hasNext()) {
