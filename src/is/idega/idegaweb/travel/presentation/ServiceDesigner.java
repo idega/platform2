@@ -397,6 +397,10 @@ public class ServiceDesigner extends TravelManager {
 
       String numberOfSeats = modinfo.getParameter("number_of_seats");
 
+      if (hotelPickup != null) {
+        if (hotelPickup.equals("N")) hotelPickupAddress = "";
+      }
+
       boolean yearly = false;
       if (activeYearly != null) {
         if (activeYearly.equals("Y")) yearly = true;
@@ -584,6 +588,7 @@ public class ServiceDesigner extends TravelManager {
                 extraInfo.setWidth(60);
                 extraInfo.setHeight(5);
               onlineCategory = new BooleanInput("price_online");
+                onlineCategory.setSelected(true);
               priceDiscount = new TextInput("price_discount");
                 priceDiscount.setAsNotEmpty("T - verður að skrá verð eða afslátt á allt verðliði");
 

@@ -15,6 +15,7 @@ import java.util.List;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import java.sql.Date;
+import com.idega.data.SimpleQuerier;
 
 /**
  * Title:        IW Travel
@@ -187,14 +188,20 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         hotelPickupAddress.setStreetName(pickupPlace);
         hotelPickupAddress.insert();
 
-      HotelPickupPlace hpp = new HotelPickupPlace();
-        hpp.setName(pickupPlace);
-        hpp.setAddress(hotelPickupAddress);
-        hpp.insert();
-
       int[] departureAddressIds = {departureAddress.getID()};
       int[] arrivalAddressIds = {arrivalAddress.getID()};
-      int[] hotePickupPlaceIds = {hpp.getID()};
+      int[] hotelPickupPlaceIds = new int[0];
+
+      if (pickupPlace != null)
+      if (!pickupPlace.equals("")) {
+        HotelPickupPlace hpp = new HotelPickupPlace();
+          hpp.setName(pickupPlace);
+          hpp.setAddress(hotelPickupAddress);
+          hpp.insert();
+
+        hotelPickupPlaceIds = new int[1];
+        hotelPickupPlaceIds[0] = hpp.getID();
+      }
 
       int serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
 
@@ -208,9 +215,9 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             tour.setTotalSeats(numberOfSeats.intValue());
 
 
-          if(hotePickupPlaceIds.length > 0){
-            for (int i = 0; i < hotePickupPlaceIds.length; i++) {
-              service.addTo(HotelPickupPlace.class, hotePickupPlaceIds[i]);
+          if(hotelPickupPlaceIds.length > 0){
+            for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
+              service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
             }
             tour.setHotelPickup(true);
             tour.setHotelPickupTime(pickupTime.getTimestamp());
@@ -418,6 +425,16 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return tour;
   }
 
+  public static HotelPickupPlace[] getHotelPickupPlaces(Service service) {
+    HotelPickupPlace[] returner = null;
+    try {
+        returner = (HotelPickupPlace[]) service.findRelated(HotelPickupPlace.getStaticInstance(HotelPickupPlace.class));
+    }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+    }
+    return returner;
+  }
+
   public static boolean getIfDay(int productId, int dayOfWeek) {
       return ServiceDay.getIfDay(productId, dayOfWeek);
   }
@@ -518,6 +535,118 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
 
       return prices;
+  }
+
+  public int BookBySupplier(int serviceId, int productPriceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
+    return Book(serviceId, productPriceId, hotelPickupPlaceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
+  }
+
+  public int Book(int serviceId, int productPriceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+    Booking booking = new Booking();
+      booking.setServiceID(serviceId);
+      booking.setProductPriceId(productPriceId);
+      booking.setAddress(address);
+      booking.setBookingDate(date.getTimestamp());
+      booking.setBookingTypeID(bookingType);
+      booking.setCity(city);
+      booking.setCountry(country);
+      booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
+      booking.setEmail(email);
+      if (hotelPickupPlaceId != -1) {
+        booking.setHotelPickupPlaceID(hotelPickupPlaceId);
+      }
+      booking.setName(name);
+      booking.setPostalCode(postalCode);
+      booking.setTelephoneNumber(telephoneNumber);
+      booking.setTotalCount(totalCount);
+    booking.insert();
+
+    return booking.getID();
+  }
+
+  public int getNumberOfBookings(int serviceId, idegaTimestamp stamp){
+      return getNumberOfBookings(serviceId, stamp, null);
+  }
+
+  public int getNumberOfBookings(int serviceId, idegaTimestamp stamp, int bookingType){
+      return getNumberOfBookings(serviceId, stamp, null, bookingType);
+  }
+
+  public int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp){
+      return getNumberOfBookings(serviceId, fromStamp, toStamp, -1);
+  }
+
+  public int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType){
+    int returner = 0;
+    try {
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select "+Booking.getTotalCountColumnName()+" from "+Booking.getBookingTableName());
+            sql.append(" where ");
+            sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
+            if ( (fromStamp != null) && (toStamp == null) ) {
+              sql.append(" and ");
+              sql.append(Booking.getBookingDateColumnName()+" = '"+fromStamp.toSQLDateString()+"'");
+            }else if ( (fromStamp != null) && (toStamp != null)) {
+              sql.append(" and (");
+              sql.append(Booking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+              sql.append(" and ");
+              sql.append(Booking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
+            }
+            if (bookingType != -1) {
+              sql.append(" and ");
+              sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingType);
+            }
+        many = SimpleQuerier.executeStringQuery(sql.toString());
+
+        for (int i = 0; i < many.length; i++) {
+            returner += Integer.parseInt(many[i]);
+        }
+
+
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
+  /**
+   * @todo Finna betri leið
+   */
+  public int getNumberOfTours(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+    int returner = 0;
+    try {
+      idegaTimestamp toTemp = new idegaTimestamp(toStamp);
+
+      int counter = 0;
+
+      int[] daysOfWeek = ServiceDay.getDaysOfWeek(serviceId);
+      int fromDayOfWeek = fromStamp.getDayOfWeek();
+      int toDayOfWeek = toStamp.getDayOfWeek();
+
+      toTemp.addDays(1);
+      int daysBetween = toStamp.getDaysBetween(fromStamp, toTemp);
+
+      daysBetween = daysBetween -+ (8 - fromDayOfWeek + toDayOfWeek);
+
+      for (int i = 0; i < daysOfWeek.length; i++) {
+          if (daysOfWeek[i]  >= fromDayOfWeek) {
+            ++counter;
+          }
+          if (daysOfWeek[i] <= toDayOfWeek) {
+            ++counter;
+          }
+      }
+
+      counter += counter + ( (daysBetween / 7) * daysOfWeek.length );
+
+      returner = counter;
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
   }
 
 }

@@ -3,6 +3,7 @@ package is.idega.travel.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
+import com.idega.block.trade.stockroom.data.ProductPrice;
 
 /**
  * Title:        IW Travel
@@ -15,6 +16,11 @@ import com.idega.core.data.*;
 
 
 public class Booking extends GenericEntity{
+
+  public static int BOOKING_TYPE_ID_ONLINE_BOOKING = 1;
+  public static int BOOKING_TYPE_ID_INQUERY_BOOKING = 2;
+  public static int BOOKING_TYPE_ID_SUPPLIER_BOOKING = 3;
+  public static int BOOKING_TYPE_ID_THIRD_PARTY_BOOKING = 4;
 
   public Booking(){
           super();
@@ -33,9 +39,18 @@ public class Booking extends GenericEntity{
     addAttribute(getTotalCountColumnName(), "Fjöldi", true, true, Integer.class);
     addAttribute(getBookingTypeIDColumnName(), "Gerð bokunar", true, true, Integer.class);
     addAttribute(getServiceIDColumnName(), "Vara", true, true, Integer.class, "many-to-one", Service.class);
-    addAttribute(getCountryIDColumnName(), "Land", true, true, Integer.class, "many-to-one", Country.class);
+    addAttribute(getCountryColumnName(), "Land", true, true, String.class);
     addAttribute(getHotelPickupPlaceIDColumnName(),"Hotel pick-up staður",true,true,Integer.class,"many_to_one",HotelPickupPlace.class);
+    addAttribute(getDateOfBookingColumnName(), "Hvenær bókun á sér stað", true, true, java.sql.Timestamp.class);
+    addAttribute(getPostalCodeColumnName(), "Póstnúmer", true, true, String.class);
+    addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
+    addAttribute(getProductPriceIDColumnName(), "product price id", true, true, Integer.class, "many-to-one",ProductPrice.class);
   }
+
+  public void setDefaultValues() {
+      this.setIsValid(true);
+  }
+
 
 
   public String getEntityName(){
@@ -69,16 +84,8 @@ public class Booking extends GenericEntity{
     setColumn(getServiceIDColumnName(), id);
   }
 
-  public Country getCountry() {
-    return (Country) getColumnValue(getCountryIDColumnName());
-  }
-
-  public int getCountryID() {
-    return getIntColumnValue(getCountryIDColumnName());
-  }
-
-  public void setCountry(int id) {
-    setColumn(getCountryIDColumnName(), id);
+  public void setCountry(String country) {
+    setColumn(getCountryColumnName(), country);
   }
 
   public String getTelephoneNumber() {
@@ -110,7 +117,7 @@ public class Booking extends GenericEntity{
   }
 
   public void setAddress(String address) {
-    setColumn(getCityColumnName(),address);
+    setColumn(getAddressColumnName(),address);
   }
 
   public int getTotalCount() {
@@ -142,6 +149,41 @@ public class Booking extends GenericEntity{
     setColumn(getHotelPickupPlaceIDColumnName(),id);
   }
 
+  public Timestamp getDateOfBooking() {
+    return (Timestamp) getColumnValue(getDateOfBookingColumnName());
+  }
+
+  public void setDateOfBooking(Timestamp dateOfBooking) {
+    setColumn(getDateOfBookingColumnName(), dateOfBooking);
+  }
+
+  public String getPostalCode() {
+    return getStringColumnValue(getPostalCodeColumnName());
+  }
+
+  public void setPostalCode(String code) {
+    setColumn(getPostalCodeColumnName(), code);
+  }
+
+  public boolean getIsValid() {
+    return getBooleanColumnValue(getIsValidColumnName());
+  }
+
+  public void setIsValid(boolean isValid) {
+    setColumn(getIsValidColumnName(), isValid);
+  }
+
+  public ProductPrice getProductPrice() throws SQLException{
+    return new ProductPrice(getProductPriceId());
+  }
+
+  public int getProductPriceId() {
+    return getIntColumnValue(getProductPriceIDColumnName());
+  }
+
+  public void setProductPriceId(int id) {
+    setColumn(getProductPriceIDColumnName(), id);
+  }
 
   public static String getBookingTableName(){return "TB_BOOKING";}
   public static String getNameColumnName() {return "NAME";}
@@ -153,9 +195,12 @@ public class Booking extends GenericEntity{
   public static String getTotalCountColumnName() {return "TOTAL_COUNT";}
   public static String getBookingTypeIDColumnName() {return "BOOKING_TYPE_ID";}
   public static String getServiceIDColumnName() {return "TB_SERVICE_ID";}
-  public static String getCountryIDColumnName() {return "IC_COUNTRY_ID";}
+  public static String getCountryColumnName() {return "COUNTRY";}
   public static String getHotelPickupPlaceIDColumnName() {return "TB_HOTEL_PICKUP_PLACE_ID";}
-
+  public static String getDateOfBookingColumnName() {return "DATE_OF_BOOKING";}
+  public static String getPostalCodeColumnName() {return "POSTAL_CODE";}
+  public static String getIsValidColumnName() {return "IS_VALID";}
+  public static String getProductPriceIDColumnName() {return "SR_PRODUCT_PRICE_ID";}
 
 
 

@@ -43,7 +43,7 @@ public class HotelPickupPlace extends GenericEntity{
     return getHotelPickupPlaceTableName();
   }
   public String getName(){
-    return getNameColumnName();
+    return getStringColumnValue(getNameColumnName());
   }
 
   public void setName(String name){

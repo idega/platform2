@@ -311,7 +311,10 @@ public class BookingOverview extends TravelManager {
           Service service;
           Tour tour;
 
-          int seatCounter;
+          int iCount = 0;
+          int iBooked =0;
+          int iInquery=0;
+          int iAvailable=0;
 
           while (toStamp.isLaterThan(fromStamp)) {
               dayOfWeek = cal.getDayOfWeek(fromStamp.getYear(), fromStamp.getMonth(), fromStamp.getDay());
@@ -336,46 +339,52 @@ public class BookingOverview extends TravelManager {
               for (int i = 0; i < products.length; i++) {
                   if (TravelStockroomBusiness.getIfDay(products[i].getID(),dayOfWeek) ) {
                       try {
+                          iCount = 0;
+                          iBooked =0;
+                          iInquery=0;
+                          iAvailable=0;
                           service = tsb.getService(products[i]);
                           tour = tsb.getTour(products[i]);
 
-                          seatCounter =tour.getTotalSeats();
+                          iCount = tour.getTotalSeats();
+                          countTextBold.setText(Integer.toString(iCount));
+
+                          iBooked = tsb.getNumberOfBookings(service.getID(), fromStamp);
+
+                          iInquery = 0;
+
+                          iAvailable = iCount - iBooked;
+
 
                           nameTextBold  = (Text) theSmallBoldText.clone();
                               nameTextBold.setText(service.getName());
                           countTextBold = (Text) theSmallBoldText.clone();
-                              countTextBold.setText(Integer.toString(tour.getTotalSeats()));
-
+                              countTextBold.setText(Integer.toString(iCount));
                           assignedTextBold = (Text) theSmallBoldText.clone();
                               assignedTextBold.setText("0");
                           inqTextBold = (Text) theSmallBoldText.clone();
-                              inqTextBold.setText("0");
+                              inqTextBold.setText(Integer.toString(iInquery));
                           bookedTextBold = (Text) theSmallBoldText.clone();
-                              bookedTextBold.setText("0");
-
-                          seatCounter = seatCounter - 0;
-                          seatCounter = seatCounter - 0;
-                          seatCounter = seatCounter - 0;
-
-
+                              bookedTextBold.setText(Integer.toString(iBooked));
                           availableTextBold = (Text) theSmallBoldText.clone();
-                              availableTextBold.setText(Integer.toString(seatCounter));
+                              availableTextBold.setText(Integer.toString(iAvailable));
 
-                          SubmitButton btnNanar = new SubmitButton("N");
-                          SubmitButton btnBook = new SubmitButton("B");
+                          SubmitButton btnNanar = new SubmitButton("Nanar");
+                          SubmitButton btnBook = new SubmitButton("Breyta");
 
 
                           table.add(nameTextBold,2,row);
                           table.add(countTextBold,3,row);
-                              table.setColor(3,row,NatBusiness.backgroundColor);
                           table.add(assignedTextBold,4,row);
-                              table.setColor(4,row,NatBusiness.ORANGE);
                           table.add(inqTextBold,5,row);
-                              table.setColor(5,row,NatBusiness.YELLOW);
                           table.add(bookedTextBold,6,row);
-                              table.setColor(6,row,NatBusiness.RED);
                           table.add(availableTextBold,7,row);
-                              table.setColor(7,row,NatBusiness.LIGHTGREEN);
+
+                          table.setColor(3,row,NatBusiness.backgroundColor);
+                          table.setColor(4,row,NatBusiness.ORANGE);
+                          table.setColor(5,row,NatBusiness.YELLOW);
+                          table.setColor(6,row,NatBusiness.RED);
+                          table.setColor(7,row,NatBusiness.LIGHTGREEN);
 
                           table.add(btnNanar,8,row);
                           table.add(btnBook,8,row);

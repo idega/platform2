@@ -36,6 +36,9 @@ public class Booking extends TravelManager {
   private Product product;
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
+  private String BookingAction = "booking_action";
+  private String BookingParameter = "booking";
+
   private Service service;
   private Timeframe timeframe;
   private Tour tour;
@@ -55,11 +58,13 @@ public class Booking extends TravelManager {
       initialize(modinfo);
 
       if (supplier != null) {
-        String action = modinfo.getParameter("action");
+        String action = modinfo.getParameter(this.BookingAction);
         if (action == null) {action = "";}
 
         if (action.equals("")) {
             displayForm(modinfo);
+        }else if (action.equals(this.BookingParameter)) {
+            saveBooking(modinfo);
         }
       }else {
         add("TEMP _LOGIN");
@@ -268,7 +273,7 @@ public class Booking extends TravelManager {
               table.mergeCells(1,row,5,row);
               table.setColor(1,row,NatBusiness.backgroundColor );
               table.mergeCells(6,1,6,row);
-              table.add(getBookingFormTable(),1,row);
+              table.add(getBookingForm(),1,row);
 
           }else {
               table.add("TEMP - Ferð ekki farinn þennan dag : " + stamp.getLocaleDate(modinfo));
@@ -296,7 +301,7 @@ public class Booking extends TravelManager {
 
 
   public Table getCalendar(ModuleInfo modinfo) {
-      String colorForAvailableDay = NatBusiness.DARKBLUE ;
+      String colorForAvailableDay = "#F0C0FF" ;
 
       Table table = new Table(4,5);
           table.setBorder(0);
@@ -507,6 +512,11 @@ public class Booking extends TravelManager {
       table.setWidth(5,cellWidth);
       table.setWidth(6,"200");
 
+      int iCount = 0;
+      int iBooked =0;
+      int iInquery=0;
+      int iAvailable=0;
+
 
       Text dateText = (Text) theBoldText.clone();
           dateText.setText(stamp.getLocaleDate(modinfo));
@@ -536,13 +546,27 @@ public class Booking extends TravelManager {
 
       try {
           if (TravelStockroomBusiness.getIfDay(this.product, this.stamp)) {
-            countTextBold.setText(Integer.toString(tour.getTotalSeats()));
+            iCount = tour.getTotalSeats();
+            countTextBold.setText(Integer.toString(iCount));
+
+            iBooked = tsb.getNumberOfBookings(service.getID(), this.stamp);
+            bookedTextBold.setText(Integer.toString(iBooked));
+
+            iInquery = 0;
+            inqTextBold.setText(Integer.toString(iInquery));
+
+            iAvailable = iCount - iBooked;
+            availableTextBold.setText(Integer.toString(iAvailable));
+
           }
+
+
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
             snfe.printStackTrace(System.err);
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
             tfnfe.printStackTrace(System.err);
       }
+
 
 
 
@@ -562,6 +586,9 @@ public class Booking extends TravelManager {
       table.setColor(5,row,NatBusiness.LIGHTGREEN);
 
       table.add(countTextBold,2,row);
+      table.add(bookedTextBold,3,row);
+      table.add(inqTextBold,4,row);
+      table.add(availableTextBold,5,row);
 
       table.setColumnAlignment(1,"left");
       table.setColumnAlignment(2,"center");
@@ -573,22 +600,24 @@ public class Booking extends TravelManager {
       return table;
   }
 
-  public Table getBookingFormTable() {
-//      Table table = new Table(6,7);
+  public Form getBookingForm() {
+      Form form = new Form();
       Table table = new Table();
-          table.setWidth("100%");
+        form.add(table);
+        table.setWidth("100%");
 
       table.setColumnAlignment(1,"right");
       table.setColumnAlignment(2,"left");
       table.setColumnAlignment(3,"right");
       table.setColumnAlignment(4,"left");
 
-      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), true);
+      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
 
       if (pPrices.length > 0) {
           int row = 1;
-          int textInputSizeLg = 18;
-          int textInputSizeSm = 2;
+          int textInputSizeLg = 38;
+          int textInputSizeMd = 18;
+          int textInputSizeSm = 5;
 
           Text surnameText = (Text) theText.clone();
               surnameText.setText(iwrb.getLocalizedString("travel.surname","surname"));
@@ -602,6 +631,11 @@ public class Booking extends TravelManager {
               emailText.setText(iwrb.getLocalizedString("travel.email","e-mail"));
           Text telNumberText = (Text) theText.clone();
               telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
+          Text cityText = (Text) theText.clone();
+              cityText.setText(iwrb.getLocalizedString("travel.city_sm","city"));
+          Text countryText = (Text) theText.clone();
+              countryText.setText(iwrb.getLocalizedString("travel.country_sm","country"));
+
 
 
           TextInput surname = new TextInput("surname");
@@ -611,31 +645,64 @@ public class Booking extends TravelManager {
           TextInput address = new TextInput("address");
               address.setSize(textInputSizeLg);
           TextInput areaCode = new TextInput("area_code");
-              areaCode.setSize(textInputSizeLg);
+              areaCode.setSize(textInputSizeSm);
           TextInput email = new TextInput("e-mail");
-              email.setSize(textInputSizeLg);
+              email.setSize(textInputSizeMd);
           TextInput telNumber = new TextInput("telephone_number");
-              telNumber.setSize(textInputSizeLg);
+              telNumber.setSize(textInputSizeMd);
+
+          TextInput city = new TextInput("city");
+              city.setSize(textInputSizeLg);
+          TextInput country = new TextInput("country");
+              country.setSize(textInputSizeMd);
 
 
 
           ++row;
           table.add(surnameText,1,row);
           table.add(surname,2,row);
-          table.add(lastnameText,3,row);
-          table.add(lastname,4,row);
+
+          ++row;
+          table.add(lastnameText,1,row);
+          table.add(lastname,2,row);
 
           ++row;
           table.add(addressText,1,row);
           table.add(address,2,row);
-          table.add(areaCodeText,3,row);
-          table.add(areaCode,4,row);
+
+          ++row;
+          table.add(cityText,1,row);
+          table.add(city,2,row);
+
+          ++row;
+          table.add(areaCodeText,1,row);
+          table.add(areaCode,2,row);
+
+          ++row;
+          table.add(countryText,1,row);
+          table.add(country,2,row);
 
           ++row;
           table.add(emailText,1,row);
           table.add(email,2,row);
-          table.add(telNumberText,3,row);
-          table.add(telNumber,4,row);
+
+          ++row;
+          table.add(telNumberText,1,row);
+          table.add(telNumber,2,row);
+
+          if (tour.getIsHotelPickup()) {
+              ++row;
+
+              Text hotelText = (Text) theText.clone();
+                hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
+              HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this.service);
+              DropdownMenu pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
+
+              table.add(hotelText,1,row);
+              table.add(pickupMenu,2,row);
+
+          }
+
 
           Text pPriceCatNameText;
           TextInput pPriceText;
@@ -644,11 +711,18 @@ public class Booking extends TravelManager {
 
           Text totalText = (Text) theBoldText.clone();
             totalText.setText("T - Total");
+          TextInput TotalPassTextInput = new TextInput("total_pass","0");
+            TotalPassTextInput.setDisabled(true);
+            TotalPassTextInput.setSize(5);
           TextInput TotalTextInput = new TextInput("total","0");
             TotalTextInput.setDisabled(true);
-            TotalTextInput.setSize(textInputSizeLg);
+            TotalTextInput.setSize(8);
 
           ++row;
+          ResultOutput flipps = new ResultOutput(form.getName());
+
+
+
           for (int i = 0; i < pPrices.length; i++) {
               ++row;
               category = pPrices[i].getPriceCategory();
@@ -662,21 +736,31 @@ public class Booking extends TravelManager {
 
               pPriceMany = new TextInput("priceCategory"+i ,"0");
                 pPriceMany.setSize(5);
+                pPriceMany.setAsNotEmpty("T - Ekki tómt");
+                pPriceMany.setAsIntegers("T - Bara tölur takk");
 
+                flipps.add(pPriceText, form.getName() );
+                flipps.add(pPriceMany, form.getName() );
             /**
-             * @todo implementa fyrir séríslenska stafi !!!!! (og bil)
+             * @todo implementa fyrir og bil...
              * @todo laga total reikninga
              */
+/*
                 pPriceMany.setOnBlur("this.form."+pPriceText.getName()+".value=("+price+"*this.form."+pPriceMany.getName()+".value)");
 
                 String totalCalc = "this.form."+TotalTextInput.getName()+".value=(";
+                String totalPass = "this.form."+TotalPassTextInput.getName()+".value=(";
                 for (int j = 0; j < pPrices.length; j++) {
                   if (j != 0) totalCalc += " + ";
+                  if (j != 0) totalPass += " + ";
                   totalCalc += "("+((int) pPrices[j].getPrice())+"*this.form.priceCategory"+j+".value)";
+                  totalPass += "(1*this.form.priceCategory"+j+".value)";
                 }
                 totalCalc += ")";
+                totalPass += ")";
                 pPriceMany.setOnBlur(totalCalc);
-
+                pPriceMany.setOnBlur(totalPass);
+*/
 
               table.add(pPriceCatNameText, 1,row);
               table.add(pPriceMany,2,row);
@@ -685,19 +769,26 @@ public class Booking extends TravelManager {
           ++row;
 
           table.add(totalText,1,row);
+          table.add(TotalPassTextInput,2,row);
           table.add(TotalTextInput,2,row);
 
 
+
+
+
           ++row;
+          table.add(flipps,4,row);
           ++row;
           table.add(new SubmitButton("TEMP BÓKA"),4,row);
+          table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
+//          table.add(new HiddenInput(Product.getProductEntityName(),Integer.toString(service.getID())),4,row);
           table.setAlignment(4,row,"right");
       }else {
           table.add("T - Verðflokkar ekki settir upp");
       }
 
 
-      return table;
+      return form;
   }
 
 
@@ -730,5 +821,51 @@ public class Booking extends TravelManager {
   }
 
 
+  private void saveBooking(ModuleInfo modinfo) {
+      String surname = modinfo.getParameter("surname");
+      String lastname = modinfo.getParameter("lastname");
+      String address = modinfo.getParameter("address");
+      String areaCode = modinfo.getParameter("area_code");
+      String email = modinfo.getParameter("e-mail");
+      String phone = modinfo.getParameter("telephone_number");
+
+      String city = modinfo.getParameter("city");
+      String country = modinfo.getParameter("country");
+      String hotelPickupPlaceId = modinfo.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+
+      String many;
+      int iMany;
+      int iHotelId;
+
+      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), true);
+      for (int i = 0; i < pPrices.length; i++) {
+          many = modinfo.getParameter("priceCategory"+i);
+          if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
+            try {
+              iMany = Integer.parseInt(many);
+              try {
+                iHotelId = Integer.parseInt(hotelPickupPlaceId);
+              }catch (NumberFormatException n) {
+                iHotelId = -1;
+              }
+
+              tsb.BookBySupplier(service.getID(), pPrices[i].getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+
+
+            }catch (NumberFormatException n) {
+              n.printStackTrace(System.err);
+            }catch (SQLException sql) {
+              sql.printStackTrace(System.err);
+            }
+
+
+
+          }
+      }
+
+
+      displayForm(modinfo);
+
+  }
 
 }

@@ -13,6 +13,10 @@ import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
 import java.sql.SQLException;
+import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.travel.data.*;
+import com.idega.block.trade.stockroom.data.*;
+
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -28,8 +32,15 @@ public class Statistics extends TravelManager {
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
-  String tableBackgroundColor = "#FFFFFF";
-  int numberOfTripsToDiplay = 6;
+  private Supplier supplier;
+  private Product product;
+  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  private Service service;
+  private Tour tour;
+  private Timeframe timeframe;
+
+  private idegaTimestamp fromStamp;
+  private idegaTimestamp toStamp;
 
   public Statistics() {
   }
@@ -43,12 +54,12 @@ public class Statistics extends TravelManager {
       super.main(modinfo);
       initialize(modinfo);
 
-      String action = modinfo.getParameter("action");
-      if (action == null) {action = "";}
+          String action = modinfo.getParameter("action");
+          if (action == null) {action = "";}
 
-      if (action.equals("")) {
-          displayForm(modinfo);
-      }
+          if (action.equals("")) {
+              displayForm(modinfo);
+          }
 
       super.addBreak();
   }
@@ -56,6 +67,32 @@ public class Statistics extends TravelManager {
   public void initialize(ModuleInfo modinfo) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
+      supplier = super.getSupplier();
+
+      String productId = modinfo.getParameter(Product.getProductEntityName());
+      try {
+        if (productId == null) {
+          productId = (String) modinfo.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
+        }else {
+          modinfo.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
+        }
+        if (productId != null) {
+          product = new Product(Integer.parseInt(productId));
+          service = tsb.getService(product);
+          tour = tsb.getTour(product);
+          timeframe = tsb.getTimeframe(product);
+        }
+      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+          snfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+          tfnfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
+          tnfe.printStackTrace(System.err);
+      }catch (SQLException sql) {sql.printStackTrace(System.err);}
+
+      fromStamp = getFromIdegaTimestamp(modinfo);
+      toStamp = getToIdegaTimestamp(modinfo);
+
   }
 
   public void displayForm(ModuleInfo modinfo) {
@@ -63,19 +100,20 @@ public class Statistics extends TravelManager {
       Form form = new Form();
       Table topTable = getTopTable(modinfo);
         form.add(topTable);
-      Table table = getContentTable(modinfo);
-      ShadowBox sb = new ShadowBox();
-        form.add(sb);
-        sb.setWidth("90%");
-        sb.setAlignment("center");
-        sb.add(getContentHeader(modinfo));
-        sb.add(table);
+      if (service != null) {
+          Table table = getContentTable(modinfo);
+          ShadowBox sb = new ShadowBox();
+            form.add(sb);
+            sb.setWidth("90%");
+            sb.setAlignment("center");
+            sb.add(getContentHeader(modinfo));
+            sb.add(table);
 
-      Paragraph par = new Paragraph();
-        par.setAlign("right");
-        par.add(new PrintButton("TEMP-PRENTA"));
-        sb.add(par);
-
+          Paragraph par = new Paragraph();
+            par.setAlign("right");
+            par.add(new PrintButton("TEMP-PRENTA"));
+            sb.add(par);
+      }
 
       int row = 0;
       add(Text.getBreak());
@@ -134,21 +172,22 @@ public class Statistics extends TravelManager {
           tframeText.addToText(":");
 
 
-      DropdownMenu trip = new DropdownMenu("trip");
-          trip.addMenuElement("1","Dropdown af ferðum sem eru til :)");
-          trip.addMenuElement("2","Annað dropdown hér ;)");
+      DropdownMenu trip = null;
+      try {
+        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+        trip = new DropdownMenu(Product.getProductEntityName());
+      }
 
-          String parTrip = modinfo.getParameter("trip");
-          if (parTrip != null) {
-              trip.setSelectedElement(parTrip);
-          }
+      if (product != null) {
+          trip.setSelectedElement(Integer.toString(product.getID()));
+      }
 
 
       DateInput active_from = new DateInput("active_from");
-          idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
           active_from.setDate(fromStamp.getSQLDate());
       DateInput active_to = new DateInput("active_to");
-          idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
           active_to.setDate(toStamp.getSQLDate());
 
       Text tfFromText = (Text) theText.clone();
@@ -189,9 +228,6 @@ public class Statistics extends TravelManager {
       table.setWidth("95%");
 
 
-      idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
-      idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
-
       String mode = modinfo.getParameter("mode");
       if (mode== null) mode="";
 
@@ -211,7 +247,7 @@ public class Statistics extends TravelManager {
       Text toTimeText = (Text) theText.clone();
           toTimeText.setText(toStamp.getLocaleDate(modinfo));
       Text nameText = (Text) theText.clone();
-          nameText.setText("Flippedý flopp");
+          nameText.setText(service.getName());
       Text statusText = (Text) theBoldText.clone();
           statusText.setFontColor(NatBusiness.textColor);
           statusText.setText(iwrb.getLocalizedString("travel.status","Status"));
@@ -239,9 +275,6 @@ public class Statistics extends TravelManager {
         table.setCellpadding(2);
 
       int row = 0;
-      idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
-      idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
-          toStamp.addDays(1);
 
       Text netBookText = (Text) smallText.clone();
           netBookText.setText(iwrb.getLocalizedString("travel.bookings_on_the_net","Bookings on the net"));
@@ -278,14 +311,29 @@ public class Statistics extends TravelManager {
       Text seatNrText = (Text) smallText.clone();
       Text usageNrText = (Text) smallText.clone();
 
-          netBookNrText.setText("460");
-          inqNrText.setText("260");
-          supplNrText.setText("500");
-          travelNrText.setText("150");
-          availNrText.setText("90");
-          passNrText.setText("1220");
-          seatNrText.setText("1310");
-          usageNrText.setText("83,6%");
+      int iNetBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
+      int iInqBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
+      int iSupBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
+      int i3rdBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
+
+
+      int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;
+      int numberOfSeats = tour.getTotalSeats() * tsb.getNumberOfTours(service.getID(), fromStamp, toStamp);
+
+      int iAvail = numberOfSeats - total;
+
+      float usage = 100 * (float)total / (float)numberOfSeats ;
+      java.text.DecimalFormat format = new java.text.DecimalFormat("0.00");
+      String sUsage = format.format(usage);
+
+          netBookNrText.setText(Integer.toString(iNetBooking));
+          inqNrText.setText(Integer.toString(iInqBooking));
+          supplNrText.setText(Integer.toString(iSupBooking));
+          travelNrText.setText(Integer.toString(i3rdBooking));
+          availNrText.setText(Integer.toString(iAvail));
+          passNrText.setText(Integer.toString(total));
+          seatNrText.setText(Integer.toString(numberOfSeats));
+          usageNrText.setText(sUsage+"%");
 
 
 
