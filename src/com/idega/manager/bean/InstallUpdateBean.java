@@ -1,5 +1,5 @@
 /*
- * $Id: InstallUpdateBean.java,v 1.2 2004/11/04 12:03:20 thomas Exp $
+ * $Id: InstallUpdateBean.java,v 1.3 2004/11/05 15:11:34 thomas Exp $
  * Created on Nov 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,86 +11,125 @@ package com.idega.manager.bean;
 
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlForm;
-import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.webface.WFUtil;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/11/04 12:03:20 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/11/05 15:11:34 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class InstallUpdateBean {
 	
-	   private HtmlForm form1 = new HtmlForm();
+	private static final String BUNDLE_IDENTIFIER = "com.idega.manager";
+	
+	private IWResourceBundle resourceBundle;
+	
+	public InstallUpdateBean() {
+		initialize();
+	}
+	
+	private void initialize() {
+		resourceBundle = WFUtil.getResourceBundle(BUNDLE_IDENTIFIER);
+		String header = resourceBundle.getLocalizedString("man_manager_header", "Manager");
+		HtmlOutputText text = new HtmlOutputText();
+		text.setTitle(header);
+		setOutputText1(text);
+	}
+	
+    private HtmlForm form1 = new HtmlForm();
 
-	    public HtmlForm getForm1() {
-	        return form1;
-	    }
+    public HtmlForm getForm1() {
+        return form1;
+    }
 
-	    public void setForm1(HtmlForm hf) {
-	        this.form1 = hf;
-	    }
+    public void setForm1(HtmlForm hf) {
+        this.form1 = hf;
+    }
 
-	    private HtmlSelectBooleanCheckbox checkbox1 = new HtmlSelectBooleanCheckbox();
+    private HtmlSelectBooleanCheckbox checkbox1 = new HtmlSelectBooleanCheckbox();
 
-	    public HtmlSelectBooleanCheckbox getCheckbox1() {
-	        return checkbox1;
-	    }
+    public HtmlSelectBooleanCheckbox getCheckbox1() {
+        return checkbox1;
+    }
 
-	    public void setCheckbox1(HtmlSelectBooleanCheckbox hsbc) {
-	        this.checkbox1 = hsbc;
-	    }
+    public void setCheckbox1(HtmlSelectBooleanCheckbox hsbc) {
+        this.checkbox1 = hsbc;
+    }
 
-	    private HtmlSelectBooleanCheckbox checkbox2 = new HtmlSelectBooleanCheckbox();
+    private HtmlSelectBooleanCheckbox checkbox2 = new HtmlSelectBooleanCheckbox();
 
-	    public HtmlSelectBooleanCheckbox getCheckbox2() {
-	        return checkbox2;
-	    }
+    public HtmlSelectBooleanCheckbox getCheckbox2() {
+        return checkbox2;
+    }
 
-	    public void setCheckbox2(HtmlSelectBooleanCheckbox hsbc) {
-	        this.checkbox2 = hsbc;
-	    }
+    public void setCheckbox2(HtmlSelectBooleanCheckbox hsbc) {
+        this.checkbox2 = hsbc;
+    }
 
-	    private HtmlCommandButton button1 = new HtmlCommandButton();
+    private HtmlCommandButton button1 = new HtmlCommandButton();
 
-	    public HtmlCommandButton getButton1() {
-	        return button1;
-	    }
+    public HtmlCommandButton getButton1() {
+        return button1;
+    }
 
-	    public void setButton1(HtmlCommandButton hcb) {
-	        this.button1 = hcb;
-	    }
+    public void setButton1(HtmlCommandButton hcb) {
+        this.button1 = hcb;
+    }
 
-	    private HtmlCommandButton button2 = new HtmlCommandButton();
+    private HtmlCommandButton button2 = new HtmlCommandButton();
 
-	    public HtmlCommandButton getButton2() {
-	        return button2;
-	    }
+    public HtmlCommandButton getButton2() {
+        return button2;
+    }
 
-	    public void setButton2(HtmlCommandButton hcb) {
-	        this.button2 = hcb;
-	    }
+    public void setButton2(HtmlCommandButton hcb) {
+        this.button2 = hcb;
+    }
 
-	    private HtmlInputText textField1 = new HtmlInputText();
+    private HtmlOutputText outputText1 = new HtmlOutputText();
 
-	    public HtmlInputText getTextField1() {
-	        return textField1;
-	    }
+    public HtmlOutputText getOutputText1() {
+        return outputText1;
+    }
 
-	    public void setTextField1(HtmlInputText hit) {
-	        this.textField1 = hit;
-	    }
+    public void setOutputText1(HtmlOutputText hot) {
+        this.outputText1 = hot;
+    }
 
-	    private HtmlInputText textField2 = new HtmlInputText();
+    private HtmlOutputText outputText2 = new HtmlOutputText();
 
-	    public HtmlInputText getTextField2() {
-	        return textField2;
-	    }
+    public HtmlOutputText getOutputText2() {
+        return outputText2;
+    }
 
-	    public void setTextField2(HtmlInputText hit) {
-	        this.textField2 = hit;
-	    }
+    public void setOutputText2(HtmlOutputText hot) {
+        this.outputText2 = hot;
+    }
+
+    private HtmlOutputText outputText3 = new HtmlOutputText();
+
+    public HtmlOutputText getOutputText3() {
+        return outputText3;
+    }
+
+    public void setOutputText3(HtmlOutputText hot) {
+        this.outputText3 = hot;
+    }
+
+    private HtmlOutputText outputText4 = new HtmlOutputText();
+
+    public HtmlOutputText getOutputText4() {
+        return outputText4;
+    }
+
+    public void setOutputText4(HtmlOutputText hot) {
+        this.outputText4 = hot;
+    }
+
 }
