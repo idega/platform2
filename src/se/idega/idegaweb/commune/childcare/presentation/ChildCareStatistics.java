@@ -89,11 +89,27 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.number_of_applications","Applications"), column++, row++);
 
+		Collection schoolTypes = null;
+		switch (_schoolTypes) {
+			case SCHOOL_TYPES_CHILD_CARE:
+				schoolTypes = getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare();
+				break;
+			case SCHOOL_TYPES_PRE_SCHOOL:
+				schoolTypes = getBusiness().getPreSchoolTypes();
+				break;
+			case SCHOOL_TYPES_FAMILY_DAYCARE:
+				schoolTypes = getBusiness().getFamilyDayCareTypes();
+				break;
+			case SCHOOL_TYPES_FAMILY_AFTER_SCHOOL:
+				schoolTypes = getBusiness().getFamilyAfterSchoolTypes();
+				break;
+		}
+
 		List providers = null;
 		if (_areaID == -1) 
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare()));
+			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(schoolTypes));
 		else
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(_areaID, getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare()));
+			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(_areaID, schoolTypes));
 
 		Date from = null;
 		try {
