@@ -52,7 +52,7 @@ public class UpdateHandicap {
 	    int member_id = member.getID();
 	    //System.out.println("MemberID: "+member_id);
 
-	    MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(member_id);
+	    MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByMember(member);
 	    TournamentRound round = null;
 	    Field field = null;
 	    Handicap leikForgjof = null;

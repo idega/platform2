@@ -21,7 +21,6 @@ import java.sql.Statement;
 
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
@@ -65,8 +64,8 @@ public class ChangeGroup extends GolfBlock {
 
 			myTable.addText("Veldu hóp:", 1, 1);
 			myTable.add(menu, 1, 2);
-			myTable.add(new SubmitButton(new Image("/pics/formtakks/stadfesta.gif", "", 76, 19)), 2, 3);
-			myTable.add(new CloseButton(new Image("/pics/formtakks/tilbaka.gif", "", 76, 19)), 1, 3);
+			myTable.add(new SubmitButton(localize("tournament.confirm","Confirm")), 2, 3);
+			myTable.add(new CloseButton(localize("tournament.back","Back")), 1, 3);
 
 			myForm.add(myTable);
 			Text breakText = new Text("<br>");

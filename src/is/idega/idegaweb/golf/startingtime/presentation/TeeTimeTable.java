@@ -10,7 +10,6 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,7 +25,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -34,7 +32,6 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
@@ -61,7 +58,7 @@ public class TeeTimeTable extends GolfBlock {
 
 
 	private final static String PART_FIRST = "0";
-	private final static String PART_SECOND = "2";
+	private final static String PART_SECOND = "1";
 	private String _currentPartOfList = PART_FIRST;
 
 	public void main(IWContext iwc) throws Exception {
@@ -238,7 +235,7 @@ public class TeeTimeTable extends GolfBlock {
 			
 			if ((isAdmin() || (isClubAdmin() && iwc.getSessionAttribute("member_main_union_id").equals(iwc.getSessionAttribute("union_id"))) || (isClubWorker() && iwc.getSessionAttribute("member_main_union_id").equals(iwc.getSessionAttribute("union_id"))))) {
 
-				Link l = getLink(localize("start.reserve","Reserve"));
+				GenericButton l = getButton(new GenericButton(localize("start.reserve","Reserve")));
 				l.setWindowToOpen(AdminRegisterTime.class);
 				l.addParameter("daytime", (String) iwc.getSessionAttribute("when"));
 				l.addParameter("mode", "1");
@@ -246,7 +243,10 @@ public class TeeTimeTable extends GolfBlock {
 				Table adminTable = new Table(3,1);
 				
 				adminTable.add(l,1,1);
-				adminTable.add(getLinkToFieldConfiguration(iwc), 2, 1);
+				
+				GenericButton fieldConfigButton = getButton(new GenericButton(localize("start.field_configuration_link","Field Configurations")));
+				fieldConfigButton.setWindowToOpen(TeeTimeFieldConfigurationWindow.class);
+				adminTable.add(fieldConfigButton, 2, 1);
 
 				int field_id = Integer.parseInt(iwc.getSessionAttribute("field_id").toString());
 				String sDate = (String) iwc.getSessionAttribute("date");
@@ -254,10 +254,13 @@ public class TeeTimeTable extends GolfBlock {
 				if (sDate != null) {
 					stamp2 = new IWTimestamp(sDate);
 				}
-				Link reportLink = TeeTimeReportWindow.getLink(stamp2, field_id);
-				reportLink.setText(localize("start.lists","Lists"));
-				reportLink.setStyleClass(getLinkFontStyle());
-				adminTable.add(reportLink, 3, 1);
+
+				GenericButton print = getButton(new GenericButton(localize("start.lists","Lists")));
+				print.setWindowToOpen(TeeTimeReportWindow.class);
+				print.addParameter(TeeTimeReportWindow.PARAMETER_DATE, stamp2.toSQLDateString());
+				print.addParameter(TeeTimeReportWindow.PARAMETER_FIELD_ID, field_id);
+
+				adminTable.add(print, 3, 1);
 
 				RTTop.add(adminTable, 1, 1);
 			} else if ((isUser(iwc) && myField.nonMemberRegistration()) || (isMemberOfUnion(iwc, iwc.getSessionAttribute("union_id").toString()) && myField.publicRegistration())&&((iwc.getSessionAttribute("union_id").equals("100")&&now.isLaterThan(opent)) || !iwc.getSessionAttribute("union_id").equals("100") )) {
@@ -292,19 +295,7 @@ public class TeeTimeTable extends GolfBlock {
 				
 				RTTop.add(mainForm, 1, 1);
 
-			}
-
-
-			
-			
-			Table partTable = new Table(2, 1);
-			partTable.setNoWrap();
-			partTable.add(getLinkToFirstPartOfList(iwc), 1, 1);
-			partTable.add(getLinkToSecondPartOfList(iwc), 2, 1);
-			
-			RTTop.add(partTable,2,1);
-			
-			
+			}		
 
 			mainTable.add(RTTop, 1, 1);
 		} else {
@@ -626,7 +617,7 @@ public class TeeTimeTable extends GolfBlock {
 
 	public DropdownMenu insertDropdown(String dropdownName, IWContext iwc) throws IOException {
 		PrintWriter out = iwc.getResponse().getWriter();
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu)getStyledInterface(new DropdownMenu(dropdownName));
 		try {
 			Field[] field = service.getFields((String) iwc.getSession().getAttribute("union_id"));
 
@@ -645,7 +636,7 @@ public class TeeTimeTable extends GolfBlock {
 
 	public DropdownMenu insertDropdown(String dropdownName, int countFrom, int countTo) {
 		String from = Integer.toString(countFrom);
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu)getStyledInterface(new DropdownMenu(dropdownName));
 
 		for (; countFrom <= countTo; countFrom++) {
 			myDropdown.addMenuElement(Integer.toString(countFrom), Integer.toString(countFrom));
@@ -661,7 +652,7 @@ public class TeeTimeTable extends GolfBlock {
 		IWTimestamp stampNow = new IWTimestamp();
 		int GKGAfter = 10;
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu)getStyledInterface(new DropdownMenu(dropdownName));
 
 		//		myDropdown.addMenuElement(funcyDateRS, getNextDays(funcDate,
 		// funcyDateRS, 0));
@@ -708,7 +699,7 @@ public class TeeTimeTable extends GolfBlock {
 	public DropdownMenu insertDrowdown(String dropdownName, TableInfo myTableInfo, IWContext iwc, Vector torunamentRounds) throws SQLException, IOException {
 		//		PrintWriter out = iwc.getResponse().getWriter();
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu)getStyledInterface(new DropdownMenu(dropdownName));
 		int end = myTableInfo.get_row_num();
 		int interval = myTableInfo.get_interval();
 		int pic_min = myTableInfo.get_first_pic_min();
@@ -754,54 +745,26 @@ public class TeeTimeTable extends GolfBlock {
 		return myInput;
 	}
 
-	public Link getLinkToFirstPartOfList(IWContext iwc) {
-		Link myLink = getLink(localize("start.morning","Morning"));
-
-		myLink.addParameter("hvenaer", "0");
-
-		return myLink;
-	}
-
-	public Link getLinkToSecondPartOfList(IWContext iwc) {
-		Link myLink= getLink(localize("start.afternoon","After noon"));
-
-		myLink.addParameter("hvenaer", "1");
-
-		return myLink;
-	}
-
-	public Link getLinkToFieldConfiguration(IWContext iwc) {
-		GolfWindow myWindow = new GolfWindow("Gluggi", 520, 320);
-		myWindow.add(new TeeTimeFieldConfiguration());
-		myWindow.setContentHorizontalAlignment(Table.HORIZONTAL_ALIGN_CENTER);
-		myWindow.setContentVerticalAlignment(Table.VERTICAL_ALIGN_MIDDLE);
-		Link myLink = new Link(myWindow);
-		myLink.setStyleClass(getLinkFontStyle());
-		myLink.setText(localize("start.field_configuration_link","Field Configurations"));
-
-		return myLink;
-	}
-
-	public Link getLinkToAdminRegisterTeeTime(IWContext iwc) {
-		Window myWindow = new GolfWindow("Gluggi", 800, 600);
-		myWindow.add(new AdminRegisterTeeTime());
-		Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), myWindow);
-
-		return myLink;
-	}
 
 	public Form getLinkToTimeAndPlaceForm(IWContext iwc, IWCalendar dateFunc, GolfField Today) throws SQLException, IOException {
 
-		Table firstTable = new Table(2, 1);
+		Table firstTable = new Table(3, 1);
 		Form day_field = new Form();
 		day_field.setMethod("get");
 		firstTable.setCellpadding(0);
 		firstTable.setCellspacing(0);
-		firstTable.setCellpaddingLeft(2,1,10);
-		firstTable.setCellpaddingLeft(1,1,10);
+		//firstTable.setCellpaddingLeft(2,1,10);
+		//firstTable.setCellpaddingLeft(1,1,10);
 
-		firstTable.add(insertDropdown("hvar", iwc), 2, 1);
-		firstTable.add(insertDropdown("day", dateFunc, Today, iwc), 1, 1);
+		DropdownMenu timeOfDay = (DropdownMenu)getStyledInterface(new DropdownMenu("hvenaer"));
+		timeOfDay.setToSubmit(true);
+		timeOfDay.addMenuElement(PART_FIRST,localize("start.morning","Morning"));
+		timeOfDay.addMenuElement(PART_SECOND,localize("start.afternoon","Afternoon"));
+		timeOfDay.setSelectedElement(_currentPartOfList);
+		
+		firstTable.add(timeOfDay,1,1);
+		firstTable.add(insertDropdown("day", dateFunc, Today, iwc), 2, 1);
+		firstTable.add(insertDropdown("hvar", iwc), 3, 1);
 
 		day_field.add(firstTable);
 

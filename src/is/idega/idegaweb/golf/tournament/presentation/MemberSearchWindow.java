@@ -29,6 +29,7 @@ public class MemberSearchWindow extends GolfWindow {
 			this.setTitle(name);
 		}
 		this.add(new MemberSearch());
+		this.setScrollbar(true);
 	}
 	
 	

@@ -535,7 +535,7 @@ public class AdminRegisterTime extends GolfWindow {
 		dateTable.setWidth(width);
 
 		if (!forPrinting) {
-			Link theSearch = getLocalizedLink("search_form_member","Search For Member");
+			GenericButton theSearch = getButton(new GenericButton(localize("search_form_member","Search For Member")));
 			theSearch.setWindowToOpen(MemberSearchWindow.class);
 			theSearch.addParameter("action", "getSearch");
 			dateTable.add(theSearch, 2, 1);
@@ -559,8 +559,6 @@ public class AdminRegisterTime extends GolfWindow {
 		//    SubmitButton save = new SubmitButton(" Vista ",
 		// saveParameterString+".x", "do");
 		//    SubmitButton save = new SubmitButton(new
-		// Image("/pics/formtakks/vista.gif","Vista"), saveParameterString,
-		// "do");
 		GenericButton save = getButton(new SubmitButton(localize("save","Save"), saveParameterString, "do"));
 		Table submSave = new Table();
 		submSave.add(save);

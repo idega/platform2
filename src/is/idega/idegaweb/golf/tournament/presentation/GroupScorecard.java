@@ -569,9 +569,9 @@ public class GroupScorecard extends GolfBlock {
 
 			int rows = myTable.getRows();
 			myTable.setAlignment(1, rows, "right");
-			myTable.add(TournamentController.getBackLink(modinfo), 1, rows);
+			myTable.add(getButton(TournamentController.getBackLink(modinfo)), 1, rows);
 			myTable.addText(" ", 1, rows);
-			myTable.add(new SubmitButton(iwrb.getImage("buttons/save.gif", "", 76, 19)), 1, rows);
+			myTable.add(getButton(new SubmitButton(localize("tournament.save","Save"))), 1, rows);
 			myForm.add(myTable);
 
 			add("<br>");
@@ -581,7 +581,7 @@ public class GroupScorecard extends GolfBlock {
 	}
 
 	public void close() {
-		getParentPage().setParentToReload();
+		//getParentPage().setParentToReload();
 		getParentPage().close();
 	}
 }

@@ -38,6 +38,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SelectionBox;
@@ -69,8 +70,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 	public Tournament getTournament(IWContext modinfo) {
 		try {
 			return ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt((String) modinfo.getSessionAttribute("tournament_id")));
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			return null;
 		}
 	}
@@ -90,41 +90,30 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		if (tournament != null) {
 			if (control.equals("tournRound")) {
 				selectTournamentRound(modinfo, getResourceBundle());
-			}
-			else if (control.equals("tourngroups")) {
+			} else if (control.equals("tourngroups")) {
 				if (getTournament(modinfo).getIfGroupTournament()) {
 					selectTournamentGroups(modinfo, getResourceBundle());
-				}
-				else {
+				} else {
 					selectTournamentGroups(modinfo, getResourceBundle());
 				}
-			}
-			else if (control.equals("arrangement_chosen")) {
+			} else if (control.equals("arrangement_chosen")) {
 				useArrangement(modinfo, getResourceBundle());
-			}
-			else if (control.equals("tournament_groups_chosen")) {
+			} else if (control.equals("tournament_groups_chosen")) {
 				arrangeTournamentGroups(modinfo, getResourceBundle());
-			}
-			else if (control.equals("manualArrangementForMembersInGroupsChosen")) {
+			} else if (control.equals("manualArrangementForMembersInGroupsChosen")) {
 				manualArrangementForMembersInGroups(modinfo);
-			}
-			else if (control.equals("tournament_groups_ordered")) {
+			} else if (control.equals("tournament_groups_ordered")) {
 				selectArrangementForGroups(modinfo, getResourceBundle());
 				//arrangeMembersInGroups(modinfo);
-			}
-			else if (control.equals("arrangement_chosen_for_groups")) {
+			} else if (control.equals("arrangement_chosen_for_groups")) {
 				arrangementChosenForGroups(modinfo, getResourceBundle());
-			}
-			else if (control.equals("arrangeManualled")) {
+			} else if (control.equals("arrangeManualled")) {
 				arrangeManualRegistraion(modinfo);
-			}
-			else if (control.equals("tournamentRoundIdChosenForArrangement")) {
+			} else if (control.equals("tournamentRoundIdChosenForArrangement")) {
 				arrangeByPreviousScore(modinfo, getResourceBundle());
-			}
-			else if (control.equals("tournamentRoundIdChosenForStartingtime")) {
+			} else if (control.equals("tournamentRoundIdChosenForStartingtime")) {
 				arrangeByPreviousStartingtime(modinfo, getResourceBundle());
-			}
-			else {
+			} else {
 				//add("Action \""+control+"\" is not handled");
 			}
 
@@ -172,11 +161,11 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		Form form = new Form();
 		Table table = new Table();
 		table.setNoWrap();
-		table.setStyleClass(1,1,getHeaderRowClass());
-		table.setStyleClass(3,1,getHeaderRowClass());
-		table.setStyleClass(4,1,getHeaderRowClass());
-		table.setStyleClass(5,1,getHeaderRowClass());
-		table.setStyleClass(6,1,getHeaderRowClass());
+		table.setStyleClass(1, 1, getHeaderRowClass());
+		table.setStyleClass(3, 1, getHeaderRowClass());
+		table.setStyleClass(4, 1, getHeaderRowClass());
+		table.setStyleClass(5, 1, getHeaderRowClass());
+		table.setStyleClass(6, 1, getHeaderRowClass());
 		table.setCellspacing(0);
 		form.add(table);
 		table.setWidth(600);
@@ -192,8 +181,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 						TournamentRound tRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(tournament_round_id));
 						if (tRound.getVisibleStartingtimes()) {
 							tRound.setVisibleStartingtimes(false);
-						}
-						else {
+						} else {
 							tRound.setVisibleStartingtimes(true);
 						}
 						TournamentController.invalidateStartingTimeCache(modinfo, tournament.getID(), String.valueOf(tournament_round_id));
@@ -201,8 +189,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 
 		TournamentRound[] tourRounds = tournament.getTournamentRounds();
@@ -216,19 +203,17 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				add(iwrb.getLocalizedString("tournament.tee_times_for_first_round_are_chosen_in_tee_times_registration", "Tee times for the first round are arrangenged in Register player"));
 				add("<br><br>");
 				add(form);
-			}
-			else {
+			} else {
 				add(iwrb.getLocalizedString("tournament.tee_times_are_chosen_in_tee_times_registration", "Tee times  in this tournament are arrangerd in Register player"));
 				add("<br><br>");
 
-				Link theEdit1 = getLocalizedLink("tournament.edit_tee_times","Edit Tee Times");
+				GenericButton theEdit1 = getButton(new GenericButton(localize("tournament.edit_teetimes", "Edit Teetimes")));
 				theEdit1.setWindowToOpen(ModifyStartingtimeWindow.class);
-				theEdit1.addParameter("tournament_id", tournament.getID());
-				theEdit1.addParameter("action", "getSearch");
+				theEdit1.addParameterToWindow("tournament_id", tournament.getID());
+				theEdit1.addParameterToWindow("action", "getSearch");
 				add(theEdit1);
 			}
-		}
-		else {
+		} else {
 			theMenu = new DropdownMenu(tournament.getTournamentRounds());
 			add(form);
 		}
@@ -238,7 +223,6 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		Text header = getSmallHeader(iwrb.getLocalizedString("tournament.pick_a_round", "Pick a round"));
 
 		table.add(header, 1, row);
-		
 
 		table.setWidth(1, "350");
 		table.setWidth(2, "20");
@@ -257,15 +241,14 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		Text header2 = getSmallHeader(iwrb.getLocalizedString("tournament.tee_times", "Tee times"));
 		table.add(header2, 3, row);
 		table.mergeCells(3, row, 5, row);
-		
+
 		for (int i = 0; i < tourRounds.length; i++) {
 			table.add(tourRounds[i].getName(iwrb), 3, row + i + 1);
 			table.setWidth(3, row + i + 1, "80");
 			table.setWidth(4, row + i + 1, "70");
 			if (tourRounds[i].getVisibleStartingtimes()) {
 				table.add(iwrb.getLocalizedString("tournament.visible", "Visible"), 4, row + i + 1);
-			}
-			else {
+			} else {
 				table.add(notVisible, 4, row + i + 1);
 			}
 			change = new Link(iwrb.getLocalizedString("tournament.change", "Change"));
@@ -279,16 +262,16 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			print.addParameter(TournamentStartingtimeWindow.PARAMETER_TOURNAMENT_ROUND_ID, tourRounds[i].getID());
 			print.setWindowToOpen(TournamentStartingtimeWindow.class);
 			table.add(print, 6, row + i + 1);
-			if(i%2==0) {
-				table.setStyleClass(3,row + i + 1,getDarkRowClass());
-				table.setStyleClass(4,row + i + 1,getDarkRowClass());
-				table.setStyleClass(5,row + i + 1,getDarkRowClass());
-				table.setStyleClass(6,row + i + 1,getDarkRowClass());
+			if (i % 2 == 0) {
+				table.setStyleClass(3, row + i + 1, getDarkRowClass());
+				table.setStyleClass(4, row + i + 1, getDarkRowClass());
+				table.setStyleClass(5, row + i + 1, getDarkRowClass());
+				table.setStyleClass(6, row + i + 1, getDarkRowClass());
 			} else {
-				table.setStyleClass(3,row + i + 1,getLightRowClass());
-				table.setStyleClass(4,row + i + 1,getLightRowClass());
-				table.setStyleClass(5,row + i + 1,getLightRowClass());
-				table.setStyleClass(6,row + i + 1,getLightRowClass());
+				table.setStyleClass(3, row + i + 1, getLightRowClass());
+				table.setStyleClass(4, row + i + 1, getLightRowClass());
+				table.setStyleClass(5, row + i + 1, getLightRowClass());
+				table.setStyleClass(6, row + i + 1, getLightRowClass());
 			}
 		}
 
@@ -305,12 +288,11 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		//   table.setAlignment(1,row,"center");
 		table.add(iwrb.getLocalizedString("tournament.to_edit_tee_times", "To edit tee times push the button below"), 1, 4);
 
-		Link theEdit = getLocalizedLink("tournament.edit_tee_times","Edit Tee Times");
+		Link theEdit = getLocalizedLink("tournament.edit_tee_times", "Edit Tee Times");
 		theEdit.setWindowToOpen(ModifyStartingtimeWindow.class);
 		theEdit.addParameter("tournament_id", tournament.getID());
 		theEdit.addParameter("action", "getSearch");
 		table.add(theEdit, 1, 5);
-		
 
 		Paragraph par = new Paragraph();
 		par.setAlign("center");
@@ -344,8 +326,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			table.add(TournamentController.getAheadButton(modinfo, "", ""), 2, 3);
 			table.add(TournamentController.getBackLink(modinfo), 1, 3);
 			add(form);
-		}
-		else {
+		} else {
 			selectArrangement(modinfo, iwrb);
 
 		}
@@ -385,8 +366,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			form.add(new HiddenInput("stt_action", "tournament_groups_ordered"));
 			form.maintainParameter("tournament_round");
 			add(form);
-		}
-		else {
+		} else {
 			add(iwrb.getLocalizedString("tournament.must_select_groups", "You must pick at least one group"));
 			add("<br><br>");
 			add(TournamentController.getBackLink(modinfo));
@@ -434,8 +414,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				table.add(new HiddenInput("tournament_group_id", "" + tGroup.getID()), 3, row);
 				table.add(menu, 3, row);
 				/*
-				 * if (members != null) { table.add(members.size()+"",5,row); } else {
-				 * table.add("0",5,row); }
+				 * if (members != null) { table.add(members.size()+"",5,row); }
+				 * else { table.add("0",5,row); }
 				 */
 
 			}
@@ -445,8 +425,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			table.add(menuAll, 3, row);
 			if (manyMembers != null) {
 				table.add("" + manyMembers.length, 5, row);
-			}
-			else {
+			} else {
 				table.add("0", 5, row);
 			}
 			++row;
@@ -462,8 +441,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			table.mergeCells(1, row, 5, row);
 			if (tRound.getStartingtees() > 1) {
 				table.add(new HiddenInput("overwrite_startingtimes", "unspecified"), 1, row);
-			}
-			else {
+			} else {
 				Text warning = new Text(iwrb.getLocalizedString("tournament.overwrite_startingtimes", "Overwrite previous startingtimes"));
 				warning.addToText("&nbsp;?&nbsp;&nbsp;");
 				CheckBox cBox = new CheckBox("overwrite_startingtimes");
@@ -498,8 +476,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		String[] tournament_group_ids = modinfo.getParameterValues("tournament_group_id");
 		String[] arrangements = modinfo.getParameterValues("arrangement");
 		String arrangementAll = modinfo.getParameter("arrangementAll");
-		if (arrangementAll == null)
-			arrangementAll = "null";
+		if (arrangementAll == null) arrangementAll = "null";
 
 		String tRoundId = modinfo.getParameter("tournament_round");
 		TournamentRound tRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(tRoundId));
@@ -550,14 +527,16 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 									/*
 									 * table.add(new
 									 * HiddenInput("tournament_group_id",tournament_group_ids[i]),1,row);
-									 * ++column; ++teljari; if (column == 3) { column = 1; ++row; }
-									 * table.add(" <u>"+tGroup.getName()+ " </u>
-									 * &nbsp;&nbsp;(hópur "+teljari+")" ,column,row); table.add("
-									 * <br> ",column,row);
+									 * ++column; ++teljari; if (column == 3) {
+									 * column = 1; ++row; } table.add("
+									 * <u>"+tGroup.getName()+ " </u>
+									 * &nbsp;&nbsp;(hópur "+teljari+")"
+									 * ,column,row); table.add(" <br>
+									 * ",column,row);
 									 * table.add(getArrangeManualSelectionBox(members,"member_"+tournament_group_ids[i]),column,row);
 									 * table.setAlignment(column,row,"left");
-									 * table.setVerticalAlignment(column,row,"top"); addTable =
-									 * true;
+									 * table.setVerticalAlignment(column,row,"top");
+									 * addTable = true;
 									 */
 								}
 
@@ -569,8 +548,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 									add("<br>");
 								}
 							}
-						}
-						else {
+						} else {
 						}
 					}
 				}
@@ -589,14 +567,12 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 					add(form);
 				}
-			}
-			else {
+			} else {
 				add(iwrb.getLocalizedString("tournament.ording_method_missing_for_group", "Ordering method missing for one group or more"));
 				add("<p>");
 				add(TournamentController.getBackLink(modinfo));
 			}
-		}
-		else {
+		} else {
 			arrangementsAllNull = false;
 			List members = TournamentController.getMembersInTournamentList(tournament);
 
@@ -606,8 +582,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 				if (arrangementAll.equals("previousRoundsHigh")) {
 					highLow = "high";
-				}
-				else if (arrangementAll.equals("previousRoundsLow")) {
+				} else if (arrangementAll.equals("previousRoundsLow")) {
 					highLow = "low";
 				}
 
@@ -650,8 +625,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				form.add(table);
 				add(form);
 
-			}
-			else if (arrangementAll.equals("previousStartingtime")) {
+			} else if (arrangementAll.equals("previousStartingtime")) {
 				arrangementsAllNull = true;
 				int theRow = 1;
 
@@ -683,8 +657,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 				form.add(table);
 				add(form);
-			}
-			else {
+			} else {
 				useArrangement(modinfo, members, arrangementAll, iwrb);
 				add(iwrb.getLocalizedString("tournament.ordering_finisher", "Ordering Finished"));
 			}
@@ -703,8 +676,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				int total = 1;
 				try {
 					total = Integer.parseInt(highestGrupNum[0]);
-				}
-				catch (NumberFormatException n) {
+				} catch (NumberFormatException n) {
 				}
 
 				int half = (total / 2) + (total % 2);
@@ -714,8 +686,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					sTimes[i].setGroupNum(sTimes[i].getGroupNum() - half);
 					sTimes[i].update();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.err.println("/tournament/setupstartingtime : finilizeStartingtimes : ");
 				e.printStackTrace(System.err);
 			}
@@ -756,7 +727,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 							member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(members[j]));
 							startingGroup = TournamentController.getNextAvailableStartingGroup(tournament, tourRound);
 
-							//startingGroup = getNextAvailableStartingGroup(tournament,
+							//startingGroup =
+							// getNextAvailableStartingGroup(tournament,
 							// tourDay, tournament.getNumberInGroup());
 
 							if (!TournamentController.isMemberRegisteredInTournament(tournament, tourRound, tournament.getNumberInGroup(), member)) {
@@ -766,8 +738,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 								tableR.add("Ráshópur " + startingGroup, 4, rowR);
 								tableR.setAlignment(1, rowR, "left");
 								tableR.setAlignment(4, rowR, "left");
-							}
-							else {
+							} else {
 								++row;
 								table.add(member.getName(), 1, row);
 								table.setAlignment(1, row, "left");
@@ -786,8 +757,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 			add(contentTable);
 
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 	}
@@ -852,14 +822,11 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		List members = new Vector();
 		if (arrangement.equals("handicap")) {
 			members = getMembers(tournament, "handicap");
-		}
-		else if (arrangement.equals("random")) {
+		} else if (arrangement.equals("random")) {
 			members = getMembers(tournament);
-		}
-		else if (arrangement.equals("alphabetical")) {
+		} else if (arrangement.equals("alphabetical")) {
 			members = getMembers(tournament, "name");
-		}
-		else if (arrangement.equals("manual")) {
+		} else if (arrangement.equals("manual")) {
 			members = getMembers(tournament, "name");
 		}
 
@@ -870,18 +837,15 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		String arrangement = modinfo.getParameter("arrangement");
 		if (arrangement != null) {
 			useArrangement(modinfo, arrangement, iwrb);
-		}
-		else {
+		} else {
 			String stt_action = modinfo.getParameter("stt_action");
 			if (stt_action != null) {
 				if (stt_action.equals("arrangement_chosen")) {
 					selectArrangement(modinfo, iwrb);
-				}
-				else if (stt_action.equals("arrangement_chosen_for_group")) {
+				} else if (stt_action.equals("arrangement_chosen_for_group")) {
 					selectArrangementForGroups(modinfo, iwrb);
 				}
-			}
-			else {
+			} else {
 				selectTournament(modinfo, iwrb);
 			}
 
@@ -903,8 +867,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			form.add(new SubmitButton(iwrb.getLocalizedString("tournament.select", "Select"), "stt_action", "arrangeManualled"));
 
 			add(form);
-		}
-		else {
+		} else {
 			nobodyIsRegistered(iwrb);
 		}
 	}
@@ -913,8 +876,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		SelectionBox memberDropdown = new SelectionBox(members);
 		if (name.equalsIgnoreCase("")) {
 			memberDropdown.setName("member");
-		}
-		else {
+		} else {
 			memberDropdown.setName(name);
 		}
 		memberDropdown.addUpAndDownMovers();
@@ -945,15 +907,13 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					//setupStartingtime(member,tournament,
 					// Integer.parseInt(s_tournament_day_id));
 					add("ekkert gerðist");
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					add("Villa");
 					e.printStackTrace(System.err);
 					add(e.getMessage());
 				}
 			}
-		}
-		else {
+		} else {
 			add("Enginn var valinn valinn");
 		}
 
@@ -972,8 +932,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					iter.remove();
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 	}
 
@@ -997,50 +956,47 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 			if (numberInGroup == 4) {
 				switch (modder) {
-					case 1 :
+					case 1:
 						start[0] = 2;
 						start[1] = 3;
 						break;
-					case 2 :
+					case 2:
 						start[0] = 3;
 						start[1] = 3;
 						break;
-					case 3 :
+					case 3:
 						start = new int[1];
 						start[0] = 3;
 						break;
-					default :
+					default:
 						start = new int[0];
 						break;
 				}
-			}
-			else if (numberInGroup == 3) {
+			} else if (numberInGroup == 3) {
 				switch (modder) {
-					case 1 :
+					case 1:
 						start[0] = 2;
 						start[1] = 2;
 						break;
-					case 2 :
+					case 2:
 						start = new int[1];
 						start[0] = 2;
 						break;
-					default :
+					default:
 						start = new int[0];
 						break;
 				}
-			}
-			else if (numberInGroup == 2) {
+			} else if (numberInGroup == 2) {
 				switch (modder) {
-					case 1 :
+					case 1:
 						start = new int[1];
 						start[0] = 1;
 						break;
-					default :
+					default:
 						start = new int[0];
 						break;
 				}
-			}
-			else {
+			} else {
 				start = new int[0];
 			}
 
@@ -1071,8 +1027,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					if (currentStartingGroup > previousStartingGroup) {
 						++groupNumber;
 						++previousStartingGroup;
-					}
-					else if (currentStartingGroup - previousStartingGroup == 2) {
+					} else if (currentStartingGroup - previousStartingGroup == 2) {
 						previousStartingGroup = currentStartingGroup - 1;
 					}
 
@@ -1087,8 +1042,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 								}
 							}
 						}
-					}
-					else if (start.length > 0) {
+					} else if (start.length > 0) {
 						if (groupNumber == 1) {
 							List theList = TournamentController.getMembersInStartingGroup(tournament, tRound, startingGroup);
 							if (theList != null) {
@@ -1104,13 +1058,11 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 						minimumGroupNumber = startingGroup;
 					}
 
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
 			}
-		}
-		else {
+		} else {
 			nobodyIsRegistered(iwrb);
 		}
 	}
@@ -1125,8 +1077,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 	 * com.idega.util.idegaTimestamp(tourDay.getDate()); Startingtime[]
 	 * startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT *
 	 * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+stamp.toSQLString()+"' AND
-	 * field_id="+tournament.getFieldId()+" AND grup_num="+startingGroup); return
-	 * startingtimes.length; }
+	 * field_id="+tournament.getFieldId()+" AND grup_num="+startingGroup);
+	 * return startingtimes.length; }
 	 */
 
 	private void nobodyIsRegistered(IWResourceBundle iwrb) {
@@ -1156,8 +1108,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 	//	 setja í TournamentBusines... (whatever hann heitir);
 
 	/**
-	 * Order by FirstName, LastName, MiddleName => String ordered = "name"; Order
-	 * by Handicap => String ordered = "handicap";
+	 * Order by FirstName, LastName, MiddleName => String ordered = "name";
+	 * Order by Handicap => String ordered = "handicap";
 	 */
 	public List getMembers(Tournament theTournament, String ordered) {
 
@@ -1165,15 +1117,12 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		try {
 			if (ordered.equalsIgnoreCase("ekkert")) {
 				list = com.idega.data.EntityFinder.findReverseRelated(theTournament, (Member) IDOLookup.instanciateEntity(Member.class));
-			}
-			else if (ordered.equalsIgnoreCase("name")) {
+			} else if (ordered.equalsIgnoreCase("name")) {
 				list = com.idega.data.EntityFinder.findAll((Member) IDOLookup.instanciateEntity(Member.class), "Select * from member,tournament_member where tournament_member.tournament_id=" + theTournament.getID() + " and member.member_id = tournament_member.member_id order by member.first_name,member.last_name, member.middle_name");
-			}
-			else if (ordered.equalsIgnoreCase("handicap")) {
+			} else if (ordered.equalsIgnoreCase("handicap")) {
 				list = com.idega.data.EntityFinder.findAll((Member) IDOLookup.instanciateEntity(Member.class), "Select * from member,tournament_member, member_info where member_info.member_id = member.member_id AND tournament_member.tournament_id=" + theTournament.getID() + " and member.member_id = tournament_member.member_id order by member_info.handicap");
 			}
-		}
-		catch (Exception s) {
+		} catch (Exception s) {
 			s.printStackTrace(System.err);
 		}
 		return list;
@@ -1183,8 +1132,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		try {
 			if (ordered.equalsIgnoreCase("alphabetical")) {
 				java.util.Collections.sort(members, new com.idega.util.GenericMemberComparator(com.idega.util.GenericMemberComparator.FIRSTLASTMIDDLE));
-			}
-			else if (ordered.equalsIgnoreCase("handicap_low_first")) {
+			} else if (ordered.equalsIgnoreCase("handicap_low_first")) {
 				Member member;
 				String SQLString = "select m.* from member m, member_info mi where m.member_id = mi.member_id ";
 				String memberString = "AND (";
@@ -1202,8 +1150,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				SQLString += " order by mi.handicap";
 
 				members = EntityFinder.findAll((Member) IDOLookup.instanciateEntity(Member.class), SQLString);
-			}
-			else if (ordered.equalsIgnoreCase("handicap_high_first")) {
+			} else if (ordered.equalsIgnoreCase("handicap_high_first")) {
 				Member member;
 				String SQLString = "select m.* from member m, member_info mi where m.member_id = mi.member_id ";
 				String memberString = "AND (";
@@ -1222,12 +1169,10 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 				members = EntityFinder.findAll((Member) IDOLookup.instanciateEntity(Member.class), SQLString);
 
-			}
-			else if (ordered.equalsIgnoreCase("random")) {
+			} else if (ordered.equalsIgnoreCase("random")) {
 				members = randomList(members);
 			}
-		}
-		catch (Exception s) {
+		} catch (Exception s) {
 			s.printStackTrace(System.err);
 		}
 
@@ -1240,8 +1185,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			add(iwrb.getLocalizedString("tournament.must_select_rounds", "You must select at least one round"));
 			add("<p>");
 			add(TournamentController.getBackLink(modinfo));
-		}
-		else {
+		} else {
 
 			String tournament_round = modinfo.getParameter("tournament_round");
 			String displayScoresOrder = modinfo.getParameter("displayScoresOrder");
@@ -1260,8 +1204,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				for (int i = 0; i < tournament_round_id.length; i++) {
 					intTRoundIds[i] = Integer.parseInt(tournament_round_id[i]);
 				}
-			}
-			catch (NumberFormatException n) {
+			} catch (NumberFormatException n) {
 				System.err.println("TournamentStartingtimeSetup : arrangeByPreviousScore : int[] creation ");
 			}
 
@@ -1284,8 +1227,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					memberList = ResultsCollectorToMember(members);
 					arrangeMembers(modinfo, memberList, iwrb);
 				}
-			}
-			else {
+			} else {
 				ResultDataHandler handler = new ResultDataHandler(tournament.getID(), tournamentTypeOrder, intTRoundIds, null);
 				members = handler.getTournamentMembers();
 
@@ -1312,8 +1254,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			add(iwrb.getLocalizedString("tournament.must_select_rounds", "You must select at least one round"));
 			add("<p>");
 			add(TournamentController.getBackLink(modinfo));
-		}
-		else {
+		} else {
 			String tournament_round = modinfo.getParameter("tournament_round");
 			Startingtime[] sTimes = (Startingtime[]) ((Startingtime) IDOLookup.instanciateEntity(Startingtime.class)).findAll("select s.* from startingtime s,tournament_round_startingtime trs where trs.startingtime_id = s.startingtime_id AND trs.tournament_round_id = " + tournament_round_id + " order by s.grup_num");
 			Startingtime sTime;
@@ -1342,8 +1283,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				resColl = (ResultsCollector) resultCollector.elementAt(i);
 				try {
 					member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(resColl.getMemberId());
-				}
-				catch (FinderException fe) {
+				} catch (FinderException fe) {
 					throw new SQLException(fe.getMessage());
 				}
 				members.add(member);

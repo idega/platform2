@@ -23,7 +23,6 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -393,7 +392,7 @@ public class TournamentGroups extends GolfBlock {
 				Member member = (is.idega.idegaweb.golf.entity.Member) getMember();
 				int tempUnionId = member.getMainUnionID();
 				if (tempUnionId == union.getID()) {
-					table.add(new SubmitButton(new Image("/pics/formtakks/uppfaera.gif", ""), "view_action", "update"), 2, row);
+					table.add(new SubmitButton(localize("tournament.update","Update"), "view_action", "update"), 2, row);
 					//table.add(new HiddenInput("view_action","update"),2,row);
 				}
 			}

@@ -36,7 +36,7 @@ public class RegistrationForMembers extends GolfBlock {
 
 
 
-  CloseButton closeButton = new CloseButton(new Image("/pics/formtakks/loka.gif","Loka glugga"));
+  CloseButton closeButton = new CloseButton();
 
   public void main(IWContext modinfo) throws Exception {
   	IWResourceBundle iwrb = getResourceBundle();
@@ -148,13 +148,13 @@ public class RegistrationForMembers extends GolfBlock {
           yesForm.maintainParameter("action");
 
           yesForm.add(new HiddenInput("subAction","yes"));
-          SubmitButton yes = new SubmitButton(new Image("/pics/formtakks/ja.gif","Já"));
+          SubmitButton yes = new SubmitButton(localize("tournament.yes","Yes"));
           yesForm.add(yes);
 
       Form noForm  = new Form();
           noForm.maintainParameter("action");
           noForm.add(new HiddenInput("subAction","no"));
-          CloseButton no = new CloseButton(new Image("/pics/formtakks/nei.gif","Nei"));
+          CloseButton no = new CloseButton(localize("tournament.no","no"));
           noForm.add(no);
 
 

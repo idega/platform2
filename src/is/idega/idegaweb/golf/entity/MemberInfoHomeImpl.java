@@ -7,9 +7,11 @@ public class MemberInfoHomeImpl extends com.idega.data.IDOFactory implements Mem
   return MemberInfo.class;
  }
 
+
  public MemberInfo create() throws javax.ejb.CreateException{
-  return (MemberInfo) super.idoCreate();
+  return (MemberInfo) super.createIDO();
  }
+
 
  public MemberInfo createLegacy(){
 	try{
@@ -21,13 +23,23 @@ public class MemberInfoHomeImpl extends com.idega.data.IDOFactory implements Mem
 
  }
 
- public MemberInfo findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (MemberInfo) super.idoFindByPrimaryKey(id);
- }
+
+public MemberInfo findByMember(is.idega.idegaweb.golf.entity.Member p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((MemberInfoBMPBean)entity).ejbFindByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
 
  public MemberInfo findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (MemberInfo) super.idoFindByPrimaryKey(pk);
+  return (MemberInfo) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public MemberInfo findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (MemberInfo) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public MemberInfo findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +50,7 @@ public class MemberInfoHomeImpl extends com.idega.data.IDOFactory implements Mem
 	}
 
  }
+
 
 
 }

@@ -32,9 +32,7 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.DateInput;
@@ -59,8 +57,8 @@ public class TournamentCreator extends TournamentBlock {
 
 	boolean bIsUpdate;
 	String sTournamentIdToUpdate;
-	SubmitButton aframButton = new SubmitButton(new Image("/pics/formtakks/afram.gif","Áfram"));
-	BackButton tilbakaButton = new BackButton(new Image("/pics/formtakks/tilbaka.gif","Til baka"));
+	SubmitButton aframButton = new SubmitButton(localize("tournamnt.next","Next"));
+	BackButton tilbakaButton = new BackButton();
 
 	SubmitButton startingTimeB1;
 
@@ -298,7 +296,7 @@ public class TournamentCreator extends TournamentBlock {
 	                HiddenInput hiddenAction = new HiddenInput("tournament_admin_createtournament_action","create_two");
 
 //	                Window myWindow = new Window("M—tsh—par",400,500,TournamentGroups.class);
-	                Link tournamentGroupButton = getLink(iwrb.getLocalizedString("tournament.tournament_groups","Tournament Groups"));
+	                GenericButton tournamentGroupButton = getButton(new GenericButton(iwrb.getLocalizedString("tournament.tournament_groups","Tournament Groups")));
 	                tournamentGroupButton.setWindowToOpen(TournamentGroupsWindow.class);
 //	                tournamentGroupButton.setWindowToOpen(TournamentGroups.class);
 
@@ -409,9 +407,10 @@ public class TournamentCreator extends TournamentBlock {
 
 	            if (bIsUpdate && AccessControl.isAdmin(modinfo)) {
 	                if(AccessControl.isAdmin(modinfo) || AccessControl.isClubAdmin(modinfo)){
-	                    Link deleteLink = getLink(localize("tournament.delete_tournament","Delete Tournament"));
+	                    GenericButton deleteLink = getButton(new GenericButton());
+	                      deleteLink.setContent(localize("tournament.delete_tournament","Delete Tournament"));
 	                      deleteLink.setWindowToOpen(TournamentDeleteWindow.class);
-	                      deleteLink.addParameter("tournament_id",sTournamentIdToUpdate);
+	                      deleteLink.addParameterToWindow("tournament_id",sTournamentIdToUpdate);
 	                    table.add(deleteLink,5,row);
 	                }
 	            }
@@ -565,7 +564,7 @@ public class TournamentCreator extends TournamentBlock {
 	            table.add(hiddenAction,1,row);
 
 
-	            table.add(TournamentController.getBackLink(modinfo),1,row);
+	            table.add(getButton(TournamentController.getBackLink(modinfo)),1,row);
 
 	        }
 	        else {
@@ -580,7 +579,7 @@ public class TournamentCreator extends TournamentBlock {
 	    String[] tournament_groups = modinfo.getParameterValues("tournament_group");
 	    if (tournament_groups == null) {
 	        add(iwrb.getLocalizedString("tournament.you_must_pick_groups","You must pick at least one tournament group")+ "<br><br>");
-	        add(TournamentController.getBackLink(modinfo));
+	        add(getButton(TournamentController.getBackLink(modinfo)));
 	    }
 	    else {
 	        try {
@@ -820,7 +819,7 @@ public class TournamentCreator extends TournamentBlock {
 					buttonTable.setWidth("85%");
 	            GenericButton submitButton = getButton(new SubmitButton(localize("tournament.save","Save")));
 	            HiddenInput hiddenInput = new HiddenInput("tournament_admin_createtournament_action","tournament_admin_save_tournament");
-	            buttonTable.add(TournamentController.getBackLink(modinfo),1,1);
+	            buttonTable.add(getButton(TournamentController.getBackLink(modinfo)),1,1);
 	            buttonTable.add(submitButton,3,1);
 	            buttonTable.add(hiddenInput,3,1);
 	            buttonTable.setAlignment(3,1,"right");

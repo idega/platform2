@@ -34,7 +34,6 @@ import com.idega.data.IDOLookup;
 import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -369,15 +368,15 @@ public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourc
           table.setCellspacing(0);
 
         if (AccessControl.isAdmin(modinfo) || AccessControl.isClubAdmin(modinfo) ) {
-            Link theChecker = new Link(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament"));
-            	theChecker.setClassToInstanciate(TournamentCheckerWindow.class);
+            GenericButton theChecker = getButton(new GenericButton(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament")));
+            	theChecker.setWindowToOpen(TournamentCheckerWindow.class);
                 theChecker.addParameter("tournament_id",tournament.getID());
                 theChecker.addParameter("action","doCheck");
             table.add(theChecker,1,1);
 
         }
 
-        Link theSearch = getLink(localize("tournament.search_for_member","Search for member"));
+        GenericButton theSearch = getButton(new GenericButton(localize("tournament.search_for_member","Search for member")));
         		theSearch.setWindowToOpen(MemberSearchWindow.class);
             theSearch.addParameter("action","getSearch");
         table.add(theSearch,2,1);
@@ -1309,7 +1308,7 @@ public void registerMarkedMembers(IWContext modinfo,IWResourceBundle iwrb) throw
 
         Form form = new Form();
           form.add(new HiddenInput("action","selectmember"));
-          form.add(new SubmitButton(new Image("/pics/formtakks/tilbaka.gif","")));
+          form.add(new SubmitButton(localize("tournament.back","Back")));
         add(form);
 
 

@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
@@ -156,7 +155,7 @@ public class FieldHandicapCalculator extends GolfBlock {
 
 		myTable.add(handicapInput, 2, 1);
 		myTable.add(tees, 2, 2);
-		myTable.add(new SubmitButton(new Image("/pics/formtakks/reiknalf.gif", "", 145, 19)), 1, 4);
+		myTable.add(new SubmitButton(localize("field.calculate","Calculate")), 1, 4);
 
 		myTable.setAlignment(1, 1, "right");
 		myTable.setAlignment(1, 2, "right");

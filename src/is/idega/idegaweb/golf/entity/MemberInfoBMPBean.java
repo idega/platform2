@@ -3,6 +3,8 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 
 
@@ -64,6 +66,10 @@ public class MemberInfoBMPBean extends GenericEntity implements MemberInfo{
           setColumn("history",history);
 	}
 
+	
+	public Object ejbFindByMember(Member member) throws FinderException {
+		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals("member_id",member));
+	}
 
 
 

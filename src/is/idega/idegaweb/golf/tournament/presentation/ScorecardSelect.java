@@ -78,7 +78,7 @@ public class ScorecardSelect extends TournamentBlock {
 		GenericButton submit = getButton(new SubmitButton(localize("tournament.continue", "Continue")));
 
 		Form myForm = new Form();
-		myForm.setMethod("post");
+		myForm.setMethod("get");
 
 		Table myTable = new Table(1, 3);
 		myTable.setAlignment("center");

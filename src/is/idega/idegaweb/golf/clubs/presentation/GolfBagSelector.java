@@ -3,33 +3,33 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.Window;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 /**
  * @author laddi
  */
 public class GolfBagSelector extends GolfBlock {
 
-	SubmitButton leitaButton = new SubmitButton(new Image("/pics/formtakks/leita.gif", "Leita"));
-	SubmitButton skraButton = new SubmitButton(new Image("/pics/formtakks/skra.gif", "Skrá"));
+	SubmitButton leitaButton = new SubmitButton(localize("search","Search"));
+	SubmitButton skraButton = new SubmitButton(localize("register","Register"));
 
 	public void main(IWContext modinfo) throws Exception {
 		getParentPage().setTitle("Pokamerki");
