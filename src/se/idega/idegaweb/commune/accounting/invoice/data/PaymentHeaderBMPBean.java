@@ -153,7 +153,6 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_STATUS, status)
 		.appendAndEquals(COLUMN_SCHOOL_ID, schoolPK.toString())
 		.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryPK.toString());
-		String test = sql.toString();
 		return idoFindPKsByQuery(sql);
 	}
 	
