@@ -1,18 +1,20 @@
-/*
- * Created on 6.8.2003
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package is.idega.idegaweb.travel.block.search.business;
 
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineHome;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroup;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroupBMPBean;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroupHome;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,19 +23,28 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
+import javax.transaction.UserTransaction;
 
 import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
-import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.data.GenericGroupHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.business.UserGroupBusiness;
+import com.idega.core.user.data.User;
+import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
@@ -62,6 +73,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	private String PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS = "post_wmi";
 	private String PARAMETER_POSTAL_CODE_SPACER = "post_space";
 	
+	private String SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION = "Search Engine administator group";
+	private String permissionGroupNameExtention = " - admins";
+
 	public ServiceSearchBusinessBean() {
 		super();
 	}
@@ -325,7 +339,250 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return coll;
 	}
 
+	public Collection getServiceSearchEngines() {
+		Collection coll = new Vector();
+		try {
+			coll = getSearchEngineHome().findAll();
+		} catch (Exception e) {
+//			e.printStackTrace();
+		}
+		return coll;
+	}
+	
+	public ServiceSearchEngine findByName(String name) {
+		ServiceSearchEngine engine = null;
+		try {
+			return getSearchEngineHome().findByName(name);
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+		return engine;
+	}
 
+	public ServiceSearchEngine findByCode(String code) {
+		ServiceSearchEngine engine = null;
+		try {
+			return getSearchEngineHome().findByCode(code);
+		} catch (Exception e) {
+//			e.printStackTrace();
+		}
+		return engine;
+	}
+	
+	public ServiceSearchEngine storeEngine(Object pk, String name, String code) {
+		ServiceSearchEngine engine = null;
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			String oldCode = null;
+			boolean isUpdate = pk != null;
+			if (pk == null) {
+				engine = getSearchEngineHome().create();
+			} else {
+				engine = getSearchEngineHome().findByPrimaryKey(pk);
+				oldCode = engine.getCode();
+				if (code != null && code.equals(oldCode)) {
+					oldCode = null;
+				}
+			}
+			
+			engine.setName(name);
+			engine.setCode(code);
+			engine.store();
+			
+			if (getServiceSearchEngineStaffGroup(engine) == null) {
+				String sName = name+"_"+engine.getPrimaryKey().toString();
+				Object object = IDOLookup.getHome(ServiceSearchEngineStaffGroup.class);
+				System.out.println("object = "+ object.getClass().getName());
+				ServiceSearchEngineStaffGroupHome ssesgh = (ServiceSearchEngineStaffGroupHome) IDOLookup.getHomeLegacy(ServiceSearchEngineStaffGroup.class);	
+				ServiceSearchEngineStaffGroup sGroup = ssesgh.create();
+				sGroup.setName(sName);
+				sGroup.insert();
+				engine.setStaffGroupID(sGroup.getID());
+				engine.store();
+			} else if (engine.getStaffGroupID() < 1){
+				System.out.println("[ServiceSearchBusinessBean] Fixing engine, setting groupID");
+				engine.setStaffGroupID(getServiceSearchEngineStaffGroup(engine).getID());
+				engine.store();
+			}
+			
+			if (getPermissionGroup(engine) == null) {
+				String sName = name+"_"+engine.getPrimaryKey().toString();
+
+				AccessControl ac = new AccessControl();
+				ac.createPermissionGroup(sName+permissionGroupNameExtention, SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION, "", null ,null);
+			}
+			
+			
+			if (oldCode != null) {
+				GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+				Collection bookings = gbHome.findAllByCode(oldCode);
+				if (bookings != null && !bookings.isEmpty()) {
+					GeneralBooking booking;
+					Iterator iter = bookings.iterator();
+					while (iter.hasNext() ){
+						booking = (GeneralBooking) iter.next();
+						booking.setCode(code);
+						booking.store();
+					}
+				}
+			}
+			
+			t.commit();
+			return engine;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return engine;
+	}
+	
+	public void addSearchEngineUser(ServiceSearchEngine engine, String name, String userName, String password, boolean addToPermissionGroup) {
+		UserBusiness uBus = new UserBusiness();
+		User user;
+		try {
+			user = uBus.insertUser(name,"","- admin",name+" - admin","Search Engine administrator",null,IWTimestamp.RightNow(),null);
+			LoginDBHandler.createLogin(user.getID(), userName, password);
+		
+			addUser(engine, user, addToPermissionGroup);		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean isUserInPermissionGroup(ServiceSearchEngine engine, User user) {
+		PermissionGroup pGroup = getPermissionGroup(engine);
+		UserGroupBusiness ugb = new UserGroupBusiness();
+		try {
+			List allUsers = ugb.getUsersContained(pGroup);
+			return allUsers.contains(user);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public PermissionGroup getPermissionGroup(ServiceSearchEngine engine) {
+	  String name = engine.getName()+"_"+engine.getPrimaryKey().toString() + permissionGroupNameExtention;
+	  String description = SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION ;
+
+	  PermissionGroup pGroup = null;
+	  List listi = null;
+	  try {
+	  	listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), name, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description);
+	  } catch (SQLException e) {
+	  	e.printStackTrace();
+	  }
+	  if (listi != null) {
+	  	if (listi.size() > 0) {
+	  		pGroup = (PermissionGroup) listi.get(listi.size()-1);
+	  	}
+	  } else {
+	  	try {
+	  		listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), engine.getName()+permissionGroupNameExtention, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description);
+	  	} catch (SQLException e1) {
+	  		e1.printStackTrace();
+	  	}
+	  	
+	  	if (listi != null) {
+	  		if (listi.size() > 0) {
+	  			pGroup = (PermissionGroup) listi.get(listi.size()-1);
+	  		}
+	  	}
+	  }
+
+	  return pGroup;
+	}
+
+	public ServiceSearchEngineStaffGroup getServiceSearchEngineStaffGroup(ServiceSearchEngine engine) throws SQLException {
+	  String name = engine.getName()+"_"+engine.getPrimaryKey().toString();
+	  ServiceSearchEngineStaffGroup sGroup = null;
+	  List listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), name);
+	  if (listi != null) {
+		if (listi.size() > 0) {
+		  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
+		}
+	  }
+	  if (listi == null) {
+		listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), engine.getName());
+		if (listi != null)
+		if (listi.size() > 0) {
+		  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
+		}
+	  }
+	  if (sGroup == null) {
+	  	System.err.println("searchEngineStaffGroup == null");
+	  }
+	  return sGroup;
+	}
+
+	public void addUser(ServiceSearchEngine engine, User user, boolean addToPermissionGroup) throws SQLException{
+	  PermissionGroup pGroup = getPermissionGroup(engine);
+	  ServiceSearchEngineStaffGroup sGroup = getServiceSearchEngineStaffGroup(engine);
+	  if (addToPermissionGroup) {
+	  	pGroup.addUser(user);
+	  }
+	  sGroup.addUser(user);
+	}
+
+	public ServiceSearchEngine getUserSearchEngine(User user) throws RuntimeException, SQLException{
+	  try {
+		  GenericGroup gGroup = ((GenericGroupHome) IDOLookup.getHome(GenericGroup.class)).createLegacy();
+		  List gr = gGroup.getAllGroupsContainingUser(user);
+		  if(gr != null){
+				Iterator iter = gr.iterator();
+				while (iter.hasNext()) {
+					try {
+						GenericGroup item = (GenericGroup)iter.next();
+						String flepps = item.getGroupTypeValue();
+						if(item.getGroupType().equals(((ServiceSearchEngineStaffGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class)).getGroupTypeValue())){
+							return getSearchEngineHome().findByGroupID(item.getID());
+						}
+					} catch (ClassCastException cce) {
+						System.out.println("[ServiceSearchBusinessBean] classcastexception");
+					}
+				}
+		  }
+		  throw new RuntimeException("Does not belong to any searchengine");
+	  } catch (IDOLookupException e) {
+		  throw new RuntimeException("Does not belong to any searchengine");
+	  } catch (FinderException e) {
+	  	throw new RuntimeException("Does not belong to any searchengine");
+	  }
+	}
+
+	public boolean deleteServiceSearchEngine(ServiceSearchEngine engine) {
+		try {
+			ServiceSearchEngineStaffGroup sGroup = this.getServiceSearchEngineStaffGroup(engine);
+			List users = UserGroupBusiness.getUsersContained(sGroup.getID());
+			if (users != null) {
+				Iterator iter = users.iterator();
+				User user;
+				while (iter.hasNext()) {
+					try {
+						user = (User) iter.next();
+						sGroup.removeFrom(user);
+						LoginDBHandler.deleteUserLogin( user.getID() );
+					}catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			engine.remove();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	
+	public ServiceSearchEngineHome getSearchEngineHome() throws IDOLookupException {
+		return (ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class);
+	}
+	
 	public TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {
 		return (TravelSessionManager) IBOLookup.getSessionInstance(iwuc, TravelSessionManager.class);
 	}
