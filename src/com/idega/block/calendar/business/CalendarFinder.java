@@ -102,9 +102,10 @@ public class CalendarFinder {
 
       idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
         stamp.addDays(-daysBack);
-        stampPlus.setMinute(0);
-        stampPlus.setHour(0);
-        stampPlus.setSecond(0);
+        stamp.setMinute(0);
+        stamp.setHour(0);
+        stamp.setSecond(0);
+
 
       StringBuffer sql = new StringBuffer("select * from ").append(CalendarEntry.getEntityTableName());
       sql.append(" where ").append(CalendarEntry.getColumnNameEntryDate()).append(" < '").append(stampPlus.toString()).append("'");

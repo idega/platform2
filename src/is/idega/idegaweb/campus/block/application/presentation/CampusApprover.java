@@ -562,7 +562,10 @@ public class CampusApprover extends Block{
       T.add(Edit.formatText(eApplicant.getPO()),col,row++);
       T.add(Edit.formatText(eApplicant.getResidencePhone()),col,row++);
       T.add(Edit.formatText(eApplicant.getMobilePhone()),col,row++);
-      T.add(Edit.formatText(eCampusApplication.getEmail()),col,row++);
+      String email = eCampusApplication.getEmail();
+      if(email==null)
+        email = "";
+      T.add(new Link(Edit.formatText(email),"mailto:"+email),col,row++);
       T.add(Edit.formatText(eCampusApplication.getFaculty()),col,row++);
       T.add(Edit.formatText(eCampusApplication.getStudyTrack()),col,row++);
       String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
