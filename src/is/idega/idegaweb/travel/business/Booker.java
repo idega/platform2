@@ -225,24 +225,24 @@ public class Booker {
     //Connection conn = null;
     try {
       Timeframe timeframe = TravelStockroomBusiness.getTimeframe(new Product(serviceId));
-      Service service = (Service) Service.getStaticInstance(Service.class);
-      String middleTable = EntityControl.getManyToManyRelationShipTableName(Service.class, Timeframe.class);
-      String sTable = Service.getServiceTableName();
+      Product product = (Product) Product.getStaticInstance(Product.class);
+      String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
+      String pTable = Product.getProductEntityName();
       String tTable = Timeframe.getTimeframeTableName();
 
       //conn = ConnectionBroker.getConnection();
         String[] many = {};
           StringBuffer sql = new StringBuffer();
             sql.append("Select "+GeneralBooking.getTotalCountColumnName()+" from "+GeneralBooking.getBookingTableName()+" b");
-            sql.append(","+sTable+" s,"+middleTable+" m,"+tTable+" t");
+            sql.append(","+pTable+" p,"+middleTable+" m,"+tTable+" t");
             sql.append(" where ");
-            sql.append("s."+service.getIDColumnName()+" = m."+service.getIDColumnName());
+            sql.append("p."+product.getIDColumnName()+" = m."+product.getIDColumnName());
             sql.append(" and ");
             sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
             sql.append(" and ");
-            sql.append("s."+service.getIDColumnName()+"="+serviceId);
+            sql.append("p."+product.getIDColumnName()+"="+serviceId);
             sql.append(" and ");
-            sql.append("b."+GeneralBooking.getServiceIDColumnName()+"= s."+service.getIDColumnName());
+            sql.append("b."+GeneralBooking.getServiceIDColumnName()+"= p."+product.getIDColumnName());
             sql.append(" and ");
             sql.append("b."+GeneralBooking.getIsValidColumnName()+" = 'Y'");
             if (bookingType != -1) {
