@@ -44,7 +44,7 @@ public class CitizenEditor extends UserEditor {
 		setLastNameLength(25);
 		setFirstNameLength(25);
 		setPersonalIDLength(15);
-		setShowMiddleNameInput(false);
+		//setShowMiddleNameInput(false);
 		setAllowPersonalIdEdit(false);
 		setBundleIdentifer(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		setShowSeperators(true);
