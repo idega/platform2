@@ -16,6 +16,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 import com.idega.block.school.data.School;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 /**
@@ -384,6 +385,18 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		.appendIsNull()
 		.appendRightParenthesis());
 	}
+/*
+	public Collection ejbFindRegularPaymentsForPeriodeAndCategory(Date date, String category, int lagCat) throws FinderException{
 
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, category);
+		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
+		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
+		sql.appendAnd().append(COLUMN_REG_SPEC_TYPE_ID).appendNOTEqual().append(lagCat);
+		System.out.println("SQL:"+sql);
+		return idoFindPKsByQuery(sql);
 
+	}
+*/
 }
