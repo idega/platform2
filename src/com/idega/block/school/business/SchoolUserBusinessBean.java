@@ -205,6 +205,27 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 		return userTypes;	
 	}
+	
+	public String getSchoolCategory(School school) throws RemoteException {
+		try {
+			Collection schoolTypeCategories = getSchoolTypeCategories(school);
+			if (schoolTypeCategories != null && !schoolTypeCategories.isEmpty()) {
+				if (schoolTypeCategories.size() == 1) {
+					Iterator iter = schoolTypeCategories.iterator();
+					while (iter.hasNext()) {
+						return (String) iter.next();
+					}
+				}	
+			}
+			return "SCHOOL";
+		}
+		catch (IDORelationshipException e) {
+			return "SCHOOL";
+		}
+		catch (FinderException e) {
+			return "SCHOOL";
+		}
+	}
 
 
 	private UserBusiness getUserBusiness() throws RemoteException {

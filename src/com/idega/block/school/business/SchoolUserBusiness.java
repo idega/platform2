@@ -26,4 +26,5 @@ public interface SchoolUserBusiness extends com.idega.business.IBOService
  public void setUserGroups(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getTeachers(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getUsers(com.idega.block.school.data.School p0,int p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public String getSchoolCategory(com.idega.block.school.data.School school) throws java.rmi.RemoteException;
 }
