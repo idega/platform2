@@ -3,6 +3,7 @@ package com.idega.block.school.data;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -26,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/30 20:21:37 $ by $Author: staffan $
- * @version $Revision: 1.76 $
+ * Last modified: $Date: 2003/11/30 22:03:19 $ by $Author: staffan $
+ * @version $Revision: 1.77 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -963,11 +964,49 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 	 
     public Collection ejbFindAllByUserAndPeriodAndSchoolCategory
-        (User child, Date period, SchoolCategory category) {
-        log ("child = " + child.getPersonalID ());
-        log ("period = " + period);
-        log ("category = " + (category == null ? "" : category.getLocalizedKey ()));
-        return new java.util.ArrayList ();
+        (User child, Date period, SchoolCategory category)
+        throws FinderException {
+		final IDOQuery sql = idoQuery ();
+        final String M_ = "m."; // sql alias for school Class member
+        final String T_ = "t."; // sql alias for school type
+        final Object userId = child.getPrimaryKey ();
+        sql.appendSelectAllFrom (getTableName() + " m")
+                .append (',' + SchoolTypeBMPBean.SCHOOLTYPE + " t")
+                .appendWhere ()
+                .appendEquals (M_ + MEMBER, userId + "");
+        if (null != category) {
+            sql.appendAndEquals (M_ + SCHOOL_TYPE,
+                                 T_ + SchoolTypeBMPBean.SCHOOLTYPE + "_id");
+            sql.appendAndEqualsQuoted (T_ + SchoolTypeBMPBean.SCHOOLCATEGORY,
+                                       category.getCategory ());
+        }
+        if (null != period) {
+            final Calendar calendar = Calendar.getInstance ();
+            calendar.setTime (period);
+            calendar.set (Calendar.DAY_OF_MONTH, 1);
+            final Date fromDate = new Date (calendar.getTimeInMillis ());
+            final long millisInDay = 1000 * 60 * 60 * 24;
+            final long maxMillisInMonth = millisInDay * 31;
+            calendar.setTimeInMillis (calendar.getTimeInMillis ()
+                                      + maxMillisInMonth);
+            calendar.set (Calendar.DAY_OF_MONTH, 1);
+            final Date toDate
+                    = new Date (calendar.getTimeInMillis () - millisInDay);
+            sql.appendAnd ()
+                    .append (toDate)
+                    .appendGreaterThanOrEqualsSign ()
+                    .append (M_ + REGISTER_DATE);
+            sql.appendAnd ()
+                    .appendLeftParenthesis ()
+                    .append (M_ + REMOVED_DATE)
+                    .appendIsNull ()
+                    .appendOr ()
+                    .append (fromDate)
+                    .appendLessThanOrEqualsSign ()
+                    .append (M_ + REMOVED_DATE)
+                    .appendRightParenthesis ();
+        }
+		return idoFindPKsBySQL(sql.toString());		
     }
 
 	 /**
