@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.91 2003/12/10 17:08:36 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.92 2003/12/10 17:11:40 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1763,16 +1763,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
 						}
 					}
-					catch (IDOLookupException e) {
-						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
-					}
-					catch (RemoteException e) {
-						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
-					}
-					catch (EJBException e) {
-						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
-					}
-					catch (FinderException e) {
+					catch (Exception e) {
 						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
 					}
 				}
