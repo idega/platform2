@@ -96,7 +96,7 @@ public class QueryBuilder extends Block {
 	private int queryFolderID = -1;
 	private int queryID = -1;
 	private int relationDepth = 4;
-	private int investigationLevel = 3;
+	private int investigationLevel = 6;
 	private int tableBorder = 0;
 	private String zebraColor1 = "#CCCC99";
 	private String zebraColor2 = "#FFFFFF";
