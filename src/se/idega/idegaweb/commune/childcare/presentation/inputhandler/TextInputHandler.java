@@ -47,6 +47,9 @@ public class TextInputHandler extends TextInput implements InputHandler {
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.Object, com.idega.presentation.IWContext)
 	 */
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
-		return value.toString();
+		if (value != null) {
+			return value.toString();
+		}
+		return "";
 	}
 }
