@@ -12,7 +12,7 @@ import com.idega.presentation.ui.Window;
 public class ChildCarePrognosisWindow extends Window {
 
 	public ChildCarePrognosisWindow() {
-		this.setWidth(600);
+		this.setWidth(680);
 		this.setHeight(450);
 		this.setScrollbar(true);
 		this.setResizable(true);	
