@@ -693,7 +693,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}
 	
 	private Table getDetailPanel(IWContext iwc, RegularPaymentEntry entry, Collection vatTypes, Map errorMessages){
-				
+		if (errorMessages == null){
+			errorMessages = new HashMap();
+		}
+						
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
 		int row = 1;
