@@ -433,7 +433,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		
 		ICPage homepage = null;
 		try {
-			ub.getHomePageForUser(user);
+			homepage = ub.getHomePageForUser(user);
 		}
 		catch (FinderException fe) {
 			//No page found
