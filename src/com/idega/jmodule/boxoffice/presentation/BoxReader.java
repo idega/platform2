@@ -1049,6 +1049,14 @@ public BoxReader(String issue_id, int numberOfColumns){
 	}
 
 	/**
+         * Sets BoxReader ID.
+         */
+
+        public void setID(int id){
+		this.issue_id = Integer.toString(id);
+	}
+
+	/**
          * Sets true/false to display border on the boxes.
          */
 
