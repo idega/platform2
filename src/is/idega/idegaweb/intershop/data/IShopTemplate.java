@@ -1,5 +1,5 @@
 /*
- * $Id: IShopTemplate.java,v 1.1 2002/03/11 22:59:27 palli Exp $
+ * $Id: IShopTemplate.java,v 1.2 2002/03/19 09:41:10 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,53 +14,35 @@ package is.idega.idegaweb.intershop.data;
  * @version 1.0
  */
 public interface IShopTemplate {
-  /**
-   *
-   */
-  public String getId();
+  public final static String ISHOP_TABLE_TEMPLATES = "templates";
+  public final static String ISHOP_TABLE_TEMPLATEDESC = "templatedesc";
+  public final static String SUBTYPE_NAME = "intershop";
 
-  /**
-   *
-   */
-  public void setId(String id);
+  public String getIShopID();
 
-  /**
-   *
-   */
-  public String getClassId();
+  public void setIShopID(String id);
 
-  /**
-   *
-   */
-  public void setClassId(String classId);
+  public String getIShopClass();
 
-  /**
-   *
-   */
-  public int getLanguageNr();
+  public void setIShopClass(String cls);
 
-  /**
-   *
-   */
-  public void setLanguageNr(int nr);
+  public int getIShopLanguageNr();
 
-  /**
-   *
-   */
-  public String getContent();
+  public void setIShopLanguageNr(int nr);
 
-  /**
-   *
-   */
-  public void setContent(String content);
+  public void setIShopLanguageNr(Integer nr);
 
-  /**
-   *
-   */
-  public String getByteCode();
+  public int getPageID();
 
-  /**
-   *
-   */
-  public void setByteCode(String byteCode);
+  public void setPageID(int id);
+
+  public void setPageID(Integer id);
+
+  public String getIShopName();
+
+  public void setIShopName(String name);
+
+  public String getIShopDescription();
+
+  public void setIShopDescription(String desc);
 }
