@@ -186,7 +186,42 @@ public class AccountingBlock extends CommuneBlock {
 		
 		if (d != null) {
 			date = new Date(d.getTime());
-		} 	
+		}
+		 	
 		return date;
+	}
+	
+	/**
+	 * Formats the specified java.sql.Date object into a string.
+	 * The length can be 4, 6 or 8 characters resulting in the
+	 * formats yyMM, yyMMdd or yyyyMMdd.
+	 * @param date the date object to format
+	 * @param length the length of the formatted date
+	 * @return the formatted string
+	 * @author anders 
+	 */
+	protected String formatDate(Date date, int length) {
+		if (date == null) {
+			return "null";
+		}
+		
+		SimpleDateFormat formatter = null;
+		
+		if (length == 4) {
+			formatter = new SimpleDateFormat ("yyMM"); 
+		} else if (length == 6) {
+			formatter = new SimpleDateFormat ("yyMMdd"); 
+		} else if (length == 8) {
+			formatter = new SimpleDateFormat ("yyyyMMdd"); 
+		}
+
+		String dateString = "";
+		
+		if (formatter != null) {
+			java.util.Date d = new java.util.Date(date.getTime());
+			dateString = formatter.format(d);		
+		}
+		
+		return dateString;
 	}
 }
