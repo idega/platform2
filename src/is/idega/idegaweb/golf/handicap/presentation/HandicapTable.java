@@ -3,6 +3,14 @@
  */
 package is.idega.idegaweb.golf.handicap.presentation;
 
+import is.idega.idegaweb.golf.entity.Field;
+import is.idega.idegaweb.golf.entity.FieldHome;
+import is.idega.idegaweb.golf.entity.Tee;
+import is.idega.idegaweb.golf.entity.TeeColor;
+import is.idega.idegaweb.golf.entity.TeeColorHome;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -14,20 +22,12 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.entity.Field;
-import is.idega.idegaweb.golf.entity.FieldHome;
-import is.idega.idegaweb.golf.entity.Tee;
-import is.idega.idegaweb.golf.entity.TeeColor;
-import is.idega.idegaweb.golf.entity.TeeColorHome;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
-
 import com.idega.util.text.TextSoap;
 
 /**
  * @author laddi
  */
-public class HandicapTable extends GolfWindow {
+public class HandicapTable extends GolfWindowOld {
 
   public HandicapTable() {
     setWidth(800);

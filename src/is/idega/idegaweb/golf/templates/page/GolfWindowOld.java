@@ -7,18 +7,14 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.MenuBar;
 import com.idega.presentation.ui.Window;
-import com.idega.util.text.StyleConstants;
 
-public class GolfWindow extends Window {
+public class GolfWindowOld extends Window {
 
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 
-  private Table table;
-  private Table contentTable;
-  private Table mainTable;
+  private Table tafla;
   
   private Class _golfClassToInstanciate = null;
 
@@ -34,130 +30,80 @@ public class GolfWindow extends Window {
   protected IWResourceBundle iwrb;
   private boolean initialized;
 
-  public GolfWindow() {
+  public GolfWindowOld() {
     super();
     this.setMarginHeight(0);
     this.setMarginWidth(0);
     this.setLeftMargin(0);
     this.setTopMargin(0);
-    this.setBackgroundColor("#A5C77D");
-
+    this.setAlinkColor("black");
+    this.setVlinkColor("black");
+    this.setLinkColor("black");
     initialized = false;
-    constructTable();
+    tafla = new Table(3, 2);
+    tafla.setVerticalAlignment(1, 2, "top");
   }
 
-  public GolfWindow(String name, int width, int height) {
+  public GolfWindowOld(String name, int width, int height) {
     super(name, width, height);
     this.setMarginHeight(0);
     this.setMarginWidth(0);
     this.setLeftMargin(0);
     this.setTopMargin(0);
-    this.setBackgroundColor("#A5C77D");
-
+    this.setAlinkColor("black");
+    this.setVlinkColor("black");
+    this.setLinkColor("black");
     initialized = false;
-    constructTable();
-  }
-  
-  private void constructTable() {
-  		table = new Table(1, 7);
-  		contentTable = new Table(3, 3);
-  		mainTable = new Table(1, 2);
+    tafla = new Table(3, 2);
+    tafla.setVerticalAlignment(1, 2, "top");
   }
 
   private void initTable(IWContext modinfo) {
     IWBundle iwb = getBundle(modinfo);
     IWResourceBundle iwrb = getResourceBundle(modinfo);
 
-    table.setBorder(0);
-    table.setCellpadding(0);
-    table.setCellspacing(0);
-    table.setWidth(Table.HUNDRED_PERCENT);
-    table.setHeight(Table.HUNDRED_PERCENT);
-    table.setVerticalAlignment(1, 7, Table.VERTICAL_ALIGN_TOP);
+    tafla.setWidth("100%");
+    tafla.setHeight("100%");
+    tafla.setHeight(1, 1, "58");
+    tafla.setBorder(0);
+    tafla.setCellpadding(0);
+    tafla.setCellspacing(0);
+    tafla.mergeCells(1, 2, 3, 2);
+    Image topLeft = iwb.getImage("golfwindow/idegaweb_standard.gif");
+    topLeft.setHeight(58);
+    topLeft.setWidth(158);
+    Image topTiler = iwb.getImage("golfwindow/idegawebTiler.gif");
+    Image topRight = iwb.getImage("golfwindow/idegaweb_Golf.gif");
+    topRight.setHeight(58);
+    topRight.setWidth(154);
+    topRight.setAlignment("right");
+    Image back = iwb.getImage("golfwindow/idegaweb_Background.gif");
 
-    table.setHeight(1, 1, 59);
-    table.setHeight(1, 2, 1);
-    table.setHeight(1, 3, 1);
-    table.setHeight(1, 4, 21);
-    table.setHeight(1, 5, 1);
-    table.setHeight(1, 6, 5);
-    table.setHeight(1, 7, Table.HUNDRED_PERCENT);
-    
-    table.setCellpaddingTop(1, 7, 1);
-    table.setCellpaddingLeft(1, 7, 6);
-    table.setCellpaddingRight(1, 7, 6);
-    table.setCellpaddingBottom(1, 7, 6);
-    
-    table.setBackgroundImage(1, 1, iwb.getImage("golfwindow/top_59px.jpg"));
-    table.setColor(1, 2, "#CDCECD");
-    table.setColor(1, 3, "#858584");
-    table.setBackgroundImage(1, 4, iwb.getImage("golfwindow/menu_21px.jpg"));
-    table.setColor(1, 5, "#3A5A20");
-    table.setBackgroundImage(1, 6, iwb.getImage("golfwindow/grad_5px.jpg"));
-    table.setColor(1, 7, "#A5C77D");
+    tafla.add(topLeft, 1, 1);
+    tafla.setBackgroundImage(1, 1, topTiler);
+    tafla.setBackgroundImage(2, 1, topTiler);
+    tafla.setBackgroundImage(3, 1, topTiler);
+    tafla.add(topRight, 3, 1);
 
-    Image topLeft = iwb.getImage("golfwindow/golf-logo.jpg");
-    topLeft.setAlignment(Image.ALIGNMENT_LEFT);
-    Image topRight = iwb.getImage("golfwindow/idega-logo.jpg");
-    topRight.setAlignment(Image.ALIGNMENT_RIGHT);
-
-    table.add(topLeft, 1, 1);
-    table.add(topRight, 1, 1);
-    
-    contentTable.setCellpadding(0);
-    contentTable.setCellspacing(0);
-    contentTable.setWidth(Table.HUNDRED_PERCENT);
-    //contentTable.setHeight(Table.HUNDRED_PERCENT);
-    contentTable.setCellBorder(1, 1, 1, "#3A5A20", "solid");
-    contentTable.mergeCells(1, 1, 2, 2);
-    contentTable.setWidth(3, 3);
-    contentTable.setHeight(3, 3);
-    contentTable.setWidth(1, 3, 3);
-    contentTable.setHeight(3, 1, 3);
-    contentTable.setColor(1, 1, "#FFFFFF");
-    contentTable.setColor(2, 3, "#70924F");
-    contentTable.setColor(3, 3, "#70924F");
-    contentTable.setColor(3, 2, "#70924F");
-    table.add(contentTable, 1, 7);
-
-    mainTable.setCellpadding(0);
-    mainTable.setCellspacing(0);
-    mainTable.setWidth(Table.HUNDRED_PERCENT);
-    mainTable.setHeight(Table.HUNDRED_PERCENT);
-    mainTable.setHeight(1, 17);
-    mainTable.setBackgroundImage(1, 1, iwb.getImage("golfwindow/heading_tiler.jpg"));
-    mainTable.setCellpadding(1, 2, 12);
-    mainTable.setCellpaddingLeft(1, 1, 3);
-   contentTable.add(mainTable, 1, 1);
-    
-    super.add(table);
+    tafla.setBackgroundImage(1, 2, back);
+    super.add(tafla);
     initialized = true;
   }
 
   public void add(PresentationObject objectToAdd) {
-  		mainTable.add(objectToAdd, 1, 2);
-  }
-
-  public void addHeading(String headingText) {
-    Text heading = new Text(headingText);
-    heading.setStyleAttribute(StyleConstants.ATTRIBUTE_FONT_FAMILY, StyleConstants.FONT_FAMILY_TREBUCHET);
-    heading.setStyleAttribute(StyleConstants.ATTRIBUTE_FONT_SIZE, "10px");
-    heading.setStyleAttribute(StyleConstants.ATTRIBUTE_COLOR, "#3A5A20");
-    
-    mainTable.emptyCell(1, 1);
-    mainTable.add(heading, 1, 1);
+    tafla.add(objectToAdd, 1, 2);
   }
 
   public void empty() {
-  		mainTable.emptyCell(1, 2);
+  		tafla.emptyCell(1,2);
   }
 
   public void setContentHorizontalAlignment(String align) {
-  		mainTable.setAlignment(1, 2, align);
+    tafla.setAlignment(1, 2, align);
   }
 
   public void setContentVerticalAlignment(String align) {
-  	mainTable.setVerticalAlignment(1, 2, align);
+    tafla.setVerticalAlignment(1, 2, align);
   }
 
   private void MenuBar() {
@@ -226,7 +172,7 @@ public class GolfWindow extends Window {
   	_golfClassToInstanciate = c;
   }
 
-  public void main(IWContext modinfo) throws Exception {
+  public void _main(IWContext modinfo) throws Exception {
   		iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
     
@@ -237,7 +183,7 @@ public class GolfWindow extends Window {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    super.main(modinfo);
+    super._main(modinfo);
   }
 
   /*
@@ -246,12 +192,10 @@ public class GolfWindow extends Window {
    * @see java.lang.Object#clone()
    */
   public Object clone() {
-    GolfWindow obj = null;
+    GolfWindowOld obj = null;
     try {
-      obj = (GolfWindow) super.clone();
-      obj.table = (Table) this.table.clone();
-      obj.contentTable = (Table) this.contentTable.clone();
-      obj.mainTable = (Table) this.mainTable.clone();
+      obj = (GolfWindowOld) super.clone();
+      obj.tafla = (Table) this.tafla.clone();
       obj.Menu = (MenuBar) this.Menu.clone();
       obj.initialized = this.initialized;
     }

@@ -48,6 +48,7 @@ public class HandicapScore extends GolfWindow {
 			IWResourceBundle iwrb = getResourceBundle();
 
 			getParentPage().setTitle(iwrb.getLocalizedString("handicap.tournament_scorecards", "Tournament scorecards"));
+			addHeading(iwrb.getLocalizedString("handicap.tournament_scorecards", "Tournament scorecards"));
 
 			String tournament_id = modinfo.getParameter("tournament_id");
 			String member_id = modinfo.getParameter("member_id");

@@ -30,7 +30,7 @@ public class HandicapStatistics extends GolfWindow {
 	
 	public HandicapStatistics() {
 		setWidth(600);
-		setHeight(350);
+		setHeight(380);
 		setTitle("Edit statistics");
 		add(new Statistics());
 	}
@@ -41,6 +41,7 @@ public class HandicapStatistics extends GolfWindow {
 		IWResourceBundle iwrb = getResourceBundle();
 
 		getParentPage().setTitle(iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"));
+		addHeading(iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"));
 
 		String mode = modinfo.getParameter("mode");
 		if (mode == null) {

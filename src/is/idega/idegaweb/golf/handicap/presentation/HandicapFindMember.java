@@ -31,7 +31,7 @@ public class HandicapFindMember extends GolfWindow {
 
 	public HandicapFindMember() {
 		setWidth(400);
-		setHeight(280);
+		setHeight(300);
 		setTitle("Find Member");
 		add(new FindMember());
 	}
@@ -42,6 +42,7 @@ public class HandicapFindMember extends GolfWindow {
 			IWResourceBundle iwrb = getResourceBundle();
 
 			getParentPage().setTitle(iwrb.getLocalizedString("handicap.member_selection", "Member selection"));
+			addHeading(iwrb.getLocalizedString("handicap.member_selection", "Member selection"));
 
 			String mode = modinfo.getParameter("mode");
 			if (mode == null) {

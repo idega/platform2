@@ -3,8 +3,6 @@
  */
 package is.idega.idegaweb.golf.field.presentation;
 
-import is.idega.idegaweb.golf.block.image.data.ImageEntity;
-import is.idega.idegaweb.golf.block.image.data.ImageEntityHome;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.FieldImage;
@@ -18,7 +16,7 @@ import is.idega.idegaweb.golf.entity.TeeImage;
 import is.idega.idegaweb.golf.entity.TeeImageHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
+import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
 
 import java.sql.SQLException;
 
@@ -38,12 +36,11 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 
 /**
  * @author laddi
  */
-public class FieldEditor extends GolfWindow {
+public class FieldEditor extends GolfWindowOld {
 
 	public FieldEditor() {
 		setWidth(1000);

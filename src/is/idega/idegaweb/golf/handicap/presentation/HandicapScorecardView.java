@@ -33,7 +33,7 @@ public class HandicapScorecardView extends GolfWindow {
 
 	public HandicapScorecardView() {
 		setWidth(650);
-		setHeight(475);
+		setHeight(500);
 		setTitle("Scorecard view");
 		add(new ScorecardView());
 	}
@@ -44,6 +44,7 @@ public class HandicapScorecardView extends GolfWindow {
 			IWResourceBundle iwrb = getResourceBundle();
 
 			getParentPage().setTitle(iwrb.getLocalizedString("handicap.scorecard", "Scorecard"));
+			addHeading(iwrb.getLocalizedString("handicap.scorecard", "Scorecard"));
 
 			String scorecard_id = modinfo.getParameter("scorecard_id");
 			boolean x = true;

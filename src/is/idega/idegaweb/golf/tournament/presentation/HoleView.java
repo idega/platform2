@@ -1,5 +1,7 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+
 import java.sql.SQLException;
 
 import com.idega.idegaweb.IWBundle;
@@ -9,8 +11,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 /**
  * @author gimmi
@@ -18,7 +18,7 @@ import is.idega.idegaweb.golf.templates.page.GolfWindow;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class HoleView extends GolfWindow {
+public class HoleView extends GolfWindowOld {
 
 	public HoleView() {
 		setWidth(796);

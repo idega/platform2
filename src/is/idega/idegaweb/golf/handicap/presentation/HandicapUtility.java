@@ -73,7 +73,7 @@ public class HandicapUtility extends GolfWindow {
 
 	public HandicapUtility() {
 		setWidth(400);
-		setHeight(220);
+		setHeight(260);
 		setTitle("Handicap Utility");
 		add(new Utility());
 	}
@@ -148,6 +148,7 @@ public class HandicapUtility extends GolfWindow {
 
 		private void getChangeTeesForm(IWContext modinfo) throws Exception {
 			getParentPage().setTitle(_iwrb.getLocalizedString("handicap.change_tees", "Change tees"));
+			addHeading(_iwrb.getLocalizedString("handicap.change_tees", "Change tees"));
 
 			Scorecard scoreCard = ((ScorecardHome) IDOLookup.getHomeLegacy(Scorecard.class)).findByPrimaryKey(_scorecardID);
 
@@ -183,6 +184,7 @@ public class HandicapUtility extends GolfWindow {
 
 		private void getDeleteScorecardForm(IWContext modinfo) throws Exception {
 			getParentPage().setTitle(_iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"));
+			addHeading(_iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"));
 
 			Table myTable = new Table(2, 2);
 			myTable.mergeCells(1, 1, 2, 1);
@@ -204,7 +206,8 @@ public class HandicapUtility extends GolfWindow {
 		}
 
 		private void getRecalculateForm(IWContext modinfo) throws Exception {
-			getParentPage().setTitle(_iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"));
+			getParentPage().setTitle(_iwrb.getLocalizedString("handicap.recalculate_handicap", "Recalculate handicap"));
+			addHeading(_iwrb.getLocalizedString("handicap.recalculate_handicap", "Recalculate handicap"));
 
 			Form myForm = new Form();
 			myForm.add(new HiddenInput(PARAMETER_MEMBER_ID, String.valueOf(_memberID)));
@@ -258,6 +261,7 @@ public class HandicapUtility extends GolfWindow {
 
 		private void getUpdateHandicapForm(IWContext modinfo) throws Exception {
 			getParentPage().setTitle(_iwrb.getLocalizedString("handicap.update_handicap", "Update handicap"));
+			addHeading(_iwrb.getLocalizedString("handicap.update_handicap", "Update handicap"));
 
 			Table myTable = new Table(2, 5);
 			myTable.mergeCells(1, 1, 2, 1);
@@ -287,6 +291,7 @@ public class HandicapUtility extends GolfWindow {
 
 		public void getFindFieldForm(IWContext modinfo) throws Exception {
 			getParentPage().setTitle(_iwrb.getLocalizedString("handicap.field_selection", "Field selection"));
+			addHeading(_iwrb.getLocalizedString("handicap.field_selection", "Field selection"));
 
 			Form myForm = new Form();
 			myForm.add(new HiddenInput(PARAMETER_ACTION, String.valueOf(ACTION_FIND_FIELD)));

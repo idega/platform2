@@ -8,6 +8,8 @@ package is.idega.idegaweb.golf.handicap.presentation;
 
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
+import com.idega.presentation.IWContext;
+
 
 /**
  * @author laddi
@@ -22,5 +24,10 @@ public class HandicapRegisterWindow extends GolfWindow {
         setHeight(600);
         setTitle("Handicap register");
         add(new HandicapRegister());
+    }
+    
+    public void main(IWContext iwc) throws Exception {
+  			super.main(iwc);
+    		addHeading(iwrb.getLocalizedString("handicap.register_scorecard", "Register scorecard"));
     }
 }

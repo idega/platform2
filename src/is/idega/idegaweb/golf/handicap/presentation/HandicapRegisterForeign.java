@@ -31,7 +31,7 @@ public class HandicapRegisterForeign extends GolfWindow {
 	
 	public HandicapRegisterForeign() {
 		setWidth(400);
-		setHeight(220);
+		setHeight(310);
 		setTitle("Foreign round");
 		add(new RegisterForeign());
 	}
@@ -43,6 +43,7 @@ public class HandicapRegisterForeign extends GolfWindow {
 			IWResourceBundle iwrb = getResourceBundle();
 
 			getParentPage().setTitle(iwrb.getLocalizedString("handicap.foreign_round", "Foreign round"));
+			addHeading(iwrb.getLocalizedString("handicap.foreign_round", "Foreign round"));
 
 			String mode = modinfo.getParameter("mode");
 			if (mode == null) {
