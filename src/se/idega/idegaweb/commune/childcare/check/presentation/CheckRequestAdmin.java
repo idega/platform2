@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.childcare.check.presentation;
 
+import com.idega.user.data.User;
 import java.util.*;
 
 import se.idega.idegaweb.commune.presentation.*;
@@ -49,25 +50,23 @@ public class CheckRequestAdmin extends CommuneBlock {
     try{
       int action = parseAction(iwc);
       switch(action){
-        case ACTION_VIEW_CHECK_LIST:
-          viewCheckList(iwc);
-          break;
-        case ACTION_VIEW_CHECK:
-          int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
-          Check check = getCheckBusiness(iwc).getCheck(checkId);
-          viewCheck(iwc,check,false);
-          break;
-        case ACTION_GRANT_CHECK:
-          grantCheck(iwc);
-          break;
-        case ACTION_RETRIAL_CHECK:
-          retrialCheck(iwc);
-          break;
-        case ACTION_SAVE_CHECK:
-          saveCheck(iwc);
-          break;
-        default:
-          break;
+	case ACTION_VIEW_CHECK_LIST:
+	  viewCheckList(iwc);
+	  break;
+	case ACTION_VIEW_CHECK:
+	  int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
+	  Check check = getCheckBusiness(iwc).getCheck(checkId);
+	  viewCheck(iwc,check,false);
+	  break;
+	case ACTION_GRANT_CHECK:
+	  grantCheck(iwc);
+	  break;
+	case ACTION_RETRIAL_CHECK:
+	  retrialCheck(iwc);
+	  break;
+	case ACTION_SAVE_CHECK:
+	  saveCheck(iwc);
+	  break;
       }
     } catch (Exception e) {
       super.add(new ExceptionWrapper(e,this));
@@ -109,28 +108,50 @@ public class CheckRequestAdmin extends CommuneBlock {
     Iterator iter = checks.iterator();
     while(iter.hasNext()){
       Check check = (Check)iter.next();
+      User child = getCheckBusiness(iwc).getUserById(iwc,check.getChildId());
+      User manager = getCheckBusiness(iwc).getUserById(iwc,check.getManagerId());
+
+      String childSSN = "-";
+      if ( child != null )
+	childSSN = child.getPersonalID();
+      String managerName = "-";
+      if ( manager != null )
+	managerName = manager.getName();
+
       Link l = getLink(check.getPrimaryKey().toString());
       l.addParameter(PARAM_VIEW_CHECK,"true");
       l.addParameter(PARAM_CHECK_ID,check.getPrimaryKey().toString());
       checkList.add(l);
       checkList.add(check.getCreated().toString().substring(0,10));
-      checkList.add("930412-4231");
-      checkList.add("Lisa Karlsson");
-      checkList.add("Ny");
+      checkList.add(childSSN);
+      checkList.add(managerName);
+      checkList.add(check.getStatus());
     }
     add(checkList);
   }
 
   private void viewCheck(IWContext iwc, Check check,boolean isError)throws Exception{
 
+    add(getCheckInfoTable(iwc,check));
+    add(new Break(2));
+
+    if(isError){
+      add(getErrorText(localize("check.must_check_all_rules","All rules must be checked.")));
+      add(new Break(2));
+    }
+
+    add(getCheckForm(iwc,check,isError));
+  }
+
+  private Table getCheckInfoTable(IWContext iwc, Check check) throws Exception {
     Table frame = new Table();
     frame.setCellpadding(10);
     frame.setCellspacing(0);
     frame.setColor("#ffffcc");
+
     Table checkInfoTable = new Table(2,8);
     checkInfoTable.setCellpadding(6);
     checkInfoTable.setCellspacing(0);
-    frame.add(checkInfoTable);
     checkInfoTable.add(getLocalizedSmallHeader("check.case_number","Case number"),1,1);
     checkInfoTable.add(getSmallHeader(":"),1,1);
     checkInfoTable.add(getLocalizedSmallHeader("check.request_regarding","Request regarding"),1,2);
@@ -153,84 +174,46 @@ public class CheckRequestAdmin extends CommuneBlock {
     checkInfoTable.add(getSmallText("Svenska"),2,6);
     checkInfoTable.add(getSmallText("Svenska"),2,7);
     checkInfoTable.add(getSmallText("Svenska"),2,8);
-    add(frame);
-    add(new Break(2));
+    frame.add(checkInfoTable);
 
-    if(isError){
-      add(getErrorText(localize("check.must_check_all_rules","All rules must be checked.")));
-      add(new Break(2));
-    }
+    return frame;
+  }
 
+  private Form getCheckForm(IWContext iwc, Check check, boolean isError) throws Exception {
     Form f = new Form();
     f.addParameter(PARAM_CHECK_ID,check.getPrimaryKey().toString());
-    frame = new Table(2,1);
+
+    Table frame = new Table(2,1);
     frame.setCellpadding(14);
     frame.setCellspacing(0);
     frame.setColor(getBackgroundColor());
     frame.setVerticalAlignment(2,1,"top");
     frame.add(getLocalizedSmallText("check.requirements","Requirements"),1,1);
     frame.add(new Break(2));
+
     Table ruleTable = new Table(2,5);
     ruleTable.setCellpadding(4);
     ruleTable.setCellspacing(0);
-    CheckBox rule1 = new CheckBox(PARAM_RULE,"1");
-    rule1.setChecked(check.getRule1());
-    ruleTable.add(rule1,1,1);
-    String ruleText1 = localize("check.nationally_registered","Nationally registered");
-    if(check.getRule1()||!isError){
-      ruleTable.add(getText(ruleText1),2,1);
-    }else{
-      ruleTable.add(getErrorText(ruleText1),2,1);
-    }
-    CheckBox rule2 = new CheckBox(PARAM_RULE,"2");
-    rule2.setChecked(check.getRule2());
-    ruleTable.add(rule2,1,2);
-    String ruleText2 = localize("check.child_one_year","Child one year of age");
-    if(check.getRule2()||!isError){
-      ruleTable.add(getText(ruleText2),2,2);
-    }else{
-      ruleTable.add(getErrorText(ruleText2),2,2);
-    }
-    CheckBox rule3 = new CheckBox(PARAM_RULE,"3");
-    rule3.setChecked(check.getRule3());
-    ruleTable.add(rule3,1,3);
-    String ruleText3 = localize("check.work_situation_approved","Work situation approved");
-    if(check.getRule3()||!isError){
-      ruleTable.add(getText(ruleText3),2,3);
-    }else{
-      ruleTable.add(getErrorText(ruleText3),2,3);
-    }
-    CheckBox rule4 = new CheckBox(PARAM_RULE,"4");
-    rule4.setChecked(check.getRule4());
-    ruleTable.add(rule4,1,4);
-    String ruleText4 = localize("check.dept_control","Skuldkontroll");
-    if(check.getRule4()||!isError){
-      ruleTable.add(getText(ruleText4),2,4);
-    }else{
-      ruleTable.add(getErrorText(ruleText4),2,4);
-    }
-    CheckBox rule5 = new CheckBox(PARAM_RULE,"5");
-    rule5.setChecked(check.getRule5());
-    ruleTable.add(rule5,1,5);
-    String ruleText5 = localize("check.need_for_special_support","Need for special support");
-    if(check.getRule5()||!isError){
-      ruleTable.add(getText(ruleText5),2,5);
-    }else{
-      ruleTable.add(getErrorText(ruleText5),2,5);
-    }
+
+    ruleTable.add(getCheckBox("1",check.getRule1()),1,1);
+    ruleTable.add(getRuleText(localize("check.nationally_registered","Nationally registered"),check.getRule1(),isError),2,1);
+
+    ruleTable.add(getCheckBox("2",check.getRule2()),1,2);
+    ruleTable.add(getRuleText(localize("check.child_one_year","Child one year of age"),check.getRule2(),isError),2,2);
+
+    ruleTable.add(getCheckBox("3",check.getRule3()),1,3);
+    ruleTable.add(getRuleText(localize("check.work_situation_approved","Work situation approved"),check.getRule3(),isError),2,3);
+
+    ruleTable.add(getCheckBox("4",check.getRule4()),1,4);
+    ruleTable.add(getRuleText(localize("check.dept_control","Skuldkontroll"),check.getRule4(),isError),2,4);
+
+    ruleTable.add(getCheckBox("5",check.getRule5()),1,5);
+    ruleTable.add(getRuleText(localize("check.need_for_special_support","Need for special support"),check.getRule5(),isError),2,5);
+
     frame.add(ruleTable,1,1);
     frame.add(new Break(2),1,1);
-    Image image = getResourceBundle().getLocalizedImageButton("check.grant_check","Grant check");
-    SubmitButton grantButton = new SubmitButton(image,PARAM_GRANT_CHECK);
-    frame.add(grantButton,1,1);
-    frame.add(new Text("&nbsp;&nbsp;&nbsp;"));
-    image = getResourceBundle().getLocalizedImageButton("check.retrial","Retrial");
-    SubmitButton retrialButton = new SubmitButton(image,PARAM_RETRIAL_CHECK);
-    frame.add(retrialButton,1,1);
-    frame.add(new Text("&nbsp;&nbsp;&nbsp;"));
-    image = getResourceBundle().getLocalizedImageButton("check.save","Save");
-    SubmitButton saveButton = new SubmitButton(image,PARAM_SAVE_CHECK);
-    frame.add(saveButton,1,1);
+    frame.add(getSubmitButtonTable(),1,1);
+
     frame.add(getLocalizedSmallText("check.notes","Notes"),2,1);
     frame.add(new Break(2),2,1);
     TextArea notes = new TextArea(PARAM_NOTES);
@@ -239,7 +222,44 @@ public class CheckRequestAdmin extends CommuneBlock {
     notes.setWidth(50);
     frame.add(notes,2,1);
     f.add(frame);
-    add(f);
+
+    return f;
+  }
+
+  private CheckBox getCheckBox(String ruleNumber,boolean checked) {
+    CheckBox rule = new CheckBox(PARAM_RULE,ruleNumber);
+    rule.setChecked(checked);
+    return rule;
+  }
+
+  private Text getRuleText(String ruleText,boolean ruleChecked,boolean isError) {
+    if ( ruleChecked || !isError ) {
+      return getText(ruleText);
+    }
+    else{
+      return getErrorText(ruleText);
+    }
+  }
+
+  private Table getSubmitButtonTable() {
+    Table submitTable = new Table(5,1);
+    submitTable.setWidth(2,"3");
+    submitTable.setWidth(4,"3");
+    submitTable.setCellpaddingAndCellspacing(0);
+
+    Image image = getResourceBundle().getLocalizedImageButton("check.grant_check","Grant check");
+    SubmitButton grantButton = new SubmitButton(image,PARAM_GRANT_CHECK);
+    submitTable.add(grantButton,1,1);
+
+    image = getResourceBundle().getLocalizedImageButton("check.retrial","Retrial");
+    SubmitButton retrialButton = new SubmitButton(image,PARAM_RETRIAL_CHECK);
+    submitTable.add(retrialButton,3,1);
+
+    image = getResourceBundle().getLocalizedImageButton("check.save","Save");
+    SubmitButton saveButton = new SubmitButton(image,PARAM_SAVE_CHECK);
+    submitTable.add(saveButton,5,1);
+
+    return submitTable;
   }
 
   private CheckBusiness verifyCheckRules(IWContext iwc)throws Exception{
@@ -247,7 +267,7 @@ public class CheckRequestAdmin extends CommuneBlock {
     String[] selectedRules = iwc.getParameterValues(PARAM_RULE);
     String notes = iwc.getParameter(PARAM_NOTES);
 //    int managerId = iwc.getUser().getID();
-    int managerId = 123;
+    int managerId = iwc.getUserId();
     CheckBusiness cb = getCheckBusiness(iwc);
     cb.verifyCheckRules(checkId,selectedRules,notes,managerId);
     return cb;
@@ -270,9 +290,8 @@ public class CheckRequestAdmin extends CommuneBlock {
 
     String subject = "...";
     String body = "...";
-//    int managerId = iwc.getUser().getID();
-    int managerId = 123;
-    cb.sendMessageToCitizen(subject,body,managerId);
+    int managerId = iwc.getUserId();
+    //cb.sendMessageToCitizen(subject,body,managerId);
 
     add(getText("Check granted:"));
     viewCheckList(iwc);
@@ -282,8 +301,14 @@ public class CheckRequestAdmin extends CommuneBlock {
     CheckBusiness cb = verifyCheckRules(iwc);
     cb.retrialCheck();
     cb.commit();
+
+    //Create message to user
+    String subject = "...";
+    String body = "...";
+    int managerId = iwc.getUserId();
+    //cb.sendMessageToCitizen(subject,body,managerId);
+
     viewCheckList(iwc);
-//Create message to user
   }
 
   private void saveCheck(IWContext iwc)throws Exception{

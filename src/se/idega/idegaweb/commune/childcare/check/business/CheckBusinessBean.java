@@ -78,25 +78,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
     return this.allRulesVerified;
   }
 
-  public void createCheck(
-      int childCareType,
-      int workSituation1,
-      int workSituation2,
-      String motherTongueMotherChild,
-      String motherTongueFatherChild,
-      String motherTongueParents,
-      int childId,
-      int method,
-      int amount,
-      int checkFee,
-      int managerId,
-      String notes,
-      boolean checkRule1,
-      boolean checkRule2,
-      boolean checkRule3,
-      boolean checkRule4,
-      boolean checkRule5
-      )throws Exception{
+  public void createCheck(int childCareType,int workSituation1,int workSituation2,String motherTongueMotherChild,String motherTongueFatherChild,String motherTongueParents,int childId,int method,int amount,int checkFee,int managerId,String notes,boolean checkRule1,boolean checkRule2,boolean checkRule3,boolean checkRule4,boolean checkRule5)throws Exception{
     CheckHome home = (CheckHome)com.idega.data.IDOLookup.getHome(Check.class);
     Check check = home.create();
     check.setChildCareType(childCareType);
@@ -125,8 +107,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
       String subject,
       String body,
       int managerId)throws Exception{
-    MessageHome home = (MessageHome)com.idega.data.IDOLookup.getHome(Message.class);
-    Message msg = home.create();
+    UserMessageHome home = (UserMessageHome)com.idega.data.IDOLookup.getHome(UserMessage.class);
+    UserMessage msg = home.create();
     msg.setSubject(subject);
     msg.setBody(body);
 //    msg.setSenderId(managerId);
@@ -143,7 +125,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
     this.rule5Verified = false;
     if(selectedRules==null){
       this.allRulesVerified = false;
-    }else{
+    }
+    else{
       for(int i=0; i<selectedRules.length; i++){
 	int rule = Integer.parseInt(selectedRules[i]);
 	switch (rule) {
@@ -206,6 +189,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
   }
 
   public void approveCheck()throws Exception{
+    System.out.println("Status: "+this.getCaseStatusGranted().toString());
     this.currentCheck.setCaseStatus(this.getCaseStatusGranted());
   }
 

@@ -94,8 +94,8 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
     return CASE_STATUS_DESCRIPTIONS;
   }
 
-  /*
-  public void insertStartData(){
+
+  /*public void insertStartData(){
 
     try{
       CheckHome home = (CheckHome)com.idega.data.IDOLookup.getHome(Check.class);
@@ -106,14 +106,14 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
       check.setChildId(4);
       check.setMethod(5);
       check.setAmount(2800);
-      check.setAmount(1200);
+      check.setCheckFee(1200);
       check.store();
     }
     catch(Exception e){
       e.printStackTrace(System.out);
     }
-  }
-  */
+  }*/
+
 
   public void setChildCareType(int type)throws java.rmi.RemoteException{
     this.setColumn(COLUMN_CHILD_CARE_TYPE,type);
