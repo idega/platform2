@@ -74,11 +74,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/09 08:07:11 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/09 09:00:19 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.58 $
+ * @version $Revision: 1.59 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1806,15 +1806,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	}
 	
 	private void addStyledInput (final java.util.Map map, final String key,
-															 final String value) {
-		final TextInput input = getStyledInput
-				(key, null != value && !value.equals (null + "") ? value : "");
-		map.put (key, input);
-	}
-	
-	private void addStyledInput (final java.util.Map map, final String key,
 															 final float number) {
-		addStyledInput (map, key, getFormattedAmount (number));
+		addStyledInput (map, key, roundAmount (number));
 	}
 	
 	private void addSmallText (final java.util.Map map, final String mapKey,

@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/09 08:07:11 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/09 09:00:19 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.109 $
+ * @version $Revision: 1.110 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -356,28 +356,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final String headerId = header.getPrimaryKey ().toString ();
 		final InvoiceRecord [] records
 				= business.getInvoiceRecordsByInvoiceHeader (header);
-		final Document document = new Document
-				(PageSize.A4, mmToPoints (20), mmToPoints (20),
-				 mmToPoints (20), mmToPoints (20));
 		final MemoryFileBuffer buffer = new MemoryFileBuffer ();
-		final OutputStream outStream = new MemoryOutputStream (buffer);
-		final PdfWriter writer = PdfWriter.getInstance (document, outStream);
-		writer.setViewerPreferences
-				(PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
-				 PdfWriter.PageModeUseNone | PdfWriter.FitWindow
-				 | PdfWriter.CenterWindow);
 		final String title = localize
 				(INVOICE_COMPILATION_KEY,
 				 INVOICE_COMPILATION_DEFAULT) + " " + headerId;
-		document.addTitle (title);
-		document.addCreationDate ();
-		document.open ();
+		final Document document = createPdfDocument (buffer, title);
 		
-		// add content to document
+		// create document table
 		final PdfPTable outerTable = new PdfPTable (1);
 		outerTable.setWidthPercentage (100f);
 		outerTable.getDefaultCell ().setBorder (0);
 		addPhrase (outerTable, title);
+
+		// add document header
 		addPhrase (outerTable, "\n");
 		final User custodian = header.getCustodian ();
 		addPhrase (outerTable, localize (CUSTODIAN_KEY, CUSTODIAN_DEFAULT)
@@ -387,19 +378,28 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		addPhrase (outerTable, localize (PRINT_DATE_KEY, PRINT_DATE_DEFAULT)
 							 + ": " + dateAndTimeFormatter.format (new Date ()));
 		addPhrase (outerTable, "\n");
+
+		// add invoices info to document
 		final Color lightBlue = new Color (0xf4f4f4);
 		final PdfPTable recordTable = getInvoiceRecordPdfTable
 				(columnNames, business, records, lightBlue);
 		outerTable.addCell (recordTable);
+
+		// add posting info to document
 		addPhrase (outerTable, "\n");
 		addPhrase (outerTable,
 							 localize (OWN_POSTING_KEY, OWN_POSTING_DEFAULT) + ":");
 		final PdfPTable postingTable
 				= getOwnPostingPdfTable (context, records, lightBlue);
 		outerTable.addCell (postingTable);
-		document.add (outerTable);
-		
+
+		// add summary
+		addPhrase (outerTable, "\n");
+		final PdfPTable summaryTable = getSummaryPdfTable (records);
+		outerTable.addCell (summaryTable);
+
 		// close and store document
+		document.add (outerTable);
 		document.close ();
 
 		// create link		
@@ -419,6 +419,40 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 								INVOICE_COMPILATION_DEFAULT);
 	}
 	
+	private Document createPdfDocument(final MemoryFileBuffer buffer, final String title) throws DocumentException {
+		final Document document = new Document
+				(PageSize.A4, mmToPoints (20), mmToPoints (20),
+				 mmToPoints (20), mmToPoints (20));
+		final OutputStream outStream = new MemoryOutputStream (buffer);
+		final PdfWriter writer = PdfWriter.getInstance (document, outStream);
+		writer.setViewerPreferences
+				(PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
+				 PdfWriter.PageModeUseNone | PdfWriter.FitWindow
+				 | PdfWriter.CenterWindow);
+		document.addTitle (title);
+		document.addCreationDate ();
+		document.open ();
+		return document;
+	}
+
+	private PdfPTable getSummaryPdfTable(final InvoiceRecord[] records) {
+		final PdfPTable summaryTable = new PdfPTable (3);
+		summaryTable.setWidthPercentage (100f);
+		summaryTable.getDefaultCell ().setBorder (0);
+		addPhrase (summaryTable,
+							 localize (TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY,
+												 TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT) + ':');
+		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
+		addPhrase (summaryTable, getTotalAmount (records));
+		addPhrase (summaryTable, ""); // add empty cell
+		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+		addPhrase (summaryTable, localize (TOTAL_AMOUNT_VAT_KEY,
+																			 TOTAL_AMOUNT_VAT_DEFAULT) + ':');
+		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
+		addPhrase (summaryTable, getTotalAmountVat (records));
+		return summaryTable;
+	}
+
 	private void newRecord (final IWContext context)
 		throws RemoteException, CreateException, FinderException {
 		final User currentUser = context.getCurrentUser ();
@@ -431,10 +465,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				= new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
 		final String doublePosting = getPostingString (context,
 																									 DOUBLE_POSTING_KEY);
-		/*
-		final Integer invoiceCompilation
-				= getIntegerParameter (context, INVOICE_COMPILATION_KEY);
-		*/
 		final InvoiceHeader header = getInvoiceHeader (context);
 		final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
 		final String invoiceText2 = context.getParameter (INVOICE_TEXT2_KEY);
@@ -743,9 +773,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		inputs.put (ADJUSTED_SIGNATURE_KEY,
 								getSmallSignature (record.getChangedBy ()));
 		inputs.put (AMOUNT_KEY, getStyledInput
-								(AMOUNT_KEY, getFormattedAmount (record.getAmount ())));
+								(AMOUNT_KEY, roundAmount (record.getAmount ()) + ""));
 		inputs.put (VAT_AMOUNT_KEY, getStyledInput
-								(VAT_AMOUNT_KEY, getFormattedAmount (record.getAmountVAT ())));
+								(VAT_AMOUNT_KEY, roundAmount (record.getAmountVAT ()) + ""));
 		inputs.put (NOTE_KEY, getStyledWideInput (NOTE_KEY,
 																							record.getNotes ()));
 		final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
@@ -1054,7 +1084,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		inputs.put (ORDER_ID_KEY, new HiddenInput
 								(ORDER_ID_KEY, regulation.getConditionOrder () + ""));
 		inputs.put (AMOUNT_KEY, getStyledInput
-		            (AMOUNT_KEY, getFormattedAmount (regulation.getAmount ())));
+		            (AMOUNT_KEY, regulation.getAmount () + ""));
 		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
 		inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
 		            (business.getAllRegulationSpecTypes (), regSpecType));
@@ -1604,13 +1634,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		return integerFormatter.format (roundAmount (f));
 	}
 	
-	private String getFormattedAmount (final Integer integer) {
-		final int i = null == integer ? 0 : integer.intValue ();
-		return integerFormatter.format (i);
-	}
-	
-	private Table getSearcherResultTable (final Collection users,
-																				int actionId) {
+	private Table getSearcherResultTable (final Collection users, int actionId) {
 		final Table table = createTable (1);
 		int row = 1;
 		for (Iterator i = users.iterator (); row <= 10 && i.hasNext ();) {
