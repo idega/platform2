@@ -1804,8 +1804,11 @@ public class HotelBookingForm extends BookingForm {
 		return fRow;
 	}
 
-	protected String getNumberOfDaysString() {
+	public String getNumberOfDaysString() {
 		return iwrb.getLocalizedString("travel.number_of_nights", "Number of nights");
+	}
+	public String getPerDayString() {
+		return iwrb.getLocalizedString("travel.search.per_night","per night");
 	}
 
 }

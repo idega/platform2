@@ -232,6 +232,11 @@ public abstract class BookingForm extends TravelManager{
 	public abstract String getUnitName();
 	public abstract String getUnitNamePlural();
 	public abstract boolean useNumberOfDays();
+	public abstract String getNumberOfDaysString();
+	public abstract String getPerDayString();
+//	{
+//		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
+//	}
 //	{
 //		return iwrb.getLocalizedString("travel.unit", "Unit");
 //	}
@@ -1455,9 +1460,6 @@ public abstract class BookingForm extends TravelManager{
 		return table;
 	}
 	
-	protected String getNumberOfDaysString() {
-		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
-	}
 	/**
 	 * @param iwc
 	 * @param product
@@ -2271,7 +2273,7 @@ public abstract class BookingForm extends TravelManager{
 				PostalCode tpc;
 				if ( to == null ) {
 					postalCodes = new Vector();
-					postalCodes.add(pcHome.findByPostalCodeFromTo(from, from));
+					postalCodes.addAll(pcHome.findByPostalCodeFromTo(from, from));
 //					postalCodes.add(new Integer(from));
 				} else {
 					postalCodes = pcHome.findByPostalCodeFromTo(from, to);

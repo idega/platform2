@@ -55,4 +55,12 @@ public class DefaultBookingForm extends BookingForm {
 		return fRow;
 	}
 
+	public String getNumberOfDaysString() {
+		return iwrb.getLocalizedString("travel.number_of_days", "Number of days");
+	}
+
+	public String getPerDayString() {
+		return iwrb.getLocalizedString("travel.search.per_day","per day");
+	}
+
 }
