@@ -224,7 +224,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		}
 		
 		if (showComment) {
-			table.setHeight(2, row++);
+			table.setHeight(row++, 2);
 			if (showNotStartedComment) {
 				table.mergeCells(1, row, table.getColumns(), row);
 				table.add(getSmallErrorText("*"), 1, row);

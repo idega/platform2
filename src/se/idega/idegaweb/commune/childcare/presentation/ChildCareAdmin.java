@@ -191,14 +191,14 @@ public class ChildCareAdmin extends ChildCareBlock {
 		}
 			
 		if (showComment) {
-			applicationTable.setHeight(2, row++);
+			applicationTable.setHeight(row++, 2);
 			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
 			applicationTable.add(getSmallErrorText("* "), 1, row);
 			applicationTable.add(getSmallText(localize("child_care.placed_at_other_provider","Placed at other provider")), 1, row++);
 		}
 		if (showPriority) {
 			if (!showComment)
-				applicationTable.setHeight(2, row++);
+				applicationTable.setHeight(row++, 2);
 			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
 			applicationTable.add(getSmallErrorText("+ "), 1, row);
 			applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row);

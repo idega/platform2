@@ -183,7 +183,7 @@ public class ChildCareContracts extends ChildCareBlock {
 				table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 			}
 			if (showComment) {
-				table.setHeight(2, row++);
+				table.setHeight(row++, 2);
 				if (showNotActiveComment) {
 					table.mergeCells(1, row, table.getColumns(), row);
 					table.add(getSmallErrorText("*"), 1, row);

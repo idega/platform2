@@ -381,7 +381,7 @@ public class ContractEditor extends ChildCareBlock {
 		}
 		
 		if (showComment) {
-			table.setHeight(2, row++);
+			table.setHeight(row++, 2);
 			if (showNotActiveComment) {
 				table.mergeCells(1, row, table.getColumns(), row);
 				table.add(getSmallErrorText("*"), 1, row);
