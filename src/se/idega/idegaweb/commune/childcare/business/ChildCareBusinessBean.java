@@ -1652,7 +1652,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public ChildCareApplication getApplicationForChildAndProvider(int childID, int providerID) throws RemoteException {
 		try {
-			return getChildCareApplicationHome().findApplicationByChildAndProvider(childID, providerID);
+			String[] statuses = { getCaseStatusReady().getStatus() };
+			return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
 		} 
 		catch (FinderException fe) {
 			return null;
