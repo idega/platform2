@@ -12,8 +12,6 @@ package com.idega.block.staff.presentation;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
@@ -23,13 +21,14 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.user.app.UserApplication;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.data.Group;
 import com.idega.util.GenericGroupComparator;
 import com.idega.util.GenericUserComparator;
@@ -694,7 +693,9 @@ public class StaffBrowser extends Block implements Builderaware {
 	private Link getAdminButtons() {
 		Image adminImage = _iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
-		adminLink.setWindowToOpen(UserApplication.class);
+		Class  staffApplicationImpl = ImplementorRepository.getInstance().getAnyClassImpl(StaffApplication.class, this.getClass());
+		adminLink.setWindowToOpen(staffApplicationImpl);
+		// prior version adminLink.setWindowToOpen(UserApplication.class);
 
 		return adminLink;
 	}
