@@ -312,6 +312,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport,IDORe
 		sql.appendSelectAllFrom(this.getEntityName())
 		.appendWhere()
 		.appendEquals(COLUMN_NAME_WORK_REPORT_YEAR,year)
+		.appendAnd()
+		.append(COLUMN_NAME_REGIONAL_UNION_GROUP_ID)
 		.appendInCollection(regionalUnionGroups)
 		.appendOrderBy(ordering);
 		
