@@ -41,6 +41,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 
@@ -65,6 +66,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
  */
 public class RegularPaymentEntriesList extends AccountingBlock {
 
+
+
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
 	private static final String KEY_OPERATIONAL_FIELD = "operational_field";
@@ -86,13 +89,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String KEY_REMARK = "remark";
 	private static final String KEY_SAVE = "save";
 	private static final String KEY_SEARCH = "search";
-	private static final String KEY_SSN = "ssn";	
 	private static final String KEY_TO = "to";
 	private static final String KEY_VALID_DATE = "valid_date";
 	private static final String KEY_VAT_PR_MONTH = "vat_pr_month";
 	private static final String KEY_VAT_TYPE = "vattype";
-	private static final String KEY_NAME = "name";	
 	private static final String KEY_PROVIDER = "provider";
+	
 	
 	
 	private static final String PAR_AMOUNT_PR_MONTH = KEY_AMOUNT_PR_MONTH;
@@ -110,6 +112,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
 	private static final String PAR_PROVIDER = KEY_PROVIDER; 	
 	private static final String PAR_VALID_DATE = KEY_VALID_DATE; 	
+	private static final String PAR_SELECTED_PROVIDER = "selected_provider";	
 	
 	private static final String PAR_PK = "pk";	
 	private static final String PAR_DELETE_PK = "delete_pk";
@@ -122,32 +125,37 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		ACTION_NEW = 1, 
 		ACTION_DELETE = 2, 
 		ACTION_CANCEL = 3,
-		ACTION_EDIT = 4, 
-		ACTION_SEARCH_PAYMENTS = 5,
-		ACTION_SEARCH_REGULATION = 6,
-		ACTION_SAVE = 7,
-		ACTION_CANCEL_NEW_EDIT = 8,
-		ACTION_OPFIELD_DETAILSCREEN = 9,
-		ACTION_OPFIELD_MAINSCREEN = 10;
+		ACTION_EDIT_FROM_DB = 4, 		
+		ACTION_EDIT_FROM_SCREEN = 5, 
+		ACTION_SEARCH_PAYMENTS = 6,
+		ACTION_SEARCH_REGULATION = 7,
+		ACTION_SAVE = 8,
+		ACTION_CANCEL_NEW_EDIT = 9,
+		ACTION_OPFIELD_DETAILSCREEN = 10,
+		ACTION_OPFIELD_MAINSCREEN = 11;
 			
 	private static final String PAR = "PARAMETER_";
 	private static final String 
 		PAR_NEW = PAR + ACTION_NEW, 
 		PAR_DELETE = PAR + ACTION_DELETE, 
 		PAR_CANCEL = PAR + ACTION_CANCEL,
-		PAR_EDIT = PAR + ACTION_EDIT, 
+		PAR_EDIT_FROM_DB = PAR + ACTION_EDIT_FROM_DB, 
+		PAR_EDIT_FROM_SCREEN = PAR + ACTION_EDIT_FROM_SCREEN, 
 		PAR_SEARCH_PAYMENTS = PAR + ACTION_SEARCH_PAYMENTS,
 		PAR_SEARCH_REGULATION = PAR + ACTION_SEARCH_REGULATION,
 		PAR_SAVE = PAR + ACTION_SAVE,
 		PAR_CANCEL_NEW_EDIT = PAR + ACTION_CANCEL_NEW_EDIT,
 		PAR_OPFIELD_DETAILSCREEN = PAR + ACTION_OPFIELD_DETAILSCREEN,
 		PAR_OPFIELD_MAINSCREEN = PAR + ACTION_OPFIELD_MAINSCREEN;
+	
+//	int ijk = 0;
+//	String searchPeopleAction = ""; 
 
 	
 	public void init(final IWContext iwc) {
 		
 
-		User user = getUser(iwc);
+		School school = getSchool(iwc);
 
 		String dateFormatErrorMessage = null;	
 
@@ -159,22 +167,23 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		if ((parFrom != null && fromDate == null) || (parTo != null && toDate == null)){
 			dateFormatErrorMessage = localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm.");
-			handleDefaultAction(iwc, user, fromDate, toDate, dateFormatErrorMessage);
+			handleDefaultAction(iwc, school, fromDate, toDate, dateFormatErrorMessage);
 			return;
 		}		
+		
 		
 		try {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_SHOW:
-					handleDefaultAction(iwc, user, fromDate, toDate);
+					handleDefaultAction(iwc, school, fromDate, toDate);
 					break;
 				case ACTION_NEW:
-					handleEditAction(iwc, getEmptyEntry(), user);
+					handleEditAction(iwc, getEmptyEntry());
 					break;
 				case ACTION_DELETE:
 					handleDeleteAction(iwc);
-					handleDefaultAction(iwc, user, fromDate, toDate);
+					handleDefaultAction(iwc, school, fromDate, toDate);
 					break;
 				case ACTION_CANCEL:
 					// TODO implement
@@ -182,21 +191,25 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				case ACTION_CANCEL_NEW_EDIT:				
 				case ACTION_SEARCH_PAYMENTS:		
 				case ACTION_OPFIELD_MAINSCREEN:
-					handleDefaultAction(iwc, user, fromDate, toDate);
+					handleDefaultAction(iwc, school, fromDate, toDate);
 					break;
-				case ACTION_EDIT:
+				case ACTION_EDIT_FROM_DB:
+					handleEditAction(iwc, getStoredEntry(iwc));
+					break;
+									
+				case ACTION_EDIT_FROM_SCREEN:
 				case ACTION_OPFIELD_DETAILSCREEN:				
-					handleEditAction(iwc, user);
+					handleEditAction(iwc, getNotStoredEntry(iwc));
 					break;
 				case ACTION_SEARCH_REGULATION:
 					//TODO implement
 					break;	
 				case ACTION_SAVE:
-					handleSaveAction(iwc, user);
+					handleSaveAction(iwc, school);
 					break;	
 				
 				default:
-					handleDefaultAction(iwc, user, fromDate, toDate);				
+					handleDefaultAction(iwc, school, fromDate, toDate);				
 					
 			}
 		}
@@ -209,25 +222,52 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	/**
 	 * @param iwc
 	 */
-	private Collection doPaymentsSearch(IWContext iwc, User user, Date from, Date to) {
+	private Collection doPaymentsSearch(IWContext iwc, School provider, Date from, Date to) {
 		Collection payments = new ArrayList();		
-		if (user != null && from != null && to != null){
+		if (provider != null && from != null && to != null){
 
 			RegularPaymentBusiness paymentsBusiness = getRegularPaymentBusiness(iwc);
 
-			if (user != null){
-				try{
-					payments = paymentsBusiness.findRegularPaymentsForPeriodeAndUser(from, to, user.getNodeID());
-				}catch(FinderException ex){
-					ex.printStackTrace(); 
-				}catch(IDOLookupException ex){
-					ex.printStackTrace(); 
-				}
+			try{
+				payments = paymentsBusiness.findRegularPaymentsForPeriodeAndSchool(from, to, provider);
+			}catch(FinderException ex){
+				ex.printStackTrace(); 
+			}catch(IDOLookupException ex){
+				ex.printStackTrace(); 
 			}
 		}
-
-		return payments;
+		return payments;		
 	}
+		
+
+	
+	private RegularPaymentEntry getStoredEntry(IWContext iwc){
+		RegularPaymentEntry entry = null;
+		RegularPaymentEntryHome home = getRegularPaymentEntryHome();
+		if (home != null){
+			try{
+				entry = home.findByPrimaryKey(iwc.getParameter(PAR_PK));
+			}catch(FinderException ex){
+				ex.printStackTrace();
+			}
+		}
+		return entry;
+	}
+	
+	private School getSchool(IWContext iwc){
+		String schoolId = iwc.getParameter(PAR_SELECTED_PROVIDER);
+		School school = null;
+		try{
+			SchoolHome sh = (SchoolHome) IDOLookup.getHome(School.class);
+			school = sh.findByPrimaryKey(schoolId);
+		}catch(IDOLookupException ex){
+			ex.printStackTrace(); 
+		}catch(FinderException ex){
+			ex.printStackTrace(); 
+		}
+		return school;	
+	}
+	
 	
 	private User getUser(IWContext iwc){
 		String userPid = iwc.getParameter(PAR_USER_SSN);
@@ -239,6 +279,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}
 		return user;	
 	}
+		
 
 	/*
 	 * Returns the action constant for the action to perform based 
@@ -276,44 +317,68 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}		
 		return paymentsBusiness;
 	}
+	
+	private Collection getProvidersForOperationalField(IWContext iwc) {
+		Collection providers = new ArrayList();		
+		String opField = null;
+		try{
+			SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), SchoolBusiness.class);
+			opField = getSession().getOperationalField();
+			try{
+				SchoolCategory sc = schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField);
+				
+				SchoolHome home = (SchoolHome) IDOLookup.getHome(School.class);				
+				providers = home.findAllByCategory(sc);
+			}catch(FinderException ex){
+				ex.printStackTrace();
+			}			
+		}catch(RemoteException ex){
+			ex.printStackTrace();
+		}
+		return providers;
+	}	
 
 		
 	
-	private void handleSaveAction(IWContext iwc, User user){
-		RegularPaymentEntry entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
-		
-		if (entry == null){
-			try{
-				entry = getRegularPaymentEntryHome().create();
-			}catch(CreateException ex2){
-				ex2.printStackTrace();
-				return;
-			}			
-		}
-		entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+	private void handleSaveAction(IWContext iwc, School school){
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
-		entry.setFrom(from);
-		entry.setTo(to);
-			
-		entry.setNote(iwc.getParameter(PAR_REMARK));
-		entry.setPlacing(iwc.getParameter(PAR_PLACING));
-		entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
-		entry.setPlacing(iwc.getParameter(PAR_PLACING));
-		if (iwc.getParameter(PAR_PROVIDER) != null){
-			entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
-		}
-		entry.setUser(user);
-		entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
-		entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-		entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 		
-		if (from != null && to != null){
-			entry.store();		
-			handleDefaultAction(iwc, user, parseDate(iwc.getParameter(PAR_SEEK_FROM)), parseDate(iwc.getParameter(PAR_SEEK_TO)));					
+		if (from == null || to == null){
+			handleEditAction(iwc, getNotStoredEntry(iwc), localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));	
 		} else {
-			handleEditAction(iwc, entry, user, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));	
-		}
+		
+			RegularPaymentEntry entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
+			
+			if (entry == null){
+				try{
+					entry = getRegularPaymentEntryHome().create();
+				}catch(CreateException ex2){
+					ex2.printStackTrace();
+					return;
+				}			
+			}
+			entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+	
+			entry.setFrom(from);
+			entry.setTo(to);
+				
+			entry.setNote(iwc.getParameter(PAR_REMARK));
+			entry.setPlacing(iwc.getParameter(PAR_PLACING));
+			entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+			if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
+				entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
+			}
+			
+			entry.setUser(getUser(iwc));
+			entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
+			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+		
+
+			entry.store();		
+			handleDefaultAction(iwc, school, parseDate(iwc.getParameter(PAR_SEEK_FROM)), parseDate(iwc.getParameter(PAR_SEEK_TO)));
+		}					
 	}
 
 	private RegularPaymentEntry getRegularPaymentEntry(String pk) {
@@ -340,35 +405,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		return home;
 	}
 		
-	private void handleEditAction(IWContext iwc, User user){
-		handleEditAction(iwc, user, null);
-				
-	}
-	private void handleEditAction(IWContext iwc, User user, String errorMessage){
-		RegularPaymentEntry entry = null;
-				
-		if (errorMessage != null){
-			entry = getNotStoredEntry(iwc);
-		}
-		
-		RegularPaymentEntryHome home = getRegularPaymentEntryHome();
-		if (home != null){
-			try{
-				entry = home.findByPrimaryKey(iwc.getParameter(PAR_PK));
-			}catch(FinderException ex){
-				ex.printStackTrace();
-			}
-		}
-		handleEditAction(iwc, entry, user, errorMessage);
-	}
-
-
-	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, User user){
-		handleEditAction(iwc, entry, user, null);
+	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry){
+		handleEditAction(iwc, entry, null);
 	}
 
 			
-	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, User user, String errorMessage){
+	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, String errorMessage){
 		Collection vatTypes = new ArrayList();
 		try {
 			vatTypes = getVATBusiness(iwc.getApplicationContext()).findAllVATRegulations();				
@@ -377,50 +419,33 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}	
 		
 		Form form = new Form();
-		if (entry != null){
-			form.add(new HiddenInput(PAR_PK, ""+entry.getPrimaryKey()));
-		}
-		form.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));	
+		form.maintainParameter(PAR_PK);		
+		form.maintainParameter(PAR_USER_SSN);			
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
+		form.maintainParameter(PAR_SELECTED_PROVIDER);
 
-		Collection providers = new ArrayList();		
-		String opField = null;
-		try{
-			SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), SchoolBusiness.class);
-			opField = getSession().getOperationalField();
-			try{
-				SchoolCategory sc = schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField);
-				
-				SchoolHome home = (SchoolHome) IDOLookup.getHome(School.class);				
-				providers = home.findAllByCategory(sc);
-			}catch(FinderException ex){
-				ex.printStackTrace();
-			}			
-		}catch(RemoteException ex){
-			ex.printStackTrace();
-		}
-		
-		form.add(getDetailPanel(iwc, user, entry, providers, vatTypes, errorMessage));
+	
+		form.add(getDetailPanel(iwc, entry, vatTypes, errorMessage));
 		
 		add(form);
 	}
 
 		
-	private void handleDefaultAction(IWContext iwc, User user, Date fromDate, Date toDate, String errorMessage){
-		add(getEntryListPage(doPaymentsSearch(iwc, user, fromDate, toDate), user, fromDate, toDate, errorMessage));
+	private void handleDefaultAction(IWContext iwc, School school, Date fromDate, Date toDate, String errorMessage){
+		add(getEntryListPage(iwc, doPaymentsSearch(iwc, school, fromDate, toDate), school, fromDate, toDate, errorMessage));
 	}
 			
-	private void handleDefaultAction(IWContext iwc, User user, Date fromDate, Date toDate){
-		add(getEntryListPage(doPaymentsSearch(iwc, user, fromDate, toDate), user, fromDate, toDate));
+	private void handleDefaultAction(IWContext iwc, School school, Date fromDate, Date toDate){
+		add(getEntryListPage(iwc, doPaymentsSearch(iwc, school, fromDate, toDate), school, fromDate, toDate));
 	}
 
 	
-	private Table getEntryListPage(Collection entries, User user, Date fromDate, Date toDate){
-		return getEntryListPage(entries, user, fromDate, toDate, null);
+	private Table getEntryListPage(IWContext iwc, Collection entries, School school, Date fromDate, Date toDate){
+		return getEntryListPage(iwc, entries, school, fromDate, toDate, null);
 	}
 	
-	private Table getEntryListPage(Collection entries, User user, Date fromDate, Date toDate, String errorMessage){
+	private Table getEntryListPage(IWContext iwc, Collection entries, School school, Date fromDate, Date toDate, String errorMessage){
 		
 		Table t1 = new Table();
 		t1.setCellpadding(getCellpadding());
@@ -428,26 +453,22 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		int row = 1;
 		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN), 1, row++); //PAR_CANCEL make it stay on the first screen (list)
-		
-		addSearchForm(t1, user, row++);
-		if (user != null){
 				
-			addPeriodeForm(t1, user, fromDate, toDate, errorMessage, row);
-				
-			Table t2 = new Table();				
-			t2.add(getPaymentsList(entries, user, fromDate, toDate), 1, 1);
-		
-			ButtonPanel bp = new ButtonPanel(this);
-			bp.addLocalizedButton(PAR_NEW, KEY_NEW, "New");
-			bp.addLocalizedButton(PAR_CANCEL, KEY_CANCEL, "Cancel");
-			t2.add(bp, 1, 2);
+		addPeriodeForm(iwc, t1, fromDate, toDate, errorMessage, row++);
+			
+		Table t2 = new Table();				
+		t2.add(getPaymentsList(entries, school, fromDate, toDate), 1, 1);
+	
+		ButtonPanel bp = new ButtonPanel(this);
+		bp.addLocalizedButton(PAR_NEW, KEY_NEW, "New");
+		bp.addLocalizedButton(PAR_CANCEL, KEY_CANCEL, "Cancel");
+		t2.add(bp, 1, 2);
 
-			Form form = new Form();		
-			form.maintainAllParameters();
-			form.add(t2);		
-			form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
-			t1.add(form, 1, row++);	
-		}
+		Form form = new Form();		
+		form.maintainAllParameters();
+		form.add(t2);		
+		form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
+		t1.add(form, 1, row++);	
 
 		return t1;		
 	}
@@ -464,17 +485,25 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
 		return inner;
 	}	
-	
-	private int addSearchForm(Table table, User user, int row){
+
+	private int addSearchForm(IWContext iwc, Table table, User user, int row){
 		
 		searcher = new UserSearcher();
 		searcher.setPersonalIDLength(15);
 		searcher.setFirstNameLength(25);
 		searcher.setLastNameLength(25);
 		searcher.setShowMiddleNameInSearch(false);
-		searcher.setOwnFormContainer(true);
+		searcher.setOwnFormContainer(false);
 		searcher.setUniqueIdentifier("");
+		searcher.setBelongsToParent(true);
+		searcher.setConstrainToUniqueSearch(false);
+		searcher.maintainParameter(new Parameter(PAR_EDIT_FROM_SCREEN, " "));
+		searcher.maintainParameter(new Parameter(PAR_SELECTED_PROVIDER, iwc.getParameter(PAR_SELECTED_PROVIDER)));		
+		searcher.maintainParameter(new Parameter(PAR_PK, iwc.getParameter(PAR_PK)));
+		searcher.setToFormSubmit(true);
+			
 	
+
 		if (user != null){
 			searcher.setUser(user);
 		}
@@ -485,11 +514,20 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}
 	
 
-	private int addPeriodeForm(Table table, User user, Date fromDate, Date toDate, String errorMessage, int row){
+	private int addPeriodeForm(IWContext iwc, Table table, Date fromDate, Date toDate, String errorMessage, int row){
 			
 		Form form = new Form();
 
 		Table formTable = new Table();
+		
+		int selectedProvider = -1;
+		try{
+			selectedProvider = new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue();
+		} catch(NumberFormatException ex){		}
+				
+		addDropDown(formTable, PAR_SELECTED_PROVIDER, KEY_PROVIDER, getProvidersForOperationalField(iwc), selectedProvider, "getSchoolName", 1, 1);
+
+		
 		formTable.add(getLocalizedLabel("KEY_PERIODE", "Periode"), 1, 2);
 		TextInput from = getTextInput(PAR_SEEK_FROM, "");
 		from.setLength(4);
@@ -515,9 +553,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		formTable.add(to, 2, 2);			
 
 		formTable.add(getLocalizedButton(PAR_SEARCH_PAYMENTS, KEY_SEARCH, "Search"), 10, 2);
-		if (user != null) {
-			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
-		}
+		form.maintainParameter(PAR_SELECTED_PROVIDER);
+//		if (user != null) {
+//			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
+//		}
 
 		form.add(formTable);
 		table.add(form, 1, row++);
@@ -525,7 +564,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}	
 	
 	
-	private ListTable getPaymentsList(Collection payments, User user, Date fromDate, Date toDate) {
+	private ListTable getPaymentsList(Collection payments, School school, Date fromDate, Date toDate) {
 		
 		ListTable list = new ListTable(this, 6);
 		
@@ -542,21 +581,21 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 					list.add(getText(""+entry.getFrom() + " - " + entry.getTo()));
 					
 					Link link = getLink(entry.getPlacing(), PAR_PK, "" + entry.getPrimaryKey());
-					link.setParameter(PAR_EDIT, " ");
+					link.setParameter(PAR_EDIT_FROM_DB, " ");
 					link.setParameter(PAR_SEEK_FROM, formatDate(fromDate, 4));
 					link.setParameter(PAR_SEEK_TO, formatDate(toDate, 4));
-					link.setParameter(PAR_USER_SSN, user.getPersonalID());
+					link.setParameter(PAR_SELECTED_PROVIDER, school.getPrimaryKey().toString());
 					list.add(link);
 					
 					list.add(getText(""+entry.getAmount()));
 					list.add(getText(entry.getNote()));
 
 					Link edit = new Link(getEditIcon(localize(KEY_EDIT_TOOLTIP, "Edit")));
-					edit.addParameter(PAR_EDIT, " ");
+					edit.addParameter(PAR_EDIT_FROM_DB, " ");
 					edit.addParameter(PAR_PK, entry.getPrimaryKey().toString());
 					edit.setParameter(PAR_SEEK_FROM, formatDate(fromDate, 4));
 					edit.setParameter(PAR_SEEK_TO, formatDate(toDate, 4));					
-					edit.addParameter(PAR_USER_SSN, user.getPersonalID());
+					edit.addParameter(PAR_SELECTED_PROVIDER, school.getPrimaryKey().toString());
 					list.add(edit);
 					
 					Link delete = new Link(getDeleteIcon(localize(KEY_DELETE_TOOLTIP, "Delete")));
@@ -564,7 +603,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 					delete.addParameter(PAR_PK, entry.getPrimaryKey().toString());
 					delete.setParameter(PAR_SEEK_FROM, formatDate(fromDate, 4));
 					delete.setParameter(PAR_SEEK_TO, formatDate(toDate, 4));					
-					delete.addParameter(PAR_USER_SSN, user.getPersonalID());
+					delete.addParameter(PAR_SELECTED_PROVIDER, school.getPrimaryKey().toString());
 					delete.setOnClick("return confirm('Confirm deletion');");
 					list.add(delete);
 				}
@@ -577,7 +616,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		return list;
 	}
 	
-	private Table getDetailPanel(IWContext iwc, User user, RegularPaymentEntry entry, Collection providers, Collection vatTypes, String errorMessage){
+	private Table getDetailPanel(IWContext iwc, RegularPaymentEntry entry, Collection vatTypes, String errorMessage){
 				
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
@@ -585,14 +624,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		table.mergeCells(1,1,3,1);
 		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, row++);
 		
+			
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
-				
-		addField(table, KEY_SSN, user.getPersonalID(), 1, row);
-		addField(table, KEY_NAME, user.getLastName() + ", " + user.getFirstName(), 3, row++);
 		
-		table.setHeight(row++, EMPTY_ROW_HEIGHT);
-				
-		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, entry.getSchoolId(), "getSchoolName", 1, row++);
+		addField(table, KEY_PROVIDER, getSchool(iwc).getName(), 1, row++);
+		
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);		
 
 		addNoEmptyField(table, PAR_PLACING, KEY_PLACING, entry.getPlacing(), 1, row);		
 		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
@@ -616,8 +653,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		table.add(toInput, 2, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
-		
-		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
 		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+entry.getAmount(), 1, row++);
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+entry.getVAT(), 1, row++);
@@ -633,6 +668,25 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getCategory", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+		
+		table.mergeCells(1, row, 10, row);
+		
+
+		int userId = entry.getUserId();
+		User user = null;
+		if (userId != -1){
+			try{
+				user = getUserBusiness(iwc.getApplicationContext()).getUser(userId);
+			}catch(RemoteException ex){
+				ex.printStackTrace();
+			}
+		}
+
+
+
+		addSearchForm(iwc, table, user, row++);
+		
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);		
 				
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PAR_SAVE, KEY_SAVE, "Save");
@@ -664,8 +718,17 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 		
 			public User getUser() {
+				try{
+					return getUserBusiness(_iwc.getApplicationContext()).getUser(getValue(PAR_USER_SSN));
+				}catch(FinderException ex){
+					ex.printStackTrace();
+				}
 				return null;
 			}
+			
+			public int getUserId() {
+				return -1;
+			}			
 		
 			public RegulationSpecType getRegSpecType() {
 				return null;
@@ -734,6 +797,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			int getIntValue(String parameter){
 				try {
 					return _iwc == null ? 0 : new Integer(_iwc.getParameter(parameter)).intValue();
+				} catch (NullPointerException ex){
+					return 0;					
 				} catch (NumberFormatException ex){
 					return 0;
 				}
@@ -742,6 +807,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			float getFloatValue(String parameter){
 				try {
 					return _iwc == null ? 0 : new Float(_iwc.getParameter(parameter)).floatValue();
+				} catch (NullPointerException ex){
+					return 0;
 				} catch (NumberFormatException ex){
 					return 0;
 				}
@@ -872,8 +939,5 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
-	}		
-	
-	
-
+	}
 }
