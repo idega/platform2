@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.41 2002/12/30 23:37:21 palli Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.42 2002/12/31 01:08:04 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,11 +34,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/30 23:37:21 $ by $Author: palli $
+ * Last modified: $Date: 2002/12/31 01:08:04 $ by $Author: aron $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
- * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.41 $
+ * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
+ * @version $Revision: 1.42 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -651,7 +651,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
     Message messageLetter = null;
     Message messageEmail = null;
     if (sendLetter) 
-      messageLetter = messageBusiness.createPrintedLetterMessage(user, messageSubject, messageBody);
+      messageLetter = messageBusiness.createPasswordMessage(user, loginName, newPassword);
     if (sendEmail)
       messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody);   
     if ((messageLetter == null && sendLetter) 
