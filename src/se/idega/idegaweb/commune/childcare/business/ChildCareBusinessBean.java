@@ -2604,9 +2604,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			if (employmentTypeID != -1) 
 				archive.setEmploymentType(employmentTypeID);
-			if(invoiceReceiverId>0)
+			
+			if(invoiceReceiverId>0 )
 				archive.setInvoiceReceiverID(invoiceReceiverId);
-			else if(oldArchive!=null && oldArchive.getInvoiceReceiverID()>0)
+			else if(oldArchive!=null && oldArchive.getInvoiceReceiverID()>0 && oldArchive.getChildID() == application.getChildId())
 				archive.setInvoiceReceiverID(oldArchive.getInvoiceReceiverID());
 			if (application.getApplicationStatus() != getStatusContract()) {
 				try {
@@ -2624,7 +2625,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						student = oldStudent;//
 					if(student==null)
 						student = getLatestPlacement(application.getChildId(), application.getProviderId());
-					archive.setSchoolClassMember(student);
+					if(((Integer)student.getStudent().getPrimaryKey()).intValue()==application.getChildId())
+						archive.setSchoolClassMember(student);
+					else{
+					    throw new NoPlacementFoundException("Classmember record's child id doesn't match application's child id");
+					}
 				}
 				catch (FinderException fe) {
 					throw new NoPlacementFoundException(fe);
