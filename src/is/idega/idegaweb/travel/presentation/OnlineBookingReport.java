@@ -146,6 +146,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.name","Name")), 2, row);
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.count","Count")), 3, row);
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.price","Price")), 4, row);
+    table.add(getHeaderText(_iwrb.getLocalizedString("travel.reference_number","Reference Number")), 6, row);
     table.setRowColor(row, super.backgroundColor);
 
 
@@ -178,6 +179,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
         table.add(getText(_iwrb.getLocalizedString("travel.check_payment","Check payment")), 5, row);
         table.setColumnColor(5, super.GRAY);
       }
+      table.add(getText(gBooking.getReferenceNumber()), 6, row);
       table.setRowColor(row, super.GRAY);
     }
 
