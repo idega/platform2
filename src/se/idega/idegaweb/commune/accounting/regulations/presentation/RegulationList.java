@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.15 2003/12/13 17:49:11 kjell Exp $
+ * $Id: RegulationList.java,v 1.16 2003/12/15 13:47:14 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.15 2003/12/13 17:49:11 kjell Exp $
+ * $Id: RegulationList.java,v 1.16 2003/12/15 13:47:14 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -88,8 +88,8 @@ public class RegulationList extends AccountingBlock {
 	public final static String PARAM_SELECTOR_PAYMENT_FLOW_TYPE = "param_sel_payment_flow_type";
 	public final static String PARAM_RETURN_FROM_DATE = "return_from_date";
 	public final static String PARAM_RETURN_TO_DATE = "return_to_date";
-
-
+	public final static String ATTRIB_SELECTOR_PAYMENT_FLOW_TYPE = "attrib_sel_payment_flow_type";
+	public final static String ATTRIB_SELECTOR_SORT_BY= "attrib_sel_selector_sort_by";
 	
 	private ICPage _editPage;
 	private Date _currentFromDate;
@@ -170,10 +170,24 @@ public class RegulationList extends AccountingBlock {
 			_currentOperation = _currentOperation == null ? "" : _currentOperation;
 		} catch (RemoteException e) {}
 
-		_currentFlowType = iwc.isParameterSet(PARAM_SELECTOR_PAYMENT_FLOW_TYPE) ? 
-				Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE)) : 1;
-		_currentSortBy = iwc.isParameterSet(PARAM_SELECTOR_SORT_BY) ? 
-				Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_SORT_BY)) : 1;
+		if (iwc.isParameterSet(PARAM_SELECTOR_PAYMENT_FLOW_TYPE)) {
+			_currentFlowType = 	Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE));
+		} else if (iwc.getSession().getAttribute(ATTRIB_SELECTOR_PAYMENT_FLOW_TYPE) != null) {
+			_currentFlowType = Integer.parseInt((String) iwc.getSession().getAttribute(ATTRIB_SELECTOR_PAYMENT_FLOW_TYPE));
+		} else {
+			_currentFlowType = 1;
+		}
+
+		if (iwc.isParameterSet(PARAM_SELECTOR_SORT_BY)) {
+			_currentSortBy = Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_SORT_BY));
+			
+		} else if (iwc.getSession().getAttribute(ATTRIB_SELECTOR_SORT_BY) != null) {
+			_currentSortBy = Integer.parseInt((String) iwc.getSession().getAttribute(ATTRIB_SELECTOR_SORT_BY));
+		} else {			
+			_currentSortBy = 1;
+		}
+
+		
 		
 		setupDefaultDates(iwc);
 		
@@ -212,6 +226,10 @@ public class RegulationList extends AccountingBlock {
 				iwc.getParameter(PARAM_TO) : iwc.getParameter(PARAM_RETURN_TO_DATE);  
 		String fromd = iwc.isParameterSet(PARAM_FROM) ? 
 				iwc.getParameter(PARAM_FROM) : iwc.getParameter(PARAM_RETURN_FROM_DATE);  
+		
+		iwc.getSession().setAttribute(ATTRIB_SELECTOR_SORT_BY, iwc.getParameter(PARAM_SELECTOR_SORT_BY));
+		iwc.getSession().setAttribute(ATTRIB_SELECTOR_PAYMENT_FLOW_TYPE, iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE));
+		
 		
 		try {
 			rBiz = getRegulationBusiness(iwc);
