@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.37 2002/08/24 15:35:07 aron Exp $
+ * $Id: CampusAllocator.java,v 1.38 2002/08/24 15:43:56 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,60 +9,27 @@
  */
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
-import is.idega.idegaweb.campus.block.allocation.business.WaitingListFinder;
-import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
-import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
-import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.block.application.presentation.ApplicationFilerWindow;
-import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
-import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
-import is.idega.idegaweb.campus.data.ApartmentContracts;
-import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.presentation.Campus;
-import is.idega.idegaweb.campus.presentation.CampusProperties;
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.data.Application;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.ApartmentCategory;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.data.Building;
-import com.idega.block.building.data.Complex;
-import com.idega.block.building.data.Floor;
-import com.idega.core.user.data.User;
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.IWTimestamp;
+import com.idega.block.application.data.*;
+import com.idega.block.building.business.*;
+import com.idega.block.building.data.*;
+import com.idega.business.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.user.data.*;
+import com.idega.util.*;
+import is.idega.idegaweb.campus.block.allocation.business.*;
+import is.idega.idegaweb.campus.block.allocation.data.*;
+import is.idega.idegaweb.campus.block.application.business.*;
+import is.idega.idegaweb.campus.block.application.data.*;
+import is.idega.idegaweb.campus.block.application.presentation.*;
+import is.idega.idegaweb.campus.block.building.data.*;
+import is.idega.idegaweb.campus.data.*;
+import is.idega.idegaweb.campus.presentation.*;
+import java.sql.*;
+import java.util.*;
 
 /**
  * @author  <a href="mailto:aron@idega.is">aron@idega.is
@@ -90,6 +57,7 @@ public class CampusAllocator extends Block implements Campus {
 	protected int fontSize = 2;
 	protected boolean fontBold = false;
 	protected String styleAttribute = "font-size: 8pt";
+  private ContractService service = null;
 
 	public String getLocalizedNameKey() {
 		return "allocator";
@@ -117,9 +85,7 @@ public class CampusAllocator extends Block implements Campus {
 		monthOverlap = overlap;
 	}
 
-	protected void control(IWContext iwc) {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+	protected void control(IWContext iwc)throws java.rmi.RemoteException {
 		fontSize = 1;
 /*		if (iwc.getParameter("list") != null) {
 		}*/
@@ -607,7 +573,7 @@ public class CampusAllocator extends Block implements Campus {
 		return MO;
 	}
 
-	private PresentationObject getApartmentsForm(int aprtTypeId, int cmplxId, int applicant_id, int contract_id) {
+	private PresentationObject getApartmentsForm(int aprtTypeId, int cmplxId, int applicant_id, int contract_id) throws java.rmi.RemoteException{
 		Form myForm = new Form();
 		ApartmentType AT = BuildingCacher.getApartmentType(aprtTypeId);
 		Complex CX = BuildingCacher.getComplex(cmplxId);
@@ -635,7 +601,7 @@ public class CampusAllocator extends Block implements Campus {
 		return myForm;
 	}
 
-	private PresentationObject getContractsForm(int apartmentId, int applicant_id, int contract_id, IWTimestamp from) {
+	private PresentationObject getContractsForm(int apartmentId, int applicant_id, int contract_id, IWTimestamp from) throws java.rmi.RemoteException{
 		Apartment A = BuildingCacher.getApartment(apartmentId);
 		Contract C = ContractFinder.getContract(contract_id);
 		ApartmentTypePeriods ATP = getPeriod(A.getApartmentTypeId());
@@ -652,7 +618,7 @@ public class CampusAllocator extends Block implements Campus {
 		return myForm;
 	}
 
-	private PresentationObject getApartmentContracts(int iApartmentId) {
+	private PresentationObject getApartmentContracts(int iApartmentId) throws java.rmi.RemoteException{
 		/** @todo try to use jdbc cursors in sql queries */
 		int iCount = Integer.parseInt(iwb.getProperty(CampusProperties.PROP_ALLOC_APRT_CON_COUNT, "10"));
 		DataTable T = new DataTable();
@@ -786,7 +752,7 @@ public class CampusAllocator extends Block implements Campus {
 		return T;
 	}
 
-	private PresentationObject getContractMakingTable(Contract C, ApartmentTypePeriods ATP, int applicant_id, IWTimestamp from, int iApartmentId) {
+	private PresentationObject getContractMakingTable(Contract C, ApartmentTypePeriods ATP, int applicant_id, IWTimestamp from, int iApartmentId) throws java.rmi.RemoteException{
 		DataTable T = new DataTable();
 		if (iApartmentId > 0) {
 			Apartment A = BuildingCacher.getApartment(iApartmentId);
@@ -814,7 +780,7 @@ public class CampusAllocator extends Block implements Campus {
 		else if (ATP != null) {
 			// Period checking
 			//System.err.println("ATP exists");
-			IWTimestamp[] stamps = ContractBusiness.getContractStampsFromPeriod(ATP, monthOverlap);
+			IWTimestamp[] stamps = service.getContractStampsFromPeriod(ATP, monthOverlap);
 			contractDateTo = stamps[1];
 			contractDateFrom = stamps[0];
 
@@ -914,7 +880,7 @@ public class CampusAllocator extends Block implements Campus {
 		return myForm;
 	}
 
-	private String saveAllocation(IWContext iwc) {
+	private String saveAllocation(IWContext iwc)throws java.rmi.RemoteException {
 		String returner = iwrb.getLocalizedString("allocation_failure", "Allocation failure");
 		String sContractId = iwc.getParameter("contract_id");
 		String sApartmentId = iwc.getParameter("apartmentid");
@@ -938,81 +904,71 @@ public class CampusAllocator extends Block implements Campus {
 				System.err.println("Sorry contracts overlap");
 				return returner;
 			}
-			if (sApplicantId != null ){
-        if( sApartmentId != null) {
-          int iApartmentId = Integer.parseInt(sApartmentId);
-          int iApplicantId = Integer.parseInt(sApplicantId);
+			if (sApplicantId != null && sApartmentId != null) {
+				int iApartmentId = Integer.parseInt(sApartmentId);
+				int iApplicantId = Integer.parseInt(sApplicantId);
 
-          Applicant eApplicant = null;
-          try {
-            eApplicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(iApplicantId);
-          }
-          catch (SQLException ex) {
-            ex.printStackTrace();
-          }
+				Applicant eApplicant = null;
+				try {
+					eApplicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(iApplicantId);
+				}
+				catch (SQLException ex) {
+					ex.printStackTrace();
+				}
 
-          List L = ContractFinder.listOfApplicantContracts(iApplicantId, ContractBMPBean.statusCreated);
+				List L = ContractFinder.listOfApplicantContracts(iApplicantId, ContractBMPBean.statusCreated);
 
-          if (L.isEmpty() && eApplicant != null) {
-            User eUser = makeNewUser(eApplicant);
-            if (eUser != null) {
-              if (makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to))
-                returner = iwrb.getLocalizedString("alloc_was_saved", "Contract was saved");
-              else
-                returner = iwrb.getLocalizedString("alloc_not_saved", "Contract was not saved");
-            }
-            else
-              returner = iwrb.getLocalizedString("no_user", "No user was made");
-          }
-          else
-            returner = iwrb.getLocalizedString("has_contracts_or_no_applicant", "Has contracts or no applicant");
-        }
-        else if (sContractId != null) {
+				if (L.isEmpty() && eApplicant != null) {
+					User eUser = makeNewUser(eApplicant);
+					if (eUser != null) {
+						if (makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to))
+							returner = iwrb.getLocalizedString("alloc_was_saved", "Contract was saved");
+						else
+							returner = iwrb.getLocalizedString("alloc_not_saved", "Contract was not saved");
+					}
+					else
+						returner = iwrb.getLocalizedString("no_user", "No user was made");
+				}
+				else
+					returner = iwrb.getLocalizedString("has_contracts_or_no_applicant", "Has contracts or no applicant");
+			}
+			else if (sContractId != null) {
 
-          int iContractId = Integer.parseInt(sContractId);
-          Contract eContract = null;
-          try {
-            eContract = ((ContractHome) IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
-            eContract.setValidFrom(from.getSQLDate());
-            eContract.setValidTo(to.getSQLDate());
-            if (sApartmentId != null) {
-              int iApartmentId = Integer.parseInt(sApartmentId);
-              eContract.setApartmentId(iApartmentId);
-            }
-            eContract.update();
-            returner = iwrb.getLocalizedString("alloc_was_updated", "Contract updated");
-          }
-          catch (SQLException ex) {
-            ex.printStackTrace();
-          }
-
-        }
-        else
-            System.err.println("no Apartment id");
-
-      }
-      else
-        System.err.println("no Applicant id");
+				int iContractId = Integer.parseInt(sContractId);
+				Contract eContract = null;
+				try {
+					eContract = ((ContractHome) IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+					eContract.setValidFrom(from.getSQLDate());
+					eContract.setValidTo(to.getSQLDate());
+					if (sApartmentId != null) {
+						int iApartmentId = Integer.parseInt(sApartmentId);
+						eContract.setApartmentId(iApartmentId);
+					}
+					eContract.update();
+					returner = iwrb.getLocalizedString("alloc_was_updated", "Contract updated");
+				}
+				catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
-    else
-      System.err.println("no from or to provided");
 
 		return returner;
 	}
 
-	private boolean deleteAllocation(IWContext iwc) {
+	private boolean deleteAllocation(IWContext iwc)throws java.rmi.RemoteException {
 		String sContractId = iwc.getParameter("contract_id");
 		int iContractId = Integer.parseInt(sContractId);
-		return ContractBusiness.deleteAllocation(iContractId);
+		return service.deleteAllocation(iContractId);
 	}
 
-	private User makeNewUser(Applicant A) {
+	private User makeNewUser(Applicant A) throws java.rmi.RemoteException{
 		String[] emails = CampusApplicationFinder.getApplicantEmail(A.getID());
-		return ContractBusiness.makeNewUser(A, emails);
+		return service.makeNewUser(A, emails);
 	}
 
-	private boolean makeNewContract(IWContext iwc, User eUser, Applicant eApplicant, int iApartmentId, IWTimestamp from, IWTimestamp to) {
-		return ContractBusiness.makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to);
+	private boolean makeNewContract(IWContext iwc, User eUser, Applicant eApplicant, int iApartmentId, IWTimestamp from, IWTimestamp to) throws java.rmi.RemoteException{
+		return service.makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to);
 	}
 
 	private java.sql.Date getValidToDate(SystemProperties SysProps) {
@@ -1078,8 +1034,8 @@ public class CampusAllocator extends Block implements Campus {
 		return sb.toString();
 	}
 
-	private String getStatus(String status) {
-		return ContractBusiness.getLocalizedStatus(iwrb, status);
+	private String getStatus(String status) throws java.rmi.RemoteException{
+		return service.getLocalizedStatus(iwrb, status);
 	}
 
 	public Text formatText(String s) {
@@ -1102,7 +1058,14 @@ public class CampusAllocator extends Block implements Campus {
 		O.setAttribute("style", this.styleAttribute);
 	}
 
-	public void main(IWContext iwc) {
+  public ContractService getContractService(IWContext iwc)throws java.rmi.RemoteException{
+    return (ContractService) IBOLookup.getServiceInstance(iwc,ContractService.class);
+  }
+
+	public void main(IWContext iwc)throws java.rmi.RemoteException {
+    iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
+    service = getContractService(iwc);
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
 		this.debugParameters(iwc);
 		isAdmin = iwc.hasEditPermission(this);
