@@ -10,4 +10,6 @@ package com.idega.jmodule.object;
  */
 
 public interface IWTab {
+
+
 }

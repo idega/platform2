@@ -47,18 +47,18 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
 
     private IWTabbedPaneUI ui;
 
+    public IWTabbedPane(){
+      this(TOP);
+    }
 
-//    private IWTabbedPane() {
-//        this(TOP);
-//    }
-
-    private IWTabbedPane(int tabPlacement) {
+    public IWTabbedPane(int tabPlacement) {
         setTabPlacement(tabPlacement);
         pages = new Vector(1);
         setModel(new DefaultSingleSelectionModel());
         this.mainForm = new Form();
+        super.add(mainForm);
         updateUI();
-        this.objectFrame = getUI().getFrame();
+//        this.objectFrame = getUI().getFrame();
         this.mainForm.add(objectFrame);
     }
 
@@ -76,6 +76,21 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
     public static IWTabbedPane getInstance(String key, ModuleInfo modinfo){
       return getInstance(key, modinfo, TOP);
     }
+
+
+//    public void addOKButton(){
+//      ui.getFrame().addOKButton();
+//    }
+//
+//    public void addCancelButton(){
+//      ui.getFrame().addCancelButton();
+//    }
+//
+//    public void addApplyButton(){
+//      ui.getFrame().addApplyButton();
+//    }
+//
+//
 
 
     public IWTabbedPaneUI getUI() {
@@ -150,7 +165,6 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
         }
 
         firePropertyChange("model", oldModel, model);
-//        repaint();
     }
 
     /**
@@ -175,8 +189,6 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
             int oldValue = this.tabPlacement;
             this.tabPlacement = tabPlacement;
             firePropertyChange("tabPlacement", oldValue, tabPlacement);
-//            revalidate();
-//            repaint();
         }
     }
 
@@ -201,19 +213,10 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
 
         if ((oldIndex >= 0) && (oldIndex != index)) {
             Page oldPage = (Page) pages.elementAt(oldIndex);
-//            if (accessibleContext != null) {
-//                accessibleContext.firePropertyChange(
-//                        AccessibleContext.ACCESSIBLE_STATE_PROPERTY,
-//                        AccessibleState.SELECTED, null);
-//            }
         }
         if ((index >= 0) && (oldIndex != index)) {
             Page newPage = (Page) pages.elementAt(index);
-//            if (accessibleContext != null) {
-//                accessibleContext.firePropertyChange(
-//                        AccessibleContext.ACCESSIBLE_STATE_PROPERTY,
-//                        null, AccessibleState.SELECTED);
-//            }
+
         }
     }
 
@@ -249,8 +252,6 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
 
         pages.insertElementAt(new Page(this, title != null? title : " --- ", moduleobject, tip), index);
         if (moduleobject != null) {
-//            moduleobject.setVisible(false);
-//            addImpl(moduleobject, null, -1);
         }
 
         if (pages.size() == 1) {
@@ -353,23 +354,11 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
     public String getTitleAt(int index) {
         return ((Page)pages.elementAt(index)).title;
     }
-
+/*
     public String getToolTipTextAt(int index) {
         return ((Page)pages.elementAt(index)).tip;
     }
-
-//    public IWColor getBackgroundAt(int index) {
-//        return ((Page)pages.elementAt(index)).getBackground();
-//    }
-//
-//    public IWColor getForegroundAt(int index) {
-//        return ((Page)pages.elementAt(index)).getForeground();
-//    }
-//
-//    public boolean isEnabledAt(int index) {
-//        return ((Page)pages.elementAt(index)).isEnabled();
-//    }
-
+*/
     public ModuleObject getComponentAt(int index) {
         return ((Page)pages.elementAt(index)).moduleobject;
     }
@@ -381,63 +370,15 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
         String oldTitle =((Page)pages.elementAt(index)).title;
         ((Page)pages.elementAt(index)).title = title;
 
-//        if ((oldTitle != title) && (accessibleContext != null)) {
-//            accessibleContext.firePropertyChange(
-//                    AccessibleContext.ACCESSIBLE_VISIBLE_DATA_PROPERTY,
-//                    oldTitle, title);
-//        }
         if (title == null || oldTitle == null ||!title.equals(oldTitle)) {
-//            revalidate();
-//            repaint();
+
         }
     }
 
-
+/*
     public void setToolTipTextAt(int index, String toolTipText) {
         String oldToolTipText =((Page)pages.elementAt(index)).tip;
         ((Page)pages.elementAt(index)).tip = toolTipText;
-
-//        if ((oldToolTipText != toolTipText) && (accessibleContext != null)) {
-//            accessibleContext.firePropertyChange(
-//                    AccessibleContext.ACCESSIBLE_VISIBLE_DATA_PROPERTY,
-//                    oldToolTipText, toolTipText);
-//        }
-//        if (!haveRegistered && toolTipText != null) {
-//            ToolTipManager.sharedInstance().registerComponent(this);
-//            haveRegistered = true;
-//        }
-    }
-/*
-//    public void setBackgroundAt(int index, IWColor background) {
-//        IWColor oldBg = ((Page)pages.elementAt(index)).background;
-        ((Page)pages.elementAt(index)).setBackground(background);
-//        if (background == null || oldBg == null ||
-//            !background.equals(oldBg)) {
-            Rectangle tabBounds = getBoundsAt(index);
-            if (tabBounds != null) {
-                repaint(tabBounds);
-            }
-//        }
-//    }
-//
-//    public void setForegroundAt(int index, IWColor foreground) {
-//        IWColor oldFg = ((Page)pages.elementAt(index)).foreground;
-//        ((Page)pages.elementAt(index)).setForeground(foreground);
-//        if (foreground == null || oldFg == null ||
-//            !foreground.equals(oldFg)) {
-            Rectangle tabBounds = getBoundsAt(index);
-//            if (tabBounds != null) {
-                repaint(tabBounds);
-//            }
-//        }
-//    }
-
-    public void setEnabledAt(int index, boolean enabled) {
-        boolean oldEnabled = ((Page)pages.elementAt(index)).isEnabled();
-        ((Page)pages.elementAt(index)).setEnabled(enabled);
-        if (enabled != oldEnabled) {
-            repaint(getBoundsAt(index));
-        }
     }
 */
     public int indexOfTab(String title) {
@@ -460,117 +401,39 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
         return -1;
     }
 
-    /*
-    protected String paramString() {
-        String tabPlacementString;
-        if (tabPlacement == TOP) {
-            tabPlacementString = "TOP";
-        } else if (tabPlacement == BOTTOM) {
-            tabPlacementString = "BOTTOM";
-        } else if (tabPlacement == LEFT) {
-            tabPlacementString = "LEFT";
-        } else if (tabPlacement == RIGHT) {
-            tabPlacementString = "RIGHT";
-        } else tabPlacementString = "";
-        String haveRegisteredString = (haveRegistered ?
-				       "true" : "false");
-
-	return super.paramString() +
-        ",haveRegistered=" + haveRegisteredString +
-        ",tabPlacement=" + tabPlacementString;
-    }
-*/
-
-
 
 
     private class Page{
       String title;
-      IWColor background;
-      IWColor foreground;
-      Icon icon;
-      Icon disabledIcon;
       IWTabbedPane parent;
       ModuleObject moduleobject;
-      String tip;
-      boolean enabled = true;
       boolean needsUIUpdate;
 
 
-
-//      Page(IWTabbedPane parent, String title, Icon icon, Icon disabledIcon, ModuleObject moduleobject, String tip) {
-//        this.title = title;
-//        this.icon = icon;
-//        this.disabledIcon = disabledIcon;
-//        this.parent = parent;
-//        this.moduleobject = moduleobject;
-//        this.tip = tip;
-//
-//      }
-
       Page(IWTabbedPane parent, String title,ModuleObject moduleobject, String tip) {
         this.title = title;
-        this.parent = parent;
         this.moduleobject = moduleobject;
-        this.tip = tip;
 
       }
 
 
 
-//      public Locale getLocale() {
-//          return parent.getLocale();
-//      }
-//
-//
-//      public IWColor getBackground() {
-//          return background != null? background : parent.getBackground();
-//      }
-//
-//      public void setBackground(IWColor c) {
-//          background = c;
-//      }
-//
-//      public IWColor getForeground() {
-//          return foreground != null? foreground : parent.getForeground();
-//      }
-//
-//      public void setForeground(IWColor c) {
-//          foreground = c;
-//      }
 
 
-//        public Font getFont() {
-//            return parent.getFont();
-//        }
-//
-//        public void setFont(Font f) {
-//            parent.setFont(f);
-//        }
-
-
-//      public boolean isEnabled() {
-//          return enabled;
-//      }
-//
-//      public void setEnabled(boolean b) {
-//          enabled = b;
-//      }
-
-//      public boolean isVisible() {
-//          return parent.isVisible();
-//      }
-//
-//      public void setVisible(boolean b) {
-//          parent.setVisible(b);
-//      }
-//
-//      public boolean isShowing() {
-//          return parent.isShowing();
-//      }
 
 
   } // InnerClass Page
+
+
+
+  public void main(ModuleInfo modinfo) throws Exception {
+
+
+
+  }
+
+
+
 
 }   // Class IWTabbedPane
 
@@ -588,6 +451,6 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
  * adda í Tabpresentationhlutinn um leið og hlut er addað í TabbedPane.  Veldur vandræðum
  * ef að skipta á um UI því þá þarf að adda öllu í TabPresentation aftur.
  *
- *
+ *@todo stroka út setBorder í Table
  *
  */
