@@ -17,6 +17,8 @@ import com.idega.user.data.User;
 public class CashierSubWindowTemplate extends Block {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 	
+	protected static final String ERROR_COULD_NOT_SAVE = "isi_acc_could_not_save";
+	
 	protected Group _club = null;
 	protected Group _division = null;
 	protected User _user = null;

@@ -363,6 +363,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			if (end != null)
 				round.setEndTime(end);
 			round.setIncludeChildren(includeChildren);
+			round.setPaymentDate(paymentDate);
+//			round.set
 
 			round.store();
 		}

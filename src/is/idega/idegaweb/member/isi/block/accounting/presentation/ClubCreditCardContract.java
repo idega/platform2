@@ -38,7 +38,6 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "etl_submit";
 	protected static final String ACTION_DELETE = "etl_delete";
 
-	//	protected static final String LABEL_CLUB = "isi_acc_cccc_club";
 	protected static final String LABEL_DIVISION = "isi_acc_cccc_division";
 	protected static final String LABEL_CONTRACT_NUMBER = "isi_acc_cccc_cont_nr";
 	protected static final String LABEL_CARD_TYPE = "isi_acc_cccc_card_type";
@@ -93,8 +92,6 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		inputTable.setCellpadding(5);
 
 		int row = 1;
-		//		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
-		//		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
 		labelDivision.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelContractNumber = new Text(iwrb.getLocalizedString(LABEL_CONTRACT_NUMBER, "Contract number"));
@@ -102,7 +99,6 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		Text labelCardType = new Text(iwrb.getLocalizedString(LABEL_CARD_TYPE, "Card type"));
 		labelCardType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-		//		inputTable.add(labelClub, 1, row);
 		inputTable.add(labelDivision, 1, row);
 		inputTable.add(labelContractNumber, 2, row);
 		inputTable.add(labelCardType, 3, row++);
@@ -138,14 +134,12 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		}
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 
-		//		inputTable.add(getClub().getName(), 1, row);
 		inputTable.add(divInput, 1, row);
 		inputTable.add(numberInput, 2, row);
 		inputTable.add(typeInput, 3, row);
 		inputTable.add(submit, 4, row);
 
 		row = 1;
-		//		t.add(labelClub, 2, row);
 		t.add(labelDivision, 2, row);
 		t.add(labelContractNumber, 3, row);
 		t.add(labelCardType, 4, row++);
@@ -156,10 +150,11 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 				CreditCardContract cont = (CreditCardContract) it.next();
 				CheckBox delete = new CheckBox(LABEL_DELETE, cont.getPrimaryKey().toString());
 				t.add(delete, 1, row);
-				//				t.add(getClub().getName(),2,row);
 				Group div = cont.getDivision();
 				if (div != null)
 					t.add(div.getName(), 2, row);
+				else
+					t.add(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"), 2, row);
 				t.add(cont.getContractNumber(), 3, row);
 				t.add(cont.getCardType().getName(), 4, row++);
 			}

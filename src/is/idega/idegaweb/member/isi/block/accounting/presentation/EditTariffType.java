@@ -35,10 +35,9 @@ public class EditTariffType extends CashierSubWindowTemplate {
 	
 //	protected static final String LABEL_CLUB = "isi_acc_ett_club";
 	protected static final String LABEL_NAME = "isi_acc_ett_name";
+	protected static final String LABEL_LIST_NAMES = "isi_acc_ett_list_names";
 	protected static final String LABEL_DELETE = "isi_acc_ett_delete";
-	
-	protected static final String ERROR_COULD_NOT_SAVE = "isi_acc_ett_could_not_save";
-	
+		
 	/**
 	 *  
 	 */
@@ -91,17 +90,16 @@ public class EditTariffType extends CashierSubWindowTemplate {
 			deleteTariffType(iwc);
 		}
 
-
 		Table t = new Table();
 		Table inputTable = new Table();
 		t.setCellpadding(5);
 		inputTable.setCellpadding(5);
 
 		int row = 1;
-//		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
-//		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelName = new Text(iwrb.getLocalizedString(LABEL_NAME, "Name"));
 		labelName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelListName = new Text(iwrb.getLocalizedString(LABEL_LIST_NAMES, "Names"));
+		labelListName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		
 		inputTable.add(labelName, 1, row++);
 		
@@ -112,9 +110,8 @@ public class EditTariffType extends CashierSubWindowTemplate {
 		inputTable.add(submit, 2, row);
 		
 		row = 1;
-//		t.add(labelClub, 2, row);
-		t.add(labelName, 2, row++);
-
+		t.add(labelListName, 2, row++);
+		
 		Collection col = null;
 		try {
 			if (getClub() != null) {
@@ -131,8 +128,6 @@ public class EditTariffType extends CashierSubWindowTemplate {
 				ClubTariffType type = (ClubTariffType) it.next();
 				CheckBox delete = new CheckBox(LABEL_DELETE, type.getPrimaryKey().toString());
 				t.add(delete, 1, row);
-//				if (type.getClub() != null)
-//					t.add(type.getClub().getName(), 2, row);
 				t.add(type.getName(), 2, row);
 				row++;
 			}

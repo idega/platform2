@@ -42,7 +42,6 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "etl_submit";
 	protected static final String ACTION_DELETE = "etl_delete";
 
-	//	protected static final String LABEL_CLUB = "isi_acc_etl_club";
 	protected static final String LABEL_DIVISION = "isi_acc_etl_div";
 	protected static final String LABEL_GROUP = "isi_acc_etl_group";
 	protected static final String LABEL_TARIFF_TYPE = "isi_acc_etl_tariff_type";
@@ -237,8 +236,14 @@ public class EditTariffList extends CashierSubWindowTemplate {
 				
 				t.add(nf.format(tariff.getAmount()), 6, row);
 				t.setAlignment(6, row, "RIGHT");
-				t.add(tariff.getPeriodFrom().toString(), 7, row);
-				t.add(tariff.getPeriodTo().toString(), 8, row++);
+				if (tariff.getPeriodFrom() != null) {
+					IWTimestamp p = new IWTimestamp(tariff.getPeriodFrom());
+					t.add(p.getDateString("dd.MM.yyyy"), 7, row);
+				}
+				if (tariff.getPeriodTo() != null) {
+					IWTimestamp p = new IWTimestamp(tariff.getPeriodTo());
+					t.add(p.getDateString("dd.MM.yyyy"), 8, row++);
+				}
 			}
 
 			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
