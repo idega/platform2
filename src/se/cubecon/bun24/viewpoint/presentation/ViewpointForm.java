@@ -24,10 +24,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/29 12:17:48 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/29 13:19:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -331,76 +331,47 @@ public class ViewpointForm extends CommuneBlock {
         } else if (isCurrentUserHandler && !viewpoint.isAnswered ()) {
             showAnswerForm (iwc);
         } else if (isCurrentUserOriginator || isCurrentUserHandler) {
+            final Table table = createViewpointTable (viewpoint, iwc);
+            int row = 5;
+		table.add(getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
+		table.add(new Break(), 1, row);
+		table.add("apa", 1, row++);
+
+            if (viewpoint.isAnswered ()) {
+                table.add (getLocalizedSmallHeader (ANSWER_KEY, ANSWER_DEFAULT),
+                           1, row);
+                table.add (new Break (), 1, row);
+                table.add (new Text (viewpoint.getAnswer ()), 1, row++);
+            } else {
+                table.add (new Text ("not answered"), 1, row++);
+            }                
+            table.add(getUserHomePageLink(iwc), 1, row++);
             add (createViewpointTable (viewpoint, iwc));
+            
         } else {
             add (getLocalizedHeader (NOTAUTHORIZEDTOSHOWVIEWPOINT_KEY,
                                      NOTAUTHORIZEDTOSHOWVIEWPOINT_DEFAULT));
         }
     }
 
-	private void showAcceptForm(final IWContext iwc) throws RemoteException, FinderException {
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
-		final int viewpointId = Integer.parseInt(iwc.getParameter(PARAM_VIEWPOINT_ID));
-		final Viewpoint viewpoint = viewpointBusiness.findViewpoint(viewpointId);
-        /*
-		final UserBusiness userBusiness = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-		final User user = userBusiness.getUser(viewpoint.getUserId());
-        */
+	private void showAcceptForm(final IWContext iwc) throws RemoteException,
+                                                            FinderException {
+		final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
+		final int viewpointId
+                = Integer.parseInt (iwc.getParameter (PARAM_VIEWPOINT_ID));
+		final Viewpoint viewpoint
+                = viewpointBusiness.findViewpoint (viewpointId);
 		final Form form = new Form();
-		form.add(new HiddenInput(PARAM_ACTION, ACCEPTTOHANDLEVIEWPOINT_ACTION + ""));
-		form.add(new HiddenInput(PARAM_VIEWPOINT_ID, viewpointId + ""));
-
-        /*
-		final Table table = new Table();
-		table.setWidth(getWidth());
-		table.setCellspacing(0);
-		table.setCellpadding(getCellpadding());
-		int row = 1;
-
-		table.add(getLocalizedSmallHeader(APPLIES_KEY, APPLIES_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getCategory()), 1, row++);
-		table.add(getLocalizedSmallHeader(FROMCITIZEN_KEY, FROMCITIZEN_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(user.getName()), 1, row++);
-		table.add(getLocalizedSmallHeader(SUBJECT_KEY, SUBJECT_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getSubject()), 1, row++);
-		table.add(getLocalizedSmallHeader(MESSAGE_KEY, MESSAGE_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getMessage()), 1, row++);
-        */
+        addHiddenActionParameterToForm (form, ACCEPTTOHANDLEVIEWPOINT_ACTION);
+		form.add(new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
         final Table table = createViewpointTable (viewpoint, iwc);
-		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(getLocalizedString(IACCEPTTOHANDLETHISVIEWPOINT_KEY, IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT)));
+		final SubmitButton submit
+                = getSubmitButton (IACCEPTTOHANDLETHISVIEWPOINT_KEY,
+                                   IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT);
 		table.add(submit, 1, 5);
 		form.add(table);
 		add(form);
 	}
-
-    private Table createViewpointTable
-        (final Viewpoint viewpoint, final IWContext iwc) throws RemoteException{
-		final Table table = new Table();
-		table.setWidth(getWidth());
-		table.setCellspacing(0);
-		table.setCellpadding(getCellpadding());
-		int row = 1;
-
-		table.add(getLocalizedSmallHeader(APPLIES_KEY, APPLIES_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getCategory()), 1, row++);
-		table.add(getLocalizedSmallHeader(FROMCITIZEN_KEY, FROMCITIZEN_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		final UserBusiness userBusiness = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-		final User user = userBusiness.getUser(viewpoint.getUserId());
-		table.add(new Text(user.getName ()), 1, row++);
-		table.add(getLocalizedSmallHeader(SUBJECT_KEY, SUBJECT_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getSubject()), 1, row++);
-		table.add(getLocalizedSmallHeader(MESSAGE_KEY, MESSAGE_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getMessage()), 1, row++);
-        return table;
-    }
 
 	private void acceptToHandleViewpoint(final IWContext iwc) throws RemoteException, FinderException {
 		// 1. parse input
@@ -424,43 +395,22 @@ public class ViewpointForm extends CommuneBlock {
 		add(table);
 	}
 
-	private void showAnswerForm(final IWContext iwc) throws RemoteException, FinderException {
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
-		final int viewpointId = Integer.parseInt(iwc.getParameter(PARAM_VIEWPOINT_ID));
-		final Viewpoint viewpoint = viewpointBusiness.findViewpoint(viewpointId);
-        /*
-		final UserBusiness userBusiness = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-		final User user = userBusiness.getUser(viewpoint.getUserId());
-*/
+	private void showAnswerForm(final IWContext iwc) throws RemoteException,
+                                                            FinderException {
+		final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
+		final int viewpointId
+                = Integer.parseInt (iwc.getParameter (PARAM_VIEWPOINT_ID));
+		final Viewpoint viewpoint
+                = viewpointBusiness.findViewpoint (viewpointId);
 		final Form form = new Form();
-		form.add(new HiddenInput(PARAM_ACTION, ANSWERVIEWPOINT_ACTION + ""));
-		form.add(new HiddenInput(PARAM_VIEWPOINT_ID, viewpointId + ""));
-		final TextArea textArea = new TextArea(PARAM_ANSWER);
-		textArea.setColumns(40);
-		textArea.setRows(10);
-		SubmitButton submit = new SubmitButton(getLocalizedString(SENDANSWERTOCITIZEN_KEY, SENDANSWERTOCITIZEN_DEFAULT));
-		submit.setAsImageButton(true);
-
-        /*
-		final Table table = new Table(1, 10);
-		int row = 1;
-		table.setWidth(600);
-		table.setCellspacing(0);
-		table.setCellpadding(14);
-		table.setColor(getBackgroundColor());
-		table.add(getLocalizedHeader(APPLIES_KEY, APPLIES_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getCategory()), 1, row++);
-		table.add(getLocalizedHeader(FROMCITIZEN_KEY, FROMCITIZEN_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(user.getName()), 1, row++);
-		table.add(getLocalizedHeader(SUBJECT_KEY, SUBJECT_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getSubject()), 1, row++);
-		table.add(getLocalizedHeader(MESSAGE_KEY, MESSAGE_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(new Text(viewpoint.getMessage()), 1, row++);
-        */
+        addHiddenActionParameterToForm (form, ANSWERVIEWPOINT_ACTION);
+		form.add(new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
+		final TextArea textArea = new TextArea (PARAM_ANSWER);
+		textArea.setColumns (40);
+		textArea.setRows (10);
+        final SubmitButton submit
+                = getSubmitButton (SENDANSWERTOCITIZEN_KEY,
+                                   SENDANSWERTOCITIZEN_DEFAULT);
         final Table table = createViewpointTable (viewpoint, iwc);
         int row = 5;
 		table.add(getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
@@ -535,6 +485,35 @@ public class ViewpointForm extends CommuneBlock {
         final String name
                 = getResourceBundle().getLocalizedString (key, defaultName);
 		return (SubmitButton) getButton (new SubmitButton (name));
+    }
+
+    private Table createViewpointTable
+        (final Viewpoint viewpoint, final IWContext iwc) throws RemoteException{
+		final Table table = new Table();
+		table.setWidth (getWidth ());
+		table.setCellspacing (0);
+		table.setCellpadding (getCellpadding ());
+		int row = 1;
+		table.add (getLocalizedSmallHeader (APPLIES_KEY, APPLIES_DEFAULT), 1,
+                   row);
+		table.add (new Break (), 1, row);
+		table.add (new Text (viewpoint.getCategory ()), 1, row++);
+		table.add (getLocalizedSmallHeader (FROMCITIZEN_KEY,
+                                            FROMCITIZEN_DEFAULT), 1, row);
+		table.add (new Break (), 1, row);
+		final UserBusiness userBusiness = (UserBusiness) IBOLookup
+                .getServiceInstance (iwc, UserBusiness.class);
+		final User user = userBusiness.getUser (viewpoint.getUserId ());
+		table.add (new Text (user.getName  ()), 1, row++);
+		table.add (getLocalizedSmallHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1,
+                   row);
+		table.add (new Break (), 1, row);
+		table.add (new Text (viewpoint.getSubject ()), 1, row++);
+		table.add (getLocalizedSmallHeader (MESSAGE_KEY, MESSAGE_DEFAULT), 1,
+                   row);
+		table.add (new Break (), 1, row);
+		table.add (new Text (viewpoint.getMessage ()), 1, row++);
+        return table;
     }
 
 	private Link getUserHomePageLink (final IWContext iwc)
