@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.70 2004/07/12 11:52:23 aron Exp $
+ * $Id: CampusAllocator.java,v 1.71 2004/07/12 12:55:47 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -606,6 +606,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		L.addParameter(TYPE_ID,typeID.toString());
 		L.addParameter("change", contractID.toString());
 		L.addParameter("applicant", waitingList.getApplicantId().toString());
+		L.addParameter("wl_id",waitingList.getPrimaryKey().toString());
 		L.setToolTip(localize("tooltip_alloc_change","Change"));
 		return L;
 	}
