@@ -290,7 +290,7 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 
     }catch(Exception e){
       e.printStackTrace();  
-      System.err.println("AddressInfoTab error initFieldContents, userId : " + getGroupId());
+      System.err.println("AddressInfoTab error initFieldContents, groupId : " + getGroupId());
     }
   }
 

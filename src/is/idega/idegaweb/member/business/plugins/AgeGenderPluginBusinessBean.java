@@ -85,7 +85,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   private int getGender(Group group) throws RemoteException, FinderException {
-    String genderIdString = (String) ((GenericEntity) group).getMetaData(GENDER_META_DATA_KEY);
+    String genderIdString = (String) group.getMetaData(GENDER_META_DATA_KEY);
     if (genderIdString == null || NULL.equals(genderIdString))
       // meta data was not set
       // return neuter
@@ -125,7 +125,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
   
   public int getLowerAgeLimit(Group group)  {
-    String lowerAgeLimitString = (String) ((GenericEntity) group).getMetaData(LOWER_AGE_LIMIT_META_DATA_KEY);
+    String lowerAgeLimitString = (String) group.getMetaData(LOWER_AGE_LIMIT_META_DATA_KEY);
     if (lowerAgeLimitString == null || NULL.equals(lowerAgeLimitString))
       return LOWER_AGE_LIMIT_DEFAULT;
     else
@@ -141,7 +141,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }
  
   public int getUpperAgeLimit(Group group)  {
-    String upperAgeLimitString = (String) ((GenericEntity) group).getMetaData(UPPER_AGE_LIMIT_META_DATA_KEY);
+    String upperAgeLimitString = (String) group.getMetaData(UPPER_AGE_LIMIT_META_DATA_KEY);
     if (upperAgeLimitString == null || NULL.equals(upperAgeLimitString))
       return UPPER_AGE_LIMIT_DEFAULT;
     else
