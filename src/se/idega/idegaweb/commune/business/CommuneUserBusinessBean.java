@@ -155,6 +155,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			middleName = (middleName == null) ? "" : middleName;
 			lastName = (lastName == null) ? "" : lastName;
 			
+			if (firstName.equals("") && middleName.equals("") && user.getMiddleName() != null) {
+				middleName = user.getMiddleName();
+			}
+			
 			if (firstName.equals("") && user.getFirstName() != null) {
 				firstName = user.getFirstName();
 			}
