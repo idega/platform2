@@ -59,6 +59,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
     addManyToManyRelationShip(SchoolYear.class, SCHOOL_CLASS_YEAR);
 		addManyToManyRelationShip(User.class, SCHOOL_CLASS_TEACHER);
 		addManyToManyRelationShip(SchoolClassMember.class, "sch_sub_group_placements");
+		addManyToManyRelationShip(SchoolStudyPath.class, "sch_group_study_path");
  	}
 	
   public String getEntityName() {
@@ -429,6 +430,22 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 		super.idoRemoveFrom(teacher);
 	}
 	
+	public Collection findRelatedStudyPaths() throws com.idega.data.IDORelationshipException {
+		return super.idoGetRelatedEntities(SchoolStudyPath.class);
+	}
+	
+	public void addStudyPath(SchoolStudyPath studyPath) throws IDOAddRelationshipException {
+		super.idoAddTo(studyPath);
+	}
+	
+	public void removeStudyPath(SchoolStudyPath studyPath) throws IDORemoveRelationshipException {
+		super.idoRemoveFrom(studyPath);
+	}
+
+	public void removeStudyPaths() throws IDORemoveRelationshipException {
+		super.idoRemoveFrom(SchoolStudyPath.class);
+	}
+
 	/* (non-Javadoc)
 	 * @see javax.ejb.EJBLocalObject#remove()
 	 */

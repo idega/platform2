@@ -4,8 +4,10 @@ package com.idega.block.school.data;
 public interface SchoolClass extends com.idega.data.IDOEntity
 {
  public void addSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDOAddRelationshipException;
+ public void addStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws com.idega.data.IDOAddRelationshipException;
  public void addTeacher(com.idega.user.data.User p0)throws com.idega.data.IDOAddRelationshipException;
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
+ public java.util.Collection findRelatedStudyPaths()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedUsers()throws com.idega.data.IDORelationshipException;
  public boolean getIsSubGroup();
  public boolean getLocked();
@@ -27,6 +29,8 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public void removeFromSchoolYear()throws com.idega.data.IDORemoveRelationshipException;
  public void removeFromUser()throws com.idega.data.IDORemoveRelationshipException;
  public void removeSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDORemoveRelationshipException;
+ public void removeStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws com.idega.data.IDORemoveRelationshipException;
+ public void removeStudyPaths()throws com.idega.data.IDORemoveRelationshipException;
  public void removeTeacher(com.idega.user.data.User p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setIsSubGroup(boolean p0);
  public void setLocked(boolean p0);

@@ -62,13 +62,6 @@ public java.util.Collection findBySchoolAndInYear(int p0,int p1)throws javax.ejb
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeason(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findBySchoolAndSeason(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeason(p0,p1);
@@ -76,9 +69,9 @@ public java.util.Collection findBySchoolAndSeason(com.idega.block.school.data.Sc
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolAndSeasonAndInYear(int p0,int p1,int p2)throws javax.ejb.FinderException{
+public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndInYear(p0,p1,p2);
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeason(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -86,6 +79,13 @@ public java.util.Collection findBySchoolAndSeasonAndInYear(int p0,int p1,int p2)
 public java.util.Collection findBySchoolAndSeasonAndInYear(int p0,int p1,int p2,boolean p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndInYear(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchoolAndSeasonAndInYear(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndInYear(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -104,9 +104,9 @@ public java.util.Collection findBySchoolAndSeasonAndTeacher(com.idega.block.scho
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2)throws javax.ejb.FinderException{
+public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2,boolean p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndYear(p0,p1,p2);
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndYear(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -118,16 +118,9 @@ public java.util.Collection findBySchoolAndSeasonAndYear(com.idega.block.school.
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2,boolean p3)throws javax.ejb.FinderException{
+public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndYear(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findBySchoolAndSeasonAndYears(int p0,int p1,java.lang.String[] p2,boolean p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndYears(p0,p1,p2,p3);
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndYear(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -135,6 +128,13 @@ public java.util.Collection findBySchoolAndSeasonAndYears(int p0,int p1,java.lan
 public java.util.Collection findBySchoolAndSeasonAndYears(int p0,int p1,java.lang.String[] p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndYears(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchoolAndSeasonAndYears(int p0,int p1,java.lang.String[] p2,boolean p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndYears(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
