@@ -161,6 +161,9 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
         Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION,
                 "Division"));
         labelDivision.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP,
+        "Group"));
+        labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelContractNumber = new Text(iwrb.getLocalizedString(
                 LABEL_CONTRACT_NUMBER, "Contract number"));
         labelContractNumber.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -168,7 +171,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
                 "Card type"));
         labelCardType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-        inputTable.add(labelDivision, 1, row);
+        inputTable.add(labelDivision + " / " + labelGroup, 1, row);
         inputTable.add(labelContractNumber, 2, row);
         inputTable.add(labelCardType, 3, row++);
 
@@ -233,6 +236,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
         checkAll.setToCheckOnClick(LABEL_DELETE, "this.checked");
         t.add(checkAll, 1, row);
         t.add(labelDivision, 2, row);
+        t.add(labelGroup, 3, row);
         t.add(labelContractNumber, 4, row);
         t.add(labelCardType, 5, row++);
 

@@ -411,7 +411,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		if (group != null && !group.equals("-1")) {
 			try {
 				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-				grp = gHome.findByPrimaryKey(new Integer(division));
+				grp = gHome.findByPrimaryKey(new Integer(group));
 			}
 			catch (IDOLookupException e) {
 			}
