@@ -31,6 +31,8 @@ import com.idega.user.data.User;
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
 public class CreateUserInLedger extends StyledIWAdminWindow{
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	
 	
 	public static String NEW_USER_IN_LEDGER = "user_new_in_ledger_";
 	
@@ -170,6 +172,10 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 			close();
 		}
 	}
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 	public CalBusiness getCalendarBusiness(IWApplicationContext iwc) {
 		CalBusiness calBiz = null;
 		if (calBiz == null) {

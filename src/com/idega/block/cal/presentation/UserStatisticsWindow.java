@@ -11,6 +11,7 @@ import java.util.List;
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.AttendanceMark;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -24,6 +25,8 @@ import com.idega.user.data.User;
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
 public class UserStatisticsWindow extends StyledIWAdminWindow{
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	
 	
 	private Table table = null;
 	
@@ -42,6 +45,8 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		
 	}
 	public void lineUp(IWContext iwc, int ledID, Collection users) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
 		table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -50,7 +55,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		Collection marks = getCalendarBusiness(iwc).getAllMarks();
 		Collection practices = getCalendarBusiness(iwc).getEntriesByLedgerID(ledID);
 		
-		table.add("heildarfjöldi æfinga: " +  practices.size(),2,1);
+		table.add(iwrb.getLocalizedString("userStat.total_practices","Total practices")+ " "  +  practices.size(),2,1);
 		table.mergeCells(2,1,5,1);
 		
 		User user = null;
@@ -98,6 +103,10 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		lineUp(iwc,ledgerID.intValue(),usersInLedger);
 		add(table,iwc);
 	}
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 	public GroupBusiness getGroupBusiness(IWApplicationContext iwc) {
 		GroupBusiness groupBiz = null;
 		if (groupBiz == null) {

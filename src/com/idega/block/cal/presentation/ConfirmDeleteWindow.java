@@ -28,7 +28,8 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
   protected final static String PRM_CONFIRM = "iw_confirm";
   public final static String PRM_DELETE = "iw_delete";
   public final static String PRM_DELETE_ID = "iw_del_id";
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.calendar";
+  private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+  
   
   private CalBusiness calBiz;
 
@@ -38,9 +39,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     setHeight(135);
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+ 
 
   public void main(IWContext iwc){
       setTitle("Confirm delete");
@@ -64,6 +63,8 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
           ex.printStackTrace();
         }
         this.close();
+        this.setOnLoad("window.opener.parent.frames['iwb_main'].location.reload()");//
+        
       }
   }
 
@@ -77,7 +78,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
 
     f.maintainParameter(PRM_DELETE);
     f.maintainParameter(PRM_DELETE_ID);
-
+    
     f.add(t);
     t.setWidth("100%");
     t.setAlignment(1,1,IWConstants.CENTER_ALIGNMENT);
@@ -108,6 +109,10 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
 
     return f;
   }
+  public String getBundleIdentifier() {
+  	return IW_BUNDLE_IDENTIFIER;
+  }
+  
   public CalBusiness getCalendarBusiness(IWApplicationContext iwc) {
   	if (calBiz == null) {
   		try {

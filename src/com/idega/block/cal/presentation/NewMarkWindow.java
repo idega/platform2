@@ -23,6 +23,8 @@ import com.idega.presentation.ui.TextInput;
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
 public class NewMarkWindow extends StyledIWAdminWindow{
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	
 	
 	//parameter names
 	private static String markFieldParameterName = "mark";
@@ -109,6 +111,10 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		}
 		
 	}
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
 		CalBusiness calBiz = null;
 		if (calBiz == null) {

@@ -31,6 +31,9 @@ import com.idega.user.presentation.UserChooser;
  */
 public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	
+	
 	//parameter names
 	private static String coachFieldParameterName = "coach";
 	private static String otherCoachesFieldParameterName = "otherCoaches";
@@ -199,6 +202,10 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		}
 		
 	}
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 	
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
 		if (calBiz == null) {

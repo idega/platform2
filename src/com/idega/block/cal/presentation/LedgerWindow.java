@@ -48,6 +48,8 @@ import com.idega.user.presentation.UserPropertyWindow;
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
 public class LedgerWindow extends StyledIWAdminWindow{
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	
 	
 	public static final String SELECTED_USERS_KEY = "selected_users";
 	public static final String DELETE_USERS_KEY = "delete_selected_users";
@@ -146,6 +148,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	 *
 	 */
 	public void lineUp(IWContext iwc, List marks) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		mainTable = new Table();
 		mainTable.setWidth(288);
@@ -162,7 +165,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		mainTable.add(fromDateField,2,4);
 		
 		mainTable.mergeCells(3,1,3,4);
-		mainTable.add("Leyfileg tákn eru: ",3,1);
+		mainTable.add(iwrb.getLocalizedString("ledgerW.allowed_marks", "Allowed marks") + " " ,3,1);
 		mainTable.add("<br><br>",3,1);
 		Iterator markIter = marks.iterator();
 		while(markIter.hasNext()) {
@@ -486,6 +489,10 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		}//end if(save != null)			
 		add(form,iwc);
 	}
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 
 	/**
 	 * 

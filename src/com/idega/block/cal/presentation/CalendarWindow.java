@@ -17,6 +17,9 @@ import com.idega.presentation.Table;
  */
 public class CalendarWindow extends StyledIWAdminWindow{
 	
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	
+	
 	private Table table = null;
 	private String borderWhiteTableStyle = "borderAllWhite";
 	private String styledLink = "styledLink";
@@ -90,6 +93,10 @@ public class CalendarWindow extends StyledIWAdminWindow{
 		
 
 	}
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 	
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
 		if (calBiz == null) {

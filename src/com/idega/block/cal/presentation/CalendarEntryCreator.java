@@ -38,6 +38,9 @@ import com.idega.util.IWTimestamp;
  */
 public class CalendarEntryCreator extends Window{
 	
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	
+	
 	//parameter names
 	public static String entryIDParameterName ="entryID";
 	public static String headlineFieldParameterName = "headline";
@@ -244,9 +247,9 @@ public class CalendarEntryCreator extends Window{
 		
 		hiddenEntryID = new HiddenInput(entryIDParameterName,iwc.getParameter(entryIDParameterName));		
 		hiddenView = new HiddenInput(CalendarParameters.PARAMETER_VIEW,iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
-		hiddenYear =new HiddenInput(CalendarParameters.PARAMETER_YEAR,iwc.getParameter(CalendarParameters.PARAMETER_YEAR));
-		hiddenMonth = new HiddenInput(CalendarParameters.PARAMETER_MONTH,iwc.getParameter(CalendarParameters.PARAMETER_MONTH));
-		hiddenDay = new HiddenInput(CalendarParameters.PARAMETER_DAY,iwc.getParameter(CalendarParameters.PARAMETER_DAY));
+		hiddenYear =new HiddenInput(CalendarParameters.PARAMETER_YEAR,new Integer(stamp.getYear()).toString());//iwc.getParameter(CalendarParameters.PARAMETER_YEAR));
+		hiddenMonth = new HiddenInput(CalendarParameters.PARAMETER_MONTH,new Integer(stamp.getMonth()).toString());//iwc.getParameter(CalendarParameters.PARAMETER_MONTH));
+		hiddenDay = new HiddenInput(CalendarParameters.PARAMETER_DAY,new Integer(stamp.getDay()).toString());//iwc.getParameter(CalendarParameters.PARAMETER_DAY));
 		
 		
 		//if some entry is selected, data is printed in the fields
@@ -257,15 +260,13 @@ public class CalendarEntryCreator extends Window{
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryIDString);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
 			deleteLink.addParameter(CalendarView.ACTION,"");
-			deleteLink.setOnClick("window.reload()");
 			deleteLink.setAsImageTab(true,true);
-			
+						
 			
 			headlineField.setContent(entry.getName());
 			typeField.setSelectedElement(entry.getEntryType());
-			System.out.println("type: " + entry.getEntryType());
 			repeatField.setSelectedElement(entry.getRepeat());
-	
+			
 			Date dateF = new Date();
 			dateF.setDate(entry.getDate().getDay());
 			dateF.setMonth(entry.getDate().getMonth());
@@ -284,7 +285,7 @@ public class CalendarEntryCreator extends Window{
 			timeToField.setHour(entry.getEndDate().getHours());
 			timeToField.setMinute(entry.getEndDate().getMinutes());	
 			
-			descriptionField.setContent(entry.getDescription());
+			descriptionField.setContent(entry.getDescription());				
 		}		
 	}
 	
@@ -452,18 +453,14 @@ public class CalendarEntryCreator extends Window{
 		initializeTexts(iwc);
 		String creatorView = iwc.getParameter(creatorViewParameterName);
 
-		String delete = iwc.getParameter(ConfirmDeleteWindow.PRM_DELETE);
-		String entryIDString = iwc.getParameter(entryIDParameterName);
-		if(entryIDString != null && !entryIDString.equals("")) {
-			Integer entryID = new Integer(entryIDString);
-			if(delete == CalendarParameters.PARAMETER_TRUE) {
-				getCalBusiness(iwc).deleteEntry(entryID.intValue());
-			}
+//		String delete = iwc.getParameter(ConfirmDeleteWindow.PRM_DELETE);
+//		String entryIDString = iwc.getParameter(entryIDParameterName);
+//		if(entryIDString != null && !entryIDString.equals("")) {
+//			Integer entryID = new Integer(entryIDString);
+//			if(delete == CalendarParameters.PARAMETER_TRUE) {
+//				getCalBusiness(iwc).deleteEntry(entryID.intValue());
+//			}
 			
-		}
-//		String save = iwc.getParameter("save");
-//		if(save != null) {			
-//			saveEntry(iwc);			
 //		}
 		if(creatorView == null || creatorView.equals("")) {
 			initializeFields(iwc);
@@ -475,13 +472,12 @@ public class CalendarEntryCreator extends Window{
 		}
 				
 	}
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 
-	/**
-	 * As the name of the method states, it is intended to 
-	 * get the CalBusiness!
-	 * @param iwc - IWApplicationContext
-	 * @return CalBusiness
-	 */
+
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
 		if (calBiz == null) {
 			try {
