@@ -1498,7 +1498,17 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId,((Integer)mainBoardGroup.getPrimaryKey()).intValue());
 	}
 	catch (FinderException e) {
-		createWorkReportDivisionBoard(workReportId, null, mainBoardGroup);
+		try {
+			createWorkReportDivisionBoard(workReportId, getGroupBusiness().getGroupByGroupID(mainBoardGroup.getGroupId().intValue()), mainBoardGroup);
+		}
+		catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
     }
