@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/09 10:36:43 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/09 12:22:09 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -74,6 +74,11 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         = "Felaktigt datumformat";
     private static final String WRONGDATEFORMAT_KEY
         = PREFIX + "wrongDateFormat";
+    private static final String YOUMUSTBELOGGEDON_DEFAULT
+        = "Du måste vara inloggad för att använda denna funktion";
+    private static final String YOUMUSTBELOGGEDON_KEY
+        = PREFIX + "youMustBeLoggedOn";
+
     private static final String ACTION_TERMINATE_KEY
         = PREFIX + "terminateMembership";
     
@@ -92,7 +97,10 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	public void init (final IWContext context) {
 
         try {
-            if (context.isParameterSet (ACTION_TERMINATE_KEY)) {
+            if (!context.isLoggedOn ()) {
+                displayRedText (YOUMUSTBELOGGEDON_KEY,
+                                YOUMUSTBELOGGEDON_DEFAULT);
+            } else if (context.isParameterSet (ACTION_TERMINATE_KEY)) {
                 add (createMainTable (getTerminateMembershipTable (context)));
             } else {
                 add (createMainTable (getUserSearchFormTable (context)));
@@ -182,32 +190,25 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
      */
     private Table getUserSearchFormTable (final IWContext context)
         throws RemoteException {
-        // 1. set up searcher
-        final UserSearcher searcher = new UserSearcher ();
-        searcher.setOwnFormContainer (false);
-        searcher.setShowMiddleNameInSearch (false);
-        searcher.setLastNameLength (14);
-        searcher.setFirstNameLength (14);
-        searcher.setPersonalIDLength (12);
-        searcher.setMaxFoundUserCols (MAX_FOUND_USER_COLS); 
-        searcher.setMaxFoundUserRows (MAX_FOUND_USER_ROWS);
-
-        // 2. do search
+        // set up searcher
+        final UserSearcher searcher = createSearcher ();
         fillSearcherWithStudents (context, searcher);
 
-        // 3. output result
+        // output result
         final Table table = new Table ();
-        final User foundUser = searcher.getUser ();
         final Form searchForm = new Form();
         searchForm.setOnSubmit("return checkInfoForm()");
         searchForm.add (searcher);
         table.add (searchForm, 1, 1);
+
+        final User foundUser = searcher.getUser ();
         if (null != foundUser) {
-            // exactly one user found - display user info and termination form
+            // exactly one user found - display user and termination form
             final Table terminateTable = new Table ();
             terminateTable.add (getStudentTable (context, foundUser), 1, 2);
             terminateTable.add (getSubmitButton
-                                (ACTION_TERMINATE_KEY, TERMINATEMEMBERSHIP_KEY,
+                                (ACTION_TERMINATE_KEY,
+                                 TERMINATEMEMBERSHIP_KEY,
                                  TERMINATEMEMBERSHIP_DEFAULT), 1, 3);
             final Form terminateForm = new Form ();
             terminateForm.add (terminateTable);
@@ -243,11 +244,9 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             final int schoolId = getSchoolID ();
             for (Iterator i = usersFound.iterator (); i.hasNext ();) {
                 final User user = (User) i.next ();
-                final SchoolClassMember student = schoolId >= 0
-                        ? communeBusiness.getCurrentSchoolClassMembership
-                        (user, schoolId)
-                        : communeBusiness.getCurrentSchoolClassMembership
-                        (user);
+                final SchoolClassMember student
+                        = getCurrentSchoolClassMembership (communeBusiness,
+                                                           user, schoolId);
                 if (null != student && null == student.getRemovedDate ()) {
                     if (MAX_FOUND_USERS <= students.size ()) {
                         // too many students found
@@ -263,6 +262,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             }
         } catch (FinderException e) {
             // no students found or too many students found
+            // Collection 'students' will have the right members anyway
         }
         searcher.setUsersFound (students);
     }
@@ -278,12 +278,11 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
     private Table getStudentTable
         (final IWContext context, final User user) throws RemoteException {
 
-        // get business objects
-        final SchoolCommuneBusiness communeBusiness = (SchoolCommuneBusiness)
-                IBOLookup.getServiceInstance (context,
-                                              SchoolCommuneBusiness.class);
-        final SchoolClassMember student
-                = communeBusiness.getCurrentSchoolClassMembership (user);
+        final SchoolCommuneBusiness communeBusiness
+                = (SchoolCommuneBusiness) IBOLookup.getServiceInstance
+                (context, SchoolCommuneBusiness.class);
+        final SchoolClassMember student = getCurrentSchoolClassMembership
+                (communeBusiness, user, getSchoolID ());
 
         // store student in session
         final HttpSession session = context.getSession ();
@@ -421,6 +420,15 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         return calendar.getTime ();
     }
 
+    private SchoolClassMember getCurrentSchoolClassMembership
+        (final SchoolCommuneBusiness communeBusiness, final User user,
+         final int schoolId) throws RemoteException {
+        return 0 <= schoolId
+                ? communeBusiness.getCurrentSchoolClassMembership (user,
+                                                                   schoolId)
+                : communeBusiness.getCurrentSchoolClassMembership (user);
+    }
+
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
         return (SubmitButton) getButton (new SubmitButton
@@ -437,5 +445,17 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
                 = new Text ('\n' + localize (key, defaultString) + '\n');
         text.setFontColor ("#ff0000");
         add (text);
+    }
+
+    private UserSearcher createSearcher () {
+        final UserSearcher searcher = new UserSearcher ();
+        searcher.setOwnFormContainer (false);
+        searcher.setShowMiddleNameInSearch (false);
+        searcher.setLastNameLength (14);
+        searcher.setFirstNameLength (14);
+        searcher.setPersonalIDLength (12);
+        searcher.setMaxFoundUserCols (MAX_FOUND_USER_COLS); 
+        searcher.setMaxFoundUserRows (MAX_FOUND_USER_ROWS);
+        return searcher;
     }
 }
