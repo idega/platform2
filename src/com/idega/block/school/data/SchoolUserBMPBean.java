@@ -61,6 +61,10 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		return getIntColumnValue(COLUMN_NAME_USER_ID);	
 	}
 	
+	public User getUser() {
+		return (User) getColumnValue(COLUMN_NAME_USER_ID);	
+	}
+	
 	public void setUserType(int userType) {
 		setColumn(COLUMN_NAME_USER_TYPE, userType);	
 	}
