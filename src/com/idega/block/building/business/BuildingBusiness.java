@@ -15,6 +15,29 @@ import java.sql.SQLException;
 
 public class BuildingBusiness {
 
+  public static boolean saveComplex(int id,String sName,String sInfo,int imageid){
+   Complex eComplex = new Complex();
+    boolean update = false;
+    try{
+      if(id > 0){
+        eComplex = new Complex(id);
+        update = true;
+      }
+      eComplex.setName(sName);
+      eComplex.setInfo(sInfo);
+      eComplex.setImageId(imageid);
+      if(update)
+        eComplex.update();
+      else
+        eComplex.insert();
+      BuildingCacher.reload();
+      return true;
+
+    }
+    catch(SQLException e){e.printStackTrace();}
+    return false;
+  }
+
   public static boolean saveBuilding(int id,String sName,String sAddress,
     String sInfo,int imageid,int complexid,String sSerie){
    Building ebuilding = new Building();

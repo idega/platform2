@@ -197,22 +197,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
     try { id = Integer.parseInt(sId); }
     catch (Exception ex) { id = -1; }
 
-    Complex eComplex = new Complex();
-    boolean update = false;
-    try{
-      if(id > 0){
-        eComplex = new Complex(id);
-        update = true;
-      }
-      eComplex.setName(sName);
-      eComplex.setInfo(sInfo);
-      eComplex.setImageId(imageid);
-      if(update)
-        eComplex.update();
-      else
-        eComplex.insert();
-    }
-    catch(SQLException e){e.printStackTrace();}
+    BuildingBusiness.saveComplex(id,sName,sInfo,imageid);
+
   }
 
   private void storeBuilding(IWContext iwc){
