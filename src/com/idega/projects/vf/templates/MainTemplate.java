@@ -85,6 +85,7 @@ public String language = "IS";
 			tafla.setBackgroundImage(1,2,new Image("/pics/leftspacer.gif",""));
                         tafla.mergeCells(2,2,4,2);
                         tafla.setAlignment(2,2,"right");
+                        tafla.add("<br>",2,1);
 
                         Image topImage = new Image("/pics/bakka.gif");
                         Link topLink = new Link(topImage,"#top");
