@@ -16,7 +16,10 @@ import com.idega.presentation.IWContext;
 public class ApartmentChooserWindow extends IWAdminWindow {
 
   public ApartmentChooserWindow() {
-    super();
+		setResizable(true);
+		setWidth(500);
+		setHeight(600);
+		keepFocus();
   }
 
   public void main(IWContext iwc) throws Exception{

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.7 2001/11/08 15:40:39 aron Exp $
+ * $Id: ContractBusiness.java,v 1.8 2001/11/18 23:41:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -138,8 +138,9 @@ public  class ContractBusiness {
 
     }
     if(L!=null){
-      while(L.iterator().hasNext()){
-        Application A = (Application) L.iterator().next();
+			Iterator I = L.iterator();
+      while(I.hasNext()){
+        Application A = (Application) I.next();
         A.setStatusSigned();
         A.update();
       }

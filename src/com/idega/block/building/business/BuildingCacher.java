@@ -218,4 +218,22 @@ public class BuildingCacher {
     }
     return (Apartment)hApartments.get(new Integer(id));
   }
+
+	public static int getNumberOfComplexes(){
+		return getComplexes().size();
+	}
+
+	public static int getNumberOfBuildings(){
+		return getBuildings().size();
+	}
+
+	public static int getNumberOfApartments(){
+		return getApartments().size();
+	}
+
+	public static int getNumberOfFloors(){
+		return getFloors().size();
+	}
+
+
 } // Class end

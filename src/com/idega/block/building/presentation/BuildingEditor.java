@@ -616,7 +616,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
       headerTable.setAlignment(1,2,"center");
       headerTable.setAlignment(2,1,"right");
 
-    Image idegaweb = new Image("/pics/idegaweb.gif","idegaWeb");
+    Image idegaweb = iwb.getImage("/shared/idegaweb.gif","idegaWeb");
       headerTable.add(idegaweb,1,1);
     Text tEditor = new Text(iwrb.getLocalizedString("buildingEditor","Building Editor")+"&nbsp;&nbsp;");
       tEditor.setBold();
@@ -1154,7 +1154,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
       chooserWindow.setWidth(550);
       chooserWindow.setHeight(500);
       chooserWindow.setResizable(true);
-    Link chooser = new Link(new Image("/pics/list.gif",iwrb.getLocalizedString("select_apartment","Select appartment"),13,13));
+    Link chooser = new Link(iwb.getImage("/shared/list.gif",iwrb.getLocalizedString("select_apartment","Select appartment"),13,13));
 		chooser.setWindowToOpen(ApartmentChooserWindow.class);
 
     form.add(HI);

@@ -16,8 +16,10 @@ import com.idega.presentation.IWContext;
 public class BuildingEditorWindow extends IWAdminWindow {
 
   public BuildingEditorWindow() {
-    super();
+		setWidth(500);
+		setHeight(500);
 		setResizable(true);
+
   }
 
   public void main(IWContext iwc) throws Exception{
@@ -27,7 +29,6 @@ public class BuildingEditorWindow extends IWAdminWindow {
     setTitle("Building Editor");
     addTitle("Building Editor");
     addHeaderObject(BE.getLinkTable(iwc));
-
-
+		setResizable(true);
   }
 }
