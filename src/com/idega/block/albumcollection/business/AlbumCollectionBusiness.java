@@ -34,6 +34,7 @@ public class AlbumCollectionBusiness {
 
   private static Text header;
   private static Text text;
+  private static Text boldText;
   private static Link link;
 
   static{
@@ -45,7 +46,11 @@ public class AlbumCollectionBusiness {
     text.setFontColor("#FFFFFF");
     text.setFontFace(Text.FONT_FACE_ARIAL);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
-    text.setBold();
+    boldText = new Text();
+    boldText.setFontColor("#FFFFFF");
+    boldText.setFontFace(Text.FONT_FACE_ARIAL);
+    boldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+    boldText.setBold();
     link = new Link();
     link.setFontColor("#FFFFFF");
     link.setFontFace(Text.FONT_FACE_ARIAL);
@@ -73,9 +78,19 @@ public class AlbumCollectionBusiness {
       text.setFontColor("#FFFFFF");
       text.setFontFace(Text.FONT_FACE_ARIAL);
       text.setFontSize(Text.FONT_SIZE_10_HTML_2);
-      text.setBold();
     }
     return (Text)text.clone();
+  }
+
+  public static Text getMainTextBoldClone(){
+    if(boldText == null){
+      boldText = new Text();
+      boldText.setFontColor("#FFFFFF");
+      boldText.setFontFace(Text.FONT_FACE_ARIAL);
+      boldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+      boldText.setBold();
+    }
+    return (Text)boldText.clone();
   }
 
   public static Link getMainLinkClone(){
@@ -98,6 +113,12 @@ public class AlbumCollectionBusiness {
 
   public static Text getMainTextClone(String text){
     Text t = getMainTextClone();
+    t.setText(text);
+    return t;
+  }
+
+  public static Text getMainTextBoldClone(String text){
+    Text t = getMainTextBoldClone();
     t.setText(text);
     return t;
   }

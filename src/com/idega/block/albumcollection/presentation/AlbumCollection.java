@@ -21,6 +21,15 @@ public class AlbumCollection extends Block {
   public static final int _STATE_LYRIC = 3;
   public static final int _STATE_LYRICLIST = 4;
 
+  public static final String _COLOR_DARKEST = "#000000";
+  public static final String _COLOR_DARKER = "#333333";
+  //public static final String _COLOR_DARK = "#666666";
+  public static final String _COLOR_DARK = "#727272";
+  //public static final String _COLOR_BRIGHT = "#777777";
+  public static final String _COLOR_BRIGHT = "#828282";
+  public static final String _COLOR_BRIGHTER = "#AAAAAA";
+  public static final String _COLOR_BRIGHTEST = "#FFFFFF";
+
   private int initialState = _STATE_ALBUMLIST;
 
   public AlbumCollection() {
