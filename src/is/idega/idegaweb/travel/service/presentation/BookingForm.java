@@ -74,6 +74,11 @@ public abstract class BookingForm extends TravelManager{
   public static String parameterFromDate = "bookingFromDate";
   public static String parameterManyDays = "bookingManyDays";
   protected String parameterOnlineBooking = "pr_onl_bking";
+  
+	protected int pWidthLeft = 60;
+	protected int pWidthCenter = 60;
+	protected int pWidthRight = 75;
+
 
   protected boolean _useInquiryForm = false;
   public List errorDays = new Vector();
