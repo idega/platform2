@@ -50,7 +50,7 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 
-public ReportableCollection getChildCareReport(Integer numberOfWeeks, Integer numberOfMonths, Object areaID, Boolean firstHandOnly) {
+	public ReportableCollection getChildCareReport(Integer numberOfWeeks, Integer numberOfMonths, Object areaID, Boolean firstHandOnly) {
 		initializeBundlesIfNeeded();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
 		List childrenList = new ArrayList();
@@ -107,15 +107,15 @@ public ReportableCollection getChildCareReport(Integer numberOfWeeks, Integer nu
 				Iterator iter = children.iterator();
 				while (iter.hasNext()) {
 					ChildCareApplication application = (ChildCareApplication) iter.next();
-					if (getChildCareBusiness().hasActiveApplications(application.getChildId(), getChildCareBusiness().getChildCareCaseCode(), new IWTimestamp().getDate())) {
+					/*if (getChildCareBusiness().hasActiveApplications(application.getChildId(), getChildCareBusiness().getChildCareCaseCode(), new IWTimestamp().getDate())) {
 						continue;
-					}
+					}*/
 					School provider = application.getProvider();
 					IWTimestamp queue = new IWTimestamp(application.getQueueDate());
 					IWTimestamp placement = new IWTimestamp(application.getFromDate());
 
 					ReportableData data = new ReportableData();
-					if (childrenList.contains(new Integer(application.getChildId()))) {
+					if (!childrenList.contains(new Integer(application.getChildId()))) {
 						User user = application.getChild();
 						Address homeAddress = getUserBusiness().getUsersMainAddress(user);
 						Phone homePhone = getUserBusiness().getChildHomePhone(user);
@@ -143,6 +143,7 @@ public ReportableCollection getChildCareReport(Integer numberOfWeeks, Integer nu
 						if (homePhone != null) {
 								data.addData(phone, homePhone.getNumber());
 						}
+						childrenList.add(new Integer(application.getChildId()));
 					}
 					else {
 						data.addData(personalID, "");
@@ -158,6 +159,7 @@ public ReportableCollection getChildCareReport(Integer numberOfWeeks, Integer nu
 					data.addData(status, getChildCareBusiness().getStatusString(application.getApplicationStatus()));
 					data.addData(queueDate, queue.getLocaleDate(currentLocale, IWTimestamp.SHORT));
 					data.addData(placementDate, placement.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+					reportCollection.add(data);
 				}
 			}
 		}
