@@ -1,28 +1,39 @@
 package com.idega.block.contract.presentation;
 
 
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.news.business.*;
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.contract.data.*;
-import com.idega.block.contract.business.*;
-import com.idega.core.user.data.User;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.idega.data.*;
-import com.idega.util.text.*;
-import com.idega.util.text.TextSoap;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.core.data.ICFile;
+import com.idega.block.contract.business.ContractBusiness;
+import com.idega.block.contract.business.ContractFinder;
+import com.idega.block.contract.data.Contract;
+import com.idega.block.contract.data.ContractCategory;
+import com.idega.block.contract.data.ContractTag;
 import com.idega.block.media.servlet.MediaServlet;
+import com.idega.core.data.ICFile;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.Edit;
 
 /**
  * Title:
