@@ -2399,13 +2399,20 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			catch (Exception e) {
 			}
 
-			if (defaultCommunePK != null) {
-			    Iterator iter = schools.iterator();
-				while (iter.hasNext()) {
-					School school = (School) iter.next();
-					if (!school.getCommunePK().toString().equals(defaultCommunePK)) 
-						l.add(school);
-					
+			Iterator iter = schools.iterator();
+			while (iter.hasNext()) {
+				School school = (School) iter.next();
+				boolean isHomeCommune = true;
+				Object communePK = school.getCommunePK();
+				if (communePK != null) {
+					if (defaultCommunePK != null) {
+						if (!defaultCommunePK.equals(communePK.toString())) {
+							isHomeCommune = false;
+						}
+					}
+				}
+				if (isHomeCommune) {
+					l.add(school);
 				}
 			}
 		}
