@@ -88,8 +88,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
     setUnMerged();
   }
 
-
-
   private void control(IWContext iwc)throws Exception{
     if(debugParameter)
       debugParameters(iwc);
