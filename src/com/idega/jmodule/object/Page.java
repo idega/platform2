@@ -139,8 +139,19 @@ public void setOnUnLoad(String action){
   setAttribute("onUnLoad",action);
 }
 
+//Sets the window to close immediately
 public void close(){
   setOnLoad("window.close()");
+}
+
+public void setToGoBack(){
+  setOnLoad("history.go(-1)");
+}
+
+
+//Sets the parent (caller) window to reload on Unload
+public void setParentToReload(){
+  setOnUnLoad("window.opener.location.reload()");
 }
 
 // Displaying an Alert
