@@ -66,10 +66,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/26 14:02:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 14:43:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.57 $
+ * @version $Revision: 1.58 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -848,8 +848,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         if (1 == radioRow) button.setSelected ();
                         radioTable.add (button, 1, radioRow);
                         radioTable.add (getUserInfo (custodian), 2, radioRow);
-                        table.add (radioTable, col, row);
                     }
+                    table.add (radioTable, col, row);
                 }
             }
         } catch (Exception e) {
