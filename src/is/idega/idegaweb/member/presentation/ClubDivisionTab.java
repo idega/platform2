@@ -10,14 +10,11 @@ package is.idega.idegaweb.member.presentation;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -38,7 +35,7 @@ import com.idega.util.IWTimestamp;
 /**
  * @author palli
  */
-public class ClubDivisionTab extends UserGroupTab {
+public class ClubDivisionTab extends UserGroupTab{
 
     private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
@@ -300,11 +297,11 @@ public class ClubDivisionTab extends UserGroupTab {
                     .get(connectionToSpecialFieldName);
             String board = (String) fieldValues.get(boardGroupFieldName);
 
-            group.setMetaData("CLUBDIV_NUMBER", number);
-            group.setMetaData("CLUBDIV_SSN", ssn);
-            group.setMetaData("CLUBDIV_FOUNDED", founded);
+            group.setMetaData(IWMemberConstants.META_DATA_DIVISION_NUMBER, number);
+            group.setMetaData(IWMemberConstants.META_DATA_DIVISION_SSN, ssn);
+            group.setMetaData(IWMemberConstants.META_DATA_DIVISION_FOUNDED, founded);
             //			group.setMetaData("CLUBDIV_CONN", connection);
-            String oldConnection = group.getMetaData("CLUBDIV_CONN");
+            String oldConnection = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
             if (oldConnection == null && connection != null) {
                 String clubName = null;
                 Group club = getMemberUserBusiness(iwc).getClubForGroup(group,
@@ -312,7 +309,7 @@ public class ClubDivisionTab extends UserGroupTab {
                 if (club != null) {
                     clubName = club.getName();
                 }
-                group.setMetaData("CLUBDIV_CONN", connection);
+                group.setMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION, connection);
                 group.store();
                 getClubInformationPluginBusiness(iwc).createSpecialConnection(
                         connection, getGroupId(), clubName, iwc);
@@ -343,11 +340,11 @@ public class ClubDivisionTab extends UserGroupTab {
                     .getHome(Group.class)).findByPrimaryKey(new Integer(
                     getGroupId())));
 
-            String number = group.getMetaData("CLUBDIV_NUMBER");
-            String ssn = group.getMetaData("CLUBDIV_SSN");
-            String founded = group.getMetaData("CLUBDIV_FOUNDED");
-            String connection = group.getMetaData("CLUBDIV_CONN");
-            String board = group.getMetaData("CLUBDIV_BOARD");
+            String number = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_NUMBER);
+            String ssn = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_SSN);
+            String founded = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_FOUNDED);
+            String connection = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
+            String board = group.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
 
             if (number != null) {
                 fieldValues.put(numberFieldName, number);
