@@ -67,11 +67,11 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			table.add(getInformationTable(iwc), 1, 1);
 			table.add(getApplicationTable(iwc), 1, 3);
 			table.add(getLegendTable(), 1, 5);
-			table.add(getButtonTable(!isAdministrator), 1, 7);
+			table.add(getButtonTable(iwc, !isAdministrator), 1, 7);
 		}
 		else {
 			table.add(this.getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
-			table.add(getButtonTable(false), 1, 3);
+			table.add(getButtonTable(iwc, false), 1, 3);
 		}
 		
 		add(table);
@@ -257,17 +257,20 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		return table;
 	}
 	
-	protected Form getButtonTable(boolean showAllButtons) throws RemoteException {
+	protected Form getButtonTable(IWContext iwc, boolean showAllButtons) throws RemoteException {
 		Form form = new Form();
 		form.add(new HiddenInput(PARAMETER_CREATE_CONTRACT, ""));
 		
-		Table table = new Table(7,1);
+		Table table = new Table();
+		table.setColumns(7);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, "4");
 		table.setWidth(4, "4");
 		table.setWidth(6, "4");
 		form.add(table);
+		
+		String dateWarning = null;
 		
 		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
 		back.setPageToOpen(getResponsePage());
@@ -377,6 +380,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 
 				if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
 					table.add(disabledCreateContract, 3, 1);
+					dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
 				}
 				else {
 					if (getBusiness().hasTerminationInFutureNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
@@ -384,6 +388,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						if (archive != null) {
 							IWTimestamp terminationDate = new IWTimestamp(archive.getTerminatedDate());
 							IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
+							dateWarning = localize("child_care.earliest_possible_placement_date", "Earliest possible placement date") + ": " + terminationDate.getLocaleDate(iwc.getLocale(), IWTimestamp.SHORT);
 							if (terminationDate.isLaterThanOrEquals(validFrom)) {
 								terminationDate.addDays(1);
 								changeDate.addParameterToWindow(ChildCareAdminWindow.PARAMETER_EARLIEST_DATE, terminationDate.toString());
@@ -439,6 +444,12 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					table.add(placeInGroup, column, 1);
 				}
 			}
+		}
+		
+		if (dateWarning != null) {
+			table.setHeight(2, 6);
+			table.mergeCells(1, 3, table.getColumns(), 3);
+			table.add(getSmallErrorText(dateWarning), 1, 3);
 		}
 		
 		return form;
