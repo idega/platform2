@@ -23,16 +23,10 @@ import se.idega.util.PIDChecker;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Commune;
-import com.idega.core.location.data.CommuneHome;
-import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 /**
@@ -44,8 +38,6 @@ public class CitizenEditor extends UserEditor {
 	/**
 	 * 
 	 */
-	private String PRM_COMMUNE_ID = "p_cm_id";
-	
 	public CitizenEditor() {
 		super();
 		setShowMiddleNameInSearch(false);
