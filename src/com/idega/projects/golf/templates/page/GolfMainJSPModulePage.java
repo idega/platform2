@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.3 2001/05/23 16:49:31 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.4 2001/05/23 18:26:00 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -191,9 +191,19 @@ public class GolfMainJSPModulePage extends MainPage {
     myTable.setHeight("95");
     myTable.setWidth("100%");
 
-    Link europeantour = new Link(new Image("/pics/europeantour.gif","European Tour",69,47),"http://www.europeantour.com");
+    Image europeant = iwrb.getImage("banners/europeantour.gif");
+    europeant.setWidth(69);
+    europeant.setHeight(47);
+
+
+    Link europeantour = new Link(europeant,"http://www.europeantour.com");
     europeantour.setTarget("_new");
-    Link pgatour = new Link(new Image("/pics/pgatour.gif","PGA Tour",59,80),"http://www.pgatour.com");
+
+    Image pgaimg = iwrb.getImage("banners/pgatour.gif");
+    pgaimg.setWidth(59);
+    pgaimg.setHeight(80);
+
+    Link pgatour = new Link(pgaimg,"http://www.pgatour.com");
     pgatour.setTarget("_new");
 
     myTable.add(europeantour,1,1);
@@ -382,7 +392,7 @@ public class GolfMainJSPModulePage extends MainPage {
         poll.setHeadlineLeft();
         poll.setAdminButtonURL("/pics/poll/pollstjori.gif");
         poll.setSubmitButtonURL("/pics/formtakks/kjosa.gif");
-        poll.setOtherPollsImage(new Image("/pics/formtakks/fyrrikannanir.gif","Fyrri kannanir"));
+        poll.setOtherPollsImage(iwrb.getImage("tabs/formerresults.gif"));
 
         HeaderTable pollTable = new HeaderTable();
             pollTable.setBorderColor("#8ab490");
