@@ -59,6 +59,8 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 			Text categoryText = productCatalog.getCategoryText(productCategory.getName());
 			if (productCatalog._headerFontStyle != null)
 				categoryText.setStyleAttribute(productCatalog._headerFontStyle);
+			if (productCatalog._hasEditPermission)
+				table.add(productCatalog.getProductCategoryEditorLink(productCategory), 1, row);
 			table.add(categoryText, 1, row++);
 			if (productCatalog._spaceBetween > 0)
 				table.setHeight(row++ , productCatalog._spaceBetween);
@@ -79,6 +81,8 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 				if (productCatalog._catFontStyle != null)
 					link.setStyleAttribute(productCatalog._catFontStyle);
 				//link.addParameter(productCatalog.prmClrCache, "true");
+				if (productCatalog._hasEditPermission)
+					table.add(productCatalog.getProductCategoryEditorLink(pCat), 1, row);
 				table.add(link, 1, row++);
 				if (iter.hasNext() && productCatalog._spaceBetweenEntries > 0)
 					table.setHeight(row++ , productCatalog._spaceBetweenEntries);
@@ -111,6 +115,8 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 		Text categoryText = productCatalog.getCategoryText(productCategory.getName());
 		if (productCatalog._headerFontStyle != null)
 			categoryText.setStyleAttribute(productCatalog._headerFontStyle);
+		if (productCatalog._hasEditPermission)
+			table.add(productCatalog.getProductCategoryEditorLink(productCategory), 1, row);
 		table.add(categoryText, 1, row++);
 		if (productCatalog._spaceBetween > 0)
 			table.setHeight(row++ , productCatalog._spaceBetween);

@@ -9,6 +9,7 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 import com.idega.block.presentation.CategoryWindow;
+import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
@@ -127,12 +128,14 @@ public class ProductCategoryEditor extends CategoryWindow {
         }
       }
 
+			if (iLocale == -1)
+				iLocale = iwc.getCurrentLocaleId();
 
 //      products = ( List ) ((ProductHome) IDOLookup.getHome(Product.class)).getProducts(-1, _productCategory.getID(), null, null, null, iLocale, iFilter);
       // HEF VALIN PRODUCT ÖLL Í LISTANUM... (ekkert filterað eða neitt)
       List products = getProductBusiness(iwc).getProducts(_productCategory);
 /** @todo skoða betur, er öruggt að casta yfir i list ? */
-      List allProducts = ( List ) ((ProductHome) IDOLookup.getHome(Product.class)).getProducts(-1, -1, null, null, null, iLocale, iFilter);
+      List allProducts = ( List ) ((ProductHome) IDOLookup.getHome(Product.class)).getProducts(-1, -1, null, null, LocalizedTextBMPBean.getEntityTableName() + "." + LocalizedTextBMPBean.getColumnNameHeadline(), iLocale, iFilter);
 //      List allProducts = getProductBusiness(iwc).getProducts();
 
       allProducts.removeAll(products);
