@@ -58,11 +58,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * Last modified: $Date: 2004/03/04 10:36:42 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/04 12:18:23 $ by $Author: laddi $
  *
  * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
@@ -902,10 +902,4 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private static InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 	}	
-
-	private static RegulationsBusiness getRegulationsBusiness
-		(final IWContext context) throws RemoteException {
-		return (RegulationsBusiness) IBOLookup.getServiceInstance
-				(context, RegulationsBusiness.class);	
-	}
 }
