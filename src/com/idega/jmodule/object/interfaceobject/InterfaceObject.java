@@ -209,6 +209,10 @@ public void setDisabled(boolean disabled){
   }
 }
 
+public void setCSSClass(String cStyleSheetReferanceClass){
+  setAttribute("class",cStyleSheetReferanceClass);
+}
+
 public void handleKeepStatus(ModuleInfo modinfo){
 	if (statusKeptOnAction()){
 		if(modinfo.getParameter(this.getName()) != null){
