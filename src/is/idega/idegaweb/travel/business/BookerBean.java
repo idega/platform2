@@ -25,12 +25,14 @@ import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.data.TravelAddressHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ui.DropdownMenu;
@@ -215,9 +217,11 @@ public class BookerBean extends IBOServiceBean implements Booker{
             for (int i = 0; i < tempInts.length; i++) {
               tempInts[i] = ((Reseller) items.get(i)).getID();
             }
+						System.out.println("[BookerBean] here...1");
             return getGeneralBookingHome().getBookingsTotalCount( tempInts , serviceId, stamp);
           }else {
             int[] tempInts = {reseller.getID()};
+            System.out.println("[BookerBean] here...2");
             return getGeneralBookingHome().getBookingsTotalCount( tempInts , serviceId, stamp);
           }
         }
@@ -360,7 +364,30 @@ public class BookerBean extends IBOServiceBean implements Booker{
         Float temp = (Float) getIWApplicationContext().getApplicationAttribute(applName);
         if (temp == null) {
           pPrice = entry.getProductPrice();
-          total = entry.getCount() * getTravelStockroomBusiness().getPrice(pPrice.getID(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
+          int timeframeId = -1;
+          int addressId = -1;
+          try {
+						Collection tFrames = pPrice.getTimeframes();
+						Collection tAddr = pPrice.getTravelAddresses();
+						
+						if (tFrames != null) {
+							Iterator iter = tFrames.iterator();
+							if (iter.hasNext()) {
+								timeframeId = ((Timeframe) iter.next()).getID();	
+							}	
+						}
+						
+						if (tAddr != null) {
+							Iterator iter = tAddr.iterator();
+							if (iter.hasNext()) {
+								addressId = ((TravelAddress) iter.next()).getID();	
+							}
+						}
+					} catch (IDORelationshipException e) {
+						e.printStackTrace();
+					}
+          
+          total = entry.getCount() * getTravelStockroomBusiness().getPrice(pPrice.getID(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking(), timeframeId, addressId);
           getIWApplicationContext().setApplicationAttribute(applName, new Float(total));
         }else {
           total = temp.floatValue();
@@ -609,17 +636,21 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
 
   /**
-   * returns int[], int[0] is number of current booking, int[1] is total bookings number
+   * returns int[], int[0] is number of current booking, int[1] is total bookings number, int[2] is the id of the first one
    */
   public  int[] getMultipleBookingNumber(GeneralBooking booking) throws RemoteException, FinderException{
     List list = getMultibleBookings(booking);
-    int[] returner = new  int[2];
+    Booking firstBooking;
+    int firstBookingId = -1;
+    int[] returner = new  int[3];
     if (list == null || list.size() < 2 ) {
       returner[0] = 0;
       returner[1] = 0;
+      returner[2] = 0;
     }else {
       returner[0] = list.indexOf(booking) + 1;
       returner[1] = list.size();
+      returner[2] = ((Booking)list.get(0)).getID();
     }
     return returner;
   }
