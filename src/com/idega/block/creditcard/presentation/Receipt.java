@@ -36,12 +36,6 @@ public class Receipt extends PresentationObjectContainer{
   private Supplier _supplier;
 
   public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.creditcard";
-/*
-  public Receipt(CreditCardClient client, Supplier supplier) {
-    _client = client;
-    _supplier = supplier;
-    _entries = null;
-  }*/
   
   public Receipt(CreditCardAuthorizationEntry entry, Supplier supplier) {
   	_entries = entry;
@@ -93,7 +87,14 @@ public class Receipt extends PresentationObjectContainer{
         ++row;
         table.mergeCells(1,row,2,row);
         table.setRowAlignment(row, "center");
-        table.add(getText(((Phone) phones.get(phones.size()-1)).getNumber()), 1,row);
+        table.add(getText(iwrb.getLocalizedString("travel.phone","Phone")+": "+((Phone) phones.get(phones.size()-1)).getNumber()), 1,row);
+      }
+      
+      if (_supplier.getOrganizationID() != null) {
+      	++row;
+      	table.mergeCells(1, row, 2, row);
+      	table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
+      	table.add(getText(iwrb.getLocalizedString("travel.organization_id","Organization id")+": "+_supplier.getOrganizationID()), 1, row);
       }
 
       HorizontalRule hr = new HorizontalRule("100%");
