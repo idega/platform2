@@ -25,6 +25,12 @@ public class WorkReportConstants extends IWMemberConstants{
 	public static final String WR_USER_TYPE_FEDERATION = "FEDERATION";
 	public static final String WR_USER_TYPE_LEAGUE = "LEAGUE";
 	
+	public static final String WR_SESSION_PARAM_CLUB_ID = "wr_sess_cl_id";
+	public static final String WR_SESSION_PARAM_REGIONAL_UNION_ID = "wr_sess_ru_id";
+	public static final String WR_SESSION_PARAM_WORK_REPORT_ID = "wr_sess_wr_id";
+	public static final String WR_SESSION_PARAM_WORK_REPORT_YEAR = "wr_sess_wr_yr";
+	public static final String WR_SESSION_CLEAR = "wr_sess_clear";
+	
   // name of the "group" that represents the main board
   public static final String MAIN_BOARD_GROUP_NAME = "AÐA"; 
   // artificial id of the "group" that represents the main board

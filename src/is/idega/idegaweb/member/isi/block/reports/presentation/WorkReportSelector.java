@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -29,10 +31,7 @@ public class WorkReportSelector extends ClubSelector {
 	protected int workReportId = -1;
 	protected int year = -1;
 	protected String userType = null;
-	
-	protected static final String PARAM_WORK_REPORT_ID = "iwme_wr_sel_wr_id";
-	protected static final String PARAM_WORK_YEAR = "iwme_wr_sel_year";
-	
+		
 	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportselector.step_name";
 	
 	
@@ -80,8 +79,8 @@ public class WorkReportSelector extends ClubSelector {
 
 	public WorkReportSelector() {
 		super();
-		addToParametersToMaintainList(PARAM_WORK_REPORT_ID);
-		addToParametersToMaintainList(PARAM_WORK_YEAR);
+		addToParametersToMaintainList(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_ID);
+		addToParametersToMaintainList(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
 		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
@@ -93,13 +92,25 @@ public class WorkReportSelector extends ClubSelector {
 		if(getClubId()!=-1){
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+			String paramWorkReportYear = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
+			String paramWorkReportId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_ID);
 			
-			if( iwc.isParameterSet(PARAM_WORK_YEAR) ){
+			if(  paramWorkReportYear!=null  ){
 				//regionalUnionId = Integer.parseInt(PARAM_REGION_UNION_ID);
-				year = Integer.parseInt(iwc.getParameter(PARAM_WORK_YEAR));
+				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR,paramWorkReportYear);
+				year = Integer.parseInt(paramWorkReportYear);
 				
 				
-				workReportId = reportBiz.getOrCreateWorkReportIdForGroupIdByYear(getClubId(),year);
+				if(paramWorkReportId==null){	
+					workReportId = reportBiz.getOrCreateWorkReportIdForGroupIdByYear(getClubId(),year);
+					iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_ID,Integer.toString(workReportId));
+				}
+				else{
+					workReportId = Integer.parseInt(paramWorkReportId);
+				}
+				
+				iwc.removeSessionAttribute(WorkReportConstants.WR_SESSION_CLEAR);
+				
 			}
 			else{
 				
@@ -118,7 +129,7 @@ public class WorkReportSelector extends ClubSelector {
 		
 		reportSelectorForm.maintainParameters(getParametersToMaintain());
 		
-		DropdownMenu dateSelector = new DropdownMenu(PARAM_WORK_YEAR);
+		DropdownMenu dateSelector = new DropdownMenu(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
 		IWTimestamp stamp = IWTimestamp.RightNow();
 		
 		int currentYear = stamp.getYear();
@@ -137,7 +148,7 @@ public class WorkReportSelector extends ClubSelector {
 		table.add(iwrb.getLocalizedString("workreportselector.select_year_of_report","Select work report year."),1,1);
 		table.add(iwrb.getLocalizedString("workreportselector.year","Year"),1,2);
 		table.add(dateSelector,2,2);		
-		table.add(new HiddenInput(PARAM_CLUB_ID,Integer.toString(getClubId())),2,2);	
+		table.add(new HiddenInput(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,Integer.toString(getClubId())),2,2);	
 		
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("clubselector.continue","continue"));
 		submit.setAsImageButton(true);

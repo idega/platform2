@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -44,9 +45,6 @@ public class ClubSelector extends Block {
 	protected List paramsToMaintain = null;
 	protected List steps = null;
 	protected Map localizedStepTexts = new HashMap(); 
-		
-	protected static final String PARAM_CLUB_ID = "iwme_club_sel_cl_id";
-	protected static final String PARAM_REGION_UNION_ID = "iwme_club_sel_ru_id";	
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private static final String STEP_NAME_LOCALIZATION_KEY = "clubselector.step_name";
@@ -75,7 +73,7 @@ public class ClubSelector extends Block {
 
 		super();
 		this.setToDebugParameters(true);
-		addToParametersToMaintainList(PARAM_CLUB_ID);
+		addToParametersToMaintainList(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
 		addToParametersToMaintainList(WorkReportWindow.ACTION);
 		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
@@ -114,6 +112,7 @@ public class ClubSelector extends Block {
 	public void main(IWContext iwc) throws Exception {
 		reportBiz = getWorkReportBusiness(iwc);
 		iwrb = getResourceBundle(iwc);
+		
 		//add breadcrumbs
 		addStepsTable(iwc);
 		addBreak();
@@ -121,16 +120,22 @@ public class ClubSelector extends Block {
 		//sets this step as bold, if another class calls it this will be overridden
 		setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
-		if(iwc.isParameterSet(PARAM_CLUB_ID) || getClubId()!=-1 ){
-			if( clubId == -1 ) clubId = Integer.parseInt(iwc.getParameter(PARAM_CLUB_ID));
+		String paramRegionalUnionId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
+		String paramClubId = getParameterFromSessionOrRequest(iwc,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
+		
+		if( paramClubId!=null || getClubId()!=-1 ){
+			if( clubId == -1 ) clubId = Integer.parseInt(paramClubId);
+			iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_CLUB_ID,paramClubId);
 			
-			if( iwc.isParameterSet(PARAM_REGION_UNION_ID) ){
-				regionalUnionId = Integer.parseInt(iwc.getParameter(PARAM_REGION_UNION_ID));
+			if( paramRegionalUnionId !=null ){
+				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
+				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
 			}
 		}
 		else{
-			if(iwc.isParameterSet(PARAM_REGION_UNION_ID)){
-				regionalUnionId = Integer.parseInt(iwc.getParameter(PARAM_REGION_UNION_ID));
+			if(paramRegionalUnionId!=null){
+				regionalUnionId = Integer.parseInt(paramRegionalUnionId);
+				iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID,paramRegionalUnionId);
 			}
 						
 			addClubSelectionForm();
@@ -142,6 +147,9 @@ public class ClubSelector extends Block {
 	protected void addStepsTable(IWContext iwc){
 		if(steps!=null && !steps.isEmpty()){
 			Table stepTable = new Table();
+			stepTable.setWidth(Table.HUNDRED_PERCENT);
+			
+			stepTable.setCellpadding(0);
 			
 			Iterator iter = steps.iterator();
 			int column = 1;
@@ -150,7 +158,10 @@ public class ClubSelector extends Block {
 				String key = (String) iter.next();
 				Text text = new Text(column+". "+iwrb.getLocalizedString(key,key));
 				localizedStepTexts.put(key,text);
-				stepTable.add(text,column++,1);		
+				stepTable.add(text,column,1);		
+				stepTable.setWidth(column,200);
+				stepTable.setColor(column,1,"#DFDFDF");
+				column++;
 			}
 			
 			add(stepTable);
@@ -179,17 +190,17 @@ public class ClubSelector extends Block {
 			try {
 				regionalUnions = new ArrayList();
 				regionalUnions.add(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
-				regMenu = new DropdownMenu(regionalUnions,PARAM_REGION_UNION_ID);
+				regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
 				//regMenu.setDisabled(true);
 				clubs = reportBiz.getClubGroupsForRegionUnionGroup(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
-				clubMenu = new DropdownMenu(clubs,PARAM_CLUB_ID);
+				clubMenu = new DropdownMenu(clubs,WorkReportConstants.WR_SESSION_PARAM_CLUB_ID);
 			}
 			catch (FinderException e) {
 				e.printStackTrace();
 			}
 		}else{
 			regionalUnions = reportBiz.getAllRegionalUnionGroups();
-			regMenu = new DropdownMenu(regionalUnions,PARAM_REGION_UNION_ID);
+			regMenu = new DropdownMenu(regionalUnions,WorkReportConstants.WR_SESSION_PARAM_REGIONAL_UNION_ID);
 		}
 		
 		table.add(iwrb.getLocalizedString("clubselector.select_regional_union_and_club","Select the desired club."),1,1);
@@ -254,6 +265,32 @@ public class ClubSelector extends Block {
 				text.setBold(false);
 			}
 		}
+	}
+	
+	
+	/**
+	 * This methods first checks for the parameter in session, if that is null then it checks the request.
+	 * If the WorkReportConstants.WR_SESSION_CLEAR is set only params from requests are fetched. 
+	 * @param iwc IWContext
+	 * @param attributeName the name of the parameter
+	 * @return
+	 */
+	protected String getParameterFromSessionOrRequest(IWContext iwc, String attributeName){
+		String clear = iwc.getParameter(WorkReportConstants.WR_SESSION_CLEAR);
+		if(clear!=null){
+			iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_CLEAR,"TRUE");
+		}
+		
+		String temp = null;
+		
+		if(! (iwc.getSessionAttribute(WorkReportConstants.WR_SESSION_CLEAR) !=null)) {
+			temp = (String) iwc.getSessionAttribute(attributeName);
+		} 
+		if( temp==null ){
+			temp = iwc.getParameter(attributeName);
+		}
+		
+		return temp;
 	}
 	
 	

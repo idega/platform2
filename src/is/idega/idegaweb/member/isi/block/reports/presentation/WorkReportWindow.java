@@ -39,7 +39,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	protected static final String ACTION = "iwme_wr_act";
 
 	
-	protected static final String ACTION_WORK_ON_REPORT ="iwme_wr_act_b1";
+	protected static final String ACTION_WORK_SELECT_REPORT ="iwme_wr_act_b1";
 	protected static final String ACTION_EDIT_MEMBER_LIST ="iwme_wr_act_b2";
 	protected static final String ACTION_EDIT_ACCOUNT ="iwme_wr_act_b3";
 	protected static final String ACTION_EDIT_BOARD ="iwme_wr_act_b4";
@@ -53,6 +53,11 @@ public class WorkReportWindow extends IWAdminWindow {
 	protected static final String ACTION_STATISTICS ="iwme_wr_act_b12";
 	protected static final String ACTION_CREATE_REPORTS ="iwme_wr_act_b13";
 	protected static final String ACTION_GET_REPORTS ="iwme_wr_act_b13_2";	
+	
+	protected static final String COLOR_DARKEST ="#9F9F9F";	
+	protected static final String COLOR_MIDDLE ="#DFDFDF";	
+	protected static final String COLOR_LIGHTEST ="#EFEFEF";	
+	
 	
 	private IWResourceBundle iwrb;
 
@@ -81,8 +86,8 @@ public class WorkReportWindow extends IWAdminWindow {
 		Table table = new Table(2,1);
 		//table.mergeCells(1,2,3,1);
 		table.setWidthAndHeightToHundredPercent();
-		table.setColumnColor(1,this.MENU_COLOR);
-		table.setColumnWidth(1,"220");
+		table.setColumnColor(1,COLOR_LIGHTEST);
+		table.setColumnWidth(1,"200");
 		table.setRowHeight(1,Table.HUNDRED_PERCENT);
 		//table.setColumnWidth(2,"100%");
 		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
@@ -99,44 +104,57 @@ public class WorkReportWindow extends IWAdminWindow {
 			
 			//depending on the user type set the currect stuff
 			
-			/*if( action.equals(ACTION_WORK_ON_REPORT) ){
-				table.add(new WorkReportSelector(),2,1);	
-			}*/
+			if( action.equals(ACTION_WORK_SELECT_REPORT) ){
+				selector = new WorkReportSelector();
+				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT,"Select report"));
+			}
 			if( action.equals(ACTION_EDIT_MEMBER_LIST) ){
 				selector = new WorkReportMemberEditor();
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST,"Edit members"));
 			}
 			else if( action.equals(ACTION_EDIT_ACCOUNT) ){
 				selector = new WorkReportAccountEditor();
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT,"Edit account info"));
 			}
 			else if( action.equals(ACTION_EDIT_BOARD) ){
 				selector = new WorkReportBoardMemberEditor();	
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD,"Edit board info"));
 			}
       else if (action.equals(ACTION_EDIT_DIVISION_BOARD)) {
 				selector = new WorkReportDivisionBoardEditor();
+				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD,"Edit division info"));
       }
 			else if( action.equals(ACTION_SEND_REPORT) ){
-				selector = new WorkReportSender();	
+				selector = new WorkReportSender();
+				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT,"Send report"));	
 			}
 			else if( action.equals(ACTION_IMPORT_MEMBERS) ){
 				selector = new WorkReportMemberImporter();
+				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS,"Import members"));	
 			}
 			else if( action.equals(ACTION_IMPORT_ACCOUNT) ){
 				selector = new WorkReportAccountImporter();
+				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT,"Import account info"));	
 			}
 			else if( action.equals(ACTION_IMPORT_BOARD) ){
 				selector = new WorkReportBoardImporter();
+				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD,"Import board info"));	
 			}
 			else if( action.equals(ACTION_REPORT_OVERVIEW) ){
 				selector = new WorkReportSelector();	
+				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW,"Review work report"));	
 			}
 			else if( action.equals(ACTION_CLOSE_REPORT) ){
 				selector = new WorkReportCloser();	
+				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT,"Close report"));	
 			}
 			else if( action.equals(ACTION_STATISTICS) ){
 				selector = new WorkReportSelector();	
+				this.addTitle(iwrb.getLocalizedString(ACTION_STATISTICS,"View statistics"));	
 			}
 			else if (action.equals(ACTION_CREATE_REPORTS)) {
 				table.add(new WorkReportZipper(),2,1);	//not a selector
+				this.addTitle(iwrb.getLocalizedString(ACTION_CREATE_REPORTS,"Generate reports"));
 			}
 			
 			if( selector!=null){
@@ -216,19 +234,23 @@ public class WorkReportWindow extends IWAdminWindow {
 	private Table getMenuTable(IWContext iwc) {
 		String type = getUserType();
 		
-		Table menu = new Table(1,13);
-		//menu.setWidth(Table.HUNDRED_PERCENT);
+		Table menu = new Table(1,14);
+		menu.setWidth(Table.HUNDRED_PERCENT);
+		menu.setHeight(Table.HUNDRED_PERCENT);
+		menu.setCellspacing(0);
 		
 		Text operations = formatHeadline(iwrb.getLocalizedString("workreportwindow.operations","Operations"));
 				
 		//B.1
-		/*LinkContainer workOnReport = new LinkContainer();
-		workOnReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_report","Select report"),true));
-		workOnReport.addParameter(ACTION,ACTION_WORK_ON_REPORT);*/
-		Text workOnReport = formatText(iwrb.getLocalizedString("workreportwindow.edit_report","Edit report"),true);
-		Lists editList = new Lists();
+		LinkContainer selectReport = new LinkContainer();
+		selectReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_report","Select report"),true));
+		selectReport.addParameter(ACTION,ACTION_WORK_SELECT_REPORT);
+		selectReport.addParameter(WorkReportConstants.WR_SESSION_CLEAR,"TRUE");
+		
 		
 		//B.2
+		Text workOnReport = formatText(iwrb.getLocalizedString("workreportwindow.edit_report","Edit report"),true);
+		Lists editList = new Lists();
 		
 		if( !WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(type) ){
 			LinkContainer editMemberList = new LinkContainer();
@@ -316,28 +338,33 @@ public class WorkReportWindow extends IWAdminWindow {
 		if(type!=null){
 			//add to window
 			menu.add(operations,1,1);
-			menu.add(createReports,1,2);
-			menu.add(reportslist,1,2);
-			menu.add(uploadReport,1,4);
-			menu.add(uploadList,1,5);
-			menu.add(workOnReport,1,6);
-			menu.add(editList,1,7);
+			menu.setRowColor(1,COLOR_MIDDLE);
+			menu.add(selectReport,1,2);
+			menu.add(createReports,1,3);
+			menu.add(reportslist,1,3);
+			menu.add(uploadReport,1,5);
+			menu.setRowColor(5,COLOR_MIDDLE);
+			menu.add(uploadList,1,6);
+			menu.add(workOnReport,1,7);
+			menu.setRowColor(7,COLOR_MIDDLE);
+			menu.add(editList,1,8);
 			
 	//insert ugly hax
 			
 			if( WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) ){
-				menu.add(reportsOverview,1,8);	
+				menu.add(reportsOverview,1,9);	
 			}
 			
-			menu.add(sendReport,1,9);
+			menu.add(sendReport,1,10);
 			
 			if( WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) ){
-				menu.add(closeReport,1,10);	
+				menu.add(closeReport,1,11);	
 			}
 	
 			if( !WorkReportConstants.WR_USER_TYPE_CLUB.equals(type) ){
-				menu.add(statistics,1,12);
-				menu.add(statsList,1,13);
+				menu.add(statistics,1,13);
+				menu.setRowColor(13,COLOR_MIDDLE);
+				menu.add(statsList,1,14);
 			}
 		
 		}
