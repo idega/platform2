@@ -1220,18 +1220,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					dateInput.setDate(application.getRequestedCancelDate());
 				}
 
-				table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);
-				table.add(dateInput, 1, row++);
-				if (helper.hasDeadlinePassed())
-					table.add(getText(localize("school.deadline_msg_for_passedby_date", "Chosen period has been invoiced. Earliest possible date is the first day of next month.")), 1, row++);
+//				table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);
+//				table.add(dateInput, 1, row++);
+//				if (helper.hasDeadlinePassed())
+//					table.add(getText(localize("school.deadline_msg_for_passedby_date", "Chosen period has been invoiced. Earliest possible date is the first day of next month.")), 1, row++);
 
-				SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
-				if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
-					form.addParameter(PARAMETER_METHOD, METHOD_CANCEL_CONTRACT);
-				}
-				form.setToDisableOnSubmit(cancelContract, true);
-				table.add(cancelContract, 1, row);
-				table.add(Text.getNonBrakingSpace(), 1, row);
+//				SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
+//				if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
+//					form.addParameter(PARAMETER_METHOD, METHOD_CANCEL_CONTRACT);
+//				}
+//				form.setToDisableOnSubmit(cancelContract, true);
+//				table.add(cancelContract, 1, row);
+//				table.add(Text.getNonBrakingSpace(), 1, row);
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
 				IWTimestamp stampNow = new IWTimestamp();
