@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.39 2002/12/21 00:33:24 thomas Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.40 2002/12/21 00:34:28 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,13 +34,14 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/21 00:33:24 $ by $Author: thomas $
+ * Last modified: $Date: 2002/12/21 00:34:28 $ by $Author: thomas $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
+  implements CitizenAccountBusiness, AccountBusiness 
     {
 	private boolean acceptApplicationOnCreation = true;
 

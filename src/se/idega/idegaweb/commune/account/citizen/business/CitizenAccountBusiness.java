@@ -1,74 +1,28 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
-import com.idega.business.IBOService;
-import com.idega.core.accesscontrol.business.UserHasLoginException;
-import com.idega.user.data.*;
-import java.rmi.RemoteException;
 import javax.ejb.*;
-import se.idega.idegaweb.commune.account.business.AccountBusiness;
-import se.idega.idegaweb.commune.account.citizen.data.*;
-import java.util.*;
 
-public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
-    void acceptApplication (int p0, User p1)
-        throws RemoteException, CreateException, FinderException;
-
-    CitizenAccount getAccount (int p0)
-        throws RemoteException,FinderException, RemoteException;
-
-    List getListOfUnapprovedApplications () throws RemoteException;
-
-    User getUser (String p0) throws RemoteException;
-
-	/**
-	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
-	 * @param user The user that makes the application
-	 * @param pid 	The PersonalId of the User to apply for.
-	 * @param email Email of the user
-	 * @param phoneHome the Home phone of the user
-	 * @param phoneWork the Work phone of the user
-	 * @return Integer appliaction id or null if insertion was unsuccessful
-	 * @throws UserHasLoginException If A User already has a login in the system.
-	 */
-    Integer insertApplication(User user, String pid, String email,
-                              String phoneHome, String phoneWork) 
-        throws RemoteException, UserHasLoginException;
-    
-    Integer insertApplication
-        (String name, String ssn, String email, String phoneHome,
-         String phoneWork, String street, String zipCode, String city,
-         String civilStatus, boolean hasCohabitant, int childrenCount,
-         String applicationReason)
-        throws RemoteException;
-
-    void rejectApplication (int p0, User p1, String p2 )
-        throws RemoteException,CreateException,FinderException, RemoteException;
-
-    Integer insertCohabitant (Integer applicationId, String firstName,
-                              String lastName, String ssn, String civilStatus,
-                              String phoneWork)
-        throws RemoteException, CreateException;
-
-    Integer insertChildren (Integer applicationId, String firstName,
-                            String lastName, String ssn)
-        throws RemoteException, CreateException;
-
-    Integer insertMovingTo (Integer applicationId, String address, String date,
-                            String housingType, String propertyType, String landlordName, String landlordPhone, String landlordAddress)
-        throws RemoteException, CreateException;
-
-    Integer insertPutChildren (Integer applicationId, String currentKommun)
-        throws RemoteException, CreateException;
-
-    CitizenApplicantPutChildren findCitizenApplicantPutChildren
-        (int applicationId) throws RemoteException, FinderException;
-
-    CitizenApplicantMovingTo findCitizenApplicantMovingTo
-        (int applicationId) throws RemoteException, FinderException;
-
-    CitizenApplicantCohabitant findCitizenApplicantCohabitant
-        (int applicationId) throws RemoteException, FinderException;
-
-    CitizenApplicantChildren [] findCitizenApplicantChildren
-        (int applicationId) throws RemoteException, FinderException;
+public interface CitizenAccountBusiness extends com.idega.business.IBOService
+{
+ public void acceptApplication(int p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public void changePasswordAndSendLetterOrEmail(com.idega.core.accesscontrol.data.LoginTable p0,com.idega.user.data.User p1,java.lang.String p2,boolean p3,boolean p4)throws javax.ejb.CreateException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantChildren[] findCitizenApplicantChildren(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantCohabitant findCitizenApplicantCohabitant(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantMovingTo findCitizenApplicantMovingTo(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildren findCitizenApplicantPutChildren(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.lang.String getAcceptMessageSubject() throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.account.citizen.data.CitizenAccount getAccount(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.Collection getAllAcceptedApplications()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getAllPendingApplications()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getAllRejectedApplications()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.List getListOfUnapprovedApplications() throws java.rmi.RemoteException;
+ public java.lang.String getRejectMessageSubject() throws java.rmi.RemoteException;
+ public com.idega.user.data.User getUser(java.lang.String p0) throws java.rmi.RemoteException;
+ public java.lang.Integer insertApplication(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,boolean p9,int p10,java.lang.String p11)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.Integer insertApplication(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4)throws com.idega.core.accesscontrol.business.UserHasLoginException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.Integer insertChildren(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public java.lang.Integer insertCohabitant(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public java.lang.Integer insertMovingTo(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public java.lang.Integer insertPutChildren(java.lang.Integer p0,java.lang.String p1)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public void rejectApplication(int p0,com.idega.user.data.User p1,java.lang.String p2)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
 }
