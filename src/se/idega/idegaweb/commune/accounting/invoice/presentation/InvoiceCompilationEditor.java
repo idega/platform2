@@ -2,7 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import com.idega.business.IBOLookup;
 import com.idega.presentation.*;
-import com.idega.presentation.text.Text;
+import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.*;
@@ -28,10 +28,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/10/30 15:53:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/31 07:57:51 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -69,6 +69,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
 
+    private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1;
 
@@ -82,7 +83,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 */
 	public void init (final IWContext context) {
 		try {
-			final int action = parseAction ();
+			final int action = parseAction (context);
 			switch (action) {
 				case ACTION_SHOW_COMPILATION:
 					showCompilation (context);
@@ -96,11 +97,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             logUnexpectedException (context, exception);
 		}
 
-        add ("\n\nDenna funktion är inte färdig. Bland annat så återstår 'klicka på underlag i listan och gå till visa underlag', 'skapa manuell faktura ifrån 'visa underlagslista'', 'ta bort en faktura från listan - bara manuella', 'klicka på faktureringsrad och se detaljer', 'skapa justeringsrad till en faktura', 'se faktureringsunderlag i pdf', 'tillåt inte negativt taxbelopp mm', 'uppdatera totalbelopp och momsersättning vid justering'\n\n");
+        displayRedText (null, "<p>Denna funktion är inte färdig. Bland annat så återstår:<ol><li>klicka på underlag i listan och gå till visa underlag<li>skapa manuell faktura ifrån 'visa underlagslista'<li>ta bort en faktura från listan - bara manuella<li>klicka på faktureringsrad och se detaljer<li>skapa justeringsrad till en faktura<li>se faktureringsunderlag i pdf<li>tillåt inte negativt taxbelopp mm<li>uppdatera totalbelopp och momsersättning vid justering</ol>\n\n");
 	}
 	
-	private int parseAction () {
-        return ACTION_SHOW_COMPILATION_LIST;
+	private int parseAction (final IWContext context) {
+        int actionId = ACTION_SHOW_COMPILATION_LIST;
+        try {
+            actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
+        } catch (final Exception dummy) {
+            // do nothing, actionId is deafault
+        }
+        return actionId;
 	}	
 
     /**
@@ -112,6 +119,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         throws RemoteException {
         add (createMainTable (INVOICE_COMPILATION_KEY,
                               INVOICE_COMPILATION_DEFAULT, createTable (1)));
+        add ("pk=" + context.getParameter (INVOICE_COMPILATION_KEY));
         throw new UnsupportedOperationException ("not implemnted yet ["
                                                  + context + ']');
     }
@@ -209,6 +217,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final java.sql.Date period = header.getPeriod ();
 		final User custodian = userHome.findByPrimaryKey
 		        (new Integer (header.getCustodianId ())) ;
+
+		final Link custodianLink = getSmallLink
+                (custodian.getFirstName () + ' '  + custodian.getLastName ());
+        custodianLink.addParameter (ACTION_KEY, ACTION_SHOW_COMPILATION);
+		custodianLink.addParameter (INVOICE_COMPILATION_KEY,
+                              header.getPrimaryKey ().toString ());
 		final InvoiceRecord [] records
 		        = invoiceBusiness.getInvoiceRecordsByInvoiceHeader (header);
 		float totalAmount = 0;
@@ -218,7 +232,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.add (status + "", col++, row);
 		table.add (null != period ? periodFormatter.format (period) : "",
 		           col++, row);
-		table.add (custodian.getName (), col++, row);
+		table.add (custodianLink, col++, row);
 		table.add (totalAmount + "", col++, row);
 	}
 
@@ -368,5 +382,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
         exception.printStackTrace ();
         add ("Det inträffade ett fel. Försök igen senare.");
+    }
+
+    private void displayRedText (final String key, final String defaultString) {
+        final String localizedString = key != null
+                ? localize (key, defaultString) : defaultString;
+        final Text text
+                = new Text ('\n' + localizedString + '\n');
+        text.setFontColor ("#ff0000");
+        add (text);
     }
 }
