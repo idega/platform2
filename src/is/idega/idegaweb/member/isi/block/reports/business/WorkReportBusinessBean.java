@@ -704,7 +704,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			Iterator iter2 = records.iterator();
 
 			while (iter2.hasNext()) {
-				WorkReportDivisionBoard record = (WorkReportDivisionBoard)iter.next();
+				WorkReportDivisionBoard record = (WorkReportDivisionBoard)iter2.next();
 				try {
 					record.remove();
 				}
