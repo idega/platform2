@@ -1,7 +1,7 @@
 package is.idega.idegaweb.golf.entity;
 
 
-public interface ZipCode extends is.idega.idegaweb.golf.entity.GolfEntity
+public interface ZipCode extends GolfEntity
 {
  public java.lang.String getCity();
  public java.lang.String getCode();

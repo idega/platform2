@@ -836,5 +836,8 @@ public List getTournamentGroupsRecursive(){
 		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(COLUMNNAME_IC_GROUP_ID,union));
 	}
 	
+	public Object ejbFindByAbbreviation(String abbr) throws FinderException {
+		return idoFindOnePKByColumnBySQL("abbrevation", abbr);
+	}
 	
 }

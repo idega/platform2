@@ -616,4 +616,8 @@ public class MemberBMPBean extends GenericEntity implements Member {
 		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(COLUMNNAME_IC_USER_ID,user));
 	}
 	
+	public Object ejbFindBySSN(String ssn) throws FinderException {
+		return idoFindOnePKByColumnBySQL(getSocialSecurityNumberColumnName(), ssn);
+	}
+	
 }

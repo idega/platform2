@@ -24,6 +24,13 @@ public class MemberHomeImpl extends com.idega.data.IDOFactory implements MemberH
  }
 
 
+public Member findBySSN(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((MemberBMPBean)entity).ejbFindBySSN(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public Member findMemberByIWMemberSystemUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((MemberBMPBean)entity).ejbFindMemberByIWMemberSystemUser(p0);

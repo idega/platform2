@@ -31,6 +31,13 @@ public java.util.Collection findAllUnions()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public Union findByAbbreviation(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((UnionBMPBean)entity).ejbFindByAbbreviation(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public Union findUnionByIWMemberSystemGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((UnionBMPBean)entity).ejbFindUnionByIWMemberSystemGroup(p0);

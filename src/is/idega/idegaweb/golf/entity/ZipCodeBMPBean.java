@@ -2,7 +2,8 @@
 
 package is.idega.idegaweb.golf.entity;
 
-//import java.util.*;
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 
 public class ZipCodeBMPBean extends GenericEntity implements ZipCode{
@@ -54,4 +55,7 @@ public class ZipCodeBMPBean extends GenericEntity implements ZipCode{
 		return getIntColumnValue("country_id");
 	}
 	
+	public Object ejbFindByCode(String code) throws FinderException {
+		return idoFindOnePKByColumnBySQL("code", code);
+	}	
 }
