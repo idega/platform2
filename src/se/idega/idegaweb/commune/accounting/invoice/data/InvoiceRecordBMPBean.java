@@ -118,7 +118,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public Date getDateCreated() {
 		return getDateColumnValue(COLUMN_DATE_CREATED);
 	}
-	public String getCreadedBy() {
+	public String getCreatedBy() {
 		return getStringColumnValue(COLUMN_CREATED_BY);
 	}
 	public Date getDateChanged() {

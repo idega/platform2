@@ -80,7 +80,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	public Date getDateCreated() {
 		return getDateColumnValue(COLUMN_DATE_CREATED);
 	}
-	public String getCreadedBy() {
+	public String getCreatedBy() {
 		return getStringColumnValue(COLUMN_CREATED_BY);
 	}
 	public Date getDateChanged() {

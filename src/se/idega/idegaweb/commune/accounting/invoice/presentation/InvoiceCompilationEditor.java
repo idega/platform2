@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/05 15:31:20 $ by $Author: joakim $
+ * Last modified: $Date: 2003/11/05 20:17:50 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -175,9 +175,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
             displayRedText
                     ("<p>Denna funktion är inte färdig! Bl.a. så återstår:<ol>" 
-                     + "<li>skapa manuell faktura ifrån 'visa underlagslista'"
-                     + "<li>klicka på faktureringsrad och se detaljer"
                      + "<li>skapa justeringsrad till en faktura"
+                     + "<li>klicka på faktureringsrad och se detaljer"
                      + "<li>se faktureringsunderlag i pdf"
                      + "<li>tillåt inte negativt taxbelopp mm"
                      + "<li>uppdatera totalbelopp och momsers. vid justering"
@@ -286,10 +285,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                       { USERSEARCHER_PERSONALID_KEY,
                                         user.getPersonalID () }};
             final Link link = createSmallLink (userText, parameters);
+            link.addParameter (USERSEARCHER_ACTION_KEY, "unspecified");
             table.add (link, 1, row++);
         }
         if (10 < users.size ()) {
-            table.add ("För många sökresultat - försök begränsa din sökning");
+            table.add ("För många sökresultat - försök att begränsa din sökning", 1,
+                       row++);
         }
 
         return table;
@@ -484,7 +485,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             }
         } else if (null != searcher.getUsersFound ()) {
             table.mergeCells (1, row, table.getColumns (), row);            
-            table.add (searcher, 1, row++);
+            table.add (getSearcherResultTable
+                       (searcher.getUsersFound (),
+                        ACTION_SHOW_COMPILATION_LIST), 1, row++);
         }
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
@@ -651,11 +654,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Link editLink = createIconLink (getEditIcon (),
                                               editLinkParameters);
         table.add (editLink, col++, row);
-        final String [][] deleteLinkParamaters = getRecordLinkParameters
-                (ACTION_DELETE_RECORD,  recordId);
-        final Link deleteLink = createIconLink (getDeleteIcon (),
-                                                deleteLinkParamaters);
-        table.add (deleteLink, col++, row);
+        final String createdBy = record.getCreatedBy ();
+        if (null != createdBy && 2 == createdBy.length ()) {
+            final String [][] deleteLinkParamaters = getRecordLinkParameters
+                    (ACTION_DELETE_RECORD,  recordId);
+            final Link deleteLink = createIconLink (getDeleteIcon (),
+                                                    deleteLinkParamaters);
+            table.add (deleteLink, col++, row);
+        }
 	}
 
 	/**

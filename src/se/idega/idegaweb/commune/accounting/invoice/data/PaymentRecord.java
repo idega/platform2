@@ -4,7 +4,7 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 public interface PaymentRecord extends com.idega.data.IDOEntity
 {
  public java.lang.String getChangedBy();
- public java.lang.String getCreadedBy();
+ public java.lang.String getCreatedBy();
  public java.sql.Date getDateChanged();
  public java.sql.Date getDateCreated();
  public java.sql.Date getDateTransaction();

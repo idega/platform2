@@ -7,7 +7,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public float getAmountVAT();
  public java.lang.String getChangedBy();
  public int getContractId();
- public java.lang.String getCreadedBy();
+ public java.lang.String getCreatedBy();
  public java.sql.Date getDateChanged();
  public java.sql.Date getDateCreated();
  public int getDays();
