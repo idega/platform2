@@ -1,11 +1,11 @@
 package com.idega.block.school.data;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
-import java.sql.Date;
-
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.text.business.TextBusiness;
@@ -13,15 +13,16 @@ import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.data.TxTextHome;
-import com.idega.core.location.data.Commune;
-import com.idega.core.file.data.ICFile;
-import com.idega.core.file.data.ICFileHome;
-import com.idega.core.location.data.Country;
+import com.idega.core.data.Commune;
+import com.idega.core.data.Country;
+import com.idega.core.data.ICFile;
+import com.idega.core.data.ICFileHome;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
@@ -333,15 +334,15 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	}
 
 	public Collection ejbFindAllSchools() throws javax.ejb.FinderException {
-		String sql = "select * from " + SCHOOL + " where " + 
-				" (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
-				" order by upper(" + NAME + ")";
+//		String sql = "select * from " + SCHOOL + " where " + 
+//				" (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
+//				" order by upper(" + NAME + ")";
 		return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by upper("+NAME+")");
 	}
 
 	public Collection ejbFindAllSchoolsIncludingTerminated() throws javax.ejb.FinderException {
-		String sql = "select * from " + SCHOOL + " where " + 
-				" order by upper(" + NAME + ")";
+//		String sql = "select * from " + SCHOOL + " where " + 
+//				" order by upper(" + NAME + ")";
 		return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by upper("+NAME+")");
 	}
 
@@ -475,6 +476,15 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		sql.append(" and middle.sch_school_id = s.sch_school_id");
 		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
 		return super.idoGetNumberOfRecords(sql.toString());
+	}
+
+	public Collection ejbFindAllPrivate() throws IDOLookupException, EJBException, FinderException{
+		Integer managementType = (Integer)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(MANAGEMENT_TYPE,managementType.intValue());
+		return idoFindPKsBySQL(sql.toString());
+
 	}
 
 	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException, RemoteException{
