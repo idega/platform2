@@ -312,39 +312,15 @@ public class CashierWindow extends StyledIWAdminWindow {
         addParametersToMenuItems(removePayments, ACTION_REMOVE_PAYMENTS);
 
         //reports
-        Text statistics = formatHeadline(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.statistics", "Statistics"));
-
-        Table stats = new Table(2, 14);
-        stats.setColumnWidth(1, "20");
-        stats.mergeCells(1, 1, 2, 1);
-        stats.mergeCells(1, 3, 2, 3);
-        stats.mergeCells(1, 5, 2, 5);
-        stats.mergeCells(1, 7, 2, 7);
-        stats.mergeCells(1, 9, 2, 9);
-        stats.mergeCells(1, 11, 2, 11);
-        stats.mergeCells(1, 13, 2, 13);
-
-        stats.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.leagues", "Leagues")), 1, 1);
-
         LinkContainer paymentStatus = new LinkContainer();
-        paymentStatus
-                .add(formatText(iwrb
-                        .getLocalizedString(
-                                "isi_acc_cashierwindow.paymentStatus",
-                                "Payment Status"), false));
-        addParametersToMenuItems(paymentStatus, REPORT_PAYMENT_STATUS);
-        paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
-                "Invocation-A29.1.xml");
-        paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,
-                "Layout-A29.1.xml");
-        paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME,
-                "isi_acc_cashierwindow.payment_status_reportname");
         paymentStatus.setStyleClass(styledLink);
-
-        stats.add(paymentStatus, 2, 2);
-        stats.addBreak(2, 2);
+        paymentStatus.add(formatText(iwrb.getLocalizedString(
+        		"isi_acc_cashierwindow.paymentStatus", 
+				"Payment Status (A.29)"), false));
+        addParametersToMenuItems(paymentStatus, REPORT_PAYMENT_STATUS);
+        paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.1.xml");
+        paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.1.xml");
+        paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.payment_status_reportname");
 
         LinkContainer paymentOverview = new LinkContainer();
         paymentOverview.setStyleClass(styledLink);
