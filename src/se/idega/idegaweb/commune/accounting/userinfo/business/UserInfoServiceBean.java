@@ -320,17 +320,10 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					try {
 						Address siblingAddress = userBus.getUsersMainAddress(sibling);
 						if (hasValidContract (sibling, period)
-								&& childAddress.isEqualTo( siblingAddress)) {
+								&& isEqual (childAddress, siblingAddress)) {
 							SortableSibling sortableSibling = new SortableSibling(sibling);
 							if(!sortedSiblings.contains(sortableSibling)){
 								sortedSiblings.add(sortableSibling);
-							}
-						}
-						if (hasValidContract (sibling, period)) {
-							boolean b1 = childAddress.isEqualTo( siblingAddress);
-							boolean b2 = isEqual (childAddress, siblingAddress);
-							if (b1 != b2) {
-								System.err.println ("### " + b1 + " " + b2 + " " + childAddress + "; " + siblingAddress);
 							}
 						}
 					} catch (NullPointerException e) {
@@ -368,16 +361,38 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 	}
 
 	/**
+	 * This is an temporary implemenation of isEqual, designed to logg the
+	 * difference between the new and the old implementation. This method will
+	 * later be replaced with the method now called _isEqual, as soon as the
+	 * later has been verified.
+	 */
+	private static boolean isEqual (final Address address1,
+																	final Address address2) {
+		final boolean oldResult = address1.isEqualTo (address2);
+		final boolean newResult = _isEqual (address1, address2);
+		if (oldResult != newResult) {
+			System.err.println ("### old:" + oldResult + " new:" + newResult + " "
+													+ address1.getPrimaryKey () + " =? "
+													+ address2.getPrimaryKey ());
+		}
+		return newResult;
+	}
+
+	/**
 	 * Compares two addresses on street name, the number part of street number,
 	 * postal code and country. Address.isEqualTo compares the whole number part,
 	 * including nb, 1tr etc. which isn't sufficiant here.
 	 */
-	private static boolean isEqual (final Address address1,
-																	final Address address2) {
+	private static boolean _isEqual (final Address address1,
+																	 final Address address2) {
 		// In order to make this method as fast as possible...
 		// 1. retreive fields lazy - return as soon as differ is known
 		// 2. compare what's expected to be most differing field first
 		// 3. fields joined from other tables with foreign keys are considered late
+
+		if (address1.getPrimaryKey ().equals (address2.getPrimaryKey ())) {
+			return true;
+		}
 
 		try {
 			if (address1.getStreetName ()
