@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.108 2002/12/10 12:19:32 aron Exp $
+ * $Id: NewsReader.java,v 1.109 2002/12/19 13:08:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -578,7 +578,9 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
     if(locText!=null){
       sHeadline = locText.getHeadline();
+      sHeadline = sHeadline==null?"":sHeadline;
       sTeaser = locText.getTitle();
+      sTeaser = sTeaser==null?"":sTeaser;
     }
     // shortening headlinestext
     boolean needMoreButton = collection;
@@ -625,7 +627,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       T.setHeight(row,String.valueOf(iSpaceBetweenNewsAndBody));
       row++;
       /////////// BODY PART //////////
-      if(showTeaserText && sTeaser.length()> 0 && !showAll){
+      if(showTeaserText  && sTeaser.length()> 0 && !showAll){
 	      T.add(teaser,1,row);
 	      needMoreButton = true;
       }
@@ -633,9 +635,10 @@ public class NewsReader extends CategoryBlock implements IWBlock {
         // counting news
         newsCount++;
         sNewsBody =  locText.getBody();
+        sNewsBody = sNewsBody==null?"":sNewsBody;
 
         // shortening newstext
-        if(!showAll && sNewsBody.length() >= numberOfLetters){
+        if(!showAll &&  sNewsBody.length() >= numberOfLetters){
           sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
           needMoreButton = true;
         }
