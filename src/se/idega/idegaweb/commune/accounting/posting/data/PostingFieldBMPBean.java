@@ -1,5 +1,5 @@
 /*
- * $Id: PostingFieldBMPBean.java,v 1.7 2003/10/09 21:21:57 kjell Exp $
+ * $Id: PostingFieldBMPBean.java,v 1.8 2003/11/28 17:35:24 sigtryggur Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -27,16 +27,16 @@ import com.idega.data.IDOQuery;
 
 public class PostingFieldBMPBean extends GenericEntity implements PostingField
 {
-	private static final String ENTITY_NAME = "cacc_posting_field";
+	private static final String ENTITY_NAME = "CACC_POSTING_FIELD";
 
-	private static final String COLUMN_CP_POSTING_STRING_ID = "cp_posting_string_id";
-	private static final String COLUMN_ORDER_NR = "order_nr";
-	private static final String COLUMN_FIELD_TITLE = "field_title";
-	private static final String COLUMN_LEN = "len";
-	private static final String COLUMN_JUSTIFICATION = "justification";
-	private static final String COLUMN_MANDATORY = "mandatory";
-	private static final String COLUMN_PAD_CHAR = "pad_char";
-	private static final String COLUMN_FIELD_TYPE = "field_type";
+	private static final String COLUMN_CP_POSTING_STRING_ID = "CP_POSTING_STRING_ID";
+	private static final String COLUMN_ORDER_NR = "ORDER_NR";
+	private static final String COLUMN_FIELD_TITLE = "FIELD_TITLE";
+	private static final String COLUMN_LEN = "LEN";
+	private static final String COLUMN_JUSTIFICATION = "JUSTIFICATION";
+	private static final String COLUMN_MANDATORY = "MANDATORY";
+	private static final String COLUMN_PAD_CHAR = "PAD_CHAR";
+	private static final String COLUMN_FIELD_TYPE = "FIELD_TYPE";
 	
 	private static final String FIELD_TYPE_ALPHA = "ALPHA";
 	private static final String FIELD_TYPE_NUMERIC = "NUMERIC";
