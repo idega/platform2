@@ -164,7 +164,8 @@ public class Scorecard extends GolfEntity{
 
         public void delete() throws SQLException{
             try {
-                List strokes = EntityFinder.findAllByColumn(new Stroke(),"scorecard_id",this.getID());
+                List strokes = EntityFinder.findAll(Stroke.getStaticInstance("com.idega.projects.golf.entity.Stroke"),"Select * from stroke where scorecard_id = "+this.getID());
+                //List strokes = EntityFinder.findAllByColumn(new Stroke(),"scorecard_id",this.getID());
                 Stroke stroke;
                 if (strokes != null) {
                     if (strokes.size() > 0) {
@@ -176,10 +177,14 @@ public class Scorecard extends GolfEntity{
                     }
                 }
             }
-            catch (SQLException sql) {}
+            catch (SQLException sql) {
+                System.err.println("Scorecard : delete : strokes");
+                sql.printStackTrace(System.err);
+            }
 
             try {
-                List statistics = EntityFinder.findAllByColumn(new Statistic(),"scorecard_id",this.getID());
+                List statistics = EntityFinder.findAll(Statistic.getStaticInstance("com.idega.projects.golf.entity.Statistic"),"Select * from statistic where scorecard_id = "+this.getID());
+                //List statistics = EntityFinder.findAllByColumn(new Statistic(),"scorecard_id",this.getID());
                 Statistic stat;
                 if (statistics != null) {
                     if (statistics.size() > 0) {
@@ -192,7 +197,10 @@ public class Scorecard extends GolfEntity{
                 }
 
             }
-            catch (SQLException sql) {}
+            catch (SQLException sql) {
+                System.err.println("Scorecard : delete : strokes");
+                sql.printStackTrace(System.err);
+            }
 
             super.delete();
         }
