@@ -1,4 +1,4 @@
-package com.idega.block.datareport.presentation;
+package com.idega.block.dataquery.presentation;
 
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
@@ -6,7 +6,13 @@ import com.idega.presentation.PresentationObject;
 
 /**
  * <p>Title: idegaWeb</p>
- * <p>Description: </p>
+ * <p>Description:
+ * This class and the class InputHandlerChooser are not in use at the moment.
+ * <br>
+ * Both classes are used for choosing (or changing) an InputHandler that is linked to a certain field in a query,
+ * that is when defining a condition for that  field the specified InputHandler is used.
+ * This feature is disabled in the QueryBuilder at the moment and should work only in the expert mode.
+ * </p>
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: idega Software</p>
  * @author <a href="thomas@idega.is">Thomas Hilbig</a>

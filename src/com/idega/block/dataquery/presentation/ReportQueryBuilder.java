@@ -33,7 +33,6 @@ import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
 import com.idega.block.dataquery.data.xml.QueryPart;
 import com.idega.block.dataquery.data.xml.QueryXMLConstants;
-import com.idega.block.datareport.presentation.InputHandlerChooser;
 import com.idega.block.datareport.presentation.ReportQueryOverview;
 import com.idega.business.IBOLookup;
 import com.idega.business.InputHandler;
@@ -94,7 +93,9 @@ public class ReportQueryBuilder extends Block {
 	public static final String PARAM_SAVE = "save";
 	public static final String PARAM_SAVE_MODE ="save_mode";
 	private static final String PARAM_SET_EXPRESSION = "setExpression";
+	/** disabled input handler chooser (don't delete this code) 
 	private static final String PARAM_SET_HANDLER = "setHandler";
+	*/
 	private static final String PARAM_DYNAMIC = "dynamic";
 //public static final String PARAM_QUIT = "quit";
 	private static final String PARAM_QUERY_AS_SOURCE = "source_query";
@@ -163,7 +164,7 @@ public class ReportQueryBuilder extends Block {
 	private int tableBorder = 0;
 
 	private String stepTableColor = "#ffffff";
-	private String stepTableStyle = "main";
+
 	private String stepFontStyle = "headingFont";
 	private String messageFontStyle = "messageFont";
 	private boolean allowEmptyConditions = true;
@@ -320,6 +321,8 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 	private void processForm(IWContext iwc) throws IDOStoreException, IOException, CreateException, SQLException, RemoteException, FinderException {
+/** disabled input handler chooser (don't delete that code) (start)
+ *  search this file for "InputHandlerChooser".
 		// first of all set new handler classes
 		if (iwc.isParameterSet(PARAM_SET_HANDLER)) {
 			String handlerClass = InputHandlerChooser.parseInputHandler(iwc);
@@ -329,6 +332,8 @@ public class ReportQueryBuilder extends Block {
 				helper.setInputHandler(fieldPart.getPath(), fieldPart.getName(), handlerClass);
 			}
 		}
+		disabled input handler chooser (end)
+*/
 //		//		destroy sessionbean and close window if set
 //		if (iwc.isParameterSet(PARAM_QUIT)) {
 //			//if(closeParentWindow)
@@ -1237,6 +1242,8 @@ public class ReportQueryBuilder extends Block {
 		// set fields as source
 		row++;
 		row = addBooleanExpressionToConditionTable(table, row);
+/** disabled input handler chooser (don't delete that code) (start)
+ * 	search this file for "InputHandlerChooser".
 		// add input handler chooser
 //		if (expertMode) {
 //			row++;
@@ -1249,6 +1256,8 @@ public class ReportQueryBuilder extends Block {
 //			table.add(inputHandlerChooser, 3, row);
 //			table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set handler", "Set handler"), PARAM_SET_HANDLER, PARAM_SET_HANDLER),7 ,row);
 //		}
+ *  disabled input handler chooser (end)
+ */
 		return table;
 	}
 
@@ -1669,13 +1678,13 @@ public class ReportQueryBuilder extends Block {
 //		}
 		return T;
 	}
-	private Table getHelpTable(int currentStep, boolean expertMode) {
+	private Table getHelpTable(int currentStep, boolean isExpertMode) {
 		Table helpTable = new Table();
 		helpTable.setCellpadding(5);
 		helpTable.setCellspacing(0);
 		Help help = null;
 		String expert = "";
-		if(expertMode) {
+		if(isExpertMode) {
 			expert = "expert";
 		}
 		else {
