@@ -1,6 +1,5 @@
-//idega 2000 - Tryggvi Larusson
 /*
-*Copyright 2000 idega.is All Rights Reserved.
+*Copyright 2001 idega.is All Rights Reserved.
 */
 
 package com.idega.jmodule.object;
@@ -14,18 +13,21 @@ import com.idega.jmodule.image.data.ImageEntity;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
-*@version 1.2
+*@version 1.5
+*@modified <a href="mailto:eiki@idega.is">Eirikur Hrafnson</a>
 */
 public class Image extends ModuleObject{
 
 private Script theAssociatedScript;
 private String overImageUrl;
+private String textBgColor = "#CCCCCC";
 private boolean limitImageWidth = false;
 private boolean zoomView = false;
+private boolean linkOnImage = true;
+
 private int imageId = -1;
 private int maxImageWidth = 140;
-private ModuleObject tableOrImage = null;
-private Link imageLink2 = null;
+
 
 public Image(){
 	this("");
@@ -102,14 +104,13 @@ public Image(String url,String name,int width,int height){
 */
 
 public Image(int imageId) throws SQLException{
+  super();
   this.imageId = imageId;
+  StringBuffer URIString = new StringBuffer("");
+  URIString.append("/servlet/imageModule?image_id=");
+  URIString.append(imageId);
+  setURL(URIString.toString());
   setBorder(0);
-/*  super();
-  this.imageId = imageId;
-  String URIString = "/servlet/imageModule";
-  URIString = URIString+"?image_id="+imageId;
-  setURL(URIString);
-  setBorder(0);*/
 
 }
 
@@ -156,12 +157,16 @@ public void setHorizontalSpacing(int spacing){
   setAttribute("hspace",Integer.toString(spacing));
 }
 
-public int getHeight(){
- return Integer.parseInt(getAttribute("height"));
+public void setTextBackgroundColor(String color){
+  this.textBgColor = color;
 }
 
-public int getWidth(){
-  return Integer.parseInt(getAttribute("width"));
+public String getHeight(){
+ return getAttribute("height");
+}
+
+public String getWidth(){
+  return getAttribute("width");
 }
 
 public String getURL(){
@@ -192,67 +197,126 @@ public void setImageLinkZoomView(){
   this.zoomView = true;
 }
 
-private void setTableOrImage(){//optimize by writing in pure html
-Table imageTable = null;
+public void setNoImageLink(){
+  this.linkOnImage = false;
+}
+
+private String getPrintStringWithName(){
+  StringBuffer sPrint = new StringBuffer();
+  sPrint.append("<img alt=\"");
+  sPrint.append(getName());
+  sPrint.append("\"");
+  sPrint.append(getAttributeString());
+  sPrint.append(" >");
+  return sPrint.toString();
+}
+
+private String getPrintString(){
+  StringBuffer sPrint = new StringBuffer();
+  sPrint.append("<img ");
+  sPrint.append(getAttributeString());
+  sPrint.append(" >");
+  return sPrint.toString();
+}
+
+private String getHTMLString(){
+  if (getName() != null){
+    return getPrintStringWithName();
+  }
+  else{
+    return getPrintString();
+  }
+}
+
+
+
+private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
   try{
     ImageEntity image = new ImageEntity(imageId);
     String texti = image.getText();
     String link = image.getLink();
+    String name = image.getName();
+    if( name != null ) setName(name);
 
-    StringBuffer URIString = new StringBuffer("");
-    URIString.append("/servlet/imageModule?image_id=");
-    URIString.append(imageId);
-
-    Image theImage = new Image(URIString.toString(),image.getName());
-
-    imageLink2 = new Link(theImage);
 
     String width = image.getWidth();
     String height = image.getHeight();
 
-    if(limitImageWidth){
-      theImage.setMaxImageWidth(maxImageWidth);
-    }
-    else{
+    if(!limitImageWidth){
       if( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
-        theImage.setWidth(width);
+        setWidth(width);
       }
       if( (height!=null) && (!height.equalsIgnoreCase("")) && (!height.equalsIgnoreCase("-1")) ) {
-        theImage.setHeight(height);
+        setHeight(height);
       }
     }
-
+    else{
+      setWidth(maxImageWidth);
+    }
 
     if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
-      imageTable = new Table(1, 2);
+      Table imageTable = new Table(1, 2);
       imageTable.setAlignment("center");
       imageTable.setAlignment(1,1,"center");
-      imageTable.setAlignment(1,2,"center");
+      imageTable.setAlignment(1,2,"left");
       imageTable.setVerticalAlignment("top");
-      imageTable.setCellpadding(0);
+      //imageTable.setCellpadding(0);
+      //imageTable.setCellspacing(0);
+      imageTable.setColor(1,2,textBgColor);
+      String sWidth = getWidth();
+
+      if( (sWidth!=null) && (!sWidth.equalsIgnoreCase(""))  && (!limitImageWidth) ){
+        imageTable.setWidth(sWidth);
+      }
+      else if( limitImageWidth ){
+        imageTable.setWidth(maxImageWidth);
+      }
 
       Text imageText = new Text(texti);
       imageText.setFontSize(1);
 
-      if ( (link!=null) && (!"".equalsIgnoreCase(link)) ){
-        Link imageLink = new Link(imageText,link);
-        imageLink.setTarget("_new");
-        imageLink.setFontSize(1);
-        imageTable.add(imageLink, 1, 2);
-        if( !zoomView ) {
-          imageLink2.setURL(link);
-          imageLink.setTarget("_new");
+      if ( (link!=null) && (!"".equalsIgnoreCase(link)) ){//has a link
+        Link textLink = new Link(imageText,link);
+        textLink.setTarget("_new");
+        textLink.setFontSize(1);
+        imageTable.add(textLink, 1, 2);//add the text with the link on it
+
+        //should we add the image with a link? or just the image
+        if( zoomView ){
+          Link imageLink = new Link(getHTMLString());
+          imageLink.addParameter("image_id",imageId);
+          imageTable.add(imageLink, 1, 1);
         }
+        else if( (!zoomView) && (linkOnImage) ) {
+          Link imageLink = new Link(getHTMLString(), link);
+          imageLink.setTarget("_new");
+          imageTable.add(imageLink, 1, 1);
+        }
+        else imageTable.add(getHTMLString(),1,1);
+
       }
-      else{
+      else{//or no link
+
+        if( zoomView ){
+          Link imageLink = new Link(getHTMLString());
+          imageLink.addParameter("image_id",imageId);
+          imageTable.add(imageLink, 1, 1);
+        }
+        else imageTable.add(getHTMLString(),1,1);
+
         imageTable.add(imageText, 1, 2);
       }
-      imageTable.setColor(1,2,"#CCCCCC");
-      tableOrImage = imageTable;
-    }
-    else  tableOrImage = theImage;
 
-    imageTable.add(imageLink2, 1, 1);
+      imageTable.print(modinfo);
+    }
+    else  {
+      if(zoomView){
+        Link imageLink = new Link(getHTMLString());
+        imageLink.addParameter("image_id",imageId);
+        imageLink.print(modinfo);
+      }
+      else print(getHTMLString());
+    }
 
   }
   catch(Exception e){
@@ -263,7 +327,7 @@ Table imageTable = null;
 }
 
 public void setMaxImageWidth(int maxImageWidth){
-  this.limitImageWidth=true;
+  this.limitImageWidth = true;
   this.maxImageWidth = maxImageWidth;
 }
 
@@ -275,15 +339,6 @@ public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if( doPrint(modinfo) ){
 		if (getLanguage().equals("HTML")){
-                  if( imageId!=-1 )  setTableOrImage();
-
-                  if(limitImageWidth){
-                     setWidth(maxImageWidth);
-                  }
-
-                  if( zoomView ){
-                    if( imageLink2!=null) imageLink2.addParameter("image_id",imageId);
-                  }
 
 			//if (getInterfaceStyle().equals("something")){
 			//}
@@ -299,18 +354,18 @@ public void print(ModuleInfo modinfo)throws IOException{
 			}*/
 
                         //added by eiki
-                        if( tableOrImage == null){
-				if (getName() != null){
-				print("<img alt=\""+getName()+"\""+getAttributeString()+" >");
-				}
-				else{
-					print("<img "+getAttributeString()+" >");
-				}
+                        if( imageId ==-1 ){//from an url
 
+                          if (getName() != null){
+                            print(getPrintStringWithName());
+                          }
+                          else{
+                            print(getPrintString());
+                          }
 
                         }
-                        else{
-                          tableOrImage.print(modinfo);
+                        else{//from the database
+                          getHTMLImage(modinfo);
                         }
 				//println("</img>");
 			// }
