@@ -8,13 +8,9 @@ package com.idega.block.poll.data;
 
 //import java.util.*;
 
-import com.idega.data.*;
-
-import com.idega.block.poll.data.*;
+import java.sql.SQLException;
 
 import com.idega.core.data.ICObjectInstance;
-
-import java.sql.*;
 
 
 

@@ -1,42 +1,36 @@
 package com.idega.block.presentation;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
+import com.idega.business.IBOLookup;
+import com.idega.core.business.Category;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.business.CategoryService;
 import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICCategoryTranslation;
+import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICObjectInstanceHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.data.IDOLookup;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Script;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-
-import java.rmi.RemoteException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Vector;
-import java.util.List;
-import java.util.Collection;
-import java.util.TreeMap;
-import java.util.StringTokenizer;
-
-import javax.ejb.FinderException;
-
-import com.idega.block.category.business.CategoryComparator;
-import com.idega.business.IBOLookup;
-import com.idega.core.business.Category;
-import com.idega.core.business.CategoryFinder;
-//import com.idega.core.business.CategoryBusiness;
-import com.idega.core.business.CategoryService;
-import com.idega.io.ObjectSerializer;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 /**
  * Title:
  * Description:

@@ -1,5 +1,5 @@
 /*
- * $Id: PollLayoutHandler.java,v 1.3 2002/04/06 19:07:33 tryggvil Exp $
+ * $Id: PollLayoutHandler.java,v 1.4 2003/04/03 08:10:53 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,12 +10,12 @@
 package com.idega.block.poll.business;
 
 import java.util.List;
+
 import com.idega.block.poll.presentation.Poll;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.text.Text;
 import com.idega.builder.handler.PropertyHandler;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.DropdownMenu;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

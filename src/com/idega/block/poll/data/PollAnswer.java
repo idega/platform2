@@ -1,6 +1,5 @@
 package com.idega.block.poll.data;
 
-import javax.ejb.*;
 
 public interface PollAnswer extends com.idega.data.IDOLegacyEntity
 {

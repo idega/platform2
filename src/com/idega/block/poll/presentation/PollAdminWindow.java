@@ -1,26 +1,31 @@
 package com.idega.block.poll.presentation;
 
 
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.core.localisation.presentation.ICLocalePresentation;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICLocale;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Locale;
+
 import com.idega.block.IWBlock;
-import com.idega.block.poll.data.*;
-import com.idega.block.poll.business.*;
-import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.block.login.business.LoginBusiness;
+import com.idega.block.poll.business.PollBusiness;
+import com.idega.block.poll.business.PollFinder;
+import com.idega.block.poll.data.PollEntity;
+import com.idega.block.poll.data.PollQuestion;
 import com.idega.block.text.business.TextFinder;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 
 public class PollAdminWindow extends IWAdminWindow{
 

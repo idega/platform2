@@ -8,15 +8,10 @@ package com.idega.block.poll.data;
 
 //import java.util.*;
 
-import com.idega.data.*;
-
-import com.idega.block.poll.data.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import com.idega.block.text.data.LocalizedText;
-
-import com.idega.core.user.data.User;
-
-import java.sql.*;
 
 
 

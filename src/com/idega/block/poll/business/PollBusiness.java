@@ -2,29 +2,22 @@ package com.idega.block.poll.business;
 
 
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 
-import com.idega.presentation.IWContext;
-
-import com.idega.block.poll.data.*;
-
-import com.idega.data.EntityFinder;
-
-import com.idega.block.text.data.LocalizedText;
-
+import com.idega.block.poll.data.PollAnswer;
+import com.idega.block.poll.data.PollEntity;
+import com.idega.block.poll.data.PollQuestion;
 import com.idega.block.text.business.TextFinder;
-
+import com.idega.block.text.data.LocalizedText;
 import com.idega.core.data.ICObjectInstance;
-
-import com.idega.util.IWTimestamp;
-
+import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
-
+import com.idega.util.IWTimestamp;
 import com.idega.util.database.ConnectionBroker;
-
-import java.util.List;
 
 
 

@@ -1,12 +1,12 @@
 package com.idega.block.poll.business;
 
-import com.idega.data.EntityFinder;
-import com.idega.block.poll.data.*;
 import java.sql.SQLException;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.business.ICObjectBusiness;
 import java.util.List;
+
+import com.idega.block.poll.data.PollEntity;
+import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.data.ICObjectInstance;
+import com.idega.data.EntityFinder;
 
 /**
  * Title:

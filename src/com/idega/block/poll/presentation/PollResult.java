@@ -1,20 +1,23 @@
 package com.idega.block.poll.presentation;
 
-import com.idega.presentation.ui.*;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.*;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.text.Link;
-import com.idega.block.poll.business.*;
-import com.idega.block.poll.data.*;
+import java.sql.SQLException;
+import java.util.List;
+
+import com.idega.block.poll.business.PollBusiness;
+import com.idega.block.poll.data.PollAnswer;
+import com.idega.block.poll.data.PollQuestion;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.accesscontrol.business.AccessControl;
-import java.util.List;
-import java.sql.SQLException;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Window;
 
 /**
  * Title:
