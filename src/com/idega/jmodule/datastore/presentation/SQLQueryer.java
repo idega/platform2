@@ -53,6 +53,8 @@ public class SQLQueryer extends Block{
 
     public void main(IWContext iwc)throws Exception{
       resultsPane = new FramePane(resultName);
+      String  queryString = iwc.getParameter (queryParameter);
+
 
       if(displayForm){
         queryPane = new FramePane("Query");
@@ -62,6 +64,9 @@ public class SQLQueryer extends Block{
         TextArea input = new TextArea(queryParameter);
         input.setWidth(50);
         input.setHeight(4);
+        if(queryString!=null){
+          input.setValue(queryString);
+        }
         Table innertTable =new Table(1,2);
         form.add(innertTable);
         innertTable.add(input,1,1);
@@ -70,7 +75,6 @@ public class SQLQueryer extends Block{
 
 
       Connection conn=getConnection();
-      String  queryString = iwc.getParameter (queryParameter);
       if(queryString == null) queryString = query;
 
       try {
