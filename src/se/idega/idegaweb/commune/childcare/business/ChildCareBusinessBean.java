@@ -1981,4 +1981,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace(System.err);
 		}
 	}
+	
+	public boolean hasActivePlacement(int childID) throws RemoteException {
+		return getActivePlacement(childID) != null;
+	}
+	
+	public ChildCareApplication getActivePlacement(int childID) throws RemoteException {
+		try{
+		
+			Collection applications = getChildCareApplicationHome().findApplicationByChild(childID);
+			Iterator i = applications.iterator();
+			while(i.hasNext()){
+				ChildCareApplication app = (ChildCareApplication) i.next();
+				if (app.isActive()){
+					return app;
+				}
+			}
+			return null;
+		}catch(FinderException ex) {
+			return null;
+		}
+	}	
 }

@@ -107,4 +107,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean reactivateApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application, com.idega.user.data.User user) throws java.rmi.RemoteException;
  public boolean reactivateApplication(int applicationID, com.idega.user.data.User user) throws java.rmi.RemoteException;
  public void convertOldQueue();
+ public boolean hasActivePlacement(int childID) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getActivePlacement(int childID) throws java.rmi.RemoteException;
+  
 }
