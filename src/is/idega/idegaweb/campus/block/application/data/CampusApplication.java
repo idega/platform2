@@ -1,9 +1,12 @@
 package is.idega.idegaweb.campus.block.application.data;
 
+import com.idega.block.application.data.Application;
+
 
 public interface CampusApplication extends com.idega.data.IDOEntity
 {
  public java.lang.Integer getAppApplicationId();
+ public Application getApplication();
  public java.lang.String getApplicationIdColumnName();
  public java.lang.String getChildren();
  public java.lang.String getChildrenColumnName();

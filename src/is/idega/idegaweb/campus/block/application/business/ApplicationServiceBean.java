@@ -74,34 +74,30 @@ import com.idega.util.IWTimestamp;
 			}
 		}
 		
-		public void storeApplicationStatus(int id, String status) {
+		public void storeApplicationStatus(Integer ID, String status) {
 			UserTransaction t = getSessionContext().getUserTransaction();
 			try {
 
 				t.begin();
-				Application A = getApplicationHome().findByPrimaryKey(new Integer(id));
+				CampusApplication CA = getCampusApplicationHome().findByPrimaryKey(ID);
+				Application A = CA.getApplication();
 				String oldStatus = A.getStatus();
 				A.setStatus(status);
 				A.store();
-				Applicant Appli = getApplicantHome().findByPrimaryKey(new Integer(A.getApplicantId()));
+				Applicant Appli = A.getApplicant();
 
 				if (((oldStatus == null) || (!oldStatus.equals(Status.APPROVED.toString())))
 					&& status.equals(Status.APPROVED.toString())) {
 					// send out approval letter ( try to do with listeners )
 					getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.APPROVAL);
 
-					CampusApplication CA = null;
-					Collection coll = getCampusApplicationHome().findAllByApplicationId(((Integer) A.getPrimaryKey()).intValue());
-					if (coll != null) {
-						Iterator it = coll.iterator();
-						if (it.hasNext())
-							CA = (CampusApplication) it.next();
-					}
 					// make transfers on waitinglists
 					createWaitinglistTransfers(Appli, CA);
 				}
-				else if (status.equals(Status.REJECTED.toString()))
+				else if (status.equals(Status.REJECTED.toString())){
 					getMailingListService().processMailEvent(new EntityHolder(Appli), LetterParser.REJECTION);
+				}
+				t.commit();
 
 			}
 			catch (Exception e) {
@@ -177,16 +173,7 @@ import com.idega.util.IWTimestamp;
 		public void storePriorityLevel(Integer ID, String level) throws RemoteException {
 
 			try {
-				Application A = getApplicationHome().findByPrimaryKey(ID);
-				Collection coll =
-					getCampusApplicationHome().findAllByApplicationId(((Integer) A.getPrimaryKey()).intValue());
-				CampusApplication CA = null;
-
-				if (coll != null) {
-					java.util.Iterator it = coll.iterator();
-					if (it.hasNext())
-						CA = (CampusApplication) it.next();
-				}
+				CampusApplication CA = getCampusApplicationHome().findByPrimaryKey(ID);
 
 				if (CA != null) {
 					CA.setPriorityLevel(level);
@@ -264,7 +251,7 @@ import com.idega.util.IWTimestamp;
 		}
 
 		public Application storeWholeApplication(
-			Integer ID,
+			Integer campusApplicationID,
 			Integer subjectID,
 			ApplicantInfo applicantInfo,
 			ApartmentInfo apartmentInfo,
@@ -280,9 +267,10 @@ import com.idega.util.IWTimestamp;
 				CampusApplication campusApplication = null;
 				Applicant spouse = null;
 				Vector children = null;
-				if (ID.intValue() > 0) {
-					application = getApplicationHome().findByPrimaryKey(ID);
-					applicant = getApplicantHome().findByPrimaryKey(new Integer(application.getApplicantId()));
+				if (campusApplicationID.intValue() > 0) {
+					campusApplication = getCampusApplicationHome().findByPrimaryKey(campusApplicationID);
+					application = campusApplication.getApplication();
+					applicant = application.getApplicant();
 					Iterator iter = applicant.getChildren();
 					if (iter != null) {
 						Applicant a;
@@ -298,9 +286,6 @@ import com.idega.util.IWTimestamp;
 							}
 						}
 					}
-					Iterator iterator = getCampusApplicationHome().findAllByApplicationId(ID.intValue()).iterator();
-					if (iter.hasNext())
-						campusApplication = (CampusApplication) iterator.next();
 
 				}
 				else {
@@ -321,7 +306,7 @@ import com.idega.util.IWTimestamp;
 					campusApplication.store();
 				}
 
-				if (application != null && applicant != null) {
+				if (application != null && applicant != null && campusApplication!=null) {
 					Collection applieds = getAppliedHome().findByApplicationID((Integer) campusApplication.getPrimaryKey());
 					storeApplicantInfo(applicant, campusApplication, applicantInfo);
 					storeApartmentInfo(campusApplication, applieds, apartmentInfo);

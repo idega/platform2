@@ -5,33 +5,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.util.TextFormat;
 import com.idega.util.database.ConnectionBroker;
 
 /**
  * Title
- * Description:
+ * Description: Shows number of habitants in the campus system
  * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserve
  * Company:      ideg
   *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
 
- public class CampusHabitants extends Block {
+ public class CampusHabitants extends CampusBlock {
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  public final static String FRAME_NAME = "fin_rightFrame";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
-  private TextFormat tf;
-
-
+  
   public CampusHabitants() {
 
   }
@@ -60,14 +50,14 @@ import com.idega.util.database.ConnectionBroker;
 
   public PresentationObject createResultTable(IWContext iwc)throws SQLException{
     DataTable T = new DataTable();
-      T.addTitle(iwrb.getLocalizedString("tenant_count","Tenant count"));
+      T.addTitle(localize("tenant_count","Tenant count"));
       T.setTitlesHorizontal(true);
       T.setWidth("50%");
       int row = 1;
       int col = 1;
-      T.add(tf.format(iwrb.getLocalizedString("campus","Campus"),tf.HEADER),col++,row);
-      T.add(tf.format(iwrb.getLocalizedString("building","Building"),tf.HEADER),col++,row);
-      T.add(tf.format(iwrb.getLocalizedString("habitants","Habitants"),tf.HEADER),col++,row);
+      T.add(getHeader(localize("campus","Campus")),col++,row);
+      T.add(getHeader(localize("building","Building")),col++,row);
+      T.add(getHeader(localize("habitants","Habitants")),col++,row);
       row++;
 
         Connection conn= null;
@@ -81,16 +71,16 @@ import com.idega.util.database.ConnectionBroker;
             int subtotal = 0;
             while (RS.next()) {
               col = 1;
-              T.add(tf.format(RS.getString(1)),col++,row);
-              T.add(tf.format(RS.getString(2)),col++,row);
+              T.add(getText(RS.getString(1)),col++,row);
+              T.add(getText(RS.getString(2)),col++,row);
               subtotal = RS.getInt(3);
-              T.add(tf.format(subtotal),col++,row);
+              T.add(getText(String.valueOf(subtotal)),col++,row);
               row++;
               total += subtotal;
             }
             col = 2;
-            T.add(tf.format(iwrb.getLocalizedString("total","Total"),tf.HEADER),col++,row);
-            T.add(tf.format(String.valueOf(total),tf.HEADER),col,row);
+            T.add(getText(localize("total","Total")),col++,row);
+            T.add(getText(String.valueOf(total)),col,row);
             RS.close();
 
         }
@@ -107,9 +97,6 @@ import com.idega.util.database.ConnectionBroker;
   }
 
   public void main(IWContext iwc)throws SQLException{
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    tf = TextFormat.getInstance();
     add(createResultTable(iwc));
   }
   

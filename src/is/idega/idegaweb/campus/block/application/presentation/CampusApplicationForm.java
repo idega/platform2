@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.26 2004/06/06 11:57:14 gimmi Exp $
+ * $Id: CampusApplicationForm.java,v 1.27 2004/06/09 17:07:36 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -359,10 +359,10 @@ public class CampusApplicationForm extends ApplicationForm {
 
 		Form form = new Form();
 		DataTable t = new DataTable();
-		
+		t.setUseBottom(false);
 
-		String text1 = _iwrb.getLocalizedString("applicationSubject", "Ums?kn um");
-		String text2 = _iwrb.getLocalizedString("apartmentType", "Tegund ?b??ar");
+		String text1 = _iwrb.getLocalizedString("applicationSubject", "Application subject");
+		String text2 = _iwrb.getLocalizedString("apartmentType", "Apartment type");
 
 		DropdownMenu subject = new DropdownMenu(subjects, "subject");
 		
@@ -511,9 +511,6 @@ public class CampusApplicationForm extends ApplicationForm {
 		Edit.setStyle(inputExtraInfo);
 		inputExtraInfo.setRows(4);
 		inputExtraInfo.setColumns(30);
-
-		inputExtraInfo.setHeight(4);
-		inputExtraInfo.setWidth(30);
 
 		DateInput input16 = new DateInput("wantHousingFrom");
 		if (iwc.isParameterSet("wantHousingFrom")) {

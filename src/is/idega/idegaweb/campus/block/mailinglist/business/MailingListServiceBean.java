@@ -174,7 +174,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	public boolean addEmail(int iMailingListId, List emails)throws RemoteException,FinderException {
 			MailingList mlist =(	(MailingListHome) getIDOHome(MailingList.class)).findByPrimaryKey(new Integer(iMailingListId));
 			EntityBulkUpdater bulk = new EntityBulkUpdater(mlist);
-			bulk.addAll(emails, bulk.addto);
+			bulk.addAll(emails, EntityBulkUpdater.addto);
 			return true;
 		
 	}

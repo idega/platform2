@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubjectInfoBMPBean.java,v 1.3 2004/06/05 07:34:56 aron Exp $
+ * $Id: ApplicationSubjectInfoBMPBean.java,v 1.4 2004/06/09 17:07:36 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
+import com.idega.block.application.data.ApplicationSubject;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 
 /**
@@ -67,6 +74,19 @@ group by app1.app_subject_id, sub.description,app1.status;
 
   public ApplicationSubjectInfoBMPBean(int id) throws SQLException {
   }
+  
+  public Class getPrimaryKeyClass() {
+	return ApplicationSubjectInfoKey.class;	
+  }
+  
+  public Object ejbFindByPrimaryKey(ApplicationSubjectInfoKey primaryKey) throws FinderException {
+	return super.ejbFindByPrimaryKey(primaryKey);
+  }
+
+  public Object ejbCreate(ApplicationSubjectInfoKey primaryKey) throws CreateException {
+	setPrimaryKey(primaryKey);
+	return super.ejbCreate();
+  }
 
   public void initializeAttributes() {
     addAttribute(SUBJECTID,"Subjed Id",true,true,Integer.class);
@@ -75,10 +95,10 @@ group by app1.app_subject_id, sub.description,app1.status;
     addAttribute(STATUS,"status",true,true,String.class);
     setAsPrimaryKey(STATUS,true);
     addAttribute(NUMBER,"Number",true,true,Integer.class);
-    addAttribute(LASTSUBMISSION,"LASTSUBMISSION",true,true,Timestamp.class);
-    addAttribute(FIRSTSUBMISSION,"FIRSTSUBMISSION",true,true,Timestamp.class);
-    addAttribute(LASTCHANGE,"LASTCHANGE",true,true,Timestamp.class);
-    addAttribute(FIRSTCHANGE,"FIRSTCHANGE",true,true,Timestamp.class);
+    addAttribute(LASTSUBMISSION,"LAST_SUBMISSION",true,true,Timestamp.class);
+    addAttribute(FIRSTSUBMISSION,"FIRST_SUBMISSION",true,true,Timestamp.class);
+    addAttribute(LASTCHANGE,"LAST_CHANGE",true,true,Timestamp.class);
+    addAttribute(FIRSTCHANGE,"FIRST_CHANGE",true,true,Timestamp.class);
 
   }
 
@@ -116,21 +136,31 @@ group by app1.app_subject_id, sub.description,app1.status;
   public Collection ejbFindAll() throws FinderException{
 	   return super.idoFindPKsByQuery(super.idoQueryGetSelect());
 	 }
+  
+  public Collection ejbFindAllNonExpired(java.sql.Date date) throws FinderException{
+  	Table type =new Table(this);
+	Table related = new Table(ApplicationSubject.class);
+	SelectQuery query = new SelectQuery(type);
+	query.addColumn(new WildCardColumn(type));
+	query.addJoin(type,SUBJECTID,related,"app_subject_id");
+	query.addCriteria(new MatchCriteria(related,"expires",MatchCriteria.GREATEREQUAL,date));
+	return idoFindPKsBySQL(query.toString());
+  }
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOView#getCreationSQL()
 	 */
 	public String getCreationSQL() {
 		StringBuffer sql =new StringBuffer();
-		sql.append("CREATE VIEW V_APP_SUBJECT_INFO( ");
-		sql.append(" SUBJECT_ID, ");
-		sql.append(" NAME, ");
-		sql.append(" STATUS, ");
-		sql.append(" NUMBER, ");
-		sql.append(" LAST_SUBMISSION, ");
-		sql.append(" FIRST_SUBMISSION, ");
-		sql.append(" LAST_CHANGE, ");
-		sql.append(" FIRST_CHANGE) ");
+		sql.append("CREATE VIEW ").append(VIEWNAME).append(" ( ");
+		sql.append(SUBJECTID).append(" , ");
+		sql.append(NAME).append(" , ");
+		sql.append(STATUS).append(" , ");
+		sql.append(NUMBER).append(" , ");
+		sql.append(LASTSUBMISSION).append(" , ");
+		sql.append(FIRSTSUBMISSION).append(" , ");
+		sql.append(LASTCHANGE).append(" , ");
+		sql.append(FIRSTCHANGE).append(" ) ");
 		sql.append(" AS ");
 		sql.append(" select app1.app_subject_id subject_id, sub.description name, app1.status, ");
 		sql.append(" count(app1.status) number, ");

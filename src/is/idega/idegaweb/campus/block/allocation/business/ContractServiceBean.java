@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.9 2004/06/07 18:25:59 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.10 2004/06/09 17:07:36 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -297,7 +297,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		return contract;
 	}
 	public User createNewUser(Applicant A, String[] emails) throws RemoteException, CreateException {
-		User user = getUserService().createUser(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN());
+		//User user = getUserService().createUser(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN());
+		User user = getUserService().createUserByPersonalIDIfDoesNotExist(A.getFirstName(), A.getMiddleName(), A.getLastName(), A.getSSN(),null,null);
 		if (emails != null && emails.length > 0) {
 			Integer userID = (Integer) user.getPrimaryKey();
 			getUserService().addNewUserEmail(userID.intValue(), emails[0]);
@@ -307,7 +308,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public boolean deleteAllocation(Integer contractID, User currentUser) {
 		try {
 			Contract eContract = getContractHome().findByPrimaryKey(contractID);
-			getUserService().deleteUser(eContract.getUserId().intValue(), currentUser);
+			//getUserService().deleteUser(eContract.getUserId().intValue(), currentUser);
 			eContract.remove();
 			return true;
 		}

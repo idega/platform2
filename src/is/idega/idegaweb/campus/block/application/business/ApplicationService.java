@@ -25,7 +25,7 @@ import com.idega.block.building.business.BuildingService;
 import com.idega.util.IWTimestamp;
 
 
-public interface ApplicationService extends com.idega.business.IBOService
+public interface ApplicationService extends com.idega.business.IBOService 
 {
 	public String[] getApplicantEmail(int iApplicantId);
 	public ApplicantHome getApplicantHome() throws RemoteException;
@@ -45,7 +45,7 @@ public interface ApplicationService extends com.idega.business.IBOService
 	public Collection getComplexTypeHelpers(Collection complexTypes);
 	public ApplicationSubjectHome getSubjectHome() throws RemoteException;
 	public  BuildingService getBuildingService() throws RemoteException ;
-	public void storeApplicationStatus(int id, String status) ;
+	public void storeApplicationStatus(Integer campusApplicationID, String status) ;
 	public void storeApartmentInfo(			CampusApplication campusApplication,			Collection capplieds,			ApartmentInfo apartmentInfo)throws RemoteException, CreateException;
 	public void createApplicationSubject(String sDesc, String sDate) throws CreateException, RemoteException;
 	public void storePriorityLevel(Integer ID, String level) throws RemoteException;

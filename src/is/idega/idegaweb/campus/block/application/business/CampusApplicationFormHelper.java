@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.21 2004/06/07 18:41:21 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.22 2004/06/09 17:07:36 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -116,7 +116,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		String cypher = "";
 
 		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
-
+		if(applicant!=null){
 		try {
 			t.begin();
 			applicant.store();
@@ -187,6 +187,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 			}
 			e.printStackTrace();
 			return (null);
+		}
 		}
 
 		String e_mail = campusApplication.getEmail();

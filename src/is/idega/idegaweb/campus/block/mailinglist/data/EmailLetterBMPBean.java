@@ -148,7 +148,7 @@ public class EmailLetterBMPBean extends com.idega.data.GenericEntity implements 
 	}
 	
   public Collection ejbFindByType(String type)throws FinderException{
-  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(TYPE,type));
+  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEqualsQuoted(TYPE,type));
   }
   
   public Collection ejbFindAll()throws FinderException{

@@ -6,6 +6,15 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Application;
+import com.idega.block.application.data.ApplicationBMPBean;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
+
 
 /**
  * A specific application for the campus system.
@@ -103,6 +112,10 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity imple
 
   public String getApplicationIdColumnName() {
     return(applicationId_);
+  }
+  
+  public Application getApplication(){
+  	return (Application) getColumnValue(applicationId_);
   }
 
   public String getCurrentResidenceIdColumnName() {
@@ -498,7 +511,29 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity imple
     sql.append(applicationId_);
     sql.append(" = ");
     sql.append(id);
-    return super.idoFindIDsBySQL(sql.toString());
+    return super.idoFindPKsBySQL(sql.toString());
+  }
+  
+  public Collection ejbFindBySubjectAndStatus(Integer subjectID,String status,String order)throws FinderException{
+  	Table campusApplication = new Table(this,"c");
+	Table application = new Table(Application.class,"a");
+	
+	
+	SelectQuery query = new SelectQuery(campusApplication);
+	query.setAsDistinct(true);
+	query.addColumn(new WildCardColumn(campusApplication));
+	try {
+		query.addJoin(campusApplication,application);
+	}
+	catch (IDORelationshipException e) {
+		throw new FinderException(e.getMessage());
+	}
+	query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getSubjectIdColumnName()),MatchCriteria.EQUALS,subjectID.intValue() ));
+	query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getStatusColumnName()),MatchCriteria.EQUALS,status ));
+	if(order!=null)
+		query.addOrder(application,order,true);
+	return idoFindPKsBySQL(query.toString());
+  
   }
   
   public Collection ejbFindAll() throws FinderException {

@@ -550,7 +550,7 @@ public abstract class CampusBlock extends Block {
 	}
 	
 	public ApplicationService getApplicationService(IWContext iwc)throws RemoteException{
-		return (ApplicationService)IBOLookup.getServiceInstance(iwc,CampusService.class);
+		return (ApplicationService)IBOLookup.getServiceInstance(iwc,ApplicationService.class);
 	}
 	
 	public BuildingService getBuildingService(IWContext iwc)throws RemoteException{
