@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
 import com.idega.presentation.IWContext;
@@ -29,10 +30,10 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	
 	private static final String PARAMETER_OPERATIONAL_FIELD = "edm_operational_field";
 	private static final String PARAMETER_JOURNAL_NUMBER = "edm_journal_number";
-	private static final String PARAMETER_ACCOUNT = "edm_account";
-	private static final String PARAMETER_COUNTER_ACCOUNT = "edm_counter_account";
-	private static final String PARAMETER_PAYABLE_ACCOUNT = "edm_payable_account";
-	private static final String PARAMETER_CUSTOMER_CLAIM_ACCOUNT = "edm_customer_claim_account";
+//	private static final String PARAMETER_ACCOUNT = "edm_account";
+//	private static final String PARAMETER_COUNTER_ACCOUNT = "edm_counter_account";
+//	private static final String PARAMETER_PAYABLE_ACCOUNT = "edm_payable_account";
+//	private static final String PARAMETER_CUSTOMER_CLAIM_ACCOUNT = "edm_customer_claim_account";
 	private static final String PARAMETER_FILE_CREATION_FOLDER = "edm_file_creation_folder";
 	private static final String PARAMETER_IFS_FILE_FOLDER = "edm_ifs_file_folder";
 	private static final String PARAMETER_FILE_BACKUP_FOLDER = "edm_ifs_file_backup_folder";
@@ -43,6 +44,8 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	private static final String PARAMETER_CASH_FLOW_IN = "edm_cash_flow_in";
 	private static final String PARAMETER_CASH_FLOW_OUT = "edm_cash_flow_out";
 	private static final String PARAMETER_PROVIDER_AUTHORIZATION = "edm_provider_authorization";
+
+	private final static String KEY_ERROR_LENGTH	= "posting_parm_edit.error_length";
 	
 	private int _inputWidth = 100;
 	
@@ -97,42 +100,42 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.add(getSmallHeader(localize("export.journal_number", "Journal number") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		table.add(journalNumber, 3, row++);
+
+//		TextInput account = getTextInput(PARAMETER_ACCOUNT, "", _inputWidth, 255);
+//		if (_mapping != null && _mapping.getAccount() != null)
+//			account.setContent(_mapping.getAccount());
 		
-		TextInput account = getTextInput(PARAMETER_ACCOUNT, "", _inputWidth, 255);
-		if (_mapping != null && _mapping.getAccount() != null)
-			account.setContent(_mapping.getAccount());
+//		table.setHeight(row++, 3);
+//		table.add(getSmallHeader(localize("export.account", "Account") + ":"), 1, row);
+//		table.setNoWrap(1, row);
+//		table.add(account, 3, row++);
 		
-		table.setHeight(row++, 3);
-		table.add(getSmallHeader(localize("export.account", "Account") + ":"), 1, row);
-		table.setNoWrap(1, row);
-		table.add(account, 3, row++);
+//		TextInput counterAccount = getTextInput(PARAMETER_COUNTER_ACCOUNT, "", _inputWidth, 255);
+//		if (_mapping != null && _mapping.getCounterAccount() != null)
+//			counterAccount.setContent(_mapping.getCounterAccount());
 		
-		TextInput counterAccount = getTextInput(PARAMETER_COUNTER_ACCOUNT, "", _inputWidth, 255);
-		if (_mapping != null && _mapping.getCounterAccount() != null)
-			counterAccount.setContent(_mapping.getCounterAccount());
+//		table.setHeight(row++, 3);
+//		table.add(getSmallHeader(localize("export.counter_account", "Counter account") + ":"), 1, row);
+//		table.setNoWrap(1, row);
+//		table.add(counterAccount, 3, row++);
 		
-		table.setHeight(row++, 3);
-		table.add(getSmallHeader(localize("export.counter_account", "Counter account") + ":"), 1, row);
-		table.setNoWrap(1, row);
-		table.add(counterAccount, 3, row++);
+//		TextInput payableAccount = getTextInput(PARAMETER_PAYABLE_ACCOUNT, "", _inputWidth, 255);
+//		if (_mapping != null && _mapping.getPayableAccount() != null)
+//			payableAccount.setContent(_mapping.getPayableAccount());
 		
-		TextInput payableAccount = getTextInput(PARAMETER_PAYABLE_ACCOUNT, "", _inputWidth, 255);
-		if (_mapping != null && _mapping.getPayableAccount() != null)
-			payableAccount.setContent(_mapping.getPayableAccount());
+//		table.setHeight(row++, 3);
+//		table.add(getSmallHeader(localize("export.payable_account", "Payable account") + ":"), 1, row);
+//		table.setNoWrap(1, row);
+//		table.add(payableAccount, 3, row++);
 		
-		table.setHeight(row++, 3);
-		table.add(getSmallHeader(localize("export.payable_account", "Payable account") + ":"), 1, row);
-		table.setNoWrap(1, row);
-		table.add(payableAccount, 3, row++);
+//		TextInput customerClaimAccount = getTextInput(PARAMETER_CUSTOMER_CLAIM_ACCOUNT, "", _inputWidth, 255);
+//		if (_mapping != null && _mapping.getCustomerClaimAccount() != null)
+//			customerClaimAccount.setContent(_mapping.getCustomerClaimAccount());
 		
-		TextInput customerClaimAccount = getTextInput(PARAMETER_CUSTOMER_CLAIM_ACCOUNT, "", _inputWidth, 255);
-		if (_mapping != null && _mapping.getCustomerClaimAccount() != null)
-			customerClaimAccount.setContent(_mapping.getCustomerClaimAccount());
-		
-		table.setHeight(row++, 3);
-		table.add(getSmallHeader(localize("export.customer_claim_account", "Customer claim account") + ":"), 1, row);
-		table.setNoWrap(1, row);
-		table.add(customerClaimAccount, 3, row++);
+//		table.setHeight(row++, 3);
+//		table.add(getSmallHeader(localize("export.customer_claim_account", "Customer claim account") + ":"), 1, row);
+//		table.setNoWrap(1, row);
+//		table.add(customerClaimAccount, 3, row++);
 		
 		TextInput fileCreationFolder = getTextInput(PARAMETER_FILE_CREATION_FOLDER, "", _inputWidth, 255);
 		if (_mapping != null && _mapping.getFileCreationFolder() != null)
@@ -229,16 +232,30 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.mergeCells(1, row, 3, row);
 		table.add(providerAuthorization, 1, row);
 		table.add(getSmallHeader(Text.NON_BREAKING_SPACE + localize("export.provider_authorization", "Provider authorization")), 1, row++);
-		
+				
+		form.add(table);
+
+		String accountString = "";
+		String counterAccountString = "";
+		String payableAccountString = "";
+		String customerClaimAccountString = "";
+		if (_mapping != null) {
+			accountString = _mapping.getAccount();
+			counterAccountString = _mapping.getCounterAccount();
+			payableAccountString = _mapping.getPayableAccount();
+			customerClaimAccountString = _mapping.getCustomerClaimAccount();			
+		}
+		AccountBlock ab = new AccountBlock(accountString, counterAccountString, payableAccountString, customerClaimAccountString);
+		form.add(ab);
+
 		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAMETER_SAVE, "true"));
 		if (_operationalField == null)
 			save.setDisabled(true);
 		
-		table.setHeight(row++, 12);
-		table.add(save, 1, row);
+		form.add(Text.getBreak());
+		form.add(save);
 		
-		form.add(table);
-		form.add(script);
+		form.add(script);		
 		add(form);
 	}
 	
@@ -262,6 +279,25 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		}
 			
 		if (iwc.isParameterSet(PARAMETER_SAVE)) {
+			String account = "";
+			String counterAccount = "";
+			String payableAccount = "";
+			String customerClaimAccount = "";
+			AccountBlock ab = null;
+			try {
+				ab = new AccountBlock(iwc);
+				account = ab.getOwnPosting();
+				counterAccount = ab.getDoublePosting();
+				payableAccount = ab.getPayableAccount();
+				customerClaimAccount = ab.getCustomerClaimAccount();
+			} catch (PostingParametersException e) {
+				if(e.getTextKey().compareTo(KEY_ERROR_LENGTH) == 0) {
+					add(getErrorText(localize(e.getTextKey(), "Fel längd på fält: ") + e.getDefaultText()));
+				} else {
+					add(getErrorText(localize(e.getTextKey(), e.getDefaultText())));
+				}
+			}
+			
 			boolean cashFlowIn = false;
 			boolean cashFlowOut = false;
 			boolean providerAuthorization = false;
@@ -274,7 +310,23 @@ public class ExportDataMappingEditor extends AccountingBlock {
 				providerAuthorization = true;
 				
 			try {
-				getBusiness().getExportBusiness().storeExportDataMapping(_operationalField, iwc.getParameter(PARAMETER_JOURNAL_NUMBER), iwc.getParameter(PARAMETER_ACCOUNT), iwc.getParameter(PARAMETER_COUNTER_ACCOUNT), iwc.getParameter(PARAMETER_PAYABLE_ACCOUNT), iwc.getParameter(PARAMETER_CUSTOMER_CLAIM_ACCOUNT), iwc.getParameter(PARAMETER_FILE_CREATION_FOLDER), iwc.getParameter(PARAMETER_IFS_FILE_FOLDER), iwc.getParameter(PARAMETER_FILE_BACKUP_FOLDER), iwc.getParameter(PARAMETER_LIST_CREATION_FOLDER), iwc.getParameter(PARAMETER_LIST_BACKUP_FOLDER), Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), Integer.parseInt(iwc.getParameter(PARAMETER_STANDARD_PAYMENT_DAY)), cashFlowIn, cashFlowOut, providerAuthorization);
+				getBusiness().getExportBusiness().storeExportDataMapping(
+						_operationalField, 
+						iwc.getParameter(PARAMETER_JOURNAL_NUMBER), 
+						account, 
+						counterAccount, 
+						payableAccount, 
+						customerClaimAccount, 
+						iwc.getParameter(PARAMETER_FILE_CREATION_FOLDER), 
+						iwc.getParameter(PARAMETER_IFS_FILE_FOLDER), 
+						iwc.getParameter(PARAMETER_FILE_BACKUP_FOLDER), 
+						iwc.getParameter(PARAMETER_LIST_CREATION_FOLDER), 
+						iwc.getParameter(PARAMETER_LIST_BACKUP_FOLDER), 
+						Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), 
+						Integer.parseInt(iwc.getParameter(PARAMETER_STANDARD_PAYMENT_DAY)), 
+						cashFlowIn, 
+						cashFlowOut, 
+						providerAuthorization);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
