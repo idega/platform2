@@ -39,7 +39,7 @@ public class CitizenChildren extends CommuneBlock {
   private static final String prmParentId = "comm_parent_id";
 	private static final String prmChildSSN = "comm_child_ssn";
 	private String prmSubmitName = "submit_cits_child";
-	private boolean showSSNSearchForm = true;
+	private boolean showSSNSearchForm = false;
 
 
 	public CitizenChildren() {
@@ -162,6 +162,10 @@ public class CitizenChildren extends CommuneBlock {
 		return new Vector();
 	}
 
+	/**
+	 * Sets if the component is to show the search for to search by personal_id.
+	 * <br>This defaults to false
+	 **/
 	public void setShowSSNSearchForm( boolean showForm){
 		this.showSSNSearchForm = showForm;
 	}
