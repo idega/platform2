@@ -326,7 +326,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   
   public DesignBox getDynamicDesignBox(SQLQuery query, IWResourceBundle resourceBundle, IWContext iwc) throws IOException, JRException {
   	final int columnSpacing = 15;
-  	final int columnWidth = 120;
+  	int columnWidth = 120;
   	final int labelWidth = 95;
   	final int valueWidth = 55;
   	
@@ -350,6 +350,14 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   	List fields = query.getFields();
   	int totalWidth = 0;
   	if (! fields.isEmpty()) {
+  	  	//TODO thi: solve problem with the width of columns avoiding merging of vertical cells in excel outputs
+  		// stretch with overflow merges two vertical cells, excel file can't be sorted
+  		// see also and fix also ReportGenerator
+  		// this is a hack ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+  		int numberOfFields = fields.size();
+  		columnWidth = DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_PORTRAIT_A4 / numberOfFields;
+  		columnWidth -= columnSpacing;
+  		// end of hack ------------------------------------------------------------------------------------------------------------------------------------------------------------------
   		totalWidth = ((columnSpacing + columnWidth) * fields.size())  - columnSpacing;
   	}
   	design.setColumnWidth(totalWidth);

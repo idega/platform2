@@ -266,7 +266,14 @@ public class ReportGenerator extends Block {
 
 		if (_allFields != null && _allFields.size() > 0) {
 			//System.out.println("ReportGenerator.");
-
+	  	  	//TODO thi: solve problem with the width of columns avoiding merging of vertical cells in excel outputs
+	  		// stretch with overflow merges two vertical cells, excel file can't be sorted
+			// see also and fix also JasperReportBusiness
+	  		// this is a hack ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+	  		int numberOfFields = _allFields.size();
+	  		columnWidth = DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_PORTRAIT_A4 / numberOfFields;
+	  		columnWidth -= 15;
+	  		// end of hack ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			//TMP
 			//TODO get columnspacing (15) and it to columnsWidth;
 			int columnsWidth = columnWidth * _allFields.size() + 15 * (_allFields.size() - 1);
