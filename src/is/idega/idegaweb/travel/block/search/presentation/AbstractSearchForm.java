@@ -125,6 +125,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	public static String PARAMETER_PHONE_NUMBER = BookingForm.PARAMETER_PHONE;
 	public static String PARAMETER_NAME_ON_CARD = BookingForm.PARAMETER_NAME_ON_CARD; //"hs_noc";
 	public static String PARAMETER_SORT_BY = "asf_p_sb"; 
+	
+	public static final String PARAMETER_COUNTRY_PC_D = "bf_coun";
+	public static final String PARAMETER_CITY_PC_D = "bf_citn";
 
 	public static String PARAMETER_NEW_SEARCH = "asf_p_ns";
 	public static String PARAMETER_PAGE_NR = "asf_p_nr";
@@ -609,7 +612,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			sorted = true;
 		}
 		
-		if (coll == null) {
+		if (coll == null || debug) {
 			System.out.println("Getting new results");
 			coll = getResults();
 			coll = getSearchBusiness(iwc).checkResults(iwc, coll);
@@ -618,7 +621,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			System.out.println("Getting cached results");
 		}
 		
-		if (!sorted){
+		if (!sorted || debug){
 			coll = filterResults(iwc, coll);
 			getSearchBusiness(iwc).addSearchResults(keyWithSort, coll);
 			System.out.println("Sorting results...");
@@ -833,6 +836,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
 			table.add(new HiddenInput(PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString()));
 			table.add(new HiddenInput(getBookingForm().getParameterTypeCountName(), iwc.getParameter(getBookingForm().getParameterTypeCountName())));
+			table.add(new HiddenInput(BookingForm.BookingAction, BookingForm.BookingParameter));
+			if (product.getAuthorizationCheck()) {
+				table.add(new HiddenInput(BookingForm.parameterInquiry, "TRUE"));
+			}
 			
 	//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
 			table.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getBookingForm().getParameterTypeCountName())));
@@ -859,7 +866,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			Link backLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.back", "Back"), false));
 			backLink.setAsBackLink();
 
-			Link submitLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.proceed_to_check_out", "Proceed to check out"), false));
+//			Link submitLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.proceed_to_check_out", "Proceed to check out"), false));
+			Link submitLink = new Link(bundle.getImage("images/book_01.jpg"));
+						
 			submitLink.setToFormSubmit(form);
 			form.addParameter(ACTION, ACTION_CONFIRM);
 
@@ -939,7 +948,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
 		try {
 			Product product = getProduct();
-			int bookingId = getBookingForm().checkBooking(iwc, true);
+			int bookingId = getBookingForm().handleInsert(iwc);
+//			int bookingId = getBookingForm().checkBooking(iwc, true);
 			GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
 			GeneralBooking gBooking = null;
 			boolean inquirySent = (bookingId == BookingForm.inquirySent); 
@@ -1572,19 +1582,19 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected Text getLinkText(String content, boolean clicked) {
 		Text text = new Text(content);
 		if (clicked) {
-			if (getStyleName(BookingForm.STYLENAME_CLICKED_LINK) != null) {
-				text = getStyleText(text, BookingForm.STYLENAME_CLICKED_LINK);
-			}
-			else if (clickedLinkFontStyle != null) {
+			if (clickedLinkFontStyle != null) {
 				text.setFontStyle(clickedLinkFontStyle);
+			}
+			else if (getStyleName(BookingForm.STYLENAME_CLICKED_LINK) != null) {
+				text = getStyleText(text, BookingForm.STYLENAME_CLICKED_LINK);
 			}
 		}
 		else {
-			if (getStyleName(BookingForm.STYLENAME_LINK) != null) {
-				text = getStyleText(text, BookingForm.STYLENAME_LINK);
-			}
-			else if (linkFontStyle != null) {
+			if (linkFontStyle != null) {
 				text.setFontStyle(linkFontStyle);
+			}
+			else if (getStyleName(BookingForm.STYLENAME_LINK) != null) {
+				text = getStyleText(text, BookingForm.STYLENAME_LINK);
 			}
 		}
 		

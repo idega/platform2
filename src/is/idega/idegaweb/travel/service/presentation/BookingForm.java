@@ -153,7 +153,7 @@ public abstract class BookingForm extends TravelManager{
 	protected DecimalFormat df = new DecimalFormat("0.00");
 	
 	public static String BookingAction = is.idega.idegaweb.travel.presentation.Booking.BookingAction;
-	protected String BookingParameter = is.idega.idegaweb.travel.presentation.Booking.BookingParameter;
+	public static String BookingParameter = is.idega.idegaweb.travel.presentation.Booking.BookingParameter;
 	public static String parameterBookingId = is.idega.idegaweb.travel.presentation.Booking.parameterBookingId;
 	public static String parameterUpdateBooking = "bookingUpdateBooking";
 	protected static String parameterBookAnyway = "bookingBookAnyway";
@@ -2148,7 +2148,7 @@ public abstract class BookingForm extends TravelManager{
 					}
 				} catch (Exception e) {}
 			} else {
-				menu = new LocationInput("bf_coun", "bf_citn", AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
+				menu = new LocationInput(AbstractSearchForm.PARAMETER_COUNTRY_PC_D, AbstractSearchForm.PARAMETER_CITY_PC_D, AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
 				((LocationInput) menu).setAvailableCountries(countries);
 				((LocationInput) menu).setSeparator(Text.BREAK+Text.NON_BREAKING_SPACE+Text.BREAK);
 			}
@@ -2198,76 +2198,92 @@ public abstract class BookingForm extends TravelManager{
 		return menu;
 	}
 	
-	public Object[] getPostalCodeIds(IWContext iwc) throws IDOLookupException, FinderException {
+	public Collection getPostalCodeIds(IWContext iwc) throws IDOLookupException, FinderException {
+		String sCountryID = iwc.getParameter(AbstractSearchForm.PARAMETER_COUNTRY_PC_D);
+		String sCityID = iwc.getParameter(AbstractSearchForm.PARAMETER_CITY_PC_D);
 		String sPostalCode = iwc.getParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
-		Object[] postalCodeIds = null;
 		
-		if (sPostalCode != null) {
-			Vector ids = new Vector();
-			
-			
-			String from;
-			String to;
-			if ( sPostalCode.equals(PARAMETER_POSTAL_CODE_ICELAND) || sPostalCode.equals(PARAMETER_POSTAL_CODE_SPACER) ) {
-				from = "100";
-				to = "998";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_REYKJAVIK)) {
-				from = "100";
-				to = "199";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_REYKJAVIK_AREA)) {
-				from = "100";
-				to = "299";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WEST_ICELAND)) {
-				from = "300";
-				to = "399";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WEST_FJORDS)) {
-				from = "400";
-				to = "499";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_ICELAND)) {
-				from = "500";
-				to = "699";
-				//			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND)) {
-				//				from = "500";
-				//				to = "599";
-				//			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND)) {
-				//				from = "600";
-				//				to = "699";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_EAST_ICELAND)) {
-				from = "700";
-				to = "799";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_SOUTH_ICELAND)) {
-				from = "800";
-				to = "899";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS)) {
-				from = "900";
-				to = "998";
-			} else if (sPostalCode.equals("999")) {
-				from = "999";
-				to = "999";
-			} else {
-				from = sPostalCode;
-				to = null;
-			}
+		Collection postalCodes = null; 
+		if (sCountryID != null) {
 			
 			PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
 			PostalCode tpc;
-			Collection pks = null;
-			if ( to == null ) {
-				ids.add(new Integer(from));
-				//pks = pcHome.findByPostalCode(from);
-			} else {
-				pks = pcHome.findByPostalCodeFromTo(from, to);
-			}
-			if (pks != null && !pks.isEmpty()) {
-				Iterator iter = pks.iterator();
-				while (iter.hasNext()) {
-					ids.add(iter.next());
+			if (sPostalCode != null && !"-1".equals(sPostalCode)) {
+				postalCodes = new Vector();
+				try {
+					tpc = pcHome.findByPrimaryKey(new Integer(sPostalCode));
+					postalCodes.add(tpc);
+				} catch (FinderException e) {
+					e.printStackTrace();
 				}
+			} else if (sCityID != null && !"-1".equals(sCityID)) {
+				postalCodes = pcHome.findByNameAndCountry(sCityID, new Integer(sCountryID));
+			} else {
+				postalCodes = pcHome.findByCountry(new Integer(sCountryID));
 			}
-			
-			postalCodeIds = ids.toArray();
+		} else {
+			if (sPostalCode != null) {
+				Vector ids = new Vector();
+				
+				String from;
+				String to;
+				if ( sPostalCode.equals(PARAMETER_POSTAL_CODE_ICELAND) || sPostalCode.equals(PARAMETER_POSTAL_CODE_SPACER) ) {
+					from = "100";
+					to = "998";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_REYKJAVIK)) {
+					from = "100";
+					to = "199";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_REYKJAVIK_AREA)) {
+					from = "100";
+					to = "299";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WEST_ICELAND)) {
+					from = "300";
+					to = "399";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WEST_FJORDS)) {
+					from = "400";
+					to = "499";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_ICELAND)) {
+					from = "500";
+					to = "699";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_EAST_ICELAND)) {
+					from = "700";
+					to = "799";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_SOUTH_ICELAND)) {
+					from = "800";
+					to = "899";
+				} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS)) {
+					from = "900";
+					to = "998";
+				} else if (sPostalCode.equals("999")) {
+					from = "999";
+					to = "999";
+				} else {
+					from = sPostalCode;
+					to = null;
+				}
+				
+				PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+				PostalCode tpc;
+				if ( to == null ) {
+					postalCodes = new Vector();
+					
+					postalCodes.add(new Integer(from));
+				} else {
+					postalCodes = pcHome.findByPostalCodeFromTo(from, to);
+				}
+//				Object[] postalCodeIds = null;
+//				if (pks != null && !pks.isEmpty()) {
+//					Iterator iter = pks.iterator();
+//					while (iter.hasNext()) {
+//						ids.add(iter.next());
+//					}
+//				}
+			} 
 		}
-		return postalCodeIds;
+
+		return postalCodes;
+//		postalCodeIds = ids.toArray();
+//		return postalCodeIds;
 	}
 	
 	
