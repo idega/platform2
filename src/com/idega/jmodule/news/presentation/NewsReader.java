@@ -198,11 +198,11 @@ public void main(ModuleInfo modinfo)throws Exception{
         if (attribs.length > 0) {
           categoryId = attribs[0].getNewsCategoryId();
         //debug
-        System.out.println("news categoryId "+categoryId);
+        //System.out.println("news categoryId "+categoryId);
 
         }
 
-        System.err.println("Inside categoryId=0");
+        //System.err.println("Inside categoryId=0");
       }
       else{ // just this category
         showAll = false;
