@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.29 2001/08/09 12:46:27 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.30 2001/08/09 14:54:39 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,6 +40,7 @@ public class GolfMainJSPModulePage extends MainPage {
   protected Login login;
   protected Table centerTable;
   protected String align;
+  //asdfasdfasdfasdfasdfasdf
 
   protected final int SIDEWIDTH = 720;
   protected final int LEFTWIDTH = 163;
@@ -489,12 +490,12 @@ public class GolfMainJSPModulePage extends MainPage {
 
           rightTable.setColumnAlignment(1, "center");
           //rightTable.add(getProGolfers(),1,1);
-          //rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
-          rightTable.add(getPollVoter(),1,3);//1,5
+          rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
+          rightTable.add(getPollVoter(),1,5);
 
-          rightTable.add(getGSIAssociates(),1,5);//1,7
-          rightTable.add(getGolfLinks(),1,7);//1,9
-          rightTable.add(getYellowLine(),1,9);//1,11
+          rightTable.add(getGSIAssociates(),1,7);
+          rightTable.add(getGolfLinks(),1,9);
+          rightTable.add(getYellowLine(),1,11);
 
 
           return rightTable;
@@ -513,9 +514,9 @@ public class GolfMainJSPModulePage extends MainPage {
           myTable.setCellpadding(0);
           myTable.setCellspacing(0);
 
-        Image rammiUppi = new Image("/pics/gulalinan/rammi_uppi120.gif","",120,6);
+        Image rammiUppi = new Image("http://www.gulalinan.is/gulleit/img/lg120/rammi_uppi120.gif","",120,6);
           myTable.add(rammiUppi,1,1);
-        Image rammiNidri = new Image("/pics/gulalinan/rammi_nidri120.gif","",120,8);
+        Image rammiNidri = new Image("http://www.gulalinan.is/gulleit/img/lg120/rammi_nidri120.gif","",120,8);
           myTable.add(rammiNidri,1,3);
 
         Table innerTable = new Table(1,3);
@@ -526,9 +527,9 @@ public class GolfMainJSPModulePage extends MainPage {
           innerTable.setAlignment(1,1,"center");
           innerTable.setAlignment(1,2,"center");
           innerTable.setAlignment(1,3,"right");
-          innerTable.setBackgroundImage(new Image("/pics/gulalinan/bakgrunnurx120.gif"));
+          innerTable.setBackgroundImage(new Image("http://www.gulalinan.is/gulleit/img/lg120/bakgrunnurx120.gif"));
 
-        Image searchImage = new Image("/pics/gulalinan/gulalinanlogo.gif","",67,12);
+        Image searchImage = new Image("http://www.gulalinan.is/gulleit/img/lg120/gulalinanlogo.gif","",67,12);
         Link yellowLink = new Link(searchImage,"http://www.gulalinan.is");
           yellowLink.setTarget("_blank");
 
@@ -537,7 +538,7 @@ public class GolfMainJSPModulePage extends MainPage {
 
         HiddenInput hidden = new HiddenInput("ac","ks");
 
-        Image submitImage = new Image("/pics/gulalinan/leita.gif","Leita",39,13);
+        Image submitImage = new Image("http://www.gulalinan.is/gulleit/img/lg120/leita.gif","Leita",39,13);
         SubmitButton submit = new SubmitButton(submitImage,"image1");
           submit.setAttribute("hspace","5");
 
