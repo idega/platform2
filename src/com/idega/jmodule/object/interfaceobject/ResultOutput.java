@@ -20,48 +20,64 @@ public class ResultOutput extends ModuleObjectContainer {
 
   Script script;
   String functionName = "functionName";
-  TextInput resultOutput = new TextInput("resultOutput");
+  TextInput resultOutput;
   List moduleObjects = new Vector();
-  List forms = new Vector();
-  String nameOfForm = "temp";
+  private int size = -1;
+  private String content = "";
+  private String name;
 
-  public ResultOutput(String nameOfForm) {
-      this.nameOfForm = nameOfForm;
+  public ResultOutput() {
+    this("unspecified","");
+  }
+
+  public ResultOutput(String name) {
+    this.name = name;
+    this.functionName = this.name;
+  }
+
+  public ResultOutput(String name, String content) {
+    this.name = name;
+    this.functionName = this.name;
+    this.content = content;
   }
 
   public void _main(ModuleInfo modinfo) {
       script = getParentPage().getAssociatedScript();
 
-      String moduleObject;
-      String form;
+      resultOutput = new TextInput(name, content);
+
+      TextInput moduleObject;
 
       StringBuffer theScript = new StringBuffer();
-        theScript.append("function "+functionName+" () {");
-        theScript.append("\n\n          document."+nameOfForm+"."+resultOutput.getName()+".value=(");
+        theScript.append("function "+functionName+"(myForm) {");
+        theScript.append("\n          myForm."+resultOutput.getName()+".value=(");
         for (int i = 0; i < moduleObjects.size(); i++) {
             if (i != 0) theScript.append("+");
-            moduleObject = (String) moduleObjects.get(i);
-            form = (String) forms.get(i);
-            theScript.append("(1*"+form+"."+moduleObject+".value)");
+            moduleObject = (TextInput) moduleObjects.get(i);
+            theScript.append("(1*myForm."+moduleObject.getName()+".value)");
         }
-        theScript.append(")");
+        theScript.append(");");
 
 
-        theScript.append("\n\n}");
+        theScript.append("\n}");
 
       script.addFunction(functionName, theScript.toString());
 
       resultOutput.setDisabled(true);
+      if (this.size > 0) resultOutput.setSize(size);
       super.add(resultOutput);
   }
 
+  public void setSize(int size) {
+    this.size = size;
+  }
 
-  public void add(ModuleObject mo, String formName) {
+
+  public void add(ModuleObject mo) {
     if (mo instanceof TextInput) {
       TextInput temp = (TextInput) mo;
-        temp.setOnBlur("javascript:"+functionName+"();");
-        moduleObjects.add(temp.getName());
-        forms.add(formName);
+        temp.setOnChange(functionName+"(this.form)");
+        moduleObjects.add(temp);
     }
   }
 
