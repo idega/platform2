@@ -594,6 +594,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				key.append(iwc.getParameter((String) iter.next())).append("_");
 			}
 		}
+		key.append(this.getICObjectInstanceID()).append("_");
+		key.append(iwc.getCurrentLocaleId()).append("_");
+		key.append(iwc.getCurrentIBPageID()).append("_");
+
 		return key;
 	}
 
