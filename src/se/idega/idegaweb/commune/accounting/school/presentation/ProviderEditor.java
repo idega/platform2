@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.9 2003/09/29 08:52:21 anders Exp $
+ * $Id: ProviderEditor.java,v 1.10 2003/09/29 10:00:52 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -59,10 +59,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/29 08:52:21 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/29 10:00:52 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -151,8 +151,6 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
-	private IBPage cancelPage = null;
-	
 	/**
 	 * @see com.idega.presentation.Block#main()
 	 */
@@ -185,20 +183,6 @@ public class ProviderEditor extends AccountingBlock {
 		}
 	}
 
-	/**
-	 * Sets the property cancel page.
-	 */
-	public void setCancelPage(IBPage page) {
-		this.cancelPage = page;
-	}
-
-	/**
-	 * Returns the property cancel page.
-	 */
-	public IBPage getCancelPage() {
-		return cancelPage;
-	}
-
 	/*
 	 * Returns the action constant for the action to perform based 
 	 * on the POST parameters in the specified context.
@@ -227,7 +211,7 @@ public class ProviderEditor extends AccountingBlock {
 	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Providers");
-		app.setSearchPanel(getButtonPanel());
+		app.setSearchPanel(getButtonPanel(iwc));
 		app.setMainPanel(getProviderList(iwc));
 		add(app);
 	}
@@ -493,10 +477,11 @@ public class ProviderEditor extends AccountingBlock {
 	/*
 	 * Returns the default button panel for this block.
 	 */
-	private ButtonPanel getButtonPanel() {
+	private ButtonPanel getButtonPanel(IWContext iwc) {
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "New");
-		bp.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Cancel", cancelPage);
+		IBPage homePage = iwc.getCurrentUser().getHomePage();
+		bp.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Cancel", homePage);
 		return bp;
 	}
 	
@@ -533,7 +518,7 @@ public class ProviderEditor extends AccountingBlock {
 			String doublePosting,
 			String errorMessage,
 			boolean isNew) {
-				
+
 		name = name == null ? "" : name;
 		address = address == null ? "" : address;
 		zipCode = zipCode == null ? "" : zipCode;
