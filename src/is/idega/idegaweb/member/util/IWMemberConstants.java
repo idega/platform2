@@ -71,9 +71,16 @@ public class IWMemberConstants {
 	public static final String GROUP_TYPE_ALIAS = "alias";
 	public static final String GROUP_TYPE_GENERAL = "general";
 	
-	public static final String MEMBER_BOARD_STATUS_CHAIR_MAN = "chairman";
-	public static final String MEMBER_BOARD_MEMBER = "board_member";
+
+	
+	public static final String MEMBER_BOARD_CHAIR_MAN = "chairman";
+	public static final String MEMBER_BOARD_VICE_CHAIRMAN ="vice_chairman";
 	public static final String MEMBER_CASHIER = "cashier";
 	public static final String MEMBER_SECRETARY = "secretary";
+	public static final String MEMBER_BOARD_MEMBER = "board_member";
+	public static final String MEMBER_EXTRA_BOARD = "extra_board";
+	public static final String MEMBER_STAND_IN = "stand_in";
+	public static final String MEMBER_CO_CHIEF = "co-chief";
+	
   
 }

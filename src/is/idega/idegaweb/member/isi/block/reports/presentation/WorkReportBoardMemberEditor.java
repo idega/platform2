@@ -106,10 +106,15 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     
   static { 
     STATUS_OPTIONS = new ArrayList();
-    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_BOARD_STATUS_CHAIR_MAN);
-    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_BOARD_MEMBER);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_BOARD_CHAIR_MAN);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_BOARD_VICE_CHAIRMAN);
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_CASHIER);
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_SECRETARY);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_BOARD_MEMBER);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_EXTRA_BOARD);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_STAND_IN);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_CO_CHIEF);
+
     
     FIELD_LIST = new ArrayList();
     FIELD_LIST.add(LEAGUE);
