@@ -16,7 +16,10 @@ public class ImageViewer extends JModuleObject{
 
 private int categoryId = -1;
 private int numberOfImages=3;
-public int numberOfDisplayedImages=1;
+private int numberOfDisplayedImages=1;
+private int iNumberInRow = 3; //iXXXX for int
+private int ifirst = 0;
+
 private boolean backbutton = false;
 private boolean limitNumberOfImage=false;
 private Table outerTable = new Table(1,1);
@@ -111,11 +114,12 @@ public void main(ModuleInfo modinfo)throws Exception{
     }
   }
   else{
+
     try{
       if ( imageCategoryId != null )
         categoryId = Integer.parseInt(imageCategoryId);
       if( categoryId != -1 )
-        add(displayCatagory(categoryId));
+        add(displayCatagory(categoryId, modinfo));
     }
     catch(NumberFormatException e) {
       add(new Text("CategoryId must be a number"));
@@ -132,7 +136,7 @@ public Table getImageTable(ImageEntity[] image)throws IOException,SQLException
 	int imageId;
 
         int k = 0;
-	if( limitNumberOfImage ) k = image.length;
+	if( !limitNumberOfImage ) k = image.length;
         else k = numberOfDisplayedImages;
 
 	for ( int i = 0; i<k ; i++){
@@ -153,7 +157,7 @@ public static Table displayImage(int imageId) throws SQLException {
 return table;
 }
 
-public Table displayImage( ImageEntity image ) throws SQLException
+private Table displayImage( ImageEntity image ) throws SQLException
 {
   String text = image.getText();
   int imageId = image.getID();
@@ -207,23 +211,39 @@ public Table displayImage( ImageEntity image ) throws SQLException
 return imageTable;
 }
 
-public Table displayCatagory(int categoryId)  throws SQLException {
-    Table table = new Table();
-      table.setBorder(0);
+private Table displayCatagory(int categoryId, ModuleInfo modinfo)  throws SQLException {
+  int k = 0;
+  String sFirst = modinfo.getParameter("iv_first");//browsing from this image
+  Table table = new Table();
 
-    ImageCatagory category = new ImageCatagory(categoryId);
-    ImageEntity[] imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
-    com.idega.jmodule.object.Image image;
-    int fjoldi_i_linu = 2;
+  ImageCatagory category = new ImageCatagory(categoryId);
+  ImageEntity[] imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
+  com.idega.jmodule.object.Image image;
 
-    if (imageEntity != null) {
-      if (imageEntity.length > 0 ) {
-        for (int i = 0 ; i < imageEntity.length ; i++ ) {
-            table.setVerticalAlignment((i%fjoldi_i_linu)+1,(i/fjoldi_i_linu)+1,"top");
-            table.add( displayImage(imageEntity[i]) ,(i%fjoldi_i_linu)+1,(i/fjoldi_i_linu)+1);
-        }
-      }
+  if( limitNumberOfImage ) k = numberOfDisplayedImages;
+  else k = imageEntity.length;
+
+  try {
+    if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
+    if (ifirst < 0 ) {
+      ifirst = (-1)*ifirst;
     }
+    else if (ifirst > (imageEntity.length -1)) {
+        ifirst = (imageEntity.length -1);
+    }
+  }
+  catch (NumberFormatException n) {
+    add(new Text("ImageViewer: sFirst must be a number"));
+    System.err.println("ImageViewer: sFirst must be a number");
+  }
+
+  int x=0;
+  for (int i = ifirst ; (x<k) && ( i < imageEntity.length ) ; i++ ) {
+    table.setVerticalAlignment((x%iNumberInRow)+1,(x/iNumberInRow)+1,"top");
+    table.setAlignment((x%iNumberInRow)+1,(x/iNumberInRow)+1,"center");
+    table.add( displayImage(imageEntity[i]) ,(x%iNumberInRow)+1,(x/iNumberInRow)+1);
+    x++;
+  }
 
 
 return table;
@@ -254,6 +274,10 @@ public void setNumberOfDisplayedImages(int numberOfDisplayedImages){
   this.limitNumberOfImage = true;
   if( numberOfDisplayedImages<0 ) numberOfDisplayedImages = (-1)*numberOfDisplayedImages;
   this.numberOfDisplayedImages = numberOfDisplayedImages;
+}
+
+public void setNumberInRow(int NumberOfImagesInOneRow){
+  this.iNumberInRow = iNumberInRow;
 }
 
 
