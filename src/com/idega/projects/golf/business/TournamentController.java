@@ -172,7 +172,7 @@ public class TournamentController{
     public static List getMembersInTournamentList(Tournament tournament) throws SQLException {
         List members = null;
         try {
-            members = EntityFinder.findRelated(tournament,new com.idega.projects.golf.entity.Member());
+            members = EntityFinder.findReverseRelated(tournament,new com.idega.projects.golf.entity.Member());
         }
         catch (Exception e) {
             e.printStackTrace(System.out);
