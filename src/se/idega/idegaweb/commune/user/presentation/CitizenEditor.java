@@ -40,7 +40,7 @@ public class CitizenEditor extends UserEditor {
 	 */
 	public CitizenEditor() {
 		super();
-		setShowMiddleNameInSearch(false);
+		//setShowMiddleNameInSearch(true);
 		setLastNameLength(25);
 		setFirstNameLength(25);
 		setPersonalIDLength(15);
