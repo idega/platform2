@@ -119,7 +119,7 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
       	contracts = new Contract[coll.size()];
       	Iterator iter = coll.iterator();
       	for ( int i = 0; i < contracts.length; i++) {
-      		contracts[i] = cHome.findByPrimaryKey(iter.next());
+      		contracts[i] = (Contract) iter.next();
       	}
       }
     }catch (FinderException sql) {
