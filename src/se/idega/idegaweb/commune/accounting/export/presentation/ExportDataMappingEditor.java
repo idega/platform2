@@ -137,7 +137,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 //		table.setNoWrap(1, row);
 //		table.add(customerClaimAccount, 3, row++);
 		
-		TextInput fileCreationFolder = getTextInput(PARAMETER_FILE_CREATION_FOLDER, "", _inputWidth, 255);
+		TextInput fileCreationFolder = getTextInput(PARAMETER_FILE_CREATION_FOLDER, "", _inputWidth * 3, 255);
 		if (_mapping != null && _mapping.getFileCreationFolder() != null)
 			fileCreationFolder.setContent(_mapping.getFileCreationFolder());
 		
@@ -146,7 +146,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.setNoWrap(1, row);
 		table.add(fileCreationFolder, 3, row++);
 		
-		TextInput IFSFileFolder = getTextInput(PARAMETER_IFS_FILE_FOLDER, "", _inputWidth, 255);
+		TextInput IFSFileFolder = getTextInput(PARAMETER_IFS_FILE_FOLDER, "", _inputWidth * 3, 255);
 		if (_mapping != null && _mapping.getIFSFileFolder() != null)
 			IFSFileFolder.setContent(_mapping.getIFSFileFolder());
 		
@@ -155,7 +155,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.setNoWrap(1, row);
 		table.add(IFSFileFolder, 3, row++);
 
-		TextInput fileBackupFolder = getTextInput(PARAMETER_FILE_BACKUP_FOLDER, "", _inputWidth, 255);
+		TextInput fileBackupFolder = getTextInput(PARAMETER_FILE_BACKUP_FOLDER, "", _inputWidth * 3, 255);
 		if (_mapping != null && _mapping.getFileBackupFolder() != null)
 			fileBackupFolder.setContent(_mapping.getFileBackupFolder());
 		
@@ -164,7 +164,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.setNoWrap(1, row);
 		table.add(fileBackupFolder, 3, row++);
 
-		TextInput listCreationFolder = getTextInput(PARAMETER_LIST_CREATION_FOLDER, "", _inputWidth, 255);
+		TextInput listCreationFolder = getTextInput(PARAMETER_LIST_CREATION_FOLDER, "", _inputWidth * 3, 255);
 		if (_mapping != null && _mapping.getListCreationFolder() != null)
 			listCreationFolder.setContent(_mapping.getListCreationFolder());
 		
@@ -173,7 +173,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.setNoWrap(1, row);
 		table.add(listCreationFolder, 3, row++);
 		
-		TextInput listBackupFolder = getTextInput(PARAMETER_LIST_BACKUP_FOLDER, "", _inputWidth, 255);
+		TextInput listBackupFolder = getTextInput(PARAMETER_LIST_BACKUP_FOLDER, "", _inputWidth * 3, 255);
 		if (_mapping != null && _mapping.getListBackupFolder() != null)
 			listBackupFolder.setContent(_mapping.getListBackupFolder());
 		
