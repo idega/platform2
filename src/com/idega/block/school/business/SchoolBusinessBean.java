@@ -1693,9 +1693,25 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				return null;
 			}
 			else {
+				boolean updateStartDate = true;
 				SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
-				if (member == null)
+				if (member != null) {
+					if (member.getRemovedDate() != null) {
+						IWTimestamp start = new IWTimestamp(registerDate);
+						IWTimestamp end = new IWTimestamp(member.getRemovedDate());
+						
+						if (IWTimestamp.getDaysBetween(end, start) <= 1) {
+							updateStartDate = false;
+						}
+						else {
+							member = null;
+						}
+					}
+				}
+				
+				if (member == null) {
 					member = this.getSchoolClassMemberHome().create();
+				}
 
 				if (member != null) {
 					member.setClassMemberId(studentID);
@@ -1704,10 +1720,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 						member.setSchoolYear(schoolYearID);
 					if (schoolTypeID > 0)
 						member.setSchoolTypeId(schoolTypeID);
-					if (registerDate != null)
+					if (updateStartDate)
 						member.setRegisterDate(registerDate);
-					if (removedDate != null)
-						member.setRemovedDate(removedDate);
+					member.setRemovedDate(removedDate);
 					if (registrator != -1)
 						member.setRegistratorId(registrator);
 					if (notes != null)
