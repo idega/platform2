@@ -124,11 +124,9 @@ public class CreateIFSFiles extends AccountingBlock {
 			paymentDate = getExportBusiness(iwc).getExportDataMapping(_currentOperation).getStandardPaymentDay();
 		}
 		catch (RemoteException e) {
-			e.printStackTrace();
 			paymentDate = -1;		
 		}
 		catch (FinderException e) {
-			e.printStackTrace();
 			paymentDate = -1;		
 		}
 
