@@ -510,7 +510,12 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     else if(pathShortKey.equals(POSTAL_CODE_ID))  {
       try {
         int postalCode = Integer.parseInt(value.toString());
-        board.setPostalCodeID(postalCode);
+        if (ConverterConstants.NULL_ENTITY_ID.intValue() == postalCode) {
+          board.setPostalCode(null);
+        }
+        else {
+          board.setPostalCodeID(postalCode);
+        }
       }
       catch (NumberFormatException ex)  {
       }
