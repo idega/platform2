@@ -1,5 +1,5 @@
 /*
- * $Id: ActivityTypeBMPBean.java,v 1.8 2003/09/02 23:42:55 kjell Exp $
+ * $Id: ActivityTypeBMPBean.java,v 1.9 2003/09/03 23:32:44 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,7 +10,6 @@
 package se.idega.idegaweb.commune.accounting.regulations.data;
     
 import java.util.Collection;
-
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
@@ -22,10 +21,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: ActivityTypeBMPBean.java,v 1.8 2003/09/02 23:42:55 kjell Exp $
+ * $Id: ActivityTypeBMPBean.java,v 1.9 2003/09/03 23:32:44 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ActivityTypeBMPBean extends GenericEntity implements ActivityType {
 	
@@ -65,11 +64,11 @@ public class ActivityTypeBMPBean extends GenericEntity implements ActivityType {
 		return (String) getStringColumnValue(COLUMN_ACTIVITY_TYPE);
 	}
 
-	public void setTextKey(String type) { 
+	public void setLocalizationKey(String type) { 
 		setColumn(COLUMN_ACTIVITY_TYPE, type); 
 	}
 	
-	public String getTextKey() {
+	public String getLocalizationKey() {
 		return (String) getStringColumnValue(COLUMN_ACTIVITY_TYPE);
 	}
 

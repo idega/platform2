@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.11 2003/09/02 23:42:30 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.12 2003/09/03 23:31:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -11,10 +11,12 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 
 import java.util.Collection;
 import java.rmi.RemoteException;
+import java.sql.Date;
+
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.ejb.CreateException;
-import java.util.Iterator;
+
 
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolType;
@@ -33,6 +35,17 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
 import se.idega.idegaweb.commune.accounting.regulations.data.MainRuleHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
+import se.idega.idegaweb.commune.accounting.regulations.data.ConditionHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.ConditionType;
+import se.idega.idegaweb.commune.accounting.regulations.data.ConditionTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType;
+import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationTypeHome;
+
+
+
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 
 /**
@@ -68,36 +81,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}	
 
 	/**
-	 * Gets all Activity types (keys) as a comma separated string
-	 * @return String of activity types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
-	 * @author Kjell
-	 */
-	public String getActivityTypesAsString() {
-		String ret = "";
-		try {
-			ActivityTypeHome home = getActivityTypeHome();
-			Collection col = home.findAllActivityTypes();
-			Iterator iter = col.iterator();
-			while(iter.hasNext())  {
-				ActivityType ah = (ActivityType) iter.next();
-				ret += replaceToDot(ah.getTextKey());
-//				ret += ah.getTextKey().replaceAll("^.*\\.", "");
-//				ret += ah.getTextKey();
-				if(iter.hasNext()) {
-					ret += ", ";
-				}
-			}
-			return ret;				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
-			return null; 
-		} 
-	}	
-
-
-	/**
 	 * Gets all Commune belonging types
 	 * @return collection of Commune belonging types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType 
@@ -114,34 +97,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 	}	
 
-	/**
-	 * Gets all Commune Belongings types (keys) as a comma separated string
-	 * @return String of activity types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
-	 * @author Kjell
-	 */
-	public String getCommuneBelongingsAsString() {
-		String ret = "";
-		try {
-			CommuneBelongingTypeHome home = getCommuneBelongingTypeHome();
-			Collection col = home.findAllCommuneBelongingTypes();
-			Iterator iter = col.iterator();
-			while(iter.hasNext())  {
-				CommuneBelongingType cbt = (CommuneBelongingType) iter.next();
-				ret += replaceToDot(cbt.getLocalizationKey());
-//				ret += cbt.getTextKey().replaceAll("^.*\\.", "");
-//				ret += cbt.getTextKey();
-				if(iter.hasNext()) {
-					ret += ", ";
-				}
-			}
-			return ret;				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
-			return null; 
-		} 
-	}	
 
 	/**
 	 * Gets all Company Types
@@ -158,35 +113,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		} catch (FinderException e) {
 			return null;
 		}
-	}	
-
-	/**
-	 * Gets all Company Types (keys) as a comma separated string
-	 * @return String of activity types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
-	 * @author Kjell
-	 */
-	public String getCompanyTypesAsString() {
-		String ret = "";
-		try {
-			CompanyTypeHome home = getCompanyTypeHome();
-			Collection col = home.findAllCompanyTypes();
-			Iterator iter = col.iterator();
-			while(iter.hasNext())  {
-				CompanyType ct = (CompanyType) iter.next();
-				ret += replaceToDot(ct.getLocalizationKey());
-//				ret += ct.getTextKey().replaceAll("^.*\\.", "");
-//				ret += ct.getTextKey();
-				if(iter.hasNext()) {
-					ret += ", ";
-				}
-			}
-			return ret;				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
-			return null; 
-		} 
 	}	
 
 	/**
@@ -265,37 +191,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}		
 	}
 
-
-	/**
-	 * Gets all Regulation Spec Types (keys) as a comma separated string
-	 * @return String of activity types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
-	 * @author Kjell
-	 */
-	public String getRegulationSpecTypesAsString() {
-		String ret = "";
-		try {
-			RegulationSpecTypeHome home = getRegulationSpecTypeHome();
-			Collection col = home.findAllRegulationSpecTypes();
-			Iterator iter = col.iterator();
-			while(iter.hasNext())  {
-				RegulationSpecType rst = (RegulationSpecType) iter.next();
-				ret += replaceToDot(rst.getLocalizationKey());
-//				ret += rst.getTextKey().replaceAll("^.*\\.", "");
-//				ret += rst.getTextKey();
-				if(iter.hasNext()) {
-					ret += ", ";
-				}
-			}
-			return ret;				
-		} catch (RemoteException e) {
-			return "";
-		} catch (FinderException e) {
-			return ""; 
-		} 
-	}	
-
-
 	/**
 	 * Gets all payment flow types.
 	 * @return collection of payment flow types
@@ -330,6 +225,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 	}	
 
+
+
 	/**
 	 * Gets all Main Rules
 	 * @return collection of provider types
@@ -363,6 +260,62 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
+
+	/**
+	 * Gets all Conditions on a certain regulation
+	 * @return collection of conditions
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
+	 * @author Kjell
+	 */
+	public Collection findAllConditionsByRegulation(Regulation r) {
+		try {
+			ConditionHome home = getConditionHome();
+			return home.findAllConditionsByRegulation(r);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
+
+	/**
+	 * Gets all Regulations
+	 * @return collection of Regulations
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
+	 * @author Kjell
+	 */
+	public Collection findAllRegulations() {
+		try {
+			RegulationHome home = getRegulationHome();
+			return home.findAllRegulations();				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
+
+	/**
+	 * Gets regulations for a certain periode
+	 * @param from periode (Date)
+	 * @param to periode (Date)
+	 * @return collection of Regulations
+	 * @author Kjell
+	 * 
+	 */
+	public Collection findRegulationsByPeriode(Date from, Date to) {
+		try {
+			RegulationHome home = getRegulationHome();
+			return home.findRegulationsByPeriode(from, to);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
 
 	/**
 	 * I Need this before we can use replaceAll with regular expressions in 1.4
@@ -405,6 +358,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		
 	protected ProviderTypeHome getProviderTypeHome() throws RemoteException {
 		return (ProviderTypeHome) com.idega.data.IDOLookup.getHome(ProviderType.class);
+	}	
+
+	protected RegulationHome getRegulationHome() throws RemoteException {
+		return (RegulationHome) com.idega.data.IDOLookup.getHome(Regulation.class);
+	}	
+
+	protected ConditionHome getConditionHome() throws RemoteException {
+		return (ConditionHome) com.idega.data.IDOLookup.getHome(Condition.class);
+	}	
+
+	protected ConditionTypeHome getConditionTypeHome() throws RemoteException {
+		return (ConditionTypeHome) com.idega.data.IDOLookup.getHome(ConditionType.class);
+	}	
+
+	protected SpecialCalculationTypeHome getSpecialCalculationTypeHome() throws RemoteException {
+		return (SpecialCalculationTypeHome) com.idega.data.IDOLookup.getHome(SpecialCalculationType.class);
 	}	
 
 	protected MainRuleHome getMainRuleHome() throws RemoteException {
