@@ -17,6 +17,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
@@ -31,6 +32,8 @@ import com.idega.util.PersonalIDFormatter;
 public class ChildCareChildContracts extends ChildCareBlock {
 
 	public static final String PARAMETER_APPLICATION_ID = "ccc_application_id";
+	public static final String PARAMETER_CHILD_ID = "ccc_child_id";
+	private boolean insideWindow = false;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -41,10 +44,20 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
 		
-		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
-		back.setPageToOpen(getResponsePage());
+		
+		GenericButton back = null;
+		if(insideWindow){
+			CloseButton close = new CloseButton(localize("close","Close"));
+			close = (CloseButton)getStyledInterface(close);
+			back = close;
+		}
+		else{
+			 back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
+			back.setPageToOpen(getResponsePage());
+		}
 
-		if (getSession().getUserID() != -1) {
+		if (getChildID(iwc) != -1) {
+		// if(getSession().getUserID != -1) {
 			parse(iwc);
 			
 			int row = 1;
@@ -98,7 +111,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		if (getSession().getApplicationID() != -1)
 			contracts = getBusiness().getContractsByApplication(getSession().getApplicationID());
 		else
-			contracts = getBusiness().getContractsByChild(getSession().getUserID());
+			contracts = getBusiness().getContractsByChild(getChildID(iwc));
+			//contracts = getBusiness().getContractsByChild(getSession().getUserID());
 
 		Iterator iter = contracts.iterator();
 		while (iter.hasNext()) {
@@ -170,7 +184,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.setWidth(2, "6");
 		int row = 1;
 		
-		User child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+		//User child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+		User child = getBusiness().getUserBusiness().getUser(getChildID(iwc));
 		if (child != null) {
 			Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 			Collection parents = getBusiness().getUserBusiness().getParentsForChild(child);
@@ -266,4 +281,25 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			}
 		}
 	}
+	
+	private int getChildID(IWContext iwc){
+		if(iwc.isParameterSet(PARAMETER_CHILD_ID))
+			return Integer.parseInt(iwc.getParameter(PARAMETER_CHILD_ID));
+		else
+			return getSession().getChildID();
+	}
+	/**
+	 * @return
+	 */
+	public boolean isInsideWindow() {
+		return insideWindow;
+	}
+
+	/**
+	 * @param insideWindow
+	 */
+	public void setInsideWindow(boolean insideWindow) {
+		this.insideWindow = insideWindow;
+	}
+
 }
