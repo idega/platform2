@@ -5,14 +5,13 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.DropDownMenuInputHandler;
 /**
  * A presentation object for dynamic reports to genders. Both,male or female. both is default.
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
+public class ClubTypeDropDownMenu extends DropDownMenuInputHandler {
 
 	private static final String LOCALIZED_EVERY_CLUB = "ClubTypeDropDownMenu.every_club";
 	private static final String LOCALIZED_MULTI_DIVISION_CLUB = "ClubTypeDropDownMenu.multi_division_club";
@@ -44,33 +43,8 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 		addMenuElement(TYPE_UMFI_CLUB, rb.getLocalizedString(LOCALIZED_UMFI_CLUB, "UMFI Clubs"));
 		addMenuElement(TYPE_INACTIVE_CLUB, rb.getLocalizedString(LOCALIZED_INACTIVE_CLUB, "Inactive Clubs"));
 	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
-	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-		this.setName(name);
 
-		if (stringValue != null) {
-			this.setSelectedElement(stringValue);
-		}
-
-		return this;
-	}
-
-	/**
-	 * @return the year, Integer
-	 *  
-	 */
-	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
-		if (values != null && values.length > 0) {
-			return values[0];
-		} else {
-			return null;
-		}
-	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -101,4 +75,5 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+
 }

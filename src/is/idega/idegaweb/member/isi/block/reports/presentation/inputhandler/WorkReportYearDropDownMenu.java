@@ -4,20 +4,16 @@ import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.FinderException;
+import java.util.Collections;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.InputHandler;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 /**
  * A presentation object for dynamic reports to choose groups. By default it
@@ -28,10 +24,8 @@ import com.idega.util.IWTimestamp;
  */
 public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 
-	private String groupType = null;
 	protected GroupBusiness groupBiz = null;
-	private boolean useShortName = false;
-	private String displayNameSeperator = ",";
+
 	private int year = IWTimestamp.getTimestampRightNow().getYear();
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
@@ -49,15 +43,15 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String,
 	 *      java.lang.String, com.idega.presentation.IWContext)
 	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
+	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
 		this.setName(name);
 		DropdownMenu yearInput=null;
 		try {
 			yearInput = getWorkReportBusiness(iwc).getYearDropdownMenu(year);
 			
 			yearInput.setName(name);
-			if(stringValue!=null){
-				yearInput.setSelectedElement(stringValue);
+			if(value!=null){
+				yearInput.setSelectedElement(value);
 			}
 		}
 		catch (RemoteException e) {
@@ -103,5 +97,16 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 	 */
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+
+
+	public PresentationObject getHandlerObject(String name, Collection values, IWContext iwc) {
+		String value = (String) Collections.min(values);
+		return getHandlerObject(name, value, iwc);
+	}
+
+
+	public Object convertSingleResultingObjectToType(Object value, String className) {
+		return value;
 	}
 }

@@ -1,26 +1,24 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
-
-import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
-import is.idega.idegaweb.member.util.IWMemberConstants;
 
 /**
  * @author Sigtryggur
 
  */
-public class DivisionSelectionBox extends GroupSelectionBox implements InputHandler {
+public class DivisionSelectionBox extends GroupSelectionBox  {
 	
 	public DivisionSelectionBox(String name) {
 		super(name,IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);

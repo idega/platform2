@@ -9,18 +9,11 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
  * Company: Idega Software <br>
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
-import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
-
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Collections;
 
-import com.idega.business.IBOLookup;
 import com.idega.business.InputHandler;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.SelectionBox;
@@ -41,15 +34,15 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 		super();
 	}
 	
-	public PresentationObject getHandlerObject(String name,String stringValue,IWContext iwc) {
+	public PresentationObject getHandlerObject(String name,String value,IWContext iwc) {
 		this.setName(name);
 		SelectionBox yearInput=null;
 		try {
 			yearInput = getYearSelectionBox();
 			
 			yearInput.setName(name);
-			if(stringValue!=null){
-				yearInput.setSelectedElement(stringValue);
+			if(value!=null){
+				yearInput.setSelectedElement(value);
 			}
 		}
 		catch (Exception e) {
@@ -121,6 +114,19 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 	 */
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+
+	public PresentationObject getHandlerObject(String name, Collection values, IWContext iwc) {
+		String value = (String) Collections.min(values);
+		return getHandlerObject(name, value, iwc);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.idega.business.InputHandler#convertResultingObjectToType(java.lang.Object, java.lang.String)
+	 */
+	public Object convertSingleResultingObjectToType(Object value, String className) {
+		return value;
 	}
 }
 	

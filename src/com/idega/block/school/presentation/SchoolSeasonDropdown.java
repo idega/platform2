@@ -14,13 +14,12 @@ import com.idega.business.InputHandler;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.DropDownMenuInputHandler;
 
 /**
  * @author Laddi
  */
-public class SchoolSeasonDropdown extends DropdownMenu implements InputHandler{
+public class SchoolSeasonDropdown extends DropDownMenuInputHandler {
 
 	/**
 	 * Creates a new <code>SchoolSeasonDropdown</code> with all school seasons.
@@ -48,17 +47,6 @@ public class SchoolSeasonDropdown extends DropdownMenu implements InputHandler{
 	
 	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
-	}
-
-	/* (non-Javadoc)
-	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
-	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-		this.setName(name);
-		if(stringValue != null){
-			this.setContent(stringValue);
-		}
-		return this;
 	}
 
 	/* (non-Javadoc)
@@ -96,4 +84,5 @@ public class SchoolSeasonDropdown extends DropdownMenu implements InputHandler{
 		}		
 		return "";
 	}
+
 }

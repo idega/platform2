@@ -329,21 +329,22 @@ public class QueryResultViewer extends Block {
 					! DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE.endsWith(key)) {
 	  		InputDescription inputDescription = (InputDescription) identifierInputDescriptionMap.get(key);
 	  		Object object = identifierValueMap.get(key);
-	  		String value = null;
-	  		if (object instanceof Collection) {
-	  			Iterator objectIterator = ((Collection) object).iterator();
-	  			//TODO thi remove hack, extend interface of inputhandler
-	  			while (objectIterator.hasNext()) {
-	  				value = (String) objectIterator.next();
-	  			}
-	  		}
-	  		else {
-	  			value = (String) object;
-	  		}
 	  		String inputHandlerClass = inputDescription.getInputHandler();
 	  		String description = inputDescription.getDescription();
 	  		InputHandler inputHandler = getInputHandler(inputHandlerClass);
-	  		PresentationObject input = (inputHandler != null) ? inputHandler.getHandlerObject(key, value, iwc) : new TextInput(key, value);
+	  		PresentationObject input = null;
+	  		if (inputHandler == null) {
+	  			String value = object.toString();
+	  			input = new TextInput(key, value);
+	  		} 
+	  		else if (object instanceof Collection) {
+	  			Collection value = (Collection) object;
+	  			input = inputHandler.getHandlerObject(key, value, iwc);
+	  		}
+	  		else {
+	  			String value = object.toString();
+	  			input = inputHandler.getHandlerObject(key, value, iwc);
+	  		}
 	  		table.add(description, 1, i);
 	  		table.add(input, 2, i++);
   		}

@@ -9,6 +9,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
@@ -104,5 +105,18 @@ public class PostalCodeBox extends SelectionBox implements InputHandler {
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e);
 		}
-	}	
+	}
+
+	public PresentationObject getHandlerObject(String name, Collection values, IWContext iwc) {
+		String value = (String) Collections.min(values);
+		return getHandlerObject(name, value, iwc);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.idega.business.InputHandler#convertResultingObjectToType(java.lang.Object, java.lang.String)
+	 */
+	public Object convertSingleResultingObjectToType(Object value, String className) {
+		return value;
+	}
 }

@@ -51,6 +51,7 @@ public class CriterionExpression implements DynamicExpression {
   private String inputHandlerDescription = null;
   
   private Map typeSQL = null;
+  private IWContext iwc = null;
   
   { 
     typeSQL = new HashMap();
@@ -66,6 +67,7 @@ public class CriterionExpression implements DynamicExpression {
 	public CriterionExpression(QueryConditionPart condition, Object identifier, SQLQuery sqlQuery, IWContext iwc)	{
 		this.id = condition.getId();
 		this.identifier = identifier;
+		this.iwc = iwc;
 		initialize(condition, sqlQuery, iwc);
 	}	
   
@@ -74,8 +76,9 @@ public class CriterionExpression implements DynamicExpression {
   	String path = condition.getPath();
  
   	// set Handler 
-  	String inputHandlerDescription = sqlQuery.getHandlerDescriptionForField(path, field); 
-  	String inputHandlerClass = sqlQuery.getInputHandlerForField(path, field);
+  	inputHandlerDescription = sqlQuery.getHandlerDescriptionForField(path, field); 
+  	inputHandlerClass = sqlQuery.getInputHandlerForField(path, field);
+  	firstColumnClass = sqlQuery.getTypeClassForField(path, field);
   	valueField =  sqlQuery.getUniqueNameForField(path,field);
     String type = condition.getType();
     comparison = (String) typeSQL.get(type);
@@ -122,15 +125,24 @@ public class CriterionExpression implements DynamicExpression {
       new StringBuffer(valueField).append(WHITE_SPACE);
     expression.append(comparison);
     Object pattern = identifierValueMap.get(identifier);
+    InputHandler inputHandler = getInputHandler();
     // if the pattern is a collection use OR operator
     if (pattern != null && pattern instanceof Collection) {
+    	// if there is an inputhandler get the resulting objects
+    	if (inputHandler != null)  {
+    		String[] patternAsArray = (String[]) ((Collection)pattern).toArray(new String[0]);
+    		try {
+    			pattern = inputHandler.getResultingObject(patternAsArray, iwc);
+    		}
+    		catch (Exception ex) {};
+    	}
     	Iterator iterator = ((Collection) pattern).iterator();
     	if (((Collection) pattern).size() == 1) {
-				return getSingleCondition( (String) iterator.next()).toString();
+				return getSingleCondition(iterator.next()).toString();
     	}
 			StringBuffer buffer = new StringBuffer();
     	while (iterator.hasNext()) {
-    		String singlePattern = (String) iterator.next();
+    		Object singlePattern = iterator.next();
     		buffer.append(BRACKET_OPEN).append(WHITE_SPACE);
     		StringBuffer singleCondition = getSingleCondition( singlePattern);
     		buffer.append(singleCondition);
@@ -145,22 +157,36 @@ public class CriterionExpression implements DynamicExpression {
     	expression.append(WHITE_SPACE).append(patternField);
     	return expression.toString();
     }	
-    return getSingleCondition((String) pattern).toString();
+    // if there is an inputhandler get the resulting object
+    String patternAsString = pattern.toString();
+    if (inputHandler != null)  {
+    	String[] patternAsArray = new String[] { patternAsString };
+    	try {
+    		pattern = inputHandler.getResultingObject(patternAsArray, iwc);
+    	}
+    	catch (Exception ex) {
+    	}
+    }
+    return getSingleCondition(pattern).toString();
   }
   
-  private StringBuffer getSingleCondition(String pattern) {
-    StringBuffer expression = 
-      new StringBuffer(valueField).append(WHITE_SPACE);
+  private StringBuffer getSingleCondition(Object patternObject) {
+  	// change pattern to the corresponding string for the given type
+  	if (inputHandlerClass != null && patternObject != null) {
+  		InputHandler inputHandler = getInputHandler();
+  		patternObject = inputHandler.convertSingleResultingObjectToType(patternObject, firstColumnClass).toString();
+  	}
+    StringBuffer expression = new StringBuffer(valueField).append(WHITE_SPACE);
     expression.append(comparison);
-    if (pattern != null)  {
+    if (patternObject != null)  {
       expression.append(WHITE_SPACE);
       // if it is an integer do not use apostrophe: age = 22
       if (INTEGER.equals(firstColumnClass)) {
-        expression.append(pattern);
+        expression.append(patternObject);
       }
       // else use apostrophe: name = 'Thomas'
       else {
-        expression.append(APOSTROPHE).append(pattern).append(APOSTROPHE);
+        expression.append(APOSTROPHE).append(patternObject).append(APOSTROPHE);
       }
     }
     return expression;
@@ -191,6 +217,10 @@ public class CriterionExpression implements DynamicExpression {
   }
   
   public InputHandler getInputHandler() {
+  	// sometimes there isn't an inputhandler 
+  	if (inputHandlerClass == null) {
+  		return null;
+  	}
   	InputHandler inputHandler = null;
   	try {
   		inputHandler = (InputHandler) Class.forName(inputHandlerClass).newInstance();

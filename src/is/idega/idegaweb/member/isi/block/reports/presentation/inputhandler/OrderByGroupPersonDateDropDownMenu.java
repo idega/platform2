@@ -1,25 +1,22 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
-import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.DropDownMenuInputHandler;
 
 /**
  * @author Sigtryggur
  */
-public class OrderByGroupPersonDateDropDownMenu extends DropdownMenu implements InputHandler {
+public class OrderByGroupPersonDateDropDownMenu extends DropDownMenuInputHandler {
 
 	private static final String NAME_ORDER = IWMemberConstants.ORDER_BY_NAME; //same as in workreportmember
 	private static final String GROUP_NAME_ORDER = IWMemberConstants.ORDER_BY_GROUP_NAME; //same as in workreportmember
 	private static final String ENTRY_DATE_ORDER = IWMemberConstants.ORDER_BY_ENTRY_DATE;
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private WorkReportBusiness workBiz = null;
 
 	public OrderByGroupPersonDateDropDownMenu() {
 		super();
@@ -33,25 +30,6 @@ public class OrderByGroupPersonDateDropDownMenu extends DropdownMenu implements 
 		this.setSelectedElement(NAME_ORDER);
 	}
 
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-		this.setName(name);
-		if (stringValue != null) {
-			this.setSelectedElement(stringValue);
-		}
-		return this;
-	}
-
-	/**
-	 * @return the orderByString, String
-	 *  
-	 */
-	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
-		if (values != null && values.length > 0) {
-			return values[0];
-		}
-		else
-			return null;
-	}
 
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -76,4 +54,5 @@ public class OrderByGroupPersonDateDropDownMenu extends DropdownMenu implements 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+
 }

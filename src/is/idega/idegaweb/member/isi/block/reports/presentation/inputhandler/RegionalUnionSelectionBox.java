@@ -19,7 +19,7 @@ import com.idega.user.data.Group;
  * A presentation object for dynamic reports to choose Leagues from a selectionbox
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class RegionalUnionSelectionBox extends GroupSelectionBox implements InputHandler{
+public class RegionalUnionSelectionBox extends GroupSelectionBox {
 
 	
 	/**

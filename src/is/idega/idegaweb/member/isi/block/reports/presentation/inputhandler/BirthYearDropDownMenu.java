@@ -6,15 +6,14 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.DropDownMenuInputHandler;
 import com.idega.util.IWTimestamp;
 /**
  * A presentation object for dynamic reports. Select an age (1-123).
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class BirthYearDropDownMenu extends DropdownMenu implements InputHandler {
+public class BirthYearDropDownMenu extends DropDownMenuInputHandler {
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
@@ -36,21 +35,7 @@ public class BirthYearDropDownMenu extends DropdownMenu implements InputHandler 
 		
 		setSelectedElement(" ");
 	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
-	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-		this.setName(name);
-
-		if (stringValue != null) {
-			this.setSelectedElement(stringValue);
-		}
-
-		return this;
-	}
-
+	
 	/**
 	 * @return the year, Integer
 	 *  
@@ -87,5 +72,7 @@ public class BirthYearDropDownMenu extends DropdownMenu implements InputHandler 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+
+
 }
 

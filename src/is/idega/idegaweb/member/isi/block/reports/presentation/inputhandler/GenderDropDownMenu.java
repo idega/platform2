@@ -1,25 +1,21 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
-import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
-
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.DropDownMenuInputHandler;
 /**
  * A presentation object for dynamic reports to genders. Both,male or female. both is default.
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
+public class GenderDropDownMenu extends DropDownMenuInputHandler {
 
 	private static final String MALE = "m"; //same as in workreportmember
 	private static final String FEMALE = "f"; //same as in workreportmember
 	private static final String BOTH = "b";
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private WorkReportBusiness workBiz = null;
 
 	public GenderDropDownMenu() {
 		super();
@@ -32,21 +28,7 @@ public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
 		this.addMenuElement(BOTH, iwrb.getLocalizedString("GenderDropdownmenu.both", "Both"));
 		this.setSelectedElement(BOTH);
 	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
-	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-		this.setName(name);
-
-		if (stringValue != null) {
-			this.setSelectedElement(stringValue);
-		}
-
-		return this;
-	}
-
+	
 	/**
 	 * @return the year, Integer
 	 *  
@@ -95,4 +77,5 @@ public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+
 }

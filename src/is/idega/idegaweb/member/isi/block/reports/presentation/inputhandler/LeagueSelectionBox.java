@@ -10,14 +10,13 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
  
 /**
  * A presentation object for dynamic reports to choose Leagues from a selectionbox
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class LeagueSelectionBox extends GroupSelectionBox implements InputHandler{
+public class LeagueSelectionBox extends GroupSelectionBox {
 
 	/**
 	 * Creates a new <code>LeagueSelectionBox</code> with all leagues.

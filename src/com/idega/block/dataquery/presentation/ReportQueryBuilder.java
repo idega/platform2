@@ -1461,7 +1461,6 @@ public class ReportQueryBuilder extends Block {
 	 * @param fieldInputHandler
 	 */
 	private void addPatternToConditionTable(IWContext iwc, Table table, int row, QueryConditionPart part, HashMatrix mapOfFields, Map temporaryParameterMap) {
-		// because the user interface is so complicated there are so many null checks - really bad
 		String path = part.getPath();
 		String field = part.getField();
 		QueryFieldPart fieldPart = null;
@@ -1481,12 +1480,7 @@ public class ReportQueryBuilder extends Block {
 		if (part.getIdNumber() == editId) {
 			PresentationObject inputWidget;
 
-			if (inputHandler != null) {
-				//TODO: extend interface of handler that it can handle multiselection 
-				// that is the case singlePattern is null, patterns is not null
-				inputWidget = inputHandler.getHandlerObject(PARAM_COND_PATTERN, singlePattern, iwc);
-			}
-			else {
+			if (inputHandler == null) {
 				inputWidget = new TextInput(PARAM_COND_PATTERN);
 				if (singlePattern != null) {
 					// type casting is necessary to prevent calling the method 
@@ -1494,6 +1488,12 @@ public class ReportQueryBuilder extends Block {
 					// The right method is setValue(String)
 					((TextInput)inputWidget).setValue(singlePattern);
 				}
+			}
+			else if (patterns != null) {
+				inputWidget = inputHandler.getHandlerObject(PARAM_COND_PATTERN, patterns, iwc);
+			}
+			else {
+				inputWidget = inputHandler.getHandlerObject(PARAM_COND_PATTERN, singlePattern, iwc);
 			}
 			table.add(inputWidget, 5, row);
 		}
@@ -1504,12 +1504,13 @@ public class ReportQueryBuilder extends Block {
 		// normal display without any inputs
 		else if (inputHandler != null) {
 			String[] patternArray = (hasMoreThanOnePattern) ? (String[]) patterns.toArray(new String[0]) : new String[]  { singlePattern };
-			Object resultingObjects = null;
+			Object resultingObject = null;
 			String display = null;
 			try {
-				resultingObjects = inputHandler.getResultingObject(patternArray, iwc);
-				display = inputHandler.getDisplayForResultingObject(resultingObjects, iwc);
-			} 	catch (Exception e)	 {
+				resultingObject = inputHandler.getResultingObject(patternArray, iwc);
+				display = inputHandler.getDisplayForResultingObject(resultingObject, iwc);
+			} 	
+			catch (Exception e)	 {
 				log(e);
 				display = "";
 			}

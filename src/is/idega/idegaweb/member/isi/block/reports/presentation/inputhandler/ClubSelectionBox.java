@@ -11,7 +11,6 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 
@@ -19,7 +18,7 @@ import com.idega.user.data.Group;
  * A presentation object for dynamic reports to choose a club from a selectionbox
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class ClubSelectionBox extends GroupSelectionBox implements InputHandler{
+public class ClubSelectionBox extends GroupSelectionBox {
 	
 	/**
 	 * Creates a new <code>ClubSelectionBox</code> with all clubs.

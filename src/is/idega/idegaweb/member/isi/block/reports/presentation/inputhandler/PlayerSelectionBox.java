@@ -11,14 +11,13 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
-import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 
 /**
  * @author Sigtryggur
  */
-public class PlayerSelectionBox extends GroupSelectionBox implements InputHandler {
+public class PlayerSelectionBox extends GroupSelectionBox  {
 	public PlayerSelectionBox(String name) {
 		super(name,IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 	}

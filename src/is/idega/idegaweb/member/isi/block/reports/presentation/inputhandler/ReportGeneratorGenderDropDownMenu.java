@@ -1,9 +1,8 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
-import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
@@ -24,7 +23,6 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 	private static final String[] ALL = new String[] { MALE, FEMALE };
 	
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private WorkReportBusiness workBiz = null;
 
 	public ReportGeneratorGenderDropDownMenu() {
 		super();
@@ -42,11 +40,11 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 	 * 
 	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
+	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
 		this.setName(name);
 
-		if (stringValue != null) {
-			this.setSelectedElement(stringValue);
+		if (value != null) {
+			this.setSelectedElement(value);
 		}
 
 		return this;
@@ -109,5 +107,18 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 	 */
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+
+	public PresentationObject getHandlerObject(String name, Collection values, IWContext iwc) {
+		String value = (String) Collections.min(values);
+		return getHandlerObject(name, value, iwc);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.idega.business.InputHandler#convertResultingObjectToType(java.lang.Object, java.lang.String)
+	 */
+	public Object convertSingleResultingObjectToType(Object value, String className) {
+		return value;
 	}
 }

@@ -8,15 +8,13 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
-import com.idega.business.InputHandler;
-
 /**
  * @author jonas
  *
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class ReportGeneratorRegionalUnionSelectionBox extends GroupSelectionBox implements InputHandler {
+public class ReportGeneratorRegionalUnionSelectionBox extends GroupSelectionBox {
 	/**
 	 * Creates a new <code>LeagueSelectionBox</code> with all leagues.
 	 * @param name	The name of the <code>LeagueSelectionBox</code>

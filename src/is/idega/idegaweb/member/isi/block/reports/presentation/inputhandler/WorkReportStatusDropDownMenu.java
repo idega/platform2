@@ -9,8 +9,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.DropDownMenuInputHandler;
 
 /**
  * @author jonas
@@ -18,7 +17,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WorkReportStatusDropDownMenu extends DropdownMenu implements InputHandler {
+public class WorkReportStatusDropDownMenu extends DropDownMenuInputHandler {
 
 	public static final String LOCALIZED_STATUS_ALL = "WorkReportStatusDropDownMenu.status_all";
 	public static final String LOCALIZED_STATUS_DONE = "WorkReportStatusDropDownMenu.status_done";
@@ -44,29 +43,6 @@ public class WorkReportStatusDropDownMenu extends DropdownMenu implements InputH
 		addMenuElement(STATUS_SOME_DONE, rb.getLocalizedString(LOCALIZED_STATUS_SOME_DONE, "Some Done"));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
-	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-		this.setName(name);
-
-		if (stringValue != null) {
-			this.setSelectedElement(stringValue);
-		}
-
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.idega.business.InputHandler#getResultingObject(java.lang.String[], com.idega.presentation.IWContext)
-	 */
-	public Object getResultingObject(String[] value, IWContext iwc) throws Exception {
-		if (value != null && value.length > 0) {
-			return value[0];
-		} else {
-			return null;
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.Object, com.idega.presentation.IWContext)
@@ -96,4 +72,5 @@ public class WorkReportStatusDropDownMenu extends DropdownMenu implements InputH
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+
 }
