@@ -43,11 +43,11 @@ public class ProductEditorBusiness extends IBOServiceBean{
     try {
       product.removeFrom(ProductCategory.class);
       if (categoryIds != null) {
-        ProductCategory pCat;
-        for (int i = 0; i < categoryIds.length; i++) {
-          pCat = ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(categoryIds[i]));
-          addCategory(product, pCat);
-        }
+	ProductCategory pCat;
+	for (int i = 0; i < categoryIds.length; i++) {
+	  pCat = ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(categoryIds[i]));
+	  addCategory(product, pCat);
+	}
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -75,30 +75,30 @@ public class ProductEditorBusiness extends IBOServiceBean{
     try {
       boolean perform = true;
       if (thumbnailId != -1) {
-        int newThumbId = thumbnailId;
-        int oldThumbId = product.getFileId();
+	int newThumbId = thumbnailId;
+	int oldThumbId = product.getFileId();
 
-        if (newThumbId == product.getFileId()) {
-          perform = false;
-        }
+	if (newThumbId == product.getFileId()) {
+	  perform = false;
+	}
 
-        if (perform) {
-          if (newThumbId == -1) {
-            dropImage(product, true);
-            //product.setFileId(null);
-            //product.update();
-          }else {
-            product.setFileId(newThumbId);
-            product.update();
-            product.removeFrom(ICFile.class, newThumbId);
-          }
-        }
+	if (perform) {
+	  if (newThumbId == -1) {
+	    dropImage(product, true);
+	    //product.setFileId(null);
+	    //product.update();
+	  }else {
+	    product.setFileId(newThumbId);
+	    product.update();
+	    product.removeFrom(ICFile.class, newThumbId);
+	  }
+	}
 
-        if (perform) {
-          if (oldThumbId != -1) {
-            product.addTo(ICFile.class, oldThumbId);
-          }
-        }
+	if (perform) {
+	  if (oldThumbId != -1) {
+	    product.addTo(ICFile.class, oldThumbId);
+	  }
+	}
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -110,29 +110,29 @@ public class ProductEditorBusiness extends IBOServiceBean{
       return false;
     }else {
       try {
-        ProductPrice pPri = getStockroomBusiness().getPrice(product);
-        int oldP = 0;
-        int pCurrId = -1;
-        if (pPri != null) {
-          oldP = (int) pPri.getPrice();
-          pCurrId = pPri.getID();
-        }
-        int newP = Integer.parseInt(price);
-        if (oldP != newP || Integer.parseInt(currencyId) != pCurrId) {
-          ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy();
-            pPrice.setIsValid(true);
-            pPrice.setPrice(Float.parseFloat(price));
-            pPrice.setPriceType(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE);
-            pPrice.setProductId(product.getID());
-            pPrice.setPriceDate(idegaTimestamp.getTimestampRightNow());
-            pPrice.setCurrencyId(Integer.parseInt(currencyId));
-          pPrice.insert();
-          return true;
-        }else {
-          return true;
-        }
+	ProductPrice pPri = getStockroomBusiness().getPrice(product);
+	int oldP = 0;
+	int pCurrId = -1;
+	if (pPri != null) {
+	  oldP = (int) pPri.getPrice();
+	  pCurrId = pPri.getID();
+	}
+	int newP = Integer.parseInt(price);
+	if (oldP != newP || Integer.parseInt(currencyId) != pCurrId) {
+	  ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy();
+	    pPrice.setIsValid(true);
+	    pPrice.setPrice(Float.parseFloat(price));
+	    pPrice.setPriceType(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE);
+	    pPrice.setProductId(product.getID());
+	    pPrice.setPriceDate(idegaTimestamp.getTimestampRightNow());
+	    pPrice.setCurrencyId(Integer.parseInt(currencyId));
+	  pPrice.insert();
+	  return true;
+	}else {
+	  return true;
+	}
       }catch (Exception e) {
-        return false;
+	return false;
       }
     }
   }
@@ -141,22 +141,43 @@ public class ProductEditorBusiness extends IBOServiceBean{
       SelectionBox catSel = new SelectionBox(name);
       List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
       if (cats != null) {
-        catSel = new SelectionBox(cats);
-        catSel.setName(name);
+	catSel = new SelectionBox(cats);
+	catSel.setName(name);
       }
       if (product != null) {
-        try {
-          List rCats = ProductBusiness.getProductCategories(product);
-          Category icCat;
-          if (rCats != null && rCats.size() > 0) {
-            for (int i = 0; i < rCats.size(); i++) {
-              icCat = (Category) rCats.get(i);
-              catSel.setSelectedElement(Integer.toString(icCat.getID()));
-            }
-          }
-        }catch (IDOFinderException ido) {
-          ido.printStackTrace(System.err);
-        }
+	try {
+	  List rCats = ProductBusiness.getProductCategories(product);
+	  Category icCat;
+	  if (rCats != null && rCats.size() > 0) {
+	    for (int i = 0; i < rCats.size(); i++) {
+	      icCat = (Category) rCats.get(i);
+	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
+	    }
+	  }
+	}catch (IDOFinderException ido) {
+	  ido.printStackTrace(System.err);
+	}
+      }
+    return catSel;
+  }
+
+  public SelectionBox getSelectionBox(Product product, String name, int productCatalogObjectInstanceId) {
+      SelectionBox catSel = new SelectionBox(name);
+      List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
+      if (product != null) {
+	try {
+	  List rCats = ProductBusiness.getProductCategories(product);
+	  Category icCat;
+	  if (rCats != null && rCats.size() > 0) {
+	    for (int i = 0; i < rCats.size(); i++) {
+	      icCat = (Category) rCats.get(i);
+	      catSel.addMenuElement(icCat.getID(),icCat.getName());
+	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
+	    }
+	  }
+	}catch (IDOFinderException ido) {
+	  ido.printStackTrace(System.err);
+	}
       }
     return catSel;
   }
@@ -167,22 +188,22 @@ public class ProductEditorBusiness extends IBOServiceBean{
       return null;
     }else {
       try {
-        List list = EntityFinder.getInstance().findRelated(product, ICFile.class);
-        files = new Vector(list);
+	List list = EntityFinder.getInstance().findRelated(product, ICFile.class);
+	files = new Vector(list);
       }catch (IDOFinderException ido) {
-        ido.printStackTrace(System.err);
+	ido.printStackTrace(System.err);
       }
     }
     if (files != null) {
       int imageId = product.getFileId();
       if (imageId != -1) {
-        try {
-          if (!files.contains(((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId))) {
-            files.add(0, ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId));
-          }
-        }catch (SQLException sql){
-          sql.printStackTrace(System.err);
-        }
+	try {
+	  if (!files.contains(((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId))) {
+	    files.add(0, ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId));
+	  }
+	}catch (SQLException sql){
+	  sql.printStackTrace(System.err);
+	}
       }
     }
     return files;
@@ -192,9 +213,9 @@ public class ProductEditorBusiness extends IBOServiceBean{
   public void addImage(Product product, int imageId) {
     if (imageId != -1) {
       try {
-        product.addTo(ICFile.class, imageId);
+	product.addTo(ICFile.class, imageId);
       }catch (SQLException sql){
-        //sql.printStackTrace(System.err);
+	//sql.printStackTrace(System.err);
       }
     }
   }
@@ -202,14 +223,14 @@ public class ProductEditorBusiness extends IBOServiceBean{
   public void removeImage(Product product, int imageId) {
     if (imageId != -1) {
       try {
-        if (product.getFileId() == imageId) {
-          product.setFileId(null);
-          product.update();
-        }else {
-          product.removeFrom(ICFile.class, imageId);
-        }
+	if (product.getFileId() == imageId) {
+	  product.setFileId(null);
+	  product.update();
+	}else {
+	  product.removeFrom(ICFile.class, imageId);
+	}
       }catch (SQLException sql){
-        sql.printStackTrace(System.err);
+	sql.printStackTrace(System.err);
       }
     }
   }
@@ -243,7 +264,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
     }
     if (defaultCurrency != null) {
       try {
-        _currencies.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(defaultCurrency).getCurrencyID()));
+	_currencies.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(defaultCurrency).getCurrencyID()));
       }
       catch (Exception e) {
       }

@@ -257,6 +257,10 @@ public class ProductEditorWindow extends IWAdminWindow {
       SelectionBox catSel = _business.getCategorySelectionBox(_product, PAR_CATEGORY, _catalogICObjectInstanceId);
       super.addLeft(iwrb.getLocalizedString("product_category","Product category"), catSel, true);
     }
+    else {
+      SelectionBox catSel = _business.getSelectionBox(_product, PAR_CATEGORY, _catalogICObjectInstanceId);
+      super.addLeft(iwrb.getLocalizedString("product_category","Product category"), catSel, true);
+    }
 
 
 
