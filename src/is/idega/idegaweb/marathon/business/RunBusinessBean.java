@@ -32,7 +32,6 @@ import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOAddRelationshipException;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;

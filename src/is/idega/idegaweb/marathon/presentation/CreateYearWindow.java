@@ -5,9 +5,6 @@ package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
