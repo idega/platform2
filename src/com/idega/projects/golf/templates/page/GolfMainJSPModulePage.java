@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.24 2001/08/08 00:56:48 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.25 2001/08/08 01:18:17 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -460,12 +460,12 @@ public class GolfMainJSPModulePage extends MainPage {
       table.setWidth(148);
       table.setHeaderText(iwrb.getLocalizedString("golferpage.header_table_name","Pro golfers"));
       //this should be automated
-      Table golfers = new Table(1,3);
+      Table golfers = new Table(1,1);
 
       Link golferLink = new Link("Björgvin Sigurbergsson","/golfers/");
       golferLink.setFontSize(1);
 
-      golfers.add(golferLink,1,2);
+      golfers.add(golferLink,1,1);
       table.add(golfers);
 
       return table;
