@@ -261,13 +261,69 @@ public class TourBusiness extends TravelStockroomBusiness {
     return menu;
   }
 
+  /**
+   * return a date if the inserted date is part on a tour
+   */
+  private static idegaTimestamp getDepartureDateForDate(IWContext iwc, Tour tour, idegaTimestamp stamp) {
+    idegaTimestamp returnStamp = null;
+    List days = getDepartureDays(iwc, tour, true);
+
+    idegaTimestamp stamp1 = null;
+    idegaTimestamp stamp2 = null;
+    boolean found = false;
+
+    int numberOfDays = tour.getNumberOfDays();
+
+    if ( numberOfDays > 1) {
+      for (int i = 0; i < days.size(); i++) {
+        if (i == 0) {
+          stamp1 = (idegaTimestamp) days.get(0);
+          stamp2 = (idegaTimestamp) days.get(1);
+          ++i;
+        }else {
+          stamp1 = (idegaTimestamp) days.get(i-1);
+          stamp2 = (idegaTimestamp) days.get(i);
+        }
+
+        if (stamp.isLaterThanOrEquals(stamp1) && stamp2.isLaterThan(stamp)) {
+          found = true;
+          break;
+        }
+      }
+
+      if (found) {
+        int daysBetween = stamp.getDaysBetween(stamp1, stamp);
+        if (stamp1.equals(stamp)) {
+          return stamp;
+        }else if (stamp2.equals(stamp)) {
+          return stamp;
+        }else if (daysBetween < numberOfDays) {
+          return stamp1;
+        }else if (daysBetween >= numberOfDays) {
+          return null;
+        }
+
+      }else {
+        return null;
+      }
+    }else {
+
+    }
+
+
+    return returnStamp;
+  }
+
   public static boolean getIfDay(IWContext iwc, Contract contract, Tour tour, idegaTimestamp stamp) {
     try {
-      if (!getIfDayInManyDayTour(tour, stamp)) {
-        return false;
-      }else {
+      idegaTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
+      if (temp == null) {
         return TravelStockroomBusiness.getIfDay(iwc, contract, new Product(tour.getID()), stamp);
+//        return TravelStockroomBusiness.getIfDay(iwc, new Product(tour.getID()), stamp, includePast);
+      }else {
+        return (stamp.equals(temp));
       }
+
     }catch (Exception e) {
       e.printStackTrace(System.err);
       return false;
@@ -276,47 +332,45 @@ public class TourBusiness extends TravelStockroomBusiness {
 
   public static boolean getIfDay(IWContext iwc, Tour tour, idegaTimestamp stamp, boolean includePast) {
     try {
-      if (!getIfDayInManyDayTour(tour, stamp)) {
-        System.err.println("+++++++++");
-        return false;
-      }else {
-        System.err.println("---------");
+      idegaTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
+      if (temp == null) {
         return TravelStockroomBusiness.getIfDay(iwc, new Product(tour.getID()), stamp, includePast);
+      }else {
+        return (stamp.equals(temp));
       }
     }catch (Exception e) {
       e.printStackTrace(System.err);
       return false;
     }
   }
-
+/*
   private static boolean getIfDayInManyDayTour(Tour tour, idegaTimestamp stamp) throws SQLException {
     int numberOfDays = tour.getNumberOfDays();
     if (numberOfDays > 1) {
-/*
-      int[] days = ServiceDay.getDaysOfWeek(tour.getID());
-      int dayOfWeek = stamp.getDayOfWeek();
 
-      boolean cont = false;
-      for (int i = 0; i < days.length; i++) {
-        if (dayOfWeek == days[i]) cont = true;
-      }
-      if (cont) return false;
-*/
       Timeframe frame = new Product(tour.getID()).getTimeframe();
       idegaTimestamp from = new idegaTimestamp(frame.getFrom());
       if (frame.getIfYearly()) {
         from.setYear(stamp.getYear());
       }
       int daysBetween = from.getDaysBetween(from, stamp);
+      System.err.println("numberOfDays               : "+numberOfDays);
+      System.err.println("daysBetween                : "+daysBetween);
+      System.err.println("daysBetween % numberOfDays : "+daysBetween % numberOfDays);
+
+      if (numberOfDays > 6) {
+
+      }else {
+
+      }
+
       if (daysBetween % numberOfDays != 0) {
         return false;
       }
-
-
     }
     return true;
   }
-
+*/
 
   public static List getDepartureDays(IWContext iwc, Tour tour) {
     return getDepartureDays(iwc, tour, true);
