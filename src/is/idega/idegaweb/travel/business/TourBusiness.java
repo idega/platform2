@@ -119,7 +119,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
 //      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
       if (serviceId == -1)
-      System.err.println("UpdateTour() - serviceID == -1");
+      System.err.println("Tour Business : UpdateTour() - serviceID == -1");
 
       if (serviceId != -1)
       try {
@@ -270,6 +270,7 @@ public class TourBusiness extends TravelStockroomBusiness {
       Service service = new Service(tour.getID());
       Timeframe frame = service.getTimeframe();
       int numberOfDays = tour.getNumberOfDays();
+        if (numberOfDays < 1) numberOfDays = 1;
 
       if (from == null) from = new idegaTimestamp(frame.getFrom());
       if (to == null)   to   = new idegaTimestamp(frame.getTo());
@@ -278,13 +279,14 @@ public class TourBusiness extends TravelStockroomBusiness {
       idegaTimestamp temp;
 
 
+
       while (to.isLaterThan(stamp)) {
         temp = getNextAvailableDay(iwc, service, stamp);
         if (temp != null) {
           returner.add(temp);
           stamp = new idegaTimestamp(temp);
-          stamp.addDays(numberOfDays);
         }
+        stamp.addDays(numberOfDays);
       }
 
     }catch (SQLException sql) {

@@ -280,6 +280,8 @@ public class Booking extends TravelManager {
       table.add(timeText,3,1);
       table.add(departureFromText,2,3);
       table.add(departureTimeText,3,3);
+
+
       try {
 
           Text nameTextC = (Text) theText.clone();
@@ -300,13 +302,14 @@ public class Booking extends TravelManager {
           table.add(depFrom,2,4);
           table.add(depAt,3,4);
 
-          List depDays = TourBusiness.getDepartureDays(iwc, tour);
-          String dateStr = iwc.getParameter("booking_date");
-          DropdownMenu menu = TourBusiness.getDepartureDaysDropdownMenu(iwc, depDays, "booking_date");
-            if (dateStr != null) menu.setSelectedElement(dateStr);
-            menu.setToSubmit();
-          if (tour.getNumberOfDays() > 1)
-          table.add(menu,3,4);
+          if (tour.getNumberOfDays() > 1) {
+            List depDays = TourBusiness.getDepartureDays(iwc, tour);
+            String dateStr = iwc.getParameter("booking_date");
+            DropdownMenu menu = TourBusiness.getDepartureDaysDropdownMenu(iwc, depDays, "booking_date");
+              if (dateStr != null) menu.setSelectedElement(dateStr);
+              menu.setToSubmit();
+            table.add(menu,3,4);
+          }
 
       }catch (SQLException sql) {
           sql.printStackTrace(System.err);
@@ -350,6 +353,7 @@ public class Booking extends TravelManager {
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
             tfnfe.printStackTrace(System.err);
       }
+
 
 
       if (isDayVisible) {
@@ -417,6 +421,8 @@ public class Booking extends TravelManager {
       String colorForAvailableDay = super.ORANGE;
       String colorForAvailableDayText = super.backgroundColor;
       String colorForInquery = super.YELLOW;
+      String colorForFullyBooked = super.RED;
+      String colorForFullyBookedText = super.WHITE;
       String colorForToday = "#71CBFB";
 
       Table table = new Table(4,6);
@@ -543,8 +549,14 @@ public class Booking extends TravelManager {
 
       idegaTimestamp temp = new idegaTimestamp(1, month , year);
       int iBookings = 0;
+      int seats = tour.getTotalSeats();
 
-      List depDays = TourBusiness.getDepartureDays(iwc, tour);
+      List depDays = new Vector();
+      if (tour.getNumberOfDays() > 1) {
+        depDays = TourBusiness.getDepartureDays(iwc, tour);
+      }else {
+        depDays = TourBusiness.getDepartureDays(iwc,tour, new idegaTimestamp(1,stamp.getMonth(), stamp.getYear()), new idegaTimestamp(lengthOfMonth ,stamp.getMonth(), stamp.getYear()));
+      }
 
       try {
         if (contract != null) {
@@ -552,60 +564,53 @@ public class Booking extends TravelManager {
             temp = (idegaTimestamp) depDays.get(i);
             if (!TravelStockroomBusiness.getIfExpired(contract, temp))
             if (TravelStockroomBusiness.getIfDay(iwc,contract,product,temp)) {
+              if (seats > 0 && seats <= Booker.getNumberOfBookings(productId, temp) ) {
+                sm.setDayColor(temp, colorForFullyBooked);
+                sm.setDayFontColor(temp, colorForFullyBookedText);
+              }else {
                 sm.setDayColor(temp, colorForAvailableDay);
-                sm.setDayFontColor(temp,colorForAvailableDayText);
+                sm.setDayFontColor(temp, colorForAvailableDayText);
+              }
             }
           }
-
-          /*
-          for (int i = 1; i <= lengthOfMonth; i++) {
-            if (!TravelStockroomBusiness.getIfExpired(contract, temp))
-            if (TravelStockroomBusiness.getIfDay(iwc,contract,product,temp)) {
-                sm.setDayColor(temp, colorForAvailableDay);
-                sm.setDayFontColor(temp,colorForAvailableDayText);
-            }
-
-            temp.addDays(1);
-          }*/
         }
         else if (supplier != null) {
+          for (int i = 0; i < depDays.size(); i++) {
+            temp = (idegaTimestamp) depDays.get(i);
+            if (seats > 0 && seats <= Booker.getNumberOfBookings(productId, temp) ) {
+              sm.setDayColor(temp, colorForFullyBooked);
+              sm.setDayFontColor(temp, colorForFullyBookedText);
+            }else {
+              sm.setDayColor(temp, colorForAvailableDay);
+              sm.setDayFontColor(temp,colorForAvailableDayText);
+            }
+          }
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(productId, temp, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
               sm.setDayFontColor(temp,colorForAvailableDayText);
-            }/*else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
-                sm.setDayColor(temp, colorForAvailableDay);
-                sm.setDayFontColor(temp,colorForAvailableDayText);
-            }*/
+            }
             temp.addDays(1);
-          }
-          for (int i = 0; i < depDays.size(); i++) {
-            temp = (idegaTimestamp) depDays.get(i);
-            sm.setDayColor(temp, colorForAvailableDay);
-            sm.setDayFontColor(temp,colorForAvailableDayText);
           }
         }
         else {
+          for (int i = 0; i < depDays.size(); i++) {
+            temp = (idegaTimestamp) depDays.get(i);
+            iBookings = Booker.getNumberOfBookings(productId, temp);
+            if (seats > 0 && seats <= iBookings ) {
+              sm.setDayColor(temp, colorForFullyBooked);
+              sm.setDayFontColor(temp, colorForFullyBookedText);
+            }else if (iBookings >= tour.getMinimumSeats() && iBookings <= tour.getTotalSeats()) {
+              sm.setDayColor(temp, colorForAvailableDay);
+              sm.setDayFontColor(temp,colorForAvailableDayText);
+            }
+          }
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(productId, temp,resellerId, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
               sm.setDayFontColor(temp,colorForAvailableDayText);
-            }/*else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
-              iBookings = Booker.getNumberOfBookings(productId, temp);
-              if (iBookings >= tour.getMinimumSeats() && iBookings <= tour.getTotalSeats()) {
-                sm.setDayColor(temp, colorForAvailableDay);
-                sm.setDayFontColor(temp,colorForAvailableDayText);
-              }
-            }*/
-            temp.addDays(1);
-          }
-          for (int i = 0; i < depDays.size(); i++) {
-            temp = (idegaTimestamp) depDays.get(i);
-            iBookings = Booker.getNumberOfBookings(productId, temp);
-            if (iBookings >= tour.getMinimumSeats() && iBookings <= tour.getTotalSeats()) {
-              sm.setDayColor(temp, colorForAvailableDay);
-              sm.setDayFontColor(temp,colorForAvailableDayText);
             }
+            temp.addDays(1);
           }
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
@@ -625,6 +630,8 @@ public class Booking extends TravelManager {
           inq.setText(iwrb.getLocalizedString("travel.colorForInquiry","Inquiry"));
         Text today = (Text) theText.clone();
           today.setText(iwrb.getLocalizedString("travel.today","Today"));
+        Text full = (Text) theText.clone();
+          full.setText(iwrb.getLocalizedString("travel.fully_booked","Fully booked"));
 
         legend.add(avail,1,1);
         legend.setColor(3,1,colorForAvailableDay);
@@ -638,6 +645,10 @@ public class Booking extends TravelManager {
         legend.setColor(3,3,colorForToday);
         legend.setWidth(3,3,"18");
         legend.setHeight(3,"14");
+        legend.add(full,1,4);
+        legend.setColor(3,4,colorForFullyBooked);
+        legend.setWidth(3,4,"18");
+        legend.setHeight(4,"14");
       table.setAlignment(1,6,"center");
 
       table.mergeCells(1,5,4,5);
@@ -787,12 +798,19 @@ public class Booking extends TravelManager {
 
 
       Text dateTextBold = (Text) theSmallBoldText.clone();
+        dateTextBold.setText("");
       Text nameTextBold = (Text) theSmallBoldText.clone();
+        nameTextBold.setText("");
       Text countTextBold = (Text) theSmallBoldText.clone();
+        countTextBold.setText("");
       Text assignedTextBold = (Text) theSmallBoldText.clone();
+        assignedTextBold.setText("");
       Text inqTextBold = (Text) theSmallBoldText.clone();
+        inqTextBold.setText("");
       Text bookedTextBold = (Text) theSmallBoldText.clone();
+        bookedTextBold.setText("");
       Text availableTextBold = (Text) theSmallBoldText.clone();
+        availableTextBold.setText("");
           dateTextBold.setFontColor(super.BLACK);
           nameTextBold.setFontColor(super.BLACK);
           countTextBold.setFontColor(super.BLACK);
@@ -901,7 +919,7 @@ public class Booking extends TravelManager {
       table.setColumnAlignment(3,"right");
       table.setColumnAlignment(4,"left");
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), true);
 
       if (pPrices.length > 0) {
           int row = 1;
