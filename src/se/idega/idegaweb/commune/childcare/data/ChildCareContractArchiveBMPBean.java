@@ -26,6 +26,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 	public static final String COLUMN_CREATED_DATE = "created_date";
 	public static final String COLUMN_VALID_FROM_DATE = "valid_from_date";
 	public static final String COLUMN_TERMINATED_DATE = "terminated_date";
+	public static final String COLUMN_CARE_TIME = "care_time";
 	
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -42,6 +43,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		addAttribute(COLUMN_CREATED_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(COLUMN_VALID_FROM_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(COLUMN_TERMINATED_DATE,"",true,true,java.sql.Date.class);
+		addAttribute(COLUMN_CARE_TIME,"",true,true,java.lang.Integer.class);
 		
 		addManyToOneRelationship(COLUMN_CHILD_ID,User.class);
 		addManyToOneRelationship(COLUMN_APPLICATION_ID,ChildCareApplication.class);
@@ -58,6 +60,10 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 	
 	public Date getTerminatedDate() {
 		return (Date) getColumnValue(COLUMN_TERMINATED_DATE);
+	}
+	
+	public int getCareTime() {
+		return getIntColumnValue(COLUMN_CARE_TIME);
 	}
 	
 	public int getChildID() {
@@ -96,6 +102,10 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		setColumn(COLUMN_TERMINATED_DATE, terminatedDate);
 	}
 	
+	public void setCareTime(int careTime) {
+		setColumn(COLUMN_CARE_TIME, careTime);
+	}
+	
 	public void setChildID(int childID) {
 		setColumn(COLUMN_CHILD_ID, childID);
 	}
@@ -123,7 +133,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 	public Collection ejbFindByChild(int childID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
-		sql.appendOrderBy(COLUMN_VALID_FROM_DATE);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return idoFindPKsByQuery(sql);
 	}
 	
@@ -133,14 +143,14 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		sql.appendWhereEquals("a."+COLUMN_CHILD_ID, childID);
 		sql.appendAndEquals("a."+COLUMN_CHILD_ID, "c."+ChildCareApplicationBMPBean.CHILD_ID);
 		sql.appendAndEquals("c."+ChildCareApplicationBMPBean.PROVIDER_ID, providerID);
-		sql.appendOrderBy(COLUMN_VALID_FROM_DATE);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return idoFindPKsByQuery(sql);
 	}
 	
 	public Collection ejbFindByApplication(int applicationID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
-		sql.appendOrderBy(COLUMN_VALID_FROM_DATE);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return idoFindPKsByQuery(sql);
 	}
 

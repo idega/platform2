@@ -6,6 +6,7 @@ public interface ChildCareContractArchive extends com.idega.data.IDOEntity
 {
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getApplication();
  public int getApplicationID();
+ public int getCareTime();
  public com.idega.user.data.User getChild();
  public int getChildID();
  public com.idega.core.data.ICFile getContractFile();
@@ -16,6 +17,7 @@ public interface ChildCareContractArchive extends com.idega.data.IDOEntity
  public void initializeAttributes();
  public void setApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0);
  public void setApplicationID(int p0);
+ public void setCareTime(int p0);
  public void setChild(com.idega.user.data.User p0);
  public void setChildID(int p0);
  public void setContractFile(com.idega.core.data.ICFile p0);

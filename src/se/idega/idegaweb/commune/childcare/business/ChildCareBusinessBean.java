@@ -819,18 +819,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			//int contractID = ContractBusiness.createContract(2, IWTimestamp.RightNow(), IWTimestamp.RightNow(), "C", null);
 			//application.setContractId(contractID);
 
-			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
-			int file_id = pdfWriter.writeToDatabase(getTagMap(application, locale, validFrom), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-
 			if (validFrom == null)
 				validFrom = new IWTimestamp(application.getFromDate());
 				
-			
 			if (application.getContractFileId() != -1) {
 				terminateContract(application.getContractFileId(), validFrom.getDate());
 			}
 
-			application.setContractFileId(file_id);
+			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
+			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, validFrom), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+
+			application.setContractFileId(fileID);
 			if (changeStatus) {
 				application.setApplicationStatus(getStatusContract());
 				changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
@@ -1204,6 +1203,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			archive.setApplication(application);
 			archive.setCreatedDate(new IWTimestamp().getDate());
 			archive.setValidFromDate(validFrom);
+			archive.setCareTime(application.getCareTime());
 			archive.store();
 		}
 		catch (IDOStoreException e) {
@@ -1223,6 +1223,33 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (FinderException e) {
 			return null;
+		}
+	}
+	
+	public Collection getContractsByChild(int childID) throws RemoteException {
+		try {
+			return getChildCareContractArchiveHome().findByChild(childID);	
+		}
+		catch (FinderException e) {
+			return new Vector();
+		}
+	}
+
+	public Collection getContractsByChildAndProvider(int childID, int providerID) throws RemoteException {
+		try {
+			return getChildCareContractArchiveHome().findByChildAndProvider(childID, providerID);	
+		}
+		catch (FinderException e) {
+			return new Vector();
+		}
+	}
+
+	public Collection getContractsByApplication(int applicationID) throws RemoteException {
+		try {
+			return getChildCareContractArchiveHome().findByApplication(applicationID);	
+		}
+		catch (FinderException e) {
+			return new Vector();
 		}
 	}
 
