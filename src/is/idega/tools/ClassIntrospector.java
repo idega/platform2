@@ -43,7 +43,6 @@ public class ClassIntrospector {
     this.wizard=wizard;
     this.setBeanSuffix(wizard.getBeanSuffix());
     this.sourceClass = sourceClass;
-    System.out.println("sourceClass"+sourceClass+"  "+sourceClass.getSuperclass());
     this.info = Introspector.getBeanInfo(sourceClass,sourceClass.getSuperclass());
     String name = sourceClass.getName().substring(sourceClass.getName().lastIndexOf(".")+1);
     /*if(name.endsWith("Entity")){
