@@ -4,9 +4,9 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -204,11 +204,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters
-		ReportableField clubName = new ReportableField("club_name", String.class);
+		final ReportableField clubName = new ReportableField("club_name", String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.club_name", "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 		
-		ReportableField regionalUnionAbbreviation = new ReportableField("regional_union_name", String.class);
+		final ReportableField regionalUnionAbbreviation = new ReportableField("regional_union_name", String.class);
 		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionAbbreviation);
 		
@@ -340,6 +340,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 		
 		//		iterate through the ordered map and ordered lists and add to the final collection
+	
 		Iterator statsDataIter = workReportsByLeagues.keySet().iterator();
 		while (statsDataIter.hasNext()) {
 			
@@ -347,6 +348,68 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//			don't forget to add the row to the collection
 			reportCollection.addAll(datas);
 		}
+		
+		// sort the reportable collection
+		Comparator comparator = new Comparator() {
+			public int compare(Object o1, Object o2) {
+				if(o1==o2) {
+					return 0;		
+				}
+				try {
+					ReportableData data1 = (ReportableData) o1;
+					ReportableData data2 = (ReportableData) o2;
+					if(data1==null) {
+						return -1;
+					} else if (data2==null) {
+						return 1;
+					}
+					String regionalUnionCode1 = (String) data1.getFieldValue(regionalUnionAbbreviation);
+					String clubName1 = (String) data1.getFieldValue(clubName);
+					
+					String regionalUnionCode2 = (String) data2.getFieldValue(regionalUnionAbbreviation);
+					String clubName2 = (String) data2.getFieldValue(clubName);;
+					
+					int i1 = getInt(regionalUnionCode1);
+					int i2 = getInt(regionalUnionCode2);
+					if(i1!=-1 && i2!=-1) {
+						// sort by regional union
+						int di = i1-i2;
+						if(di!=0) {
+							// regional union code differs, sorting by that
+							return di;
+						}
+					}
+					
+					// regional unions differ or are invalid
+					int stri = regionalUnionCode1.compareTo(regionalUnionCode2);
+					if(stri!=0) {
+						return stri;
+					}
+					return clubName1.compareTo(clubName2);
+				} catch(Exception e) {
+					//e.printStackTrace();
+					return 42;
+				}
+			}
+			
+			private int getInt(String str) {
+				int i = str.indexOf(" ");
+				String c1;
+				if(i==-1) {
+					c1 = str; 
+				} else {
+					c1 = str.substring(0, i);
+				}
+				try {
+					return Integer.parseInt(c1);
+				} catch(Exception e) {
+					//e.printStackTrace();
+					return -1;
+				}
+			}
+		};
+		
+		Collections.sort(reportCollection, comparator);
 		
 		//finished return the collection
 		return reportCollection;
