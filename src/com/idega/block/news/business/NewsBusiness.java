@@ -85,16 +85,9 @@ public class NewsBusiness{
   }
 
   private static void deleteNwNews(NwNews nwNews) throws SQLException{
-      List L = NewsFinder.listOfLocalizedText(nwNews.getID());
-      if(L != null){
-        LocalizedText lt;
-        for (int i = 0; i < L.size(); i++) {
-          lt = (LocalizedText) L.get(i);
-          lt.removeFrom(nwNews);
-          lt.delete();
-        }
-      }
-      nwNews.delete();
+    int contentId = nwNews.getContentId();
+    nwNews.delete();
+    ContentBusiness.deleteContent(contentId);
   }
 
   public static boolean deleteNews(int iNewsId){
