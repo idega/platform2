@@ -279,7 +279,7 @@ public class TourBMPBean extends GenericEntity implements Tour {
 
 			//sql.append(" order by ").append();
 			
-			System.out.println(sql.toString());
+			//System.out.println(sql.toString());
 			return this.idoFindPKsBySQL(sql.toString());
 		}catch (IDOLookupException e) {
 			return null;

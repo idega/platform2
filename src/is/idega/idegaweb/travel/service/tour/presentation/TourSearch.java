@@ -114,6 +114,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 		String sManySeats = iwc.getParameter(PARAMETER_MANY_SEATS);
 		String sTourType[] = iwc.getParameterValues(PARAMETER_TOUR_TYPE_ID);
 		String supplierName = iwc.getParameter(PARAMETER_SUPPLIER_NAME);
+		supplierName.trim();
 		
 		InvalidSearchException ie = null;
 		try {

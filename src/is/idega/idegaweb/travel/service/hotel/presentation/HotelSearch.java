@@ -70,6 +70,7 @@ public class HotelSearch extends AbstractSearchForm {
 		String sMinRating = iwc.getParameter(PARAMETER_MIN_RATING);
 		String sMaxRating = iwc.getParameter(PARAMETER_MAX_RATING);
 		String supplierName = iwc.getParameter(PARAMETER_SUPPLIER_NAME);
+		supplierName.trim();
 		
 		try {
 			Object[] roomTypeIds = null;

@@ -572,6 +572,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		.append(iwc.getParameter(PARAMETER_MANY_DAYS)).append("_")
 		.append(iwc.getParameter(PARAMETER_PRODUCT_ID)).append("_")
 		.append(iwc.getParameter(PARAMETER_POSTAL_CODE)).append("_")
+		.append(iwc.getParameter(PARAMETER_SUPPLIER_NAME)).append("_")
 		.append(iwc.getParameter(ACTION)).append("_");
 		if (includeSortAndPageNR) {
 			key.append(iwc.getParameter(PARAMETER_SORT_BY)).append("_")
