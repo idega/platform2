@@ -2,7 +2,7 @@ package se.idega.idegaweb.commune.message.data;
 
 import com.idega.data.*;
 import com.idega.block.process.data.*;
-import com.idega.core.user.data.User;
+import com.idega.user.data.User;
 
 import javax.ejb.*;
 
