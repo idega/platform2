@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.11 2002/08/12 13:00:42 palli Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.12 2002/09/04 23:00:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -84,16 +84,28 @@ public class CampusReferenceNumberInfoHelper {
       List li = EntityFinder.findAllByColumn(applicant,com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(),ref);
       if (li != null && !li.isEmpty()) {
         Iterator it = li.iterator();
+        List contracts = null;
         Contract contract = null;
         while (it.hasNext()) {
           applicant = (Applicant)it.next();
-          contract = ContractFinder.findByApplicant(applicant.getID());
-          if (contract != null) {
-            if (contract.getIsRented())
-              break;
-            else
-              contract = null;
+          contracts = ContractFinder.findAllContractsByApplicant(applicant.getID());
+          if (contracts != null && !contracts.isEmpty()) {
+          	Iterator it2 = contracts.iterator();
+          	while (it2.hasNext()) {
+          		contract = (Contract)it2.next();
+		          System.out.println("Contract id = " + contract.getID());
+		          
+  	  	      if (contract != null) {
+    		        if (contract.getIsRented())
+      		        break;
+        		    else
+          		    contract = null;
+	          	}
+          	}
           }
+          
+          if (contract != null)
+          	break;
         }
 
         if (contract == null)

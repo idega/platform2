@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.42 2002/09/04 10:52:40 laddi Exp $
+ * $Id: CampusAllocator.java,v 1.43 2002/09/04 23:00:48 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -928,10 +928,11 @@ public class CampusAllocator extends Block implements Campus {
 		mustBeFrom.setHour(0);
 		mustBeFrom.setMinute(0);
 		mustBeFrom.setSecond(0);
-
+		
 		if (sDateFrom != null && sDateTo != null) {
 			IWTimestamp from = new IWTimestamp(sDateFrom);
 			IWTimestamp to = new IWTimestamp(sDateTo);
+			
 			System.err.println("Saving new contract : Applicant : " + sApplicantId);
 			System.err.println("Must be from : " + mustBeFrom.toString() + " , is from " + from.toString());
 			if (mustBeFrom != null && mustBeFrom.isLaterThan(from)) {

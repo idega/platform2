@@ -644,6 +644,23 @@ public abstract class ContractFinder {
     return contract;
   }
 
+
+  /**
+   *
+   */
+  public static List findAllContractsByApplicant(int applicantId){
+    Contract contract = null;
+    try {
+      List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getApplicantIdColumnName(),applicantId);
+      return L;
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
+
+
   /**
    *
    */
