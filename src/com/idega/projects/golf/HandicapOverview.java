@@ -122,40 +122,73 @@ private String headerTextColor = "#FFFFFF";
 			Text dags = new Text(iwrb.getLocalizedString("handicap.date","Date"));
 				dags.setFontColor(headerTextColor);
 				dags.setFontSize("1");
+        if ( noIcons ) {
+          dags.setBold();
+        }
 			Text vollur = new Text(iwrb.getLocalizedString("handicap.course","Course"));
 				vollur.setFontColor(headerTextColor);
 				vollur.setFontSize("1");
+        if ( noIcons ) {
+          vollur.setBold();
+        }
 			Text mot = new Text(iwrb.getLocalizedString("handicap.tournament","Tournament"));
 				mot.setFontColor(headerTextColor);
 				mot.setFontSize("1");
+        if ( noIcons ) {
+          mot.setBold();
+        }
 			Text teigar = new Text(iwrb.getLocalizedString("handicap.tees","Tees"));
 				teigar.setFontColor(headerTextColor);
 				teigar.setFontSize("1");
+        if ( noIcons ) {
+          teigar.setBold();
+        }
 			Text vaegi = new Text(iwrb.getLocalizedString("handicap.slope","Slope/CR"));
 				vaegi.setFontColor(headerTextColor);
 				vaegi.setFontSize("1");
+        if ( noIcons ) {
+          vaegi.setBold();
+        }
 			Text leikforgjof = new Text(iwrb.getLocalizedString("handicap.course_handicap","Course"));
         leikforgjof.addBreak();
         leikforgjof.addToText(iwrb.getLocalizedString("handicap.handicap_lowercase","handicap"));
 				leikforgjof.setFontColor(headerTextColor);
 				leikforgjof.setFontSize("1");
+        if ( noIcons ) {
+          leikforgjof.setBold();
+        }
 			Text punktar = new Text(iwrb.getLocalizedString("handicap.points","Points"));
 				punktar.setFontColor(headerTextColor);
 				punktar.setFontSize("1");
+        if ( noIcons ) {
+          punktar.setBold();
+        }
 			Text mismunur = new Text(iwrb.getLocalizedString("handicap.difference","Difference"));
 				mismunur.setFontColor(headerTextColor);
 				mismunur.setFontSize("1");
+        if ( noIcons ) {
+          mismunur.setBold();
+        }
 			Text grunnforgjof = new Text(iwrb.getLocalizedString("handicap.handicap","Handicap"));
 				grunnforgjof.setFontColor(headerTextColor);
 				grunnforgjof.setFontSize("1");
+        if ( noIcons ) {
+          grunnforgjof.setBold();
+        }
 			Text ny_grunnforgjof = new Text(iwrb.getLocalizedString("handicap.new","New"));
         ny_grunnforgjof.addBreak();
         ny_grunnforgjof.addToText(iwrb.getLocalizedString("handicap.handicap_lowercase","handicap"));
 				ny_grunnforgjof.setFontColor(headerTextColor);
 				ny_grunnforgjof.setFontSize("1");
+        if ( noIcons ) {
+          ny_grunnforgjof.setBold();
+        }
 			Text skor = new Text(iwrb.getLocalizedString("handicap.scorecard","Scorecard"));
 				skor.setFontColor(headerTextColor);
 				skor.setFontSize("1");
+        if ( noIcons ) {
+          skor.setBold();
+        }
 
 			myTable.add(dags,1,2);
 			myTable.add(vollur,2,2);
@@ -384,7 +417,7 @@ private String headerTextColor = "#FFFFFF";
         if ( canWrite && tournament_name.length() == 0 && !noIcons ) {
           myTable.add(update,11,a+3);
         }
-        if ( tournament_name.length() > 0 ) {
+        if ( tournament_name.length() > 0 && !noIcons ) {
           myTable.add(update2,11,a+3);
         }
       }
@@ -438,8 +471,11 @@ private String headerTextColor = "#FFFFFF";
 
     myTable.mergeCells(1,rows,11,rows);
     myTable.setAlignment(1,rows,"right");
-    if ( Integer.parseInt(this.member_id) > 1 ) {
+    if ( Integer.parseInt(this.member_id) > 1 && !noIcons ) {
       myTable.add(recalculateLink,1,rows);
+    }
+    if ( noIcons ) {
+      myTable.setAlignment(1,1,"left");
     }
 
 	}
