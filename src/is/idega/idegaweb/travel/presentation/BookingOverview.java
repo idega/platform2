@@ -50,7 +50,8 @@ public class BookingOverview extends TravelManager {
   private Contract contract;
 
   private Product product;
-  private TravelStockroomBusiness tsb;
+  private int _productId = -1;
+//  private TravelStockroomBusiness tsb;
 
   private Service service;
   private Timeframe timeframe;
@@ -68,6 +69,7 @@ public class BookingOverview extends TravelManager {
   private String parameterDeleteBooking = "bookingOverviewDeleteBooking";
   private String bookingOverviewAction = "bookingOverviewAction";
   private String parameterBookingId = "bookingOverviewBookingId";
+  private String parameterViewAll = "-109";
 
   public BookingOverview() {
   }
@@ -96,7 +98,6 @@ public class BookingOverview extends TravelManager {
   public void initialize(IWContext iwc) throws RemoteException{
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
-      tsb  = getTravelStockroomBusiness(iwc);
 
       supplier = super.getSupplier();
       reseller = super.getReseller();
@@ -106,13 +107,14 @@ public class BookingOverview extends TravelManager {
         if (productId == null) {
           productId = (String) iwc.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
         }else {
+          _productId = Integer.parseInt(productId);
           iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
         }
-        if (productId != null && !productId.equals("-1")) {
-          product = ProductBusiness.getProduct(Integer.parseInt(productId));
-          service = tsb.getService(product);
+        if (productId != null && !productId.equals("-1") && !productId.equals(parameterViewAll)) {
+          product = ProductBusiness.getProduct(_productId);
+          service = getTravelStockroomBusiness(iwc).getService(product);
           tour = getTourBusiness(iwc).getTour(product);
-          timeframe = tsb.getTimeframe(product);
+          timeframe = getTravelStockroomBusiness(iwc).getTimeframe(product);
         }
       }catch (ServiceNotFoundException snfe) {
           snfe.printStackTrace(System.err);
@@ -229,6 +231,8 @@ public class BookingOverview extends TravelManager {
           trip = ResellerManager.getDropdownMenuWithProducts(iwc, reseller.getID());
         }
 
+        trip.addMenuElementFirst(parameterViewAll,iwrb.getLocalizedString("travel.all_products","All products"));
+
 
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
@@ -311,12 +315,11 @@ public class BookingOverview extends TravelManager {
         table.setWidth("90%");
 
       int row = 1;
-      if (product != null) {
+      if (_productId != -1) {
 
           boolean viewAll = false;
-          int productId = product.getID();
-          if (productId == -10 ) viewAll = true;
-
+          int productId = _productId;
+          if (productId == Integer.parseInt(this.parameterViewAll) ) viewAll = true;
 
           Text dateText = (Text) theText.clone();
               dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
@@ -399,17 +402,15 @@ public class BookingOverview extends TravelManager {
                   dateTextBold.setFontColor(super.BLACK);
               table.add(dateTextBold,1,row);
 
-              table.setRowColor(row,theColor);
-
               boolean bContinue= false;
 
               for (int i = 0; i < products.size(); i++) {
                   try {
                     prod = (Product) products.get(i);
                       if (supplier != null) {
-                        bContinue = tsb.getIfDay(iwc,prod,tempStamp);
+                        bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,prod,tempStamp);
                       }else if (reseller != null) {
-                        bContinue = tsb.getIfDay(iwc,contract,product,tempStamp);
+                        bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,contract,prod,tempStamp);
                       }
                       if (bContinue) {
                           iCount = 0;
@@ -417,7 +418,7 @@ public class BookingOverview extends TravelManager {
                           iInquery=0;
                           iAvailable=0;
                           iAssigned=0;
-                          service = tsb.getService(prod);
+                          service = getTravelStockroomBusiness(iwc).getService(prod);
                           tour = getTourBusiness(iwc).getTour(prod);
 
                           if (supplier != null) {
@@ -433,7 +434,7 @@ public class BookingOverview extends TravelManager {
 
                             //iCount = tour.getTotalSeats();
                             iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
-                            iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(product, tempStamp);
+                            iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
 
                             int resellerBookings = getBooker(iwc).getNumberOfBookingsByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                             if (iAssigned != 0) {
@@ -478,8 +479,9 @@ public class BookingOverview extends TravelManager {
 
                           Link btnNanar = new Link(iwrb.getImage("/buttons/closer.gif"));
                             btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());
+                            btnNanar.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
                           Link btnBook = new Link(iwrb.getImage("/buttons/book.gif"), is.idega.idegaweb.travel.presentation.Booking.class);
-                            btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, this.product.getID());
+                            btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
                             btnBook.addParameter("year",tempStamp.getYear());
                             btnBook.addParameter("month",tempStamp.getMonth());
                             btnBook.addParameter("day",tempStamp.getDay());
@@ -506,9 +508,10 @@ public class BookingOverview extends TravelManager {
                             table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
                             table.add(btnBook,8,row);
                           } else if (reseller != null) {
-                            if (!tsb.getIfExpired(contract, tempStamp))
+                            if (!getTravelStockroomBusiness(iwc).getIfExpired(contract, tempStamp))
                               table.add(btnBook,8,row);
                           }
+                          table.setRowColor(row,theColor);
                           ++row;
                           upALine = true;
                       }

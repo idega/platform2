@@ -104,14 +104,7 @@ public class Voucher extends TravelManager {
       text.setText(content);
     return text;
   }
-/*
-  private Text getText(String content) {
-    Text text = (Text) theText.clone();
-      text.setFontColor(BLACK);
-      text.setText(content);
-    return text;
-  }
-*/
+
   private int getVoucherNumber() throws RemoteException{
     return _booking.getID() + voucherNumberChanger;
   }
@@ -185,19 +178,11 @@ public class Voucher extends TravelManager {
         List emails = null;
         String name = "";
 
-        //if (_reseller != null) {
-          //name = _reseller.getName();
-          //address = _reseller.getAddress();
-          //hPhone = _reseller.getHomePhone();
-          //fPhone = _reseller.getFaxPhone();
-          //emails = _reseller.getEmails();
-        //}else {
-          name = _supplier.getName();
-          address = _supplier.getAddress();
-          hPhone = _supplier.getHomePhone();
-          fPhone = _supplier.getFaxPhone();
-          emails = _supplier.getEmails();
-        //}
+        name = _supplier.getName();
+        address = _supplier.getAddress();
+        hPhone = _supplier.getHomePhone();
+        fPhone = _supplier.getFaxPhone();
+        emails = _supplier.getEmails();
 
         table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO")+" : "),1,2);
         table.add(getText(name),1,2);
