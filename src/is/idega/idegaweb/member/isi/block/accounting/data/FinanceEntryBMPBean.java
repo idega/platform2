@@ -479,9 +479,14 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	throws FinderException {
 		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
+		IWTimestamp stampFrom = new IWTimestamp(dateFrom);
+		IWTimestamp stampTo = new IWTimestamp(dateTo);
+		stampTo.addHours(23);
+		stampTo.addMinutes(59);
+		stampTo.addSeconds(59);
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
-		sql.appendWhere().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
+		sql.appendWhere().appendWithinStamps(COLUMN_DATE_OF_ENTRY, stampFrom.getTimestamp(), stampTo.getTimestamp());
 		if (types!= null && !containsTypePayment(types))
 			sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
 		if  (types != null && types.length>0)
@@ -519,6 +524,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			Collection groups)
 	throws FinderException {
 		IWTimestamp now = new IWTimestamp();
+		now.addDays(1);
 		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
 		
@@ -529,7 +535,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 				
 		sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
 		sql.appendWhereEquals(F_ + COLUMN_ASSESSMENT_ROUND_ID, A_ + "ISI_ASS_ROUND_ID" );
-		sql.appendAnd().append(A_ + AssessmentRoundBMPBean.COLUMN_PAYMENT_DATE).appendLessThanOrEqualsSign().append(now.getDate());
+		sql.appendAnd().append(A_ + AssessmentRoundBMPBean.COLUMN_PAYMENT_DATE).appendLessThanSign().append(now.getDate());
 		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
 		if  (types != null && types.length>0)
 			sql.appendAnd().append(F_ + COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
@@ -558,14 +564,17 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			Collection divisions,
 			Collection groups)
 	throws FinderException {
-		IWTimestamp toStamp = new IWTimestamp(entryDate);
-		toStamp.addDays(1);
+		IWTimestamp stampFrom = new IWTimestamp(entryDate);
+		IWTimestamp stampTo = new IWTimestamp(entryDate);
+		stampTo.addHours(23);
+		stampTo.addMinutes(59);
+		stampTo.addSeconds(59);
 		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(ENTITY_NAME);
 		sql.appendWhereEqualsQuoted(COLUMN_TYPE, type);
 		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_NO);
-		sql.appendAnd().appendBetweenStamps(COLUMN_DATE_OF_ENTRY, entryDate, toStamp.getDate());
+		sql.appendAnd().appendWithinStamps(COLUMN_DATE_OF_ENTRY, stampFrom.getTimestamp(), stampTo.getTimestamp());
 		if (club != null)
 			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
 		if  (divisions != null && divisions.size()>0)
