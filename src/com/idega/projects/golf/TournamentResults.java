@@ -308,7 +308,7 @@ public class TournamentResults extends JModuleObject {
         myTable.add(seeScores,2,a+3);
         myTable.add(memberText,2,a+3);
         myTable.add(clubText,3,a+3);
-        if ( handicap > 0 ) {
+        if ( finalScore > 0 ) {
           myTable.add(handicapText,4,a+3);
         }
         myTable.add(holeText,5,a+3);
