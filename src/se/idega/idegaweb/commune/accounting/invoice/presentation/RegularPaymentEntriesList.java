@@ -501,7 +501,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		searcher.setConstrainToUniqueSearch(false);
 		searcher.maintainParameter(new Parameter(PAR_EDIT_FROM_SCREEN, " "));
 		searcher.maintainParameter(new Parameter(PAR_SELECTED_PROVIDER, iwc.getParameter(PAR_SELECTED_PROVIDER)));		
-		searcher.maintainParameter(new Parameter(PAR_PK, iwc.getParameter(PAR_PK)));
 		searcher.setToFormSubmit(true);
 			
 	
