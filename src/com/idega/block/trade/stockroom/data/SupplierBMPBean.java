@@ -47,6 +47,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	private String newName;
 	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
 	private static String COLUMN_ORGANIZATION_ID = "ORGANIZATION_ID";
+	public static final String COLUMN_NAME_NAME_ALL_CAPS = "NAME_CAPS";
 
 	public SupplierBMPBean() {
 		super();
@@ -59,6 +60,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnNameName(), "Name", true, true, String.class);
+		addAttribute(COLUMN_NAME_NAME_ALL_CAPS, "nafn i storun", true, true, String.class);
 		addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class, 500);
 		addAttribute(getColumnNameGroupID(), "Hópur", true, true, Integer.class, "many_to_one", SupplierStaffGroup.class);
 		addAttribute(getColumnNameIsValid(), "Í notkun", true, true, Boolean.class);
@@ -118,9 +120,10 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 	public String getName() {
 		return getStringColumnValue(getColumnNameName());
 	}
-
+	
 	public void setName(String name) {
 		newName = name;
+		setColumn(COLUMN_NAME_NAME_ALL_CAPS, name.toUpperCase());
 	}
 
 	public String getDescription() {
@@ -265,6 +268,7 @@ public class SupplierBMPBean extends GenericEntity implements Supplier{
 				sGroup.setName(newName + "_" + this.getID());
 				sGroup.store();
 				setColumn(getColumnNameName(), newName);
+				System.out.println("Supplier : setting updateName");
 				newName = null;
 			} catch (Exception e) {
 				e.printStackTrace();
