@@ -2,8 +2,8 @@ package com.idega.block.trade.business;
 
 
 /**
- * Title:MediaBundleStarter
- * Description: MediaBundleStarter implements the IWBundleStartable interface. The start method of this
+ * Title:TradeBundleStarter
+ * Description: TradeBundleStarter implements the IWBundleStartable interface. The start method of this
  * object is called during the Bundle loading when starting up a idegaWeb applications.
  * Copyright:    Copyright (c) 2001
  * Company:      idega software
