@@ -404,14 +404,17 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc)	{
 				if (optionMap == null) {
 					optionMap = new HashMap();
-  				Iterator iterator = designFolder.getChildren();
-  				while (iterator.hasNext())	{
-  					ICTreeNode node = (ICTreeNode) iterator.next();
-  					String name = node.getNodeName();
-  					int id = node.getNodeID();
-  					String idAsString = Integer.toString(id);
-  					optionMap.put(idAsString, name);
-  				}
+					if(designFolder!=null){
+		  				Iterator iterator = designFolder.getChildren();
+		  				while (iterator.hasNext())	{
+		  					ICTreeNode node = (ICTreeNode) iterator.next();
+		  					String name = node.getNodeName();
+		  					int id = node.getNodeID();
+		  					String idAsString = Integer.toString(id);
+		  					optionMap.put(idAsString, name);
+		  				}
+					}
+				
 				}
 				return optionMap;
 			}
