@@ -245,7 +245,7 @@ public class HandicapOverview extends GolfBlock {
 					Field field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(scoreCards[a].getFieldID());
 					TeeColor teeColor = ((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(scoreCards[a].getTeeColorID());
 					TournamentRound tournamentRound = null;
-					String tournamentName = "";
+					String tournamentName = null;
 					Tournament tournament = (Tournament) IDOLookup.instanciateEntity(Tournament.class);
 					mergedCells = false;
 
@@ -401,10 +401,10 @@ public class HandicapOverview extends GolfBlock {
 							table.add(update, 11, row);
 						}
 						else if (GolfLoginBusiness.isLoggedOn(modinfo) || iMemberID.equalsIgnoreCase("1")) {
-							if (canWrite && tournamentName.length() == 0 && !noIcons) {
+							if (canWrite && tournamentName == null && !noIcons) {
 								table.add(update, 11, row);
 							}
-							if (tournamentName.length() > 0 && !noIcons) {
+							if (tournamentName != null && !noIcons) {
 								table.add(update2, 11, row);
 							}
 						}
