@@ -56,8 +56,6 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.util.StringHandler;
-//import com.idega.util.IWColor;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -308,10 +306,8 @@ public class ReportQueryBuilder extends Block {
 				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
 				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
 				helper.addCondition(part);
-				
+				processBooleanExpression(iwc);
 			}
-			// update boolean expression
-			processBooleanExpression(iwc);
 		}
 		else if (iwc.isParameterSet(PARAM_DROP)) {
 			String dropvalue = iwc.getParameter(PARAM_DROP);
@@ -803,8 +799,8 @@ public class ReportQueryBuilder extends Block {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
 			if (helper.hasSourceEntity())
 				lockCheck.setChecked(helper.getSourceEntity().isLocked());
-			table.add(getMsgText(iwrb.getLocalizedString("lock_source_entity", "Lock source entity")), 1, row);
-			table.add(lockCheck, 1, row);
+//LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_source_entity", "Lock source entity")), 1, row);
+//LOCK			table.add(lockCheck, 1, row);
 		}
 
 		return table;
@@ -834,8 +830,8 @@ public class ReportQueryBuilder extends Block {
 		if (hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
 			lockCheck.setChecked(helper.isEntitiesLock());
-			table.add(getMsgText(iwrb.getLocalizedString("lock_related_entities", "Lock entities")), 1, 2);
-			table.add(lockCheck, 1, 2);
+//LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_related_entities", "Lock entities")), 1, 2);
+//LOCK			table.add(lockCheck, 1, 2);
 		}
 		return table;
 	}
@@ -893,11 +889,6 @@ public class ReportQueryBuilder extends Block {
 			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
 		}
 		
-		
-		
-		
-		
-		
 		while (iterator.hasNext()) {
 			entityPart = (QueryEntityPart) iterator.next();
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
@@ -911,8 +902,8 @@ public class ReportQueryBuilder extends Block {
 		if (hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
 			lockCheck.setChecked(helper.isFieldsLock());
-			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
-			table.add(lockCheck, 2, row);
+//LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
+//LOCK			table.add(lockCheck, 2, row);
 		}
 		
 		
@@ -988,8 +979,8 @@ public class ReportQueryBuilder extends Block {
 		if (hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
 			lockCheck.setChecked(helper.isFieldsLock());
-			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
-			table.add(lockCheck, 2, row);
+//LOCK			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
+//LOCK			table.add(lockCheck, 2, row);
 		}
 		
 		
@@ -1149,22 +1140,24 @@ public class ReportQueryBuilder extends Block {
 	public PresentationObject getStep5(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		int row = 1;
-		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 2, row);
-		table.setColor(2,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_display", "Display")), 3, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_id","Id")), 2, row);
+		table.setColor(2,row, "#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 3, row);
 		table.setColor(3,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 4, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_display", "Display")), 4, row);
 		table.setColor(4,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 5, row);
 		table.setColor(5,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 6, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 6, row);
 		table.setColor(6,row,"#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 7, row);
 		table.setColor(7,row,"#dfdfdf");
+		table.setColor(8,row,"#dfdfdf");
 		if (hasTemplatePermission) {
-			table.add(getMsgText(iwrb.getLocalizedString("field_lock", "Lock")), 8, row);
-			table.setColor(8,row,"#dfdfdf");
-			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")),9,row);
-			table.setColor(9,row,"#dfdfdf");
+//			table.add(getMsgText(iwrb.getLocalizedString("field_lock", "Lock")), 8, row);
+//			table.setColor(8,row,"#dfdfdf");
+			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")), 9 ,row);
+			table.setColor(9 ,row,"#dfdfdf");
 		}
 
 		row++;
@@ -1176,23 +1169,24 @@ public class ReportQueryBuilder extends Block {
 				QueryConditionPart part = (QueryConditionPart) iter.next();
 				QueryFieldPart field = (QueryFieldPart) mapOfFields.get(part.getField());
 				if (field != null) {
-					table.add(iwrb.getLocalizedString(field.getEntity(), field.getEntity()), 2, row);
-					table.add(field.getDisplay(), 3, row);
+					table.add(iwrb.getLocalizedString(field.getEntity(), field.getEntity()), 3, row);
+					table.add(field.getDisplay(), 4, row);
 				}
-				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 4, row);
-				table.add(part.getPattern(), 5, row);
-				table.add(part.getDescription(), 6, row);
+				table.add(part.getId(), 2, row);
+				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 5, row);
+				table.add(part.getPattern(), 6, row);
+				table.add(part.getDescription(), 7, row);
 				
 								
 				if (hasTemplatePermission){ 
-					if(	part.isLocked()) 
-						table.add("x", 8, row);
+//LOCK					if(	part.isLocked()) 
+//LOCK						table.add("x", 8, row);
 					if(part.isDynamic())
 						table.add("x",9,row);
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
+					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	8,	row);
 				}
 				else if(!(part.isLocked() || part.isDynamic())){
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
+					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	8,	row);
 				}
 				row++;
 			}
@@ -1201,18 +1195,18 @@ public class ReportQueryBuilder extends Block {
 
 		DropdownMenu equators = getConditionTypeDropdown();
 		DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc);//getFieldDropdown();
-		table.add(chosenFields, 3, row);
-		table.add(equators, 4, row);
+		table.add(chosenFields, 4, row);
+		table.add(equators, 5, row);
 		TextInput pattern = new TextInput(PARAM_CONDITION);
-		table.add(pattern, 5, row);
+		table.add(pattern, 6, row);
 		TextInput description = new TextInput(PARAM_COND_DESCRIPTION);
-		table.add(description, 6, row);
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 7, row);
+		table.add(description, 7, row);
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 8, row);
 		if(hasTemplatePermission){
 		
 			CheckBox lock = new CheckBox(PARAM_LOCK);	
 			CheckBox dynamic = new CheckBox(PARAM_DYNAMIC);
-			table.add(lock,8,row);
+//LOCK			table.add(lock,8,row);
 			table.add(dynamic,9,row);
 		}
 		
@@ -1227,10 +1221,14 @@ public class ReportQueryBuilder extends Block {
 		TextInput textInput = new TextInput(PARAM_BOOLEAN_EXPRESSION, booleanExpression);
 		textInput.setLength(150);
 		row++;
-		table.mergeCells(3, row, 6, row);
-		table.add(textInput, 3 , row); 
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),7 ,row);
-		
+		table.mergeCells(4, row, 7, row);
+		table.add(textInput, 4 , row); 
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),8 ,row);
+		row++;
+		table.mergeCells(4, row, 7, row);
+		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("Example", "Example"));
+		buffer.append(": ( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )");
+		table.add(buffer.toString(), 4, row);
 		return table;
 	}
 
@@ -1265,8 +1263,8 @@ public class ReportQueryBuilder extends Block {
 		row++;
 		CheckBox templateCheck = new CheckBox(PARAM_ASTEMPLATE, "true");
 		templateCheck.setChecked(helper.isTemplate());
-		table.add(iwrb.getLocalizedString("step_5_check_template", "Save as template query ?"), 1, row);
-		table.add(templateCheck, 2, row);
+//LOCK		table.add(iwrb.getLocalizedString("step_5_check_template", "Save as template query ?"), 1, row);
+//LOCK		table.add(templateCheck, 2, row);
 
 		return table;
 	}

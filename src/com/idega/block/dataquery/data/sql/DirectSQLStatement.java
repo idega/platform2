@@ -44,8 +44,7 @@ public class DirectSQLStatement implements DynamicExpression {
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#isDynamic()
 	 */
 	public boolean isDynamic() {
-		// TODO finish implementation
-		return true;
+		return ! keys.isEmpty();
 	}
 
 	/* (non-Javadoc)

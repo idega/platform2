@@ -29,10 +29,13 @@ public class QueryBooleanExpressionPart implements QueryPart {
 		booleanOperators.add("OR");
 		booleanOperators.add("(");
 		booleanOperators.add(")");
+		booleanOperators.add("NOT");
 	}
 	
 	private static final String WHITESPACE = " ";
 	private static final String AND = "AND";
+	
+	// do not choose prefix and suffix that are similar to the allowed operators!
 	private static final String INVALID_ID_PREFIX = "[";
 	private static final String INVALID_ID_SUFFIX = "]";
 	
@@ -100,6 +103,9 @@ public class QueryBooleanExpressionPart implements QueryPart {
 	}
 
 	public String updateConditions(List conditionParts, String newBooleanExpression)	{
+		if (conditionParts == null) {
+			conditionParts = new ArrayList(0);
+		}
 		// move all valid ids to the list of invalid ids
 		invalidIds.addAll(validIds);
 		validIds.clear();
@@ -146,6 +152,10 @@ public class QueryBooleanExpressionPart implements QueryPart {
 				StringBuffer buffer = new StringBuffer(QueryBooleanExpressionPart.INVALID_ID_PREFIX).append(element);
 				buffer.append(QueryBooleanExpressionPart.INVALID_ID_SUFFIX);
 				expressionElements.set(i, buffer.toString());
+			}
+			// there are already invalid elements
+			else if (element.startsWith(INVALID_ID_PREFIX)) {
+				booleanExpressionIsValid = false;
 			}
 		}
 		// add new valids elements

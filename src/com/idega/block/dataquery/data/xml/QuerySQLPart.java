@@ -20,7 +20,11 @@ import com.idega.xml.XMLElement;
 
 public class QuerySQLPart implements QueryPart {
 
-	private String statement;
+	private String statement = null;
+	// a statement that should be executed after the statement
+	// for example: drop a view 
+	private String postStatement = null;
+	
 	private Map keyValueMap = new HashMap();
 	private Map keyTypeMap = new HashMap();
 	private Map keyDescriptionMap = new HashMap();
@@ -42,6 +46,9 @@ public class QuerySQLPart implements QueryPart {
 			if (name.equals(QueryXMLConstants.SQL_STATEMENT))	{
 				statement = element.getTextTrim();
 			}
+			if (name.equals(QueryXMLConstants.SQL_POST_STATEMENT)) {
+				postStatement = element.getTextTrim();
+			}	
 			if (name.equals(QueryXMLConstants.SQL_VARIABLE))	{
 				String type = element.getChild(QueryXMLConstants.TYPE).getTextTrim();
 				String key = element.getChild(QueryXMLConstants.SQL_VARIABLE_KEY).getTextTrim();
@@ -68,6 +75,13 @@ public class QuerySQLPart implements QueryPart {
 		XMLElement statementElement = new XMLElement(QueryXMLConstants.SQL_STATEMENT);
 		statementElement.setText(this.statement);
 		sqlElement.addContent(statementElement);
+		
+		// post statement is not mandatory
+		if (postStatement != null && postStatement.length() != 0) {
+			XMLElement postStatementElement = new XMLElement(QueryXMLConstants.SQL_POST_STATEMENT);
+			postStatementElement.setText(postStatement);
+			sqlElement.addContent(postStatementElement);
+		}
 		// result
 		Iterator fieldIterator = resultFieldOrder.iterator();
 		while (fieldIterator.hasNext())	{
@@ -131,6 +145,10 @@ public class QuerySQLPart implements QueryPart {
 	
 	public String getStatement()	{
 		return statement;
+	}
+	
+	public String getPostStatement()	{
+		return postStatement;
 	}
 	
 	public Map getVariableValueMap()	{

@@ -40,6 +40,8 @@ public class SQLQuery implements DynamicExpression {
   
   private String name;
   
+  private String postStatement = null;
+  
   // tablename : path : number
   private HashMatrix aliasMatrix = new HashMatrix();
   private int counter = 0;
@@ -271,6 +273,8 @@ public class SQLQuery implements DynamicExpression {
   	if (querySQLPart != null)	{
   		String identifier = Integer.toString(++counter);
   		setFields(queryHelper);
+  		// set post statement
+  		postStatement = querySQLPart.getPostStatement();
   		return new DirectSQLStatement(querySQLPart, identifier, this);
   	}
   	// no direct sql !
@@ -486,4 +490,18 @@ public class SQLQuery implements DynamicExpression {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	/** Returns true if creating a view is possible and desired. 
+	 * @return true if creating a view is possible and desired else false
+	 */
+	public boolean isUsableForCreatingAView()	{
+		// If there aren't any fields creating a view makes no sense and is not desired
+		return ! fieldOrder.isEmpty();
+	}
+	
+	public String getPostStatement()	{
+		return postStatement;
+	}
+		
+		
 }

@@ -59,6 +59,7 @@ public final static String NEXT_QUERY = "nextQuery";
 
 public final static String SQL = "sql";
 public final static String SQL_STATEMENT = "statement";
+public final static String SQL_POST_STATEMENT = "postStatement";
 public final static String SQL_VARIABLE = "variable";
 public final static String SQL_VARIABLE_KEY = "variableKey";
 public final static String SQL_VARIABLE_VALUE = "variableValue";
