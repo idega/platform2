@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.9 2003/04/30 12:56:45 joakim Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.10 2003/05/01 14:48:46 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -252,6 +252,23 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(CHILD_ID, childID);
 		sql.appendAndEqualsQuoted(EXPORTED, "N");
+		return super.idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetTotalCount(String[] queueType, boolean exported) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append("count(distinct ").append(CHILD_ID).append(") ").appendFrom().append(getEntityName());
+		boolean whereAdded = false;
+		if (queueType != null) {
+			sql.appendWhere().append(QUEUE_TYPE).appendInArrayWithSingleQuotes(queueType);
+			whereAdded = true;
+		}
+		if (exported) {
+			if (!whereAdded)
+				sql.appendWhereEquals(EXPORTED, "'Y'");
+			else
+				sql.appendAndEquals(EXPORTED, "'Y'");
+		}
 		return super.idoGetNumberOfRecords(sql);
 	}
 }

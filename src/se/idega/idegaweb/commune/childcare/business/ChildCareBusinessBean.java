@@ -1703,6 +1703,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public int getOldQueueTotal(String[] queueType, boolean exported) {
+		try {
+			return getChildCareQueueHome().getTotalCount(queueType, exported);
+		}
+		catch (RemoteException e) {
+			return 0;
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+	
 	public Map getProviderAreaMap(Collection schoolAreas, Locale locale, String emptyString) throws RemoteException {
 		Map areaMap = new HashMap();
 		if (schoolAreas != null) {
