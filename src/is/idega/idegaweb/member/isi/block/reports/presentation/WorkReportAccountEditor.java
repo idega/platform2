@@ -90,6 +90,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private List specialFieldList;
   private Map specialFieldColorMap;
   private boolean editable = true;
+  private boolean accountOutOfBalance = false;
   
   // this number format is shared by the converters
   NumberFormat currencyNumberFormat = null;
@@ -164,7 +165,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private String parseAction(IWContext iwc) {
     String action = "";
     if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
-      setWorkReportAsFinished(iwc);
+      accountOutOfBalance = isAccountOutOfBalance();
+      if (! accountOutOfBalance) {
+        setWorkReportAsFinished(iwc);
+      }
       return action;
     }
     // does the user want to cancel something?
@@ -175,46 +179,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // do not create an entry
       // do not delete an entry
     }
-    // does the user want to delete an existings entries?
-//    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
-//      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
-//      if (! entriesToDelete.isEmpty())  {
-//        deleteWorkReportAccountGroupHelper(entriesToDelete, iwc);
-//        // !! do nothing else !!
-//        // do not modify entry
-//        // do not create an entry
-//        return action;
-//      }
-//    }
-    
-    // does th euser want to save a new entry?
-//    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
-//      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-//      Integer newGroupId = null;
-//      EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
-//        DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), LEAGUE_NAME, iwc);
-//      if (entityPathValueContainerFromDropDownMenu.isValid()) {
-//        String pathShortKey = entityPathValueContainerFromDropDownMenu.getEntityPathShortKey();
-//        Object value = entityPathValueContainerFromDropDownMenu.getValue();
-//        newGroupId = changeLeagueOfExistingRecords(new Integer(-1), value.toString(), workReportBusiness);
-//      }
-//      if (newGroupId != null) {
-//        Iterator iterator = fieldList.iterator();
-//        while (iterator.hasNext())  {
-//          String field = (String) iterator.next();
-//          EntityPathValueContainer entityPathValueContainerFromTextEditor = 
-//            TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), field, iwc);
-//          if (entityPathValueContainerFromTextEditor.isValid()) {
-//            setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromTextEditor, newGroupId, workReportBusiness);
-//          }
-//        }
-//      }
-//      return action;
-//    }
-//    // does the user want to create a new entry?
-//    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
-//      return ACTION_SHOW_NEW_ENTRY;
-//    }  
     // does the user want to modify an existing entity? 
     if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
@@ -246,16 +210,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       return action;
     }  
       
-      
-//    // does the user want to modify an existing entity?
-//    EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
-//    EntityPathValueContainer entityPathValueContainerFromDropDownMenu = DropDownMenuConverter.getResultByParsing(iwc);
-//    if (entityPathValueContainerFromTextEditor.isValid()) {
-//      updateWorkReportBoardMember(entityPathValueContainerFromTextEditor, iwc);
-//    }
-//    if (entityPathValueContainerFromDropDownMenu.isValid()) {
-//      updateWorkReportBoardMember(entityPathValueContainerFromDropDownMenu, iwc);
-//    }
     return action;
   }
   
@@ -288,18 +242,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (workReportClubAccountRecordsIterator.hasNext())  {
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) workReportClubAccountRecordsIterator.next();
       Integer groupId = new Integer(record.getWorkReportGroupId());
-      // note: workReportGroupId is -1 if the record belongs to the main board
-      // (the column value is null but the getIntValue-method returns -1 
-      // 23.09.2003: the data model has changed:
-      // the main board is now represented by a real work report group.
-      // That means, that the groupId should never be null. 
-      // old data model: 
-      // if (groupId.intValue() == -1) {
-      //  groupId = WorkReportConstants.MAIN_BOARD_ID;
-      // }
       Integer accountKey = new Integer(record.getAccountKeyId());
       leagueKeyMatrix.put(groupId, accountKey, record);
     }
+    // validate 
   }
   
   private void initializeAccountKeyData(WorkReportBusiness workReportBusiness, IWContext iwc)  {
@@ -435,32 +381,26 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     };
     // sort leagues
     Collections.sort(workReportLeagues, leagueComparator);
-    //
-    // !!!  add the main board (represented by null)
-    //
-    //workReportLeagues.add(null);
-
     // create helper 
     // iterate over leagues
     Collection workReportAccountGroupHelpers = new ArrayList();
     Iterator leagueIterator = workReportLeagues.iterator();
     while (leagueIterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
-      // handle the special case that the group id is null
-      // 23.09.2003: the data model has changed:
-      // the main board is now represented by a real work report group.
-      // That means, that the group should never be null. 
-      // old data model: String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD_GROUP_NAME : group.getName();
       String groupName = group.getShortName();
-      // old data model: Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : (Integer) group.getPrimaryKey();
       Integer groupId = (Integer) group.getPrimaryKey();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
-//    // add new entry
-//    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
-//      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), WorkReportConstants.MAIN_BOARD_GROUP_NAME));
-//    }
+    
+    // add error message
+    if (accountOutOfBalance) {
+      String message = resourceBundle.getLocalizedString("wr_account_editor_account_out_of_balance", "Account is out of balance");
+      Text text = new Text(message);
+      text.setBold();
+      add(text);
+    }
+    
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
     // put browser into a table
@@ -560,126 +500,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     return browser;
   }
   
-//  /**
-//   * Converter for league column 
-//   */
-//  private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
-//    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
-//      protected Object getValue(
-//        Object entity,
-//        EntityPath path,
-//        EntityBrowser browser,
-//        IWContext iwc)  {
-//          return ((EntityRepresentation) entity).getColumnValue(LEAGUE_NAME);
-//        }
-//      };        
-//
-//        
-//    OptionProvider optionProvider = new OptionProvider() {
-//      
-//    Map optionMap = null;
-//      
-//    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-//      if (optionMap == null)  {
-//        optionMap = new TreeMap();
-//        WorkReportBusiness business = getWorkReportBusiness(iwc);
-//        Collection coll = null;
-//        try {
-//          coll = business.getAllLeagueWorkReportGroupsForYear(getYear());
-//        }
-//        catch (RemoteException ex) {
-//          System.err.println(
-//            "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-//              + ex.getMessage());
-//          ex.printStackTrace(System.err);
-//          throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
-//        }
-//        Iterator collIterator = coll.iterator();
-//        while (collIterator.hasNext())  {
-//          WorkReportGroup league = (WorkReportGroup) collIterator.next();
-//          String name = league.getName(); 
-//          String display = resourceBundle.getLocalizedString(name, name);
-//          optionMap.put(name, display);
-//          }
-//        }
-//        // add default value: no league (because main board members are not assigned to a league)
-//        optionMap.put(WorkReportConstants.MAIN_BOARD_GROUP_NAME, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
-//        return optionMap;
-//      }
-//    };     
-//    converter.setOptionProvider(optionProvider); 
-//    converter.maintainParameters(getParametersToMaintain());
-//    return converter;
-//  }   
-   
-//  /** business method: delete WorkReportAccountGroupHelper.
-//   * @param ids - List of primaryKeys (Integer)
-//   */
-//  private void deleteWorkReportAccountGroupHelper(List ids, IWContext iwc) {
-//    Iterator idIterator = ids.iterator();
-//    while (idIterator.hasNext())  {
-//      List removedRecords = new ArrayList();
-//      Integer groupId = (Integer) idIterator.next();
-//      Map recordsMap = leagueKeyMatrix.get(groupId);
-//      Collection records = recordsMap.values();
-//      Iterator iteratorRecords = records.iterator();
-//      while (iteratorRecords.hasNext())  {
-//        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
-//        try {
-//          int accountKey = record.getAccountKeyId();
-//          record.remove();
-//          // remove the value from the matrix
-//          removedRecords.add(new Integer(accountKey));
-//        }
-//        catch (EJBException ex) {
-//          String message =
-//            "[WorkReportAccountEditor]: Can't remove WorkReportClubAccountRecord.";
-//          System.err.println(message + " Message is: " + ex.getMessage());
-//          ex.printStackTrace(System.err);
-//        }
-//        catch (RemoveException ex)  {
-//          String message =
-//            "[WorkReportAccountEditor]: Can't remove WorkReportClubAccountRecord.";
-//          System.err.println(message + " Message is: " + ex.getMessage());
-//          ex.printStackTrace(System.err);
-//        }
-//      }
-//      Iterator removedRecordsIterator = removedRecords.iterator();
-//      while (removedRecordsIterator.hasNext())  {
-//        Integer id = (Integer) removedRecordsIterator.next();
-//        // remove the value from the matrix
-//        leagueKeyMatrix.remove(groupId, id);
-//      }
-//    }
-//  }
-    
-  
-//  // business method: create
-//  private WorkReportBoardMember createWorkReportBoardMember()  {
-//    WorkReportBoardMember workReportBoardMember = null;
-//    try {
-//      workReportBoardMember =
-//        (WorkReportBoardMember) IDOLookup.create(WorkReportBoardMember.class);
-//    } catch (IDOLookupException e) {
-//      System.err.println("[WorkReportBoardMemberEditor] Could not lookup home of WorkReportBoardMember. Message is: "+ e.getMessage());
-//      e.printStackTrace(System.err);
-//    } catch (CreateException e) {
-//      System.err.println("[WorkReportBoardMemberEditor] Could not create new WorkReportBoardMember. Message is: "+ e.getMessage());
-//      e.printStackTrace(System.err);
-//    }
-//    workReportBoardMember.setReportId(getWorkReportId());
-//    workReportBoardMember.store();
-//    return workReportBoardMember;
-//  }
   
   // business method: set values (invoked by 'update' or 'create')
   private void setValuesOfWorkReportClubAccountRecord(EntityPathValueContainer valueContainer, Integer groupId, WorkReportBusiness workReportBusiness)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
-//    if (LEAGUE_NAME.equals(pathShortKey)) {
-//      changeLeagueOfExistingRecords(groupId, value.toString(), workReportBusiness);
-//      return;
-//    }
     Float amount;
     try {
       amount = new Float(value.toString());
@@ -766,99 +591,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
   } 
 
-//  private Integer changeLeagueOfExistingRecords(Integer groupId, String newLeagueName, WorkReportBusiness workReportBusiness)  {
-//    WorkReportGroup workReportGroup; 
-//    Integer newGroupId;
-//    try {
-//      workReportGroup = 
-//        workReportBusiness.getWorkReportGroupHome().findWorkReportGroupByNameAndYear(newLeagueName, getYear());
-//      newGroupId = (Integer) workReportGroup.getPrimaryKey();
-//    }
-//    catch (RemoteException rmEx) {
-//      String message =
-//        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.";
-//      System.err.println(message + " Message is: " + rmEx.getMessage());
-//      rmEx.printStackTrace(System.err);
-//      throw new RuntimeException(message);
-//    }
-//    catch (FinderException ex) {
-//      String message =
-//        "[WorkReportAccountEditor]: Can't retrieve WorkReportGroupHome.";
-//      System.err.println(message + " Message is: " + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//      // give up
-//      return null;
-//    }
-//    // does this league already exist?
-//    Set leaguesIds = leagueKeyMatrix.firstKeySet();
-//    if (leaguesIds.contains(newGroupId))  {
-//      // do nothing
-//      return null;
-//    }
-//    // !!!! add league to work report +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//    WorkReport workReport;
-//    try {
-//      workReport = workReportBusiness.getWorkReportById(getWorkReportId());
-//    }
-//    catch (RemoteException ex) {
-//      String message =
-//        "[WorkReportAccountEditor]: Can't retrieve WorkReport.";
-//      System.err.println(message + " Message is: " + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//      throw new RuntimeException(message);
-//    }
-//    try {
-//      workReport.addLeague(workReportGroup);
-//    }
-//    catch (IDORelationshipException ex) {
-//      String message =
-//        "[WorkReportBoardMemberEditor]: Can't add league to work report.";
-//      System.err.println(message + " Message is: " + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//      // give up
-//      return null;
-//    }
-//    TransactionManager tm = IdegaTransactionManager.getInstance();
-//    try {
-//      tm.begin();
-//      List changedRecords = new ArrayList();
-//      Map recordsMap = leagueKeyMatrix.get(groupId);
-//      Collection records = recordsMap.values();
-//      Iterator iteratorRecords = records.iterator();
-//      while (iteratorRecords.hasNext())  {
-//        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
-//        record.setWorkReportGroupId(newGroupId.intValue());
-//        record.store();
-//        changedRecords.add(record);
-//      } 
-//      // change the matrix
-//      Iterator iterator = changedRecords.iterator();
-//      while (iterator.hasNext())  {
-//        WorkReportClubAccountRecord recordItem = (WorkReportClubAccountRecord) iterator.next();
-//        Integer accountKeyId = new Integer(recordItem.getAccountKeyId());
-//        leagueKeyMatrix.remove(groupId, accountKeyId);
-//        leagueKeyMatrix.put(newGroupId, accountKeyId, recordItem);
-//      }
-//      tm.commit();
-//    }
-//    catch (Exception ex)  {
-//      String message =
-//        "[WorkReportAccountEditor]: Can't store records.";
-//      System.err.println(message + " Message is: " + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//      try {
-//        tm.rollback();
-//      }
-//      catch (SystemException sysEx) {
-//        String sysMessage =
-//        "[WorkReportAccountEditor]: Can't rollback.";
-//        System.err.println(sysMessage + " Message is: "+ sysEx.getMessage());
-//        sysEx.printStackTrace(System.err);
-//      }
-//    }
-//    return newGroupId;
-//  }
-
     
   private void createOrUpdateRecord(WorkReportBusiness workReportBusiness, Integer groupId, Integer accountKeyId, Float amount)  {
     WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKeyId);
@@ -913,6 +645,48 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       throw new RuntimeException(message);
     }
   }
+  
+  
+  private boolean isAccountOutOfBalance()  {
+    // assertion: league key matrix must be initialized
+    List assetIds = (List) specialFieldAccountKeyIdsPlus.get(ASSET);
+    List debtIds = (List) specialFieldAccountKeyIdsPlus.get(DEBT);
+    Iterator iterator = leagueKeyMatrix.firstKeySet().iterator();
+    while (iterator.hasNext()) {
+      Map keyRecordMap = leagueKeyMatrix.get(iterator.next());
+      Iterator keyRecordIterator = keyRecordMap.entrySet().iterator();
+      float result = 0;
+      while (keyRecordIterator.hasNext()) {
+        Map.Entry entry = (Map.Entry) keyRecordIterator.next();
+        Integer accountKey = (Integer) entry.getKey();
+        if (assetIds.contains(accountKey))  {
+          WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) entry.getValue();
+          result += record.getAmount();
+        }
+        else if (debtIds.contains(accountKey))  {
+          WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) entry.getValue();
+          result -= record.getAmount();
+        }
+      }
+      if (result != 0)  {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private NumberFormat getCurrencyNumberFormat(IWContext iwc) {
+    if (currencyNumberFormat == null) {
+      Locale locale = iwc.getCurrentLocale();
+      currencyNumberFormat = NumberFormat.getCurrencyInstance(locale);
+      // !!!!!!
+      // do not show any digits after the decimal point
+      // !!!!!!
+      currencyNumberFormat.setMaximumFractionDigits(0);
+    }
+    return currencyNumberFormat;       
+  }
+
     
   /** 
    * WorkReportAccountGroupHelper:
@@ -1011,17 +785,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   }
   
-  private NumberFormat getCurrencyNumberFormat(IWContext iwc) {
-    if (currencyNumberFormat == null) {
-      Locale locale = iwc.getCurrentLocale();
-      currencyNumberFormat = NumberFormat.getCurrencyInstance(locale);
-      // !!!!!!
-      // do not show any digits after the decimal point
-      // !!!!!!
-      currencyNumberFormat.setMaximumFractionDigits(0);
-    }
-    return currencyNumberFormat;       
-  }
+
   /**
    * 
    */
