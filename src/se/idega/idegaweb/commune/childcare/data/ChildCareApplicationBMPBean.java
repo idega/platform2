@@ -306,4 +306,31 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}		
+	
+	public Collection ejbFindAllCasesByProviderStatusNotRejected(int providerId, String caseStatus) throws FinderException, RemoteException {
+		Collection ids = super.ejbFindAllCasesByStatus(caseStatus);
+		
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(PROVIDER_ID);
+		sql.append(" = ");
+		sql.append(providerId);
+		sql.append(" and ");
+		sql.append(getIDColumnName());
+		sql.append(" in (");
+		
+		Iterator it = ids.iterator();
+		while (it.hasNext()) {
+			Integer id = (Integer)it.next();
+			sql.append(id);
+			if (it.hasNext())
+				sql.append(", ");
+		}
+		sql.append(") and ");
+		sql.append(REJECTION_DATE);
+		sql.append(" is null");
+		
+		return (Collection)super.idoFindPKsBySQL(sql.toString());
+	}		
 }
