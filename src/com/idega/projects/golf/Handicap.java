@@ -6,21 +6,18 @@ import java.text.DecimalFormat;
 import com.idega.projects.golf.entity.*;
 import java.util.Vector;
 import com.idega.util.idegaTimestamp;
+import com.idega.util.text.TextSoap;
 
 public class Handicap {
 
 private double grunn;
 
 	public Handicap(double grunn) {
-
-		this.grunn = grunn;
-
+		this.grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
 	}
 
 	public Handicap(float grunn) {
-
-		this.grunn = (double) grunn;
-
+  	this.grunn = Double.parseDouble(TextSoap.singleDecimalFormat((double) grunn));
 	}
 
 	public double getNewHandicap(double breyting) {
