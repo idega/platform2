@@ -9,7 +9,7 @@ package com.idega.block.dataquery.business;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import com.idega.core.IWTreeNode;
+import com.idega.core.data.IWTreeNode;
 import com.idega.xml.XMLElement;
 
 /**

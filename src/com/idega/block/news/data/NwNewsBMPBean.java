@@ -8,8 +8,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import com.idega.block.text.data.Content;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICFile;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDORelationshipException;
 
 

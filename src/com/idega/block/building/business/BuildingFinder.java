@@ -477,7 +477,7 @@ public class BuildingFinder {
     try {
       String sql = "select distinct f.* from ic_file f, bu_building  b where  b.ic_image_id = f.ic_file_id and b.bu_complex_id = "+iComplexId;
      //System.err.println(sql);
-      return EntityFinder.findAll(com.idega.core.data.ICFileBMPBean.getStaticInstance(com.idega.core.data.ICFile.class),sql);
+      return EntityFinder.findAll(com.idega.core.file.data.ICFileBMPBean.getStaticInstance(com.idega.core.file.data.ICFile.class),sql);
     }
     catch (SQLException ex) {
       ex.printStackTrace();

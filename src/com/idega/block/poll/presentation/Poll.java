@@ -12,7 +12,7 @@ import com.idega.block.poll.data.PollEntity;
 import com.idega.block.poll.data.PollQuestion;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -120,7 +120,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     }
 
     if ( _newObjInst ) {
-      _pollID = PollFinder.getRelatedEntityId(((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
+      _pollID = PollFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
     }
 
     if(_pollID > 0) {

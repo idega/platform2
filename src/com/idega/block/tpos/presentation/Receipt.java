@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.idega.block.tpos.business.TPosClient;
 import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.core.data.Phone;
+import com.idega.core.contact.data.Phone;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;

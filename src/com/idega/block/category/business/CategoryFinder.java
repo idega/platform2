@@ -22,7 +22,7 @@ package com.idega.block.category.business;
 
 
 
-public class CategoryFinder extends com.idega.core.business.CategoryFinder{
+public class CategoryFinder extends com.idega.core.category.business.CategoryFinder{
 
 
 

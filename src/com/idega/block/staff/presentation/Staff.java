@@ -17,9 +17,9 @@ import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.data.StaffInfo;
 import com.idega.block.staff.data.StaffMetaData;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.data.Phone;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
@@ -176,7 +176,7 @@ private Table _myTable;
 	if ( _showListTitle )
 	  staffInfo = StaffFinder.getStaffInfo(user.getID());
 	if ( _showListWorkPhone )
-	  phone = UserBusiness.getUserPhone(user.getID(),com.idega.core.data.PhoneTypeBMPBean.WORK_PHONE_ID);
+	  phone = UserBusiness.getUserPhone(user.getID(),com.idega.core.contact.data.PhoneTypeBMPBean.WORK_PHONE_ID);
 
 	userLink = getStaffLink(user);
 	emailLink = getEmailLink(email);
@@ -239,8 +239,8 @@ private Table _myTable;
     User user = StaffFinder.getUser(_userID);
     StaffInfo staffInfo = StaffFinder.getStaffInfo(_userID);
     StaffMetaData[] staffMeta = StaffFinder.getMetaData(_userID);
-    Phone workphone = UserBusiness.getUserPhone(_userID,com.idega.core.data.PhoneTypeBMPBean.WORK_PHONE_ID);
-    Phone mobilephone = UserBusiness.getUserPhone(_userID,com.idega.core.data.PhoneTypeBMPBean.MOBILE_PHONE_ID);
+    Phone workphone = UserBusiness.getUserPhone(_userID,com.idega.core.contact.data.PhoneTypeBMPBean.WORK_PHONE_ID);
+    Phone mobilephone = UserBusiness.getUserPhone(_userID,com.idega.core.contact.data.PhoneTypeBMPBean.MOBILE_PHONE_ID);
 
     Table userTable = new Table();
       userTable.setWidth("100%");

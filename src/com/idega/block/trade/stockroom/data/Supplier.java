@@ -6,11 +6,11 @@ public interface Supplier extends com.idega.data.IDOLegacyEntity
  public java.util.List getFaxPhone()throws java.sql.SQLException;
  public java.util.List getEmails()throws java.sql.SQLException;
  public void setTPosMerchantId(int p0);
- public com.idega.core.data.Address getAddress()throws java.sql.SQLException;
+ public com.idega.core.location.data.Address getAddress()throws java.sql.SQLException;
  public java.util.List getPhones(int p0)throws java.sql.SQLException;
  public int getGroupId();
  public java.util.List getAddresses()throws java.sql.SQLException;
- public com.idega.core.data.Email getEmail()throws java.sql.SQLException;
+ public com.idega.core.contact.data.Email getEmail()throws java.sql.SQLException;
  public java.util.List getHomePhone()throws java.sql.SQLException;
  public java.util.List getMobilePhone()throws java.sql.SQLException;
  public boolean getIsValid();

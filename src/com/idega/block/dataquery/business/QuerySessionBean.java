@@ -11,8 +11,8 @@ import javax.ejb.FinderException;
 //import com.idega.block.dataquery.data.Query;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOSessionBean;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.util.xml.XMLData;
 /**
  * <p>Title: idegaWeb</p>

@@ -4,9 +4,9 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import com.idega.block.forum.data.ForumData;
-import com.idega.builder.data.IBPage;
-import com.idega.core.ICTreeNode;
-import com.idega.core.data.Email;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.contact.data.Email;
+import com.idega.core.data.ICTreeNode;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
@@ -31,7 +31,7 @@ public class ForumTree extends AbstractTreeViewer {
 
 private String _name;
 private String _style;
-private IBPage _page;
+private ICPage _page;
 private Image _threadImage;
 private int _id = -1;
 
@@ -170,7 +170,7 @@ public ForumTree() {
     _style = style;
   }
 
-  public void setLinkPage(IBPage page) {
+  public void setLinkPage(ICPage page) {
     _page = page;
   }
 

@@ -3,8 +3,8 @@ package com.idega.block.trade.stockroom.presentation;
 import java.util.List;
 
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICFile;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.file.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -100,7 +100,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 		table.setWidth(1, row, "100%");
 	    if (productCatalog._showThumbnail) {
 	      if (fileId != -1) {
-			ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(fileId));
+			ICFile file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(fileId));
 			String attributes = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 			image = new Image(fileId);
 			if ( attributes != null )

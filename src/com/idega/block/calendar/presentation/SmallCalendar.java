@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -20,7 +20,7 @@ public class SmallCalendar extends Block {
 	private IWTimestamp today;
 	private IWTimestamp stamp;
 	private IWCalendar cal = new IWCalendar();
-	private IBPage _page;
+	private ICPage _page;
 
 	private boolean useNextAndPreviousLinks = true;
 	private boolean daysAreLinks = false;
@@ -562,7 +562,7 @@ public class SmallCalendar extends Block {
 		_link = link;
 	}
 
-	public void setPage(IBPage page) {
+	public void setPage(ICPage page) {
 		_page = page;
 	}
 

@@ -1,12 +1,13 @@
 package com.idega.block.book.presentation;
 
-import com.idega.builder.data.IBPage;
 import com.idega.data.IDOException;
 import java.text.NumberFormat;
 import com.idega.presentation.text.*;
 import com.idega.block.book.business.BookComparator;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICCategory;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
+
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.*;
@@ -53,7 +54,7 @@ public class BookViewer extends CategoryBlock implements Builderaware {
 
   private BookBusiness _bookBusiness;
   private Image _divider;
-  private IBPage _page;
+  private ICPage _page;
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.book";
   protected IWResourceBundle _iwrb;
@@ -825,7 +826,7 @@ public class BookViewer extends CategoryBlock implements Builderaware {
     _initialState = layout;
   }
 
-  public void setPage(IBPage page) {
+  public void setPage(ICPage page) {
     _page = page;
   }
 

@@ -3,9 +3,9 @@ package com.idega.block.trade.stockroom.data;
 
 public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDataCapable
 {
- public void addArrivalAddress(com.idega.core.data.Address p0) throws java.rmi.RemoteException;
+ public void addArrivalAddress(com.idega.core.location.data.Address p0) throws java.rmi.RemoteException;
  public boolean addCategory(com.idega.block.trade.stockroom.data.ProductCategory p0) throws java.rmi.RemoteException;
- public void addICFile(com.idega.core.data.ICFile p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
+ public void addICFile(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
  public void addText(com.idega.block.text.data.TxText p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
  public void addTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
  public void addTravelAddress(com.idega.block.trade.stockroom.data.TravelAddress p0) throws java.rmi.RemoteException;
@@ -15,7 +15,7 @@ public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDa
  public java.util.List getDepartureAddresses(boolean p0)throws com.idega.data.IDOFinderException, java.rmi.RemoteException;
  public int getDiscountTypeId() throws java.rmi.RemoteException;
  public java.sql.Timestamp getEditDate() throws java.rmi.RemoteException;
- public com.idega.core.data.ICFile getFile() throws java.rmi.RemoteException;
+ public com.idega.core.file.data.ICFile getFile() throws java.rmi.RemoteException;
  public int getFileId() throws java.rmi.RemoteException;
  public java.util.Collection getICFile()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public int getID() throws java.rmi.RemoteException;
@@ -33,7 +33,7 @@ public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDa
  public void invalidate()throws com.idega.data.IDOException, java.rmi.RemoteException;
  public void removeAllFrom(java.lang.Class p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void removeCategory(com.idega.block.trade.stockroom.data.ProductCategory p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
- public void removeICFile(com.idega.core.data.ICFile p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
+ public void removeICFile(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void removeTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void removeTravelAddress(com.idega.block.trade.stockroom.data.TravelAddress p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void setCreationDate(com.idega.util.IWTimestamp p0) throws java.rmi.RemoteException;

@@ -19,7 +19,7 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getColumnNameLocaleId(), "Locale", true, true, java.lang.Integer.class,"many_to_one",com.idega.core.data.ICLocale.class);
+    addAttribute(getColumnNameLocaleId(), "Locale", true, true, java.lang.Integer.class,"many_to_one",com.idega.core.localisation.data.ICLocale.class);
     addAttribute(getColumnNameHeadline(), "Headline", true, true, java.lang.String.class);
     addAttribute(getColumnNameTitle(), "Title", true, true, java.lang.String.class);
     addAttribute(getColumnNameBody(), "Body", true, true, java.lang.String.class,30000);

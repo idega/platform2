@@ -13,11 +13,11 @@ import com.idega.block.forum.business.ForumTree;
 import com.idega.block.forum.data.ForumData;
 import com.idega.block.presentation.CategoryBlock;
 import com.idega.block.text.business.TextFormatter;
-import com.idega.builder.data.IBPage;
-import com.idega.core.business.CategoryBusiness;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.Email;
-import com.idega.core.data.ICCategory;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.category.business.CategoryBusiness;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.contact.data.Email;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
@@ -84,8 +84,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private String _headingColor;
 
 	private String _width;
-	private IBPage _page;
-	private IBPage _threadPage;
+	private ICPage _page;
+	private ICPage _threadPage;
 	private Image _threadImage;
 
 	protected String _topicName;
@@ -834,7 +834,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		_width = width;
 	}
 
-	public void setPage(IBPage page) {
+	public void setPage(ICPage page) {
 		_page = page;
 	}
 
@@ -950,21 +950,21 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	/**
 	 * @return
 	 */
-	public IBPage getPage() {
+	public ICPage getPage() {
 		return _page;
 	}
 
 	/**
 	 * @return
 	 */
-	public IBPage getThreadPage() {
+	public ICPage getThreadPage() {
 		return _threadPage;
 	}
 
 	/**
 	 * @param page
 	 */
-	public void setThreadPage(IBPage page) {
+	public void setThreadPage(ICPage page) {
 		_threadPage = page;
 	}
 

@@ -1,6 +1,6 @@
 package com.idega.block.importer.data;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 
 public interface ImportFileRecord extends ICFile
 {

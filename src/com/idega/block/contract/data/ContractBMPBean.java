@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.22 2003/07/10 16:55:44 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.23 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,7 +23,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -120,7 +120,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		addAttribute(signedFlag_, "Signed Flag", true, true, java.lang.Boolean.class);
 		addAttribute(signedDate_, "Signed Date", true, true, java.sql.Date.class);
 		addAttribute(signedBy_, "Signed By", true, true, java.lang.Integer.class, "one-to-many", com.idega.core.user.data.User.class);
-		addManyToManyRelationShip(com.idega.core.data.ICFile.class);
+		addManyToManyRelationShip(com.idega.core.file.data.ICFile.class);
 		addMetaDataRelationship();
 	}
 	public String getEntityName() {

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 
 
 

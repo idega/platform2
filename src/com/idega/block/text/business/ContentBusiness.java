@@ -9,7 +9,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORemoveRelationshipException;
@@ -33,7 +33,7 @@ public class ContentBusiness {
 	public static boolean addFileToContent(int iContentId, int iICFileId) {
 		try {
 			Content content = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
-			content.addFileToContent((ICFile)((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey( new Integer(iICFileId)));
+			content.addFileToContent((ICFile)((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey( new Integer(iICFileId)));
 			return true;
 		}
 		catch (SQLException e) {
@@ -51,7 +51,7 @@ public class ContentBusiness {
 	public static boolean removeFileFromContent(int iContentId, int iICFileId) {
 		try {
 			Content content = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
-			content.removeFileFromContent(((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iICFileId)));
+			content.removeFileFromContent(((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iICFileId)));
 			return true;
 		} catch (IDORemoveRelationshipException e) {
 			e.printStackTrace();

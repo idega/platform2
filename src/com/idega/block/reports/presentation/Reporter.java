@@ -11,7 +11,7 @@ import com.idega.block.reports.business.ReportFinder;
 import com.idega.block.reports.business.ReportWriter;
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportInfo;
-import com.idega.core.data.ICCategory;
+import com.idega.core.category.data.ICCategory;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;

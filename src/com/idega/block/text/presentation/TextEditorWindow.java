@@ -9,10 +9,12 @@ import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.business.TextHelper;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.user.data.User;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -396,7 +398,8 @@ public class TextEditorWindow extends AbstractChooserWindow{
       Vector files = null;
 
       try {
-        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iImageId));
+      	ICFileHome fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
+        ICFile file = fileHome.findByPrimaryKey(new Integer(iImageId));
         files = new Vector();
         files.add(file);
       }catch (IDOLookupException e) {

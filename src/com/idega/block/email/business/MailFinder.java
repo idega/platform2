@@ -11,9 +11,9 @@ import com.idega.block.email.data.MailList;
 import com.idega.block.email.data.MailTopic;
 import com.idega.block.email.data.MailTopicBMPBean;
 import com.idega.block.email.data.MailTopicHome;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.Email;
-import com.idega.core.data.EmailBMPBean;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.EmailBMPBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLegacyEntity;
@@ -55,7 +55,7 @@ public class MailFinder {
    */
   public Collection getEmails(MailList l) {
     try {
-      return EntityFinder.getInstance().findRelatedOrdered(l, Email.class, com.idega.core.data.EmailBMPBean.getColumnNameAddress(), true);
+      return EntityFinder.getInstance().findRelatedOrdered(l, Email.class, com.idega.core.contact.data.EmailBMPBean.getColumnNameAddress(), true);
     } catch (IDOFinderException ex) {
 
     }
@@ -286,7 +286,7 @@ public class MailFinder {
   public Email lookupEmail(String EmailAddress){
     try {
       EntityFinder.debug = true;
-      java.util.List c = EntityFinder.getInstance().findAllByColumn(Email.class,com.idega.core.data.EmailBMPBean.getColumnNameAddress(),EmailAddress);
+      java.util.List c = EntityFinder.getInstance().findAllByColumn(Email.class,com.idega.core.contact.data.EmailBMPBean.getColumnNameAddress(),EmailAddress);
       EntityFinder.debug = false;
       if(c!=null && c.size() > 0)
         return (Email) c.get(0);

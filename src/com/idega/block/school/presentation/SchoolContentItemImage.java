@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;

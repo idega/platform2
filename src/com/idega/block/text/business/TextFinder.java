@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
@@ -180,7 +180,7 @@ public class TextFinder {
   public static int getObjectInstanceIdFromTextId(int iTextId){
     try {
       TxText tx = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTextId);
-      List L = EntityFinder.findRelated( tx,((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
+      List L = EntityFinder.findRelated( tx,((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
       if(L!= null){
         return ((ICObjectInstance) L.get(0)).getID();
       }
@@ -196,7 +196,7 @@ public class TextFinder {
 
   public static List listOfTextForObjectInstanceId(int instanceid){
     try {
-      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(instanceid );
+      ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(instanceid );
       return listOfTextForObjectInstanceId(obj);
     }
     catch (SQLException ex) {

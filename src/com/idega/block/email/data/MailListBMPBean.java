@@ -89,7 +89,7 @@ public class MailListBMPBean extends com.idega.data.GenericEntity implements com
 
     addAttribute(CREATED, "Created", true, true, Timestamp.class);
 
-    addManyToManyRelationShip(com.idega.core.data.Email.class);
+    addManyToManyRelationShip(com.idega.core.contact.data.Email.class);
 
   }
 

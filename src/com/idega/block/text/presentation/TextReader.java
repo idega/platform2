@@ -24,7 +24,7 @@ import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

@@ -10,7 +10,7 @@ import com.idega.block.banner.data.AdEntity;
 import com.idega.block.banner.data.BannerEntity;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;

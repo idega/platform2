@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.idega.block.poll.data.PollEntity;
-import com.idega.core.business.ICObjectBusiness;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.business.ICObjectBusiness;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
 
 /**

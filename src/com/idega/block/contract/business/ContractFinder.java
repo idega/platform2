@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.9 2003/05/31 00:49:39 aron Exp $
+ * $Id: ContractFinder.java,v 1.10 2003/10/03 01:41:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,8 +26,8 @@ import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractText;
 
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.data.ICObjectInstanceHome;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -85,7 +85,7 @@ public abstract class ContractFinder
 		try
 		{
 			ICObjectInstance obj =
-				((com.idega.core.data.ICObjectInstanceHome) IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(
+				((com.idega.core.component.data.ICObjectInstanceHome) IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(
 					iObjectInstanceId);
 			id = getObjectInstanceCategoryId(obj);
 			if (id <= 0 && CreateNew)
@@ -122,7 +122,7 @@ public abstract class ContractFinder
 		try
 		{
 			ICObjectInstance obj =
-				((com.idega.core.data.ICObjectInstanceHome) IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(
+				((com.idega.core.component.data.ICObjectInstanceHome) IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(
 					iObjectInstanceId);
 			return getObjectInstanceCategoryId(obj);
 		}

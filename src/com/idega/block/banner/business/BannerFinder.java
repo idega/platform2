@@ -7,9 +7,9 @@ import javax.ejb.FinderException;
 
 import com.idega.block.banner.data.AdEntity;
 import com.idega.block.banner.data.BannerEntity;
-import com.idega.core.business.ICObjectBusiness;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.business.ICObjectBusiness;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookupException;
 
@@ -110,7 +110,7 @@ public class BannerFinder {
 
   public static ICFile getFile(int ICFileID) {
     try {
-      return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(ICFileID));
+      return ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(ICFileID));
     }
     catch (IDOLookupException e) {
 		e.printStackTrace();
@@ -122,7 +122,7 @@ public class BannerFinder {
 
   public static ICFile[] getFilesInAd(AdEntity ad) {
     try {
-      ICFile[] files = (ICFile[]) ad.findRelated(com.idega.core.data.ICFileBMPBean.getStaticInstance(ICFile.class));
+      ICFile[] files = (ICFile[]) ad.findRelated(com.idega.core.file.data.ICFileBMPBean.getStaticInstance(ICFile.class));
       if ( files != null ) {
         return files;
       }
@@ -156,7 +156,7 @@ public class BannerFinder {
   public static int getObjectInstanceIdFromID(int bannerID){
     try {
       BannerEntity banner = ((com.idega.block.banner.data.BannerEntityHome)com.idega.data.IDOLookup.getHomeLegacy(BannerEntity.class)).findByPrimaryKeyLegacy(bannerID);
-      List L = EntityFinder.findRelated(banner,((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
+      List L = EntityFinder.findRelated(banner,((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
       if(L!= null){
         return ((ICObjectInstance) L.get(0)).getID();
       }

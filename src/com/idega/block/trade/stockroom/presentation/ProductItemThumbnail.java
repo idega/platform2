@@ -8,7 +8,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.block.presentation.ImageWindow;
 import com.idega.presentation.IWContext;

@@ -6,8 +6,8 @@ import java.util.List;
 
 import com.idega.block.banner.data.AdEntity;
 import com.idega.block.banner.data.BannerEntity;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.file.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.ui.DropdownMenu;
@@ -83,7 +83,7 @@ public static final String COOKIE_NAME = "idegaAD_";
       else {
         banner.insert();
         if(InstanceId > 0){
-          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
+          ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
           banner.addTo(objIns);
         }
       }

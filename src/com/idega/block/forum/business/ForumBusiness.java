@@ -12,8 +12,8 @@ import javax.ejb.FinderException;
 
 import com.idega.block.forum.data.ForumData;
 import com.idega.block.forum.data.ForumDataHome;
-import com.idega.core.ICTreeNode;
-import com.idega.core.data.ICCategory;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.data.ICTreeNode;
 import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
 /**

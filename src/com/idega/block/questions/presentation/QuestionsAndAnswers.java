@@ -17,7 +17,7 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.presentation.TextChooser;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.ICCategory;
+import com.idega.core.category.data.ICCategory;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;

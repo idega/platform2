@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.121 2003/07/15 14:43:22 aron Exp $
+ * $Id: NewsReader.java,v 1.122 2003/10/03 01:42:00 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,9 +31,9 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICFile;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -1056,7 +1056,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
     this.dateAlign=alignment;
   }
 
-  public void setViewPage(com.idega.builder.data.IBPage page){
+  public void setViewPage(com.idega.core.builder.data.ICPage page){
     viewPageId = page.getID();
   }
 

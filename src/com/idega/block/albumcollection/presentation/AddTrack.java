@@ -8,7 +8,7 @@ import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.block.albumcollection.data.Track;
 import com.idega.block.media.presentation.FileChooser;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;

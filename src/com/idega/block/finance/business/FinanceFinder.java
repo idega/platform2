@@ -25,7 +25,7 @@ import com.idega.block.finance.data.TariffGroup;
 import com.idega.block.finance.data.TariffHome;
 import com.idega.block.finance.data.TariffIndex;
 import com.idega.block.finance.data.TariffKey;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
@@ -55,7 +55,7 @@ public class FinanceFinder  {
   public int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
     int id = -1;
     try {
-      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+      ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
       id = getObjectInstanceCategoryId(obj);
       if(id <= 0 && CreateNew ){
         id = FinanceBusiness.createCategory(iObjectInstanceId );
@@ -84,7 +84,7 @@ public class FinanceFinder  {
 
   public  int getObjectInstanceCategoryId(int iObjectInstanceId){
     try {
-      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+      ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
       return getObjectInstanceCategoryId(obj);
     }
     catch (Exception ex) {
@@ -96,7 +96,7 @@ public class FinanceFinder  {
   public  int getObjectInstanceIdFromCategoryId(int iCategoryId){
     try {
       FinanceCategory cat = ((com.idega.block.finance.data.FinanceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(FinanceCategory.class)).findByPrimaryKeyLegacy(iCategoryId);
-      List L = EntityFinder.findRelated( cat,((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
+      List L = EntityFinder.findRelated( cat,((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
       if(L!= null){
         return ((ICObjectInstance) L.get(0)).getID();
       }
@@ -126,7 +126,7 @@ public class FinanceFinder  {
 
   public  List listOfEntityForObjectInstanceId(int instanceid){
     try {
-      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(instanceid );
+      ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(instanceid );
       return listOfEntityForObjectInstanceId(obj);
     }
     catch (SQLException ex) {

@@ -9,7 +9,7 @@
  */
 package com.idega.block.help.data;
 
-import com.idega.core.ICTreeNode;
+import com.idega.core.data.ICTreeNode;
 
 import java.util.Iterator;
 import java.util.List;

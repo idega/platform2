@@ -5,11 +5,11 @@ package com.idega.block.documents.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.category.data.ICInformationCategory;
+import com.idega.core.category.data.ICInformationFolder;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICInformationCategory;
-import com.idega.core.data.ICInformationFolder;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 
 
@@ -47,7 +47,7 @@ public class DocLinkBMPBean extends com.idega.data.GenericEntity implements com.
 
     this.addManyToOneRelationship(getColumnNameFileID(), "File", ICFile.class);
 
-    this.addManyToOneRelationship(getColumnNamePageID(), "Page", IBPage.class);
+    this.addManyToOneRelationship(getColumnNamePageID(), "Page", ICPage.class);
 
     addAttribute(getColumnNameTarget(), "Target", true, true, String.class);
 

@@ -13,7 +13,7 @@ import com.idega.block.poll.data.PollEntity;
 import com.idega.block.poll.data.PollQuestion;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
@@ -1169,7 +1169,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
           System.err.println("instance er til");
 
-          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
+          ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
 
           System.err.println(" object instance "+objIns.getID() +", "+ objIns.getName());
 

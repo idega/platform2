@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductCategoryHandler.java,v 1.3 2003/04/03 08:52:05 laddi Exp $
+ *  $Id: ProductCategoryHandler.java,v 1.4 2003/10/03 01:41:58 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package com.idega.block.trade.stockroom.business;
 import java.util.List;
 
 import com.idega.builder.handler.PropertyHandler;
-import com.idega.core.business.CategoryFinder;
+import com.idega.core.category.business.CategoryFinder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;

@@ -8,8 +8,8 @@ import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxCategory;
 import com.idega.block.boxoffice.data.BoxEntity;
 import com.idega.block.boxoffice.data.BoxLink;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -132,7 +132,7 @@ public class Box extends Block implements Builderaware {
 		}
 
 		if (_newObjInst) {
-			_boxID = BoxFinder.getRelatedEntityId(((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
+			_boxID = BoxFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
 		}
 
 		if (_boxID > 0) {

@@ -3,7 +3,7 @@ package com.idega.block.text.data;
 
 public interface Content extends com.idega.data.IDOLegacyEntity
 {
- public void addFileToContent(com.idega.core.data.ICFile p0)throws com.idega.data.IDOAddRelationshipException;
+ public void addFileToContent(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDOAddRelationshipException;
  public java.util.Collection getContentFiles()throws com.idega.data.IDORelationshipException;
  public java.sql.Timestamp getCreated();
  public java.sql.Timestamp getLastUpdated();
@@ -12,7 +12,7 @@ public interface Content extends com.idega.data.IDOLegacyEntity
  public java.sql.Timestamp getPublishTo();
  public int getUserId();
  public void initializeAttributes();
- public void removeFileFromContent(com.idega.core.data.ICFile p0)throws com.idega.data.IDORemoveRelationshipException;
+ public void removeFileFromContent(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setCreated(java.sql.Timestamp p0);
  public void setLastUpdated(java.sql.Timestamp p0);
  public void setPublishFrom(java.sql.Timestamp p0);

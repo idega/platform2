@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.17 2003/04/03 07:05:44 laddi Exp $
+ * $Id: ReferenceNumber.java,v 1.18 2003/10/03 01:42:00 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -290,7 +290,7 @@ public class ReferenceNumber extends Block {
     _textStyles=styleAttribute;
   }
 
-  public void setPage(com.idega.builder.data.IBPage page){
+  public void setPage(com.idega.core.builder.data.ICPage page){
     _pageId = page.getID();
   }
 

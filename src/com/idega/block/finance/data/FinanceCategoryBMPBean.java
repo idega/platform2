@@ -54,7 +54,7 @@ public class FinanceCategoryBMPBean extends com.idega.data.GenericEntity impleme
 
     addAttribute(getValidColumnName(), "Valid", true, true, Boolean.class);
 
-    addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class);
+    addManyToManyRelationShip(com.idega.core.component.data.ICObjectInstance.class);
 
   }
 

@@ -9,7 +9,7 @@ public interface Track extends com.idega.data.IDOLegacyEntity
  public int getLyricId();
  public java.lang.String getName();
  public int getNumber();
- public com.idega.core.data.ICFile getTrack();
+ public com.idega.core.file.data.ICFile getTrack();
  public int getTrackID();
  public void initializeAttributes();
  public boolean isAudoTrackHidden();

@@ -8,7 +8,7 @@ import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.trade.business.CurrencyHolder;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.data.EntityControl;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;

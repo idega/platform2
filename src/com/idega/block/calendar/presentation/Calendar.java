@@ -22,8 +22,8 @@ import com.idega.block.calendar.business.CalendarFinder;
 import com.idega.block.calendar.data.CalendarCategory;
 import com.idega.block.calendar.data.CalendarEntry;
 import com.idega.block.presentation.CategoryBlock;
-import com.idega.builder.data.IBPage;
-import com.idega.core.business.CategoryFinder;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.category.business.CategoryFinder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -55,7 +55,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 	private String _noActionDay = "#999966";
 	private String _actionDay = "#660000";
-	private IBPage _page;
+	private ICPage _page;
 	private boolean _showMonth = false;
 	private boolean _showMonthButton = false;
 	private boolean _asLineView = false;
@@ -662,7 +662,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 		}
 	}
 
-	public void setPage(IBPage page) {
+	public void setPage(ICPage page) {
 		_page = page;
 	}
 

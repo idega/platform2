@@ -3,7 +3,7 @@ package com.idega.block.contract.data;
 
 public interface Contract extends com.idega.data.IDOLegacyEntity
 {
- public void addFileToContract(com.idega.core.data.ICFile p0)throws com.idega.data.IDOAddRelationshipException;
+ public void addFileToContract(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDOAddRelationshipException;
  public java.lang.Integer getCategoryId();
  public java.sql.Date getCreationDate();
  public java.lang.Integer getSignedBy(java.lang.Integer p0);
@@ -19,7 +19,7 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public java.lang.String getXmlSignedData();
  public void initializeAttributes();
  public boolean isSigned();
- public void removeFileFromContract(com.idega.core.data.ICFile p0)throws com.idega.data.IDORemoveRelationshipException;
+ public void removeFileFromContract(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setCategoryId(java.lang.Integer p0);
  public void setCategoryId(int p0);
  public void setCreationDate(java.sql.Date p0);

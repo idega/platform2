@@ -8,8 +8,9 @@ import java.util.Collection;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.data.ICObjectInstanceHome;
+
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
@@ -30,7 +31,7 @@ public class ContractCategoryBMPBean
 		addAttribute(getColumnCreated(), "Created", true, true, java.sql.Date.class);
 		addAttribute(getColumnValid(), "Valid", true, true, Boolean.class);
 		addAttribute(getColumnXMLTemplate(), "XML Template", true, true, String.class, 30000);
-		addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class);
+		addManyToManyRelationShip(com.idega.core.component.data.ICObjectInstance.class);
 	}
 	public void insertStartData() throws Exception {
 		ContractCategory cat = ((ContractCategoryHome) IDOLookup.getHome(ContractCategory.class)).create();

@@ -11,10 +11,10 @@ import javax.ejb.FinderException;
 import com.idega.block.boxoffice.data.BoxCategory;
 import com.idega.block.boxoffice.data.BoxEntity;
 import com.idega.block.boxoffice.data.BoxLink;
-import com.idega.builder.data.IBPage;
-import com.idega.core.business.ICObjectBusiness;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.component.business.ICObjectBusiness;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookupException;
 
@@ -29,24 +29,24 @@ import com.idega.data.IDOLookupException;
 
 public class BoxFinder {
 
-	public static IBPage getPage(int pageID) {
+	public static ICPage getPage(int pageID) {
 		try {
-			return ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageID);
+			return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(pageID);
 		}
 		catch (SQLException e) {
-			return ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+			return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 		}
 	}
 
 	public static ICFile getFile(int fileID) {
 		try {
-			return ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(fileID));
+			return ((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(fileID));
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 			return null;
 		} catch (FinderException e) {
 			try {
-				return ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				return ((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 			} catch (IDOLookupException e1) {
 				e1.printStackTrace();
 				return null;
@@ -282,7 +282,7 @@ public class BoxFinder {
 	public static int getObjectInstanceIdFromID(int boxID) {
 		try {
 			BoxEntity box = ((com.idega.block.boxoffice.data.BoxEntityHome) com.idega.data.IDOLookup.getHomeLegacy(BoxEntity.class)).findByPrimaryKeyLegacy(boxID);
-			List L = EntityFinder.findRelated(box, ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
+			List L = EntityFinder.findRelated(box, ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
 			if (L != null) {
 				return ((ICObjectInstance) L.get(0)).getID();
 			}

@@ -14,12 +14,12 @@ import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.business.UserGroupBusiness;
-import com.idega.core.data.Address;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityControl;
 import com.idega.data.EntityFinder;
@@ -112,17 +112,17 @@ public class ResellerManager {
         res.setDescription(description);
       res.update();
 
-      res.removeFrom(com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
+      res.removeFrom(com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
       for (int i = 0; i < addressIds.length; i++) {
         res.addTo(Address.class, addressIds[i]);
       }
 
-      res.removeFrom(com.idega.core.data.PhoneBMPBean.getStaticInstance(Phone.class));
+      res.removeFrom(com.idega.core.contact.data.PhoneBMPBean.getStaticInstance(Phone.class));
       for (int i = 0; i < phoneIds.length; i++) {
         res.addTo(Phone.class, phoneIds[i]);
       }
 
-      res.removeFrom(com.idega.core.data.EmailBMPBean.getStaticInstance(Email.class));
+      res.removeFrom(com.idega.core.contact.data.EmailBMPBean.getStaticInstance(Email.class));
       for (int i = 0; i < emailIds.length; i++) {
         res.addTo(Email.class, emailIds[i]);
       }

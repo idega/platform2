@@ -3,11 +3,13 @@ package com.idega.block.reports.business;
 import com.idega.data.EntityFinder;
 import java.util.*;
 import com.idega.block.reports.data.*;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.category.business.*;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
+
 import java.sql.SQLException;
-import com.idega.core.data.ICObject;
 import com.idega.core.business.*;
-import com.idega.core.data.ICCategory;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
 
@@ -124,7 +126,7 @@ public class ReportFinder {
 
   public static List listOfDataClasses(){
     try {
-      return EntityFinder.findAllByColumn(((com.idega.core.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy(),com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(),com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_DATA);
+      return EntityFinder.findAllByColumn(((com.idega.core.component.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy(),com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(),com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_DATA);
     }
     catch (SQLException ex) {
 

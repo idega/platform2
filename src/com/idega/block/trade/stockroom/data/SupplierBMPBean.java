@@ -14,9 +14,9 @@ import com.idega.block.tpos.data.TPosMerchant;
 import com.idega.block.tpos.data.TPosMerchantHome;
 import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.data.Address;
-import com.idega.core.data.Email;
-import com.idega.core.data.Phone;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -118,28 +118,28 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
   }
 
   public List getAddresses() throws SQLException{
-    return EntityFinder.findRelated(this,com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
+    return EntityFinder.findRelated(this,com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
   }
 
 
   public List getPhones() throws SQLException {
-    return EntityFinder.findRelated(this,com.idega.core.data.PhoneBMPBean.getStaticInstance(Phone.class));
+    return EntityFinder.findRelated(this,com.idega.core.contact.data.PhoneBMPBean.getStaticInstance(Phone.class));
   }
 
   public List getHomePhone() throws SQLException {
-    return getPhones(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
+    return getPhones(com.idega.core.contact.data.PhoneBMPBean.getHomeNumberID());
   }
 
   public List getFaxPhone() throws SQLException {
-    return getPhones(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
+    return getPhones(com.idega.core.contact.data.PhoneBMPBean.getFaxNumberID());
   }
 
   public List getWorkPhone() throws SQLException {
-    return getPhones(com.idega.core.data.PhoneBMPBean.getWorkNumberID());
+    return getPhones(com.idega.core.contact.data.PhoneBMPBean.getWorkNumberID());
   }
 
   public List getMobilePhone() throws SQLException {
-    return getPhones(com.idega.core.data.PhoneBMPBean.getMobileNumberID());
+    return getPhones(com.idega.core.contact.data.PhoneBMPBean.getMobileNumberID());
   }
 
   public List getPhones(int PhoneTypeId) throws SQLException{
@@ -167,7 +167,7 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
   }
 
   public List getEmails() throws SQLException {
-    return EntityFinder.findRelated(this,com.idega.core.data.EmailBMPBean.getStaticInstance(Email.class));
+    return EntityFinder.findRelated(this,com.idega.core.contact.data.EmailBMPBean.getStaticInstance(Email.class));
   }
 
   public static Supplier[] getValidSuppliers() throws SQLException {

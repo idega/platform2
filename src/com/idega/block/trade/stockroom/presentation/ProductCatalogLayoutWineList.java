@@ -14,7 +14,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
-import com.idega.core.data.ICCategory;
+import com.idega.core.category.data.ICCategory;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;

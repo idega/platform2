@@ -1,7 +1,8 @@
 package com.idega.block.reports.business;
 
 import com.idega.block.reports.data.*;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Iterator;
@@ -48,7 +49,7 @@ public class ReportBusiness {
       }
 
       if(iObjectInstanceId > 0  ){
-        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
         nc.removeFrom(obj);
       }
       nc.delete();
@@ -87,7 +88,7 @@ public class ReportBusiness {
                     cat.insert();
                           // Binding category to instanceId
                   if(iObjectInstanceId > 0){
-                          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+                          ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
                           // Allows only one category per instanceId
                           objIns.removeFrom(((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy());
                           cat.addTo(objIns);
@@ -104,7 +105,7 @@ public class ReportBusiness {
       eCategory.setValid(false);
       eCategory.update();
       if(iObjectInstanceId > 0  ){
-        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
         eCategory.removeFrom(obj);
       }
 

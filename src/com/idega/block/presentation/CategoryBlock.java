@@ -3,10 +3,10 @@ package com.idega.block.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import com.idega.core.business.CategoryBusiness;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICCategoryHome;
+import com.idega.core.category.business.CategoryBusiness;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.category.data.ICCategoryHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;

@@ -10,8 +10,8 @@ import com.idega.block.staff.data.StaffInfo;
 import com.idega.block.staff.data.StaffLocalized;
 import com.idega.block.staff.data.StaffMeta;
 import com.idega.block.staff.data.StaffMetaData;
-import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.util.IWTimestamp;
 

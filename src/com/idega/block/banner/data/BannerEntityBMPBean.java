@@ -10,7 +10,7 @@ package com.idega.block.banner.data;
 
 import java.sql.SQLException;
 
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 
 
 
@@ -92,7 +92,7 @@ public class BannerEntityBMPBean extends com.idega.data.GenericEntity implements
 
   public void delete() throws SQLException {
 
-    removeFrom(com.idega.core.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class));
+    removeFrom(com.idega.core.component.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class));
 
     removeFrom(com.idega.block.banner.data.AdEntityBMPBean.getStaticInstance(AdEntity.class));
 

@@ -22,7 +22,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.idega.core.business.EmailDataView;
+import com.idega.core.contact.data.EmailDataView;
 
 
 

@@ -20,7 +20,7 @@ public java.util.Collection findAll()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByObjectInstance(com.idega.core.data.ICObjectInstance p0)throws javax.ejb.FinderException,com.idega.data.IDORelationshipException{
+public java.util.Collection findByObjectInstance(com.idega.core.component.data.ICObjectInstance p0)throws javax.ejb.FinderException,com.idega.data.IDORelationshipException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ContractCategoryBMPBean)entity).ejbFindByObjectInstance(p0);
 	this.idoCheckInPooledEntity(entity);

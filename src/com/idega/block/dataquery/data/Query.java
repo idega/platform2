@@ -1,6 +1,6 @@
 package com.idega.block.dataquery.data;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.util.xml.XMLFile;
 
 

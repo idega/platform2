@@ -8,7 +8,7 @@ package com.idega.block.datareport.data;
 
 import java.sql.SQLException;
 
-import com.idega.core.data.ICFileBMPBean;
+import com.idega.core.file.data.ICFileBMPBean;
 
 /**
  * Title:		ReportDesignFileBMPBean

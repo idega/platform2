@@ -3,7 +3,7 @@ package com.idega.block.trade.stockroom.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -49,7 +49,7 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
 
   public Address getAddress() {
     try {
-      return ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(getIntColumnValue(getColumnNameAddressId()));
+      return ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(getIntColumnValue(getColumnNameAddressId()));
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
       return null;

@@ -34,7 +34,7 @@ public class StaffMetaBMPBean extends com.idega.block.staff.data.StaffMetaDataBM
     	//addAttribute(getIDColumnName());
 
       addAttribute(getColumnNameUserID(),"User",true,true,Integer.class,"many-to-one",com.idega.core.user.data.User.class);
-      addAttribute(getColumnNameLocaleId(), "Locale", true, true, Integer.class,"many_to_one",com.idega.core.data.ICLocale.class);
+      addAttribute(getColumnNameLocaleId(), "Locale", true, true, Integer.class,"many_to_one",com.idega.core.localisation.data.ICLocale.class);
       addAttribute(getColumnNameAttribute(),"Attribute",true,true,String.class);
       addAttribute(getColumnNameValue(),"Value",true,true,String.class);
     }

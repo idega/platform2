@@ -14,7 +14,7 @@ import com.idega.block.dictionary.business.DictionaryComparator;
 import com.idega.block.dictionary.data.Word;
 import com.idega.block.presentation.CategoryBlock;
 import com.idega.block.text.business.TextFormatter;
-import com.idega.core.data.ICCategory;
+import com.idega.core.category.data.ICCategory;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

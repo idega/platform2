@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.12 2003/05/31 15:03:00 aron Exp $
+ * $Id: ContractBusiness.java,v 1.13 2003/10/03 01:41:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,8 +23,8 @@ import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.contract.data.ContractText;
 import com.idega.block.contract.data.ContractTextHome;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.data.ICObjectInstanceHome;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.util.IWTimestamp;

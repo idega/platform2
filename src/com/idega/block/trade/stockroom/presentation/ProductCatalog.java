@@ -18,10 +18,10 @@ import com.idega.block.trade.stockroom.business.ProductBusinessBean;
 import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICCategory;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
@@ -77,7 +77,7 @@ public class ProductCatalog extends CategoryBlock{
   private String _anchorString = "prodCatAnchorID_";
 
   String _width = null;
-  IBPage _productLinkPage = null;
+  ICPage _productLinkPage = null;
   String _windowString = null;
   boolean _expandSelectedOnly = false;
   boolean _productIsLink = false;
@@ -308,7 +308,7 @@ public String _topColor;
     this.productsPerPage = numberOfItems;
   }
 
-  public void setProductLinkPage(IBPage page) {
+  public void setProductLinkPage(ICPage page) {
     this._productLinkPage = page;
   }
 

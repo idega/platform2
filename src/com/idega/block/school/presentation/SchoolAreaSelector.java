@@ -8,8 +8,8 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolContentBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -41,7 +41,7 @@ public class SchoolAreaSelector extends Block {
 	private String _expandedSelStyle;
 	private String _expandedSelColor;
 	private String _spaceBetween = "5";
-	private IBPage _page;
+	private ICPage _page;
 	private int _spaceBeforeExpanded = 2;
 
 
@@ -284,7 +284,7 @@ public class SchoolAreaSelector extends Block {
 		_spaceBeforeExpanded = numberOfSpaces;	
 	}
 	
-	public void setPage(IBPage page) {
+	public void setPage(ICPage page) {
 		_page = page;	
 	}
 }

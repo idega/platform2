@@ -17,7 +17,7 @@ import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.data.User;
@@ -87,8 +87,8 @@ public class StaffBrowser extends Block implements Builderaware {
 	private String _headlineStyle;
 	private String _divisionStyle;
 
-	private IBPage _page;
-	private IBPage _backPage;
+	private ICPage _page;
+	private ICPage _backPage;
 
 	private IWBundle _iwb;
 	private IWResourceBundle _iwrb;
@@ -835,11 +835,11 @@ public class StaffBrowser extends Block implements Builderaware {
 		_selectedLetterColor = color;
 	}
 
-	public void setStaffPage(IBPage page) {
+	public void setStaffPage(ICPage page) {
 		_page = page;
 	}
 
-	public void setBackPage(IBPage page) {
+	public void setBackPage(ICPage page) {
 		_backPage = page;
 	}
 

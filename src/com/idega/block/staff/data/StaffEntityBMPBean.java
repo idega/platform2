@@ -3,7 +3,7 @@ package com.idega.block.staff.data;
 import java.sql.Date;
 import java.sql.SQLException;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 
 
 /**

@@ -1,7 +1,7 @@
 package com.idega.block.dataquery.data;
 
 
-public interface QueryResultEntity extends com.idega.core.data.ICFile 
+public interface QueryResultEntity extends com.idega.core.file.data.ICFile 
 {
  public int getReportQueryId();
  public int getXMLSchemaId();

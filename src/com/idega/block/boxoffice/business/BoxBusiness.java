@@ -8,7 +8,7 @@ import com.idega.block.boxoffice.data.BoxEntity;
 import com.idega.block.boxoffice.data.BoxLink;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
@@ -88,7 +88,7 @@ public static final int PAGE = 3;
       else {
         box.insert();
         if(InstanceId > 0){
-          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
+          ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
           box.addTo(objIns);
         }
       }
@@ -176,7 +176,7 @@ public static final int PAGE = 3;
 	public static boolean disconnectBox(BoxEntity box,int iObjectInstanceId){
     try {
       if(iObjectInstanceId > 0  ){
-        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
         box.removeFrom(obj);
       }
       return true;

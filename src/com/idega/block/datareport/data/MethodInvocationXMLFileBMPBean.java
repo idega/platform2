@@ -7,8 +7,8 @@
 package com.idega.block.datareport.data;
 
 
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileBMPBean;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileBMPBean;
 
 /**
  * Title:		MethodInvocationXMLFileBMPBean

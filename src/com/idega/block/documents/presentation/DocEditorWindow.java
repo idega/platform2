@@ -6,13 +6,13 @@ import java.util.Locale;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.media.presentation.SimpleFileChooser;
-import com.idega.builder.data.IBPage;
 import com.idega.builder.presentation.IBPageChooser;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.core.business.InformationCategory;
-import com.idega.core.business.InformationFolder;
-import com.idega.core.data.ICLocale;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.category.data.InformationCategory;
+import com.idega.core.category.data.InformationFolder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.data.ICLocale;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -518,7 +518,7 @@ public class DocEditorWindow extends IWAdminWindow {
 			case DocBusiness.PAGE :
 				IBPageChooser pageChooser = new IBPageChooser(_PRM_PAGE_ID, STYLE);
 				if (_pageID != -1) {
-					IBPage page = DocBusiness.getPage(_pageID);
+					ICPage page = DocBusiness.getPage(_pageID);
 					if (page != null) {
 						pageChooser.setSelectedPage(_pageID, page.getName());
 					}

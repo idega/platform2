@@ -5,7 +5,7 @@ package com.idega.block.text.data;
 
 
 import java.sql.SQLException;
-
+import com.idega.core.component.data.ICObjectInstance;
 
 
 /**
@@ -54,8 +54,7 @@ public class TxTextBMPBean extends com.idega.data.GenericEntity implements com.i
 
     addAttribute(getColumnNameContentId(), "content", true, true, Integer.class,"many-to-one",Content.class);
 
-    addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class);
-
+    addManyToManyRelationShip(ICObjectInstance.class,"TX_TEXT_IC_OBJECT_INSTANCE");
 
 
   }

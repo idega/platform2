@@ -3,8 +3,9 @@ package com.idega.block.dictionary.business;
 import java.sql.SQLException;
 import com.idega.presentation.Image;
 import javax.ejb.*;
-import com.idega.core.data.ICCategory;
-import com.idega.core.business.CategoryFinder;
+
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
 import com.idega.presentation.ui.DropdownMenu;
 import java.util.*;
 import com.idega.data.*;

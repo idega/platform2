@@ -32,7 +32,7 @@ public class StaffLocalizedBMPBean extends com.idega.data.GenericEntity implemen
 
     addAttribute(getIDColumnName());
 
-    addAttribute(getColumnNameLocaleId(), "Locale", true, true, java.lang.Integer.class,"many_to_one",com.idega.core.data.ICLocale.class);
+    addAttribute(getColumnNameLocaleId(), "Locale", true, true, java.lang.Integer.class,"many_to_one",com.idega.core.localisation.data.ICLocale.class);
 
     addAttribute(getColumnNameTitle(), "Title", true, true, java.lang.String.class);
 

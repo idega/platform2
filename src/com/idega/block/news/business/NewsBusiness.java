@@ -11,8 +11,8 @@ import com.idega.block.news.data.NewsCategory;
 import com.idega.block.news.data.NwNews;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.data.Content;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.component.data.ICObjectInstance;
 
 public class NewsBusiness {
 
@@ -64,7 +64,7 @@ public class NewsBusiness {
 
 			if (iObjectInstanceId > 0) {
 
-				ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+				ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
 				newsCat.removeFrom(obj);
 
@@ -215,7 +215,7 @@ public class NewsBusiness {
 
 			if (iObjectInstanceId > 0) {
 
-				ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+				ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
 				nc.removeFrom(obj);
 

@@ -8,7 +8,7 @@ import com.idega.block.banner.business.BannerFinder;
 import com.idega.block.banner.business.BannerListener;
 import com.idega.block.banner.data.AdEntity;
 import com.idega.block.banner.data.BannerEntity;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -138,7 +138,7 @@ public Banner(String attribute){
 
     if ( _newObjInst ) {
 
-      _bannerID = BannerFinder.getRelatedEntityId(((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
+      _bannerID = BannerFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
 
     }
 

@@ -7,7 +7,7 @@ import com.idega.block.email.business.EmailTopic;
 import com.idega.block.email.business.MailBusiness;
 import com.idega.block.email.business.MailFinder;
 import com.idega.block.presentation.CategoryBlock;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -412,7 +412,7 @@ public class NewsLetter extends CategoryBlock {
     _spaceBetween = spaceBetween;
   }
   
-  public void setArchivePage(IBPage page){
+  public void setArchivePage(ICPage page){
   		this.archivePage = page.getID();
   }
   

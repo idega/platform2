@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.business;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.business.*;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.business.*;
 import com.idega.block.trade.stockroom.data.Product;
 

@@ -2,8 +2,8 @@ package com.idega.block.documents.presentation;
 
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.documents.data.DocLink;
-import com.idega.core.business.InformationCategory;
-import com.idega.core.business.InformationFolder;
+import com.idega.core.category.data.InformationCategory;
+import com.idega.core.category.data.InformationFolder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

@@ -1,17 +1,26 @@
 package com.idega.block.trade.stockroom.business;
 
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.core.accesscontrol.data.PermissionGroup;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierStaffGroup;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.user.data.User;
+import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.location.data.Address;
 import com.idega.core.user.business.UserBusiness;
-import com.idega.core.data.*;
-import com.idega.util.IWTimestamp;
+import com.idega.core.user.business.UserGroupBusiness;
+import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
-import java.util.*;
-import java.sql.*;
+import com.idega.util.IWTimestamp;
 
 
 /**
@@ -57,17 +66,17 @@ public class SupplierManager {
         supp.setDescription(description);
       supp.update();
 
-      supp.removeFrom(com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class));
+      supp.removeFrom(com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
       for (int i = 0; i < addressIds.length; i++) {
         supp.addTo(Address.class, addressIds[i]);
       }
 
-      supp.removeFrom(com.idega.core.data.PhoneBMPBean.getStaticInstance(Phone.class));
+      supp.removeFrom(com.idega.core.contact.data.PhoneBMPBean.getStaticInstance(Phone.class));
       for (int i = 0; i < phoneIds.length; i++) {
         supp.addTo(Phone.class, phoneIds[i]);
       }
 
-      supp.removeFrom(com.idega.core.data.EmailBMPBean.getStaticInstance(Email.class));
+      supp.removeFrom(com.idega.core.contact.data.EmailBMPBean.getStaticInstance(Email.class));
       for (int i = 0; i < emailIds.length; i++) {
         supp.addTo(Email.class, emailIds[i]);
       }

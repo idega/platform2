@@ -14,7 +14,7 @@ import com.idega.block.email.data.MailList;
 import com.idega.block.email.data.MailListHome;
 import com.idega.block.email.data.MailTopic;
 import com.idega.block.email.data.MailTopicHome;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
 import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
 /**
@@ -246,7 +246,7 @@ public class MailBusiness {
 
       Email eEmail =MailFinder.getInstance().lookupEmail(email);
       if(eEmail == null){
-        eEmail = ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
+        eEmail = ((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
         eEmail.setEmailAddress(email);
         eEmail.insert();
       }

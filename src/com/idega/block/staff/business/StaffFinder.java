@@ -12,12 +12,12 @@ import com.idega.block.staff.data.StaffInfo;
 import com.idega.block.staff.data.StaffLocalized;
 import com.idega.block.staff.data.StaffMeta;
 import com.idega.block.staff.data.StaffMetaData;
-import com.idega.core.business.UserGroupBusiness;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.data.Phone;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
 import com.idega.presentation.IWContext;
@@ -397,9 +397,9 @@ public class StaffFinder {
 
     StaffMeta[] staffMeta = getMeta(user.getID(),localeID);
 
-    Phone workPhone = UserBusiness.getUserPhone(user.getID(),com.idega.core.data.PhoneTypeBMPBean.WORK_PHONE_ID);
+    Phone workPhone = UserBusiness.getUserPhone(user.getID(),com.idega.core.contact.data.PhoneTypeBMPBean.WORK_PHONE_ID);
 
-    Phone mobilePhone = UserBusiness.getUserPhone(user.getID(),com.idega.core.data.PhoneTypeBMPBean.MOBILE_PHONE_ID);
+    Phone mobilePhone = UserBusiness.getUserPhone(user.getID(),com.idega.core.contact.data.PhoneTypeBMPBean.MOBILE_PHONE_ID);
 
     Email email = UserBusiness.getUserMail(user);
 

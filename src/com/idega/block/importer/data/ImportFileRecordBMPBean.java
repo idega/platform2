@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.data.ICFileBMPBean;
+import com.idega.core.file.data.ICFileBMPBean;
 import com.idega.data.IDOQuery;
 
 

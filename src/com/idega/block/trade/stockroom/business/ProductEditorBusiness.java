@@ -1,6 +1,5 @@
 package com.idega.block.trade.stockroom.business;
 import javax.ejb.FinderException;
-import com.idega.core.data.ICFileHome;
 import com.idega.data.*;
 import com.idega.business.IBOServiceBean;
 import java.rmi.RemoteException;
@@ -13,7 +12,8 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.util.IWTimestamp;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 
@@ -199,8 +199,8 @@ public class ProductEditorBusiness extends IBOServiceBean {
 			int imageId = product.getFileId();
 			if (imageId != -1) {
 				try {
-					if (!files.contains(((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(imageId)))) {
-						files.add(0, ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(imageId)));
+					if (!files.contains(((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(imageId)))) {
+						files.add(0, ((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(imageId)));
 					}
 				}
 				catch (IDOLookupException e) {

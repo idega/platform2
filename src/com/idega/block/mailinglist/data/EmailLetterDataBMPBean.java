@@ -11,7 +11,7 @@ package com.idega.block.mailinglist.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 
 public class EmailLetterDataBMPBean extends com.idega.data.GenericEntity implements com.idega.block.mailinglist.data.EmailLetterData {
 
@@ -80,7 +80,7 @@ public class EmailLetterDataBMPBean extends com.idega.data.GenericEntity impleme
     addAttribute(EMAIL_LETTER_DATA_SUBJECT, "subject", true, true, String.class);
     addAttribute(EMAIL_LETTER_DATA_BODY, "body", true, false, java.lang.String.class, 10000);
     addAttribute(EMAIL_LETTER_DATA_SENT, "sent", true, false, Boolean.class);
-    addAttribute(EMAIL_LETTER_DATA_ATTACHMENTS, "attachments", true, false, com.idega.core.data.ICFile.class);
+    addAttribute(EMAIL_LETTER_DATA_ATTACHMENTS, "attachments", true, false, com.idega.core.file.data.ICFile.class);
   }
 
   public String getEntityName(){

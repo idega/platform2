@@ -8,7 +8,7 @@ import com.idega.block.reports.business.ReportFinder;
 import com.idega.block.reports.data.ReportCategory;
 import com.idega.block.reports.data.ReportEntity;
 import com.idega.block.reports.data.ReportItem;
-import com.idega.core.data.ICObject;
+import com.idega.core.component.data.ICObject;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.idegaweb.IWBundle;

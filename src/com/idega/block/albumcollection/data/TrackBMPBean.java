@@ -2,7 +2,7 @@ package com.idega.block.albumcollection.data;
 
 import java.sql.SQLException;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 
 /**
  * Title:        AlbumCollection

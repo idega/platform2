@@ -8,7 +8,7 @@ package com.idega.block.boxoffice.data;
 
 import java.sql.SQLException;
 
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 
 
 
@@ -100,7 +100,7 @@ public class BoxEntityBMPBean extends com.idega.data.GenericEntity implements co
 
     }
 
-    removeFrom(com.idega.core.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class));
+    removeFrom(com.idega.core.component.data.ICObjectInstanceBMPBean.getStaticInstance(ICObjectInstance.class));
 
     removeFrom(com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
 

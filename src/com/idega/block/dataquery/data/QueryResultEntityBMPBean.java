@@ -1,6 +1,6 @@
 package com.idega.block.dataquery.data;
 
-import com.idega.core.data.ICFileBMPBean;
+import com.idega.core.file.data.ICFileBMPBean;
 import com.idega.util.xml.XMLFile;
 
 /**

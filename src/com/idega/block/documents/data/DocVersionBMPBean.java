@@ -5,9 +5,9 @@ package com.idega.block.documents.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 
@@ -41,7 +41,7 @@ public class DocVersionBMPBean extends com.idega.data.GenericEntity implements c
 
     this.addManyToOneRelationship(getColumnNameFileID(), "File", ICFile.class);
 
-    this.addManyToOneRelationship(getColumnNamePageID(), "Page", IBPage.class);
+    this.addManyToOneRelationship(getColumnNamePageID(), "Page", ICPage.class);
 
     this.addAttribute(getColumnNameCreationDate(), "Creation Date", true, true, Timestamp.class);
 

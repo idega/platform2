@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOQuery;
 
 

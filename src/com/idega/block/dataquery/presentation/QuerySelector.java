@@ -4,7 +4,7 @@
  */
 package com.idega.block.dataquery.presentation;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;

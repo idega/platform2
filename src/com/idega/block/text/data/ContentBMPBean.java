@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDORelationshipException;
@@ -38,7 +38,7 @@ public class ContentBMPBean extends com.idega.data.GenericEntity implements com.
     addAttribute(getColumnNamePublishFrom(), "Publish from", true, true, java.sql.Timestamp.class);
     addAttribute(getColumnNamePublishTo(), "Publish to", true, true, java.sql.Timestamp.class);
     addManyToManyRelationShip(LocalizedText.class);
-    addManyToManyRelationShip(com.idega.core.data.ICFile.class);
+    addManyToManyRelationShip(com.idega.core.file.data.ICFile.class);
   }
 
 	public String getLocalizedTextMiddleTableName(IDOLegacyEntity returning,IDOLegacyEntity from){

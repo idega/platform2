@@ -15,8 +15,8 @@ import javax.ejb.RemoveException;
 import javax.transaction.UserTransaction;
 
 
-import com.idega.core.data.Commune;
-import com.idega.core.data.CommuneHome;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
@@ -44,7 +44,7 @@ import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;

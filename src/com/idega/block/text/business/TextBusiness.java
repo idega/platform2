@@ -12,7 +12,7 @@ import com.idega.block.text.data.Content;
 import com.idega.block.text.data.ContentHome;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 
 public class TextBusiness{
 
@@ -60,7 +60,7 @@ public class TextBusiness{
 
       TxText txText= ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(iTextId);
       if(iObjectInstanceId > 0  ){
-          ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+          ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
           txText.removeFrom(obj);
       }
       int contentId = txText.getContentId();
@@ -107,7 +107,7 @@ public class TextBusiness{
           eTxText.insert();
         if(InstanceId > 0 && !update){
           //System.err.println("instance er til");
-          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
+          ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
           //System.err.println(" object instance "+objIns.getID() + objIns.getName());
           //objIns.removeFrom(new ICCategory());
           eTxText.addTo(objIns);

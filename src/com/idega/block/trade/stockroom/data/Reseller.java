@@ -4,10 +4,10 @@ package com.idega.block.trade.stockroom.data;
 public interface Reseller extends com.idega.data.IDOLegacyEntity, com.idega.data.TreeableEntity
 {
  public void delete()throws java.sql.SQLException;
- public com.idega.core.data.Address getAddress()throws java.sql.SQLException;
+ public com.idega.core.location.data.Address getAddress()throws java.sql.SQLException;
  public java.util.List getAddresses()throws java.sql.SQLException;
  public java.lang.String getDescription();
- public com.idega.core.data.Email getEmail()throws java.sql.SQLException;
+ public com.idega.core.contact.data.Email getEmail()throws java.sql.SQLException;
  public java.util.List getEmails()throws java.sql.SQLException;
  public java.util.List getFaxPhone()throws java.sql.SQLException;
  public int getGroupId();

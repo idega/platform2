@@ -13,7 +13,7 @@ import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.business.IBOLookup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
@@ -63,7 +63,7 @@ public class ProductViewer extends Block {
 	String _imageWidth = null;
 	String _textAlignment = Paragraph.HORIZONTAL_ALIGN_LEFT;
 	String _imageAlignment = Paragraph.HORIZONTAL_ALIGN_RIGHT;
-	IBPage _productPage;
+	ICPage _productPage;
 	Image _productImage;
 	boolean _showProductLink = false;
 	boolean _showTeaser = false;
@@ -292,7 +292,7 @@ public class ProductViewer extends Block {
 		_showNewest = !showRandom;
 	}
 
-	public void setProductPage(IBPage page) {
+	public void setProductPage(ICPage page) {
 		_productPage = page;
 	}
 

@@ -21,9 +21,9 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICFile;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.user.data.User;
@@ -347,7 +347,7 @@ private IWResourceBundle iwrb;
       if(iImageId > 0){
         try {
           /** @todo  use finder */
-          F = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iImageId));
+          F = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iImageId));
           V = new Vector(1);
           V.add(F);
         }

@@ -15,7 +15,7 @@ import com.idega.block.finance.data.TariffGroup;
 import com.idega.block.finance.data.TariffHome;
 import com.idega.block.finance.data.TariffIndex;
 import com.idega.block.finance.data.TariffKey;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.util.IWTimestamp;
 
 
@@ -72,7 +72,7 @@ public  class FinanceBusiness {
 
       if(iObjectInstanceId > 0){
 
-        ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+        ICObjectInstance objIns = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
       // Allows only one category per instanceId
 
@@ -142,7 +142,7 @@ public  class FinanceBusiness {
 
       if(iObjectInstanceId > 0  ){
 
-        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
         Cat.removeFrom(obj);
 
@@ -196,7 +196,7 @@ public  class FinanceBusiness {
 
       if(iObjectInstanceId > 0  ){
 
-        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+        ICObjectInstance obj = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
         cat.removeFrom(obj);
 

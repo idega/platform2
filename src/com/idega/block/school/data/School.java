@@ -3,7 +3,7 @@ package com.idega.block.school.data;
 
 public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegacyEntity
 {
- public void addImage(com.idega.core.data.ICFile p0)throws com.idega.data.IDORelationshipException;
+ public void addImage(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORelationshipException;
  public void addSchoolType(com.idega.block.school.data.SchoolType p0)throws com.idega.data.IDOAddRelationshipException;
  public void addSchoolTypes(int[] p0);
  public void addSchoolTypesRemoveOther(int[] p0);
@@ -15,9 +15,9 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.lang.String getActivity();
  public int getAssistantHeadmasterGroupId();
  public boolean getCentralizedAdministration();
- public com.idega.core.data.Commune getCommune();
+ public com.idega.core.location.data.Commune getCommune();
  public int getCommuneId();
- public com.idega.core.data.Country getCountry();
+ public com.idega.core.location.data.Country getCountry();
  public int getCountryId();
  public java.lang.String getExtraProviderId();
  public com.idega.user.data.Group getHeadmasterGroup()throws java.rmi.RemoteException,javax.ejb.FinderException;
@@ -59,7 +59,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setExtraProviderId(java.lang.String p0);
  public void setHeadmasterGroupId(int p0);
  public void setHeadmasterUserId(int p0);
- public void setImage(com.idega.core.data.ICFile p0)throws com.idega.data.IDORelationshipException;
+ public void setImage(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORelationshipException;
  public void setImages(java.util.Collection p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException;
  public void setLocalizedText(java.lang.String p0,int p1)throws com.idega.data.IDORelationshipException;
  public void setManagementTypeId(java.lang.String p0);

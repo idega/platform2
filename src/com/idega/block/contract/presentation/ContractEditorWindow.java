@@ -17,7 +17,7 @@ import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.media.servlet.MediaServlet;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;

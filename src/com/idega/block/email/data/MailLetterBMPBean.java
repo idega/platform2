@@ -117,7 +117,7 @@ public class MailLetterBMPBean extends com.idega.data.GenericEntity implements c
 
     addAttribute(CREATED, "created", true, true, Timestamp.class);
 
-    addManyToManyRelationShip(com.idega.core.data.ICFile.class);
+    addManyToManyRelationShip(com.idega.core.file.data.ICFile.class);
 
   }
 

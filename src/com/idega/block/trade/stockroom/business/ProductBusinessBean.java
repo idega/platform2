@@ -23,10 +23,10 @@ import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.presentation.ProductCatalog;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.data.Address;
-import com.idega.core.data.ICCategory;
+import com.idega.core.category.data.ICCategory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
@@ -455,7 +455,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   public Address getArrivalAddress(Product product) throws RemoteException, IDOFinderException, SQLException{
     Address[] tempAddresses = getArrivalAddresses(product);
     if (tempAddresses.length > 0) {
-      return ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
+      return ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
     }else {
       return null;
     }

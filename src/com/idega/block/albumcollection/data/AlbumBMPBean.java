@@ -38,8 +38,8 @@ public class AlbumBMPBean extends com.idega.data.GenericEntity implements com.id
     this.addAttribute(_COLUMNNAME_NUMBER,"Númer",true,true,Integer.class);
     this.addAttribute(_COLUMNNAME_PUBLISHINGDAY,"Útgáfudagur",true,true,java.sql.Date.class);
     this.addAttribute(_COLUMNNAME_ALBUM_TYPE_ID,"Gerð",true,true,Integer.class,"one_to_many",AlbumType.class);
-    this.addAttribute(_COLUMNNAME_COVER_FRONT,"Framhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.data.ICFile.class);
-    this.addAttribute(_COLUMNNAME_COVER_BACK,"Bakhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.data.ICFile.class);
+    this.addAttribute(_COLUMNNAME_COVER_FRONT,"Framhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.file.data.ICFile.class);
+    this.addAttribute(_COLUMNNAME_COVER_BACK,"Bakhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.file.data.ICFile.class);
 
     this.setNullable(_COLUMNNAME_COVER_FRONT,true);
     this.setNullable(_COLUMNNAME_COVER_BACK,true);

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDORelationshipException;
 
 
@@ -271,7 +271,7 @@ public class AdEntityBMPBean extends com.idega.data.GenericEntity implements com
 
   public void delete() throws SQLException {
 
-    removeFrom(com.idega.core.data.ICFileBMPBean.getStaticInstance(ICFile.class));
+    removeFrom(com.idega.core.file.data.ICFileBMPBean.getStaticInstance(ICFile.class));
 
     removeFrom(com.idega.block.banner.data.BannerEntityBMPBean.getStaticInstance(BannerEntity.class));
 

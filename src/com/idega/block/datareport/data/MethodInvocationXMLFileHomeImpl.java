@@ -1,7 +1,7 @@
 package com.idega.block.datareport.data;
 
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileHomeImpl;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHomeImpl;
 
 
 public class MethodInvocationXMLFileHomeImpl extends ICFileHomeImpl implements MethodInvocationXMLFileHome
