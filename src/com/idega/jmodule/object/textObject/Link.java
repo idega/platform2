@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.34 2001/09/14 16:45:50 tryggvil Exp $
+ * $Id: Link.java,v 1.35 2001/09/15 23:56:22 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ public class Link extends Text {
   private boolean _addSessionId = true;
   private static String _sessionStorageName = IWMainApplication.windowOpenerParameter;
   private Form _formToSubmit;
-  private Class _windowClass;
+  private Class _windowClass = null;
   private boolean _maintainAllGlobalParameters = false;
 
   private static final String HASH = "#";
@@ -71,7 +71,7 @@ public class Link extends Text {
    */
   public Link(ModuleObject mo, Window myWindow) {
     _myWindow = myWindow;
-    myWindow.setParentObject(this);
+    _myWindow.setParentObject(this);
     _objectType = OBJECT_TYPE_WINDOW;
     _obj = mo;
     _obj.setParentObject(this);
@@ -162,7 +162,7 @@ public class Link extends Text {
    */
   public Link(int file_id, Window myWindow) {
     _myWindow = myWindow;
-    myWindow.setParentObject(this);
+    _myWindow.setParentObject(this);
     _objectType = OBJECT_TYPE_WINDOW;
   }
 
