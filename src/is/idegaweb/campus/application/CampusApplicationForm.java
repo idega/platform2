@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.12 2001/08/17 09:31:29 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.13 2001/08/20 17:51:56 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -125,8 +125,8 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Form form = new Form();
     Table t = new Table(2,4);
-    t.setWidth(1,"50%");
-    t.setWidth(2,"50%");
+      t.setWidth(1,"250");
+      t.setCellpadding(5);
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
@@ -225,6 +225,8 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Form form = new Form();
     Table t = new Table(3,5);
+      t.setWidth(1,"250");
+      t.setCellpadding(5);
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
@@ -508,8 +510,11 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Form form = new Form();
     Table t = new Table(2,23);
-    t.setWidth(1,"50%");
-    t.setWidth(2,"50%");
+      t.setWidth(1,"250");
+      t.setColumnVerticalAlignment(1,"top");
+      t.setColumnVerticalAlignment(2,"top");
+      t.setCellpadding(5);
+
     form.add(heading);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
@@ -620,10 +625,10 @@ public class CampusApplicationForm extends ApplicationForm {
   }
 
   public void main(ModuleInfo modinfo){
-System.out.println("Main fall i CampusApplicationForm");
-    iwrb_ = getResourceBundle(modinfo);
-if (iwrb_ == null)
-  System.out.println("bundle null í CampusApplicationForm");
-    control(modinfo);
-  }
+    System.out.println("Main fall i CampusApplicationForm");
+        iwrb_ = getResourceBundle(modinfo);
+    if (iwrb_ == null)
+      System.out.println("bundle null í CampusApplicationForm");
+        control(modinfo);
+      }
 }
