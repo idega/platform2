@@ -16,7 +16,7 @@ import com.idega.user.data.*;
  * @version 1.0
  */
 
-public class MemberFamilyLogicBean extends IBOServiceBean {
+public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamilyLogic{
 
   private static final String RELATION_TYPE_GROUP_PARENT="FAM_PARENT";
   private static final String RELATION_TYPE_GROUP_CHILD="FAM_CHILD";
