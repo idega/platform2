@@ -438,6 +438,7 @@ public class TourBusiness extends TravelStockroomBusiness {
           int fromM = from.getMonth();
           int yearsBetween = 0;
 
+          from.addDays(-1);
           to.addDays(1);
 
           if (yearly) {
@@ -465,6 +466,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
             yearsBetween = to.getYear() - toY;
           }
+
 
         idegaTimestamp stamp = new idegaTimestamp(from);
         idegaTimestamp temp;

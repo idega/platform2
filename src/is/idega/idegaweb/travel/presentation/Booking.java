@@ -708,7 +708,7 @@ public class Booking extends TravelManager {
       String month = iwc.getParameter("month");
       String day = iwc.getParameter("day");
 
-      String IWCalendar_year = iwc.getParameter(CalendarBusiness.PARAMETER_VIEW);
+      String IWCalendar_year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
       String IWCalendar_month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
       String IWCalendar_day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
       if (IWCalendar_year != null) year = IWCalendar_year;
@@ -745,7 +745,6 @@ public class Booking extends TravelManager {
       }
 
       return stamp;
-
   }
 
 

@@ -71,7 +71,7 @@ public class CalendarHandler extends TravelManager {
     _supplier = super.getSupplier();
     //handleInsert(iwc, supplier);
     buildCalendar();
-    setTimestampsAuto();
+    setTimestampsAuto(iwc);
   }
 
   private void buildCalendar() {
@@ -104,20 +104,6 @@ public class CalendarHandler extends TravelManager {
         if (_timeframes == null) {
           _timeframes =_product.getTimeframes();
         }
-        /*
-        if (_timeframe != null) {
-          if (new idegaTimestamp(_timeframe.getFrom()).isLaterThan(_fromStamp)) {
-            _fromStamp = new idegaTimestamp(_timeframe.getFrom());
-          }
-          if (_toStamp.isLaterThan(new idegaTimestamp(_timeframe.getTo()))) {
-            _toStamp = new idegaTimestamp(_timeframe.getTo());
-          }
-          if (_fromStamp.isLaterThan(_toStamp)) {
-            _toStamp = new idegaTimestamp(_fromStamp);
-            _toStamp.addMonths(1);
-          }
-        }*/
-
       }catch (SQLException s) {
         s.printStackTrace(System.err);
       }
@@ -530,10 +516,19 @@ public class CalendarHandler extends TravelManager {
     _resellerId = reseller.getID();
   }
 
-  private void setTimestampsAuto() {
+  private void setTimestampsAuto(IWContext iwc) {
     idegaTimestamp stamp = idegaTimestamp.RightNow();
-    _fromStamp =  new idegaTimestamp(1,stamp.getMonth(), stamp.getYear());
-    _toStamp   = new idegaTimestamp(cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear()), stamp.getMonth(), stamp.getYear());
+
+    String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+    String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+    if (year != null && month != null) {
+      _fromStamp =  new idegaTimestamp(1,Integer.parseInt(month), Integer.parseInt(year));
+      _toStamp   = new idegaTimestamp(cal.getLengthOfMonth(Integer.parseInt(month), Integer.parseInt(year)), Integer.parseInt(month), Integer.parseInt(year));
+    }else {
+      _fromStamp =  new idegaTimestamp(1,stamp.getMonth(), stamp.getYear());
+      _toStamp   = new idegaTimestamp(cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear()), stamp.getMonth(), stamp.getYear());
+    }
+
   }
 
   public void setTimestamp(idegaTimestamp stamp) {

@@ -69,7 +69,7 @@ public class LoginPage extends TravelManager {
       Image welcome = iwrb.getImage("images/welcome.gif",215, 75);
       Image language = iwrb.getImage("images/language.gif",154, 75);
       Image login = iwrb.getImage("images/login.gif",174, 75);
-      Image disclaimer = iwrb.getImage("images/disclaimer.gif",547, 18);
+      Image disclaimer = iwrb.getImage("images/disclaimer.gif",543, 18);
 
       table.add(banner, 1, 1);
       table.add(welcome, 1, 2);

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
+import com.idega.data.IDOFinderException;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.idegaweb.*;
@@ -110,13 +111,20 @@ public class TourBookingForm extends TravelManager {
       table.setColumnAlignment(4,"left");
 
 //      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
-      TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(_product);
+      List addresses;
+      try {
+        addresses = ProductBusiness.getDepartureAddresses(_product, false);
+      }catch (IDOFinderException ido) {
+        ido.printStackTrace(System.err);
+        addresses = new Vector();
+      }
+      TravelAddress tAddress;
       int addressId = -1;
       String sAddressId = iwc.getParameter(parameterDepartureAddressId);
       if (sAddressId != null) {
         addressId = Integer.parseInt(sAddressId);
-      }else if (addresses.length > 0) {
-        addressId = addresses[0].getID();
+      }else if (addresses.size() > 0) {
+        addressId = ((TravelAddress) addresses.get(0)).getID();
       }
 
 
@@ -249,7 +257,7 @@ public class TourBookingForm extends TravelManager {
           table.add(telNumberText,1,row);
           table.add(telNumber,2,row);
 
-          if (addresses.length > 1) {
+          if (addresses.size() > 1) {
             ++row;
             table.mergeCells(2,row,4,row);
             table.add(depPlaceText, 1, row);
@@ -324,6 +332,31 @@ public class TourBookingForm extends TravelManager {
             entries = TourBooker.getBookingEntries(_booking);
           }
 
+          ++row;
+          Table pTable = new Table();
+            pTable.setBorder(1);
+          int pWidthLeft = 60;
+          int pWidthCenter = 60;
+          int pWidthRight = 75;
+
+          pTable = new Table(3,1);
+            pTable.setWidth(1, Integer.toString(pWidthLeft));
+            pTable.setWidth(2, Integer.toString(pWidthCenter));
+            pTable.setWidth(3, Integer.toString(pWidthRight));
+            pTable.setCellpaddingAndCellspacing(0);
+          table.add(pTable, 2, row);
+
+          Text count = (Text) super.theSmallBoldText.clone();
+            count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
+          Text unitPrice = (Text) super.theSmallBoldText.clone();
+            unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
+          Text amount = (Text) super.theSmallBoldText.clone();
+            amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
+
+          pTable.add(count, 1, 1);
+          pTable.add(unitPrice, 2, 1);
+          pTable.add(amount, 3, 1);
+
 
           for (int i = 0; i < pPrices.length; i++) {
               try {
@@ -367,17 +400,29 @@ public class TourBookingForm extends TravelManager {
                   TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
 
 
-                  table.add(pPriceCatNameText, 1,row);
-                  table.add(pPriceMany,2,row);
-                  table.add(pPriceText, 2,row);
 
+                  table.add(pPriceCatNameText, 1,row);
 
                   txtPrice = (Text) theText.clone();
                     txtPrice.setText(Integer.toString(price));
-                  table.add(Text.NON_BREAKING_SPACE,2,row);
-                  table.add(txtPrice,2,row);
+//                  table.add(Text.NON_BREAKING_SPACE,2,row);
+
+                  pTable = new Table(3,1);
+                    pTable.setWidth(1, Integer.toString(pWidthLeft));
+                    pTable.setWidth(2, Integer.toString(pWidthCenter));
+                    pTable.setWidth(3, Integer.toString(pWidthRight));
+                    pTable.setCellpaddingAndCellspacing(0);
+                    pTable.add(pPriceMany,1,1);
+                    pTable.add(txtPrice,2,1);
+                    pTable.add(pPriceText, 3,1);
+                  table.add(pTable, 2, row);
+
                   //table.add(txtPerPerson,4,row);
 
+//                  pTable.add(pPriceCatNameText, 1, pRow);
+//                  pTable.add(pPriceMany, 2, pRow);
+//                  pTable.add(txtPrice, 3, pRow);
+//                  pTable.add(pPriceText, 4, pRow);
 
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
@@ -385,14 +430,24 @@ public class TourBookingForm extends TravelManager {
           }
 
           ++row;
+          table.mergeCells(1,row,4,row);
+//          table.add(pTable, 1, row);
+          ++row;
 
           table.add(totalText,1,row);
           if (_booking != null) {
             TotalPassTextInput.setContent(Integer.toString(totalCount));
             TotalTextInput.setContent(Integer.toString(totalSum));
           }
-          table.add(TotalPassTextInput,2,row);
-          table.add(TotalTextInput,2,row);
+          pTable = new Table(3,1);
+            pTable.setWidth(1, Integer.toString(pWidthLeft));
+            pTable.setWidth(2, Integer.toString(pWidthCenter));
+            pTable.setWidth(3, Integer.toString(pWidthRight));
+            pTable.setCellpaddingAndCellspacing(0);
+
+          pTable.add(TotalPassTextInput,1,1);
+          pTable.add(TotalTextInput,3,1);
+          table.add(pTable, 2, row);
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
           ++row;
@@ -534,13 +589,19 @@ public class TourBookingForm extends TravelManager {
         }
       }
 
-      TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(_product);
+      List addresses;
+      try {
+        addresses = ProductBusiness.getDepartureAddresses(_product, false);
+      }catch (IDOFinderException ido) {
+        ido.printStackTrace(System.err);
+        addresses = new Vector();
+      }
       int addressId = -1;
       String sAddressId = iwc.getParameter(parameterDepartureAddressId);
       if (sAddressId != null) {
         addressId = Integer.parseInt(sAddressId);
-      }else if (addresses.length > 0) {
-        addressId = addresses[0].getID();
+      }else if (addresses.size() > 0) {
+        addressId = ((TravelAddress) addresses.get(0)).getID();
       }
 
       ProductPrice[] pPrices = {};
@@ -674,7 +735,7 @@ public class TourBookingForm extends TravelManager {
           table.add(subHeader, 1, row);
           table.mergeCells(1, row, 6 ,row);
 
-          if (addresses.length > 1) {
+          if (addresses.size() > 1) {
             ++row;
             table.add(depPlaceText, 1, row);
             table.add(depAddr, 2,row);
