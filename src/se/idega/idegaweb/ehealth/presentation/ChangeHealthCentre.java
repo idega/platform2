@@ -258,12 +258,12 @@ public class ChangeHealthCentre extends EHealthBlock {
 		
 		DropdownMenu dropDr = new DropdownMenu(prmDoctor);
 		if (age != null && age.getYears() >= 70){
-			dropDr.addMenuElementFirst("1", "Dr Magne Syhl");
-			dropDr.addMenuElement("2", "Dr Inga Pren");
-		}
-		else{
 			dropDr.addMenuElementFirst("1", "Dr Inga Pren");
 			dropDr.addMenuElement("2", "Dr Magne Syhl");
+		}
+		else{
+			dropDr.addMenuElementFirst("1", "Dr Magne Syhl");
+			dropDr.addMenuElement("2", "Dr Inga Pren");
 		}
 			
 		dropDr.addMenuElement("3", "Dr Alve Don");

@@ -11,6 +11,8 @@ package se.idega.idegaweb.ehealth.presentation;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import se.idega.util.PIDChecker;
+
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -86,6 +88,12 @@ public class MyInbox extends EHealthBlock {
 		}
 		else 
 			name = "-";
+		
+		if (user != null && user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
+		else if (user != null && user.getPersonalID() != null)
+			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
+		
 		add(getAppointmentHistoryForm());
 		
 		
