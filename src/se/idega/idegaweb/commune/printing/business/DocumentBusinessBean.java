@@ -34,7 +34,6 @@ import se.idega.idegaweb.commune.message.business.MessagePdfHandler;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
-import se.idega.idegaweb.commune.message.data.PrintMessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
@@ -249,43 +248,55 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		return getPrintDocumentsHome().findAllDocumentByType(type);
 	}
 
-	public Collection getPrintedDocuments(String type, IWTimestamp from, IWTimestamp to) throws FinderException {
-		return getPrintDocumentsHome().findAllDocumentByType(type, from, to);
+	public Collection getPrintedDocuments(String type, IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
+		return getPrintDocumentsHome().findAllDocumentByType(type, from, to,resultSize,startingIndex);
 	}
 
-	public Collection getPrintedMessages(String type) throws FinderException {
+	public Collection getPrintedMessages(String type,int resultSize,int startingIndex) throws FinderException {
 		if (isTypeSystemArchiveMessage(type)) return getSystemArchivationMessageHome().findPrintedMessages();
-		return getPrintedLetterMessageHome().findPrintedLettersByType(type);
+		return getPrintedLetterMessageHome().findPrintedLettersByType(type,resultSize, startingIndex);
 	}
 
 	public Collection getPrintedMessagesByPrimaryKeys(String[] primaryKeys, String type) throws FinderException {
-		PrintMessageHome msgHome = null;
+		
+
 		PrintMessage msg;
 		ArrayList coll = new ArrayList(primaryKeys.length);
-		if (isTypeSystemArchiveMessage(type)) msgHome = getSystemArchivationMessageHome();
-		msgHome = getPrintedLetterMessageHome();
-		if (msgHome != null) {
-			for (int i = 0; i < primaryKeys.length; i++) {
-				msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
-				coll.add(msg);
+		if (isTypeSystemArchiveMessage(type)) {
+		    SystemArchivationMessageHome msgHome = getSystemArchivationMessageHome();
+		    if (msgHome != null) {
+				for (int i = 0; i < primaryKeys.length; i++) {
+					msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
+					coll.add(msg);
+				}
 			}
 		}
+		else {
+		    PrintedLetterMessageHome msgHome = getPrintedLetterMessageHome();
+		    if (msgHome != null) {
+				for (int i = 0; i < primaryKeys.length; i++) {
+					msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
+					coll.add(msg);
+				}
+			}
+		}
+		
 		return coll;
 	}
 
-	public Collection getPrintedMessages(String type, IWTimestamp from, IWTimestamp to) throws FinderException {
+	public Collection getPrintedMessages(String type, IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
 		if (isTypeSystemArchiveMessage(type)) return getSystemArchivationMessageHome().findPrintedMessages(from, to);
-		return getPrintedLetterMessageHome().findPrintedLettersByType(type, from, to);
+		return getPrintedLetterMessageHome().findPrintedLettersByType(type, from, to, resultSize, startingIndex);
 	}
 
-	public Collection getUnPrintedMessages(String type) throws FinderException {
+	public Collection getUnPrintedMessages(String type,int resultSize,int startingIndex) throws FinderException {
 		if (isTypeSystemArchiveMessage(type)) return getSystemArchivationMessageHome().findUnPrintedMessages();
-		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type);
+		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type,resultSize, startingIndex);
 	}
 
-	public Collection getUnPrintedMessages(String type, IWTimestamp from, IWTimestamp to) throws FinderException {
+	public Collection getUnPrintedMessages(String type, IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
 		if (isTypeSystemArchiveMessage(type)) return getSystemArchivationMessageHome().findUnPrintedMessages(from, to);
-		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type, from, to);
+		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type, from, to,resultSize, startingIndex);
 	}
 
 	public int getUnPrintedDefaultLettersCount() {
@@ -345,9 +356,9 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 	/**
 	 * Returns an empty array if nothing is found.
 	 */
-	public int[] getUnPrintedLettersIDs(String type) {
+	public int[] getUnPrintedLettersIDs(String type,int resultSize,int startingIndex) {
 		try {
-			Collection coll = getPrintedLetterMessageHome().findUnPrintedLettersByType(type);
+			Collection coll = getPrintedLetterMessageHome().findUnPrintedLettersByType(type,resultSize,startingIndex);
 			if (coll != null && coll.size() > 0) {
 				int[] theReturn = new int[coll.size()];
 				Iterator iter = coll.iterator();

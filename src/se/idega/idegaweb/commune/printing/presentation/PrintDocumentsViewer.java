@@ -232,19 +232,39 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		uFrom.addDays(-defaultDays);
 		uTo = IWTimestamp.RightNow();
 		if (iwc.isParameterSet(PRM_STAMP_P_FROM)){
-			pFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_FROM));
+		    try {
+                long time = Long.parseLong(iwc.getParameter(PRM_STAMP_P_FROM));
+                pFrom = new IWTimestamp(time);
+            } catch (NumberFormatException e) {
+                pFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_FROM));
+            }
 			pFrom.setTime(0,0,0);
 		}
 		if (iwc.isParameterSet(PRM_STAMP_U_FROM)){
-			uFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_FROM));
+		    try {
+                long time = Long.parseLong(iwc.getParameter(PRM_STAMP_U_FROM));
+                uFrom = new IWTimestamp(time);
+            } catch (NumberFormatException e) {
+                uFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_FROM));
+            }
 			uFrom.setTime(0,0,0);
 		}
 		if (iwc.isParameterSet(PRM_STAMP_P_TO)){
-			pTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_TO));
+		    try {
+                long time = Long.parseLong(iwc.getParameter(PRM_STAMP_P_TO));
+                pTo = new IWTimestamp(time);
+            } catch (NumberFormatException e) {
+                pTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_TO));
+            }
 			pTo.setTime(23,59,59);
 		}
 		if (iwc.isParameterSet(PRM_STAMP_U_TO)){
-			uTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_TO));
+		    try {
+                long time = Long.parseLong(iwc.getParameter(PRM_STAMP_U_TO));
+                uTo = new IWTimestamp(time);
+            } catch (NumberFormatException e) {
+                uTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_TO));
+            }
 			uTo.setTime(23,59,59);
 		}
 
@@ -263,7 +283,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	private void printAllUnPrintedMessages(IWContext iwc) throws Exception {
 		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
-		Collection unPrintedLetters = getDocumentBusiness(iwc).getUnPrintedMessages(currentType);
+		Collection unPrintedLetters = getDocumentBusiness(iwc).getUnPrintedMessages(currentType,-1,-1);
 		getDocumentBusiness(iwc).writeBulkPDF(
 			unPrintedLetters,
 			iwc.getCurrentUser(),
@@ -371,10 +391,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			drp.setSelectedElement(currentType);
 			Form F = new Form();
 			F.add(drp);
-			F.add(new HiddenInput(PRM_STAMP_P_FROM, pFrom.toString()));
-			F.add(new HiddenInput(PRM_STAMP_P_TO, pTo.toString()));
-			F.add(new HiddenInput(PRM_STAMP_U_FROM, uFrom.toString()));
-			F.add(new HiddenInput(PRM_STAMP_U_TO, uTo.toString()));
+			F.add(new HiddenInput(PRM_STAMP_P_FROM, String.valueOf(pFrom.getDate().getTime())));
+			F.add(new HiddenInput(PRM_STAMP_P_TO, String.valueOf(pTo.getDate().getTime())));
+			F.add(new HiddenInput(PRM_STAMP_U_FROM, String.valueOf(uFrom.getDate().getTime())));
+			F.add(new HiddenInput(PRM_STAMP_U_TO, String.valueOf(uTo.getDate().getTime())));
 			add(F);
 		} else {
 			Table T = new Table();
@@ -384,10 +404,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				Link typeLink =
 					new Link(getHeader(localize("printdoc.letter_type_" + types[i], types[i])));
 				typeLink.addParameter(PARAM_LETTER_TYPE, types[i]);
-				typeLink.addParameter(PRM_STAMP_P_FROM, pFrom.toString());
-				typeLink.addParameter(PRM_STAMP_U_FROM, uFrom.toString());
-				typeLink.addParameter(PRM_STAMP_P_TO, pTo.toString());
-				typeLink.addParameter(PRM_STAMP_U_TO, uTo.toString());
+				typeLink.addParameter(PRM_STAMP_P_FROM, String.valueOf(pFrom.getDate().getTime()));
+				typeLink.addParameter(PRM_STAMP_U_FROM, String.valueOf(uFrom.getDate().getTime()));
+				typeLink.addParameter(PRM_STAMP_P_TO, String.valueOf(pTo.getDate().getTime()));
+				typeLink.addParameter(PRM_STAMP_U_TO, String.valueOf(uTo.getDate().getTime()));
 				T.add(typeLink, col++, 1);
 			}
 			add(T);
@@ -398,6 +418,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getPrintedDatesForm() {
 
 		Table T = new Table();
+		T.setCellpadding(0);
+		T.setCellspacing(0);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		DateInput from = new DateInput(PRM_STAMP_P_FROM, true);
 		from = (DateInput) getStyledInterface(from);
@@ -411,16 +433,13 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		SubmitButton search =
 			new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch", "Fetch"));
 		search = (SubmitButton) getButton(search);
-		T.add(
-			getHeader(getResourceBundle().getLocalizedString("printdoc.date_from", "From:")),
-			1,
-			1);
-		T.add(from, 2, 1);
-		T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to", "To:")), 3, 1);
-		T.add(to, 4, 1);
+		T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from", "From:")),1,1);
+		T.add(from, 1, 2);
+		T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to", "To:")), 2, 1);
+		T.add(to, 2, 2);
 		//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
-		T.add(getCountDrop(PRM_P_COUNT, count_p), 6, 1);
-		T.add(search, 7, 1);
+		T.add(getCountDrop(PRM_P_COUNT, count_p), 4, 2);
+		T.add(search, 6, 2);
 		//T.add(new HiddenInput(PRM_STAMP_U_FROM, uFrom.toString()));
 		//T.add(new HiddenInput(PRM_STAMP_U_TO, uTo.toString()));
 		//T.add(new HiddenInput(PRM_U_COUNT, String.valueOf(count_u)));
@@ -435,6 +454,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	private DropdownMenu getCountDrop(String name, int selected) {
 		DropdownMenu drp = new DropdownMenu(name);
+		drp = (DropdownMenu) getStyledInterface(drp);
 		drp.addMenuElement(String.valueOf(10));
 		drp.addMenuElement(String.valueOf(25));
 		drp.addMenuElement(String.valueOf(50));
@@ -447,6 +467,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	private DropdownMenu getStatusDrop(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);
+		drp = (DropdownMenu) getStyledInterface(drp);
 		drp.addMenuElement(statusUnprinted, localize("printdoc.unprinted", "Unprinted"));
 		drp.addMenuElement(statusPrinted, localize("printdoc.printed", "Printed"));
 		drp.addMenuElement(statusDeleted, localize("printdoc.deleted", "Deleted"));
@@ -458,8 +479,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getUnPrintedDatesForm(boolean showStatus) {
 
 		Table T = new Table();
+		T.setCellpadding(0);
+		T.setCellspacing(0);
 		T.setWidth(Table.HUNDRED_PERCENT);
-		int col = 1;
+		
 		DateInput from = new DateInput(PRM_STAMP_U_FROM, true);
 		from = (DateInput) getStyledInterface(from);
 		from.setYearRange(today.getYear() - 5, today.getYear() + 2);
@@ -471,21 +494,15 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		SubmitButton search =
 			new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch", "Fetch"));
 		search = (SubmitButton) getButton(search);
-		T.add(
-			getHeader(getResourceBundle().getLocalizedString("printdoc.date_from", "From:")),
-			col++,
-			1);
-		T.add(from, col++, 1);
-		T.add(
-			getHeader(getResourceBundle().getLocalizedString("printdoc.date_to", "To:")),
-			col++,
-			1);
-		T.add(to, col++, 1);
+		T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from", "From:")),1,1);
+		T.add(from, 1, 2);
+		T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to", "To:")),2,1);
+		T.add(to, 2, 2);
 		//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
-		T.add(getCountDrop(PRM_U_COUNT, count_u), col++, 1);
+		T.add(getCountDrop(PRM_U_COUNT, count_u), 4, 2);
 		if (showStatus)
-			T.add(getStatusDrop(PARAM_LETTER_STATUS, currentStatus), col++, 1);
-		T.add(search, col++, 1);
+			T.add(getStatusDrop(PARAM_LETTER_STATUS, currentStatus), 5, 2);
+		T.add(search, 6, 2);
 		//T.add(new HiddenInput(PRM_STAMP_P_FROM, pFrom.toString()));
 		//T.add(new HiddenInput(PRM_STAMP_P_TO, pTo.toString()));
 		//T.add(new HiddenInput(PRM_P_COUNT, String.valueOf(count_p)));
@@ -575,10 +592,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 
 	private void addDateParametersToLink(Link link) {
-		link.addParameter(PRM_STAMP_P_FROM, pFrom.toString());
-		link.addParameter(PRM_STAMP_U_FROM, uFrom.toString());
-		link.addParameter(PRM_STAMP_P_TO, pTo.toString());
-		link.addParameter(PRM_STAMP_U_TO, uTo.toString());
+		link.addParameter(PRM_STAMP_P_FROM, String.valueOf(pFrom.getDate().getTime()));
+		link.addParameter(PRM_STAMP_U_FROM, String.valueOf(uFrom.getDate().getTime()));
+		link.addParameter(PRM_STAMP_P_TO, String.valueOf(pTo.getDate().getTime()));
+		link.addParameter(PRM_STAMP_U_TO, String.valueOf(uTo.getDate().getTime()));
 		link.addParameter(PRM_U_COUNT, count_u);
 		link.addParameter(PRM_P_COUNT, count_p);
 	}
@@ -626,8 +643,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 		ColumnList printedLetterDocs = new ColumnList(4);
 
+		int count = cursor_p + 1;
+		int ccp = count_p + cursor_p;
 		Collection printDocs =
-			getDocumentBusiness(iwc).getPrintedDocuments(currentType, pFrom, pTo);
+			getDocumentBusiness(iwc).getPrintedDocuments(currentType, pFrom, pTo,count_p,cursor_p);
 
 		int prow = 1;
 		pT.add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"), 1, prow++);
@@ -641,14 +660,13 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 
 		Iterator iter = printDocs.iterator();
-		int count = cursor_p + 1;
-		int ccp = count_p + cursor_p;
-		if (cursor_p > 0) {
+		
+		/*if (cursor_p > 0) {
 			while (iter.hasNext() && cursor_p > 0) {
 				iter.next();
 				cursor_p--;
 			}
-		}
+		}*/
 		while (iter.hasNext() && count <= ccp) {
 			PrintDocuments doc = (PrintDocuments) iter.next();
 			printedLetterDocs.add(String.valueOf(count));
@@ -894,7 +912,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		printedLetterDocs.setHeader(localize("printdoc.file", "File"), 5);
 		
 		Collection printedLetters =
-			getMessageBusiness(iwc).getSinglePrintedLetterMessagesByType(currentType, pFrom, pTo);
+			getMessageBusiness(iwc).getSinglePrintedLetterMessagesByType(currentType, pFrom, pTo,count_p,cursor_p);
 
 		int prow = 1;
 		//int bulkId;
@@ -915,14 +933,14 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 		Iterator iter = printedLetters.iterator();
 		int count = cursor_p + 1;
-		int ccp = cursor_p + count_p;
+		/*int ccp = cursor_p + count_p;
 		if (cursor_p > 0) {
 			while (iter.hasNext() && cursor_p > 0) {
 				iter.next();
 				cursor_p--;
 			}
-		}
-		while (iter.hasNext() && count <= ccp) {
+		}*/
+		while (iter.hasNext() ){//&& count <= ccp) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
 			//if (!displayMessageToCommuneAdministrator(iwc, msg)) {
 			if (hideMessage(iwc, msg)) {
@@ -968,7 +986,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		ColumnList printedLetterDocs = new ColumnList(4);
 
 		Collection printDocs =
-			getDocumentBusiness(iwc).getPrintedDocuments(currentType, pFrom, pTo);
+			getDocumentBusiness(iwc).getPrintedDocuments(currentType, pFrom, pTo,count_p,cursor_p);
 
 		int prow = 1;
 		Table hT = new Table(2, 1);
@@ -989,15 +1007,17 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 
 		Iterator iter = printDocs.iterator();
+		
 		int count = cursor_p + 1;
-		int ccp = count_p + cursor_p;
+		/*int ccp = count_p + cursor_p;
+		
 		if (cursor_p > 0) {
 			while (iter.hasNext() && cursor_p > 0) {
 				iter.next();
 				cursor_p--;
 			}
-		}
-		while (iter.hasNext() && count <= ccp) {
+		}*/
+		while (iter.hasNext()){// && count <= ccp) {
 			PrintDocuments doc = (PrintDocuments) iter.next();
 			printedLetterDocs.add(String.valueOf(count));
 			printedLetterDocs.add(doc.getCreated().toString());
@@ -1046,12 +1066,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		ColumnList letterList = new ColumnList(7);
 		
 		int row = 1;
-		Collection letters =
-			getMessageBusiness(iwc).getSingleLettersByTypeAndStatus(
-				currentType,
-				currentStatus,
-				uFrom,
-				uTo);
+		Collection letters = getMessageBusiness(iwc).getSingleLettersByTypeAndStatus(currentType,currentStatus,uFrom,uTo,count_u,cursor_u);
 		/*
 		Table hT = new Table(2, 1);
 		hT.setWidth(hT.HUNDRED_PERCENT);
@@ -1088,18 +1103,18 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 		Iterator iter = letters.iterator();
 		int count = cursor_u + 1;
-		int ccu = count_u + cursor_u;
+		/*int ccu = count_u + cursor_u;
 		if (cursor_u > 0) {
 			while (iter.hasNext() && cursor_u > 0) {
 				iter.next();
 				cursor_u--;
 			}
 		}
-
+*/
 		//int bulkId;
 		UserBusiness ub = getUserBusiness(iwc);
 		Address addr;
-		while (iter.hasNext() && count <= ccu) {
+		while (iter.hasNext()){ //&& count <= ccu) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
 			//if (!displayMessageToCommuneAdministrator(iwc, msg)) {
 			if (hideMessage(iwc, msg)) {
@@ -1184,9 +1199,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		Collection letters = null;
 		if (file_id > 0) {
 			letters =
-				getMessageBusiness(iwc).getLettersByBulkFile(file_id, currentType, currentStatus);
+				getMessageBusiness(iwc).getLettersByBulkFile(file_id, currentType, currentStatus,-1,-1);
 		} else {
-			letters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType);
+			letters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,-1,-1);
 		}
 		Iterator iter = letters.iterator();
 		PrintMessage msg;
