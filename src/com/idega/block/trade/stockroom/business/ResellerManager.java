@@ -41,7 +41,7 @@ public class ResellerManager {
     return createReseller(-1, name, userName, password, description, addressIds, phoneIds, emailIds);
   }
 */
-  public static Reseller updateReseller(int resellerId, Reseller parentReseller, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+  public static Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
       return createReseller(resellerId, null, name, null,null, description, addressIds, phoneIds, emailIds);
   }
 

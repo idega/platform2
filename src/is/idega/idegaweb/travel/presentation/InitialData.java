@@ -1017,7 +1017,7 @@ public class InitialData extends TravelManager {
                 emailIds[0] = eEmail.getID();
 
                 ResellerManager resellerMan = new ResellerManager();
-                Reseller reseller = resellerMan.createReseller(name, userName, passOne, description, addressIds, phoneIds, emailIds);
+                Reseller reseller = resellerMan.createReseller(this.reseller, name, userName, passOne, description, addressIds, phoneIds, emailIds);
                 reseller.addTo(supplier);
 
                 //add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));

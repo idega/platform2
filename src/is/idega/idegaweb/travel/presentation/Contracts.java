@@ -511,7 +511,7 @@ public class Contracts extends TravelManager {
               emailIds[0] = eml.getID();
 
               ResellerManager resMan = new ResellerManager();
-              reseller = resMan.updateReseller(resellerId, this.reseller, name, description, addressIds, phoneIds, emailIds);
+              reseller = resMan.updateReseller(resellerId,  name, description, addressIds, phoneIds, emailIds);
 
 
               add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
