@@ -3,8 +3,8 @@ package se.idega.idegaweb.commune.presentation;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.idega.idegaweb.commune.Constants;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.business.Constants;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
