@@ -27,6 +27,13 @@ public BruttoIncome findLatestByUser(java.lang.Integer p0)throws javax.ejb.Finde
 	return this.findByPrimaryKey(pk);
 }
 
+public BruttoIncome findLatestByUserAndDate(java.lang.Integer p0,com.idega.util.IWTimestamp p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((BruttoIncomeBMPBean)entity).ejbFindLatestByUserAndDate(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public BruttoIncome findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (BruttoIncome) super.findByPrimaryKeyIDO(pk);
  }

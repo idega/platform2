@@ -44,9 +44,24 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
+ * A service bean for the accounting part of the isi member system.
+ * 
  * @author palli
  */
 public class AccountingBusinessBean extends IBOServiceBean implements AccountingBusiness {
+	/**
+	 * A method to start the assessment batch. Starts up a thread that executes the batch, creates a log entry and then exits.
+	 * 
+	 * @param name The name of the assessment batch.
+	 * @param club The group representing the club the batch is being executed for.
+	 * @param division The group representing the division the batch is being executed for. Can be null.
+	 * @param groupId The id of the top level group the batch is being executed for.
+	 * @param user The user executing the batch.
+	 * @param includeChildren If true then the batch is executed recursively for the children of the top level group.
+	 * @param tariffs A String array of the tariff types the batch is being executed for.
+	 * @param paymentDate The last payment date to be put in the FinanceEntry.
+	 * @param runOnDate The date the tariffs are being fetched on.
+	 */
 	public boolean doAssessment(String name, Group club, Group division, String groupId, User user, boolean includeChildren, String tariffs[], Timestamp paymentDate, Timestamp runOnDate) {
 		Group group = null;
 		if (groupId != null) {
@@ -74,6 +89,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return true;
 	}
 
+	
 	public Collection findAllTariffByClub(Group club) {
 		try {
 			return getClubTariffHome().findAllByClub(club);

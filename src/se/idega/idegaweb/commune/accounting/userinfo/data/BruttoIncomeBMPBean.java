@@ -11,7 +11,9 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * BruttoIncome used to store income info about users.
@@ -125,4 +127,21 @@ public class BruttoIncomeBMPBean extends GenericEntity implements BruttoIncome {
 			return pks.iterator().next();
 		throw new FinderException("Nothing found");
 	}
+	
+	public Object ejbFindLatestByUserAndDate(Integer userID, IWTimestamp date) throws FinderException{
+		IDOQuery sql = idoQueryGetSelect();
+		sql.appendWhereEquals(COLUMN_USER,userID.intValue());
+		sql.appendAnd();
+		sql.append(COLUMN_VALID_FROM);
+		sql.appendLessThanOrEqualsSign();
+		sql.append(date.getTimestamp());
+		sql.appendOrderByDescending(COLUMN_VALID_FROM);
+		
+		Collection pks = super.idoFindPKsByQuery(sql, 1);
+		if (pks != null && !pks.isEmpty()) {
+			return pks.iterator().next();
+		}
+		
+		throw new FinderException("Nothing found");
+	}	
 }

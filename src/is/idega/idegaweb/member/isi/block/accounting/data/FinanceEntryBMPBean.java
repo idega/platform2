@@ -44,6 +44,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String TYPE_ASSESSMENT = "A";
 	protected final static String TYPE_MANUAL = "M";
 	protected final static String TYPE_PAYMENT = "P";
+//	protected final static String TYPE_
 	
 	protected static final String STRING_TYPE_MANUAL = "isi_acc_fin_entry_manual_type";
 	protected static final String STRING_TYPE_AUTOMATIC = "isi_acc_fin_entry_auto_type";

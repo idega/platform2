@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.117 2004/02/03 09:55:37 staffan Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.118 2004/02/10 17:27:25 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1585,7 +1585,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {
 					Regulation regulation = (Regulation) it.next();
-					//					System.out.println("Checking Regulation "+regulation.getName());
 					int i = checkConditions(regulation, condition);
 					if (i == 1) {
 						logDebug("Regulation found " + regulation.getName());
@@ -1667,8 +1666,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
 					ret.setOrderID(reg.getConditionOrder().intValue());
-					//				ret.setVat(32.0f);
-					//				ret.setVatRegulationID(1);
 				}
 			}
 			else if (type.equals(RegSpecialCalculationConstant.SIBLING)) {
@@ -1678,8 +1675,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				ret.setRuleSpecType(reg.getLocalizationKey());
 				ret.setTerm(reg.getName());
 				ret.setOrderID(reg.getConditionOrder().intValue());
-				//				ret.setVat(32.0f);
-				//				ret.setVatRegulationID(1);
 			}
 			else if (type.equals(RegSpecialCalculationConstant.MAXTAXA)) {
 				User child = null;
@@ -1701,7 +1696,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							while (it.hasNext()) {
 								User custodian = (User) it.next();
 								try {
-									BruttoIncome userIncome = getUserInfoService().getBruttoIncomeHome().findLatestByUser((Integer) custodian.getPrimaryKey());
+									BruttoIncome userIncome = getUserInfoService().getBruttoIncomeHome().findLatestByUserAndDate((Integer) custodian.getPrimaryKey(), IWTimestamp.RightNow());
 									if (userIncome != null) {
 										income += userIncome.getIncome().floatValue();
 										missingIncome = false;
@@ -1733,8 +1728,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 								ret.setTerm(reg.getName());
 								ret.setOrderID(reg.getConditionOrder().intValue());
-								//			ret.setVat(32.0f);
-								//			ret.setVatRegulationID(1);
 							}
 							else {
 								throw new BruttoIncomeException("reg_exp.no_brutto_income", "Brutto income not registered");
@@ -1776,8 +1769,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 									ret.setTerm(reg.getName());
 									ret.setOrderID(reg.getConditionOrder().intValue());
-									//			ret.setVat(32.0f);
-									//			ret.setVatRegulationID(1);
 								}
 								else {
 									throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
@@ -1810,9 +1801,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 			ret.setTerm(reg.getName());
 			ret.setOrderID(reg.getConditionOrder().intValue());
-			//			ret.setVat(32.0f);
-			//			ret.setVatRegulationID(1);
 		}
+
 		//Handle the VAT
 		try {
 			VATBusiness vatBusiness = getVATBusiness();
