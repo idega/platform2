@@ -476,8 +476,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, -1, type_ids, year_ids, null, null, null, null, communePK, -1, null, null);
 	}
 
+	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids, Object communePK, String providerStringId) throws RemoteException {
+		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, -1, type_ids, year_ids, null, null, null, null, communePK, -1, null, null, providerStringId);
+	}
+
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int sub_area_id, int[] type_ids, int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId, java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration, Boolean invisibleForCitizen) throws RemoteException {
-		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, -1, type_ids, year_ids, null, null, null, null, communePK, -1, null, null, null);		
+		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, sub_area_id, type_ids, year_ids, organizationNumber, extraProviderId, managementTypeId, terminationDate, communePK, countryId, centralizedAdministration, invisibleForCitizen, null);		
 	}
 	
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int sub_area_id, int[] type_ids, int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId, java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration, Boolean invisibleForCitizen, String providerStringId) throws RemoteException {
