@@ -208,24 +208,34 @@ public void addParameter(String parameterName,int parameterValue){
    addParameter(parameterName,Integer.toString(parameterValue));
 }
 
+public void setOnEvent(String eventType,String eventString){
+  String value = this.getAttribute(eventType);
+  if(value==null){
+    setAttribute(eventType,eventString);
+  }
+  else{
+    setAttribute(eventType,value+";"+eventString);
+  }
+}
+
 public void setOnFocus(String s){
-	setAttribute("onfocus",s);
+	setOnEvent("onfocus",s);
 }
 
 public void setOnBlur(String s){
-	setAttribute("onblur",s);
+	setOnEvent("onblur",s);
 }
 
 public void setOnSelect(String s){
-	setAttribute("onselect",s);
+	setOnEvent("onselect",s);
 }
 
 public void setOnChange(String s){
-	setAttribute("onchange",s);
+	setOnEvent("onchange",s);
 }
 
 public void setOnClick(String s){
-	setAttribute("onclick",s);
+	setOnEvent("onclick",s);
 }
 
 public String getOnFocus(){
