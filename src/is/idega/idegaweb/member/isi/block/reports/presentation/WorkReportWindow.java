@@ -788,7 +788,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		stats.addBreak(2,14);
 		
 		LinkContainer b12_7_2 = new LinkContainer();
-		b12_7_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_4_reportname", "Stickers for Members"), false));
+		b12_7_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_7_2_reportname", "Stickers for Members"), false));
 		b12_7_2.addParameter(ACTION, ACTION_STATISTICS);
 		b12_7_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.7.2.xml");
 		b12_7_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.7.2.xml");
