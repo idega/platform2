@@ -84,6 +84,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberLog;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
@@ -1087,7 +1088,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setApplicationStatus(getStatusReady());
 			application.store();
 			try {
-				IWTimestamp stamp = new IWTimestamp();
 				User child = application.getChild();
 				Collection siblings = getUserBusiness().getMemberFamilyLogic().getSiblingsFor(application.getChild());
 				Iterator iter = siblings.iterator();
@@ -3579,6 +3579,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					contract.store();
 				}
 				catch (Exception e) {
+				}
+				try {
+					SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, archive.getValidFromDate());
+					log.remove();
+				}
+				catch (FinderException fe) {
+					log(fe);
 				}
 				archive.remove();
 				if (memberID != ((Integer) member.getPrimaryKey()).intValue()) {
