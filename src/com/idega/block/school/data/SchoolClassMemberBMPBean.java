@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/01/29 10:20:13 $ by $Author: anders $
- * @version $Revision: 1.86 $
+ * Last modified: $Date: 2004/02/10 14:03:23 $ by $Author: staffan $
+ * @version $Revision: 1.87 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -894,6 +894,23 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		//sql.append (" and school.sch_school_year_id =s.sch_school_year_id");
 		sql.append(" and school.sch_school_id = s.sch_school_id");
 		sql.append(" )");
+		return idoFindIDsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindAllBySeasonAndSchoolYear(SchoolSeason season,SchoolYear schoolYear) throws FinderException {
+
+		final String [] tableNames
+				= new String [] { SCHOOLCLASSMEMBER, SchoolClassBMPBean.SCHOOLCLASS };
+		final String [] tableIds
+				= new String [] { "m", "c" };
+		IDOQuery sql = idoQuery();
+		sql.appendSelect ();
+		sql.append ("m." + SCHOOLCLASSMEMBERID);
+		sql.appendFrom (tableNames, tableIds);
+		sql.appendWhereEquals ("m." + SCHOOL_YEAR, schoolYear);
+		sql.appendAndEquals ("m." + SCHOOLCLASS,
+												 "c." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAndEquals ("c." + SchoolClassBMPBean.SEASON, season);
 		return idoFindIDsBySQL(sql.toString());
 	}
 	

@@ -13,6 +13,7 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public java.util.Collection findAllByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCurrentInvoiceCompensationBySchoolType(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,int p1)throws javax.ejb.FinderException;
+ public java.util.Collection findAllBySeasonAndSchoolYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1,int p2)throws javax.ejb.FinderException;
  public java.util.Collection findAllOrderedByRegisterDate(int p0)throws javax.ejb.FinderException;

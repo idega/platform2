@@ -69,6 +69,13 @@ public java.util.Collection findAllLastYearStudentsBySeasonAndMaximumAge(com.ide
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+	public java.util.Collection findAllBySeasonAndSchoolYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySeasonAndSchoolYear(p0,p1);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 public java.util.Collection findAllLastYearStudentsBySeasonAndYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllLastYearStudentsBySeasonAndYear(p0,p1);
