@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.8 2005/02/08 11:10:24 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.9 2005/02/14 14:47:01 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -42,7 +42,7 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -164,7 +164,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 	public Collection getMeetingGroups(User user) {
 		try {
 			String[] types = { AguraConstants.GROUP_TYPE_MEETING };
-			return getUserBusiness().getGroupBusiness().getGroups(types, true);
+			return getUserBusiness().getGroupBusiness().getChildGroups(user.getPrimaryGroup(), types, true);
 		}
 		catch (Exception e) {
 			throw new IBORuntimeException(e);
