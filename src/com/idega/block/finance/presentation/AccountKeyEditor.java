@@ -17,8 +17,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -153,8 +153,7 @@ public class AccountKeyEditor extends Finance {
   }
 
   private PresentationObject getChange(IWContext iwc) throws SQLException{
-    Form myForm = new Form();
-    myForm.maintainAllParameters();
+    
     Collection keys = null;
 	Collection Tkeys = null;
 	try {
@@ -169,14 +168,12 @@ public class AccountKeyEditor extends Finance {
     if(keys !=null && Tkeys!=null)
        count = keys.size();
     int inputcount = count+5;
-    Table inputTable =  new Table(5,inputcount+1);
+    DataTable inputTable =  getDataTable();
+    inputTable.setUseBottom(false);
+    inputTable.setUseTop(false);
+    inputTable.setTitlesHorizontal(true);
     inputTable.setWidth(Table.HUNDRED_PERCENT);
-    //inputTable.setWidth(1,"15");
-    inputTable.setCellpadding(2);
-    inputTable.setCellspacing(1);
-    //inputTable.setColumnAlignment(1,"right");
-    inputTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
-    inputTable.setRowColor(1,getHeaderColor());
+    
     inputTable.add(getHeader("Nr"),1,1);
     inputTable.add(getHeader(localize("name","Name")),2,1);
     inputTable.add(getHeader(localize("info","Inro")),3,1);
@@ -219,15 +216,15 @@ public class AccountKeyEditor extends Finance {
       inputTable.add(iDrp,4,i+1);
       inputTable.add(idInput);
     }
-    myForm.add(new HiddenInput("ake_count", String.valueOf(inputcount) ));
-    myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
-    myForm.add(Finance.getCategoryParameter(iCategoryId));
-    myForm.add(inputTable);
+    inputTable.add(new HiddenInput("ake_count", String.valueOf(inputcount) ));
+    inputTable.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    inputTable.add(Finance.getCategoryParameter(iCategoryId));
+   
     SubmitButton save = new SubmitButton(localize("save","Save"));
     save = (SubmitButton) setStyle(save,STYLENAME_INTERFACE_BUTTON);
-    myForm.add(save);
+    inputTable.addButton(save);
 
-    return (myForm);
+    return (inputTable);
   }
 
   private PresentationObject doUpdate(IWContext iwc){

@@ -19,8 +19,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -147,27 +147,25 @@ public class TariffIndexEditor extends Finance {
   }
 
   protected PresentationObject getChangeTable(IWContext iwc,int iCategoryId) throws SQLException{
-    Form myForm = new Form();
-    myForm.maintainAllParameters();
+    
+    
     Collection L= getIndices(iCategoryId);
     String t = com.idega.block.finance.data.TariffIndexBMPBean.indexType;
     int count = 0;
     if(L!= null)
       count = L.size();
     int inputcount = count+5;
-    Table inputTable =  new Table(7,inputcount+1);
+    DataTable inputTable =  getDataTable();
+    inputTable.setUseBottom(false);
+    inputTable.setUseTop(false);
+    inputTable.setTitlesHorizontal(true);
     inputTable.setWidth("100%");
-    inputTable.setCellpadding(2);
-    inputTable.setCellspacing(1);
-    inputTable.setColumnAlignment(1,"left");
-    inputTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
-    inputTable.setRowColor(1,getHeaderColor());
     inputTable.add(getHeader("Nr"),1,1);
-    inputTable.add(getHeader("Auðkenni"),2,1);
-    inputTable.add(getHeader("Lýsing"),3,1);
-    inputTable.add(getHeader("Stuðull"),4,1);
-    inputTable.add(getHeader("Týpa"),5,1);
-    inputTable.add(getHeader("Eyða"),6,1);
+    inputTable.add(getHeader(localize("name","Name")),2,1);
+    inputTable.add(getHeader(localize("description","Description")),3,1);
+    inputTable.add(getHeader(localize("index","Index")),4,1);
+    inputTable.add(getHeader(localize("type","Type")),5,1);
+    inputTable.add(getHeader(localize("delete","Delete")),6,1);
     Iterator iter = L.iterator();
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
@@ -201,8 +199,6 @@ public class TariffIndexEditor extends Finance {
       infoInput.setSize(40);
       indexInput.setSize(10);
 
-      
-
       inputTable.add(getText(rownum),1,i+1);
       inputTable.add(nameInput,2,i+1);
       inputTable.add(infoInput,3,i+1);
@@ -211,13 +207,14 @@ public class TariffIndexEditor extends Finance {
       inputTable.add(idInput);
 
     }
-    myForm.add(new HiddenInput("ti_count", String.valueOf(inputcount) ));
-    myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
-    myForm.add(Finance.getCategoryParameter(iCategoryId));
-    myForm.add(inputTable);
-    myForm.add(new SubmitButton("save","Vista"));
+   
+    inputTable.add(new HiddenInput("ti_count", String.valueOf(inputcount) ));
+    inputTable.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    inputTable.add(Finance.getCategoryParameter(iCategoryId));
+   
+    inputTable.addButton(new SubmitButton("save","Save"));
 
-    return (myForm);
+    return (inputTable);
   }
 
   protected PresentationObject doUpdate(IWContext iwc,int iCategoryId) throws SQLException{

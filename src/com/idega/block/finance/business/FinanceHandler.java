@@ -3,6 +3,8 @@ package com.idega.block.finance.business;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.util.IWTimestamp;
 /**
  * Title:
@@ -18,10 +20,10 @@ public interface FinanceHandler {
   public String getAccountType();
   public List listOfAttributes();
   //public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String assessmentName,int iCashierId,int iAccountKeyId,IWTimestamp payDate);
-  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String assessmentName,int iCashierId,int iAccountKeyId,IWTimestamp payDate,IWTimestamp start,IWTimestamp end);
-  public boolean rollbackAssessment(int iAssessmentRoundId);
+  public boolean executeAssessment(IWApplicationContext iwac,Integer categoryId,Integer tariffGroupId,String assessmentName,Integer cashierId,Integer accountKeyId,IWTimestamp payDate,IWTimestamp start,IWTimestamp end,Integer excessBatchID);
+  public boolean rollbackAssessment(IWApplicationContext iwac,Integer assessmentRoundId);
   public Map getAttributeMap();
-  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,IWTimestamp start,IWTimestamp end)throws java.rmi.RemoteException;
+  public Collection listOfAssessmentTariffPreviews(IWApplicationContext iwac,Integer  tariffGroupId,IWTimestamp start,IWTimestamp end)throws java.rmi.RemoteException;
   public Collection getTariffsForAccountInGroup(Integer accountID,Integer tariffGroupID);
 
 }

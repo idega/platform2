@@ -216,11 +216,11 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		float price,
 		String name,
 		String info,
-		int iAccountId,
-		int iAccountKeyId,
+		Integer accountID,
+		Integer accountKeyID,
 		Date paydate,
-		int tariffGroupId,
-		int financeCategory,
+		Integer tariffGroupID,
+		Integer financeCategoryID,Integer externalID,
 		boolean save) {
 		javax.transaction.UserTransaction transaction = this.getSessionContext().getUserTransaction();
 		try {
@@ -228,30 +228,30 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 
 			AssessmentRoundHome arh = (AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class);
 			AssessmentRound AR = arh.create();
-			AR.setAsNew("account " + iAccountId);
-			AR.setTariffGroupId(tariffGroupId);
-			AR.setCategoryId(financeCategory);
+			AR.setAsNew("account " + accountID);
+			AR.setTariffGroupId(tariffGroupID.intValue());
+			AR.setCategoryId(financeCategoryID.intValue());
 			AR.store();
 			
-			storeAccountEntry(
-				iAccountId,
-				iAccountKeyId,
-				1,
-				((Integer) AR.getPrimaryKey()).intValue(),
+			createAccountEntry(
+				accountID,
+				accountKeyID,
+				new Integer(1),
+				((Integer) AR.getPrimaryKey()),
 				price,
 				0,
 				price,
 				paydate,
 				name,
 				info,
-				"C");
+				"C",externalID);
 			if (save) {
 				Tariff t = ((TariffHome) IDOLookup.getHome(Tariff.class)).create();
-				t.setAccountKeyId(iAccountKeyId);
+				t.setAccountKeyId(accountKeyID);
 				t.setInfo(info);
 				t.setName(name);
 				t.setPrice(price);
-				t.setTariffGroupId(tariffGroupId);
+				t.setTariffGroupId(tariffGroupID);
 				t.store();
 			}
 			transaction.commit();
@@ -269,11 +269,12 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 	}
 	public void assessTariffsToAccount(
 		Integer[] tariffIds,Double[] multiplyFactors,
-		int iAccountId,
+		Integer accountID,
 		Date paydate,
 		int discount,
-		int tariffGroupId,
-		int financeCategory)
+		Integer tariffGroupID,
+		Integer financeCategoryID,
+		Integer externalID)
 		throws java.rmi.RemoteException {
 		try {
 			boolean useFactors = (multiplyFactors!=null && tariffIds.length==multiplyFactors.length);
@@ -289,7 +290,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 			}
 			
 			//Collection tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findAllByPrimaryKeyArray(tariffIds);
-			assessTariffsToAccount(tariffs,factors, iAccountId, paydate, discount, tariffGroupId, financeCategory);
+			assessTariffsToAccount(tariffs,factors, accountID, paydate, discount, tariffGroupID, financeCategoryID,externalID);
 		}
 		catch (javax.ejb.FinderException ex) {
 			throw new java.rmi.RemoteException(ex.getMessage());
@@ -297,18 +298,18 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 	}
 	public void assessTariffsToAccount(
 		List tariffs,List multiplyFactors,
-		int iAccountId,
+		Integer accountID,
 		Date paydate,
 		int discount,
-		int tariffGroupId,
-		int financeCategory) {
+		Integer tariffGroupID,
+		Integer financeCategoryID,Integer externalID) {
 		javax.transaction.UserTransaction transaction = this.getSessionContext().getUserTransaction();
 
 		try {
 			transaction.begin();
-			AssessmentRound AR = createAssessmentRound(iAccountId, tariffGroupId, financeCategory,(java.sql.Date)paydate);
-			int RoundID = ((Integer) AR.getPrimaryKey()).intValue();
-			createAccountEntries(tariffs,multiplyFactors,iAccountId, paydate, discount, RoundID);
+			AssessmentRound AR = createAssessmentRound(accountID, tariffGroupID, financeCategoryID,(java.sql.Date)paydate);
+			Integer roundID = ((Integer) AR.getPrimaryKey());
+			createAccountEntries(tariffs,multiplyFactors,accountID, paydate, discount, roundID,externalID);
 			transaction.commit();
 		}
 		catch (Exception e) {
@@ -323,7 +324,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		}
 
 	}
-	private void createAccountEntries(List tariffs,List factors ,int iAccountId, Date paydate, int discount, int RoundID)
+	private void createAccountEntries(List tariffs,List factors ,Integer accountID, Date paydate, int discount, Integer roundID,Integer externalID)
 		throws RemoteException, CreateException {
 		Tariff tariff;
 		Double factor;
@@ -346,39 +347,40 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 				info += "(" + discount + " %)";
 			}
 			if(price>0)
-				storeAccountEntry(	iAccountId,tariff.getAccountKeyId(),	1,	RoundID,price,0,	price,paydate,tariff.getName(),info,"C");
+				createAccountEntry(	accountID,new Integer(tariff.getAccountKeyId()),	new Integer(1),	roundID,price,0,	price,paydate,tariff.getName(),info,"C",externalID);
 		}
 	}
-	private AssessmentRound createAssessmentRound(int iAccountId, int tariffGroupId, int financeCategory,java.sql.Date duedate)
+	private AssessmentRound createAssessmentRound(Integer accountID, Integer tariffGroupID, Integer financeCategory,java.sql.Date duedate)
 		throws IDOLookupException, CreateException {
 		AssessmentRoundHome arh = (AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class);
 		AssessmentRound AR = arh.create();
-		String name = "account " + iAccountId;
-		AR.setTariffGroupId(tariffGroupId);
-		AR.setCategoryId(financeCategory);
+		String name = "account " +accountID;
+		AR.setTariffGroupId(tariffGroupID.intValue());
+		AR.setCategoryId(financeCategory.intValue());
 		AR.setAsNew(name);
 		AR.setDueDate(duedate);
 		AR.store();
 		return AR;
 	}
-	public AccountEntry storeAccountEntry(
-		int iAccountId,
-		int iAccountKeyId,
-		int iCashierId,
-		int iRoundId,
+	public AccountEntry createAccountEntry(
+		Integer accountID,
+		Integer accountKeyID,
+		Integer cashierID,
+		Integer roundID,
 		float netto,
 		float VAT,
 		float total,
 		Date paydate,
 		String Name,
 		String Info,
-		String status)
+		String status,
+		Integer externalID)
 		throws java.rmi.RemoteException, javax.ejb.CreateException {
 		AccountEntry AE = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
-		AE.setAccountId(iAccountId);
-		AE.setAccountKeyId(iAccountKeyId);
-		AE.setCashierId(iCashierId);
-		AE.setRoundId(iRoundId);
+		AE.setAccountId(accountID.intValue());
+		AE.setAccountKeyId(accountKeyID.intValue());
+		AE.setCashierId(cashierID);
+		AE.setRoundId(roundID);
 		AE.setTotal(-total);
 		AE.setVAT(-VAT);
 		AE.setNetto(-netto);
@@ -391,16 +393,16 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		AE.store();
 		return AE;
 	}
-	public boolean rollBackAssessment(int iAssessmentRoundId) {
+	public boolean rollBackAssessment(Integer assessmentRoundId) {
 		StringBuffer sql = new StringBuffer("delete from ");
 		sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
 		sql.append(" where ").append(com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName());
-		sql.append(" = ").append(iAssessmentRoundId);
+		sql.append(" = ").append(assessmentRoundId);
 		System.err.println(sql.toString());
 		javax.transaction.UserTransaction t = this.getSessionContext().getUserTransaction();
 		try {
 			t.begin();
-			AssessmentRound AR = ((AssessmentRoundHome) getIDOHome(AssessmentRound.class)).findByPrimaryKey(new Integer(iAssessmentRoundId));
+			AssessmentRound AR = ((AssessmentRoundHome) getIDOHome(AssessmentRound.class)).findByPrimaryKey(assessmentRoundId);
 			com.idega.data.SimpleQuerier.execute(sql.toString());
 			AR.remove();
 			t.commit();

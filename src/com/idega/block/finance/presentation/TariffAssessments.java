@@ -2,6 +2,7 @@ package com.idega.block.finance.presentation;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,7 +33,8 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
+
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -338,15 +340,15 @@ public class TariffAssessments extends Finance {
 	private void doRollback(IWContext iwc) {
 		String sRoundId = iwc.getParameter("rollback");
 		if (sRoundId != null) {
-			int iRoundId = Integer.parseInt(sRoundId);
+			Integer roundId = Integer.valueOf(sRoundId);
 			try {
 				//boolean rb = false;
 				if (handler != null) {
-					handler.rollbackAssessment(iRoundId);
+					handler.rollbackAssessment(iwc,roundId);
 				} else {
 					AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(
 							iwc, AssessmentBusiness.class);
-					assBuiz.rollBackAssessment(iRoundId);
+					assBuiz.rollBackAssessment(roundId);
 				}
 				//AssessmentBusiness.rollBackAssessment(iRoundId);
 				/*if (rb)
@@ -369,18 +371,19 @@ public class TariffAssessments extends Finance {
 			String end = iwc.getParameter("end_date");
 			String roundName = iwc.getParameter("round_name");
 			String accountKeyId = iwc.getParameter("account_key_id");
+			Integer excessRoundID = Integer.valueOf(iwc.getParameter("excess_round_id"));
 			//add(accountKeyId);
 			if (date != null && date.length() == 10) {
 				if (roundName != null && roundName.trim().length() > 1) {
 					roundName = roundName == null ? "" : roundName;
-					int iAccountKeyId = accountKeyId != null ? Integer.parseInt(accountKeyId) : -1;
+					Integer accKeyId = accountKeyId != null ? Integer.valueOf(accountKeyId) :null;
 					IWTimestamp paydate = new IWTimestamp(date);
 					IWTimestamp startdate = new IWTimestamp(start);
 					IWTimestamp enddate = new IWTimestamp(end);
 					//add(paydate.getISLDate());
 					debug("Starting Execution " + IWTimestamp.RightNow().toString());
-					handler.executeAssessment(iCategoryId, groupID.intValue(), roundName, 1,
-							iAccountKeyId, paydate, startdate, enddate);
+					handler.executeAssessment(iwc,getFinanceCategoryId(), groupID, roundName,new Integer( 1),
+							accKeyId, paydate, startdate, enddate,excessRoundID);
 					debug("Ending Execution " + IWTimestamp.RightNow().toString());
 					/*if (assessed) {
 						status.setMessage(localize("assessment_sucess", "Assessment succeded"));
@@ -501,7 +504,7 @@ public class TariffAssessments extends Finance {
 		Table T = new Table();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		if (handler != null && group != null) {
-			Collection L = handler.listOfAssessmentTariffPreviews(((Integer) group.getPrimaryKey()).intValue(), new IWTimestamp(fromDate),new IWTimestamp(toDate));
+			Collection L = handler.listOfAssessmentTariffPreviews(iwc,((Integer) group.getPrimaryKey()), new IWTimestamp(fromDate),new IWTimestamp(toDate));
 			if (L != null) {
 				int row = 1;
 				float totals = 0;
@@ -765,8 +768,9 @@ public class TariffAssessments extends Finance {
 		return T;
 	}
 	private PresentationObject doMainTable(IWContext iwc) {
-		Form F = new Form();
-		Table T = new Table();
+	
+		DataTable T = getDataTable();
+		T.setUseBottom(false);
 		int iAccountCount = 0;
 		if (handler != null) {
 			try {
@@ -779,8 +783,8 @@ public class TariffAssessments extends Finance {
 			}
 		}
 		int row = 1;
-		T.add(getText(localize("number_of_accounts", "Number of accounts")), 1, row);
-		T.add(String.valueOf(iAccountCount), 2, row);
+		T.add(getHeader(localize("number_of_accounts", "Number of accounts")), 1, row);
+		T.add(getText(String.valueOf(iAccountCount)), 2, row);
 		row++;
 		DateInput di = new DateInput("pay_date", true);
 		di.setStyleAttribute("type", Edit.styleAttribute);
@@ -816,22 +820,43 @@ public class TariffAssessments extends Finance {
 		}
 		DropdownMenu drpAccountKeys = drpAccountKeys(keys, "account_key_id");
 		Edit.setStyle(drpAccountKeys);
-		T.add(getText(localize("date_of_payment", "Date of payment")), 1, row);
+		T.add(getHeader(localize("date_of_payment", "Date of payment")), 1, row);
 		T.add(di, 2, row);
 		row++;
-		T.add(getText(localize("start_date", "Start date")), 1, row);
+		T.add(getHeader(localize("start_date", "Start date")), 1, row);
 		T.add(start, 2, row);
 		row++;
 		T.add(getText(localize("end_date", "End date")), 1, row);
 		T.add(end, 2, row);
 		row++;
-		T.add(getText(localize("account_key", "Account key")), 1, row);
+		T.add(getHeader(localize("account_key", "Account key")), 1, row);
 		T.add(drpAccountKeys, 2, row);
 		row++;
-		T.add(getText(localize("name_of_round", "Assessment name")), 1, row);
+		T.add(getHeader(localize("name_of_round", "Assessment name")), 1, row);
 		T.add(rn, 2, row);
 		row++;
 		T.add(sb, 2, row);
+		row++;
+		try {
+			T.add(getHeader(localize("excess_round","Excess round")),1,row);
+			DropdownMenu excessRounds = new DropdownMenu("excess_round_id");
+			Collection rounds = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,-1,-1);
+			excessRounds.addMenuElement(-1,localize("old_batches","Old batches"));
+			DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
+			for (Iterator iter = rounds.iterator(); iter.hasNext();) {
+				AssessmentRound round = (AssessmentRound) iter.next();
+				excessRounds.addMenuElement(round.getPrimaryKey().toString(),round.getName()+" ( "+df.format(round.getPeriodFromDate())+" - "+df.format(round.getPeriodToDate())+" )");
+			}
+			T.add(excessRounds,2,row++);
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		} catch (EJBException e1) {
+			e1.printStackTrace();
+		} catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		//sb.setOnClick("this.disabled = true");
 		//status.setMessageCaller(sb, localize("assessment_time", "Assessment takes time"));
 		sb.setOnClick("this.form.submit()");
@@ -839,15 +864,13 @@ public class TariffAssessments extends Finance {
 		bb.setInterfaceObject(sb);
 		T.add(bb, 2, row);
 		row++;
-		T.setHorizontalZebraColored(Edit.colorLight, Edit.colorWhite);
-		T.setRowColor(1, Edit.colorMiddle);
-		T.mergeCells(1, 1, 2, 1);
+		
 		T.setWidth("100%");
-		F.add(new HiddenInput(this.PRM_ACTION, String.valueOf(this.ACT3)));
-		F.add(new HiddenInput(PRM_GROUP_ID, String.valueOf(groupID)));
-		F.add(T);
-		return F;
+		T.add(new HiddenInput(this.PRM_ACTION, String.valueOf(this.ACT3)));
+		T.add(new HiddenInput(PRM_GROUP_ID, String.valueOf(groupID)));
+		return T;
 	}
+
 	private DropdownMenu drpAccountKeys(Collection AK, String name) {
 		DropdownMenu drp = new DropdownMenu(name);
 		drp.addMenuElement(-1, "--");

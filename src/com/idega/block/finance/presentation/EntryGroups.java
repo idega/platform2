@@ -15,7 +15,6 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -244,7 +243,6 @@ public class EntryGroups extends Finance {
 		return T;
 	}
 	private PresentationObject doMainTable(IWContext iwc) {
-		Form F = new Form();
 		Table T = new Table();
 		int row = 2;
 		T.add(getHeader(localize("entries_from", "Entries from")), 1, row);
@@ -274,9 +272,9 @@ public class EntryGroups extends Finance {
 		T.setRowColor(1, getHeaderColor());
 		T.mergeCells(1, 1, 2, 1);
 		T.setWidth("100%");
-		F.add(new HiddenInput(this.strAction, String.valueOf(this.ACT3)));
-		F.add(T);
-		return F;
+		T.add(new HiddenInput(this.strAction, String.valueOf(this.ACT3)));
+		
+		return T;
 	}
 
 	private Link getGroupLink(String name, Integer id) {

@@ -220,6 +220,11 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account,Fin
       sql.append(last);
       sql.append("%' ");
     }
+    if(pid!=null &&  !"".equals(pid)){
+        sql.append(" and u.personal_id like '%");
+        sql.append(pid);
+        sql.append("%' ");
+      }
     if(type !=null && !"".equals(type)){
       sql.append(" and a.account_type like '");
       sql.append(type);

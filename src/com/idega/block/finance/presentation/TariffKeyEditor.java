@@ -15,7 +15,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -139,8 +139,8 @@ public class TariffKeyEditor extends Finance {
 		return (keyTable);
 	}
 	protected PresentationObject getChange(IWContext iwc) throws SQLException {
-		Form myForm = new Form();
-		myForm.add(Finance.getCategoryParameter(getFinanceCategoryId().intValue()));
+		
+		
 		//myForm.maintainAllParameters();
 		Collection keys = null;
 		try {
@@ -155,13 +155,11 @@ public class TariffKeyEditor extends Finance {
 		if (keys != null)
 			count = keys.size();
 		int inputcount = count + 5;
-		Table inputTable = new Table(4, inputcount + 1);
+		DataTable inputTable = getDataTable();
 		inputTable.setWidth("100%");
-		inputTable.setCellpadding(2);
-		inputTable.setCellspacing(1);
-		// inputTable.setColumnAlignment(1,"right");
-		inputTable.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
-		inputTable.setRowColor(1, getHeaderColor());
+		inputTable.setUseBottom(false);
+		inputTable.setUseTop(false);
+		inputTable.setTitlesHorizontal(true);
 		inputTable.add(getHeader("Nr"), 1, 1);
 		inputTable.add(getHeader(localize("name", "Name")), 2, 1);
 		inputTable.add(getHeader(localize("info", "Info")), 3, 1);
@@ -195,13 +193,14 @@ public class TariffKeyEditor extends Finance {
 			inputTable.add(infoInput, 3, i + 1);
 			inputTable.add(idInput);
 		}
-		myForm.add(new HiddenInput("tke_count", String.valueOf(inputcount)));
-		myForm.add(new HiddenInput(this.strAction, String.valueOf(this.ACT3)));
-		myForm.add(inputTable);
+		inputTable.add(Finance.getCategoryParameter(getFinanceCategoryId().intValue()));
+		inputTable.add(new HiddenInput("tke_count", String.valueOf(inputcount)));
+		inputTable.add(new HiddenInput(this.strAction, String.valueOf(this.ACT3)));
+		
 		SubmitButton save = new SubmitButton(localize("save", "Save"));
 		save = (SubmitButton) setStyle(save,STYLENAME_INTERFACE_BUTTON);
-		myForm.add(save);
-		return (myForm);
+		inputTable.addButton(save);
+		return (inputTable);
 	}
 	protected PresentationObject doUpdate(IWContext iwc) {
 		int count = Integer.parseInt(iwc.getParameter("tke_count"));

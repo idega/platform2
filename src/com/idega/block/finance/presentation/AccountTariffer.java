@@ -17,10 +17,12 @@ import com.idega.block.finance.data.FinanceAccount;
 import com.idega.block.finance.data.Tariff;
 import com.idega.block.finance.data.TariffGroup;
 import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
@@ -42,8 +44,9 @@ public class AccountTariffer extends Finance {
 	private static String prmGroup = "at_grp";
 	private FinanceAccount account;
 	private Integer accountId = null;
+	private Integer externalID = null;
 	private int viewPage = -1;
-	
+	boolean showAllTariffs = false;
 	private String prmNewTariff = "fin_ati_nwta";
 	private String prmQuantity = "fin_trf_qty";
 	private String prmTariffIds = "fin_trf_ids";
@@ -62,6 +65,11 @@ public class AccountTariffer extends Finance {
 	}
 	protected void control(IWContext iwc) throws java.rmi.RemoteException {
 		if (isAdmin) {
+			
+			if(getExternalIDParameter()!=null && iwc.isParameterSet(getExternalIDParameter()))
+				externalID = Integer.valueOf(iwc.getParameter(getExternalIDParameter()));
+			
+			showAllTariffs = iwc.isParameterSet("fin_show_all");
 			
 			//      iCategoryId = Finance.parseCategoryId(iwc);
 			Collection groups = null;
@@ -109,6 +117,9 @@ public class AccountTariffer extends Finance {
 			
 			setLocalizedTitle("account_tariffer", "Account tariffer");
 			setSearchPanel(getAccountInfo(iwc));
+			PresentationObject external = getExternalInfo(iwc);
+			if(external!=null)
+				setSearchPanel(external);
 		
 			setTabPanel(getGroupLinks(groups));
 			if (group != null)
@@ -132,7 +143,7 @@ public class AccountTariffer extends Finance {
 			String SDiscount = iwc.getParameter(prmDiscount);
 			int discount = SDiscount != null && !SDiscount.equals("") ? Integer.parseInt(SDiscount) : -1;
 			System.out.println(discount);
-			AssessmentBusiness assBuiz = getFinanceService().getFinanceBusiness();
+			AssessmentBusiness assBuiz = getAssessmentService(iwc);
 			String[] qtys = iwc.getParameterValues(prmQuantity);
 			String[] ids = iwc.getParameterValues(prmTariffIds);
 			if (qtys != null && qtys.length > 0 && ids != null && qtys.length == ids.length) {
@@ -150,10 +161,7 @@ public class AccountTariffer extends Finance {
 				if (tariffIDs.size() > 0) {
 					Integer[] tariffIds = (Integer[]) tariffIDs.toArray(new Integer[0]);
 					Double[] mfactors = (Double[]) factors.toArray(new Double[0]);
-					//System.err.println("trying
-					// assessTariffsToAcount("+tariffIds+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
-					assBuiz.assessTariffsToAccount(tariffIds, mfactors, accountId.intValue(), Pd.getSQLDate(),
-							discount, groupId.intValue(), getFinanceCategoryId().intValue());
+					createTariffs(iwc,Pd, discount, tariffIds, mfactors);
 				}
 			} else if (iwc.isParameterSet(prmTariffCheck)) {
 				//System.err.println("using tariffs checks");
@@ -162,26 +170,45 @@ public class AccountTariffer extends Finance {
 				for (int i = 0; i < tariff_ids.length; i++) {
 					tar_ids[i] = new Integer(tariff_ids[i]);
 				}
-				assBuiz.assessTariffsToAccount(tar_ids, null, accountId.intValue(), Pd.getSQLDate(), discount, groupId
-						.intValue(), getFinanceCategoryId().intValue());
+				createTariffs(iwc,Pd, discount, tar_ids);
 			} else {
-				int keyId = iwc.isParameterSet(prmAccountKey) ? Integer.parseInt(iwc.getParameter(prmAccountKey)) : -1;
+				Integer keyId = iwc.isParameterSet(prmAccountKey) ? Integer.valueOf(iwc.getParameter(prmAccountKey)) : null;
 				;
 				int price = iwc.isParameterSet(prmAmount) ? Integer.parseInt(iwc.getParameter(prmAmount)) : 0;
-				if (keyId > 0 && price != 0) {
-					int TariffGroupId = iwc.isParameterSet(prmTariffGroupId) ? Integer.parseInt(iwc
-							.getParameter(prmTariffGroupId)) : -1;
+				if (keyId.intValue() > 0 && price != 0) {
+					Integer TariffGroupId = iwc.isParameterSet(prmTariffGroupId) ? Integer.valueOf(iwc
+							.getParameter(prmTariffGroupId)) : null;
 					//System.err.println("using new tariff");
 					String name = iwc.getParameter(prmTariffName);
 					String info = iwc.getParameter(prmTariffInfo);
 					boolean saveTariff = iwc.isParameterSet(prmSaveTariff);
-					assBuiz.assessTariffsToAccount(price, name, info, accountId.intValue(), keyId, Pd.getSQLDate(),
-							TariffGroupId, getFinanceCategoryId().intValue(), saveTariff);
+					createTariff(iwc,Pd, keyId, price, TariffGroupId, name, info, saveTariff);
 				}
 			}
 		}
 	}
 	
+	protected PresentationObject getExternalInfo(IWContext iwc){
+		return null;
+	}
+	
+	protected void createTariffs(IWContext iwc,IWTimestamp paymentDate, int discountPercentage,  Integer[] tariffIDs, Double[] multiplyFactors) throws RemoteException {
+		//System.err.println("trying
+		// assessTariffsToAcount("+tariffIds+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
+		getAssessmentService(iwc).assessTariffsToAccount(tariffIDs, multiplyFactors, accountId, paymentDate.getSQLDate(),
+				discountPercentage, groupId, getFinanceCategoryId(),externalID);
+	}
+	protected void createTariff(IWContext iwc,IWTimestamp paymentDate, Integer tariffkeyID, int amount, Integer tariffGroupID, String name, String info, boolean saveTariff) throws RemoteException {
+		getAssessmentService(iwc).assessTariffsToAccount(amount, name, info, accountId, tariffkeyID, paymentDate.getSQLDate(),
+				tariffGroupID, getFinanceCategoryId(), externalID,saveTariff);
+	}
+	protected AssessmentBusiness getAssessmentService(IWApplicationContext iwac) throws RemoteException {
+		return getFinanceService().getFinanceBusiness();
+	}
+	protected void createTariffs(IWContext iwc,IWTimestamp paymentDate, int discountPercentage,  Integer[] tariffIDs) throws RemoteException {
+		getAssessmentService(iwc).assessTariffsToAccount(tariffIDs, null, accountId, paymentDate.getSQLDate(), discountPercentage, groupId
+				, getFinanceCategoryId(),externalID);
+	}
 	protected void createInvoice(Integer accountID, Integer tariffGroupID, Integer categoryID, Date dueDate, List tariffs,List multipliers , int discount){
 		
 	}
@@ -205,7 +232,7 @@ public class AccountTariffer extends Finance {
 			UserBusiness uBuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 			User user = uBuiz.getUser(account.getUserId());
 			T	.add(getHeader(localize("account_owner", "Account owner")), 1, 2);
-			T.add(getText(user.getName()), 2, 2);
+			T.add(getText(user.getName()+Text.getNonBrakingSpace()+" ( "+user.getPersonalID() +" )"), 2, 2);
 
 			T.add(getHeader(localize("account_balance", "Account balance")),					1, 3);
 			T.add(getAmountText(getFinanceService().getAccountBalance(account.getAccountId())), 2, 3);
@@ -247,27 +274,33 @@ public class AccountTariffer extends Finance {
 		return T;
 	}
 	private PresentationObject getTariffTable(TariffGroup group) throws java.rmi.RemoteException {
-		Collection listOfTariffs = null;
+		Collection tariffs = null;
 		Map map = null;
 		boolean hasMap = false;
+	
 		if (group != null) {
 			if (group.getHandlerId() > 0) {
 				FinanceHandler handler = getFinanceService().getFinanceHandler(new Integer(group.getHandlerId()));
 				//FinanceHandler handler =
 				// FinanceFinder.getInstance().getFinanceHandler(group.getHandlerId());
 				map = handler.getAttributeMap();
+				if(!showAllTariffs)
+					tariffs = handler.getTariffsForAccountInGroup(this.accountId,(Integer)group.getPrimaryKey());
 				if (map != null)
 					hasMap = true;
 			}
 		}
-		try {
-			listOfTariffs = getFinanceService().getTariffHome().findByTariffGroup((Integer) group.getPrimaryKey());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (EJBException e) {
-			e.printStackTrace();
-		} catch (FinderException e) {
-			e.printStackTrace();
+		if(tariffs==null || tariffs.isEmpty()){
+			showAllTariffs = true;
+			try {
+				tariffs = getFinanceService().getTariffHome().findByTariffGroup((Integer) group.getPrimaryKey());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (EJBException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
 		}
 		//listOfTariffs =
 		// FinanceFinder.getInstance().listOfTariffs(group.getID());
@@ -286,8 +319,8 @@ public class AccountTariffer extends Finance {
 		T.add(getHeader(localize("price", "Price")), col++, row);
 		T.add(getHeader(localize("quantity", "Qty.")), col++, row);
 		row++;
-		if (listOfTariffs != null) {
-			java.util.Iterator I = listOfTariffs.iterator();
+		if (tariffs != null) {
+			java.util.Iterator I = tariffs.iterator();
 			Tariff tariff;
 			while (I.hasNext()) {
 				col = 1;
@@ -298,7 +331,7 @@ public class AccountTariffer extends Finance {
 					T.add(getText((String) map.get(tariff.getTariffAttribute())), col++, row);
 				T.add(getText(tariff.getName()), col++, row);
 				T.add(getAmountText(tariff.getPrice()), col++, row);
-				IntegerInput QtyInput = new IntegerInput(prmQuantity);
+				TextInput QtyInput = new TextInput(prmQuantity);
 				QtyInput.setLength(5);
 				T.add(QtyInput, col, row);
 				T.add(new HiddenInput(prmTariffIds, tariff.getPrimaryKey().toString()));
@@ -306,6 +339,9 @@ public class AccountTariffer extends Finance {
 			}
 			T.getContentTable().setColumnAlignment(col - 1, "right");
 			T.getContentTable().setAlignment(1, col, "left");
+			if(!showAllTariffs)
+				T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("fin_show_all", "Show All"), "fin_show_all","true"));
+			
 		}
 		return T;
 	}
@@ -400,11 +436,39 @@ public class AccountTariffer extends Finance {
 		return drp;
 	}
 	
+	protected String getExternalIDParameter(){
+		return null;
+	}
+	
 	public void setAccountViewPage(int pageId) {
 		this.viewPage = pageId;
 	}
 	
 	public void main(IWContext iwc) throws java.rmi.RemoteException {
 		control(iwc);
+	}
+	/**
+	 * @return Returns the account.
+	 */
+	public FinanceAccount getAccount() {
+		return account;
+	}
+	/**
+	 * @return Returns the accountId.
+	 */
+	public Integer getAccountId() {
+		return accountId;
+	}
+	/**
+	 * @return Returns the externalID.
+	 */
+	public Integer getExternalID() {
+		return externalID;
+	}
+	/**
+	 * @return Returns the groupId.
+	 */
+	public Integer getGroupId() {
+		return groupId;
 	}
 }
