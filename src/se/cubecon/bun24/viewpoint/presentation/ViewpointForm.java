@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/19 11:32:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/20 07:31:44 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -128,7 +128,7 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT
         = "Jag accepterar att handlägga den här synpunkten";
 	private final static String LOGINNAME_KEY = "viewpoint.loginName";
-	private final static String LOGINNAME_DEFAULT = "Användarnamn";
+	//private final static String LOGINNAME_DEFAULT = "Användarnamn";
 	private final static String MESSAGE_KEY = "viewpoint.message";
 	private final static String MESSAGE_DEFAULT = "Meddelande";
     private final static String NOTAUTHORIZEDTOSHOWVIEWPOINT_KEY
@@ -151,8 +151,8 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String SUBMITVIEWPOINT_KEY
         = "viewpoint.submitViewpoint";
 	private final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
-	private final static String UNKNOWN_KEY = "viewpoint.unknown";
-	private final static String UNKNOWN_DEFAULT = "Okänt";
+	//private final static String UNKNOWN_KEY = "viewpoint.unknown";
+	//private final static String UNKNOWN_DEFAULT = "Okänt";
 	private final static String USER_KEY = "viewpoint.user";
 	private final static String USE_SSN_INFO_KEY = "viewpoint.useSsnInfo";
 	private final static String USE_SSN_INFO_DEFAULT = "För att kunna lämna en synpunkt så måste du antingen vara inloggad eller om du bor i Nacka så räcker det med att ange ditt personnummer nedan";
