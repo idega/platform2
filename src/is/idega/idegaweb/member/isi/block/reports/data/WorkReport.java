@@ -17,8 +17,10 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public boolean isBoardPartDone();
  public boolean isCreationFromDatabaseDone();
  public boolean isMembersPartDone();
+ public boolean isSent();
  public void setAccountFileId(int p0);
  public void setAccountPartDone(boolean p0);
+ public void setAsSent(boolean p0);
  public void setBoardFileId(int p0);
  public void setBoardPartDone(boolean p0);
  public void setClubId(int p0);
