@@ -376,7 +376,7 @@ public class CategoryWindow extends IWAdminWindow {
 					deleteLink.addParameter(actDelete, "true");
 					deleteLink.addParameter(prmCategoryId, id);
 					deleteLink.addParameter(actForm, "true");
-					metadataLink = new Link(core.getImage("/shared/edir.gif"));
+					metadataLink = new Link(core.getImage("/shared/edit.gif"));
 					metadataLink.setWindowToOpen(CategoryMetaDataWindow.class);
 					metadataLink.addParameter(CategoryMetaDataWindow.PARAMETER_CATEGORY_ID, id);
 					addParametersToLink(childLink);
