@@ -1393,7 +1393,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				System.out.println("Skipping club cause name is null");
 				continue;
 			}
-			System.out.println("Procesing club \"" + cName + "\".");
+			
 			String regUniIdentifier = getRegionalUnionIdentifier(report);
 
 			Map clubMap = (Map) ruMap.get(regUniIdentifier);
@@ -1425,7 +1425,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				Iterator iterator = leagues.iterator();
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
-
+					
 					int womenPlayersUnder = getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league);
 					int womenPlayersEqualOrOver = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league);
 					int menPlayersUnder = getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league);
@@ -1437,6 +1437,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					regData = addToIntegerCount(bothGendersEqualOrOver, regData, menPlayersEqualOrOver + womenPlayersEqualOrOver);
 					regData = addToIntegerCount(bothGendersUnderAge, regData, menPlayersUnder + womenPlayersUnder);
 					regData = addToIntegerCount(bothGendersAllAge, regData, menPlayersUnder + womenPlayersUnder + menPlayersEqualOrOver + womenPlayersEqualOrOver);
+					
+					System.out.println("Counting players for club " + cName + " in regional union " + regUniIdentifier + " and league " + league.getName() + " total is "
+					                   + (menPlayersUnder + womenPlayersUnder + menPlayersEqualOrOver + womenPlayersEqualOrOver));
 				}
 			}
 			catch (IDOException e) {
