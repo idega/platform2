@@ -100,15 +100,15 @@ public class PageCounter extends Block {
       agents.add("User agents",1,y2);
       agents.add("Count",2,y2);
 
-      Hashtable ua = (Hashtable) TrackerBusiness.getUserAgents();
-      if( ua != null ){
-        Iterator iter = ua.keySet().iterator();
-        while (iter.hasNext()) {
-          UserAgentStatistics item = (UserAgentStatistics) ua.get((String)iter.next());
-          agents.add(item.getUserAgent(),1,++y2);
-          agents.add(String.valueOf(item.getSessions()),2,y2);
-        }
+      ArrayList agentsList = TrackerBusiness.getAgentArrayListSortedByAgent();
+      Iterator ua = agentsList.iterator();
+      UserAgentStatistics item;
+      while (ua.hasNext()) {
+        item = (UserAgentStatistics) ua.next();
+        agents.add(item.getUserAgent(),1,++y2);
+        agents.add(String.valueOf(item.getSessions()),2,y2);
       }
+
       add(agents);
 
       }

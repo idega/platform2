@@ -19,7 +19,7 @@ public class AgentComparator implements Comparator {
 
   public static final int ORDER_BY_SESSIONS   = 1;
   public static final int REVERSE_ORDER_BY_SESSIONS   = 2;
-  public static final int ORDER_BY_BROWSER_TYPE = 3;
+  public static final int ORDER_BY_AGENT = 3;
 
   private int sortBy;
 
@@ -39,7 +39,7 @@ public class AgentComparator implements Comparator {
       int result = 0;
 
       switch (this.sortBy) {
-        case ORDER_BY_BROWSER_TYPE     : result = browserSort(o1, o2);
+        case ORDER_BY_AGENT     : result = browserSort(o1, o2);
         break;
         case ORDER_BY_SESSIONS   : result = sessionSort(o1,o2);
         break;

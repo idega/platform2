@@ -180,7 +180,7 @@ public class TrackerBusiness {
     if( agents!=null ){
       Iterator iter = agents.keySet().iterator();
         while (iter.hasNext()) {
-          ReferrerStatistics item = (ReferrerStatistics) agents.get((String)iter.next());
+          UserAgentStatistics item = (UserAgentStatistics) agents.get((String)iter.next());
           list.add(item);
         }
     }
