@@ -1,12 +1,14 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.data.GenericEntity;
+import java.util.Collection;
+import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/11/15 12:11:16 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CitizenApplicantPutChildrenBMPBean extends GenericEntity
     implements CitizenApplicantPutChildren {
@@ -49,5 +51,13 @@ public class CitizenApplicantPutChildrenBMPBean extends GenericEntity
     
     public void setCurrentKommun (final String currentKommun) {
         setColumn (COLUMN_CURRENT_KOMMUN, currentKommun);
+    }
+
+    public Collection ejbFindByApplicationId (final int applicationId)
+        throws FinderException {
+        final StringBuffer sql = new StringBuffer ();
+        sql.append ("select * from " + ENTITY_NAME);
+        sql.append (" where " + COLUMN_APPLICATION_ID + " = " + applicationId);
+        return idoFindIDsBySQL (sql.toString ());
     }
 }

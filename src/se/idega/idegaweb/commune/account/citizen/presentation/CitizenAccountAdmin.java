@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.11 2002/11/20 11:50:59 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.12 2002/12/11 12:50:49 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,11 +30,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/20 11:50:59 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -207,6 +207,12 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				table.add(getSmallHeader(localize(CitizenAccountApplication.APPLICATION_REASON_KEY, CitizenAccountApplication.APPLICATION_REASON_DEFAULT)), 1, row);
 				final String applicationReason = localize(applicant.getApplicationReason(), "?");
 				table.add(getSmallText(applicationReason), 3, row++);
+
+                if (applicant.getApplicationReason().equals (CitizenAccountApplication.PUT_CHILDREN_IN_NACKA_KEY)) {
+                    table.add(getSmallHeader(localize(CitizenAccountApplication.CURRENT_KOMMUN_KEY, CitizenAccountApplication.CURRENT_KOMMUN_DEFAULT)), 1, row);
+                    final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
+                    table.add(getSmallText(capc.getCurrentKommun ()), 3, row++);
+                }
 			}
 			
 			table.setHeight(row++, 6);

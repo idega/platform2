@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.38 2002/11/20 14:24:02 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.39 2002/12/11 12:50:49 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,11 +29,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/20 14:24:02 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -53,8 +53,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	final static String CIVIL_STATUS_KEY = "caa_civil_status";
 	final static String COHABITANT_DEFAULT = "Sammanboende";
 	final static String COHABITANT_KEY = "caa_cohabitant";
-	private final static String CURRENT_KOMMUN_DEFAULT = "Nuvarande kommun";
-	private final static String CURRENT_KOMMUN_KEY = "caa_current_kommun";
+	final static String CURRENT_KOMMUN_DEFAULT = "Nuvarande kommun";
+	final static String CURRENT_KOMMUN_KEY = "caa_current_kommun";
 	private final static String DETACHED_HOUSE_DEFAULT = "Villa";
 	private final static String DETACHED_HOUSE_KEY = "caa_detached_house";
 	final static String EMAIL_DEFAULT = "E-post";
@@ -81,7 +81,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String PROPERTY_TYPE_DEFAULT = "Fastighetsbeteckning (endast villa)";
 	private final static String PROPERTY_TYPE_KEY = "caa_property_type";
 	private final static String PUT_CHILDREN_IN_NACKA_DEFAULT = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
-	private final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";
+	final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";
 	final static String SSN_DEFAULT = "Personnummer";
 	final static String SSN_KEY = "caa_ssn";
 	private final static String STREET_DEFAULT = "Gatuadress";

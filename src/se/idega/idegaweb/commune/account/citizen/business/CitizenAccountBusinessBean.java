@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.34 2002/11/27 13:41:40 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.35 2002/12/11 12:50:49 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -27,11 +27,11 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/11/27 13:41:40 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
     implements CitizenAccountBusiness, AccountBusiness {
@@ -224,6 +224,15 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
         
 		return (Integer) (putChildren == null ? null
                           : putChildren.getPrimaryKey());
+    }
+
+    public CitizenApplicantPutChildren findCitizenApplicantPutChildren
+        (final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantPutChildrenHome home
+                = (CitizenApplicantPutChildrenHome) IDOLookup.getHome
+                (CitizenApplicantPutChildren.class);
+		return (CitizenApplicantPutChildren) home.findByApplicationId
+                (applicationId).toArray () [0];
     }
 
 	public User getUser(String ssn) {

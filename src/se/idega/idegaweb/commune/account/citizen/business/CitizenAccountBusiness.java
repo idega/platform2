@@ -6,7 +6,7 @@ import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import javax.ejb.*;
 import se.idega.idegaweb.commune.account.business.AccountBusiness;
-import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
+import se.idega.idegaweb.commune.account.citizen.data.*;
 import java.util.*;
 
 public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
@@ -59,4 +59,7 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
 
     Integer insertPutChildren (Integer applicationId, String currentKommun)
         throws RemoteException, CreateException;
+
+    CitizenApplicantPutChildren findCitizenApplicantPutChildren
+        (int applicationId) throws RemoteException, FinderException;
 }
