@@ -80,7 +80,7 @@ public class WorkReportOverViewCloseView extends Block {
 	private static final String HAS_ACCOUNT = "WorkReportOverViewCloseView.HAS_ACCOUNT";
 	private static final String HAS_BOARD= "WorkReportOverViewCloseView.HAS_BOARD";
 	
-	private int year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+	private int year = -1;
 	
 	
 	
@@ -116,6 +116,9 @@ public class WorkReportOverViewCloseView extends Block {
   public void main(IWContext iwc) throws Exception {
    
     IWResourceBundle iwrb = getResourceBundle(iwc);
+		if(year==-1) {
+			year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+		}
 
     Form form = new Form();
     PresentationObject pres = getContent(iwc, iwrb, form);
@@ -405,6 +408,14 @@ public class WorkReportOverViewCloseView extends Block {
 			return text;
 		}
 		
+	}
+
+
+	/**
+	 * @param year
+	 */
+	public void setYear(int year) {
+		this.year = year;
 	}
 	
 	

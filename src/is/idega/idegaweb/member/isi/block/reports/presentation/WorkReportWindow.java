@@ -18,6 +18,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 /**
  * This window is used to work with a clubs work reports.
  * Copyright : Idega Software 2003
@@ -75,6 +76,12 @@ public class WorkReportWindow extends IWAdminWindow {
 		//and then gets the primary key of the correct group
 		Integer groupId = setUserTypeAndReturnGroupId(iwc);
 
+		int year = new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear();
+		String paramWorkReportYear = (String) iwc.getSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
+		if(paramWorkReportYear!=null) {
+			year  = Integer.parseInt(paramWorkReportYear);
+		}
+		
 		setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));
 		String action = iwc.getParameter(ACTION);
 
@@ -137,13 +144,17 @@ public class WorkReportWindow extends IWAdminWindow {
 			}
 			else if (action.equals(ACTION_REPORT_OVERVIEW)) {
 				WorkReportOverView overView = new WorkReportOverView();
+				overView.setYear(year);
 				table.add(overView,2,1);	//not a selector
-				menuTable.add(new WorkReportOverViewStats(),1,15);
+				WorkReportOverViewStats stats = new WorkReportOverViewStats();
+				stats.setYear(year);
+				menuTable.add(stats,1,15);
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 			}
 			else if( action.equals(ACTION_REPORT_OVERVIEW_CLOSE_VIEW)) {
-				
-				table.add(new WorkReportOverViewCloseView(),2,1);	//not a selector
+				WorkReportOverViewCloseView closeView = new WorkReportOverViewCloseView();
+				closeView.setYear(year);
+				table.add(closeView,2,1);	//not a selector
 				menuTable.add(new WorkReportOverViewStats(),1,15);
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 			}

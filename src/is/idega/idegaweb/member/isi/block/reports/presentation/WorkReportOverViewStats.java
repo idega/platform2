@@ -20,6 +20,7 @@ public class WorkReportOverViewStats extends Block {
 	private WorkReportBusiness reportBiz;
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	protected static final String COLOR_MIDDLE = "#DFDFDF";
+	private int year = -1;
 	
 	public String getBundleIdentifier(){
 		return this.IW_BUNDLE_IDENTIFIER;
@@ -30,6 +31,10 @@ public class WorkReportOverViewStats extends Block {
 	}
 
 	public void main(IWContext iwc) throws Exception {
+		if(year==-1) {
+			year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+		}
+		
 		Table table = new Table(2,14);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setLineFrame(true);
@@ -108,7 +113,15 @@ public class WorkReportOverViewStats extends Block {
 
 	//TODO Eiki Make the year choosable
 	protected int getYear() {
-		return (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+		return year;
+	}
+
+	/**
+	 * @param year
+	 */
+	public void setYear(int year) {
+		this.year = year;
+		
 	}
 	
 

@@ -76,6 +76,8 @@ public class WorkReportMultiEditor extends Block {
 	private static final String  CONTINUANCE_TILL = WorkReport.class.getName()+".CONTINUANCE_TILL";
   
   private boolean editable = true;
+  
+  int year = -1;
    
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
@@ -92,7 +94,10 @@ public class WorkReportMultiEditor extends Block {
   public void main(IWContext iwc) throws Exception {
    
     IWResourceBundle iwrb = getResourceBundle(iwc);
-
+    if(year==-1) {
+    	year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+    }
+    
     String action = parseAction(iwc);
     Form form = new Form();
     PresentationObject pres = getContent(iwc, iwrb, form, action);
@@ -296,8 +301,8 @@ public class WorkReportMultiEditor extends Block {
 	}
 	
 	//TODO Make the year choosable
-	protected int getYear(){
-		return (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
+	public int getYear(){
+		return year;
 	}
 	
 
@@ -498,4 +503,11 @@ public class WorkReportMultiEditor extends Block {
     
 
 	
+	/**
+	 * @param year
+	 */
+	public void setYear(int year) {
+		this.year = year;
+	}
+
 }
