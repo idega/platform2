@@ -18,6 +18,7 @@ import com.idega.block.reports.data.ReportInfo;
 
 import com.idega.util.database.ConnectionBroker;
 
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.MemoryFileBuffer;
 
 import com.idega.io.MemoryInputStream;
@@ -86,7 +87,7 @@ public class ReportWriter implements MediaWritable {
 
 
 
-  public void init(HttpServletRequest req){
+  public void init(HttpServletRequest req, IWMainApplication iwma){
 
     if(req.getParameter(prmReportId)!=null ){
 
