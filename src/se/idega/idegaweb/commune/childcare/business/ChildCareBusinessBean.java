@@ -69,6 +69,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolUser;
 import com.idega.core.data.Address;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.Phone;
@@ -516,15 +517,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public void sendMessageToProvider(ChildCareApplication application, String subject, String message, User sender) throws RemoteException {
-		Collection users = getSchoolBusiness().getHeadmasters(application.getProvider());
+		Collection users = getSchoolBusiness().getSchoolUsers(application.getProvider());
 		Object[] arguments = { application.getChild().getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString() };
 		
 		if (users != null) {
 			MessageBusiness messageBiz = getMessageBusiness();
 			Iterator it = users.iterator();
 			while (it.hasNext()) {
-				User providerUser = (User) it.next();
-				messageBiz.createUserMessage(application,providerUser, sender, subject, MessageFormat.format(message, arguments), false);
+				SchoolUser providerUser = (SchoolUser) it.next();
+				messageBiz.createUserMessage(application,providerUser.getUser(), sender, subject, MessageFormat.format(message, arguments), false);
 			}
 		}
 		else
@@ -532,7 +533,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	private void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
-		Collection users = getSchoolBusiness().getHeadmasters(application.getProvider());
+		Collection users = getSchoolBusiness().getSchoolUsers(application.getProvider());
 		User child = application.getChild();
 		Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID() };
 		
@@ -540,8 +541,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			MessageBusiness messageBiz = getMessageBusiness();
 			Iterator it = users.iterator();
 			while (it.hasNext()) {
-				User providerUser = (User) it.next();
-				messageBiz.createUserMessage(application,providerUser, subject, MessageFormat.format(message, arguments), false);
+				SchoolUser providerUser = (SchoolUser) it.next();
+				messageBiz.createUserMessage(application,providerUser.getUser(), subject, MessageFormat.format(message, arguments), false);
 			}
 		}
 		else
