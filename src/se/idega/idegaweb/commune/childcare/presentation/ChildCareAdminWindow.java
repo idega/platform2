@@ -1,13 +1,15 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.FinderException;
 
@@ -35,18 +37,14 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.idega.xml.XMLDocument;
-import com.idega.xml.XMLElement;
-import com.idega.xml.XMLException;
-import com.idega.xml.XMLParser;
 
 /**
  * @author laddi
@@ -118,6 +116,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_ALTER_VALID_FROM_DATE = 16;
 	public static final int ACTION_END_CONTRACT = 17;	
 	public static final int ACTION_NEW_CARE_TIME = 18;
+	public static final int ACTION_SIGN_CONTRACT = 19;	
 
 	private int _method = -1;
 	private int _action = -1;
@@ -131,11 +130,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private CloseButton close;
 	private Form form;
 
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		System.out.println("ChildCareAdminWindow");
 		parse(iwc);
 		switch (_action) {
 			case ACTION_CLOSE :
@@ -194,7 +193,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_NEW_CARE_TIME :
 				sendNewCareTimeRequest(iwc);
-				break;				
+				break;	
+			case ACTION_SIGN_CONTRACT :
+				processSignContract(iwc);
+				break;								
 
 		}
 
@@ -202,11 +204,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			drawForm(iwc);
 	}
 
-	private void drawForm(IWContext iwc) throws RemoteException {
+	private void drawForm(IWContext iwc) throws RemoteException, Exception {
 		form = new Form();
 		form.maintainParameter(PARAMETER_USER_ID);
 		form.maintainParameter(PARAMETER_APPLICATION_ID);
 		form.maintainParameter(PARAMETER_PAGE_ID);
+		form.maintainParameter(PARAMETER_CONTRACT_ID);
 		form.setStyleAttribute("height:100%");
 
 		Table table = new Table(3, 5);
@@ -938,173 +941,140 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return layoutTbl;
 	}	
 	
-	private Table getContractSignerForm(IWContext iwc) {
-	
-	//put in existing fields first
+	private Table getContractSignerForm(IWContext iwc) throws Exception {
+		Table table = null;		
+		//store incoming field values first
+						
 		Contract contract = getContract(iwc);
-		contract.setText(mergeFields(iwc));
-		contract.store();		
-		
-	//create form for the rest of the fields
-		Table table = makeFillOutForm(iwc);
-		if (table == null){
-			return signContract(iwc);
-		} else {
+		if (contract.isSigned()) {
+			table = new Table();
+			table.setCellpadding(5);
+			table.setWidth(Table.HUNDRED_PERCENT);
+			table.setHeight(Table.HUNDRED_PERCENT);					
+			table.add(getHeader("The contract is signed."), 1, 1);
+			table.add(close, 1, 2);
+			table.setHeight(2, Table.HUNDRED_PERCENT);
+			table.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_BOTTOM);
 			return table;
-		}
-	}
-	
-	/**
-	 * 
-	 * @param iwc
-	 * @return
-	 * 
-	 */
-	private String mergeFields(IWContext iwc) {
-		System.out.println("mergeFields()");
-		Contract contract = getContract(iwc);
-		String text = contract.getText();
-		StringBuffer merged = new StringBuffer();
+			
+		} else {
 		
-		try {
-			XMLParser parser = new XMLParser();
-			XMLDocument document = parser.parse(new StringReader("<dummy>" + text + "</dummy>"));
-		
-			XMLElement root = document.getRootElement();
-			Iterator it = root.getContent().iterator();
-			while (it.hasNext()){
-				Object obj = it.next();
-				if (obj instanceof XMLElement) {
-					String name = ((XMLElement) obj).getName();
-					String value = iwc.getParameter(PARAMETER_TEXT_FIELD + name);
-					System.out.println("name: " + name + " value: " + value);
-					
-					merged.append(value != null ? value : "<"+name+"/>");
+			Map fieldValues = new HashMap();
+			Enumeration parameters = iwc.getRequest().getParameterNames();
+			while(parameters.hasMoreElements()){
+				String name = (String) parameters.nextElement();
+				if (name.startsWith(PARAMETER_TEXT_FIELD)){
+					String value = iwc.getParameter(name);
+					if (value != null && value.length() != 0) {
+						fieldValues.put(name.substring(PARAMETER_TEXT_FIELD.length()), iwc.getParameter(name));
+					}
 				}
-//				else if (obj instanceof XMLCDATA) { ignore	}
-				else if (obj instanceof String) {
-					merged.append((String) obj);			
-				}
-			}	
-		}catch (XMLException ex){
-			ex.printStackTrace();
-			return text;
-		}
-		return merged.toString();
-	}
-		
-	
-	/**
-	 * 
-	 * @param iwc
-	 * @return null If no fields in text, Table with TextInput fields otherwise
-	 * @throws XMLException
-	 */
-	private Table makeFillOutForm(IWContext iwc) {
-		System.out.println("makeFillOutForm()");		
-		Table table = null;			
-
-		Contract contract = getContract(iwc);
-		String text = contract.getText();
-		
-		try {
-			XMLParser parser = new XMLParser();
-			XMLDocument document = parser.parse(new StringReader("<dummy>" + text + "</dummy>"));
-		
-			XMLElement root = document.getRootElement();
-			List fields = root.getChildren();
-			if (fields.size() != 0){
-				table = new Table();
-				table.setCellpadding(5);
-				table.setWidth(Table.HUNDRED_PERCENT);
-				table.setHeight(Table.HUNDRED_PERCENT);	
-								
-				int row = 1;
-				table.add(getSmallHeader(localize("ccconsign_formHeading", "Please, fill out the contract fields")), 1, row++);
-				Iterator i = fields.iterator();
-
-				while (i.hasNext()){
-					String field = ((XMLElement) i.next()).getName();
-					table.add(new Text(field + ":"), 1, row);
-					table.add(getStyledInterface(new TextInput(PARAMETER_TEXT_FIELD + field)), 2, row);
-					row ++;
-				}
-				table.add(new HiddenInput(PARAMETER_CONTRACT_ID, iwc.getParameter(PARAMETER_CONTRACT_ID)), 1, row);					
-				
-				SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT)));
-				table.add(submit, 1, row);
-				table.add(Text.getNonBrakingSpace(), 1, row);
-				table.add(close, 1, row);
-				table.setHeight(row, Table.HUNDRED_PERCENT);
-				table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 			}
-		}catch (XMLException ex){
-			ex.printStackTrace();
+			
+			contract.setUnsetFields(fieldValues);
+			
+		//create form for still unset fields
+			table = getContractFieldsForm(contract.getUnsetFields());
+			if (table != null){
+				return table;			
+			} else {
+				//todo: (Roar) Fungerer ikke...
+				((Window) getParentObject()).setWidth(700);
+				((Window) getParentObject()).setHeight(400);
+				return initSignContract(iwc);
+			}
 		}
+	} 	
+	
+	
+	private Table getContractFieldsForm(Set fields) {
+		Table table = null;			
+		if (fields.size() != 0){
+			table = new Table();
+			table.setCellpadding(5);
+			table.setWidth(Table.HUNDRED_PERCENT);
+			table.setHeight(Table.HUNDRED_PERCENT);	
+							
+			int row = 1;
+			table.add(getHeader(localize("ccconsign_formHeading", "Please, fill out the contract fields")), 1, row++);
+			table.mergeCells(1, 1, 2, 1);
+			Iterator i = fields.iterator();
+
+			while (i.hasNext()){
+				String field = (String) i.next();
+				table.add(getSmallHeader(field.substring(0, 1).toUpperCase() + field.substring(1).toLowerCase() + ":"), 1, row);
+				table.add(getStyledInterface(new TextInput(PARAMETER_TEXT_FIELD + field)), 2, row);
+				row ++;
+			}
+		
+			SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT)));
+			table.add(submit, 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
+			table.add(close, 1, row);
+			table.setHeight(row, Table.HUNDRED_PERCENT);
+			table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+		}
+
 		return table;
 	}
 	
-	private Table signContract(IWContext iwc){
-		System.out.println("signContract()");			
+	private Table initSignContract(IWContext iwc){
 		Contract contract = getContract(iwc);	
-		
-		if (iwc.getSessionAttribute(NBSSigningBlock.NBS_SIGNED_ENTITY) == null){
 			
-			iwc.setSessionAttribute(NBSSigningBlock.NBS_SIGNED_ENTITY, 
-				new NBSSignedEntity() {
-					private Contract _contract = null;
-						
-					public Object init(Contract contract){
-						_contract = contract;
-						return this;
-					}
-						
-					public void setXmlSignedData(String data) {
-						_contract.setXmlSignedData(data);
-					}
-		
-					public void setSignedBy(int userId) {
-						//_contract.setUserId(userId); //This shall already be set 
-					}
-		
-					public void setSignedDate(java.sql.Date time) {
-						_contract.setSignedDate(time);
-					}
-		
-					public void setSignedFlag(boolean flag) {
-						_contract.setSignedFlag(new Boolean(flag));												
-					}
-		
-					public void store() {
-						_contract.store();
-					}
-		
-					public String getText() {
-						return _contract.getText();
-					}
-				}
-				.init(contract)
-			);
-		}
-		
-
+		iwc.setSessionAttribute(NBSSigningBlock.NBS_SIGNED_ENTITY, 
+			new NBSSignedEntity() {
+				private Contract _contract = null;
 					
-//		iwc.removeSessionAttribute(NBSSigningBlock.INIT_DONE);		
-//		add(new HiddenInput(ACTION, ""));
+				public Object init(Contract contract){
+					_contract = contract;
+					return this;
+				}
+					
+				public void setXmlSignedData(String data) {
+					_contract.setXmlSignedData(data);
+				}
 	
+				public void setSignedBy(int userId) {
+					//_contract.setUserId(userId); //This shall already be set 
+				}
+	
+				public void setSignedDate(java.sql.Date time) {
+					_contract.setSignedDate(time);
+				}
+	
+				public void setSignedFlag(boolean flag) {
+					_contract.setSignedFlag(new Boolean(flag));												
+				}
+	
+				public void store() {
+					_contract.store();
+				}
+	
+				public String getText() {
+					return _contract.getText();
+				}
+			}
+			.init(contract)
+		);
+		
 		Table table = new Table();
 		NBSSigningBlock nbsSigningBlock = new NBSSigningBlock();
-		nbsSigningBlock.setHiddenInput(PARAMETER_METHOD, ""+METHOD_SIGN_CONTRACT);
-		nbsSigningBlock.setHiddenInput("idegaweb_frame_class", iwc.getParameter("idegaweb_frame_class"));
+		nbsSigningBlock.setParameter(PARAMETER_ACTION, ""+ACTION_SIGN_CONTRACT);
+		nbsSigningBlock.setParameter(PARAMETER_METHOD, ""+METHOD_SIGN_CONTRACT);		
+		nbsSigningBlock.setParameter(PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
 		table.add(nbsSigningBlock, 1, 1);
-		table.setHeight(1, Table.HUNDRED_PERCENT);
-		table.setRowVerticalAlignment(1, Table.VERTICAL_ALIGN_BOTTOM);		
+		table.add(close, 1, 2);
+		table.setHeight(2, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_BOTTOM);		
 		return table; 
-				
-//		iwc.forwardToIBPage(getParentPage(), getResponsePage());	
 	}
 		
-		
+	
+	private void processSignContract(IWContext iwc) throws Exception{
+			NBSSigningBlock nbsSigningBlock = new NBSSigningBlock();
+			nbsSigningBlock.processSignContract(iwc);	
+	}
+			
 	/**
 	 * 
 	 * @param iwc
@@ -1299,7 +1269,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void sendEndContractRequest(IWContext iwc) throws RemoteException{
-		System.out.println("SendEndContractrequest()");
 		
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		User owner = application.getOwner();
