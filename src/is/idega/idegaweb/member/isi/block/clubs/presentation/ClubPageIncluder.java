@@ -21,12 +21,14 @@ public class ClubPageIncluder extends PageIncluder {
     public static String BUNDLE_PROPERTY_ROOT_CLUB_ID = "ROOT_CLUB_ID";
     public static String PARAM_ROOT_CLUB_ID = "RO_CL_ID";
     public static String PARAM_CALLING_PAGE_ID = "CL_PA_ID";
+    public static String PARAM_CALLING_DOMAIN = "CL_DM";
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
     
 	private Page parentPage;
 	private String menuStyleSrc = "cssmenu/CSSMultiLevelMenu.css";
     private ICPage page;
     private String rootClubParamName = null; // id of club is sent with this parametere (if not null)
+    private String _callingDomain = null;
 	
     public ClubPageIncluder() {
         super();
@@ -74,6 +76,7 @@ public class ClubPageIncluder extends PageIncluder {
             
             if(page!=null) {
                 finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append( page.getPrimaryKey().toString());
+                finalUrl.append("&").append(PARAM_CALLING_DOMAIN).append("=").append( _callingDomain );
             }
             /*else {
 	            //the page the includer is currently on
@@ -101,8 +104,9 @@ public class ClubPageIncluder extends PageIncluder {
 	
 	public void setCallingPage(ICPage page) {
 	    this.page = page;
-	    
 	}
 	
-
+	public void setCallingDomain(String callingDomain) {
+		_callingDomain = callingDomain;
+	}
 }

@@ -41,9 +41,12 @@ public class ClubInfoBar extends Block {
 	
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
 	
+	private String _callingDomain = null;
+	
 	public void main(IWContext iwc) {
 	    
 		pageId = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_PAGE_ID);
+		_callingDomain = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_DOMAIN);
 		
 		_collator = Collator.getInstance(iwc.getLocale());
 		Group club = getClub(iwc);
@@ -121,6 +124,9 @@ public class ClubInfoBar extends Block {
 			}
 			if(showGroup(playerGroup)) {
 				Link link = new Link(playerGroup.getName());
+				if(_callingDomain!=null && _callingDomain.length()>0) {
+					link.setHostname(_callingDomain);
+				}
 				link.addParameter(PARAM_NAME_GROUP_ID, playerGroup.getPrimaryKey().toString());
 				if(pageId!=null) {
 				  link.setPage(Integer.parseInt(pageId));
