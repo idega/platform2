@@ -250,6 +250,15 @@ public class InvoiceChildcareThread extends BillingThread{
 							regulation,
 							startPeriod.getDate(),
 							conditions);
+							
+						if(postingDetail==null){
+							log.warning("Posting detail is null!");
+							log.info("tot sum "+totalSum);
+							log.info("contract "+contract.getPrimaryKey());
+							log.info("regulation "+regulation.getName());
+							log.info("start period "+startPeriod.toString());
+							log.info("# of conditions"+conditions.size());
+						}
 
 						// **Create the invoice record
 						//TODO (JJ) get these strings from the postingDetail instead.

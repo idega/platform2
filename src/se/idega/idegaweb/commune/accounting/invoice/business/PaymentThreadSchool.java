@@ -350,6 +350,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 								while (resourceIter.hasNext()) {
 									ResourceClassMember resource = (ResourceClassMember) resourceIter.next();
 									dispTime("Gotten resource " + resource.getResource().getResourceName());
+									log.info("schClassMem "+schoolClassMember.getPrimaryKey());
+									log.info("schClass "+schoolClassMember.getSchoolClass().getName());
+									log.info("schType "+schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey());
 									ArrayList resourceConditions = new ArrayList();
 									resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey()));
 									resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
