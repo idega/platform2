@@ -275,22 +275,22 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			iter = coll.iterator();
 			while (iter.hasNext()) {
 				user = (User) iter.next();
-				//System.out.println("Got user : "+user.getName());
 				coll2.remove(user);
 				iter2 = coll2.iterator();
 				while (iter2.hasNext()) {
 					user2 = (User) iter2.next();
-					//System.out.println("      checking user : "+user2.getName());
 					try {
 						if (parents.contains(user)) {
 							if (parents.contains(user2)) {
 								familyLogic.setAsSpouseFor(user, user2);
 							} else {
 								familyLogic.setAsParentFor(user, user2);
+								familyLogic.setAsCustodianFor(user, user2);
 							}
 						} else {
 							if (parents.contains(user2)) {
 								familyLogic.setAsChildFor(user, user2);
+								familyLogic.setAsCustodianFor(user2, user);
 							} else {
 								familyLogic.setAsSiblingFor(user, user2);
 							}
