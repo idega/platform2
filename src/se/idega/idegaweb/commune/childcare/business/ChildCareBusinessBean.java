@@ -325,7 +325,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					
 					if (canChangeApplication(appl, providerID, fromDate, queueDate)) {
 						if (appl.getProviderId() != providerID && appl.getProviderId() != -1) {
-							removeFromQueue(appl, user);
+							removeFromQueue(appl, user, provider);
 							appl = getChildCareApplicationHome().create();
 						}
 						if (user != null)
@@ -1269,15 +1269,30 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public boolean removeFromQueue(ChildCareApplication application, User user) {
+		return removeFromQueue(application, user, null);
+	}
+	
+	private boolean removeFromQueue(ChildCareApplication application, User user, int[] providerIDs) {
 		try {
 			IWTimestamp removed = new IWTimestamp();
 			application.setApplicationStatus(getStatusRejected());
 			application.setRejectionDate(removed.getDate());
 			changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+			boolean sendMessage = true;
 
+			if (providerIDs != null) {
+				for (int i = 0; i < providerIDs.length; i++) {
+					if (application.getProviderId() == providerIDs[i]) {
+						sendMessage = false;
+						continue;
+					}
+				}
+			}
+			
 			String subject = getLocalizedString("child_care.removed_from_queue_subject", "A child removed from the queue.");
 			String body = getLocalizedString("child_care.removed_from_queue_body", "Custodian for {0}, {3} has removed you as a choice alternative.  {0} can therefore no longer be found in the queue but in the list of those removed from the queue.");
-			sendMessageToProvider(application, subject, body);
+			if (sendMessage)
+				sendMessageToProvider(application, subject, body);
 
 			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
 				Iterator iter = application.getChildren();
