@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.8 2003/10/05 11:39:26 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.9 2003/10/09 11:12:55 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.8 2003/10/05 11:39:26 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.9 2003/10/09 11:12:55 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -196,7 +196,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return idoFindOnePKByQuery(sql);
 	}
 
-	public Object ejbFindRegulationOverlap(Date from, Date to, Regulation r) throws FinderException {
+	public Object ejbFindRegulationOverlap(String name, Date from, Date to, Regulation r) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere();
@@ -226,7 +226,22 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_TO);
 		sql.appendGreaterThanSign().append("'"+from+"'");
+		sql.append(") ");
+
+		sql.appendOr();
+
+		sql.append(" (");
+		sql.append(COLUMN_PERIOD_FROM);
+		sql.appendEqualSign().append("'"+to+"'");
+		sql.appendAnd();
+		sql.append(COLUMN_PERIOD_TO);
+		sql.appendEqualSign().append("'"+from+"'");
 		sql.append(")) ");
+
+		sql.appendAnd();
+		sql.append(COLUMN_NAME);
+		sql.appendEqualSign();
+		sql.append("'"+name+"'");			
 
 		if (r != null) {
 			sql.appendAnd();

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.38 2003/10/07 08:58:09 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.39 2003/10/09 11:13:22 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -191,8 +191,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			r = null;
 		}
 
-		if (isRegulationOverlap(periodeFrom, periodeTo, r)) {
-			throw new RegulationException(KEY_ERROR_PARAM_OVERLAP, "Överlappande perioder");			
+		if (isRegulationOverlap(name, periodeFrom, periodeTo, r)) {
+				throw new RegulationException(KEY_ERROR_PARAM_OVERLAP, "Överlappande perioder");			
 		}
 		
 		try {
@@ -642,11 +642,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
 	 * @author Kelly
 	 */
-	private boolean isRegulationOverlap(Date from, Date to, Regulation r) {
+	private boolean isRegulationOverlap(String name, Date from, Date to, Regulation r) {
 
 		try {
 			RegulationHome home = getRegulationHome();
-			if (home.findRegulationOverlap(from, to, r) == null) {
+			if (home.findRegulationOverlap(name, from, to, r) == null) {
 				return false;				
 			} else {
 				return true;
@@ -657,6 +657,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return false;
 		}
 	}	
+
 
 
 	/**

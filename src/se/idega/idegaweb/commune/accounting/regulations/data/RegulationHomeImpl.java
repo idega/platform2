@@ -27,9 +27,9 @@ public Regulation findRegulation(int p0)throws javax.ejb.FinderException{
 	return this.findByPrimaryKey(pk);
 }
 
-public Regulation findRegulationOverlap(java.sql.Date p0,java.sql.Date p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2)throws javax.ejb.FinderException{
+public Regulation findRegulationOverlap(java.lang.String p0,java.sql.Date p1,java.sql.Date p2,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((RegulationBMPBean)entity).ejbFindRegulationOverlap(p0,p1,p2);
+	Object pk = ((RegulationBMPBean)entity).ejbFindRegulationOverlap(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
