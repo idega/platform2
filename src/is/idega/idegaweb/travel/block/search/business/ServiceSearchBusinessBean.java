@@ -32,6 +32,7 @@ import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
+import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -263,17 +264,19 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			IWTimestamp from = null;
 			IWTimestamp to = null;
 			IWTimestamp tmp;
+			Collection addresses = null;
 			try {
 				from = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
 				int betw = Integer.parseInt(iwc.getParameter(AbstractSearchForm.PARAMETER_MANY_DAYS));
 				to = new IWTimestamp(from);
 				to.addDays(betw);
-				
-				//to = new IWTimestamp(((IWContext) getIWApplicationContext()).getParameter(AbstractSearchForm.PARAMETER_TO_DATE));
 			}catch (Exception e) {
 				System.out.println("error getting stamps : "+e.getMessage());
 				e.printStackTrace();
 			}
+			int addressId = -1;
+			int timeframeId = -1;
+			Timeframe timeframe;
 			BookingForm bf;
 			ProductPrice[] prices;
 			Iterator iter = results.iterator();
@@ -282,7 +285,14 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				try {
 					product = pHome.findByPrimaryKey(iter.next());
 					bf = getServiceHandler().getBookingForm(iwc, product);
-					prices = ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+					addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
+					addressId = -1;
+					timeframeId = -1;
+					timeframe = getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
+					if (timeframe != null) {
+						timeframeId = timeframe.getID();
+					}
+					prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 
 					if (prices != null && prices.length > 0) { 
 						/** Not inserting product without proper price categories */
