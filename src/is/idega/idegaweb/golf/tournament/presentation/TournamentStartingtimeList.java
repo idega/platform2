@@ -76,6 +76,10 @@ public class TournamentStartingtimeList extends GolfBlock {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext modinfo) throws Exception {
+		if (tournament == null) {
+			tournament = getTournamentSession(modinfo).getTournament();
+		}
+		
 		String cacheString = "tournament_startingtime_" + tournament.getID() + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
 
 		Form cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
@@ -94,10 +98,6 @@ public class TournamentStartingtimeList extends GolfBlock {
 			add(cachedForm);
 		}
 		else {
-			if (tournament == null) {
-				tournament = getTournamentSession(modinfo).getTournament();
-			}
-			
 			form.maintainParameter("action");
 			form.add(new HiddenInput("viewOnly", "" + viewOnly));
 
