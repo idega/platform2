@@ -400,10 +400,10 @@ public class RegulationSearchPanel extends AccountingBlock {
 		
 
 		
-		addField(table, PAR_PLACING, KEY_PLACING, _currentPlacing, 1, row);		
+		addField(table, PAR_PLACING, KEY_PLACING, _currentPlacing, 1, row, 200);		
 		String date = iwc.getParameter(PAR_VALID_DATE) != null ? iwc.getParameter(PAR_VALID_DATE) :
 			formatDate(new Date(System.currentTimeMillis()), 4); 
-		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, date, 3, row);	
+		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, date, 3, row, 35);	
 		table.add(getLocalizedButton(SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
 
 		table.setColumnWidth(1, "" + _leftColMinWidth);
@@ -422,8 +422,8 @@ public class RegulationSearchPanel extends AccountingBlock {
 		return addWidget(table, key, dropDown, col, row);		
 	}
 	
-	private Table addField(Table table, String parameter, String key, String value, int col, int row){
-		return addWidget(table, key, getTextInput(parameter, value), col, row);
+	private Table addField(Table table, String parameter, String key, String value, int col, int row, int width){
+		return addWidget(table, key, getTextInput(parameter, value, width), col, row);
 	}
 	
 	private Table addWidget(Table table, String key, PresentationObject widget, int col, int row){
