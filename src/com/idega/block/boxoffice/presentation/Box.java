@@ -236,8 +236,8 @@ public class Box extends Block implements Builderaware {
 			int linkRow = 1;
 
 			BoxLink[] links = null;
-			System.out.println("Getting links in getBoxView()");
-			System.out.println("_showOnlyBelongingToUser = " + _showOnlyBelongingToUser);
+//			System.out.println("Getting links in getBoxView()");
+//			System.out.println("_showOnlyBelongingToUser = " + _showOnlyBelongingToUser);
 			if (_showOnlyBelongingToUser)
 				links = BoxFinder.getLinksInBoxByUser(box, categories[a],iwc.getUserId());
 			else
