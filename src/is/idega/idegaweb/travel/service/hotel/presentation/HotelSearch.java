@@ -1,40 +1,31 @@
 package is.idega.idegaweb.travel.service.hotel.presentation;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
-
-import javax.ejb.FinderException;
-
-import com.idega.block.trade.stockroom.data.PriceCategory;
-import com.idega.block.trade.stockroom.data.Product;
-import com.idega.business.IBOLookup;
-import com.idega.core.data.PostalCode;
-import com.idega.core.data.PostalCodeHome;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.TextInput;
-import com.idega.util.IWTimestamp;
-
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-import is.idega.idegaweb.travel.service.hotel.business.HotelBusiness;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.service.hotel.data.RoomType;
 import is.idega.idegaweb.travel.service.hotel.data.RoomTypeHome;
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.PriceCategoryHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author gimmi
@@ -88,7 +79,15 @@ public class HotelSearch extends AbstractSearchForm {
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
 
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
+
 			Collection coll = hHome.find(null, null, roomTypeIds, postalCodeIds);
+
+			PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
+			PriceCategory priceCat = pcHome.findByKey(HotelSetup.HOTEL_SEARCH_PRICE_CATEGORY_KEY);
+			IWTimestamp from = from = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
+
+			coll = getSearchBusiness(iwc).sortProducts(coll, priceCat);
+
 			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
 			int mapSize = map.size();
 			String foundString = "";
@@ -102,7 +101,7 @@ public class HotelSearch extends AbstractSearchForm {
 			if (mapSize > 0) {
 				add(foundString);
 			}
-			listResults(iwc, map);
+			listResults(iwc, coll, map);
 			add(foundString);
 
 			if (coll != null) {
@@ -169,4 +168,5 @@ public class HotelSearch extends AbstractSearchForm {
 		return PARAMETER_TYPE_COUNT;
 	}
 	
+
 }
