@@ -21,9 +21,9 @@ import com.idega.data.IDOCreateException;
  */
 public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 {
-	public SchoolHome getSchoolHome()
+	public SchoolHome getSchoolHome()throws java.rmi.RemoteException
 	{
-		return getSchoolHome();
+		return (SchoolHome) IDOLookup.getHome(School.class);
 	}
 	public School getSchool(Object primaryKey)
 	{
