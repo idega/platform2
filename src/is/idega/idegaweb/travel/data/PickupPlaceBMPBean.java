@@ -1,13 +1,15 @@
 package is.idega.idegaweb.travel.data;
 
-import javax.ejb.FinderException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.Collection;
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.core.data.*;
-import com.idega.core.location.data.*;
+
+import javax.ejb.FinderException;
+
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 
 /**
  * Title:        IW Travel

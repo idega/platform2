@@ -1,25 +1,41 @@
 package is.idega.idegaweb.travel.presentation;
 import java.rmi.RemoteException;
-import java.util.*;
-import com.idega.block.trade.stockroom.business.SupplierManager;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.presentation.text.Link;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.block.trade.stockroom.business.ResellerManager;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.trade.stockroom.business.ResellerManager;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.ResellerBMPBean;
+import com.idega.block.trade.stockroom.data.ResellerHome;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierBMPBean;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.PostalCode;
+import com.idega.core.location.data.PostalCodeHome;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.*;
-import com.idega.core.contact.data.*;
-import com.idega.core.data.*;
-import com.idega.core.location.data.*;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.PasswordInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:        idegaWeb TravelBooking

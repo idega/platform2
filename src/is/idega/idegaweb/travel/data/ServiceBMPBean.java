@@ -1,16 +1,20 @@
 package is.idega.idegaweb.travel.data;
 
 import java.rmi.RemoteException;
-import javax.ejb.FinderException;
-import com.idega.block.trade.stockroom.data.ProductHome;
-import java.util.Iterator;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.core.data.*;
-import com.idega.core.location.data.*;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 
 
 /**

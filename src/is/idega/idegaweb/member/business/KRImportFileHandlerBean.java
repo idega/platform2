@@ -5,16 +5,21 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.CreateException;
 import javax.transaction.UserTransaction;
 
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.contact.data.*;
-import com.idega.core.data.*;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.EmailHome;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneHome;
 import com.idega.core.location.business.AddressBusiness;
-import com.idega.core.location.data.*;
-import com.idega.data.IDOAddRelationshipException;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressHome;
+import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.Country;
+import com.idega.core.location.data.CountryHome;
+import com.idega.core.location.data.PostalCode;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
