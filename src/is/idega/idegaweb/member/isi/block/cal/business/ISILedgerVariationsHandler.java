@@ -43,13 +43,12 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 		return null;
 	}
 	
-	public void saveLedger(IWContext iwc, Page parentPage, int groupID, String coachName, int coachGroupID, String date) {
+	public void saveLedger(IWContext iwc, Page parentPage, String name, int groupID, String coachName, int coachGroupID, String date) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		CalBusiness calBiz = getCalBusiness(iwc);		
 		GroupBusiness grBiz =getGroupBusiness(iwc);
 		Collection playerGroups = null;
 		Group g = null;
-		String name = null;
 
 		try {
 			g = grBiz.getGroupByGroupID(groupID);			
@@ -71,17 +70,22 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 					Iterator playersGroupIter = playerGroups.iterator();
 					while(playersGroupIter.hasNext()) {
 						Group group = (Group) playersGroupIter.next();
-						name = group.getName();
+						String n = name;
+						if(n == null || n.equals("")) {
+							n = group.getName();
+						}
 						Integer grID = (Integer) group.getPrimaryKey();
-						calBiz.createNewLedger(name + "_ledger",grID.intValue(),coachName,date,coachGroupID);
+						calBiz.createNewLedger(n,grID.intValue(),coachName,date,coachGroupID);
 					}
 					parentPage.close();
 					parentPage.setOnLoad("window.opener.parent.location.reload()");
 				}
 			}			
-			else if(g.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)){			 
-				name = g.getName();
-				calBiz.createNewLedger(name + "_ledger",groupID,coachName,date,coachGroupID);
+			else if(g.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)){	
+				if(name == null || name.equals("")) {
+					name = g.getName();
+				}
+				calBiz.createNewLedger(name,groupID,coachName,date,coachGroupID);
 				parentPage.close();
 				parentPage.setOnLoad("window.opener.parent.location.reload()");				
 			}	
