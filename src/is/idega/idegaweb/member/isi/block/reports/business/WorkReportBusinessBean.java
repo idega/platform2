@@ -380,7 +380,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public int getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(int reportId, int wrGroupId){
 		int count = 0;
 		try {
-			Collection recs = getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,getWorkReportAccountKeyHome().findExpensesAccountKeys());
+			Collection recs = getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,getWorkReportAccountKeyHome().findExpensesAccountKeysWithoutSubKeys());
 			
 			Iterator iter = recs.iterator();
 			while (iter.hasNext()) {
@@ -390,6 +390,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 		catch (FinderException e) {
+			e.printStackTrace();
 			return 0;
 		}
 		

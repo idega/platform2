@@ -955,7 +955,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					
 					int totalPlayerCount = 0;
 					int cost = 0;
-					
 					totalPlayerCount = getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(report, league);
 					leagueStatsData = addToIntegerCount(totalCountOfPlayersForLeague, leagueStatsData, totalPlayerCount);
 					cost = getWorkReportBusiness().getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(((Integer)report.getPrimaryKey()).intValue(),((Integer)league.getPrimaryKey()).intValue());
