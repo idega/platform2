@@ -117,7 +117,7 @@ public class EJBWizard {
 		this.setEntityClassName(entityClass.getName());
 	}
 	public void setWorkingDirectory(File directory) {
-		System.out.println("Setting working dir=" + directory.getAbsolutePath());
+		//System.out.println("Setting working dir=" + directory.getAbsolutePath());
 		this.workingDirectory = directory;
 	}
 	public File getWorkingDirectory() {
