@@ -37,7 +37,7 @@ public class CampusApprover extends KeyEditor{
   private String redColor = "#942829";
   private String blueColor = "#27324B",lightBlue ="#ECEEF0";
   private int iSubjectId = -1;
-  private String sGlobalStatus = "S";
+  private String sGlobalStatus = "S",sGlobalOrder = Applicant.getFullnameOrderValue();
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
   private String bottomThickness = "8";
@@ -74,6 +74,13 @@ public class CampusApprover extends KeyEditor{
     }
     else if(modinfo.getSessionAttribute("gl_status")!=null){
       this.sGlobalStatus = ((String)modinfo.getSessionAttribute("gl_status"));
+    }
+    if(modinfo.getParameter("global_order")!=null){
+      this.sGlobalOrder= (modinfo.getParameter("global_order"));
+      modinfo.setSessionAttribute("gl_order",sGlobalOrder);
+    }
+    else if(modinfo.getSessionAttribute("gl_order")!=null){
+      this.sGlobalOrder = ((String)modinfo.getSessionAttribute("gl_order"));
     }
 
     if(isAdmin){
@@ -123,7 +130,7 @@ public class CampusApprover extends KeyEditor{
     Table T = new Table();
       T.setCellpadding(2);
       T.setCellspacing(1);
-    List L = ApplicationFinder.listOfNewApplicationHoldersInSubject(this.iSubjectId,this.sGlobalStatus);
+    List L = ApplicationFinder.listOfNewApplicationHoldersInSubject(this.iSubjectId,this.sGlobalStatus,this.sGlobalOrder);
 
     if(L != null){
       ListIterator iterator = L.listIterator();
@@ -132,6 +139,8 @@ public class CampusApprover extends KeyEditor{
       int row = 1;
       int col = 1;
 
+      Image printImage = new Image("/pics/print.gif");
+      Image viewImage = new Image("/pics/view.gif");
       T.add(headerText(iwrb.getLocalizedString("nr","Nr")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("name","Name")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
@@ -156,8 +165,8 @@ public class CampusApprover extends KeyEditor{
         T.add(formatText(A.getResidence()),col++,row);
         T.add(formatText(A.getPO()),col++,row);
         T.add(formatText(A.getResidencePhone()),col++,row);
-        T.add((getPDFLink(new Text("P"),A.getID())),col++,row);
-        T.add( getApplicationLink(a.getID()),col,row);
+        T.add((getPDFLink(printImage,A.getID())),col++,row);
+        T.add( getApplicationLink(viewImage,a.getID()),col,row);
         if(lastcol < col)
           lastcol = col;
       }
@@ -169,10 +178,10 @@ public class CampusApprover extends KeyEditor{
       T.setRowColor(lastrow,this.redColor);
       T.add(formatText(" "),1,lastrow);
       T.setHeight(lastrow,bottomThickness);
-      T.add(getPDFLink(new Text("Print"),sGlobalStatus,iSubjectId),1,++row);
+      T.add(getPDFLink(printImage,sGlobalStatus,iSubjectId),1,++row);
     }
     else{
-      T.add(formatText("Engar umsóknir í gagnagrunni"));
+      T.add(formatText(iwrb.getLocalizedString("no_applications","No applications in database")));
     }
     return T;
   }
@@ -529,11 +538,15 @@ public class CampusApprover extends KeyEditor{
     Form myForm = new Form();
     DropdownMenu drp = subjectDrop(String.valueOf(this.iSubjectId));
     DropdownMenu status = statusDrop("global_status",sGlobalStatus);
+    DropdownMenu order = orderDrop("global_order",sGlobalOrder);
     drp.setToSubmit();
     status.setToSubmit();
+    order.setToSubmit();
     setStyle(status);
+    setStyle(order);
     myForm.add(drp);
     myForm.add(status);
+    myForm.add(order);
     return myForm;
   }
 
@@ -574,6 +587,19 @@ public class CampusApprover extends KeyEditor{
     return drp;
   }
 
+   private DropdownMenu orderDrop(String name,String selected){
+    DropdownMenu drp = new DropdownMenu(name);
+    Applicant A = new Applicant();
+
+    drp.addMenuElement(A.getFullnameOrderValue(),iwrb.getLocalizedString("name","Name"));
+    drp.addMenuElement(A.getSSNColumnName(),iwrb.getLocalizedString("ssn","Socialnumber"));
+    drp.addMenuElement(A.getLegalResidenceColumnName(),iwrb.getLocalizedString("legal_residence","Legal Residence"));
+    drp.addMenuElement(A.getResidenceColumnName(),iwrb.getLocalizedString("residence","Residence"));
+    drp.addMenuElement(A.getResidenceColumnName(),iwrb.getLocalizedString("phone","Residence phone"));
+    drp.setSelectedElement(selected);
+    return drp;
+  }
+
   private Text boldText(String text){
     Text T = new Text(text);
     T.setBold();
@@ -585,8 +611,8 @@ public class CampusApprover extends KeyEditor{
     return boldText(String.valueOf(i));
   }
 
-  public Link getApplicationLink(int id){
-    Link L = new Link("X");
+  public Link getApplicationLink(ModuleObject MO,int id){
+    Link L = new Link(MO);
     L.setFontSize(1);
     L.addParameter("view",id);
     return L;

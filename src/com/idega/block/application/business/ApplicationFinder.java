@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.8 2001/07/18 11:42:02 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.9 2001/08/01 11:50:29 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,12 +61,16 @@ public class ApplicationFinder {
     }
   }
 
-
   public static List listOfNewApplicants(){
+    return listOfNewApplicants(null);
+  }
+
+
+  public static List listOfNewApplicants(String order){
     try {
        Applicant a = new Applicant();
       Application A = new Application();
-      StringBuffer sql = new StringBuffer("select ");
+      StringBuffer sql = new StringBuffer("select distinct ");
       sql.append(a.getEntityName());
       sql.append(".* from ");
       sql.append(a.getEntityName());
@@ -82,6 +86,11 @@ public class ApplicationFinder {
       sql.append(a.getIDColumnName());
       sql.append(" = ");
       sql.append(A.getApplicantIdColumnName());
+      if(order != null && order.length() > 0){
+        sql.append(" order by ");
+        sql.append( order);
+      }
+      System.err.println(sql.toString());
       return(EntityFinder.findAll(a,sql.toString()));
     }
     catch(SQLException e){
@@ -121,6 +130,38 @@ public class ApplicationFinder {
     return V;
   }
 
+  private static List listOfHolders(List lApplications,List lApplicants){
+    Vector V = null;
+    if(lApplications != null){
+      int len = lApplications.size();
+      System.err.println("applications length :"+len);
+      Hashtable H = new Hashtable(len);
+      for (int i = 0; i < len; i++) {
+        Application application = (Application) lApplications.get(i);
+        H.put(new Integer(application.getApplicantId()),application);
+      }
+
+      if(lApplicants != null){
+        int iLen = lApplicants.size();
+         System.err.println("applicant length :"+iLen);
+        Application application;
+        Applicant applicant;
+        ApplicationHolder AH;
+        V = new Vector();
+        for (int i = 0; i < iLen; i++) {
+          applicant = (Applicant) lApplicants.get(i);
+          Integer id = new Integer(applicant.getID());
+          if(H.containsKey(id)){
+            application = (Application) H.get(id);
+            AH = new ApplicationHolder(application,applicant);
+            V.addElement(AH);
+          }
+        }
+      }
+    }
+    return V;
+  }
+
   public static List listOfNewApplicationHolders(){
     List A = listOfNewApplicants();
     List L = listOfNewApplications();
@@ -138,6 +179,13 @@ public class ApplicationFinder {
     List L = listOfApplicationInSubject(id,status);
     return listOfApplicationHolders(L,A);
   }
+
+  public static List listOfNewApplicationHoldersInSubject(int id,String status,String order){
+    List A = listOfNewApplicants(order);
+    List L = listOfApplicationInSubject(id,status);
+    return listOfHolders(L,A);
+  }
+
 
   public static List listOfSubject() {
     try {

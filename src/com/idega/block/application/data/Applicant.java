@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.9 2001/08/01 11:17:37 aron Exp $
+ * $Id: Applicant.java,v 1.10 2001/08/01 11:49:54 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -64,6 +64,9 @@ public class Applicant extends GenericEntity {
   public static String getPOColumnName() {    return(po_);  }
   public static String getMobilePhoneColumnName() {    return(mobilePhone_);  }
   public static String getSendSMSColumnName() {    return(sendSMS_);  }
+  public static String getFullnameOrderValue(){
+    return getFirstNameColumnName()+","+getMiddleNameColumnName()+","+getLastNameColumnName();
+  }
 
   public void setFirstName(String name) {
     setColumn(firstName_,name);
