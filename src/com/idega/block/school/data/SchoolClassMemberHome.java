@@ -54,6 +54,7 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public SchoolClassMember findLatestFromElemAndHighSchoolByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException;
  public java.util.Collection getInvoiceIntervalTypes();
  public int getNumberOfPlacings(int p0,int p1)throws com.idega.data.IDOException;
+ public int getNumberOfSubGroupPlacings(int p0,int p1)throws com.idega.data.IDOException;
  public int getNumberOfPlacings(int p0)throws com.idega.data.IDOException;
  public int getNumberOfPlacingsAtSchool(int p0,int p1)throws com.idega.data.IDOException;
  public int getNumberOfUsersNotAssignedToClassOnGivenDate(com.idega.user.data.Group p0,java.sql.Date p1,java.util.Collection p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException,com.idega.data.IDOLookupException;

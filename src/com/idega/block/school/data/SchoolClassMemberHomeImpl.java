@@ -368,6 +368,13 @@ public int getNumberOfPlacings(int p0,int p1)throws com.idega.data.IDOException{
 	return theReturn;
 }
 
+public int getNumberOfSubGroupPlacings(int p0,int p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeGetNumberOfSubGroupPlacings(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getNumberOfPlacings(int p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeGetNumberOfPlacings(p0);

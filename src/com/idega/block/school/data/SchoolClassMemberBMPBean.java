@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/04/01 13:28:00 $ by $Author: anders $
- * @version $Revision: 1.108 $
+ *         Last modified: $Date: 2004/04/02 13:39:54 $ by $Author: laddi $
+ * @version $Revision: 1.109 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -417,6 +417,16 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public int ejbHomeGetNumberOfPlacings(int userID, int schoolClassID) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(MEMBER, userID).appendAndEquals(SCHOOLCLASS, schoolClassID);
+
+		return this.idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetNumberOfSubGroupPlacings(int userID, int schoolClassID) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).append("c, sch_sub_group_placements p");
+		sql.appendWhereEquals("c."+MEMBER, userID);
+		sql.appendAndEquals("p."+SCHOOLCLASS, schoolClassID);
+		sql.appendAndEquals("c.sch_class_member_id", "p.sch_class_member_id");
 
 		return this.idoGetNumberOfRecords(sql);
 	}

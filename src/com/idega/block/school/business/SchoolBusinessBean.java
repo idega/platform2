@@ -2169,8 +2169,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public boolean hasGroupPlacement(int userID, int groupID) {
+		return hasGroupPlacement(userID, groupID, false);
+	}
+
+	public boolean hasGroupPlacement(int userID, int groupID, boolean isSubGroup) {
 		try {
-			return getSchoolClassMemberHome().getNumberOfPlacings(userID, groupID) > 0;
+			if (isSubGroup) {
+				return getSchoolClassMemberHome().getNumberOfSubGroupPlacings(userID, groupID) > 0;
+			}
+			else {
+				return getSchoolClassMemberHome().getNumberOfPlacings(userID, groupID) > 0;
+			}
 		}
 		catch (IDOException ie) {
 			return false;
