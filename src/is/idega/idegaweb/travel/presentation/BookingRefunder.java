@@ -123,7 +123,11 @@ public class BookingRefunder extends TravelBlock {
 		String action  = iwc.getParameter(ACTION);
 
 		if (bookingSupplier.equals(super.getSupplier()) || super.isSuperAdmin ) {
-			if (action == null){
+			if (ccAuthEntry == null) {
+				table.add(getHeaderText(iwrb.getLocalizedString("travel.not_booked_with_a_creditcard", "Not booked with a creditcard")), 1, row);
+				++row;
+				table.add(getErrorText(iwrb.getLocalizedString("travel.not_booked_with_a_creditcard_long", "This booking was not booked using a creditcard. Please contact the supplier if this is incorrect.")), 1, row);
+			} else if (action == null){
 		    row = creditcardInputForm(iwc, table, row);
 			} else if (action.equals(PARAMETER_VERIFY)) {
 				row = verificationForm(iwc, table, row);
