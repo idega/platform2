@@ -183,13 +183,13 @@ public class ServiceDesigner extends TravelManager {
             tc.setValue(product.getText());
           }
 
-          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
+          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra_info"));
 
           Link tfAdder = new Link(iwrb.getLocalizedImageButton("travel.timeframes","Timeframes"));
             tfAdder.addParameter(TimeframeAdder._parameterProductId, product.getID());
             tfAdder.setWindowToOpen(TimeframeAdder.class);
 
-          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure places"));
+          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure_places"));
             addAdder.addParameter(AddressAdder._parameterProductId, product.getID());
             addAdder.setWindowToOpen(AddressAdder.class);
 
