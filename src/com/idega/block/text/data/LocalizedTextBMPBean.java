@@ -1,6 +1,7 @@
 //idega 2000 - Laddi
 package com.idega.block.text.data;
 
+import com.idega.util.text.TextSoap;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.util.idegaTimestamp;
@@ -26,6 +27,7 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
     addAttribute(getColumnNameBody(), "Body", true, true, java.lang.String.class,30000);
     addAttribute(getColumnNameCreated(), "Created", true, true, java.sql.Timestamp.class);
     addAttribute(getColumnNameUpdated(), "Updated", true, true, java.sql.Timestamp.class);
+    addAttribute(getColumnNameMarkupLanguage(), "The markup language of the text", true, true, java.lang.String.class);
   }
 
   public static String getEntityTableName(){ return "TX_LOCALIZED_TEXT";}
@@ -35,7 +37,7 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
   public static String getColumnNameBody(){ return "BODY";}
   public static String getColumnNameCreated(){ return "CREATED";}
   public static String getColumnNameUpdated(){ return "UPDATED";}
-
+  public static String getColumnNameMarkupLanguage(){ return "MARKUP_LANGUAGE";}
 
   public String getEntityName(){
     return getEntityTableName();
@@ -67,6 +69,12 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
   public void setBody(String body){
     setColumn(getColumnNameBody(), addBreaks(body));
   }
+  public String getMarkupLanguage(){
+    return getStringColumnValue(getColumnNameMarkupLanguage());
+  }
+  public void setMarkupLanguage(String markup){
+    setColumn(getColumnNameMarkupLanguage(), markup);
+  }
   public java.sql.Timestamp getCreated(){
     return (java.sql.Timestamp) getColumnValue(getColumnNameCreated());
   }
@@ -82,7 +90,7 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
 
   private String addBreaks(String text){
     //replace with local bean method? and a none html specific xml
-    return TextSoap.findAndReplace(text,"\r\n","<br>");
+    return TextSoap.findAndReplaceOnPrefixCondition(text, "\r\n", ">","<br/>",true);
   }
 
 }

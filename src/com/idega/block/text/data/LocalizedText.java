@@ -5,6 +5,7 @@ import javax.ejb.*;
 public interface LocalizedText extends com.idega.data.IDOLegacyEntity
 {
  public java.lang.String getBody();
+ public java.lang.String getMarkupLanguage();
  public java.sql.Timestamp getCreated();
  public java.lang.String getHeadline();
  public int getLocaleId();
@@ -13,6 +14,7 @@ public interface LocalizedText extends com.idega.data.IDOLegacyEntity
  public void setBody(java.lang.String p0);
  public void setCreated(java.sql.Timestamp p0);
  public void setHeadline(java.lang.String p0);
+ public void setMarkupLanguage(java.lang.String p0);
  public void setLocaleId(java.lang.Integer p0);
  public void setLocaleId(int p0);
  public void setTitle(java.lang.String p0);

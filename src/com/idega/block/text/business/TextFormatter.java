@@ -112,9 +112,8 @@ public class TextFormatter {
       //Almenn hreinsun
       textBody = TextSoap.findAndReplace(textBody,"*","<li>");
 
-      //if( textBody.indexOf("<")==-1 ){
-        textBody = TextSoap.findAndReplace(textBody, "\r\n", "<br>");
-      //}
+      textBody = TextSoap.findAndReplaceOnPrefixCondition(textBody, "\r\n", ">","<br/>",true);
+
       textBody = TextSoap.findAndReplace(textBody, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 
     //Búa til töflu
