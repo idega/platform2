@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.8 2003/08/24 06:50:02 anders Exp $
+ * $Id: ButtonPanel.java,v 1.9 2003/08/24 12:31:45 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.builder.data.IBPage;
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/24 06:50:02 $
+ * Last modified: $Date: 2003/08/24 12:31:45 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -77,6 +77,32 @@ public class ButtonPanel extends AccountingBlock {
 	public void addLocalizedButton(String parameter, String textKey, String defaultText, IBPage page) {
 		GenericButton button = new GenericButton(parameter, localize(textKey, defaultText));
 		button.setPageToOpen(page);
+		addButton(button);
+	}
+
+
+	/**
+	 * Adds a localized and formatted button to the panel with 
+	 * a confirm message and parameter.
+	 * The buttoms are added from left to right.
+	 * @param parameter the form parameter name for the button
+	 * @param textKey the text to localize
+	 * @param defaultText the default localized text
+	 * @param checkboxParameter the parameter name of the checkbox to confirm
+	 * @param comfirmTextKey the text key for the confirm message
+	 * @param confirmDefaultText the default text for the confirm message 
+	 * @author <a href="http://www.lindman.se">Kjell Lindman</a>
+	 */
+	public void addLocalizedConfirmButton(
+			String parameter,
+			String textKey,
+			String defaultText,
+			String checkboxParameter,
+			String confirmTextKey,
+			String confirmDefaultText) {
+		SubmitButton button = getLocalizedButton(parameter, textKey, defaultText);
+		button.setToEnableWhenChecked(checkboxParameter);
+		button.setSubmitConfirm(localize(confirmTextKey, confirmDefaultText));
 		addButton(button);
 	}
 

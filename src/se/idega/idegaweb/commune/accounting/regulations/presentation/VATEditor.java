@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.7 2003/08/24 06:50:02 anders Exp $
+ * $Id: VATEditor.java,v 1.8 2003/08/24 12:31:45 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/24 06:50:02 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/24 12:31:45 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -45,24 +45,30 @@ public class VATEditor extends AccountingBlock {
 	private final static int ACTION_SEARCH = 1;
 	private final static int ACTION_NEW = 2;
 	private final static int ACTION_SAVE = 3;
+	private final static int ACTION_DELETE = 4;
 	
 	private final static String PP = "cacc_vat_"; // Parameter prefix 
 
+	private final static String PARAMETER_SEARCH_PERIOD_FROM = PP + "period_search_from";
+	private final static String PARAMETER_SEARCH_PERIOD_TO = PP + "period_search_to";
 	private final static String PARAMETER_PERIOD_FROM = PP + "period_from";
 	private final static String PARAMETER_PERIOD_TO = PP + "period_to";
 	private final static String PARAMETER_DESCRIPTION = PP + "description";
 	private final static String PARAMETER_VAT_PERCENT = PP + "vat_percent";
 	private final static String PARAMETER_PAYMENT_FLOW_TYPE_ID = PP + "payment_flow_type_id";
 	private final static String PARAMETER_PROVIDER_TYPE_ID = PP + "provider_type_id";
+	private final static String PARAMETER_VAT_REGULATION_ID = PP + "vat_regulation_id";
 	private final static String PARAMETER_SEARCH = PP + "search";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
+	private final static String PARAMETER_DELETE = PP + "delete";
 	
 	private final static String KP = "vat_editor."; // key prefix 
 	
 	private final static String KEY_TITLE = KP + "title";
 	private final static String KEY_TITLE_ADD = KP + "title_add";
+	private final static String KEY_TITLE_DELETE = KP + "title_delete";
 	private final static String KEY_SCHOOL = KP + "school";
 	private final static String KEY_PERIOD = KP + "period";
 	private final static String KEY_DESCRIPTION = KP+ "description";
@@ -76,6 +82,8 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_CANCEL = KP + "cancel";
+	private final static String KEY_DELETE = KP + "delete";
+	private final static String KEY_CONFIRM_DELETE_MESSAGE = KP + "confirm_delete_message";
 
 	/**
 	 * @see com.idega.presentation.Block#main()
@@ -97,6 +105,9 @@ public class VATEditor extends AccountingBlock {
 					break;
 				case ACTION_SAVE :
 					handleSaveAction(iwc);
+					break;
+				case ACTION_DELETE :
+					handleDeleteAction(iwc);
 					break;
 			}
 		}
@@ -185,6 +196,21 @@ public class VATEditor extends AccountingBlock {
 		}
 		
 	}
+
+	/*
+	 * Handles the delete action for this block.
+	 */	
+	private void handleDeleteAction(IWContext iwc) {
+		String errorMessage = null;
+		try {
+			VATBusiness vb = getVATBusiness(iwc);
+		} catch (RemoteExpeption e) {
+			add(new ExceptionWrapper(e));
+		} catch (VATExpeption e) {
+			errorMessage = localize(e.getTextKey(), e.getDefaultText());
+		}
+		
+	}
 	 
 	/*
 	 * Returns the search panel for this block.
@@ -194,9 +220,9 @@ public class VATEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
 		table.add(getLocalizedText(KEY_SCHOOL, "Skola"), 2, 1);
 		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 2);
-		table.add(getTextInput(PARAMETER_PERIOD_FROM, "", 60), 2, 2);
+		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_FROM, "", 60), 2, 2);
 		table.add(getText(" - "), 2, 2);
-		table.add(getTextInput(PARAMETER_PERIOD_TO, "", 60), 2, 2);
+		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_TO, "", 60), 2, 2);
 		table.add(getLocalizedButton(PARAMETER_SEARCH, KEY_SEARCH, "Sök"), 5, 2);
 		return table;
 	}	
@@ -229,7 +255,7 @@ public class VATEditor extends AccountingBlock {
 			return t;
 		}
 
-		ListTable list = new ListTable(5);
+		ListTable list = new ListTable(6);
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_DESCRIPTION, "Benämning", 2);
 		list.setLocalizedHeader(KEY_VAT_PERCENT, "Procentsats", 3);
@@ -247,6 +273,7 @@ public class VATEditor extends AccountingBlock {
 				list.add(textKey, textKey);
 				textKey = vr.getProviderType().getTextKey();
 				list.add(textKey, textKey);
+				list.add(getCheckBox(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString()));
 			}
 		}
 
@@ -274,6 +301,13 @@ public class VATEditor extends AccountingBlock {
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel();
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
+		bp.addLocalizedConfirmButton(
+				PARAMETER_DELETE,
+				KEY_DELETE,
+				"Ta bort",
+				PARAMETER_VAT_REGULATION_ID,
+				KEY_CONFIRM_DELETE_MESSAGE,
+				"Vill du verkligen ta bort markerade momssatser?");
 		return bp;
 	}
 	
