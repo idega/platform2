@@ -515,7 +515,9 @@ public class ChildCareApplicationForm extends CommuneBlock {
 						while (iter3.hasNext()) {
 							school = (School) iter3.next();
 							String pk = school.getPrimaryKey().toString();
-							if (!hash.containsKey(pk)) {
+							boolean invisibleForCitizen = false;
+							invisibleForCitizen = school.getInvisibleForCitizen();
+							if (!hash.containsKey(pk)&& !invisibleForCitizen) {
 								a.append("schoolSelect.options[schoolSelect.options.length] = new Option(\"");
 								a.append(school.getSchoolName()).append("\",\"");
 								a.append(pk).append("\");\n\t\t");
