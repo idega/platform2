@@ -345,7 +345,7 @@ public class PublicBooking extends Block  {
 		    BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
         tm.begin();
 
-				float price = bf.getOrderPrice(iwc, product, stamp);
+//				float price = bf.getOrderPrice(iwc, product, stamp);
 
 //        TourBookingForm tbf = new TourBookingForm(iwc,product);
         int bookingId = bf.saveBooking(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
@@ -354,7 +354,7 @@ public class PublicBooking extends Block  {
         if (bookingId == BookingForm.inquirySent) {
           inquirySent = true;
           tm.commit();
-        }else {
+        }else {/*
           try {
             System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
 						String currency = bf.getCurrencyForBooking(gBooking);
@@ -407,9 +407,9 @@ public class PublicBooking extends Block  {
               case 75:
                 display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
                 break;
-              /*case 69:
-                display.setText(e.getErrorMessage());
-                break;*/
+              //case 69:
+              //  display.setText(e.getErrorMessage());
+              //  break;
               case 20:
               case 31:
                 display.setText(iwrb.getLocalizedString("travel.transaction_not_permitted","Transaction not permitted"));
@@ -424,7 +424,7 @@ public class PublicBooking extends Block  {
 
             throw e;
           }
-
+*/
           gBooking.setCreditcardAuthorizationNumber(heimild);
           gBooking.store();
 
@@ -435,11 +435,11 @@ public class PublicBooking extends Block  {
 
       }catch(com.idega.block.tpos.business.TPosException e) {
       	if (!e.getMessage().equals("")) {
-	        display.addToText(" ( "+e.getMessage()+" )");
+	        display.addToText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")+" ( "+e.getMessage()+" )");
       	}
         //e.printStackTrace(System.err);
-        gBooking.setIsValid(false);
-        gBooking.store();
+//        gBooking.setIsValid(false);
+//        gBooking.store();
         try {
           tm.commit();
         }catch(Exception ex) {
