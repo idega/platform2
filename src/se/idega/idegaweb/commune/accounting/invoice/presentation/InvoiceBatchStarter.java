@@ -122,6 +122,13 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		}
 	}
 	
+	protected Date getParamMonth(){
+		Date month = null;
+		if(getIWContext().getParameter(PARAM_MONTH)!=null){
+			month = new IWTimestamp(getIWContext().getParameter(PARAM_MONTH)).getDate();
+		}		
+		return month;
+	}
 	/**
 	 * @param iwc
 	 */

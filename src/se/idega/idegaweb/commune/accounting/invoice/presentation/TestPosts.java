@@ -9,6 +9,8 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.invoice.business.BatchRunQueue;
 import se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -18,6 +20,7 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
@@ -27,6 +30,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
+import com.idega.util.CalendarMonth;
 
 /**
  * Starts the batch run that will create billing and invoicing information
@@ -57,8 +61,8 @@ public class TestPosts extends InvoiceBatchStarter {
             DropdownMenu dropDown = getDropdownMenu(PAR_PROVIDER,
                     getSchools(getIWContext()), "getSchoolName");
             dropDown.setToSubmit(false);
-            if (_currentSchool != null) {
-                dropDown.setSelectedElement((String) _currentSchool
+            if (getSelectedSchool() != null) {
+                dropDown.setSelectedElement((String) getSelectedSchool()
                         .getPrimaryKey());
             }
             return getInputContainer("cacc_testposts_school", "School",
@@ -69,28 +73,64 @@ public class TestPosts extends InvoiceBatchStarter {
         }
     }
 
-    protected void handleSave(IWContext iwc, String schoolCategory) {
-        //Getting selected school
-        try {
-            SchoolHome schoolHome = (SchoolHome) IDOLookup
-                    .getHome(School.class);
-            int currentSchoolId = new Integer(iwc.getParameter(PAR_PROVIDER))
-                    .intValue();
-            _currentSchool = schoolHome.findByPrimaryKey("" + currentSchoolId);
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
-        } catch (FinderException ex) {
-            ex.printStackTrace();
-        }
+	protected void handleSave(IWContext iwc, String schoolCategory) {
+		if(isBatchAlreadyRun()){
+			add(getLocalizedText("se.idega.idegaweb.commune.accounting.invoice.presentation.testposts.already_run", "Batch already run"));	
+		}else{
+			super.handleSave(iwc, schoolCategory); //This call will result addBatchRunToQueue( ) being called
+		}
+	}
+	
+	private boolean isBatchAlreadyRun(){
+		IWContext iwc = getIWContext();
+		boolean batchRun = true;		
 
-        super.handleSave(iwc, schoolCategory);
-    }
+		PaymentHeaderHome home = null;
+
+		try {
+			home = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class));
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+			return true;
+		}		
+				
+		//Todo: rather use a has- method than a find- method for this
+		if (getParamMonth() != null){
+		}
+		try{
+			home.findBySchoolCategoryAndSchoolAndPeriodAndStatus(getSelectedSchool(), getCurrentSchoolCategory(iwc), new CalendarMonth (), "P");
+		} catch (FinderException e1) {
+			try {
+				home.findBySchoolCategoryAndSchoolAndPeriodAndStatus(getSelectedSchool(), getCurrentSchoolCategory(iwc), new CalendarMonth (getParamMonth()), "U");
+			} catch (FinderException e2) {
+				batchRun = false;	
+			}
+		}		
+
+		return batchRun;
+	}
+		
+    
+	private School getSelectedSchool(){
+		if (_currentSchool == null && getIWContext().isParameterSet(PAR_PROVIDER)){
+			try{
+				SchoolHome schoolHome = (SchoolHome) IDOLookup.getHome(School.class);			
+				int currentSchoolId = new Integer(getIWContext().getParameter(PAR_PROVIDER)).intValue();
+				_currentSchool = schoolHome.findByPrimaryKey("" + currentSchoolId);	
+			}catch(RemoteException ex){
+				ex.printStackTrace();
+			}catch(FinderException ex){ 
+				ex.printStackTrace();
+			}		
+		}		
+		return _currentSchool;
+	}    
 
     protected void addBatchRunToQueue(Date month, Date readDate,
             String schoolCategory, IWContext iwc)
             throws SchoolCategoryNotFoundException {
         BatchRunQueue.addBatchRunToQueue(month, readDate, schoolCategory,
-                _currentSchool, iwc, true);
+			getSelectedSchool(), iwc, true);
     }
 
     private Collection getSchools(IWContext iwc) {
