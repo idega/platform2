@@ -181,6 +181,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return getWorkReportMemberHome().getCountOfFemaleMembersByWorkReport(report);
 	}
 	
+	public int getCountOfPlayersByWorkReport(WorkReport report) {
+		return getWorkReportMemberHome().getCountOfPlayersByWorkReport(report);
+	}
+
+	public int getCountOfMalePlayersByWorkReport(WorkReport report) {
+		return getWorkReportMemberHome().getCountOfMalePlayersByWorkReport(report);
+	}
+
+	public int getCountOfFemalePlayersByWorkReport(WorkReport report) {
+		return getWorkReportMemberHome().getCountOfFemalePlayersByWorkReport(report);
+	}
+		
+	
 	//equal or older
 	public int getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,league);
@@ -206,6 +219,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return getWorkReportMemberHome().getCountOfFemaleMembersEqualOrOlderThanAgeByWorkReport(age, report);
 	}
 	
+	public int getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeByWorkReport(age, report);
+	}
+
+	public int getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeByWorkReport(age, report);
+	}
+
+	public int getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfFemaleMembersEqualOrOlderThanAgeByWorkReport(age, report);
+	}
+	
+	
 	//younger
 	public int getCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		return getWorkReportMemberHome().getCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,league);
@@ -230,6 +256,22 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public int getCountOfFemaleMembersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
 		return getWorkReportMemberHome().getCountOfFemaleMembersOfYoungerAgeByWorkReport(age, report);
 	}
+	
+	
+	
+	public int getCountOfPlayersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfPlayersOfYoungerAgeByWorkReport(age, report);
+	}
+
+	public int getCountOfMalePlayersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeByWorkReport(age, report);
+	}
+
+	public int getCountOfFemalePlayersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeByWorkReport(age, report);
+	}
+	
+	
 	
 /*	data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
 						data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
