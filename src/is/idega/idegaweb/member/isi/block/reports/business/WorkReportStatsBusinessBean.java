@@ -2418,7 +2418,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then iterate the map and insert into the final report collection.
 		HashSet clubSet = (clubsFilter==null)?(new HashSet()):(new HashSet(clubsFilter));
 		if(umfiClubsFilter!=null) {
-			clubSet.add(umfiClubsFilter);
+			clubSet.addAll(umfiClubsFilter);
 		}
 		if(clubSet.isEmpty()) {
 			clubSet = null;
