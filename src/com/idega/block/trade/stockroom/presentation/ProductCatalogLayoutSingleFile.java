@@ -83,7 +83,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 	    }
 	    table.add(productCatalog.getNamePresentationObject(product), 1, row);
 
-	    if (productCatalog._showThumbnail) {
+	    if (productCatalog._showThumbnail && !productCatalog._showTeaser) {
 	      if (fileId != -1) {
 		image = new Image(fileId);
 		table.add(image, 4, row);
@@ -96,6 +96,13 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 		++row;
 		table.mergeCells(1, row, 3, row);
 		table.setWidth(1, row, "100%");
+	    if (productCatalog._showThumbnail) {
+	      if (fileId != -1) {
+			image = new Image(fileId);
+			table.add(image, 1, row);
+	      }
+	    }
+
 		table.add(productCatalog.getTeaserText(teaser), 1,row);
 		table.setHeight(++row,"12");
 	      }
