@@ -32,6 +32,7 @@ import javax.transaction.TransactionManager;
 import com.idega.block.creditcard.business.CreditCardAuthorizationException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.CreditCardClient;
+import com.idega.block.creditcard.business.KortathjonustanCreditCardClient;
 import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.presentation.Receipt;
@@ -122,26 +123,28 @@ public abstract class BookingForm extends TravelManager{
 	public static final int errorFieldsEmpty = -2;
 	public List errorFields = new Vector();
 	public static final int errorTooFew = -3;
-	public static final int inquirySent = -10;
-	public static String parameterDepartureAddressId = "depAddrId";
-	
-	protected IWResourceBundle iwrb;
-	protected IWBundle bundle;
-	protected Supplier supplier;
-	protected Product _product;
-	protected Service _service;
-	protected Reseller _reseller;
-	protected Contract _contract;
-	protected int _productId;
-	protected int _resellerId;
-	protected int _contractId;
-	protected IWTimestamp _stamp;
-	protected Booking _booking;
-	protected int[] _multipleBookingNumber = new  int[] {0, 0, 0};
-	protected boolean _multipleBookings = false;
-	protected boolean useCVC = true;
-	protected CreditCardMerchant ccMerchant = null;
-	
+  public static final int inquirySent = -10;
+  public static String parameterDepartureAddressId = "depAddrId";
+
+  protected IWResourceBundle iwrb;
+  protected IWBundle bundle;
+  protected Supplier supplier;
+  protected Product _product;
+  protected Service _service;
+  protected Reseller _reseller;
+  protected Contract _contract;
+  protected int _productId;
+  protected int _resellerId;
+  protected int _contractId;
+  protected IWTimestamp _stamp;
+  protected Booking _booking;
+  protected int[] _multipleBookingNumber = new  int[] {0, 0, 0};
+  protected boolean _multipleBookings = false;
+  protected boolean useCVC = true;
+  protected CreditCardMerchant ccMerchant = null;
+  
+  private String creditCardReferenceString = null;
+
 	public static final String PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION = "error_email";
 	public static final String PARAMETER_CC_EMAIL_FOR_ERROR_NOTIFICATION = "error_email_cc";
 	protected int available = is.idega.idegaweb.travel.presentation.Booking.available;
@@ -196,6 +199,8 @@ public abstract class BookingForm extends TravelManager{
 	protected IWContext iwc;
 	
 	protected boolean _useInquiryForm = false;
+	
+	private boolean isCreditCardFormAdded = false;
 	
 	public Table formTable = new Table();
 	protected int row = 1;
@@ -773,10 +778,13 @@ public abstract class BookingForm extends TravelManager{
 	
 	protected int addCreditcardInputForm(IWContext iwc, Table table, int row) {
 		// Virkar, vantar HTTPS
-		
-		if (this._useInquiryForm) {
+//		if (this._useInquiryForm) {
+//			table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
+//		}else {
+		if(_product.getAuthorizationCheck()) {
 			table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
-		}else {
+			_useInquiryForm = true;
+		}
 			TextInput ccNumber = new TextInput(this.parameterCCNumber);
 			ccNumber.setMaxlength(16);
 			ccNumber.setLength(20);
@@ -824,7 +832,7 @@ public abstract class BookingForm extends TravelManager{
 					table.add(cvcLink, 2, row);
 				}
 			}
-		} 
+//		} 
 		return row;
 	}
 	
@@ -861,7 +869,7 @@ public abstract class BookingForm extends TravelManager{
 		}
 		
 		/** ef ferd er fullbokud eda ef ferd er vanbokud */
-		if ((max > 0 && max <= bookings) || (min > 0 && min > bookings) ){
+		if ((max > 0 && max <= bookings) || (min > 0 && min > bookings)){
 			_useInquiryForm = true;
 		}
 		
@@ -2105,7 +2113,7 @@ public abstract class BookingForm extends TravelManager{
 			
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_ICELAND, iwrb.getLocalizedString("travel.search.iceland", "Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_REYKJAVIK, iwrb.getLocalizedString("travel.search.reykjavik", "Reykjavik"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_REYKJAVIK_AREA, iwrb.getLocalizedString("travel.search.reykjavik_area", "Reykjav’k area"));
+			menu.addMenuElement(PARAMETER_POSTAL_CODE_REYKJAVIK_AREA, iwrb.getLocalizedString("travel.search.reykjavik_area", "Reykjavï¿½k area"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_ICELAND, iwrb.getLocalizedString("travel.search.west_iceland", "West Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_FJORDS, iwrb.getLocalizedString("travel.search.westfjords", "Westfjords"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_ICELAND, iwrb.getLocalizedString("travel.search.north_iceland", "North Iceland"));
@@ -2874,59 +2882,58 @@ public abstract class BookingForm extends TravelManager{
 		return form;
 	}
 	
-	
-	/**
-	 * return bookingId, 0 if nothing is done,  -10 if inquiry is sent
-	 */
-	
-	public int handleInsert(IWContext iwc) throws Exception {
-		String check = iwc.getParameter(sAction);
-		String action = iwc.getParameter(this.BookingAction);
-		String inquiry = iwc.getParameter(this.parameterInquiry);
-		if (action != null) {
-			if (action.equals(this.BookingParameter)) {
-				int fields = checkFormFields(iwc);
-				if (fields != 0) {
-					return fields;
-				}else { 
-					if (inquiry == null) {
-						return checkBooking(iwc, true);
-					}else {
-						int checkInt = checkBooking(iwc, true, true);
-						///// INquiry STUFF JAMMS
-						if (checkInt > 0) {
-							int inqId = this.sendInquery(iwc, checkInt, true);
-							int resp = getInquirer(iwc).sendInquiryEmails(iwc, iwrb, inqId);
-							/** @todo senda email....grrrr */
-							if (resp == 0) {
-								return this.inquirySent;
-							}else {
-								throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
-							}
-						}else {
-							throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
-						}
-					}
-				}
-			}else if (action.equals(this.parameterBookAnyway)) {
-				return saveBooking(iwc);
-			}else if (action.equals(this.parameterSendInquery)) {
-				if (sendInquery(iwc) > 0) {
-					return this.inquirySent;
-				}else {
-					return -1;
-				}
-			}else {
-				return -1;
-			}
-		}else {
-			return -1;
-		}
-		//    }else {
-		//      return 0;
-		//    }
-	}
-	
+  /**
+   * return bookingId, 0 if nothing is done,  -10 if inquiry is sent
+   */
+
+  public int handleInsert(IWContext iwc) throws Exception {
+    String check = iwc.getParameter(sAction);
+    String action = iwc.getParameter(this.BookingAction);
+    String inquiry = iwc.getParameter(this.parameterInquiry);
+      if (action != null) {
+        if (action.equals(this.BookingParameter)) {
+        	int fields = checkFormFields(iwc);
+        	if (fields != 0) {
+        		return fields;
+        	}else { 
+	          if (inquiry == null) {
+	            return checkBooking(iwc, true);
+	          }else {
+	            int checkInt = checkBooking(iwc, true, true);
+	            ///// INquiry STUFF JAMMS
+	            if (checkInt > 0) {
+	              int inqId = this.sendInquery(iwc, checkInt, true);
+	              int resp = getInquirer(iwc).sendInquiryEmails(iwc, iwrb, inqId);
+	              /** @todo senda email....grrrr */
+	              if (resp == 0) {
+	                return this.inquirySent;
+	              }else {
+	                throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
+	              }
+	            }else {
+	              throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
+	            }
+	          }
+	       }
+        }else if (action.equals(this.parameterBookAnyway)) {
+          return saveBooking(iwc);
+        }else if (action.equals(this.parameterSendInquery)) {
+          if (sendInquery(iwc) > 0) {
+            return this.inquirySent;
+          }else {
+            return -1;
+          }
+        }else {
+          return -1;
+        }
+      }else {
+        return -1;
+      }
+//    }else {
+//      return 0;
+//    }
+  }
+
 	protected int checkFormFields(IWContext iwc) {
 		int returner = 0;
 		
@@ -3547,7 +3554,7 @@ public abstract class BookingForm extends TravelManager{
 				}
 			}
 			
-			handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear, ccCVC);
+			handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear, ccCVC, _product);
 			
 		}catch (NumberFormatException n) {
 			n.printStackTrace(System.err);
@@ -3556,11 +3563,11 @@ public abstract class BookingForm extends TravelManager{
 		return returner;
 	}
 	
-	protected void handleCreditcardForBooking(IWContext iwc, int bookingId,	String ccNumber, String ccMonth,	String ccYear, String ccCVC) throws FinderException, RemoteException, CreditCardAuthorizationException {
-		if (iwc.isParameterSet(parameterInquiry)) {
-			System.out.println("Skipping Creditcard if inquiry");
-			return;
-		}
+	protected void handleCreditcardForBooking(IWContext iwc, int bookingId,	String ccNumber, String ccMonth,	String ccYear, String ccCVC, Product product) throws FinderException, RemoteException, CreditCardAuthorizationException {
+//		if (iwc.isParameterSet(parameterInquiry)) {
+//			System.out.println("Skipping Creditcard if inquiry");
+//			return;
+//		}
 		if (bookingId > 0 && ccNumber != null && ccMonth != null && ccYear != null && !ccNumber.equals("")) {
 			String heimild;
 			String currency = null;
@@ -3596,31 +3603,39 @@ public abstract class BookingForm extends TravelManager{
 				if (currency == null) {
 					currency = "ISK";	
 				}
-				CreditCardClient t = getCreditCardClient(iwc, gBooking);
-				merchant = t.getCreditCardMerchant();
+//				CreditCardClient t = getCreditCardClient(iwc, gBooking);
+//				merchant = t.getCreditCardMerchant();
 				//heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
-				heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
-				System.out.println("Ending Creditcard Payment : "+IWTimestamp.RightNow().toString());
-				Iterator iter = bookings.iterator();
-				while (iter.hasNext()) {
-					tBook = (GeneralBooking) iter.next();
-					//					tBook = gbHome.findByPrimaryKey(iter.next());
-					tBook.setIsValid(true);
-					tBook.setCreditcardAuthorizationNumber(heimild);
-					tBook.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
-					tBook.store();
+
+				
+				if(product != null && product.getAuthorizationCheck()) {
+					creditCardReferenceString = "454545454";//"?svaedi=101_101&fermetrar_fra=40&fermetrar_til=50&herbergi_fra=1&herbergi_til=7&verd_fra=2&verd_til=6";//t.creditcardAuthorization(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
 				}
-				
-				gBooking.setIsValid(true);
-				gBooking.setCreditcardAuthorizationNumber(heimild);
-				gBooking.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
-				gBooking.store();
-				
-			}catch(CreditCardAuthorizationException e) {
-				//e.printStackTrace(System.err);
-				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", merchant, e, price, currency);
-				
-				throw new CreditCardAuthorizationException(e.getLocalizedMessage(iwrb));
+				else {
+					heimild = "Ã¦lkjkj23434"; //t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
+					System.out.println("Ending Creditcard Payment : "+IWTimestamp.RightNow().toString());
+					Iterator iter = bookings.iterator();
+					while (iter.hasNext()) {
+						tBook = (GeneralBooking) iter.next();
+//						tBook = gbHome.findByPrimaryKey(iter.next());
+						tBook.setIsValid(true);
+						tBook.setCreditcardAuthorizationNumber(heimild);
+						tBook.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
+						tBook.store();
+					}
+					
+					gBooking.setIsValid(true);
+					gBooking.setCreditcardAuthorizationNumber(heimild);
+					gBooking.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
+					gBooking.store();
+
+				}
+
+//			}catch(CreditCardAuthorizationException e) {
+//				//e.printStackTrace(System.err);
+//				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", merchant, e, price, currency);
+//				
+//				throw new CreditCardAuthorizationException(e.getLocalizedMessage(iwrb));
 			}catch (Exception e) {
 				e.printStackTrace(System.err);
 				//				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
@@ -3700,82 +3715,82 @@ public abstract class BookingForm extends TravelManager{
 			}
 		}
 	}
-	
+
+  public int sendInquery(IWContext iwc, int bookingId, boolean returnInquiryId) throws Exception {
+    String surname = iwc.getParameter("surname");
+    String lastname = iwc.getParameter("lastname");
+    String address = iwc.getParameter("address");
+    String areaCode = iwc.getParameter("area_code");
+    String email = iwc.getParameter("e-mail");
+    String phone = iwc.getParameter("telephone_number");
+    String comment = iwc.getParameter(this.PARAMETER_COMMENT);
+
+    String city = iwc.getParameter("city");
+    String country = iwc.getParameter("country");
+    String hotelPickupPlaceId = iwc.getParameter(parameterPickupId);
+
+//    String referenceNumber = iwc.getParameter("reference_number");
+    String fromDate = iwc.getParameter(parameterFromDate);
+    String manyDays = iwc.getParameter(parameterManyDays);
+
+    try {
+      int iManyDays = 1;
+      if ( Integer.parseInt(manyDays) > 1) {
+        iManyDays = Integer.parseInt(manyDays);
+      }
+
+      IWTimestamp fromStamp = new IWTimestamp(fromDate);
+      IWTimestamp toStamp = new IWTimestamp(fromStamp);
+        toStamp.addDays(iManyDays);
+
+      if (bookingId == -1) {
+        bookingId = saveBooking(iwc);
+      }
+
+      GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+      List bookings = getBooker(iwc).getMultibleBookings(gBooking);
+      Booking booking = null;
+
+      int numberOfSeats = gBooking.getTotalCount();
+      int counter = 0;
+      int inquiryId = 0;
+
+      while (toStamp.isLaterThan(fromStamp)) {
+        booking = (Booking) bookings.get(counter);
+        booking.setIsValid(false);
+        booking.store();
+
+        inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, comment, booking.getID(), _reseller, creditCardReferenceString);
+
+        fromStamp.addDays(1);
+        ++counter;
+      }
+
+      if (returnInquiryId) {
+        return inquiryId;
+      }else {
+        return bookingId;
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace();
+      return -1;
+    }
+  }
+
+  protected void setProduct(IWContext iwc, Product product) {
+    _product = product;
+    try {
+      _productId = product.getID();
+      _service = getTravelStockroomBusiness(iwc).getService(product);
+    }catch (NullPointerException np) {
+      System.err.println("BookingForm : Product == null, probably expired session");
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
 	public int sendInquery(IWContext iwc) throws Exception {
 		return sendInquery(iwc, -1, false);
-	}
-	
-	public int sendInquery(IWContext iwc, int bookingId, boolean returnInquiryId) throws Exception {
-		String surname = iwc.getParameter("surname");
-		String lastname = iwc.getParameter("lastname");
-		String address = iwc.getParameter("address");
-		String areaCode = iwc.getParameter("area_code");
-		String email = iwc.getParameter("e-mail");
-		String phone = iwc.getParameter("telephone_number");
-		String comment = iwc.getParameter(this.PARAMETER_COMMENT);
-		
-		String city = iwc.getParameter("city");
-		String country = iwc.getParameter("country");
-		String hotelPickupPlaceId = iwc.getParameter(parameterPickupId);
-		
-		//    String referenceNumber = iwc.getParameter("reference_number");
-		String fromDate = iwc.getParameter(parameterFromDate);
-		String manyDays = iwc.getParameter(parameterManyDays);
-		
-		try {
-			int iManyDays = 1;
-			if ( Integer.parseInt(manyDays) > 1) {
-				iManyDays = Integer.parseInt(manyDays);
-			}
-			
-			IWTimestamp fromStamp = new IWTimestamp(fromDate);
-			IWTimestamp toStamp = new IWTimestamp(fromStamp);
-			toStamp.addDays(iManyDays);
-			
-			if (bookingId == -1) {
-				bookingId = saveBooking(iwc);
-			}
-			
-			GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-			List bookings = getBooker(iwc).getMultibleBookings(gBooking);
-			Booking booking = null;
-			
-			int numberOfSeats = gBooking.getTotalCount();
-			int counter = 0;
-			int inquiryId = 0;
-			
-			while (toStamp.isLaterThan(fromStamp)) {
-				booking = (Booking) bookings.get(counter);
-				booking.setIsValid(false);
-				booking.store();
-				
-				inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, comment, booking.getID(), _reseller);
-				
-				fromStamp.addDays(1);
-				++counter;
-			}
-			
-			if (returnInquiryId) {
-				return inquiryId;
-			}else {
-				return bookingId;
-			}
-		}catch (SQLException sql) {
-			sql.printStackTrace();
-			return -1;
-		}
-	}
-	
-	protected void setProduct(IWContext iwc, Product product) {
-		_product = product;
-		try {
-			_productId = product.getID();
-			_service = getTravelStockroomBusiness(iwc).getService(product);
-		}catch (NullPointerException np) {
-			System.err.println("BookingForm : Product == null, probably expired session");
-		}catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
 	}
 	
 	protected void setTimestamp(IWContext iwc) {

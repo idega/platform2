@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
+import is.idega.idegaweb.travel.business.InquirerBean;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.data.BookingEntry;
@@ -55,7 +56,7 @@ import com.idega.util.IWTimestamp;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href mailto:"gimmi@idega.is">Grímur Jónsson</a>
+ * @author <a href mailto:"gimmi@idega.is">Grï¿½mur Jï¿½nsson</a>
  * @version 1.0
  */
 
@@ -1877,7 +1878,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 			gBooking.setIsValid(false);
 			gBooking.store();
 	
-	    inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, stamp, _product.getID() , numberOfSeats, comment, gBooking.getID(), _reseller);
+	    inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, stamp, _product.getID() , numberOfSeats, comment, gBooking.getID(), _reseller, null);
 	
 
       if (returnInquiryId) {

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.business.InquirerBean;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -10,27 +11,31 @@ import is.idega.idegaweb.travel.data.InqueryHome;
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
+import com.idega.block.creditcard.business.CreditCardBusiness;
+import com.idega.block.creditcard.business.CreditCardClient;
 import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.creditcard.presentation.Receipt;
 import com.idega.block.creditcard.presentation.ReceiptWindow;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.data.TravelAddressHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
@@ -87,6 +92,9 @@ public class Booking extends TravelManager {
 	private static String parameterRespondYes = "bookingYes";
 	private static String parameterRespondNo = "bookingNo";
 	private static String parameterRespondDel = "inquiryDel";
+	private static String parameterRespondCCYes = "bookingCCYes";
+	private static String parameterRespondCCNo = "bookingCCNo";
+	private static String parameterRespondCCDel = "bookingCCDel";
 
 	public static String parameterUpdateBooking = "bookinUpdateBooking";
 
@@ -369,7 +377,7 @@ public class Booking extends TravelManager {
 				Inquery[] inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
 				if (inqueries.length > 0) {
-					table.add(getInqueries(iwc, inqueries), 1, row);
+					table.add(getInqueries(iwc, inqueries, product), 1, row);
 					table.setColor(1, row, super.YELLOW);
 					++row;
 				}
@@ -382,7 +390,7 @@ public class Booking extends TravelManager {
 				Inquery[] inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 
 				if (inqueries.length > 0) {
-					table.add(getInqueries(iwc, inqueries), 1, row);
+					table.add(getInqueries(iwc, inqueries, product), 1, row);
 					table.setColor(1, row, super.YELLOW);
 					++row;
 				}
@@ -416,7 +424,7 @@ public class Booking extends TravelManager {
 					Inquery[] inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
 					if (inqueries.length > 0) {
-						table.add(getInqueries(iwc, inqueries), 1, row);
+						table.add(getInqueries(iwc, inqueries, product), 1, row);
 						table.setColor(1, row, super.YELLOW);
 						++row;
 					}
@@ -429,7 +437,7 @@ public class Booking extends TravelManager {
 					Inquery[] inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 
 					if (inqueries.length > 0) {
-						table.add(getInqueries(iwc, inqueries), 1, row);
+						table.add(getInqueries(iwc, inqueries, product), 1, row);
 						table.setColor(1, row, super.YELLOW);
 						++row;
 					}
@@ -444,7 +452,7 @@ public class Booking extends TravelManager {
 					Inquery[] inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
 					if (inqueries.length > 0) {
-						table.add(getInqueries(iwc, inqueries), 1, row);
+						table.add(getInqueries(iwc, inqueries, product), 1, row);
 						table.setColor(1, row, super.YELLOW);
 						++row;
 					}
@@ -457,7 +465,7 @@ public class Booking extends TravelManager {
 					Inquery[] inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 
 					if (inqueries.length > 0) {
-						table.add(getInqueries(iwc, inqueries), 1, row);
+						table.add(getInqueries(iwc, inqueries, product), 1, row);
 						table.setColor(1, row, super.YELLOW);
 						++row;
 					}
@@ -518,11 +526,11 @@ public class Booking extends TravelManager {
 		}
 	}
 
-	private Table getInqueries(IWContext iwc, Inquery[] inqueries) throws RemoteException, FinderException, CreateException {
+	private Table getInqueries(IWContext iwc, Inquery[] inqueries, Product product) throws RemoteException, FinderException, CreateException {
 		Table table = new Table();
 		table.setWidth("100%");
 		table.setBorder(0);
-		table.setCellspacing(0);
+		table.setCellspacing(1);
 
 		int row = 0;
 
@@ -605,27 +613,61 @@ public class Booking extends TravelManager {
 			++row;
 			table.mergeCells(2, row, 3, row);
 			table.setAlignment(2, row, "right");
+			
+			Collection resellers = null;
+			try {
+				resellers = inqueries[i].getResellers();
+			}
+			catch (IDORelationshipException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
 
 			if (supplier != null) {
-				answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking", "Confirm booking"));
-				answerYes.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
-				answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
-				answerYes.addParameter(BookingForm.sAction, this.parameterRespondInquery);
-				answerYes.addParameter("year", this.stamp.getYear());
-				answerYes.addParameter("month", this.stamp.getMonth());
-				answerYes.addParameter("day", this.stamp.getDay());
+				if(inqueries[i].getInqueryType() != null && inqueries[i].getInqueryType().equals(InquirerBean.INQUERYTYPE_CREDITCARD)) {
+					Link answerCCYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking", "Confirm booking"));
+					answerCCYes.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
+					answerCCYes.addParameter(this.parameterRespondInquery, this.parameterRespondCCYes);
+					answerCCYes.addParameter(BookingForm.sAction, this.parameterRespondInquery);
+					answerCCYes.addParameter("year", this.stamp.getYear());
+					answerCCYes.addParameter("month", this.stamp.getMonth());
+					answerCCYes.addParameter("day", this.stamp.getDay());
+					
+					Link answerCCNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking", "Reject booking"));
+					answerCCNo.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
+					answerCCNo.addParameter(this.parameterRespondInquery, this.parameterRespondCCNo);
+					answerCCNo.addParameter(BookingForm.sAction, this.parameterRespondInquery);
+					answerCCNo.addParameter("year", this.stamp.getYear());
+					answerCCNo.addParameter("month", this.stamp.getMonth());
+					answerCCNo.addParameter("day", this.stamp.getDay());
+					
+					table.add(answerCCYes, 2, row);
+					table.add("&nbsp;&nbsp;", 2, row);
+					table.add(answerCCNo, 2, row);
+				}
+				else {
+					answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking", "Confirm booking"));
+					answerYes.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
+					answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
+					answerYes.addParameter(BookingForm.sAction, this.parameterRespondInquery);
+					answerYes.addParameter("year", this.stamp.getYear());
+					answerYes.addParameter("month", this.stamp.getMonth());
+					answerYes.addParameter("day", this.stamp.getDay());
 
-				answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking", "Reject booking"));
-				answerNo.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
-				answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
-				answerNo.addParameter(BookingForm.sAction, this.parameterRespondInquery);
-				answerNo.addParameter("year", this.stamp.getYear());
-				answerNo.addParameter("month", this.stamp.getMonth());
-				answerNo.addParameter("day", this.stamp.getDay());
+					answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking", "Reject booking"));
+					answerNo.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
+					answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
+					answerNo.addParameter(BookingForm.sAction, this.parameterRespondInquery);
+					answerNo.addParameter("year", this.stamp.getYear());
+					answerNo.addParameter("month", this.stamp.getMonth());
+					answerNo.addParameter("day", this.stamp.getDay());
 
-				table.add(answerYes, 2, row);
-				table.add("&nbsp;&nbsp;", 2, row);
-				table.add(answerNo, 2, row);
+					table.add(answerYes, 2, row);
+					table.add("&nbsp;&nbsp;", 2, row);
+					table.add(answerNo, 2, row);
+				}
 			}
 			else if (reseller != null) {
 				answerNo = new Link(iwrb.getLocalizedImageButton("travel.cancel_inquiry", "Cancel sinquiry"));
@@ -635,15 +677,28 @@ public class Booking extends TravelManager {
 
 				table.add(answerNo, 2, row);
 			}
-			answerDel = new Link(iwrb.getLocalizedImageButton("travel.delete_inquiry", "Delete inquiry"));
-			answerDel.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
-			answerDel.addParameter(this.parameterRespondInquery, this.parameterRespondDel);
-			answerDel.addParameter(BookingForm.sAction, this.parameterRespondInquery);
-			answerDel.addParameter("year", this.stamp.getYear());
-			answerDel.addParameter("month", this.stamp.getMonth());
-			answerDel.addParameter("day", this.stamp.getDay());
-			table.add("&nbsp;&nbsp;", 2, row);
-			table.add(answerDel, 2, row);
+			if(inqueries[i].getInqueryType() != null && inqueries[i].getInqueryType().equals(InquirerBean.INQUERYTYPE_CREDITCARD)) {
+				Link answerCCDel = new Link(iwrb.getLocalizedImageButton("travel.delete_inquiry", "Delete inquiry"));
+				answerCCDel.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
+				answerCCDel.addParameter(this.parameterRespondInquery, this.parameterRespondCCDel);
+				answerCCDel.addParameter(BookingForm.sAction, this.parameterRespondInquery);
+				answerCCDel.addParameter("year", this.stamp.getYear());
+				answerCCDel.addParameter("month", this.stamp.getMonth());
+				answerCCDel.addParameter("day", this.stamp.getDay());
+			}
+			else {
+				answerDel = new Link(iwrb.getLocalizedImageButton("travel.delete_inquiry", "Delete inquiry"));
+				answerDel.addParameter(this.parameterInqueryId, ((Integer) inqueries[i].getPrimaryKey()).intValue());
+				answerDel.addParameter(this.parameterRespondInquery, this.parameterRespondDel);
+				answerDel.addParameter(BookingForm.sAction, this.parameterRespondInquery);
+				answerDel.addParameter("year", this.stamp.getYear());
+				answerDel.addParameter("month", this.stamp.getMonth());
+				answerDel.addParameter("day", this.stamp.getDay());
+				table.add("&nbsp;&nbsp;", 2, row);
+				table.add(answerDel, 2, row);
+			}
+
+			
 		}
 
 		return table;
@@ -907,7 +962,7 @@ public class Booking extends TravelManager {
 			int returner = bf.handleInsert(iwc);
 
 			if (returner == bf.inquirySent) {
-				/** @todo Cleara form eftir að inquiry hefur att ser stad  */
+				/** @todo Cleara form eftir aï¿½ inquiry hefur att ser stad  */
 				displayForm(iwc);
 			}
 			else if (returner == 0) {
@@ -1055,40 +1110,72 @@ public class Booking extends TravelManager {
 		String yesNo = iwc.getParameter(this.parameterRespondInquery);
 		String sInqueryId = iwc.getParameter(this.parameterInqueryId);
 		Boolean book = null;
+		int inqueryId = -1;
+		Inquery inquery =  null;
+		
+		if(sInqueryId !=  null && !sInqueryId.equals("")) {
+			inqueryId = Integer.parseInt(sInqueryId);
+			inquery = ((is.idega.idegaweb.travel.data.InqueryHome)com.idega.data.IDOLookup.getHome(Inquery.class)).findByPrimaryKey(new Integer(inqueryId));
+		}
 
 		if (yesNo != null) {
 			if (yesNo.equals(this.parameterRespondYes)) book = new Boolean(true);
 			if (yesNo.equals(this.parameterRespondNo)) book = new Boolean(false);
 		}
+		
+		if (book != null) {
+			int errorMessage = getInquirer(iwc).inquiryResponse(iwc, iwrb, inqueryId, book.booleanValue(), this.supplier);
 
-		if (sInqueryId != null) {
-			if (book != null) {
-				int inqueryId = Integer.parseInt(sInqueryId);
-				int errorMessage = getInquirer(iwc).inquiryResponse(iwc, iwrb, inqueryId, book.booleanValue(), this.supplier);
-
-				switch (errorMessage) {
-					case 0:
-						displayForm(iwc);
-						break;
-					case 1:
-						displayForm(iwc, getInquirer(iwc).getInquiryResponseError(iwrb));
-						break;
-				}
+			switch (errorMessage) {
+				case 0:
+					displayForm(iwc);
+					break;
+				case 1:
+					displayForm(iwc, getInquirer(iwc).getInquiryResponseError(iwrb));
+					break;
 			}
-			else if (yesNo != null && yesNo.equals(this.parameterRespondDel)) {
-				int inqueryId = Integer.parseInt(sInqueryId);
-				int errorMessage = getInquirer(iwc).inquiryResponse(iwc, iwrb, inqueryId, false, false, this.supplier);
+		}
+		else if (yesNo != null && yesNo.equals(this.parameterRespondDel)) {
+			int errorMessage = getInquirer(iwc).inquiryResponse(iwc, iwrb, inqueryId, false, false, this.supplier);
 
-				switch (errorMessage) {
-					case 0:
-						displayForm(iwc);
-						break;
+			switch (errorMessage) {
+				case 0:
+					displayForm(iwc);
+					break;
+				case 1:
+					displayForm(iwc, getInquirer(iwc).getInquiryResponseError(iwrb));
+					break;
+			}
+		}
+		else if(yesNo.equals(this.parameterRespondCCYes)) {
+			if(inquery != null) {
+				int errorMessage = getInquirer(iwc).getCreditcardInqueryRespons(iwc,iwrb,inqueryId,true,true,this.supplier,this.reseller);
+				GeneralBooking booking = inquery.getBooking();
+	      CreditCardClient t = getCreditCardClient(iwc, booking);
+				switch(errorMessage) {
 					case 1:
-						displayForm(iwc, getInquirer(iwc).getInquiryResponseError(iwrb));
-						break;
+						displayForm(iwc);
+						t.finishTransaction(inquery.getAuthorizationString());
 				}
 			}
 		}
+		else if(yesNo.equals(this.parameterRespondCCNo)) {
+			int errorMessage = getInquirer(iwc).getCreditcardInqueryRespons(iwc,iwrb,inqueryId,false,true,this.supplier,this.reseller);
+			switch(errorMessage) {
+				case 1:
+					displayForm(iwc);
+			}			
+		}
+		else if(yesNo.equals(this.parameterRespondCCDel)) {
+			int errorMessage = getInquirer(iwc).getCreditcardInqueryRespons(iwc,iwrb,inqueryId,false,true,this.supplier,this.reseller);
+			switch(errorMessage) {
+				case 1:
+					displayForm(iwc);
+			}
+		}
+			
+		
+		
 
 	}
 
@@ -1109,5 +1196,18 @@ public class Booking extends TravelManager {
 		table.add(text);
 		return table;
 	}
+	
+	public CreditCardClient getCreditCardClient(IWContext iwc, GeneralBooking gBooking) {
+		try {
+			int productSupplierId = gBooking.getService().getProduct().getSupplierId();
+			Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
+			return getCreditCardBusiness(iwc).getCreditCardClient(suppTemp, new IWTimestamp(gBooking.getDateOfBooking()));
+		}catch (Exception e) {
+			System.out.println("CreditCardMerchant NOT found");
+		}		
+		return null;
+	}
+
+
 
 }
