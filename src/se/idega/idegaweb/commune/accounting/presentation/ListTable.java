@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.7 2003/08/25 19:47:36 anders Exp $
+ * $Id: ListTable.java,v 1.8 2003/08/25 20:17:21 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.presentation.text.Text;
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/25 19:47:36 $
+ * Last modified: $Date: 2003/08/25 20:17:21 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ListTable extends AccountingBlock {
 
@@ -38,7 +38,6 @@ public class ListTable extends AccountingBlock {
 		table.setWidth(getWidth());
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setNoWrap();
 		super.add(table);
 	}
 
@@ -53,6 +52,7 @@ public class ListTable extends AccountingBlock {
 		Text t = getSmallHeader(localize(textKey, defaultText));
 		table.add(t, col, 1);
 		table.setRowColor(1, getHeaderColor());
+		table.setNoWrap(col, 1);
 	}
 
 	/**
@@ -63,6 +63,8 @@ public class ListTable extends AccountingBlock {
 	public void setHeader(PresentationObject po, int col) {
 		// Check boundaries, null?
 		table.add(po, col, 1);
+		table.setRowColor(1, getHeaderColor());
+		table.setNoWrap(col, 1);
 	}
 
 	/**
@@ -73,6 +75,7 @@ public class ListTable extends AccountingBlock {
 	 */
 	public void add(PresentationObject po) {
 		table.add(po, col, row);
+		table.setNoWrap(col, row);
 		skip();
 	}
 
