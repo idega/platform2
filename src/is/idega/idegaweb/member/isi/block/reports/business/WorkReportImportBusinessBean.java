@@ -1241,7 +1241,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							}
 							catch (NumberFormatException e) {
 								throw new WorkReportImportException(
-										"workreportimportexception.numberic_value_in_league_cell", i, j, "");
+										"workreportimportexception.numberic_value_in_league_cell", i+1, j+1, "");
 							}
 							//								boolean isChecked = (check != null &&
 							// !"".equals(check) &&
@@ -1252,15 +1252,20 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 								WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(j));
 								if (league != null) {
 									try {
-										league.addEntity(member);
+									    league.addEntity(member);
+									}
+									catch (IDOAddRelationshipException e5) {
+										throw new WorkReportImportException(
+												"workreportimportexception.member_possibly_registered_twice_in_league",i+1,j+1,name+" ("+ssn+") / "+league.getName());
+									}
 										try {
 											if (reportLeagues != null && !reportLeagues.contains(league)) {
 												report.addLeague(league);
 												reportLeagues.add(league);
 											}
 										}
-										catch (Exception e) {
-											//e.printStackTrace();
+										catch (IDORelationshipException e) {
+											e.printStackTrace();
 										}
 										try {
 											if (firstTimeMemberToBeAddedToMainboard && firstOccurrenceOfMemberInFile) {
@@ -1268,7 +1273,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 												firstTimeMemberToBeAddedToMainboard = false;
 											}
 										}
-										catch (Exception e) {
+										catch (IDORelationshipException e) {
 											e.printStackTrace();
 										}
 										playerCount++;
@@ -1278,12 +1283,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 										else
 											count = new Integer(count.intValue() + 1);
 										divPlayerCount.put(new Integer(j), count);
-									}
-									catch (IDOAddRelationshipException e5) {
-										e5.printStackTrace();
-										throw new WorkReportImportException(
-												"workreportimportexception.database_error_could_not_add_member_to_group");
-									}
 								}
 							}
 						}
