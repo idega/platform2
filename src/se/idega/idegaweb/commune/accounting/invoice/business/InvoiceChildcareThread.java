@@ -138,26 +138,21 @@ public class InvoiceChildcareThread extends BillingThread{
 	private User getInvoiceReceiver(ChildCareContract contract){
 		//First option is to set it to the invoice receiver according to the contract
 		User invoiceReceiver = contract.getInvoiceReceiver();
+		errorRelated.append("Contract owner "+contract.getApplication().getOwner().getName());
 		User child = contract.getChild();
-		int femaleKey = -1;
-		try {
-			Gender female = ((GenderHome) IDOLookup.getHome(Gender.class)).getFemaleGender();
-			femaleKey = ((Integer)female.getPrimaryKey()).intValue();
-		} catch (IDOLookupException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (RemoteException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (FinderException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-
 		
 		//If non is set in the contract, start looking for parents at the same address
 		//Select the female if several are found
 		if(invoiceReceiver == null){
+			int femaleKey = -1;
+			try {
+				Gender female = ((GenderHome) IDOLookup.getHome(Gender.class)).getFemaleGender();
+				femaleKey = ((Integer)female.getPrimaryKey()).intValue();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+				createNewErrorMessage(errorRelated,"invoice.CouldNotFindPrimaryKeyForFemaleGender");
+			}
+
 			try {
 				UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 				MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
@@ -181,6 +176,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				//Poor child
 			} catch (RemoteException e) {
 				e.printStackTrace();
+				createNewErrorMessage(errorRelated,"invoice.RemoteExceptionFindingCustodianForChild");
 			}
 		}
 		//If no invoice receiver is set in contract and no fitting custodian found,  
@@ -189,6 +185,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			invoiceReceiver = contract.getApplication().getOwner();
 			createNewErrorMessage(errorRelated,"invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound_UsingContractOwner");
 		}
+		errorRelated.append("Invoice receiver "+invoiceReceiver);
 		return invoiceReceiver;
 	}
 	
@@ -224,10 +221,21 @@ public class InvoiceChildcareThread extends BillingThread{
 				errorRelated = new ErrorLogger();
 				errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
 				errorRelated.append("Contract "+contract.getContractID());
+				
+				//Moved up for better logging
+				//Get all the parameters needed to select the correct contract
+				SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
+				User child = schoolClassMember.getStudent();
+				errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
+				SchoolType schoolType = schoolClassMember.getSchoolType();
+				String childcareType =schoolType.getLocalizationKey();
+				errorRelated.append("SchoolType "+schoolType.getName());
+				errorRelated.append("Child "+contract.getChild().getName());
+
+				
 				// **Fetch invoice receiver
 //				custodian = contract.getApplication().getOwner();
 				custodian = getInvoiceReceiver(contract);
-				errorRelated.append("Invoice receiver "+custodian.getName());
 				//**Fetch the reference at the provider
 				school = contract.getApplication ().getProvider ();
 				errorRelated.append("School "+school.getName(),1);
@@ -260,15 +268,6 @@ public class InvoiceChildcareThread extends BillingThread{
 					//Get the check for the contract
 					//
 					RegulationsBusiness regBus = getRegulationsBusiness();
-				
-					//Get all the parameters needed to select the correct contract
-					SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
-					User child = schoolClassMember.getStudent();
-					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
-					SchoolType schoolType = schoolClassMember.getSchoolType();
-					String childcareType =schoolType.getLocalizationKey();
-					errorRelated.append("SchoolType "+schoolType.getName());
-					errorRelated.append("Child "+contract.getChild().getName());
 
 					//childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
