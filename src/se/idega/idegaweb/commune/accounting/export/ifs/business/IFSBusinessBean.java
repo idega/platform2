@@ -650,7 +650,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale, String periodText)
 		throws FinderException, IOException, StudyPathException, RemoteException {
-		Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("P",schoolCategory);
+		Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("P", schoolCategory);
 
 		if (iHeaders != null && !iHeaders.isEmpty()) {
 			NumberFormat format = NumberFormat.getInstance(currentLocale);
@@ -676,11 +676,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			for (int i = 0; i < 8; i++)
 				bWriter.write(' ');
 			//Rutinkod for avsandande rutin	
-			bWriter.write("BUN");
+			bWriter.write("KU ");
 			//Framstallandedatum
-			bWriter.write(executionDate.getDateString("yyMMDD"));
-			//Klockslag + Kommentar
-			for (int i = 0; i < 231; i++)
+			bWriter.write(executionDate.getDateString("yyMMdd"));
+			//Klockslag 
+			bWriter.write(executionDate.getDateString("hhmmss"));
+			//Kommentar
+			for (int i = 0; i < 225; i++)
 				bWriter.write(' ');
 			bWriter.newLine();
 
@@ -693,14 +695,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 				if (rec != null && !rec.isEmpty()) {
 					Iterator irIt = rec.iterator();
-					//					Iterator sumIt = rec.iterator();
-					//
-					//					float sum = 0;
-					//					while (sumIt.hasNext()) {
-					//						PaymentRecord r = (PaymentRecord) sumIt.next();
-					//						sum += r.getTotalAmount();
-					//					}
-
 					//Posttyp
 					bWriter.write("60");
 					//Filler etc
@@ -710,12 +704,12 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					if (periodText.length() < 20) {
 						StringBuffer p = new StringBuffer(periodText);
 						while (p.length() < 20)
-							p.insert(0,' ');
-							
+							p.append(' ');
+
 						periodText = p.toString();
-					}	
+					}
 					else if (periodText.length() > 20) {
-						periodText = periodText.substring(0,20);
+						periodText = periodText.substring(0, 20);
 					}
 					bWriter.write(periodText);
 					//Kundnrtyp
@@ -723,11 +717,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					//Kundnr
 					String pnr = iHead.getCustodian().getPersonalID();
 					if (pnr.length() < 10) {
-							StringBuffer p = new StringBuffer(pnr);
-							while (p.length() < 10)
-								p.insert(0,' ');
-							
-							pnr = p.toString();
+						StringBuffer p = new StringBuffer(pnr);
+						while (p.length() < 10)
+							p.insert(0, ' ');
+
+						pnr = p.toString();
 					}
 					else if (pnr.length() > 10) {
 						pnr = pnr.substring(2);
@@ -736,76 +730,76 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					//Kundnamn
 					String name = iHead.getCustodian().getNameLastFirst(false);
 					if (name.length() < 25) {
-							StringBuffer p = new StringBuffer(name);
-							while (p.length() < 25)
-								p.insert(0,' ');
-							
-							name = p.toString();
+						StringBuffer p = new StringBuffer(name);
+						while (p.length() < 25)
+							p.append(' ');
+
+						name = p.toString();
 					}
 					else if (name.length() > 25) {
-						name = name.substring(0,25);
+						name = name.substring(0, 25);
 					}
 					bWriter.write(name);
 					//Kundadress
 					String address = getUserBusiness().getUsersMainAddress(iHead.getCustodian()).getName();
 					if (address.length() < 27) {
-							StringBuffer p = new StringBuffer(address);
-							while (p.length() < 27)
-								p.insert(0,' ');
-							
-							address = p.toString();
+						StringBuffer p = new StringBuffer(address);
+						while (p.length() < 27)
+							p.append(' ');
+
+						address = p.toString();
 					}
 					else if (address.length() > 27) {
-						address = address.substring(0,27);
+						address = address.substring(0, 27);
 					}
 					bWriter.write(address);
 					//Kundpostnr
 					String po = getUserBusiness().getUsersMainAddress(iHead.getCustodian()).getPostalCode().getPostalCode();
 					if (po.length() < 5) {
-							StringBuffer p = new StringBuffer(po);
-							while (p.length() < 5)
-								p.insert(0,' ');
-							
-							po = p.toString();
+						StringBuffer p = new StringBuffer(po);
+						while (p.length() < 5)
+							p.insert(0, ' ');
+
+						po = p.toString();
 					}
 					else if (po.length() > 5) {
-						po = po.substring(0,5);
+						po = po.substring(0, 5);
 					}
 					bWriter.write(po);
 					//Kundort
 					String poName = getUserBusiness().getUsersMainAddress(iHead.getCustodian()).getPostalCode().getName();
 					if (poName.length() < 13) {
-							StringBuffer p = new StringBuffer(poName);
-							while (p.length() < 13)
-								p.insert(0,' ');
-							
-							poName = p.toString();
+						StringBuffer p = new StringBuffer(poName);
+						while (p.length() < 13)
+							p.append(' ');
+
+						poName = p.toString();
 					}
 					else if (poName.length() > 13) {
-						poName = poName.substring(0,13);
+						poName = poName.substring(0, 13);
 					}
 					bWriter.write(poName);
 					//C/O address
 					Address ad = getUserBusiness().getUsersCoAddress(iHead.getCustodian());
 					String co = "";
-					if (ad != null) 
+					if (ad != null)
 						co = ad.getName();
 					if (co.length() < 25) {
-							StringBuffer p = new StringBuffer(co);
-							while (p.length() < 25)
-								p.insert(0,' ');
-							
-							co = p.toString();
+						StringBuffer p = new StringBuffer(co);
+						while (p.length() < 25)
+							p.append(' ');
+
+						co = p.toString();
 					}
 					else if (co.length() > 25) {
-						co = co.substring(0,25);
+						co = co.substring(0, 25);
 					}
 					bWriter.write(co);
 					//Filler
 					for (int i = 0; i < 8; i++)
 						bWriter.write(' ');
 					//Er referens
-					StringBuffer bun = new StringBuffer("Kundvalgsgruppen Tel: 718 00 00");
+					StringBuffer bun = new StringBuffer("Kundvalgruppen Tel: 718 00 00");
 					while (bun.length() < 40) {
 						bun.append(' ');
 					}
@@ -820,75 +814,20 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					//Filler
 					for (int i = 0; i < 15; i++)
 						bWriter.write(' ');
-											
+
 					bWriter.newLine();
 
 					while (irIt.hasNext()) {
 						InvoiceRecord iRec = (InvoiceRecord) irIt.next();
-						
-						//Posttype
-						bWriter.write("62");
-						//Filler
-						for (int i = 0; i < 10; i++)
-							bWriter.write(' ');
-						//Tecken
-						float am = iRec.getAmount();
-						if (am < 0)
-							bWriter.write('-');
-						else
-							bWriter.write(' ');
-						//Belopp
-						am = Math.abs(am);
-						bWriter.write(format.format(am));
-						//Antal, pris, moms, filler
-						for (int i = 0; i < 29; i++)
-							bWriter.write(' ');
-						//Avser period f.o.m
-						for (int i = 0; i < 8; i++)
-							bWriter.write(' ');
-						//Avser period t.o.m
-						for (int i = 0; i < 8; i++)
-							bWriter.write(' ');
-						//Faktura text 1
-						boolean insertLRow = false;
-						String LText = null;
-						String text = iRec.getInvoiceText();
-						if (text.length() < 25) {
-							StringBuffer t = new StringBuffer(text);
-							while (t.length() < 25) {
-								t.append(' ');
-							}
-							text = t.toString();
-						}
-						else if (text.length() > 25) {
-							insertLRow = true;
-							LText = text.substring(25);
-							text = text.substring(0,25);
-						}
-						
-						bWriter.write(text);
-						//Filler
-						for (int i = 0; i < 11; i++)
-							bWriter.write(' ');
-						//Faktura text 2, 3 and 4
-						for (int i = 0; i < 108; i++)
-							bWriter.write(' ');
-						//Kod
-						bWriter.write('T');
-						//Filler
-						for (int i = 0; i < 33; i++)
-							bWriter.write(' ');
-						
-						bWriter.newLine();
-						
-						if (insertLRow) {
+
+						if (iRec.getAmount() != 0.0f) {
 							//Posttype
 							bWriter.write("62");
 							//Filler
 							for (int i = 0; i < 10; i++)
 								bWriter.write(' ');
 							//Tecken
-							am = iRec.getAmount();
+							float am = iRec.getAmount();
 							if (am < 0)
 								bWriter.write('-');
 							else
@@ -906,153 +845,210 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							for (int i = 0; i < 8; i++)
 								bWriter.write(' ');
 							//Faktura text 1
-							if (LText.length() < 36) {
-								StringBuffer t = new StringBuffer(LText);
-								while (t.length() < 36) {
+							boolean insertLRow = false;
+							String LText = null;
+							String text = iRec.getInvoiceText();
+							if (text.length() < 25) {
+								StringBuffer t = new StringBuffer(text);
+								while (t.length() < 25) {
 									t.append(' ');
 								}
-								LText = t.toString();
+								text = t.toString();
 							}
-							else if (LText.length() > 36) {
-								LText = LText.substring(0,36);
+							else if (text.length() > 25) {
+								insertLRow = true;
+								LText = text.substring(25);
+								text = text.substring(0, 25);
 							}
-						
-							bWriter.write(LText);
+
+							bWriter.write(text);
+							//Filler
+							for (int i = 0; i < 11; i++)
+								bWriter.write(' ');
 							//Faktura text 2, 3 and 4
 							for (int i = 0; i < 108; i++)
 								bWriter.write(' ');
 							//Kod
-							bWriter.write('L');
+							bWriter.write('T');
 							//Filler
 							for (int i = 0; i < 33; i++)
 								bWriter.write(' ');
-						
-							bWriter.newLine();						
+
+							bWriter.newLine();
+
+							if (insertLRow) {
+								//Posttype
+								bWriter.write("62");
+								//Filler
+								for (int i = 0; i < 10; i++)
+									bWriter.write(' ');
+								//Tecken
+								am = iRec.getAmount();
+								if (am < 0)
+									bWriter.write('-');
+								else
+									bWriter.write(' ');
+								//Belopp
+								am = Math.abs(am);
+								bWriter.write(format.format(am));
+								//Antal, pris, moms, filler
+								for (int i = 0; i < 29; i++)
+									bWriter.write(' ');
+								//Avser period f.o.m
+								for (int i = 0; i < 8; i++)
+									bWriter.write(' ');
+								//Avser period t.o.m
+								for (int i = 0; i < 8; i++)
+									bWriter.write(' ');
+								//Faktura text 1
+								if (LText.length() < 36) {
+									StringBuffer t = new StringBuffer(LText);
+									while (t.length() < 36) {
+										t.append(' ');
+									}
+									LText = t.toString();
+								}
+								else if (LText.length() > 36) {
+									LText = LText.substring(0, 36);
+								}
+
+								bWriter.write(LText);
+								//Faktura text 2, 3 and 4
+								for (int i = 0; i < 108; i++)
+									bWriter.write(' ');
+								//Kod
+								bWriter.write('L');
+								//Filler
+								for (int i = 0; i < 33; i++)
+									bWriter.write(' ');
+
+								bWriter.newLine();
+							}
+
+							bWriter.write("63");
+							//Filler
+							for (int i = 0; i < 6; i++)
+								bWriter.write(' ');
+							//Tecken
+							am = iRec.getAmount();
+							if (am < 0)
+								bWriter.write('-');
+							else
+								bWriter.write(' ');
+							//Belopp
+							am = Math.abs(am);
+							bWriter.write(format.format(am));
+							//Kvantitet and Apris
+							for (int i = 0; i < 27; i++)
+								bWriter.write(' ');
+							//Ansvar						
+							String tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Ansvar");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Konto
+							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Konto");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Resurs						
+							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Resurs");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Verksamhet
+							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Verksamhet");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Aktivitet
+							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Aktivitet");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Project
+							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Projekt");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Object
+							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Objekt");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Motpart
+							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Motpart");
+							if (tmp.length() < 10) {
+								StringBuffer post = new StringBuffer(tmp);
+								while (post.length() < 10)
+									post.append(' ');
+								tmp = post.toString();
+							}
+							else if (tmp.length() > 10) {
+								tmp = tmp.substring(0, 10);
+							}
+							bWriter.write(tmp);
+							//Anlaggnings nummber
+							for (int i = 0; i < 10; i++)
+								bWriter.write(' ');
+							//Internranta
+							for (int i = 0; i < 10; i++)
+								bWriter.write(' ');
+							//Filler
+							for (int i = 0; i < 100; i++)
+								bWriter.write(' ');
+
+							bWriter.newLine();
 						}
-						
-						bWriter.write("63");
-						//Filler
-						for (int i = 0; i < 6; i++)
-							bWriter.write(' ');
-						//Tecken
-						am = iRec.getAmount();
-						if (am < 0)
-							bWriter.write('-');
-						else
-							bWriter.write(' ');
-						//Belopp
-						am = Math.abs(am);
-						bWriter.write(format.format(am));
-						//Kvantitet and Apris
-						for (int i = 0; i < 27; i++)
-							bWriter.write(' ');
-						//Ansvar						
-						String tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Ansvar");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Konto
-						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Konto");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Resurs						
-						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Resurs");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Verksamhet
-						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Verksamhet");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Aktivitet
-						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Aktivitet");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Project
-						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Projekt");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Object
-						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Objekt");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Motpart
-						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Motpart");
-						if (tmp.length() < 10) {
-							StringBuffer post = new StringBuffer(tmp);
-							while (post.length() < 10)
-								post.append(' ');
-							tmp = post.toString();
-						}
-						else if (tmp.length() > 10) {
-							tmp = tmp.substring(0,10);
-						}
-						bWriter.write(tmp);
-						//Anlaggnings nummber
-						for (int i = 0; i < 10; i++)
-							bWriter.write(' ');
-						//Internranta
-						for (int i = 0; i < 10; i++)
-							bWriter.write(' ');
-						//Filler
-						for (int i = 0; i < 100; i++)
-							bWriter.write(' ');	
-							
-						bWriter.newLine();					
 					}
 
 					numberOfHeaders++;
@@ -1150,8 +1146,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					head.store();
 				}
 			}
-			
-			Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("L",schoolCategory);
+
+			Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("L", schoolCategory);
 			Iterator itHead = iHeaders.iterator();
 			while (itHead.hasNext()) {
 				InvoiceHeader iHead = (InvoiceHeader) itHead.next();
