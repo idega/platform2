@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.9 2004/05/05 10:00:05 sigtryggur Exp $
+/* $Id: ControlListWriter.java,v 1.10 2004/05/12 19:19:38 sigtryggur Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -51,7 +51,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.9 2004/05/05 10:00:05 sigtryggur Exp $
+ * $Id: ControlListWriter.java,v 1.10 2004/05/12 19:19:38 sigtryggur Exp $
  *
  * @author Kelly
  */
@@ -236,7 +236,7 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 				iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_PREL, "Total amount, prel."),
 				iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_COMPARE_MONTH, "Total amount, compare")};
 				
-			int[] sizes = { 20, 20, 20, 20, 20 };
+			int[] sizes = { 30, 20, 20, 20, 20 };
 			Cell cell;
 
 			Table datatable = getTable(headers, sizes);
