@@ -236,7 +236,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		}
 		else {
-			IWTimestamp created = new IWTimestamp(app.getCreated());
+			IWTimestamp created = new IWTimestamp(app.getQueueDate());
 			IWTimestamp validFrom = new IWTimestamp(app.getFromDate());
 			
 			setNoWrap(column, row);
