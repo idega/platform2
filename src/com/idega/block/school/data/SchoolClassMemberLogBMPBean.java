@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogBMPBean.java,v 1.11 2005/02/18 08:59:14 laddi Exp $
+ * $Id: SchoolClassMemberLogBMPBean.java,v 1.12 2005/03/07 16:20:45 laddi Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/18 08:59:14 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/07 16:20:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class SchoolClassMemberLogBMPBean extends GenericEntity  implements SchoolClassMemberLog{
 
@@ -248,6 +248,23 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
 		query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.GREATEREQUAL, fromDate));	
+		if (toDate != null) {
+			query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.LESSEQUAL, toDate));
+		}
+		query.addOrder(new Order(new Column(table, START_DATE), false));
+		
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindAllByPlacementAndDates(SchoolClassMember member, Date fromDate, Date toDate) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
+		MatchCriteria start = new MatchCriteria(table, START_DATE, MatchCriteria.GREATEREQUAL, fromDate);
+		MatchCriteria end = new MatchCriteria(table, END_DATE, MatchCriteria.GREATEREQUAL, fromDate);
+		query.addCriteria(new OR(start, end));
 		if (toDate != null) {
 			query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.LESSEQUAL, toDate));
 		}
