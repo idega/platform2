@@ -70,8 +70,9 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.add(getHeader(localize("export.export_data_mapping_editor", "Export data mapping editor")), 1, row);
 		table.setRowColor(1, getHeaderColor());
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setCellpadding(1, row, 3);
 		table.mergeCells(1, row, table.getColumns(), row++);
-		table.setHeight(row++, 6);
+		table.setHeight(row++, 12);
 
 		DropdownMenu operationalField = this.getDropdownMenuLocalized(PARAMETER_OPERATIONAL_FIELD, getBusiness().getExportBusiness().getAllOperationalFields(), "getLocalizedKey");
 		operationalField.addMenuElementFirst("", localize("export.select_operational_field", "Select operational field"));
@@ -174,7 +175,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		if (_mapping != null)
 			providerAuthorization.setChecked(_mapping.getProviderAuthorization());
 		
-		table.setHeight(row++, 6);
+		table.setHeight(row++, 9);
 		table.mergeCells(1, row, 3, row);
 		table.add(providerAuthorization, 1, row);
 		table.add(getSmallHeader(Text.NON_BREAKING_SPACE + localize("export.provider_authorization", "Provider authorization")), 1, row++);
