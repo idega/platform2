@@ -485,7 +485,6 @@ public class TourBookingForm extends TravelManager {
               email.setSize(textInputSizeMd);
           TextInput telNumber = new TextInput("telephone_number");
               telNumber.setSize(textInputSizeMd);
-
           TextInput city = new TextInput("city");
               city.setSize(textInputSizeLg);
           TextInput country = new TextInput("country");

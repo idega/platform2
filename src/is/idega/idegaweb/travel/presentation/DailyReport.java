@@ -146,7 +146,10 @@ public class DailyReport extends TravelManager {
 
         }
         else {
-          form.add("T ekkert product valið");
+          Text selectProduct = (Text) theBoldText.clone();
+            selectProduct.setText(iwrb.getLocalizedString("travel.please_select_a_product","Please select a product"));
+            selectProduct.setFontColor(WHITE);
+          form.add(selectProduct);
         }
 
       int row = 0;
@@ -503,8 +506,11 @@ public class DailyReport extends TravelManager {
           nameText = (Text) smallText.clone();
             nameText.setText(bookings[i].getName());
 
-          payTypeText = (Text) smallText.clone();
-            payTypeText.setText(iwrb.getLocalizedString("travel.paid_on_location","Paid on loaction"));
+          payType = (DropdownMenu) Booker.getPaymentTypes(iwrb).clone();
+            payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
+
+//          payTypeText = (Text) smallText.clone();
+//            payTypeText.setText(iwrb.getLocalizedString("travel.paid_on_location","Paid on loaction"));
 
 
           bookedText = (Text) smallText.clone();
@@ -526,7 +532,7 @@ public class DailyReport extends TravelManager {
 
           addTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,addRow);
           addTable.add(nameText,1,addRow);
-          addTable.add(payTypeText,2,addRow);
+          addTable.add(payType,2,addRow);
           addTable.add(bookedText,3,addRow);
           addTable.add(attTextBox,4,addRow);
           addTable.add(amountText,5,addRow);
@@ -626,6 +632,8 @@ public class DailyReport extends TravelManager {
           amountText.setFontColor(super.BLACK);
 
           correctionTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,corrRow);
+          correctionTable.add(new HiddenInput("payment_type",Integer.toString(bookings[i].getPaymentTypeId())),1,corrRow);
+
           correctionTable.add(nameText,1,corrRow);
 
           correctionTable.add(bookedText,3,corrRow);

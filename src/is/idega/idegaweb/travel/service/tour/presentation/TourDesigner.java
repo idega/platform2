@@ -304,10 +304,12 @@ public class TourDesigner extends TravelManager {
           departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
       table.add(departureFromText,1,row);
       table.add(departure_from,2,row);
+
+      /*
       Link addDepAddress = new Link(iwrb.getImage("/buttons/new.gif"));
         addDepAddress.setWindowToOpen(AddressAdder.class);
       table.add(addDepAddress,2,row);
-
+      */
 
       ++row;
       Text departureTimeText = (Text) theBoldText.clone();
@@ -414,7 +416,6 @@ public class TourDesigner extends TravelManager {
             hotels.setSelectedElement(Integer.toString(places[i].getID()));
           }
 
-
           if (tour.getIsHotelPickup()) {
             hotelPickupYes.setSelected();
           }else {
@@ -425,17 +426,9 @@ public class TourDesigner extends TravelManager {
           minNumberOfSeats.setContent(Integer.toString(tour.getMinimumSeats()));
           number_of_days.setContent(Integer.toString(tour.getNumberOfDays()));
           kilometers.setContent(Float.toString(tour.getLength()));
-
       }
-      /*
-      String newImageId = (String)iwc.getSessionAttribute("design_image_id");
-      System.err.println("ServiceDesigner : newImageId = "+newImageId);
-      if (newImageId != null) {
-        imageInserter.setImageId(Integer.parseInt(newImageId));
-      }*/
-
     }else {
-      table.add("Gögn eru ósamræmd");
+      table.add(iwrb.getLocalizedString("travel.data_is_invalid","Data is invalid"));
     }
     return form;
 

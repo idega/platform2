@@ -43,6 +43,7 @@ public class ResellerManager {
     boolean isUpdate = false;
     if (resellerId != -1) isUpdate = true;
 
+    if (description == null) description = "";
 
     if (isUpdate) {
       Reseller res = new Reseller(resellerId);

@@ -40,10 +40,11 @@ public class AdditionalBooking extends TravelWindow {
   idegaTimestamp stamp;
 
   public AdditionalBooking() {
-    super.setHeight(300);
+    super.setHeight(450);
     super.setWidth(400);
     super.setTitle("idegaWeb Travel");
-    super.setScrollbar(false);
+//    super.setScrollbar(true);
+    super.setResizable(true);
   }
 
   public void main(IWContext iwc) {
@@ -59,7 +60,7 @@ public class AdditionalBooking extends TravelWindow {
         super.close(true);
       }
     }else {
-      add("Session útrunnið ??");
+      add(iwrb.getLocalizedString("travel.session_has_expired","Session has expired"));
     }
   }
 
@@ -108,7 +109,7 @@ public class AdditionalBooking extends TravelWindow {
       TextInput pPriceMany;
       Text totalText = (Text) text.clone();
         totalText.setBold();
-        totalText.setText("T - Total");
+        totalText.setText(iwrb.getLocalizedString("travel.total","Total"));
       ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
         TotalPassTextInput.setSize(5);
       ResultOutput TotalTextInput = new ResultOutput("total","0");
@@ -134,8 +135,6 @@ public class AdditionalBooking extends TravelWindow {
 
             pPriceMany = new TextInput("priceCategory"+i ,"0");
               pPriceMany.setSize(5);
-              pPriceMany.setAsNotEmpty("T - Ekki tómt");
-              pPriceMany.setAsIntegers("T - Bara tölur takk");
 
             pPriceText.add(pPriceMany,"*"+price);
             TotalPassTextInput.add(pPriceMany);
@@ -202,11 +201,13 @@ public class AdditionalBooking extends TravelWindow {
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {
-          bEntry = new BookingEntry();
-            bEntry.setProductPriceId(pPrices[i].getID());
-            bEntry.setBookingId(bookingId);
-            bEntry.setCount(manys[i]);
-          bEntry.insert();
+          if (manys[i] != 0) {
+            bEntry = new BookingEntry();
+              bEntry.setProductPriceId(pPrices[i].getID());
+              bEntry.setBookingId(bookingId);
+              bEntry.setCount(manys[i]);
+            bEntry.insert();
+          }
         }
 
 
