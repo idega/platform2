@@ -747,6 +747,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				if (c != null)
 					val = c.getNumericCellValue();
 					
+									
 				System.out.println("val = " + val);
 				
 				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn+i));
@@ -759,6 +760,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setReportId(workReportId);
 						rec.setAmount((float)val);
 						rec.store();
+						
+						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
 						return false;
