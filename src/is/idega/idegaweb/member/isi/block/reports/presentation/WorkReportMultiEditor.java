@@ -197,11 +197,11 @@ public class WorkReportMultiEditor extends Block {
 			REGIONAL_UNION_NUMBER, new LinkConverter(form),
 			REGIONAL_UNION_ABBR, new LinkConverter(form),
 			REPORT_STATUS, reportStatusDropDownMenuConverter,
-			MEMBER_COUNT,new LinkConverter(form),
-			PLAYER_COUNT,new LinkConverter(form),
+			CONTINUANCE_TILL,textEditorConverter,
 			INACTIVE, inActiveConverter,
 			WHATS_LEFT,new WhatIsMissingConverter(),
-			CONTINUANCE_TILL,textEditorConverter,
+			MEMBER_COUNT,new LinkConverter(form),
+			PLAYER_COUNT,new LinkConverter(form),
 			"more",new MoreButtonConverter(resourceBundle),
 		};
       
