@@ -60,6 +60,7 @@ public class AccountViewer extends Finance {
   private int iUserId = -1,iAccountId = -1;
   private boolean specialview = false;
   private AccountBusiness accBuiz;
+	private DateFormat df,tf;
 
   public AccountViewer(){
     this(-1);
@@ -335,7 +336,7 @@ public class AccountViewer extends Finance {
 
   private PresentationObject getPhoneEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
     int tableDepth = 4;
-    int cols = 7;
+    int cols = 6;
     if(listEntries != null){
       tableDepth += listEntries.size();
     }
@@ -344,17 +345,15 @@ public class AccountViewer extends Finance {
 
     Table T = new Table(cols,tableDepth);
     T.setWidth("100%");
-    T.setWidth(1,"65");
+
     T.setCellspacing(0);
     T.setCellpadding(2);
-   
+
     T.setColumnAlignment(1,"left");
     T.setColumnAlignment(2,"right");
     T.setColumnAlignment(cols,"right");
     T.setAlignment(1,1,"left");
     T.setAlignment(1,2,"left");
-    T.setWidth(1,"20");
-    T.setWidth("100%");
 
     T.setHorizontalZebraColored(FinanceColors.LIGHTGREY,FinanceColors.WHITE);
     T.setRowColor(1,FinanceColors.DARKBLUE);
@@ -363,20 +362,21 @@ public class AccountViewer extends Finance {
     String fontColor = sWhiteColor;
     int fontSize = 1;
 
-    Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
+		String title = iwrb.getLocalizedString("entries","Entries")+"  "
+			+iwrb.getLocalizedString("for","for")+" "+df.format(from.getSQLDate())+" - "+df.format(to.getSQLDate());
+    Text Title = new Text(title,true,false,false);
     Title.setFontColor(FinanceColors.WHITE);
     T.add(Title,1,row);
     T.mergeCells(1,row,cols,row);
     row++;
     Text[] TableTitles = new Text[cols];
-    
+
     TableTitles[0] = new Text(iwrb.getLocalizedString("dating","Dating"));
     TableTitles[1] = new Text(iwrb.getLocalizedString("number","Number"));
     TableTitles[2] = new Text(iwrb.getLocalizedString("night_time","Night time"));
     TableTitles[3] = new Text(iwrb.getLocalizedString("day_time","Day time"));
     TableTitles[4] = new Text(iwrb.getLocalizedString("time","Time"));
     TableTitles[5] = new Text(iwrb.getLocalizedString("amount","Amount"));
-
 
     for(int i = 0 ; i < TableTitles.length;i++){
       TableTitles[i].setFontSize(fontSize);
@@ -394,11 +394,12 @@ public class AccountViewer extends Finance {
         //TableTexts[0] = new Text(getDateString(new IWTimestamp(entry.getLastUpdated())));
         //TableTexts[1] = new Text(entry.getMainNumber());
         //TableTexts[0] = new Text(entry.getSubNumber());
-        TableTexts[0] = new Text(entry.getPhonedNumber());
-        TableTexts[1] = new Text(new IWTimestamp(entry.getPhonedStamp()).toSQLString());
-        TableTexts[2] = new Text(new java.sql.Time(entry.getNightDuration()*1000).toString());
-        TableTexts[3] = new Text(new java.sql.Time(entry.getDayDuration()*1000).toString());
-        TableTexts[4] = new Text(new java.sql.Time(entry.getDuration()*1000).toString());
+
+        TableTexts[0] = new Text(new IWTimestamp(entry.getPhonedStamp()).toSQLString());
+				TableTexts[1] = new Text(entry.getPhonedNumber());
+        TableTexts[2] = new Text(getCorrectedTimeString(entry.getNightDuration()));
+        TableTexts[3] = new Text(getCorrectedTimeString(entry.getDayDuration()));
+        TableTexts[4] = new Text(getCorrectedTimeString(entry.getDuration()));
         totNight += entry.getNightDuration();
         totDay += entry.getDayDuration();
         totDur += entry.getDuration();
@@ -411,9 +412,9 @@ public class AccountViewer extends Finance {
           TableTexts[i].setFontSize(fontSize);
           TableTexts[i].setFontColor("#000000");
           if(i == 5){
-            if(debet) 
+            if(debet)
             	TableTexts[i].setFontColor(sDebetColor);
-            else 
+            else
             	TableTexts[i].setFontColor(sKreditColor);
           }
           else
@@ -422,9 +423,9 @@ public class AccountViewer extends Finance {
         }
         row++;
       }
-      Text txTotNight = new Text(new java.sql.Time(totNight*1000).toString());
-      Text txTotDay = new Text(new java.sql.Time(totDay*1000).toString());
-      Text txTotDur = new Text(new java.sql.Time(totDur*1000).toString());
+      Text txTotNight = new Text(tf.format(new java.sql.Time(totNight*1000)));
+      Text txTotDay = new Text(tf.format(new java.sql.Time(totDay*1000)));
+      Text txTotDur = new Text(tf.format(new java.sql.Time(totDur*1000)));
       Text txTotPrice = new Text(NF.format(totPrice));
       txTotNight.setFontColor("#000000");
       txTotDay.setFontColor("#000000");
@@ -462,8 +463,9 @@ public class AccountViewer extends Finance {
 
     Table T = new Table(5,9);
     T.setWidth("100%");
-    T.setCellpadding(0);
-    T.setCellspacing(0);
+    T.setCellpadding(2);
+    T.setCellspacing(1);
+		T.mergeCells(1,1,5,1);
 
 
     T.setHorizontalZebraColored(FinanceColors.WHITE,FinanceColors.LIGHTGREY);
@@ -473,10 +475,13 @@ public class AccountViewer extends Finance {
     T.setColumnAlignment(4,"right");
     T.setColumnAlignment(5,"right");
 
-    String fontColor = sWhiteColor;
+    String fontColor = sDarkColor;;
     int fontSize = 1;
 
-    Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
+
+		String title = iwrb.getLocalizedString("sum_report","Report")+"  "
+			+iwrb.getLocalizedString("for","for")+" "+df.format(from.getSQLDate())+" - "+df.format(to.getSQLDate());
+    Text Title = new Text(title,true,false,false);
     Title.setFontColor(FinanceColors.WHITE);
     T.add(Title,1,1);
 
@@ -528,10 +533,10 @@ public class AccountViewer extends Finance {
       T.add(formatText(String.valueOf(forCount)),3,5);
       T.add(formatText(String.valueOf(totalCount)),3,6);
 
-      T.add(formatText(new java.sql.Time(otherTime*1000).toString()),4,3);
-      T.add(formatText(new java.sql.Time(mobTime*1000).toString()),4,4);
-      T.add(formatText(new java.sql.Time(forTime*1000).toString()),4,5);
-      T.add(formatText(new java.sql.Time(totalTime*1000).toString()),4,6);
+      T.add(formatText(getCorrectedTimeString(otherTime)),4,3);
+      T.add(formatText(getCorrectedTimeString(mobTime)),4,4);
+      T.add(formatText(getCorrectedTimeString(forTime)),4,5);
+      T.add(formatText(getCorrectedTimeString(totalTime)),4,6);
 
       T.add(formatText(NF.format(otherPrice)),5,3);
       T.add(formatText(NF.format(mobPrice)),5,4);
@@ -551,7 +556,7 @@ public class AccountViewer extends Finance {
   }
 
   private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to)throws java.rmi.RemoteException{
-    DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+
     int tableDepth = 5;
     if(listEntries != null){
       tableDepth += listEntries.size();
@@ -784,11 +789,17 @@ public class AccountViewer extends Finance {
     isAdmin = iwc.hasEditPermission(this);
     isLoggedOn = iwc.isLoggedOn();
     eUser = iwc.getUser();
+		df = DateFormat.getDateInstance(DateFormat.SHORT);
+		tf = DateFormat.getTimeInstance();
     control(iwc);
   }
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
+
+	public String getCorrectedTimeString(long seconds){
+	  return tf.format(new java.sql.Time((seconds+(60*60))*1000));
+	}
 
 }// class AccountViewer

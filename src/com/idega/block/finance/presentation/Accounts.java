@@ -96,7 +96,7 @@ public class Accounts extends Finance {
       */
      if(iwc.isParameterSet(prmNewAccount)){
         int iUserId = Integer.parseInt(iwc.getParameter(prmNewAccount));
-        getNewAccountForm(iUserId,iCategoryId);
+        T.add(getNewAccountForm(iUserId,iCategoryId),1,1);
       }
       else if(iwc.isParameterSet("sf_search")){
         performSearch(iwc,iCategoryId);
@@ -270,6 +270,7 @@ public class Accounts extends Finance {
       T.addTitle(iwrb.getLocalizedString("users_with_accounts","Users with accounts"));
 
       col = 1;
+			T.add(Edit.format(iwrb.getLocalizedString("account_assessment","Assessment")),col++,row);
       T.add(Edit.format(iwrb.getLocalizedString("account_id","Account id")),col++,row);
       T.add(Edit.format(iwrb.getLocalizedString("user_name","User name")),col++,row);
       T.add(Edit.format(iwrb.getLocalizedString("balance","Balance")),col++,row);
