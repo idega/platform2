@@ -144,8 +144,8 @@ public class NewsLetter extends CategoryBlock {
 
         if ( obj != null )
           T.add(obj,1,row);
-        
-        T.add(getButtonsBelowTable(iwc),1,row);
+        if(_submitBelowTopics)
+        		T.add(getButtonsBelowTable(iwc),1,row);
         
         }
         else{
@@ -314,8 +314,9 @@ public class NewsLetter extends CategoryBlock {
 		}
   		
 		T.add(send,1,1);
+		T.setWidth(2,1,_spaceBetween);
 		if (_showCancelImage)
-			T.add(cancel, 2, 1);
+			T.add(cancel, 3, 1);
   		
 		return T;
   	
