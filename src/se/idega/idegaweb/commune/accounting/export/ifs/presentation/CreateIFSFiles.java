@@ -8,6 +8,7 @@
 package se.idega.idegaweb.commune.accounting.export.ifs.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Locale;
 
 import javax.ejb.FinderException;
 
@@ -23,6 +24,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -84,10 +86,14 @@ public class CreateIFSFiles extends AccountingBlock {
 
 	private void createFiles(IWContext iwc) {
 		String date = iwc.getParameter(PARAM_PAYMENT_DATE);
+		IWTimestamp pDate = new IWTimestamp(date);
 		String period = iwc.getParameter(PARAM_PERIOD_TEXT);
+		Locale currentLocale = iwc.getCurrentLocale();
+		if (currentLocale == null)
+			currentLocale = Locale.getDefault();
 		
 		try {
-			getIFSBusiness(iwc).createFiles(_currentOperation,date,period,iwc.getCurrentUser());
+			getIFSBusiness(iwc).createFiles(_currentOperation,pDate,period,iwc.getCurrentUser(),currentLocale);
 		}
 		catch (RemoteException e1) {
 			e1.printStackTrace();
