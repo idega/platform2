@@ -46,12 +46,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/03/31 20:06:01 $ by $Author: laddi $
+ * Last modified: $Date: 2005/04/01 06:54:54 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -127,9 +127,9 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 		table.setHeight(table.getRows() + 1, 12);
 
 		SubmitButton button = getSubmitButton(SIMPLE_FORM_SUBMIT_KEY + "_button", SIMPLE_FORM_SUBMIT_DEFAULT);
-		table.add(button, 3, table.getRows() + 1);
-		table.add(Text.getNonBrakingSpace(), 3, table.getRows());
-		table.add(getHelpButton("registration_help_key"), 3, table.getRows());
+		table.add(button, 1, table.getRows() + 1);
+		table.add(Text.getNonBrakingSpace(), 1, table.getRows());
+		table.add(getHelpButton("registration_help_key"), 1, table.getRows());
 		final Form accountForm = new Form();
 		accountForm.add(table);
 		accountForm.setToDisableOnSubmit(button, true);
@@ -228,9 +228,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 		table.add(getSingleInput(iwc, PHONE_HOME_KEY, 25, true), 1, row++);
 
 		table.setHeight(row++, 18);
-		table.mergeCells(1, row, 3, row);
 		table.add(getErrorText(localize(MANDATORY_FIELD_EXPL_KEY, MANDATORY_FIELD_EXPL_DEFAULT)), 1, row++);
-		table.mergeCells(1, row, 3, row);
 		table.add(getSmallText(localize(CITIZEN_ACCOUNT_INFO_KEY, CITIZEN_ACCOUNT_INFO_DEFAULT)), 1, row++);
 	}
 
