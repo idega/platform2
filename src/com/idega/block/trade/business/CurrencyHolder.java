@@ -33,12 +33,17 @@ private float buyValue_ = -1;
 private float sellValue_ = -1;
 private float middleValue_ = -1;
 private idegaTimestamp timestamp_ = null;
+private int currencyID_ = -1;
 
   public CurrencyHolder() {
   }
 
 
   /* Setters */
+  public void setCurrencyID(int id) {
+    currencyID_ = id;
+  }
+
   public void setCurrencyName(String name) {
     currencyName_ = name;
   }
@@ -61,6 +66,10 @@ private idegaTimestamp timestamp_ = null;
 
 
   /* Getters */
+  public int getCurrencyID() {
+    return currencyID_;
+  }
+
   public String getCurrencyName() {
     return currencyName_;
   }
