@@ -6,46 +6,33 @@ import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.news.data.NewsCategory;
 import com.idega.block.news.data.NwNews;
+import com.idega.block.news.data.NwNewsHome;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.data.Content;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 
 public class NewsBusiness {
 
 	public static NwNews getNews(int iNewsId) {
 
-		NwNews NW = ((com.idega.block.news.data.NwNewsHome) com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy();
+		try {
+            return  ((NwNewsHome) com.idega.data.IDOLookup.getHome(NwNews.class)).findByPrimaryKey(new Integer(iNewsId));
+        } catch (IDOLookupException e) {
+            e.printStackTrace();
+        } catch (FinderException e) {
+            e.printStackTrace();
+        }
 
-		if (iNewsId > 0) {
-
-			try {
-
-				NW = ((com.idega.block.news.data.NwNewsHome) com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).findByPrimaryKeyLegacy(iNewsId);
-
-			}
-
-			catch (SQLException e) {
-
-				e.printStackTrace();
-
-				NW = ((com.idega.block.news.data.NwNewsHome) com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy();
-
-			}
-
-		}
-
-		else {
-
-			NW = null;
-
-		}
-
-		return NW;
-
+        return null;
 	}
 
 	public static boolean disconnectBlock(int instanceid) {
@@ -253,7 +240,7 @@ public class NewsBusiness {
 
 			boolean update = false;
 
-			NwNews eNwNews = ((com.idega.block.news.data.NwNewsHome) com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy();
+			NwNews eNwNews = ((NwNewsHome) IDOLookup.getHome(NwNews.class)).create();
 
 			if (iNwNewsId > 0) {
 
@@ -293,7 +280,11 @@ public class NewsBusiness {
 
 			ex.printStackTrace();
 
-		}
+		} catch (IDOLookupException e) {
+            e.printStackTrace();
+        } catch (CreateException e) {
+            e.printStackTrace();
+        }
 
 		return null;
 

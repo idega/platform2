@@ -18,11 +18,16 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.CreateException;
+
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.news.data.NewsCategory;
 import com.idega.block.news.data.NwNews;
+import com.idega.block.news.data.NwNewsHome;
 import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
@@ -38,7 +43,13 @@ public class NewsBundleStarter implements IWBundleStartable{
 
     if(!testNews()){
       System.err.println("News bundle starter: Adding category reference to news ");
-      addICCategoryField(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy());
+      try {
+        addICCategoryField(((NwNewsHome)IDOLookup.getHome(NwNews.class)).create());
+    } catch (IDOLookupException e) {
+        e.printStackTrace();
+    } catch (CreateException e) {
+        e.printStackTrace();
+    }
     }
 
     //
