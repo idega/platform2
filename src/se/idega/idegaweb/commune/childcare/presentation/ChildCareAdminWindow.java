@@ -1369,7 +1369,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		layoutTbl.setWidth(Table.HUNDRED_PERCENT);
 		layoutTbl.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
-					
+		
+		layoutTbl.mergeCells(1, row, 2, row);
+		
+		layoutTbl.add(getSmallText(localize("ccpqw_prognosis_info", "On this page the childcare providers are presented with their total queue...")), 1, row++);
+		
 		layoutTbl.add(getSmallHeader(localize("ccpqw_provider", "Provider") + ":"), 1, row);
 		layoutTbl.add(getSmallText(school.getName()), 2, row++);	
 
