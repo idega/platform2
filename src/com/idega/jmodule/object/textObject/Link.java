@@ -423,7 +423,7 @@ public String getParameterString(ModuleInfo modinfo,String URL){
           URL="";
         }
 	if (parameterString == null){
-          if (addSessionId){
+          if (addSessionId && (!modinfo.isSearchEngine()) ){
 		if(URL.indexOf("://") == -1){
 			if (URL.indexOf("?") != -1){
 

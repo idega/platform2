@@ -116,12 +116,21 @@ public boolean isNetscape(){
 }
 
 public boolean isIE(){
-	if (getUserAgent().indexOf("MSIE") != -1){
-		return true;
-	}
-	else{
-		return false;
-	}
+  if (getUserAgent().indexOf("MSIE") != -1){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+public boolean isSearchEngine(){
+  if (getUserAgent().indexOf("Ultraseek") != -1){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
 /*Under Construction*/
