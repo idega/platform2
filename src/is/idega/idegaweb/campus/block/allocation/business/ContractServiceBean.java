@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.17 2004/06/25 11:09:45 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.18 2004/06/25 11:45:07 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -792,6 +792,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		if (contract != null) {
 			contractDateTo = new IWTimestamp(contract.getValidTo());
 			contractDateFrom = new IWTimestamp(contract.getValidFrom());
+			return new Period( contractDateFrom.getDate(),contractDateTo.getDate());
 		}
 		// if we have an apartment lets see if there exist some definitions for it
 		else if (apartment != null) {
