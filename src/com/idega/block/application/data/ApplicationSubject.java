@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubject.java,v 1.1 2001/06/21 16:20:46 palli Exp $
+ * $Id: ApplicationSubject.java,v 1.2 2001/06/22 11:33:08 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ public class ApplicationSubject extends GenericEntity {
   public static final String description_ = "description";
   public static final String created_ = "created";
   public static final String expires_ = "expires";
+  public static final String status_ = "status";
 
   public ApplicationSubject() {
     super();
@@ -37,7 +38,9 @@ public class ApplicationSubject extends GenericEntity {
     addAttribute(description_,"Description",true,true,"java.lang.String");
     addAttribute(created_,"Created",true,true,"java.sql.Date");
     addAttribute(expires_,"Expires",true,true,"java.sql.Date");
+    addAttribute(status_,"Status",true,true,"java.lang.String");
     setMaxLength(description_,255);
+    setMaxLength(status_,1);
   }
 
   public String getEntityName() {
@@ -68,4 +71,11 @@ public class ApplicationSubject extends GenericEntity {
     return((Date)getColumnValue(expires_));
   }
 
+  public void setStatus(String status) {
+    setColumn(status_,status);
+  }
+
+  public String getStatus() {
+    return((String)getColumnValue(status_));
+  }
 }
