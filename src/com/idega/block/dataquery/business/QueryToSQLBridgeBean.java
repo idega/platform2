@@ -10,7 +10,7 @@ import java.util.List;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultCell;
 import com.idega.block.dataquery.data.QueryResultField;
-import com.idega.block.dataquery.data.QuerySQL;
+import com.idega.block.dataquery.data.sql.QuerySQL;
 import com.idega.business.IBOServiceBean;
 import com.idega.util.database.ConnectionBroker;
 

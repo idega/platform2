@@ -22,7 +22,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.dataquery.data.QueryResult;
-import com.idega.block.dataquery.data.QuerySQL;
+import com.idega.block.dataquery.data.sql.QuerySQL;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
@@ -68,7 +68,9 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 			ArrayList list = new ArrayList(coll.size());
 			for (Iterator iter = coll.iterator(); iter.hasNext();) {
 				ICObject ICObj = (ICObject) iter.next();
-				list.add(new QueryEntityPart(ICObj.getName(),ICObj.getClassName()));
+        String queryEntityPartName = ICObj.getClassName();
+				// thi comment list.add(new QueryEntityPart(ICObj.getName(),ICObj.getClassName()));
+        list.add(new QueryEntityPart(queryEntityPartName, queryEntityPartName));
 			}
 			return list;
 		}
@@ -176,7 +178,9 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 				while (iter.hasNext()) {
 					IDOEntityDefinition entityDef = (IDOEntityDefinition) iter.next();
 					//GenericEntity relatedEntity = getEntity(entityClass);
-					QueryEntityPart child2 = new QueryEntityPart (entityDef.getUniqueEntityName(),entityDef.getInterfaceClass().getName());
+          String queryEntityPartName = entityDef.getInterfaceClass().getName();
+					// thi comment QueryEntityPart child2 = new QueryEntityPart (entityDef.getUniqueEntityName(),entityDef.getInterfaceClass().getName());
+          QueryEntityPart child2 = new QueryEntityPart (queryEntityPartName, queryEntityPartName);
 					node.addChild(child2);
 					if(level >0)
 						generateEntityTree(child2,level-1);

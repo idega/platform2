@@ -10,7 +10,7 @@ import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
-import com.idega.block.dataquery.data.QuerySQL;
+import com.idega.block.dataquery.data.sql.QuerySQL;
 import com.idega.block.dataquery.presentation.QueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.business.IBOLookup;
