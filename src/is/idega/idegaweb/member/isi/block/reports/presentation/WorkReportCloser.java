@@ -103,7 +103,14 @@ public class WorkReportCloser extends Block {
 		DateInput fromDate = new DateInput(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE);
 		DateInput toDate = new DateInput(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE);
 		
-	
+		IWTimestamp earliest = new IWTimestamp();
+		int currentYear = earliest.getYear();
+		earliest.addYears(-2);
+		earliest.setMonth(1);
+		earliest.setDay(1);
+		
+		fromDate.setYearRange(earliest.getYear(),currentYear+2);
+		toDate.setYearRange(earliest.getYear(),currentYear+2);
 		
 		if(fDate!=null) {
 			fromDate.setDate(fDate);
