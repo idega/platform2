@@ -38,9 +38,9 @@ private String sAttribute = null;
 private String adminURL = "/text/textadmin.jsp";
 
 private int iTextId = -1;
-private int textSize = 2;
+private int textSize = 1;
 private int tableTextSize = 1;
-private int headlineSize = 3;
+private int headlineSize = 2;
 private String tableWidth = "";
 private String textBgColor = null;
 private String textColor = "#000000";

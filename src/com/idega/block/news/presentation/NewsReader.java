@@ -392,11 +392,16 @@ public class NewsReader extends Block implements IWBlock{
         T.add(getNewsTable(newsHelper,newsCategory,locale ,false,collection,iwc),useDividedTable,"left");
       }
 			// news collection
-			if(showNewsCollectionButton && len < count){
-				Link collectionLink = new Link(iwrb.getImage("collection.gif"));
-				collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
-				collectionLink.addParameter(prmCollection,"true");
-				T.add(collectionLink);
+			if(showNewsCollectionButton){
+			  if(len < count && !collection){
+				  Link collectionLink = new Link(iwrb.getImage("collection.gif"));
+				  collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
+				  collectionLink.addParameter(prmCollection,"true");
+				  T.add(collectionLink);
+			  }
+			  else if(collection){
+			    T.add(new BackButton(iwrb.getImage("back.gif")));
+				}
 			}
 			// Finish objectsbetween
       if(objectsBetween != null && objectsBetween.size() > 0){
@@ -479,7 +484,9 @@ public class NewsReader extends Block implements IWBlock{
 
 						Image newsImage = new Image(imid);
 						if(att != null)
-							T.add(newsImage,1,3);
+							newsImage.setAttributes(getAttributeMap(att));
+
+						  T.add(newsImage,1,3);
 						}
 						catch(SQLException ex){
 							ex.printStackTrace();
