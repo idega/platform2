@@ -28,6 +28,7 @@ import com.idega.core.data.PhoneType;
 import com.idega.core.data.PhoneTypeHome;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -212,6 +213,25 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		
 		return appl;
  
+	}
+	
+	public boolean changeGroupApplicationAdminCommentAndGroups(GroupApplication app, String adminComment, String[] groupIds){
+		try {
+			app.setAdminComment(adminComment);		
+			
+			if( groupIds!=null ){
+				app.removeAllGroups();
+				app.addGroups(ListUtil.convertCollectionToList(getGroupBusiness().getGroups(groupIds)));
+			}
+			//else app.removeAllGroups();
+		
+			app.store();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public boolean changeGroupApplicationStatus(GroupApplication app, String status){

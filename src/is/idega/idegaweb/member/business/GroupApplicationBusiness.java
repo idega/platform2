@@ -28,4 +28,6 @@ public interface GroupApplicationBusiness extends com.idega.business.IBOService,
  public boolean changeGroupApplicationStatus(int p0,java.lang.String p1) throws java.rmi.RemoteException;
  public com.idega.user.business.UserBusiness getUserBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public is.idega.idegaweb.member.data.GroupApplication createGroupApplication(com.idega.user.data.Group p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.util.List p5)throws java.rmi.RemoteException,javax.ejb.CreateException,com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
+ public boolean changeGroupApplicationAdminCommentAndGroups(is.idega.idegaweb.member.data.GroupApplication app, String adminComment, String[] groupIds) throws java.rmi.RemoteException;
+
 }
