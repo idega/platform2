@@ -73,7 +73,7 @@ public class ContractEditWindow extends Window{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    if(isAdmin){
+    if(iwc.hasEditPermission(new CampusContracts())){
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
         doSaveContract(iwc);
       }
