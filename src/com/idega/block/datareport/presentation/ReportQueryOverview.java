@@ -472,6 +472,19 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	    			addExecutedSQLQueries(executedSQLStatements);
 	    		}
 	    		
+	    		//little debugging/logging
+	    		StringBuffer queryExecuted = new StringBuffer();
+				if(executedSQLStatements!=null && !executedSQLStatements.isEmpty()){
+					Iterator iterator = executedSQLStatements.iterator();
+					while (iterator.hasNext())	{
+						queryExecuted.append( (String) iterator.next());
+						queryExecuted.append("\n");
+					}
+				}
+					
+	    		debug(queryExecuted.toString());
+	    		//
+	    		
 	    		if (! isOkay)	{
 	    			errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 	    		}	
