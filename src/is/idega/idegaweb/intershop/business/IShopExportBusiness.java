@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopExportBusiness.java,v 1.8 2002/05/03 13:58:33 palli Exp $
+ *  $Id: IShopExportBusiness.java,v 1.9 2002/05/06 14:51:15 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Properties;
 import java.io.ByteArrayInputStream;
 
@@ -129,7 +130,6 @@ public class IShopExportBusiness {
       sql.append(page.getIShopLanguageNr());
       sql.append(")");
 
-//      System.out.println("sql1 = " + sql.toString());
       Statement stmt = conn.createStatement();
       int res = stmt.executeUpdate(sql.toString());
 
@@ -155,7 +155,6 @@ public class IShopExportBusiness {
       sql.append(page.getIShopDescription());
       sql.append("')");
 
-//      System.out.println("sql2 = " + sql.toString());
       stmt = conn.createStatement();
       int res2 = stmt.executeUpdate(sql.toString());
 
@@ -168,5 +167,49 @@ public class IShopExportBusiness {
     }
 
     return true;
+  }
+
+  public String getMaxIdForUT(Properties dbProps) {
+    try {
+      String driver = dbProps.getProperty("drivers");
+      String url = dbProps.getProperty("default.url");
+      String dbname = dbProps.getProperty("default.dbname");
+      String user = dbProps.getProperty("default.user");
+      String passwd = dbProps.getProperty("default.password");
+
+      if (driver == null || url == null || dbname == null || user == null || passwd == null)
+        return null;
+
+      Class.forName(driver).newInstance();
+      Connection conn = DriverManager.getConnection(url,user,passwd);
+
+      StringBuffer sql = new StringBuffer("select max(");
+      sql.append(is.idega.idegaweb.intershop.data.IShopTemplateBeanBMPBean.getIShopIDColumnName());
+      sql.append(") from ");
+      sql.append(dbname);
+      sql.append("..");
+      sql.append(IShopTemplate.ISHOP_TABLE_TEMPLATES);
+      sql.append(" where ");
+      sql.append(is.idega.idegaweb.intershop.data.IShopTemplateBeanBMPBean.getIShopClassColumnName());
+      sql.append(" = 'UT'");
+
+      Statement stmt = conn.createStatement();
+
+      ResultSet res = stmt.executeQuery(sql.toString());
+
+      String ret = null;
+      if (res.next())
+        ret = res.getString(1);
+
+      res.close();
+      stmt.close();
+      conn.close();
+
+      return ret;
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: IShopCreatePageWindow.java,v 1.3 2002/04/17 11:54:49 palli Exp $
+ * $Id: IShopCreatePageWindow.java,v 1.4 2002/05/06 14:51:15 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -67,6 +67,8 @@ public class IShopCreatePageWindow extends IWAdminWindow {
     IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
     IShopXMLDesc desc = new IShopXMLDesc(iwc.getApplicationContext());
 
+    String ut = iwb.getProperty("UT","UT");
+
     Form form = new Form();
 
     setTitle(iwrb.getLocalizedString("create_new_ispage","Create Intershop Template"));
@@ -98,6 +100,7 @@ public class IShopCreatePageWindow extends IWAdminWindow {
     }
 
     mnu.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+    mnu.setToSubmit();
 
     Text classText = new Text(iwrb.getLocalizedString(IS_CLASS,"Class")+":");
     classText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -185,6 +188,14 @@ public class IShopCreatePageWindow extends IWAdminWindow {
           return;
         }
 
+        if (className_.equals(ut)) {
+          String idString = IShopExportBusiness.getInstance().getMaxIdForUT(props);
+          int idInt = Integer.parseInt(idString);
+          idInt++;
+          temp.setIShopID(Integer.toString(idInt));
+          IShopTemplateHome.getInstance().update(temp);
+        }
+
         IShopExportBusiness.getInstance().createPage(temp,props);
       }
     }
@@ -198,8 +209,16 @@ public class IShopCreatePageWindow extends IWAdminWindow {
       String name_ = iwc.getParameter(IS_NAME);
       String description_ = iwc.getParameter(IS_DESCRIPTION);
 
-      if (id_ != null)
-        id.setValue(id_);
+      if (className_ != null) {
+        if (!className_.equals(ut)) {
+          if (id_ != null)
+            id.setValue(id_);
+          id.setDisabled(false);
+        }
+        else
+          id.setDisabled(true);
+        mnu.setSelectedElement(className_);
+      }
 
       if (langnr_ != null)
         langnr.setValue(langnr_);
@@ -210,8 +229,6 @@ public class IShopCreatePageWindow extends IWAdminWindow {
       if (description_ != null)
         description.setValue(description_);
 
-      if (className_ != null)
-        mnu.setSelectedElement(className_);
     }
   }
 
