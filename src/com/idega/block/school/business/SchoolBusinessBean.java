@@ -1519,10 +1519,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, notes);
 	}
 	
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) {
+		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, removedDate, registrator, notes, null);
+	}
+	
 	/**
 	 *  Stores placement. If placement for student and schoolgroup exist placement is updated
 	 */
-	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) {
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes, String language) {
 		try {
 			SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
 			if (member == null)
@@ -1543,6 +1547,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 					member.setRegistratorId(registrator);
 				if (notes != null)
 					member.setNotes(notes);
+				if (language != null)
+					member.setLanguage(language);
 				member.setRegistrationCreatedDate(IWTimestamp.getTimestampRightNow());
 
 				member.store();
