@@ -77,7 +77,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
        modinfo.removeSessionAttribute("dr_id");
     }
 
-    if(modinfo.getParameter(prmSave)!=null){
+    if(modinfo.getParameter(prmSave)!=null || modinfo.getParameter(prmSave+".x")!=null){
       if(modinfo.getParameter("bm_choice")!=null){
         int i = Integer.parseInt(modinfo.getParameter("bm_choice"));
          switch (i) {
@@ -90,7 +90,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
         }
       }
     }
-    else if(modinfo.getParameter( prmDelete)!=null){
+    else if(modinfo.getParameter( prmDelete)!=null || modinfo.getParameter(prmDelete+".x")!=null){
        if(modinfo.getParameter("bm_choice")!=null && eId > 0){
         int i = Integer.parseInt(modinfo.getParameter("bm_choice"));
          switch (i) {
@@ -961,8 +961,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T2.add(formatText(iwrb.getLocalizedString("icon","Icon")),1,1);
     T2.add(Text.getBreak(),1,1);
     T2.add(this.makeImageInput(iIconId,"iconid"),1,1);
-    T2.add(new SubmitButton(iwrb.getImage("save.gif"),prmSave),1,1);
-    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),prmDelete),1,1);
+    T2.add(new SubmitButton(iwrb.getImage("save.gif"),prmSave),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),prmDelete),1,2);
     form.add(Frame);
     return form;
   }
