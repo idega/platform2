@@ -39,7 +39,7 @@ public class GolfLoginBusiness implements IWPageEventListener {
     public final static String PRM_PRIFIX = "golf_";
     public static String UserAttributeParameter = "member_login";
     public static String UserAccessAttributeParameter = "member_access";
-    public static String LoginStateParameter = "login_state";
+    public static String LoginStateParameter = PRM_PRIFIX+"login_state";
     public static String newLoginStateParameter = "new_login_state";
     public static final String ACCESSCONTROL_GROUP_PARAMETER = "iw_accesscontrol_group";
     public static final String CURRENT_GOLF_UNION_ID_ATTRIBUTE = "golf_union_id";

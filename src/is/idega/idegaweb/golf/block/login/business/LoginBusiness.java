@@ -34,7 +34,7 @@ public class LoginBusiness implements IWPageEventListener {
 
 	public static String UserAttributeParameter = "member_login";
 	public static String UserAccessAttributeParameter = "member_access";
-	public static String LoginStateParameter = "login_state";
+	public static String LoginStateParameter = GolfLoginBusiness.LoginStateParameter;//"login_state";
 
 	public LoginBusiness() {
 	}
