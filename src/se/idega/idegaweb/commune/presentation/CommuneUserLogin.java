@@ -46,6 +46,8 @@ public class CommuneUserLogin extends CommuneBlock {
 	public static final int METHOD_SEARCH = 1;
 	public static final int METHOD_LOGIN = 2;
 	
+	private static final String DEFAULT_HOME_PAGE = "default_citizen_home_page";
+	
 	private String searchString;
 	private String personalID = null;
 	private String userID = null;
@@ -221,6 +223,9 @@ public class CommuneUserLogin extends CommuneBlock {
 					iwc.forwardToIBPage(getParentPage(), user.getHomePage());
 				if (group != null && group.getHomePageID() != -1 )
 					iwc.forwardToIBPage(getParentPage(), group.getHomePage());
+				if (getBundle().getProperty(DEFAULT_HOME_PAGE) != null) {
+					iwc.forwardToIBPage(getParentPage(), new Integer(getBundle().getProperty(DEFAULT_HOME_PAGE)).intValue());
+				}
 			}
 			else {
 				add(getBackTable());
