@@ -187,7 +187,8 @@ public abstract class BillingThread extends Thread{
 			result.setPaymentRecord (paymentRecord);
 		}
 		if (null != postingDetail) {
-			result.setRuleText (postingDetail.getTerm());
+			result.setInvoiceText(postingDetail.getTerm());
+			result.setRuleText(postingDetail.getTerm());
 			result.setOrderId(postingDetail.getOrderID());
 		}
 		result.setPeriodStartCheck (checkPeriod.getFirstCheckDay ().getDate ());
