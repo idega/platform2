@@ -30,6 +30,7 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
 	 * @return School that is the first school that the user is a manager for.
 	 * @throws javax.ejb.FinderException if there is no school that the user manages.
 	 */
+  public com.idega.block.school.data.School getFirstManagingMusicSchoolForUser(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School getFirstManagingSchoolForUser(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School getFirstManagingChildCareForUser(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootCitizenGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;

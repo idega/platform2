@@ -429,6 +429,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return rootGroup;
 		*/
 	}
+	public Group getRootMusicSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
+		return getSchoolBusiness().getRootMusicSchoolAdministratorGroup();
+	}
 	/**
 	* Returns or creates (if not available) the default usergroup all school administors have as their primary group.
 	* @throws CreateException if it failed to create the group.
@@ -525,6 +528,43 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public School getFirstManagingSchoolForUser(User user) throws FinderException, RemoteException {
 		try {
 			Group rootGroup = getRootSchoolAdministratorGroup();
+			if (user.getPrimaryGroup().equals(rootGroup)) {
+				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
+				Collection schoolIds = sub.getSchools(user);
+				if (!schoolIds.isEmpty()) {
+					Iterator iter = schoolIds.iterator();
+					while (iter.hasNext()) {
+						School school = sub.getSchoolHome().findByPrimaryKey(iter.next());
+						return school;
+					}
+				}
+			}
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		catch (FinderException e) {
+			Collection schools = ((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
+			if (!schools.isEmpty()) {
+				Iterator iter = schools.iterator();
+				while (iter.hasNext()) {
+					return (School) iter.next();
+				}
+			}
+		}
+		throw new FinderException("No school found that " + user.getName() + " manages");
+	}
+
+	/**
+	 * Method getFirstManagingSchoolForUser.
+	 * If there is no school that the user manages then the method throws a FinderException.
+	 * @param user a user
+	 * @return School that is the first school that the user is a manager for.
+	 * @throws javax.ejb.FinderException if ther is no school that the user manages.
+	 */
+	public School getFirstManagingMusicSchoolForUser(User user) throws FinderException, RemoteException {
+		try {
+			Group rootGroup = getRootMusicSchoolAdministratorGroup();
 			if (user.getPrimaryGroup().equals(rootGroup)) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
