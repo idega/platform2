@@ -1,19 +1,37 @@
 package is.idega.idegaweb.travel.presentation;
-import java.rmi.*;
-import java.sql.*;
-import java.text.*;
-import java.util.*;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.ejb.*;
+import javax.ejb.FinderException;
 
-import com.idega.block.trade.data.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.data.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.util.*;
-import com.idega.util.text.*;
+import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.data.CurrencyHome;
+import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
+import com.idega.block.trade.stockroom.data.Settings;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.block.trade.stockroom.data.TravelAddressHome;
+import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * <p>Title: idegaWeb TravelBooking</p>
