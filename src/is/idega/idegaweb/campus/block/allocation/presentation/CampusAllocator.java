@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.idega.data.IDOLookup;
+import is.idega.idegaweb.campus.block.allocation.data.*;
+
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
@@ -477,7 +480,7 @@ public class CampusAllocator extends Block implements Campus {
 		Frame.setHorizontalZebraColored(lightBlue,WhiteColor);
 		Frame.setRowColor(1,blueColor);
 		Frame.setRowColor(row,redColor);
-		
+
 		Frame.mergeCells(1,row,col,row);
 		Frame.setWidth(1,"15");
 		Frame.add(formatText(" "),1,row);
@@ -902,7 +905,8 @@ public class CampusAllocator extends Block implements Campus {
 				}
 
 				List L = ContractFinder.listOfApplicantContracts(iApplicantId, ContractBMPBean.statusCreated);
-				if (L == null && eApplicant != null) {
+
+				if (L.isEmpty() && eApplicant != null) {
 					User eUser = makeNewUser(eApplicant);
 					if (eUser != null) {
 						if (makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to))
@@ -913,15 +917,15 @@ public class CampusAllocator extends Block implements Campus {
 					else
 						returner = iwrb.getLocalizedString("no_user", "No user was made");
 				}
+				else
+					returner = iwrb.getLocalizedString("has_contracts_or_no_applicant","Has contracts or no applicant");
 			}
 			else if (sContractId != null) {
 
 				int iContractId = Integer.parseInt(sContractId);
 				Contract eContract = null;
 				try {
-					eContract =
-						((is.idega.idegaweb.campus.block.allocation.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-							iContractId);
+					eContract =((ContractHome) IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(	iContractId);
 					eContract.setValidFrom(from.getSQLDate());
 					eContract.setValidTo(to.getSQLDate());
 					if (sApartmentId != null) {
