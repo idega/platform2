@@ -66,11 +66,13 @@ import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolAreaComparator;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
+import com.idega.block.school.business.SchoolTypeComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
@@ -4271,5 +4273,43 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		public SchoolHome getSchoolHome() throws java.rmi.RemoteException {
 			return getSchoolBusiness().getSchoolHome();
+		}
+		
+		public Map getSchoolTypeClassMap(Collection schoolTypes,int schoolID,int seasonID,Boolean showSubGroups,Boolean showNonSeasonGroups,String noSchoolClassFoundEntry){
+			try {
+				SortedMap typeMap = new TreeMap(new SchoolTypeComparator());
+				if (schoolTypes != null) {
+					Map groupMap = null;
+					SchoolType schoolType = null;
+					SchoolBusiness sb = getSchoolBusiness();
+					Collection groups = null;
+					SchoolClass group = null;
+
+					Iterator iter = schoolTypes.iterator();
+					while (iter.hasNext()) {
+						groupMap = new HashMap();
+
+						schoolType = (SchoolType) iter.next();
+						groups = sb.findSchoolClassesBySchoolAndSchoolTypeAndSeason(schoolID, ((Integer) schoolType.getPrimaryKey()).intValue(),seasonID, showSubGroups,showNonSeasonGroups);
+						if (groups != null && groups.size() > 0) {
+							Iterator iterator = groups.iterator();
+							while (iterator.hasNext()) {
+								group = (SchoolClass) iterator.next();
+								groupMap.put(group, group);
+							}
+						}
+						else{
+							groupMap.put("-1",noSchoolClassFoundEntry);
+						}
+						typeMap.put(schoolType, groupMap);
+					}
+				}
+				return typeMap;
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+				return null;
+			}
+		
 		}
 }

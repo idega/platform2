@@ -12,10 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
@@ -23,8 +21,6 @@ import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
 import se.idega.idegaweb.commune.childcare.business.PlacementHelper;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
-import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
-
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
@@ -34,7 +30,6 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -729,8 +724,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (getChildcareID() != -1) {
 			
 			if (!types.isEmpty()) {
-				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
-				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
+				Map typeGroupMap = getBusiness().getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
@@ -909,8 +903,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (getChildcareID() != -1) {
 			
 			if (!types.isEmpty()) {
-				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
-				Map typeGroupMap = sb.getSchoolTypeClassMap(types,helper.getApplication().getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
+				Map typeGroupMap =getBusiness().getSchoolTypeClassMap(types,helper.getApplication().getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {

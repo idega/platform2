@@ -5,20 +5,17 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import se.idega.idegaweb.commune.care.business.ProviderSession;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.care.data.EmploymentType;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
-import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
-
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
@@ -310,8 +307,8 @@ public class ContractEditor extends ChildCareBlock {
 			
 				
 			if (!types.isEmpty()) {
-				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
-				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
+				ChildCareBusiness childCareBusiness = (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);
+				Map typeGroupMap = childCareBusiness.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {

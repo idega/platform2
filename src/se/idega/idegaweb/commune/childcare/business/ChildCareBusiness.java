@@ -1195,4 +1195,10 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getSchoolHome
 	 */
 	public SchoolHome getSchoolHome() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getSchoolTypeClassMap
+	 */
+	public Map getSchoolTypeClassMap(Collection schoolTypes, int schoolID, int seasonID, Boolean showSubGroups,
+			Boolean showNonSeasonGroups, String noSchoolClassFoundEntry) throws java.rmi.RemoteException;
 }
