@@ -1,5 +1,6 @@
 package com.idega.user;
 
+import java.rmi.RemoteException;
 import javax.ejb.*;
 
 /**
@@ -29,9 +30,13 @@ public class Converter {
       Object id = user.getPrimaryKey();
       return getOldUserHome().findByPrimaryKey(id);
     }
-    catch(Exception e){
-    	e.printStackTrace();
-      throw new EJBException(e.getMessage());
+    catch(RemoteException e){
+    	//e.printStackTrace();
+      throw new EJBException("RemoteException: "+e.getMessage());
+    }
+    catch(FinderException e){
+    	//e.printStackTrace();
+      throw new EJBException("FinderException: "+e.getMessage());
     }
   }
 
@@ -40,10 +45,14 @@ public class Converter {
       Object id = user.getPrimaryKey();
       return getNewUserHome().findByPrimaryKey(id);
     }
-    catch(Exception e){
-    	e.printStackTrace();
-      throw new EJBException(e.getMessage());
+    catch(RemoteException e){
+    	//e.printStackTrace();
+      throw new EJBException("RemoteException:"+e.getMessage());
     }
+    catch(FinderException e){
+    	//e.printStackTrace();
+      throw new EJBException("FinderException: "+e.getMessage());
+    } 
   }
 
 }
