@@ -40,7 +40,7 @@ public class TournamentResultsDetailed extends JModuleObject {
   private Text blackText;
   private Text whiteText;
 
-  private int[] allTournamentRounds_;
+  private int[] pastTournamentRounds_;
 
 
   private int totalPar = 0;
@@ -59,13 +59,10 @@ public class TournamentResultsDetailed extends JModuleObject {
       iwb = getBundle(modinfo);
       tournament = new Tournament(tournamentId_);
       getMemberVector();
-      setMemberVectorAllRounds();
+      setMemberVectorPastRounds();
       if ( result != null ) {
-      System.err.println("Test : result != null");
         if ( result.size() > 1 ) {
-      System.err.println("Test : result.size() > 1");
           sortMemberVector();
-      System.err.println("Test : sorteringu lokid");
         }
       }
 
@@ -118,12 +115,15 @@ public class TournamentResultsDetailed extends JModuleObject {
       int totalStrokes = 0;
       int difference = 0;
 
-      ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,this.allTournamentRounds_,r.getMemberId());
+      ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,pastTournamentRounds_,r.getMemberId());
       Vector v = handler.getTournamentMembers();
       if (v != null) {
+        System.err.println("V != null");
         if (v.size() > 0) {
+            System.err.println("V > 0");
             ResultsCollector rip = (ResultsCollector) v.get(0);
             if (rip != null) {
+                System.err.println("Rip != null");
                 difference = rip.getDifference();
             }else {System.err.println("Rip == null");}
         }else {System.err.println("V.size = 0");}
@@ -345,26 +345,26 @@ public class TournamentResultsDetailed extends JModuleObject {
     }
   }
 
-  private void setMemberVectorAllRounds() throws SQLException{
+  private void setMemberVectorPastRounds() throws SQLException{
 
       TournamentRound[] rounds = tournament.getTournamentRounds();
       TournamentRound tRound = new TournamentRound(tournamentRound_);
       Vector ids = new Vector();
       for (int i = 0; i < rounds.length; i++) {
-        if (rounds[i].getRoundNumber() <= tRound.getRoundNumber()) {
+        if (rounds[i].getRoundNumber() < tRound.getRoundNumber()) {
           ids.add(new Integer(rounds[i].getID()));
         }
       }
 
       if (ids != null) {
-          allTournamentRounds_ = new int[ids.size()];
+          pastTournamentRounds_ = new int[ids.size()];
           for (int i = 0; i < ids.size(); i++) {
-              allTournamentRounds_[i] = ((Integer) ids.get(i)).intValue();
+              pastTournamentRounds_[i] = ((Integer) ids.get(i)).intValue();
           }
       }else {
           //int[]
-          allTournamentRounds_ = new int[1];
-            allTournamentRounds_[0] = tournamentRound_;
+          pastTournamentRounds_ = new int[1];
+            pastTournamentRounds_[0] = tournamentRound_;
       }
   }
 
