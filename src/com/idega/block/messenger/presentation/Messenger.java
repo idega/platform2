@@ -1,6 +1,7 @@
 package com.idega.block.messenger.presentation;
 
 import com.idega.block.messenger.business.ClientSessionBinder;
+import com.idega.builder.presentation.InvisibleInBuilder;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Applet;
 import com.idega.presentation.Block;
@@ -15,7 +16,7 @@ import com.idega.presentation.IWContext;
  * @version 1.0
  */
 
-public class Messenger extends Block {
+public class Messenger extends Block implements InvisibleInBuilder {
   private IWBundle iwb;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.messenger";
   private static String SESSION_ID = "session_id";
