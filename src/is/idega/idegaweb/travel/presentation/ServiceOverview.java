@@ -212,6 +212,8 @@ public class ServiceOverview extends TravelManager {
         ProductPrice[] prices;
         Currency currency;
 
+        String stampTxt1;
+        String stampTxt2;
 
         for (int i = 0; i < products.length; i++) {
           try {
@@ -223,9 +225,18 @@ public class ServiceOverview extends TravelManager {
                 prodName.setText(service.getName());
 
             timeframeTxt = (Text) theBoldText.clone();
-                timeframeTxt.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc) + " - ");
+                stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
+                stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
+                try {
+                  if (timeframe.getIfYearly() ){
+                    stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -4);
+                    stampTxt2 = stampTxt2.substring(0, stampTxt2.length() -4);
+                  }
+                }catch (ArrayIndexOutOfBoundsException ai) {}
+                timeframeTxt.setText(stampTxt1 + " - ");
                 timeframeTxt.addToText(Text.BREAK);
-                timeframeTxt.addToText(new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc));
+                timeframeTxt.addToText(stampTxt2);
+
 
             depFrom = (Text) theBoldText.clone();
             if (address != null)

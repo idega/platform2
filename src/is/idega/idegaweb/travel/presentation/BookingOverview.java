@@ -451,7 +451,6 @@ public class BookingOverview extends TravelManager {
                               iCount = tour.getTotalSeats();
                               iBooked = Booker.getNumberOfBookings(service.getID(), tempStamp);
                               iAssigned = Assigner.getNumberOfAssignedSeats(product, tempStamp);
-                              //iAssigned = Assigner.getNumberOfAssignedSeats(service.getID(), tempStamp);
 
                               iInquery = Inquirer.getInqueredSeats(service.getID(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
                               //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
@@ -464,7 +463,6 @@ public class BookingOverview extends TravelManager {
                               iInquery = Inquirer.getInqueredSeats(service.getID(),tempStamp,reseller.getID(), true);
                               iAvailable = iCount - iBooked - iAssigned -iInquery;
                           }
-                          System.err.println(i +" : "+iAssigned);
                           countTextBold.setText(Integer.toString(iCount));
 
 
@@ -533,6 +531,7 @@ public class BookingOverview extends TravelManager {
               if (upALine) --row;
 
               tempStamp.addDays(1);
+
           }
           toStamp.addDays(-1);
 

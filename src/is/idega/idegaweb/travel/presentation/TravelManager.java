@@ -60,7 +60,8 @@ public class TravelManager extends Block {
     protected static String parameterUpdatePassword = "lUpdatePassword";
     protected static String parameterHome = "lHome";
 
-
+    private int tableWidth = 849;
+    private boolean showLogo = true;
 
     public TravelManager(){
         super();
@@ -91,15 +92,10 @@ public class TravelManager extends Block {
     public void main(IWContext iwc) throws Exception{
         initializer(iwc);
 
-        if (!iwc.hasEditPermission(this) && supplier == null && reseller == null) {
-            if (!isLoginPage(iwc)) {
-              //addBreak();
-              //add(this.getLogin(iwc));
-            }
-            draw(iwc);
-        }else {
-          draw(iwc);
-        }
+        showLogo = isLoggedOn(iwc);
+
+        draw(iwc);
+
 
     }
 
@@ -120,23 +116,16 @@ public class TravelManager extends Block {
       return !hasLoginExpired(iwc);
     }
 
-    protected Login getLogin(IWContext iwc) {
-      return LoginPage.getLoginObject(iwc);
+    protected Table getLogin(IWContext iwc) {
+      return LoginPage.getLoginTable(iwc, bundle, iwrb);
     }
 
     protected Table getLoggedOffTable(IWContext iwc) {
-      Text sessionHasExpired = (Text) this.theText.clone();
-        sessionHasExpired.setText(iwrb.getLocalizedString("travel.session_has_expired","Session has expired"));
-      Table table = new Table(1,5);
-        table.setAlignment("center");
-        table.setAlignment(1,3,"center");
-        table.add(sessionHasExpired,1,3);
-        table.setAlignment(1,5,"center");
-        table.add(getLogin(iwc),1,5);
-      return table;
+      return LoginPage.getLoginTable(iwc, bundle, iwrb);
     }
 
     public void draw(IWContext iwc) {
+
         table.setBorder(0);
         table.setHeight("100%");
         table.setCellpadding(0);
@@ -150,7 +139,7 @@ public class TravelManager extends Block {
         table.mergeCells(1,2,2,2);
         table.setAlignment(2,1,"right");
         table.setHeight(1,2,"100%");
-        table.setWidth("849");
+        table.setWidth(tableWidth);
 
         String action = iwc.getParameter(this.sAction);
         if (action == null) {
@@ -193,6 +182,7 @@ public class TravelManager extends Block {
           iUpdatePassword = iwrb.getImage("buttons/update_password_on.gif");
         }else if (action.equals(this.parameterHome)) {
           iHome = iwrb.getImage("buttons/home_on.gif");
+          showLogo = false;
         }else {
           iHome = iwrb.getImage("buttons/home_on.gif");
         }
@@ -256,6 +246,17 @@ public class TravelManager extends Block {
         if (oldLogin) {
           this.add(iwrb.getLocalizedString("travel.no_permission","No permission"));
         }
+
+        Table logoTable = new Table(1,1);
+          logoTable.setCellpadding(0);
+          logoTable.setCellspacing(0);
+          logoTable.setAlignment("center");
+          logoTable.setWidth(tableWidth);
+          logoTable.add(bundle.getImage("buttons/admin_logo.gif"));
+          logoTable.setAlignment(1,1,"left");
+
+        if (showLogo)
+        super.add(logoTable);
         super.add(table);
     }
 
@@ -287,10 +288,10 @@ public class TravelManager extends Block {
         }
 
 
-        theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+        theText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         theText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         theText.setFontColor(this.textColor);
-        theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
+        theBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         theBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         theBoldText.setBold();
         theBoldText.setFontColor(this.textColor);

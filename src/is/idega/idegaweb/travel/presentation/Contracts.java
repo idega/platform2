@@ -531,7 +531,7 @@ public class Contracts extends TravelManager {
 
     Text header = (Text) theBoldText.clone();
       header.setText(reseller.getName());
-      header.setFontSize(Text.FONT_SIZE_14_HTML_4 );
+//      header.setFontSize(Text.FONT_SIZE_12_HTML_3 );
     table.add(header,1,row);
     table.setRowColor(row, super.backgroundColor);
     table.mergeCells(1,row,4,row+1);

@@ -29,38 +29,57 @@ public class Assigner {
   }
 
 
+  /**
+   * @deprecated
+   */
   public static int getNumberOfAssignedSeatsByContract(int serviceId, idegaTimestamp stamp, Contract contract) {
-    stamp.addDays(contract.getExpireDays());
-    return getNumberOfAssignedSeats(serviceId, -1, stamp);
+    idegaTimestamp theStamp= idegaTimestamp.RightNow();
+      theStamp.addDays(contract.getExpireDays()-1);
+    if (stamp.isLaterThan(theStamp)) {
+      return getNumberOfAssignedSeats(serviceId, -1, stamp);
+    }else {
+      return 0;
+    }
   }
 
 
+  /**
+   * @deprecated
+   */
   private static int getNumberOfAssignedSeatsByContract(int serviceId, idegaTimestamp stamp, Contract contract, Connection conn) {
-    stamp.addDays(contract.getExpireDays());
-    return getNumberOfAssignedSeats(serviceId, -1, stamp, conn);
+    idegaTimestamp theStamp= idegaTimestamp.RightNow();
+      theStamp.addDays(contract.getExpireDays()-1);
+    if (stamp.isLaterThan(theStamp)) {
+      return getNumberOfAssignedSeats(serviceId, -1, stamp, conn);
+    }else {
+      return 0;
+    }
   }
+
 
 
   public static int getNumberOfAssignedSeatsByContract(int serviceId, int resellerId, idegaTimestamp stamp, Contract contract, Connection conn) {
-    stamp.addDays(contract.getExpireDays());
-    System.err.println(serviceId + " : "+stamp.toSQLDateString()+ " : "+contract.getID()+" : "+getNumberOfAssignedSeats(serviceId, -1, stamp, conn));
-    return getNumberOfAssignedSeats(serviceId, resellerId, stamp);
+    idegaTimestamp theStamp= idegaTimestamp.RightNow();
+      theStamp.addDays(contract.getExpireDays()-1);
+    if (stamp.isLaterThan(theStamp)) {
+      System.err.println(theStamp.toSQLDateString() +" > "+stamp.toSQLDateString());
+      return getNumberOfAssignedSeats(serviceId, resellerId, stamp, conn);
+    }else {
+      return 0;
+    }
+
   }
+
 
 
   public static int getNumberOfAssignedSeats(Product product, idegaTimestamp stamp) {
-    return getNumberOfAssignedSeats(product, -1, stamp);
-  }
-
-
-  public static int getNumberOfAssignedSeats(Product product, int resellerId, idegaTimestamp stamp) {
     int returner = 0;
     Contract[] contracts = getContracts(product);
     Connection conn= null;
     try {
       conn = ConnectionBroker.getConnection();
       for (int i = 0; i < contracts.length; i++) {
-        returner += getNumberOfAssignedSeatsByContract(product.getID(), resellerId, stamp, contracts[i], conn);
+        returner += getNumberOfAssignedSeatsByContract(product.getID(), contracts[i].getResellerId(), stamp, contracts[i], conn);
       }
     }
     finally {
@@ -71,9 +90,6 @@ public class Assigner {
     return returner;
   }
 
-  /**
-   * @deprecated
-   */
   public static int getNumberOfAssignedSeats(int serviceId,int resellerId, idegaTimestamp stamp) {
     return getNumberOfAssignedSeats(serviceId, resellerId, stamp, null);
   }

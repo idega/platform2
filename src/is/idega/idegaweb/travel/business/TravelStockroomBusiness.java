@@ -475,6 +475,14 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           Timeframe timeframe = TravelStockroomBusiness.getTimeframe(product);
 
           if (isValidWeekDay) {
+            if (isDayValid(product, stamp)) {
+              isDay = true;
+              serviceDayHash.put(key1, key2, new Boolean(true) );
+            }
+            else {
+              serviceDayHash.put(key1, key2, new Boolean(false) );
+            }
+            /*
               idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
               idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
               if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
@@ -485,7 +493,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
                   serviceDayHash.put(key1, key2, new Boolean(true) );
               }else {
                   serviceDayHash.put(key1, key2, new Boolean(false) );
-              }
+              }*/
           }else {
               serviceDayHash.put(key1, key2, new Boolean(false) );
           }
@@ -494,6 +502,72 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         isDay = ((Boolean) obj).booleanValue();
       }
       return isDay;
+  }
+
+  private static boolean isDateValid(Contract contract, idegaTimestamp stamp) {
+    idegaTimestamp theStamp= idegaTimestamp.RightNow();
+      theStamp.addDays(contract.getExpireDays()-1);
+    if (stamp.isLaterThan(theStamp)) {
+      return new idegaTimestamp(contract.getTo()).isLaterThan(stamp);
+    }else {
+      return false;
+    }
+
+  }
+
+  private static boolean isDayValid(Product product, idegaTimestamp stamp) {
+    return isDayValid(product, null, stamp);
+  }
+
+  private static boolean isDayValid(Product product, Contract contract, idegaTimestamp stamp) {
+    boolean returner = false;
+    try {
+      boolean goOn = false;
+      if (contract == null) {
+        goOn = true;
+      }else {
+        goOn = isDateValid(contract, stamp);
+      }
+      if (goOn) {
+        Service service = TravelStockroomBusiness.getService(product);
+        String middleTable = EntityControl.getManyToManyRelationShipTableName(Service.class, Timeframe.class);
+        Timeframe frame = service.getTimeframe();
+        boolean isYearly = frame.getIfYearly();
+        StringBuffer sb = new StringBuffer();
+          sb.append("Select "+frame.getIDColumnName()+" from "+frame.getTimeframeTableName()+" t, "+middleTable+" st");
+          sb.append(" where ");
+          sb.append("st."+service.getIDColumnName()+" = "+product.getID());
+          sb.append(" and ");
+          sb.append("st."+frame.getIDColumnName()+" = "+frame.getID());
+          sb.append(" and ");
+          sb.append("st."+frame.getIDColumnName()+" = t."+frame.getIDColumnName());
+//          if (isYearly) {
+//            sb.append(" and ");
+//            sb.append(frame.getTimeframeFromColumnName() +" <= '%-"+stamp.getMonth()+"-"+stamp.getDay()+"%'");
+//            sb.append(" and ");
+//            sb.append(frame.getTimeframeToColumnName() +" >= '%-"+stamp.getMonth()+"-"+stamp.getDay()+"%'");
+//          }else {
+            sb.append(" and ");
+            sb.append(frame.getTimeframeFromColumnName() +" <= '"+stamp.toSQLDateString()+"'");
+            sb.append(" and ");
+            sb.append(frame.getTimeframeToColumnName() +" >= '"+stamp.toSQLDateString()+"'");
+//          }
+
+System.err.println(sb.toString());
+          String[] result = SimpleQuerier.executeStringQuery(sb.toString());
+
+          if (result != null) {
+            if (!result[0].equals("0")) {
+              returner = true;
+            }
+          }
+
+      }
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
   }
 
   public static HashtableDoubleKeyed getResellerDayHashtable(IWContext iwc) {
