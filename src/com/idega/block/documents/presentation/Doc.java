@@ -407,7 +407,7 @@ public class Doc extends FolderBlock implements Builderaware {
 		Image categoryImage = _iwbDoc.getImage("shared/category.gif");
 
 		for (int a = 0; a <= categories.length; a++) {
-			if (a == 0 && (_catID == -1 || ic_obj_inst_id != icObjectInstanceID)) {
+			if (a == 0 && (_catID == -1 || ic_obj_inst_id != icObjectInstanceID)&&(a < categories.length)) {
 				_catID = categories[a].getID();
 			}
 
