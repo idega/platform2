@@ -1,9 +1,9 @@
 package is.idega.idegaweb.travel.presentation;
 
 import java.rmi.RemoteException;
-
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
@@ -78,6 +78,8 @@ public class LinkGenerator extends TravelWindow {
     if (refNumber != null) {
     		text.append("&"+BookingRefunder.PARAMETER_EMAILED_REFERENCE_NUMBER+"="+refNumber);
     }
+    
+    text.append("&"+LocaleSwitcher.languageParameterString+"="+iwc.getCurrentLocale().toString());
     
     return text.toString();
   }
