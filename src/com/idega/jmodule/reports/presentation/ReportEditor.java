@@ -1,7 +1,7 @@
 package com.idega.jmodule.reports.presentation;
 
-import com.idega.block.reports.data.*;
-import com.idega.block.reports.business.*;
+import com.idega.jmodule.reports.data.*;
+import com.idega.jmodule.reports.business.*;
 import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.data.EntityFinder;

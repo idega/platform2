@@ -1,6 +1,6 @@
 package com.idega.jmodule.reports.presentation;
 
-import com.idega.block.reports.data.*;
+import com.idega.jmodule.reports.data.*;
 import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import java.sql.SQLException;
