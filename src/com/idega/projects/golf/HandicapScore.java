@@ -28,11 +28,16 @@ import com.idega.projects.golf.service.*;
 import com.idega.util.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class HandicapScore extends JModuleObject {
 
 private String member_id;
 private boolean isAdmin = false;
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 private Table myTable;
 private Form myForm;
@@ -49,7 +54,7 @@ private Form myForm;
   }
 
   public void main(ModuleInfo modinfo) throws Exception {
-
+     iwrb = getResourceBundle(modinfo);
         this.isAdmin=isAdministrator(modinfo);
 
         if ( member_id == null ) {
@@ -80,10 +85,10 @@ private Form myForm;
           noTable.setCellpadding(12);
           noTable.setCellspacing(12);
 
-        Text texti = new Text("Kylfingur hefur ekki skráða forgjöf.");
+        Text texti = new Text(iwrb.getLocalizedString("handicap.member_no_handicap","Member does not have a registered handicap."));
             texti.addBreak();
             texti.addBreak();
-            texti.addToText("Til að fá forgjöf þarf að hafa samband við aðildarklúbb kylfingsins sem úthlutar fyrstu forgjöf.");
+            texti.addToText(iwrb.getLocalizedString("handicap.handicap_help","Contact your club to get your handicap."));
 
         noTable.add(texti);
         add(noTable);
@@ -197,34 +202,34 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
               select_tee.setSelectedElement(tee_number);
 
       Window memberWindow = new Window("",400,220,"/handicap/select_member.jsp?");
-      Image selectMemberImage = new Image("/pics/form_takkar/velja.gif","Velja kylfing");
+      Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif","handicap.select","Select member");
         selectMemberImage.setAttribute("hspace","10");
       Link selectMember = new Link(selectMemberImage,memberWindow);
               selectMember.clearParameters();
 
       Window fieldWindow = new Window("",400,220,"/handicap/select_field.jsp?");
-      Image selectFieldImage = new Image("/pics/form_takkar/velja.gif","Velja völl");
+      Image selectFieldImage =  iwrb.getImage("buttons/choose.gif","handicap.select_course","Select course");
         selectFieldImage.setAttribute("hspace","10");
       Link selectField = new Link(selectFieldImage,fieldWindow);
               selectField.clearParameters();
 
-      SubmitButton writeScore = new SubmitButton(new Image("/pics/form_takkar/skra.gif"));
+      SubmitButton writeScore = new SubmitButton(iwrb.getImage("buttons/register.gif"));
 
-      Text member = new Text("Kylfingur:");
+      Text member = new Text(iwrb.getLocalizedString("handicap.member","Member")+":" );
               member.setFontSize(1);
       Text memberText = new Text(memberInfo.getName());
               memberText.setFontSize(2);
-      Text field = new Text("Völlur:");
+      Text field = new Text(iwrb.getLocalizedString("handicap.course","Course")+":" );
               field.setFontSize(1);
       Text fieldText = new Text(fieldName.getName());
               fieldText.setFontSize(2);
-      Text tees = new Text("Teigar:");
+      Text tees = new Text(iwrb.getLocalizedString("handicap.tees","Tees")+":" );
               tees.setFontSize(1);
-      Text date = new Text("Dags:");
+      Text date = new Text(iwrb.getLocalizedString("handicap.day","Day")+":" );
               date.setFontSize(1);
-      Text numberOfHoles = new Text("Fjöldi hola:");
+      Text numberOfHoles = new Text(iwrb.getLocalizedString("handicap.number_of_holes","Number of holes")+":" );
               numberOfHoles.setFontSize(1);
-      Text statistics = new Text("Tölfræði:");
+      Text statistics = new Text(iwrb.getLocalizedString("handicap.statistics","Statistics")+":");
               statistics.setFontSize(1);
 
       myTable = new Table(2,7);
@@ -242,7 +247,7 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
       myTable.add(statistics,1,6);
 
       myTable.add(memberText,2,1);
-      if ( com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo) ) {
+      if ( isAdmin ) {
         myTable.add(selectMember,2,1);
       }
       myTable.add(fieldText,2,2);
@@ -260,7 +265,7 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
         myTable.add(writeScore,1,7);
       }
       else {
-        myTable.addText("Engir teigar skráðir í grunni...",2,3);
+        myTable.addText(iwrb.getLocalizedString("handicap.no_tees","No tees registered")+":",2,3);
       }
 
 }
@@ -273,4 +278,7 @@ private void getForm() {
 
 }
 
+public String getBundleIdentifier(){
+  return IW_BUNDLE_IDENTIFIER;
+}
 }
