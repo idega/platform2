@@ -10,9 +10,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -33,6 +36,9 @@ public class UserFamilyTab extends UserTab {
 
 	private static final String TAB_NAME = "usr_fam_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Family";	
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "user_family_tab";
 	
 	private Text spouseText;
 	private Text childrenText;
@@ -78,7 +84,7 @@ public class UserFamilyTab extends UserTab {
 
 		empty();
 
-		frameTable = new Table(1, 1);
+		frameTable = new Table(1, 2);
 		frameTable.setCellpadding(0);
 		frameTable.setCellspacing(0);
 		add(frameTable);
@@ -92,8 +98,10 @@ public class UserFamilyTab extends UserTab {
 		attachLink.addParameter(FamilyConnector._PARAM_METHOD, FamilyConnector._METHOD_ATTACH);
 		attachLink.addParameter(FamilyConnector._PARAM_ACTION, FamilyConnector._ACTION_ATTACH);
 		frameTable.add(attachLink, 1, 1);
+		frameTable.add(getHelpButton(),1,2);
 		frameTable.add(Text.getBreak(), 1, 1);
 		frameTable.add(Text.getBreak(), 1, 1);
+		frameTable.add(Text.getBreak(),1,2);
 
 		if (user != null) {
 			try {
@@ -140,6 +148,17 @@ public class UserFamilyTab extends UserTab {
 		childrenText = new Text(iwrb.getLocalizedString("usr_fam_children","Children") + ":");
 		siblingsText = new Text(iwrb.getLocalizedString("usr_fam_siblings","Siblings") + ":");
 
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 
 	public void lineUpFields() {
