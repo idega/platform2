@@ -27,7 +27,7 @@ import com.idega.idegaweb.IWBundle;
  * @version 1.0
  */
 
-public class BuildingEditor extends com.idega.presentation.PresentationObjectContainer{
+public class BuildingEditor extends com.idega.presentation.Block{
 
   protected boolean isAdmin = false;
   protected String TextFontColor = "#000000";
@@ -56,16 +56,16 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     return IW_BUNDLE_IDENTIFIER;
   }
 
+  public String getLocalizedNameKey(){
+    return "building_editor";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Buildings";
+  }
+
   protected void control(IWContext iwc){
-  /*
-    java.util.Enumeration E = iwc.getParameterNames();
-    System.err.println();
-    while(E.hasMoreElements()){
-      String prm = (String) E.nextElement();
-      System.err.println("prm : "+ prm +" = "+iwc.getParameter(prm));
-    }
-    System.err.println();
-*/
+
 
     outerTable = new Table(1,2);
       outerTable.setCellpadding(0);
@@ -73,7 +73,8 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
       outerTable.setWidth("100%");
       outerTable.setHeight("100%");
       outerTable.setHeight(2,"100%");
-      outerTable.setColor(1,1,"#0E2456");
+    //  outerTable.setColor(1,1,"#0E2456");
+
 
     int iAction = BUILDING;
     if(iwc.getParameter(sAction)!= null){
@@ -441,22 +442,24 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
   }
 
   protected PresentationObject makeLinkTable(int i){
-    Table headerTable = new Table(2,2);
+    Table headerTable = new Table(1,2);
       headerTable.setCellpadding(0);
       headerTable.setCellspacing(0);
       headerTable.setWidth("100%");
-      headerTable.mergeCells(1,2,2,2);
+      //headerTable.mergeCells(1,2,2,2);
       headerTable.setAlignment(1,2,"center");
-      headerTable.setAlignment(2,1,"right");
+      //headerTable.setAlignment(2,1,"right");
 
-    Image idegaweb = iwb.getImage("/shared/idegaweb.gif","idegaWeb");
+    /*Image idegaweb = iwb.getImage("/shared/idegaweb.gif","idegaWeb");
       headerTable.add(idegaweb,1,1);
     Text tEditor = new Text(iwrb.getLocalizedString("buildingEditor","Building Editor")+"&nbsp;&nbsp;");
       tEditor.setBold();
       tEditor.setFontColor("#FFFFFF");
       tEditor.setFontSize("3");
       headerTable.add(tEditor,2,1);
+*/
 
+    String color = includeLinks?"#000000":"#FFFFFF";
     Table LinkTable = new Table();
       LinkTable.setBorder(0);
       LinkTable.setCellpadding(3);
@@ -465,32 +468,32 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
 
     Link B1 = new Link(iwrb.getLocalizedString("complex","Complex"));
       B1.setFontStyle("text-decoration: none");
-      B1.setFontColor("#FFFFFF");
+      B1.setFontColor(color);
       B1.setBold();
       B1.addParameter(sAction,COMPLEX);
     Link B2 = new Link(iwrb.getLocalizedString("building","Building"));
       B2.setFontStyle("text-decoration: none");
-      B2.setFontColor("#FFFFFF");
+      B2.setFontColor(color);
       B2.setBold();
       B2.addParameter(sAction,BUILDING);
     Link B3 = new Link(iwrb.getLocalizedString("floor","Floor"));
       B3.setFontStyle("text-decoration: none");
-      B3.setFontColor("#FFFFFF");
+      B3.setFontColor(color);
       B3.setBold();
       B3.addParameter(sAction,FLOOR);
     Link B4 = new Link(iwrb.getLocalizedString("category","Category"));
       B4.setFontStyle("text-decoration: none");
-      B4.setFontColor("#FFFFFF");
+      B4.setFontColor(color);
       B4.setBold();
       B4.addParameter(sAction,CATEGORY);
     Link B5 = new Link(iwrb.getLocalizedString("type","Type"));
       B5.setFontStyle("text-decoration: none");
-      B5.setFontColor("#FFFFFF");
+      B5.setFontColor(color);
       B5.setBold();
       B5.addParameter(sAction,TYPE);
     Link B6 = new Link(iwrb.getLocalizedString("apartment","Apartment"));
       B6.setFontStyle("text-decoration: none");
-      B6.setFontColor("#FFFFFF");
+      B6.setFontColor(color);
       B6.setBold();
       B6.addParameter(sAction,APARTMENT);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.6 2002/01/29 13:18:25 aron Exp $
+ * $Id: CampusAllocation.java,v 1.7 2002/02/04 10:39:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,8 @@ import is.idega.idegaweb.campus.block.application.presentation.*;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.presentation.SysPropsSetter;
 import is.idega.idegaweb.campus.block.allocation.presentation.*;
+import is.idega.idegaweb.campus.block.mailinglist.presentation.Emailer;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
@@ -70,7 +72,7 @@ public class CampusAllocation extends Block{
     objects.add(0,new SysPropsSetter());
     //objects.add(0,new AprtTypePeriodMaker());
     objects.add(0,new ApplicationSubjectMaker());
-    objects.add(0,new EmailSetter());
+    objects.add(0,new Emailer(new LetterParser()));
     objects.add(0,new ContractTextSetter());
     objects.add(0,new CampusAllocator());
     objects.add(0,new RoughOrderForm());
