@@ -164,7 +164,7 @@ public class UserEditor extends Block {
 	private int emailInputLength = 40;
 	private int postalcodeInputLength = 10;
 	private int postalnameInputLength = 30;
-	private int phoneInputLength = 10;
+	private int phoneInputLength = 30;
 	private boolean allowPersonalIdEdit = true;
 	private void initStyleNames() {
 		if (textFontStyleName == null)
