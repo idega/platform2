@@ -27,6 +27,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -54,6 +55,7 @@ public class ContractEditor extends ChildCareBlock {
 	private static String PARAMETER_CONTRACT_ID = "p_ci";
 	private static String PARAMETER_FROM_DATE = "p_fd";
 	private static String PARAMETER_CANCELLED_DATE = "p_cd";
+	private static String PARAMETER_CLEAR_DATE = "p_cld";
 	private static String PARAMETER_CARE_TIME = "p_ct";
 	private static String PARAMETER_EMPLOYMENT_TYPE = "p_et";
 	private static String PARAMETER_INVOICE_REVCEIVER = "p_ir";
@@ -115,6 +117,7 @@ public class ContractEditor extends ChildCareBlock {
 			String inRe = iwc.getParameter(PARAMETER_INVOICE_REVCEIVER);
 			String schType = iwc.getParameter(PARAMETER_SCHOOL_TYPE);
 			String schClass = iwc.getParameter(PARAMETER_SCHOOL_CLASS);
+			boolean clearTerminationDate = iwc.isParameterSet(PARAMETER_CLEAR_DATE);
 			
 			int iCareTime = -1;
 			int iEmpType = -1;
@@ -137,7 +140,8 @@ public class ContractEditor extends ChildCareBlock {
 			} catch (Exception e) {}
 
 			try {
-				dToDate = (new IWTimestamp(toDate)).getDate();
+			    if(!clearTerminationDate)
+			        dToDate = (new IWTimestamp(toDate)).getDate();
 			} catch (Exception ignore) {}
 			
 			try {
@@ -223,19 +227,36 @@ public class ContractEditor extends ChildCareBlock {
 			}
 			if (contract.getValidFromDate() != null) {
 				from.setDate(contract.getValidFromDate());
-				cancelled.setEarliestPossibleDate(contract.getValidFromDate(),localize("child_care.date_warning.termination_earlier_than_start", "You can not choose a termination date earlier than the start date."));
 			}
 			
+			CheckBox clearTerminatedDate = new CheckBox(PARAMETER_CLEAR_DATE);
+			clearTerminatedDate.setToolTip(localize("child_care.clear_termination_date","Clear termination date"));
 			
-			ChildCareContract latestTerminatedContract = null;
+			
+		   ChildCareContract latestTerminatedContract = null;
+		   ChildCareContract nextContract = null;
+		   ChildCareContract previousContract = null;
             try {
                 latestTerminatedContract = contractHome.findLatestTerminatedContractByChild(contract.getChildID(),null);
             } catch (FinderException e1) {
-                e1.printStackTrace();
+                //e1.printStackTrace();
             }
-            if(latestTerminatedContract!=null){
-			    from.setEarliestPossibleDate(latestTerminatedContract.getTerminatedDate(),localize("child_care.date_warning.start_earlier_than_latest_termination", "You can not choose a start date earlier than latest termination date."));
+            try {
+                nextContract = contractHome.findNextContractByChild(contract);
+            } catch (FinderException e2) {
+               // e2.printStackTrace();
+            }
+            try {
+                previousContract = contractHome.findPreviousTerminatedContractByChild(contract);
+            } catch (FinderException e3) {
+                //e3.printStackTrace();
+            }
+            if(previousContract!=null){
+			    from.setEarliestPossibleDate(previousContract.getTerminatedDate(),localize("child_care.date_warning.start_earlier_than_previous_termination", "You can not choose a start date earlier than previous termination date."));
 			}
+            if(nextContract!=null){
+                cancelled.setLatestPossibleDate(nextContract.getValidFromDate(),localize("child_care.date_warning.termination_later_than_nex_startdate","You can not choose a termination date later than next start date"));
+            }
 			
 			TextInput careTime = (TextInput) getStyledInterface(new TextInput(PARAMETER_CARE_TIME));
 			careTime.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
@@ -276,6 +297,8 @@ public class ContractEditor extends ChildCareBlock {
 			schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes","No school classes"));
 			schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);	
 			//int classID = archive.getSchoolClassMember().getSchoolClassId();
+			schoolClasses.getSecondaryDropdown().setAsNotEmpty(localize("child_care.must_choose_a_school_class","You must choose a school class"));
+			schoolClasses.getPrimaryDropdown().setAsNotEmpty(localize("child_care.must_choose_a_school_type","You must choose a school type"));
 
 			
 			
@@ -311,7 +334,10 @@ public class ContractEditor extends ChildCareBlock {
 			table.add(getLocalizedSmallText("child_care.valid_from","Valid from"), 1, row);
 			table.add(from, 2, row++);
 			table.add(getLocalizedSmallText("child_care.terminated","Terminated"), 1, row);
-			table.add(cancelled, 2, row++);
+			table.add(cancelled, 2, row);
+			if(latestTerminatedContract!=null && nextContract==null && latestTerminatedContract.getPrimaryKey().equals(contract.getPrimaryKey()))
+			    table.add(clearTerminatedDate,2,row);
+			row++;
 			table.add(getLocalizedSmallText("child_care.care_time","Care time"), 1, row);
 			table.add(careTime, 2, row++);
 			table.add(getLocalizedSmallText("child_care.employment", "Employment"), 1, row);

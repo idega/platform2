@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2004 Idega software. All Rights Reserved.
+ * $Id: ChildCareContractHome.java,v 1.16 2004/09/16 14:14:05 aron Exp $
+ * Created on 16.9.2004
  *
- * This software is the proprietary information of Idega software.
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
- *
  */
-
 package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
@@ -21,7 +22,11 @@ import com.idega.user.data.User;
 import com.idega.util.TimePeriod;
 
 /**
- * @author palli
+ * 
+ *  Last modified: $Date: 2004/09/16 14:14:05 $ by $Author: aron $
+ * 
+ * @author <a href="mailto:aron@idega.com">aron</a>
+ * @version $Revision: 1.16 $
  */
 public interface ChildCareContractHome extends IDOHome {
     public ChildCareContract create() throws javax.ejb.CreateException;
@@ -87,6 +92,24 @@ public interface ChildCareContractHome extends IDOHome {
      */
     public ChildCareContract findLatestTerminatedContractByChild(int childID,
             Date date) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindNextContractByChild
+     */
+    public ChildCareContract findNextContractByChild(ChildCareContract contract)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindNextTerminatedContractByChild
+     */
+    public ChildCareContract findNextTerminatedContractByChild(
+            ChildCareContract contract) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindPreviousTerminatedContractByChild
+     */
+    public ChildCareContract findPreviousTerminatedContractByChild(
+            ChildCareContract contract) throws FinderException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindLatestContractByChild

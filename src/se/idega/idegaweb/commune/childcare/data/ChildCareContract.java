@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2004 Idega software. All Rights Reserved.
+ * $Id: ChildCareContract.java,v 1.14 2004/09/16 14:14:05 aron Exp $
+ * Created on 16.9.2004
  *
- * This software is the proprietary information of Idega software.
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
- *
  */
-
 package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
@@ -18,7 +19,11 @@ import com.idega.data.IDOEntity;
 import com.idega.user.data.User;
 
 /**
- * @author palli
+ * 
+ *  Last modified: $Date: 2004/09/16 14:14:05 $ by $Author: aron $
+ * 
+ * @author <a href="mailto:aron@idega.com">aron</a>
+ * @version $Revision: 1.14 $
  */
 public interface ChildCareContract extends IDOEntity {
     /**

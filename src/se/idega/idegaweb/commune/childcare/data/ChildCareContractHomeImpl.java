@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2004 Idega software. All Rights Reserved.
+ * $Id: ChildCareContractHomeImpl.java,v 1.16 2004/09/16 14:14:05 aron Exp $
+ * Created on 16.9.2004
  *
- * This software is the proprietary information of Idega software.
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
- *
  */
-
 package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
@@ -21,7 +22,11 @@ import com.idega.user.data.User;
 import com.idega.util.TimePeriod;
 
 /**
- * @author palli
+ * 
+ *  Last modified: $Date: 2004/09/16 14:14:05 $ by $Author: aron $
+ * 
+ * @author <a href="mailto:aron@idega.com">aron</a>
+ * @version $Revision: 1.16 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements
         ChildCareContractHome {
@@ -123,6 +128,33 @@ public class ChildCareContractHomeImpl extends IDOFactory implements
         com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
         Object pk = ((ChildCareContractBMPBean) entity)
                 .ejbFindLatestTerminatedContractByChild(childID, date);
+        this.idoCheckInPooledEntity(entity);
+        return this.findByPrimaryKey(pk);
+    }
+
+    public ChildCareContract findNextContractByChild(ChildCareContract contract)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        Object pk = ((ChildCareContractBMPBean) entity)
+                .ejbFindNextContractByChild(contract);
+        this.idoCheckInPooledEntity(entity);
+        return this.findByPrimaryKey(pk);
+    }
+
+    public ChildCareContract findNextTerminatedContractByChild(
+            ChildCareContract contract) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        Object pk = ((ChildCareContractBMPBean) entity)
+                .ejbFindNextTerminatedContractByChild(contract);
+        this.idoCheckInPooledEntity(entity);
+        return this.findByPrimaryKey(pk);
+    }
+
+    public ChildCareContract findPreviousTerminatedContractByChild(
+            ChildCareContract contract) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        Object pk = ((ChildCareContractBMPBean) entity)
+                .ejbFindPreviousTerminatedContractByChild(contract);
         this.idoCheckInPooledEntity(entity);
         return this.findByPrimaryKey(pk);
     }

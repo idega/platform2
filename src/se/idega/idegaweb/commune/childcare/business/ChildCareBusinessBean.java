@@ -1260,11 +1260,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if(employmentType>0)
 			    childcareContract.setEmploymentType(employmentType);
 			
+			if(careTime>0 && childcareContract.getCareTime()!= careTime){
+			    childcareContract.setCareTime(careTime);
+			    
+			}
+			
 			
 			ICFile contractFile = recreateContractFile(childcareContract,locale);
 			childcareContract.setContractFile(contractFile);
 			childcareContract.store();
-
 			
 			if (application.getContractId() == childcareContract.getContractID()) {
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
@@ -1374,6 +1378,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
 						placement.store();
 			        }
+			        lastContract.store();
 				
 			    }
 			}
