@@ -321,6 +321,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				Link resetLink = new Link(getLinkText(iwrb.getLocalizedString("reset", "Reset"), false));
 				resetLink.setToFormReset(form);
 				
+				
 				Link searchLink = new Link(getLinkText(iwrb.getLocalizedString("search","Search"), false));
 				if (hasDefinedProduct()) {
 					form.addParameter(ACTION, ACTION_PRODUCT_DETAILS);
@@ -333,6 +334,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 					searchLink.setImage(searchImage);
 				}
 				searchLink.setToFormSubmit(form);
+				searchLink.setTarget(Link.TARGET_TOP_WINDOW);
+				form.setTarget(Link.TARGET_TOP_WINDOW);
 				
 				if (resetImage != null) {
 					resetLink.setImage(resetImage);
