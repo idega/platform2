@@ -25,7 +25,6 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.texteditor.TextEditor;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
@@ -190,9 +189,9 @@ public class QandAEditorWindow extends IWAdminWindow {
 			questionTitle.setWidth("500");
 			TextInput answerTitle = new TextInput(PRM_A_TITLE);
 			answerTitle.setWidth("500");
-			TextEditor questionBody = new TextEditor(PRM_Q_BODY,"");
 			// @TODO commenting the following out, it broke the build, aron fix when he gets to work
-			/*questionBody.setColumns(70);
+			/*TextEditor questionBody = new TextEditor(PRM_Q_BODY,"");
+			questionBody.setColumns(70);
 			questionBody.setRows(10);
 			TextEditor answerBody = new TextEditor(PRM_A_BODY,"");
 			answerBody.setColumns(70);
