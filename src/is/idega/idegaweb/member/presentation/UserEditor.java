@@ -460,7 +460,9 @@ public class UserEditor extends Block {
 		tCountry.setStyleClass(headerFontStyleName);
 
 		
-		addressTable.add(tAddress, 1, row++);
+		addressTable.add(tAddress, 2, row);
+		addressTable.add(tCO,3,row);
+		row++;
 		int startRow = row;
 		addressTable.add(tStreetAddress, 1, row++);
 		addressTable.add(tPostalCode, 1, row++);
