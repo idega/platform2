@@ -4,14 +4,17 @@ import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class TitleIcons extends JModuleObject {
 
 private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus";
+public final static String IDEGALOGO = "idegalogo";
 public final static String MAINMENU = "mainmenu";
 public final static String LOGIN = "login";
 
 protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 private String icon;
 private Image image;
@@ -22,10 +25,14 @@ private Image image;
 
   public void main(ModuleInfo modinfo) {
     iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+
     if ( icon.equalsIgnoreCase(MAINMENU) )
       image = iwrb.getImage("/title/mainmenu.gif");
     else if ( icon.equalsIgnoreCase(LOGIN) )
       image = iwrb.getImage("/title/login.gif");
+    else if ( icon.equalsIgnoreCase(IDEGALOGO) )
+      image = iwb.getImage("idegaweb.gif");
     else
       image = new Image();
 
