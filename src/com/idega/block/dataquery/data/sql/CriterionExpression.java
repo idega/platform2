@@ -3,10 +3,14 @@ package com.idega.block.dataquery.data.sql;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
+import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
 import com.idega.business.InputHandler;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -58,13 +62,13 @@ public class CriterionExpression implements DynamicExpression {
     typeSQL.put(QueryConditionPart.TYPE_LEQ, "<=");
   }
      
-	public CriterionExpression(QueryConditionPart condition, Object identifier, SQLQuery sqlQuery)	{
+	public CriterionExpression(QueryConditionPart condition, Object identifier, SQLQuery sqlQuery, IWContext iwc)	{
 		this.id = condition.getId();
 		this.identifier = identifier;
-		initialize(condition, sqlQuery);
+		initialize(condition, sqlQuery, iwc);
 	}	
   
-  protected void initialize(QueryConditionPart condition, SQLQuery sqlQuery)	{
+  protected void initialize(QueryConditionPart condition, SQLQuery sqlQuery, IWContext iwc)	{
   	String field = condition.getField();
   	String path = condition.getPath();
  
@@ -94,12 +98,23 @@ public class CriterionExpression implements DynamicExpression {
    	identifierInputDescriptionMap = new HashMap();
    	String description = condition.getDescription();
    	if (description == null || description.length() == 0)	{
-  		StringBuffer buffer = new StringBuffer(valueField).append(" ").append(type);
+   	IWResourceBundle iwrb = getResourceBundle(iwc);
+   		// localization
+   		String localizedField = iwrb.getLocalizedString(valueField, valueField);
+   		String localizedType = iwrb.getLocalizedString(type, type);
+  		StringBuffer buffer = new StringBuffer(localizedField).append(" ").append(localizedType);
   		description =  buffer.toString();
    	}
 		identifierInputDescriptionMap.put(identifier, new InputDescription(description, inputHandlerClass, inputHandlerDescription));
 		isDynamic = condition.isDynamic();
   }
+  
+  private IWResourceBundle getResourceBundle(IWContext iwc) {
+		Locale locale = iwc.getApplicationSettings().getDefaultLocale();
+		return iwc.getIWMainApplication().getBundle(QueryConstants.QUERY_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+	}
+
+  	
 
   public String toSQLString() {
     StringBuffer expression = 

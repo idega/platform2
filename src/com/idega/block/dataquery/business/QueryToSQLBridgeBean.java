@@ -36,7 +36,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
   		throw new QueryGenerationException("User is not logged on");
   	}
   	String uniqueIdentifier = Integer.toString(iwc.getCurrentUserId());
-    SQLQuery sqlQuery = SQLQuery.getInstance(queryHelper, uniqueIdentifier);
+    SQLQuery sqlQuery = SQLQuery.getInstance(queryHelper, uniqueIdentifier, iwc);
     return sqlQuery;
   }
   

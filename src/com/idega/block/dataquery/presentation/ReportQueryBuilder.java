@@ -74,7 +74,6 @@ import com.idega.util.datastructures.HashMatrix;
 public class ReportQueryBuilder extends Block {
 	private static final String PARAM_ASTEMPLATE = "astemplate";
 	protected IWResourceBundle iwrb = null;
-	//private static final String IWBUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	protected QueryHelper helper = null;
 	private boolean hasEditPermission = false, hasTemplatePermission = false, hasCreatePermission = false;
 	
@@ -488,7 +487,7 @@ public class ReportQueryBuilder extends Block {
 	 * @param part
 	 */
 	private void setPatternByParsing(IWContext iwc, QueryConditionPart part) {
-		// call method isFieldAsPatternSet before
+		// call method isFieldAsPatternSet before calling this method
 		String[] patterns = iwc.getParameterValues(PARAM_COND_PATTERN);
 		if (patterns == null || "".equals(patterns)){
 			part.setPattern(DEFAULT_PATTERN);
@@ -1656,7 +1655,7 @@ public class ReportQueryBuilder extends Block {
 		return (QueryService) IBOLookup.getServiceInstance(iwc, QueryService.class);
 	}
 	public String getBundleIdentifier() {
-		return "com.idega.block.dataquery";
+		return QueryConstants.QUERY_BUNDLE_IDENTIFIER;
 	}
 	public Map getQueryPartMap(List listOfQueryParts) {
 		int size = 0;

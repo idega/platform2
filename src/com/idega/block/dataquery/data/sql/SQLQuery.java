@@ -21,6 +21,7 @@ import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
 import com.idega.block.dataquery.data.xml.QuerySQLPart;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOEntity;
+import com.idega.presentation.IWContext;
 import com.idega.util.datastructures.HashMatrix;
 
 /**
@@ -94,7 +95,7 @@ public class SQLQuery implements DynamicExpression {
    * first sql query -> second sql query -> ..... -> returned sql query
    * Do not change the behaviour because you have to work with last sql query.
    */ 
-  static public  SQLQuery getInstance(QueryHelper queryHelper, String uniqueIdentifier)	{
+  static public  SQLQuery getInstance(QueryHelper queryHelper, String uniqueIdentifier, IWContext iwc)	{
   	// go back to the very first query helper
 //  	QueryHelper currentQueryHelper = queryHelper;
 //  	while (currentQueryHelper.hasPreviousQuery())	{
@@ -111,7 +112,7 @@ public class SQLQuery implements DynamicExpression {
   		//  does the query already exist?
   		String path = currentQueryHelper.getPath();
   		if (! queryTableNames.containsKey(path)) {
-  			currentQuery = new SQLQuery(currentQueryHelper, uniqueIdentifier, tempCounter, queryTableNames, entityQueryEntityMap, currentQuery);
+  			currentQuery = new SQLQuery(currentQueryHelper, uniqueIdentifier, tempCounter, queryTableNames, entityQueryEntityMap, currentQuery, iwc);
   			// java for beginners: primitves aren't objects, therefore set counter to the right number
   			tempCounter = currentQuery.counter;
   		}
@@ -134,11 +135,11 @@ public class SQLQuery implements DynamicExpression {
   }
   		
   
-	private SQLQuery(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery)	{
-  	initialize(queryHelper, uniqueIdentifier, counter, queryTablesNames,  entityQueryEntityMap, previousQuery);
+	private SQLQuery(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery, IWContext iwc)	{
+  	initialize(queryHelper, uniqueIdentifier, counter, queryTablesNames,  entityQueryEntityMap, previousQuery, iwc);
   }
   
-  protected void initialize(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery) {
+  protected void initialize(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery, IWContext iwc) {
   	if (previousQuery != null) {
   		previousQuery.nextQuery = this;
   	}
@@ -166,7 +167,7 @@ public class SQLQuery implements DynamicExpression {
   	entityQueryEntity.putAll(entityQueryEntityMap);
 
   	try {
-      query = createQuery(queryHelper);
+      query = createQuery(queryHelper, iwc);
     }
     catch (IOException ex)  {
       query = null;
@@ -348,7 +349,7 @@ public class SQLQuery implements DynamicExpression {
   }
     
       
-  private DynamicExpression createQuery(QueryHelper queryHelper) throws IOException {
+  private DynamicExpression createQuery(QueryHelper queryHelper, IWContext iwc) throws IOException {
   	
   	// direct sql ?
   	QuerySQLPart querySQLPart = queryHelper.getSQL();
@@ -419,7 +420,7 @@ public class SQLQuery implements DynamicExpression {
       QueryConditionPart condition = (QueryConditionPart) conditionsIterator.next();
       // use the counter as identifier
       String identifier = Integer.toString(++counter);
-      CriterionExpression criterion = new CriterionExpression(condition, identifier, this);
+      CriterionExpression criterion = new CriterionExpression(condition, identifier, this, iwc);
       if (criterion.isValid()) {
       	// mark used entities
       	String path = condition.getPath();

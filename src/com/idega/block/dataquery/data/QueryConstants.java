@@ -18,5 +18,6 @@ public abstract class QueryConstants {
 	// e.g. reykjavik (already existing) -> reykjavik+COUNTER_TOKEN+1 
 	public final static String COUNTER_TOKEN = "_";
 	public final static int MAX_NUMBER_OF_ROWS_IN_RESULT =  200;
+	public final static String QUERY_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 
 }
