@@ -43,7 +43,7 @@ public class IdegaClient extends Applet implements Runnable{
   private long threadSleep;
 
   private String sessionId;
-  private String memberId;
+  private String userId;
   private String servletURL;
   private URL hostURL;
 
@@ -68,8 +68,8 @@ public class IdegaClient extends Applet implements Runnable{
   public void init() {
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
-      memberId = this.getParameter(USER_ID, "-1");
-      servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
+      userId = this.getParameter(USER_ID, "-1");
+      servletURL = this.getParameter(SERVLET_URL, "/servlet/ClientServer");
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -194,7 +194,7 @@ public class IdegaClient extends Applet implements Runnable{
       System.out.println("sending packets");
       if( isfirstRun ){
         packetToServlet = new Packet();
-        packetToServlet.addProperty(new Property(sessionId,memberId));
+        packetToServlet.addProperty(new Property(sessionId,userId));
         packetToServlet.setSender(sessionId);
         Message msg = new Message("TEST FROM MYSELF!",sessionId,sessionId);
         packetToServlet.addMessage(msg);
@@ -518,9 +518,9 @@ public class IdegaClient extends Applet implements Runnable{
   public String[][] getParameterInfo() {
     String[][] pinfo =
       {
-      {"sessionId", "String", "The users sessionId"},
-      {"memberId", "String", "The users memberId"},
-      {"servletURL", "String", "The clientServers url"},
+      {"session_id", "String", "The users sessionId"},
+      {"user_id", "String", "The users memberId"},
+      {"servlet_url", "String", "The clientServers url"},
       };
     return pinfo;
   }
