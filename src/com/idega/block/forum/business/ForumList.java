@@ -40,7 +40,7 @@ public class ForumList{
 
 
 
-  private Forum thisForum;
+  private com.idega.block.forum.data.Forum thisForum;
 
   private static ForumService service;
 
@@ -102,13 +102,13 @@ public class ForumList{
 
     this();
 
-    thisForum = ((com.idega.block.forum.data.ForumHome)com.idega.data.IDOLookup.getHomeLegacy(Forum.class)).findByPrimaryKeyLegacy(id);
+    thisForum = ((com.idega.block.forum.data.ForumHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.block.forum.data.Forum.class)).findByPrimaryKeyLegacy(id);
 
   }
 
 
 
-  public ForumList(Forum theForum) throws SQLException {
+  public ForumList(com.idega.block.forum.data.Forum theForum) throws SQLException {
 
     this();
 
@@ -216,9 +216,9 @@ public class ForumList{
 
     if (thisForum == null)
 
-      thisForum = ((com.idega.block.forum.data.ForumHome)com.idega.data.IDOLookup.getHomeLegacy(Forum.class)).createLegacy();
+      thisForum = ((com.idega.block.forum.data.ForumHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.block.forum.data.Forum.class)).createLegacy();
 
-    Forum[] list = (Forum[])thisForum.findAllOrdered("forum_name");
+    com.idega.block.forum.data.Forum[] list = (com.idega.block.forum.data.Forum[])thisForum.findAllOrdered("forum_name");
 
 
 
@@ -266,7 +266,7 @@ public class ForumList{
 
 
 
-  private ForumList[] getList(Forum[] list) throws SQLException{
+  private ForumList[] getList(com.idega.block.forum.data.Forum[] list) throws SQLException{
 
     Vector listVector = new Vector();
 
