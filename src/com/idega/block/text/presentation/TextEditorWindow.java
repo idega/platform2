@@ -41,7 +41,7 @@ public class TextEditorWindow extends IWAdminWindow{
   private static String actNone = "txea.none",actDelete = "txea.delete",
     actSave = "txea.save",actUpdate = "txea.update" ,actNew = "txea.new";
   private static String modeNew = "txem.new",modeUpdate ="txem.update",
-    modeSave = "txem.save",modeDelete = "txea.delete";
+    modeSave = "txem.save",modeDelete = "txem.delete";
   private TextHelper textHelper;
 
   private IWBundle iwb;
@@ -69,8 +69,6 @@ public class TextEditorWindow extends IWAdminWindow{
       iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
     }
 
-    add(sLocaleId+ " ");
-
     if ( isAdmin ) {
       String sAction;
 
@@ -78,13 +76,13 @@ public class TextEditorWindow extends IWAdminWindow{
     String sLocTextId = modinfo.getParameter(prmLocalizedTextId);
     if(modinfo.getParameter(prmTxTextId) != null){
       sTextId = modinfo.getParameter(prmTxTextId);
-      add(sTextId);
     }
     else if(modinfo.getParameter(prmAttribute)!=null){
       sAttribute = modinfo.getParameter(actSave);
     }
     else if(modinfo.getParameter(prmDelete)!=null){
-      confirmDelete(modinfo);
+      sTextId = modinfo.getParameter(prmDelete);
+      confirmDelete(sTextId);
       doView = false;
     }
 
@@ -93,7 +91,7 @@ public class TextEditorWindow extends IWAdminWindow{
       saveText(modinfo,sTextId,sLocTextId);
     }
     else if(modinfo.getParameter( actDelete )!=null || modinfo.getParameter(actDelete+".x")!=null){
-      deleteText(modinfo,sTextId,sLocTextId);
+      deleteText(sTextId);
     }
     else if(modinfo.getParameter( actNew ) != null || modinfo.getParameter(actNew+".x")!= null){
       sTextId = null;sAttribute = null;
@@ -142,7 +140,7 @@ public class TextEditorWindow extends IWAdminWindow{
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
-    TextArea taBody = new TextArea(prmBody,65,16);
+    TextArea taBody = new TextArea(prmBody,65,18);
     if ( hasLocalizedText ) {
       if ( locText.getHeadline() != null ) {
         tiHeadline.setContent(locText.getHeadline());
@@ -180,17 +178,16 @@ public class TextEditorWindow extends IWAdminWindow{
     this.addSubmitButton(new CloseButton(iwrb.getLocalizedString("close","Closee")));
   }
 
-  private void confirmDelete(ModuleInfo modinfo) throws IOException,SQLException {
-    TextModule text = TextBusiness.getTextModule(modinfo);
-    String textHeadline = text.getTextHeadline();
+  /** @todo  */
+  private void confirmDelete(String sTextId) throws IOException,SQLException {
+    int iTextId = Integer.parseInt(sTextId);
+    TxText  txText= TextFinder.getText(iTextId);
 
-    if ( textHeadline != null ) {
-      addLeft(iwrb.getLocalizedString("text_to_delete","Text to delete")+": "+textHeadline);
+    if ( txText != null ) {
+      addLeft(iwrb.getLocalizedString("text_to_delete","Text to delete"));
       addLeft(iwrb.getLocalizedString("confirm_delete","Are you sure?"));
-      addHiddenInput(new HiddenInput("text_id",Integer.toString(text.getID())));
-      addHiddenInput(new HiddenInput(prmAction,actDelete));
-      addHiddenInput(new HiddenInput(prmMode,modeDelete));
-      addSubmitButton(new SubmitButton(iwrb.getImage("delete.gif")));
+      addSubmitButton(new SubmitButton(iwrb.getImage("delete.gif"),actDelete));
+      addHiddenInput(new HiddenInput(modeDelete,String.valueOf(txText.getID())));
     }
     else {
       addLeft(iwrb.getLocalizedString("not_exists","Text already deleted or not available."));
@@ -216,8 +213,8 @@ public class TextEditorWindow extends IWAdminWindow{
     close();
   }
 
-  private void deleteText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId ) {
-    TextBusiness.deleteText(modinfo);
+  private void deleteText(String sTextId ) {
+    TextBusiness.deleteText(Integer.parseInt(sTextId));
     setParentToReload();
     close();
   }
