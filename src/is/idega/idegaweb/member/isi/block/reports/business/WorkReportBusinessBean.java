@@ -309,6 +309,27 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			ex.printStackTrace(System.err);
 			throw new CreateException(errorMessage);
 		}
+    // address
+    try {
+      Address address = getUsersMainAddress(user);
+      if (address != null)  {
+        String streetAddress = address.getStreetAddress();
+        if (streetAddress != null) {
+          member.setStreetName(streetAddress);
+        }
+        int postalCodeId = address.getPostalCodeID();
+        if (postalCodeId > 0) {
+          member.setPostalCodeID(postalCodeId);
+        }
+      }
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportBusiness]: Can't retrieve  user's main address.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
 		member.store();
 		return member;
 
