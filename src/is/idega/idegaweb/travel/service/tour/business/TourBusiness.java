@@ -263,8 +263,11 @@ public class TourBusiness extends TravelStockroomBusiness {
 
   public static boolean getIfDay(IWContext iwc, Contract contract, Tour tour, idegaTimestamp stamp) {
     try {
-      if (!getIfDayInManyDayTour(tour, stamp)) return false;
-      return TravelStockroomBusiness.getIfDay(iwc, contract, new Product(tour.getID()), stamp);
+      if (!getIfDayInManyDayTour(tour, stamp)) {
+        return false;
+      }else {
+        return TravelStockroomBusiness.getIfDay(iwc, contract, new Product(tour.getID()), stamp);
+      }
     }catch (Exception e) {
       e.printStackTrace(System.err);
       return false;
@@ -273,8 +276,13 @@ public class TourBusiness extends TravelStockroomBusiness {
 
   public static boolean getIfDay(IWContext iwc, Tour tour, idegaTimestamp stamp, boolean includePast) {
     try {
-      if (!getIfDayInManyDayTour(tour, stamp)) return false;
-      return TravelStockroomBusiness.getIfDay(iwc, new Product(tour.getID()), stamp, includePast);
+      if (!getIfDayInManyDayTour(tour, stamp)) {
+        System.err.println("+++++++++");
+        return false;
+      }else {
+        System.err.println("---------");
+        return TravelStockroomBusiness.getIfDay(iwc, new Product(tour.getID()), stamp, includePast);
+      }
     }catch (Exception e) {
       e.printStackTrace(System.err);
       return false;
@@ -284,6 +292,16 @@ public class TourBusiness extends TravelStockroomBusiness {
   private static boolean getIfDayInManyDayTour(Tour tour, idegaTimestamp stamp) throws SQLException {
     int numberOfDays = tour.getNumberOfDays();
     if (numberOfDays > 1) {
+/*
+      int[] days = ServiceDay.getDaysOfWeek(tour.getID());
+      int dayOfWeek = stamp.getDayOfWeek();
+
+      boolean cont = false;
+      for (int i = 0; i < days.length; i++) {
+        if (dayOfWeek == days[i]) cont = true;
+      }
+      if (cont) return false;
+*/
       Timeframe frame = new Product(tour.getID()).getTimeframe();
       idegaTimestamp from = new idegaTimestamp(frame.getFrom());
       if (frame.getIfYearly()) {
@@ -293,6 +311,8 @@ public class TourBusiness extends TravelStockroomBusiness {
       if (daysBetween % numberOfDays != 0) {
         return false;
       }
+
+
     }
     return true;
   }

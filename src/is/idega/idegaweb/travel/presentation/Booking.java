@@ -263,6 +263,7 @@ public class Booking extends TravelManager {
       boolean isExpired = false;
       int iBookings = 0;
       try {
+System.err.println("1 Her : "+isDayVisible);
         if (reseller != null) {
           isExpired = TravelStockroomBusiness.getIfExpired(contract, stamp);
           if (!isExpired) {
@@ -274,11 +275,15 @@ public class Booking extends TravelManager {
           }
         }
         else {
+System.err.println("4 Her : "+isDayVisible);
           if (this.tour != null) {
             isDayVisible = TourBusiness.getIfDay(iwc, tour, stamp, false);
+System.err.println("4a Her : "+isDayVisible);
           }else {
             isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, this.stamp);
+System.err.println("4b Her : "+isDayVisible);
           }
+System.err.println("5 Her : "+isDayVisible);
           if (supplier == null) {
             if (isDayVisible) {
               iBookings = Booker.getNumberOfBookings(productId, stamp);
@@ -294,6 +299,7 @@ public class Booking extends TravelManager {
             tfnfe.printStackTrace(System.err);
       }
 
+System.err.println("6 Her : "+isDayVisible);
 
       boolean yearly = timeframe.getIfYearly();
       List depDays = null;

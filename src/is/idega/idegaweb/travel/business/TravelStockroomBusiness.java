@@ -525,6 +525,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       boolean isValidWeekDay = false;
       boolean isValidServiceDay = false;
 
+
       isValidServiceDay = TravelStockroomBusiness.getIfDay(iwc,product,stamp);
 
       if (isValidServiceDay) {
