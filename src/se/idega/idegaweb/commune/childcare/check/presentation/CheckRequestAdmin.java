@@ -357,6 +357,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 		
 		StandardMessageArea standardMsgArea = new StandardMessageArea();
 		standardMsgArea.setCategory("CHECKSTDMSG");
+		standardMsgArea.setTextAreaName(PARAM_USER_NOTES);
 		
 		TextArea userNotes = (TextArea) getStyledInterface(standardMsgArea.getTextArea(frame));
 		//TextArea userNotes = (TextArea) getStyledInterface(new TextArea(PARAM_USER_NOTES));
