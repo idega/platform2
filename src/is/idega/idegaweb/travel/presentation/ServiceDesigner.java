@@ -302,13 +302,15 @@ private void finalize(IWContext iwc) throws Exception {
           table.add(serviceNameText,1,row);
           table.mergeCells(1,row,3,row);
           table.setRowColor(row, super.backgroundColor);
+          
           ++row;
 					com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
 					if (product.getText() != null) {
 					  tc.setValue(product.getText());
 					}
-			
+								
 					tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
+					tc.addForm(false);
           table.add(tc,1,row);
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,3,row);
@@ -348,7 +350,6 @@ private void finalize(IWContext iwc) throws Exception {
 
   private void priceCategorySave(IWContext iwc) {
       String text_id = iwc.getParameter("le_text_id");
-			System.out.println("LeTextId = "+text_id);
       Service service = this.getService(iwc);
 
       try {
