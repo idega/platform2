@@ -114,6 +114,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String AFTER_SCHOOL_CASE_CODE_KEY = "MBFRITV";
 
 	private final static String PROPERTY_CONTRACT_CATEGORY = "childcare_contract_category";
+	
+	private final static String STATUS_NOT_PROCESSED = String.valueOf(STATUS_SENT_IN);
+	private final static String[] STATUS_IN_QUEUE = {
+					String.valueOf(STATUS_SENT_IN), 
+					String.valueOf(STATUS_PRIORITY), 
+					String.valueOf(STATUS_ACCEPTED), 
+					String.valueOf(STATUS_PARENTS_ACCEPT), 
+					String.valueOf(STATUS_CONTRACT)};
 
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
@@ -718,7 +726,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public int getNumberOfFirstHandChoicesByProvider(int providerID, Date from, Date to) {
 		try {
-			return getChildCareApplicationHome().getQueueByProviderAndChoiceNumber(providerID, 1, ""+STATUS_SENT_IN, from, to);
+			return getChildCareApplicationHome().getQueueByProviderAndChoiceNumber(providerID, 1, STATUS_NOT_PROCESSED, from, to);
 		}
 		catch (IDOException ie) {
 			return 0;
@@ -727,7 +735,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public int getNumberOfFirstHandNettoChoicesByProvider(int providerID, Date from, Date to) {
 		try {
-			return getChildCareApplicationHome().getNettoQueueByProviderAndChoiceNumber(providerID, 1, ""+STATUS_SENT_IN, from, to);
+			return getChildCareApplicationHome().getNettoQueueByProviderAndChoiceNumber(providerID, 1, STATUS_NOT_PROCESSED, from, to);
 		}
 		catch (IDOException ie) {
 			return 0;
@@ -736,7 +744,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public int getNumberOfFirstHandBruttoChoicesByProvider(int providerID, Date from, Date to) {
 		try {
-			return getChildCareApplicationHome().getBruttoQueueByProviderAndChoiceNumber(providerID, 1, ""+STATUS_SENT_IN, from, to);
+			return getChildCareApplicationHome().getBruttoQueueByProviderAndChoiceNumber(providerID, 1, STATUS_NOT_PROCESSED, from, to);
 		}
 		catch (IDOException ie) {
 			return 0;
@@ -2796,96 +2804,90 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public int getQueueTotalByProvider(int providerID, Date from, Date to) {
+	public int getQueueTotalByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) {
 		try {
-			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
-			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, applicationStatus, from, to);
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, STATUS_IN_QUEUE, from, to, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getQueueByProvider(int providerID, Date from, Date to) {
+	public int getQueueByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) {
 		try {
-			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, ""+STATUS_SENT_IN, from, to);
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, STATUS_NOT_PROCESSED, from, to, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getQueueTotalByProviderWithinMonths(int providerID, int months) {
+	public int getQueueTotalByProviderWithinMonths(int providerID, int months, boolean isOnlyFirstHand) {
 		try {
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
-			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, applicationStatus, null, toDate);
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, STATUS_IN_QUEUE, null, toDate, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getBruttoQueueTotalByProvider(int providerID, Date from, Date to) {
+	public int getBruttoQueueTotalByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) {
 		try {
-			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
-			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, applicationStatus, from, to);
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, from, to, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getBruttoQueueByProvider(int providerID, Date from, Date to) {
+	public int getBruttoQueueByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) {
 		try {
-			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, ""+STATUS_SENT_IN, from, to);
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, STATUS_NOT_PROCESSED, from, to, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getBruttoQueueTotalByProviderWithinMonths(int providerID, int months) {
+	public int getBruttoQueueTotalByProviderWithinMonths(int providerID, int months, boolean isOnlyFirstHand) {
 		try {
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
-			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, applicationStatus, null, toDate);
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, null, toDate, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getNettoQueueTotalByProvider(int providerID, Date from, Date to) {
+	public int getNettoQueueTotalByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) {
 		try {
-			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
-			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, applicationStatus, from, to);
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, from, to, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getNettoQueueByProvider(int providerID, Date from, Date to) {
+	public int getNettoQueueByProvider(int providerID, Date from, Date to, boolean isOnlyFirstHand) {
 		try {
-			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, ""+STATUS_SENT_IN, from, to);
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, STATUS_NOT_PROCESSED, from, to, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
 		}
 	}
 
-	public int getNettoQueueTotalByProviderWithinMonths(int providerID, int months) {
+	public int getNettoQueueTotalByProviderWithinMonths(int providerID, int months, boolean isOnlyFirstHand) {
 		try {
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
-			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, applicationStatus, null, toDate);
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, null, toDate, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;

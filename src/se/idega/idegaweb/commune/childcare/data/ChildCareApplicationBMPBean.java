@@ -983,7 +983,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);		
 	}
 	
-	public int ejbHomeGetQueueSizeInStatus(int providerID, String applicationStatus[], Date from, Date to) throws IDOException {
+	public int ejbHomeGetQueueSizeInStatus(int providerID, String applicationStatus[], Date from, Date to, boolean isOnlyFirstHand) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(" + CHILD_ID + ") from ").append(ENTITY_NAME);
 		sql.appendWhereEquals(PROVIDER_ID, providerID);
@@ -995,10 +995,13 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			to = Date.valueOf("2999-01-01");
 		}
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		if (isOnlyFirstHand) {
+			sql.appendAndEquals(CHOICE_NUMBER, 1);
+		}
 		return idoGetNumberOfRecords(sql);		
 	}
 	
-	public int ejbHomeGetBruttoQueueSizeInStatus(int providerID, String applicationStatus[], Date from, Date to) throws IDOException {
+	public int ejbHomeGetBruttoQueueSizeInStatus(int providerID, String applicationStatus[], Date from, Date to, boolean isOnlyFirstHand) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(" + CHILD_ID + ") from ").append(ENTITY_NAME);
 		sql.appendWhereEquals(PROVIDER_ID, providerID);
@@ -1009,9 +1012,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		if (to == null) {
 			to = Date.valueOf("2999-01-01");
 		}
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		if (isOnlyFirstHand) {
+			sql.appendAndEquals(CHOICE_NUMBER, 1);
+		}
 		Date today = new Date(System.currentTimeMillis());
-		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append(CHILD_ID + " in ")
+		sql.appendAnd().append(CHILD_ID + " in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1025,7 +1031,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);		
 	}
 
-	public int ejbHomeGetNettoQueueSizeInStatus(int providerID, String applicationStatus[], Date from, Date to) throws IDOException {
+	public int ejbHomeGetNettoQueueSizeInStatus(int providerID, String applicationStatus[], Date from, Date to, boolean isOnlyFirstHand) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(" + CHILD_ID + ") from ").append(ENTITY_NAME);
 		sql.appendWhereEquals(PROVIDER_ID, providerID);
@@ -1036,9 +1042,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		if (to == null) {
 			to = Date.valueOf("2999-01-01");
 		}
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		if (isOnlyFirstHand) {
+			sql.appendAndEquals(CHOICE_NUMBER, 1);
+		}
 		Date today = new Date(System.currentTimeMillis());
-		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append(CHILD_ID + " not in ")
+		sql.appendAnd().append(CHILD_ID + " not in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1062,7 +1071,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 
-	public int ejbHomeGetQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to) throws IDOException {
+	public int ejbHomeGetQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(" + CHILD_ID + ") from ").append(ENTITY_NAME);
 		sql.appendWhereEquals(PROVIDER_ID, providerID);
@@ -1074,10 +1083,13 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			to = Date.valueOf("2999-01-01");
 		}
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		if (isOnlyFirstHand) {
+			sql.appendAndEquals(CHOICE_NUMBER, 1);
+		}
 		return idoGetNumberOfRecords(sql);
 	}
 
-	public int ejbHomeGetBruttoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to) throws IDOException {
+	public int ejbHomeGetBruttoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(" + CHILD_ID + ") from ").append(ENTITY_NAME);
 		sql.appendWhereEquals(PROVIDER_ID, providerID);
@@ -1088,9 +1100,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		if (to == null) {
 			to = Date.valueOf("2999-01-01");
 		}
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		if (isOnlyFirstHand) {
+			sql.appendAndEquals(CHOICE_NUMBER, 1);
+		}
 		Date today = new Date(System.currentTimeMillis());
-		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append(CHILD_ID + " in ")
+		sql.appendAnd().append(CHILD_ID + " in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1104,7 +1119,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 	
-	public int ejbHomeGetNettoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to) throws IDOException {
+	public int ejbHomeGetNettoQueueSizeInStatus(int providerID, String applicationStatus, Date from, Date to, boolean isOnlyFirstHand) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(" + CHILD_ID + ") from ").append(ENTITY_NAME);
 		sql.appendWhereEquals(PROVIDER_ID, providerID);
@@ -1115,9 +1130,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		if (to == null) {
 			to = Date.valueOf("2999-01-01");
 		}
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		if (isOnlyFirstHand) {
+			sql.appendAndEquals(CHOICE_NUMBER, 1);
+		}
 		Date today = new Date(System.currentTimeMillis());
-		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append(CHILD_ID + " not in ")
+		sql.appendAnd().append(CHILD_ID + " not in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")

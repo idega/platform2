@@ -72,14 +72,16 @@ public class ChildCareStatistics extends ChildCareBlock {
 		
 		switch (_action) {
 			case ORDER_BY_ALL_CHOICES :
-				add(getAllProviderTable(iwc));
+				add(getAllProviderTable(iwc, false));
 				break;
 			case ORDER_BY_FIRST_HAND_CHOICES :
-				add(getFirstHandProviderTable(iwc));
+				add(getAllProviderTable(iwc, true));
+//				add(getFirstHandProviderTable(iwc));
 				break;
 		}
 	}
-	
+
+/*
 	private Table getFirstHandProviderTable(IWContext iwc) throws RemoteException {
 		Table table = getTable(2);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -163,15 +165,16 @@ public class ChildCareStatistics extends ChildCareBlock {
 		
 		return table;
 	}
+*/
 	
-	private Table getAllProviderTable(IWContext iwc) throws RemoteException {
+	private Table getAllProviderTable(IWContext iwc, boolean isFirstHandOnly) throws RemoteException {
 		Table table = getTable(8);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 		int column = 1;
 
 		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.order","Order"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.not_processed","Order"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.placement_within_3_month","Within months (3)"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.placement_within_12_month","Within months (12)"), column++, row);
@@ -245,22 +248,22 @@ public class ChildCareStatistics extends ChildCareBlock {
 				
 				switch (_queueType) {
 					case QUEUE_TYPE_ALL:
-						queueOrder = getBusiness().getQueueByProvider(providerID, from, to);
-						queueTotal = getBusiness().getQueueTotalByProvider(providerID, from, to);
-						queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 3);
-						queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 12);
+						queueOrder = getBusiness().getQueueByProvider(providerID, from, to, isFirstHandOnly);
+						queueTotal = getBusiness().getQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
+						queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 3, isFirstHandOnly);
+						queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 12, isFirstHandOnly);
 						break;
 					case QUEUE_TYPE_NETTO:
-						queueOrder = getBusiness().getNettoQueueByProvider(providerID, from, to);
-						queueTotal = getBusiness().getNettoQueueTotalByProvider(providerID, from, to);
-						queueWithin3Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID, 3);
-						queueWithin12Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID, 12);
+						queueOrder = getBusiness().getNettoQueueByProvider(providerID, from, to, isFirstHandOnly);
+						queueTotal = getBusiness().getNettoQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
+						queueWithin3Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID, 3, isFirstHandOnly);
+						queueWithin12Months = getBusiness().getNettoQueueTotalByProviderWithinMonths(providerID, 12, isFirstHandOnly);
 						break;
 					case QUEUE_TYPE_BRUTTO:
-						queueOrder = getBusiness().getBruttoQueueByProvider(providerID, from, to);
-						queueTotal = getBusiness().getBruttoQueueTotalByProvider(providerID, from, to);
-						queueWithin3Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID, 3);
-						queueWithin12Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID, 12);
+						queueOrder = getBusiness().getBruttoQueueByProvider(providerID, from, to, isFirstHandOnly);
+						queueTotal = getBusiness().getBruttoQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
+						queueWithin3Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID, 3, isFirstHandOnly);
+						queueWithin12Months = getBusiness().getBruttoQueueTotalByProviderWithinMonths(providerID, 12, isFirstHandOnly);
 						break;						
 				}
 				queueOrderSum += queueOrder;
@@ -306,6 +309,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		return table;
 	}
