@@ -2596,10 +2596,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				archive.setEmploymentType(employmentTypeID);
 			if(invoiceReceiverId>0)
 				archive.setInvoiceReceiverID(invoiceReceiverId);
+			else if(oldArchive!=null && oldArchive.getInvoiceReceiverID()>0)
+				archive.setInvoiceReceiverID(oldArchive.getInvoiceReceiverID());
 			if (application.getApplicationStatus() != getStatusContract()) {
 				try {
 					SchoolClassMember student= null;
-					if(oldStudent==null)
+					if(oldStudent==null && oldArchive!=null)
+						oldStudent = oldArchive.getSchoolClassMember();
+					if(oldStudent ==null)
 						oldStudent = getLatestPlacement(application.getChildId(), application.getProviderId());
 					//if(student!=null && createNewStudent && (schoolTypeId != student.getSchoolTypeId() || schoolClassId!= student.getSchoolClassId())){
 					if(createNewStudent && oldStudent!=null && oldStudent.getSchoolTypeId()!=schoolTypeId  && oldStudent.getSchoolClassId() != schoolClassId){
