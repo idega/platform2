@@ -655,4 +655,30 @@ public class NewsLetter extends CategoryBlock {
 		_inputWidth = width;
 	}
 
+	/**
+	 * @param arrowStyleClass The arrowStyleClass to set.
+	 */
+	public void setArrowStyleClass(String arrowStyleClass) {
+		this.arrowStyleClass = arrowStyleClass;
+	}
+	/**
+	 * @param linkStyleClass The linkStyleClass to set.
+	 */
+	public void setLinkStyleClass(String linkStyleClass) {
+		this.linkStyleClass = linkStyleClass;
+	}
+	/**
+	 * @param useButtons The useButtons to set.
+	 */
+	public void setUseButtons(boolean useButtons) {
+		this.useButtons = useButtons;
+		this.useLinks = !useButtons;
+	}
+	/**
+	 * @param useLinks The useLinks to set.
+	 */
+	public void setUseLinks(boolean useLinks) {
+		this.useLinks = useLinks;
+		this.useButtons = !useLinks;
+	}
 }
