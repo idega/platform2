@@ -47,265 +47,70 @@ public class TextBusiness{
 
   public static void deleteText(int iTextId , int instanceid) {
     int iObjectInstanceId = TextFinder.getObjectInstanceIdFromTextId(iTextId);
-    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
     try {
-      t.begin();
-    //  List O = TextFinder.listOfObjectInstanceTexts();
+
       TxText txText= new TxText(iTextId);
-      List L = TextFinder.listOfLocalizedText(txText.getID());
-      if(L != null){
-        LocalizedText lt;
-        for (int i = 0; i < L.size(); i++) {
-          lt = (LocalizedText) L.get(i);
-          lt.removeFrom(txText);
-          lt.delete();
-        }
-      }
+      if(ContentBusiness.deleteContent( txText.getContentId() ) ){
 
-      if(iObjectInstanceId > 0  ){
-        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
-        txText.removeFrom(obj);
+        if(iObjectInstanceId > 0  ){
+          ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+          txText.removeFrom(obj);
+        }
+        txText.delete();
       }
-      txText.delete();
-     t.commit();
     }
     catch(Exception e) {
-      try {
-        t.rollback();
-      }
-      catch(javax.transaction.SystemException ex) {
-        ex.printStackTrace();
-      }
       e.printStackTrace();
     }
   }
 
 
-  public static TextModule getTextModule(IWContext iwc) {
-    int textID = -1;
-    String text_id = iwc.getParameter("text_id");
+  public static boolean saveText(int iTxTextId,
+                              int iLocalizedTextId,
+                              int iLocaleId ,
+                              int iUserId,
+                              int InstanceId,
+                              Timestamp tsPubFrom,
+                              Timestamp tsPubTo,
+                              String sHeadline,
+                              String sTitle,
+                              String sBody,
+                              String sAttribute,
+                              List listOfFiles){
 
-    if ( text_id != null ) {
-      try {
-        textID = Integer.parseInt(text_id);
-      }
-      catch (NumberFormatException e) {
-        textID = -1;
-      }
-    }
-
-    if ( textID != -1 ) {
-      try {
-        TextModule text = new TextModule(textID);
-        return text;
-      }
-      catch (SQLException e) {
-        return new TextModule();
-      }
-    }
-    else {
-      return new TextModule();
-    }
-  }
-
-  public static void deleteText(IWContext iwc) {
 
     try {
-      TextModule text = getTextModule(iwc);
-      text.delete();
-    }
-    catch (SQLException e) {
-      e.printStackTrace(System.err);
-      System.out.println("Text not deleted");
-    }
-  }
-
-  public static void saveText(IWContext iwc,boolean update) {
-		iwc.getSession().removeAttribute("image_id");
-    int textID = -1;
-    String text_id = iwc.getParameter("text_id");
-
-    if ( text_id != null ) {
-      try {
-        textID = Integer.parseInt(text_id);
-      }
-      catch (NumberFormatException e) {
-        textID = -1;
-      }
-    }
-
-    if ( textID != -1 ) {
-      String text_headline = iwc.getParameter("text_headline");
-        if ( text_headline == null ) { text_headline = ""; }
-
-      String text_body = iwc.getParameter("text_body");
-        if ( text_body == null ) { text_body = ""; }
-
-      String include_image = iwc.getParameter("insertImage");
-        if ( include_image == null ) { include_image = "N"; }
-
-      int imageID = -1;
-      String image_id = iwc.getParameter("image_id");
-      if ( image_id != null ) {
-        try {
-          imageID = Integer.parseInt(image_id);
-        }
-        catch (Exception e) {
-          imageID = -1;
-        }
-      }
-
-      idegaTimestamp date = new idegaTimestamp();
-
-      TextModule text;
-        if ( update ) {
-          try {
-            text = new TextModule(textID);
-          }
-          catch (SQLException e) {
-            text = new TextModule();
-            update = false;
-          }
-        }
-        else {
-          text = new TextModule();
-        }
-
-      text.setTextHeadline( text_headline );
-      text.setTextBody( text_body );
-      text.setIncludeImage(include_image);
-      text.setImageId(imageID);
-      text.setTextDate( date.getTimestampRightNow());
-
-      if ( update ) {
-        try {
-          text.update();
-        }
-        catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-      else {
-        try {
-          text.insert();
-        }
-        catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-
-  }
-
-   public static void saveText(int iTxTextId,int iLocalizedTextId,
-            String sHeadline,String sTitle,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId){
-
-     saveText( iTxTextId, iLocalizedTextId,
-             sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,-1,"");
-
-   }
-
-   public static void saveText(int iTxTextId,int iLocalizedTextId,
-            String sHeadline,String sTitle,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId,String sAttribute){
-
-     saveText( iTxTextId, iLocalizedTextId,
-             sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,-1,sAttribute);
-
-   }
-
-    public static void saveText(int iTxTextId,int iLocalizedTextId,
-            String sHeadline,String sTitle,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int iInstanceId){
-
-     saveText( iTxTextId, iLocalizedTextId,sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,iInstanceId,"");
-
-   }
-
-
-  public static void saveText(int iTxTextId,int iLocalizedTextId,
-            String sHeadline,String sTitle,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int InstanceId,String sAttribute){
-
-    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
-    try {
-      t.begin();
-      boolean txUpdate = false;
-      boolean locUpdate = false;
-      TxText txText = null;
-      LocalizedText locText = null;
+      boolean update = false;
+      TxText eTxText = new TxText();
       if(iTxTextId > 0){
-        txUpdate = true;
-        txText = new TxText(iTxTextId);
-        if(iLocalizedTextId > 0){
-          locUpdate = true;
-          locText = new LocalizedText(iLocalizedTextId);
-        }
-        else{
-          locUpdate = false;
-          locText = new LocalizedText();
-        }
+        eTxText = new TxText(iTxTextId);
+        update = true;
       }
-      else{
-        txUpdate = false;
-        locUpdate = false;
-        txText = new TxText();
-        locText = new LocalizedText();
-      }
-
-      locText.setHeadline(sHeadline);
-      locText.setBody(sBody);
-      locText.setLocaleId(iLocaleId);
-      locText.setTitle( sTitle);
-      locText.setUpdated(idegaTimestamp.getTimestampRightNow());
-
-      txText.setImageId(iImageId);
-      txText.setIncludeImage(useImage);
-      txText.setUpdated(idegaTimestamp.getTimestampRightNow());
-
-      if(sAttribute != null){
-        txText.setAttribute(sAttribute);
-      }
-
-      if(txUpdate ){
-        txText.update();
-        if(locUpdate){
-          locText.update();
-        }
-        else if(!locUpdate){
-          locText.setCreated(idegaTimestamp.getTimestampRightNow());
-          locText.insert();
-          locText.addTo(txText);
-        }
-      }
-      else if(!txUpdate){
-        txText.setCreated(idegaTimestamp.getTimestampRightNow());
-        txText.setUserId(iUserId);
-        txText.insert();
-        locText.setCreated(idegaTimestamp.getTimestampRightNow());
-        locText.insert();
-        locText.addTo(txText);
-        if(InstanceId > 0){
-          System.err.println("instance er til");
+      Content eContent = ContentBusiness.saveContent(eTxText.getContentId(),iLocalizedTextId,iLocaleId,iUserId,tsPubFrom,tsPubTo,sHeadline,sBody,sTitle,listOfFiles);
+      if(eContent != null){
+         if(InstanceId > 0){
+          //System.err.println("instance er til");
           ICObjectInstance objIns = new ICObjectInstance(InstanceId);
-          System.err.println(" object instance "+objIns.getID() + objIns.getName());
-          txText.addTo(objIns);
+          //System.err.println(" object instance "+objIns.getID() + objIns.getName());
+          eTxText.addTo(objIns);
         }
+        if(sAttribute != null){
+          eTxText.setAttribute(sAttribute);
+        }
+        if(eContent.getID() > 0)
+          eTxText.setContentId(eContent.getID());
+        if(update)
+          eTxText.update();
+        else
+          eTxText.insert();
+        return true;
       }
-      t.commit();
     }
-    catch(Exception e) {
-      try {
-        t.rollback();
-      }
-      catch(javax.transaction.SystemException ex) {
-        ex.printStackTrace();
-      }
-      e.printStackTrace();
+    catch (SQLException ex) {
+
     }
-
-
+    return false;
   }
 }
 

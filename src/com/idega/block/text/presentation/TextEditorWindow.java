@@ -22,6 +22,7 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.core.data.ICFile;
 
 /**
  * Title:
@@ -40,25 +41,25 @@ public class TextEditorWindow extends IWAdminWindow{
   private boolean save = false;
   private int iUserId = -1;
   private int iObjInsId = -1;
-  public  static String prmAttribute = "txe.attribute";
-  public  static String prmTextId = "txep.txtextid";
-  public  static String prmDelete = "txep.txdeleteid";
-  public  static String prmLocale = "txep.localedrp";
-  public  static String prmObjInstId = "txep.icobjinstid";
-  private static String prmHeadline = "txep.headline";
-  private static String prmBody = "txep.body";
+  public  static String prmAttribute = "txe_attribute";
+  public  static String prmTextId = "txep_txtextid";
+  public  static String prmDelete = "txep_txdeleteid";
+  public  static String prmLocale = "txep_localedrp";
+  public  static String prmObjInstId = "txep_icobjinstid";
+  private static String prmHeadline = "txep_headline";
+  private static String prmBody = "txep_body";
   //debug
   //private static String prmImageId = "txep.imageid";
   private static String prmImageId = "txep_imageid";
-  private static String prmTxTextId = "txep.txtextid";
-  private static String prmLocalizedTextId = "txep.loctextid";
-  private static String prmUseImage = "txep.useimage";
-  private static String actDelete = "txea.delete";
-  private static String actSave = "txea.save";
-  private static String actUpdate = "txea.update" ;
-  private static String actNew = "txea.new";
-  private static String modeNew = "txem.new";
-  private static String modeDelete = "txem.delete";
+  private static String prmTxTextId = "txep_txtextid";
+  private static String prmLocalizedTextId = "txep_loctextid";
+  private static String prmUseImage = "txep_useimage";
+  private static String actDelete = "txea_delete";
+  private static String actSave = "txea_save";
+  private static String actUpdate = "txea_update" ;
+  private static String actNew = "txea_new";
+  private static String modeNew = "txem_new";
+  private static String modeDelete = "txem_delete";
   private TextHelper textHelper;
 
   private IWBundle iwb;
@@ -158,31 +159,32 @@ public class TextEditorWindow extends IWAdminWindow{
   }
 
   private void doViewText(String sTextId,String sAttribute,Locale locale,int iLocaleId){
-    TextHelper textHelper = null;
+    ContentHelper contentHelper = null;
+    TxText eTxText = null;
+    int iTextId = -1;
     if(sTextId != null){
-
-      int iTextId = Integer.parseInt(sTextId);
+      iTextId = Integer.parseInt(sTextId);
+      eTxText = TextFinder.getText(iTextId);
       if(iLocaleId > 0)
-        textHelper = TextFinder.getTextHelper(iTextId,iLocaleId);
+        contentHelper = TextFinder.getContentHelper(iTextId,iLocaleId);
       else
-        textHelper = TextFinder.getTextHelper(iTextId,locale);
+        contentHelper = TextFinder.getContentHelper(iTextId,locale);
     }
     else if(sAttribute != null){
-      textHelper = TextFinder.getTextHelper(sAttribute,iLocaleId);
-    }
-    LocalizedText LocTx = null;
-    TxText  TxTx = null;
-    if(textHelper != null){
-      LocTx = textHelper.getLocalizedText();
-      TxTx = textHelper.getTxText();
+      contentHelper = TextFinder.getContentHelper(sAttribute,iLocaleId);
     }
 
-    addLocalizedTextFields(LocTx,TxTx,iLocaleId,sAttribute,iObjInsId);
+    addLocalizedTextFields(eTxText,contentHelper,iLocaleId,sAttribute,iObjInsId);
   }
 
-  private void addLocalizedTextFields(LocalizedText locText,TxText txText, int iLocaleId,String sAttribute,int iObjInsId){
+  private void addLocalizedTextFields(TxText txText,ContentHelper contentHelper, int iLocaleId,String sAttribute,int iObjInsId){
+    LocalizedText locText = null;
     boolean hasTxText = ( txText != null ) ? true: false;
-    boolean hasLocalizedText = ( locText != null ) ? true: false;
+    //boolean hasLocalizedText = ( locText != null ) ? true: false;
+    boolean hasContent = ( contentHelper != null) ? true:false;
+    if(hasContent)
+      locText = contentHelper.getLocalizedText(TextFinder.getLocale(iLocaleId));
+    boolean hasLocalizedText = ( locText !=null ) ? true:false;
 
     TextInput tiHeadline = new TextInput(prmHeadline);
     tiHeadline.setLength(40);
@@ -217,11 +219,13 @@ public class TextEditorWindow extends IWAdminWindow{
     imageInsert.setUseBoxParameterName(prmUseImage);
     imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
     imageInsert.setSelected(false);
-    if ( hasTxText ) {
-      if(txText.getImageId() > 0)
-        imageInsert.setImageId(txText.getImageId());
-      if ( txText.getIncludeImage())
-        imageInsert.setSelected(true);
+    if ( hasContent ) {
+      List files = contentHelper.getFiles();
+      if(files != null){
+        ICFile file1 = (ICFile) files.get(0);
+        imageInsert.setImageId(file1.getID());
+        Text properties = new Text("properties");
+      }
     }
 
     addLeft(iwrb.getLocalizedString("title","Title"),tiHeadline,true);
@@ -259,14 +263,24 @@ public class TextEditorWindow extends IWAdminWindow{
     String sImageId = iwc.getParameter(prmImageId);
     String sLocaleId = iwc.getParameter(prmLocale);
     String sUseImage = iwc.getParameter(prmUseImage);
+
     if(sHeadline != null || sBody != null){
       int iTxTextId = sTxTextId!=null?Integer.parseInt(sTxTextId): -1;
       int iLocalizedTextId = sLocalizedTextId != null ? Integer.parseInt(sLocalizedTextId): -1;
       int iLocaleId = sLocaleId != null ? Integer.parseInt(sLocaleId):-1;
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
       boolean bUseImage = sUseImage!= null?true:false;
+      Vector files = null;
+      try {
+        ICFile file = new ICFile(iImageId);
+        files = new Vector();
+        files.add(file);
+      }
+      catch (SQLException ex) {
 
-      TextBusiness.saveText(iTxTextId,iLocalizedTextId,sHeadline,"",sBody,iImageId,bUseImage,iLocaleId,iUserId,iObjInsId,sAttribute);
+      }
+
+      TextBusiness.saveText(iTxTextId,iLocalizedTextId,iLocaleId,iUserId,iObjInsId,null,null,sHeadline,"",sBody,sAttribute,files);
 
     }
     setParentToReload();

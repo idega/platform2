@@ -1,10 +1,11 @@
 package com.idega.block.news.business;
 
 import com.idega.data.EntityFinder;
-import com.idega.block.text.business.TextHelper;
+import com.idega.block.text.business.*;
 import com.idega.util.LocaleUtil;
 import com.idega.block.news.data.*;
 import com.idega.block.text.data.*;
+import com.idega.util.idegaTimestamp;
 import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -13,13 +14,14 @@ import java.util.Locale;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICFile;
+
 /**
  * Title:
  * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
+ * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * Company:      idega
+  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @version 1.1
  */
 
 public class NewsFinder {
@@ -37,19 +39,74 @@ public class NewsFinder {
     }
   }
 
+  public static List listOfAllNwNewsInCategory(int newsCategoryId){
+    return listOfPublishingNews(newsCategoryId,true);
+  }
+
   public static List listOfNwNewsInCategory(int newsCategoryId){
-    List L = null;
+    return listOfPublishingNews(newsCategoryId,false);
+    /*
     try {
-      L = EntityFinder.findAllByColumnDescendingOrdered(
-                      new NwNews(),
-                      NwNews.getColumnNameNewsCategoryId(),
-                      String.valueOf(newsCategoryId),
-                      NwNews.getColumnNameNewsDate());
+      return  EntityFinder.findAllByColumn( new NwNews(),NwNews.getColumnNameNewsCategoryId(),String.valueOf(newsCategoryId));
     }
     catch (SQLException ex) {
-      L = null;
+      ex.printStackTrace();
     }
-    return L;
+
+    return null;
+    */
+  }
+
+  public static List listOfPublishingNews(int newsCategoryId,boolean ignorePublishingDates){
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(NwNews.getEntityTableName());
+    sql.append(" n,");
+    sql.append(Content.getEntityTableName());
+    sql.append(" c where n.");
+    sql.append(NwNews.getColumnNameContentId());
+    sql.append(" = c.");
+    sql.append(Content.getEntityTableName());
+    sql.append("_id and ");
+    sql.append(NwNews.getColumnNameNewsCategoryId());
+    sql.append(" = ");
+    sql.append(newsCategoryId);
+    // USE BETWEEN
+    if(!ignorePublishingDates ){
+      idegaTimestamp today = idegaTimestamp.RightNow();
+      sql.append(" and '");
+      sql.append(today.toSQLString());
+      sql.append("' between ");
+      sql.append(Content.getColumnNamePublishFrom() );
+      sql.append(" and ");
+      sql.append(Content.getColumnNamePublishTo());
+
+    }
+    // USE OPERATORS <= AND >=
+    /*
+    if(!ignorePublishingDates ){
+      idegaTimestamp today = idegaTimestamp.RightNow();
+      sql.append(" and ");
+      sql.append(Content.getColumnNamePublishFrom() );
+      sql.append(" <= '");
+      sql.append(today.toSQLString());
+      sql.append("' and ");
+      sql.append(Content.getColumnNamePublishTo());
+      sql.append(" >= '");
+      sql.append(today.toSQLString());
+      sql.append("' ");
+    }
+    */
+    sql.append(" order by ");
+    sql.append(Content.getColumnNamePublishFrom());
+    sql.append(" desc ");
+    System.err.println(sql.toString());
+    try {
+      return EntityFinder.findAll(new NwNews(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return null;
   }
 
   public static List listOfNewsHelpersInCategory(int newsCategoryId,int maxNumberOfNews){
@@ -72,8 +129,17 @@ public class NewsFinder {
     return listOfNewsHelpersInCategory(newsCategoryId,maxNumberOfNews,getLocaleId(locale));
   }
 
+  public static List listOfAllNewsHelpersInCategory(int newsCategoryId,int maxNumberOfNews,Locale locale){
+    List L = listOfAllNwNewsInCategory(newsCategoryId );
+    return listOfNewsHelpersInCategory(L,newsCategoryId ,maxNumberOfNews ,getLocaleId(locale) );
+  }
+
   public static List listOfNewsHelpersInCategory(int newsCategoryId,int maxNumberOfNews,int iLocaleId){
     List L = listOfNwNewsInCategory(newsCategoryId);
+    return listOfNewsHelpersInCategory(L,newsCategoryId ,maxNumberOfNews ,iLocaleId );
+  }
+
+  private static List listOfNewsHelpersInCategory(List L,int newsCategoryId,int maxNumberOfNews,int iLocaleId){
     if(L!= null){
       int len = L.size();
       Vector V = new Vector();
@@ -92,9 +158,9 @@ public class NewsFinder {
     NewsHelper NH = new NewsHelper();
     NwNews N = news;
     if(N!=null){
+      ContentHelper ch = ContentFinder.getContentHelper(N.getContentId());
       NH.setNews(N);
-      NH.setLocalizedText( listOfLocalizedText(N.getID()));
-      NH.setFiles( listOfNewsFiles(N.getID()));
+      NH.setContentHelper(ch);
       return NH;
     }
     else
@@ -105,9 +171,9 @@ public class NewsFinder {
     NewsHelper NH = new NewsHelper();
     NwNews N = news;
     if(N!=null){
+      ContentHelper ch = ContentFinder.getContentHelper(N.getContentId(),iLocaleId );
       NH.setNews(N);
-      NH.setLocalizedText(getLocalizedText(N.getID(),iLocaleId));
-      NH.setFiles(listOfNewsFiles(news));
+      NH.setContentHelper(ch);
       return NH;
     }
     else
@@ -129,9 +195,9 @@ public class NewsFinder {
     NwNews N = getNews(iNwNewsId);
 
     if(N!=null){
+      ContentHelper ch = ContentFinder.getContentHelper(N.getContentId(),locale );
       NH.setNews(N);
-      NH.setLocalizedText(getLocalizedText(iNwNewsId,locale));
-      NH.setFiles(listOfNewsFiles(N));
+      NH.setContentHelper(ch);
       return NH;
     }
     else

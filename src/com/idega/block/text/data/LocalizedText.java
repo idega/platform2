@@ -23,7 +23,6 @@ public class LocalizedText extends GenericEntity{
     addAttribute(getColumnNameBody(), "Body", true, true, java.lang.String.class,30000);
     addAttribute(getColumnNameCreated(), "Created", true, true, java.sql.Timestamp.class);
     addAttribute(getColumnNameUpdated(), "Updated", true, true, java.sql.Timestamp.class);
-    this.addManyToManyRelationShip(TxText.class,"TX_TEXT_TX_LOCALIZED_TEXT");
   }
 
   public static String getEntityTableName(){ return "TX_LOCALIZED_TEXT";}

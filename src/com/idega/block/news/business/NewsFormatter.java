@@ -2,6 +2,8 @@ package com.idega.block.news.business;
 
 import java.util.Vector;
 import java.util.StringTokenizer;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.Content;
 import com.idega.util.text.TextSoap;
 import com.idega.block.news.data.NwNews;
 import java.text.DateFormat;
@@ -70,9 +72,9 @@ public class NewsFormatter {
     return newsString;
   }
 
-  public static  String getInfoText(NwNews news,String sCategory, Locale locale, boolean showOnlyDates){
+  public static  String getInfoText(NwNews news,Content content,String sCategory, Locale locale, boolean showOnlyDates){
     DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,locale);
-    String NewsStamp = news.getNewsDate()!=null?df.format((java.util.Date)news.getNewsDate()):null;
+    String NewsStamp = content.getLastUpdated()!=null?df.format((java.util.Date)content.getLastUpdated()):null;
     StringBuffer info = new StringBuffer();
     String spacer = " | ";
     if(showOnlyDates && NewsStamp != null){

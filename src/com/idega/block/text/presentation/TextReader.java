@@ -175,6 +175,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     //if ( text.getIncludeImage().equals("Y") ) {
       //bodyImage = new Image(text.getImageId());
+    /* image dót
     if ( txText.getIncludeImage() ) {
       bodyImage = new Image(txText.getImageId());
       bodyImage.setAttribute("align","right");
@@ -188,7 +189,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
         T.add(bodyImage,1,1);
       }
     }
-
+    */
     if ( displayHeadline ) {
       if ( headline.getText() != null ) {
         Anchor headlineAnchor = new Anchor(headline,headline.getText());

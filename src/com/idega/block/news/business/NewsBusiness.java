@@ -4,6 +4,7 @@ import java.sql.*;
 import com.idega.presentation.IWContext;
 import com.idega.block.news.data.*;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.business.*;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.data.ICFile;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 import com.idega.data.EntityFinder;
+import com.idega.block.text.data.Content;
 
 public class NewsBusiness{
 
@@ -139,41 +141,41 @@ public class NewsBusiness{
     }
   }
 
-
-
-
-   public static void saveText(int iTxTextId,int iLocalizedTextId,int iCategoryId,
+  public static boolean saveNews(int iNwNewsId,int iLocalizedTextId,int iCategoryId,
             String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId){
-
-     saveNews( iTxTextId, iLocalizedTextId,iCategoryId,
-             sHeadline, sTitle,sAuthor,sSource,sBody,iImageId, useImage, iLocaleId , iUserId,-1,"");
-
-   }
-
-   public static void saveNews(int iTxTextId,int iLocalizedTextId,int iCategoryId,
-            String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId,String sAttribute){
-
-     saveNews( iTxTextId, iLocalizedTextId,iCategoryId,
-             sHeadline, sTitle,sAuthor,sSource,sBody,iImageId, useImage, iLocaleId , iUserId,-1,sAttribute);
-
-   }
-
-    public static void saveNews(int iTxTextId,int iLocalizedTextId,int iCategoryId,
-            String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int iInstanceId){
-
-     saveNews( iTxTextId, iLocalizedTextId,iCategoryId,sHeadline, sTitle,
-     sAuthor,sSource,sBody,iImageId, useImage, iLocaleId , iUserId,iInstanceId,"");
-
-   }
+            int iLocaleId ,int iUserId,int InstanceId,
+            Timestamp tsPubFrom,Timestamp tsPubTo,List listOfFiles){
 
 
-  public static void saveNews(int iNwNewsId,int iLocalizedTextId,int iCategoryId,
-            String sHeadline,String sTitle,String sAuthor,String sSource,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int InstanceId,String sAttribute){
+    try {
+      boolean update = false;
+      NwNews eNwNews = new NwNews();
+      if(iNwNewsId > 0){
+        eNwNews = new NwNews(iNwNewsId);
+        update = true;
+      }
+      Content eContent = ContentBusiness.saveContent(eNwNews.getContentId(),iLocalizedTextId,iLocaleId,iUserId,tsPubFrom,tsPubTo,sHeadline,sBody,sTitle,listOfFiles);
+      if(eContent != null){
+        if(eContent.getID() > 0)
+          eNwNews.setContentId(eContent.getID());
+        if(sAuthor != null)
+          eNwNews.setAuthor(sAuthor );
+        if(sSource !=null)
+          eNwNews.setSource(sSource );
 
+        if(update)
+        eNwNews.update();
+        else
+          eNwNews.insert();
+        return true;
+      }
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return false;
+  }
+    /*
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
       t.begin();
@@ -209,6 +211,7 @@ public class NewsBusiness{
       locText.setTitle( sTitle);
       locText.setUpdated(idegaTimestamp.getTimestampRightNow());
 
+
       if(iImageId > 0){
         ICFile file = new ICFile(iImageId);
         ICFile[] nwfile = (ICFile[]) nwNews.findRelated(file);
@@ -224,6 +227,8 @@ public class NewsBusiness{
       nwNews.setNewsCategoryId(iCategoryId );
       nwNews.setAuthor(sAuthor);
       nwNews.setSource(sSource);
+      nwNews.setPublishFrom(pubFrom.getTimestamp());
+      nwNews.setPublishTo(pubTo.getTimestamp());
 
       if(nwUpdate ){
         nwNews.update();
@@ -263,7 +268,7 @@ public class NewsBusiness{
 
 
   }
-
+*/
   public static void saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try{
