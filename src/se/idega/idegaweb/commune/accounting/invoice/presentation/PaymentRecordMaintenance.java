@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/05 14:39:46 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/07 21:00:00 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -138,6 +138,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
     private static final String POSTGIRO_DEFAULT = "Postgiro";
     private static final String POSTGIRO_KEY = PREFIX + "postgiro";
+    private static final String PRINT_DATE_DEFAULT = "Utskriftsdatum";
+    private static final String PRINT_DATE_KEY = PREFIX + "print_date";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
@@ -198,6 +200,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         = new SimpleDateFormat ("yyMM");
     private static final SimpleDateFormat dateFormatter
         = new SimpleDateFormat ("yyyy-MM-dd");
+    private static final SimpleDateFormat dateAndTimeFormatter
+        = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private final static Font SANSSERIF_FONT
 		= FontFactory.getFont (FontFactory.HELVETICA, 9);
     
@@ -288,7 +292,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         outerTable.setWidthPercentage (100f);
         outerTable.getDefaultCell ().setBorder (0);
         addPhrase (outerTable, title + "\n\n");
-		final PdfPTable headerTable = getRecordsHeaderPdfTable(context);
+		final PdfPTable headerTable = getRecordsHeaderPdfTable (context);
         outerTable.addCell (headerTable);
         addPhrase (outerTable, "\n");
         final String [][] columnNames =
@@ -320,9 +324,15 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addPhrase (outerTable, "\n");
         addPhrase (outerTable,
                    localize (OWN_POSTING_KEY, OWN_POSTING_DEFAULT) + ":");
-        final PdfPTable postingTable
-                = getOwnPostingPdfTable (context, records, lightBlue);
-        outerTable.addCell (postingTable);
+        final PdfPTable ownPostingTable
+                = getPostingPdfTable (context, records, lightBlue, true);
+        outerTable.addCell (ownPostingTable);
+        addPhrase (outerTable, "");
+        addPhrase (outerTable,
+                   localize (DOUBLE_POSTING_KEY, DOUBLE_POSTING_DEFAULT) + ":");
+        final PdfPTable doublePostingTable
+                = getPostingPdfTable (context, records, lightBlue, false);
+        outerTable.addCell (doublePostingTable);
         document.add (outerTable);        
         
         // close and store document
@@ -339,9 +349,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                               CHECK_AMOUNT_LIST_DEFAULT, viewLink));
     }
     
-	private PdfPTable getOwnPostingPdfTable
+	private PdfPTable getPostingPdfTable
         (final IWContext context, final PaymentRecord [] records,
-         final Color lightBlue) throws RemoteException {
+         final Color lightBlue, final boolean isOwnPosting)
+        throws RemoteException {
 		final PostingField [] fields = getCurrentPostingFields (context);
         final PdfPTable table = new PdfPTable (fields.length + 1);
         table.setWidthPercentage (100f);
@@ -352,7 +363,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addPhrase (table, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
         for (int i = 0; i < records.length; i++) {
             final PaymentRecord record = records [i];
-            final String postingString = record.getOwnPosting ();
+            final String postingString = isOwnPosting ? record.getOwnPosting ()
+                    : record.getDoublePosting ();
             table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
                                                         : lightBlue);
             int offset = 0;
@@ -375,6 +387,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				= (Integer) context.getSessionAttribute (PROVIDER_KEY);
 		final String schoolCategoryId
 				= (String) context.getSessionAttribute (MAIN_ACTIVITY_KEY);
+        final Date period = (Date) context.getSessionAttribute (PERIOD_KEY);
         final PdfPTable headerTable
                 = new PdfPTable (new float [] { 2.0f, 3.0f });
         headerTable.getDefaultCell ().setBorder (0);
@@ -382,6 +395,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                    localize (MAIN_ACTIVITY_KEY, MAIN_ACTIVITY_DEFAULT) + ": ");
         addPhrase (headerTable, getSchoolCategoryName (context,
                                                        schoolCategoryId));
+        addPhrase (headerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": ");
+        addPhrase (headerTable, getFormattedPeriod (period));
+        addPhrase (headerTable, localize (PRINT_DATE_KEY, PRINT_DATE_DEFAULT)
+                   + ": ");
+        addPhrase (headerTable,
+                   dateAndTimeFormatter.format (new java.util.Date ()));
         try {
             final School school
                     = getSchoolBusiness (context).getSchool (providerId);
@@ -395,7 +414,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             addPhrase (headerTable, bankgiro != null ? bankgiro : "");
             addPhrase (headerTable, localize (POSTGIRO_KEY, POSTGIRO_DEFAULT)
                        + ": ");
-            final String postgiro = provider.getBankgiro ();
+            final String postgiro = provider.getPostgiro ();
             addPhrase (headerTable, postgiro != null ? postgiro : "");
             
         } catch (Exception e) {
@@ -754,6 +773,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                            (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
                             CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
                            columnCount, 2);
+                final PaymentHeaderHome headerHome
+                        = business.getPaymentHeaderHome ();
+                final PaymentHeader header = headerHome.findByPrimaryKey
+                        (new Integer (records [0].getPaymentHeader ()));
+                context.setSessionAttribute (PERIOD_KEY, header.getPeriod ());
                 context.setSessionAttribute (PAYMENT_RECORDS_KEY, records);
                 context.setSessionAttribute (PROVIDER_KEY, providerId);
                 context.setSessionAttribute (MAIN_ACTIVITY_KEY, schoolCategory);

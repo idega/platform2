@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/05 21:00:48 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/07 21:00:00 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.59 $
+ * @version $Revision: 1.60 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -290,16 +290,18 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param header the header to find records connected to
 	 * @return array of invoice records
 	 */
-	public InvoiceRecord[] getInvoiceRecordsByInvoiceHeader(final InvoiceHeader header) {
-		Collection collection = null;
+	public InvoiceRecord [] getInvoiceRecordsByInvoiceHeader
+        (final InvoiceHeader header) {
+		Collection collection = new ArrayList ();
 		try {
-			collection = getInvoiceRecordHome().findByInvoiceHeader(header);
-		} catch (RemoteException exception) {
-			exception.printStackTrace();
+			collection.addAll (getInvoiceRecordHome ().findByInvoiceHeader
+                               (header));
 		} catch (FinderException exception) {
 			// no problem, return empty array
+		} catch (RemoteException exception) {
+			exception.printStackTrace();
 		}
-		return null == collection ? new InvoiceRecord[0] : (InvoiceRecord[]) collection.toArray(new InvoiceRecord[0]);
+		return (InvoiceRecord[]) collection.toArray (new InvoiceRecord[0]);
 	}
 
 	public User getChildByInvoiceRecord(final InvoiceRecord record)

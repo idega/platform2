@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/06 14:29:35 $ by $Author: laddi $
+ * Last modified: $Date: 2003/12/07 21:00:00 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.84 $
+ * @version $Revision: 1.85 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1277,11 +1277,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             int offset = 0;
             for (int j = 0; j < fields.length; j++) {
                 final PostingField field = fields [j];
-                final int endPosition = min (offset + field.getLen (),
-                                             postingString.length ());
-                addPhrase (table, postingString.substring
-                           (offset, endPosition).trim ());
-                offset = endPosition;
+                final StringBuffer value = new StringBuffer ();
+                if (null != field && null != postingString) {
+                    final int endPosition = min (offset + field.getLen (),
+                                                 postingString.length ());
+                    value.append (postingString.substring
+                                  (offset, endPosition).trim ());
+                    offset = endPosition;
+                }
+                addPhrase (table, value.toString ());
             }
             addPhrase (table, ((long)record.getAmount ()) + "");
         }
@@ -1508,7 +1512,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
  		final InvoiceRecord [] records
 		        = business.getInvoiceRecordsByInvoiceHeader (header);
-
         // set up header row
         final String [][] columnNames =
                 {{ SSN_KEY, SSN_DEFAULT },
@@ -1668,13 +1671,21 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final ListTable result = new ListTable (this, fields.length);
         int offset = 0;
         for (int i = 0; i < fields.length; i++) {
+            final StringBuffer title = new StringBuffer ();
+            final StringBuffer value = new StringBuffer ();
             final PostingField field = fields [i];
-            final int endPosition = min (offset + field.getLen (),
-                                         postingString.length ());
-            result.setHeader (field.getFieldTitle (), i + 1);
-            result.add (getSmallText (postingString.substring
-                                      (offset, endPosition).trim ()));
-            offset = endPosition;
+            if (null != field) {
+                title.append (field.getFieldTitle ());
+                if (null != postingString) {
+                    final int endPosition = min (offset + field.getLen (),
+                                                 postingString.length ());
+                    value.append (postingString.substring
+                                  (offset, endPosition).trim ());
+                    offset = endPosition;
+                }
+            }
+            result.setHeader (title.toString (), i + 1);
+            result.add (getSmallText (value.toString ()));
         }       
 		return result;
 	}
