@@ -1,48 +1,4 @@
-/*
- * Created on 24.9.2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
-
-import is.idega.idegaweb.member.presentation.UserSearcher;
-
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
-import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -68,12 +24,50 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.util.CalendarMonth;
+import com.idega.util.IWTimestamp;
+import is.idega.idegaweb.member.presentation.UserSearcher;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingHome;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.business.PlacementTimes;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * @author Roar
+ * Last modified: $Date: 2004/02/26 10:51:21 $ by $Author: staffan $
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.32 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
@@ -112,14 +106,12 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 
 	
 	private static final String PAR_AMOUNT_TOTAL = KEY_AMOUNT_TOTAL;
-//	private static final String PAR_DOUBLE_ENTRY_ACCOUNT  = KEY_DOUBLE_ENTRY_ACCOUNT;
 	private static final String PAR_SEEK_FROM = "SEEK_" + KEY_FROM;	
 	private static final String PAR_PLACING = KEY_PLACING;
 	private static final String PAR_REMARK = KEY_REMARK;
 	private static final String PAR_TO = KEY_TO;
 	private static final String PAR_SEEK_TO = "SEEK_" + KEY_TO;	
 	private static final String PAR_USER_SSN = "usrch_search_pid"; //Constant used in UserSearcher...
-//	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
 	public static final String PAR_SELECTED_PROVIDER = "selected_provider";	
@@ -154,13 +146,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		PAR_CANCEL_NEW_EDIT = PAR + ACTION_CANCEL_NEW_EDIT,
 		PAR_OPFIELD_DETAILSCREEN = PAR + ACTION_OPFIELD_DETAILSCREEN;
 	
-//	int ijk = 0;
-//	String searchPeopleAction = ""; 
-
 	
 	public void init(final IWContext iwc) {
-		
-//		School school = getSchool(iwc);
 		
 		int action = parseAction(iwc);
 		
@@ -171,7 +158,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 					handleEditAction(iwc);
 					break;
 				case ACTION_SAVE:
-					handleSaveAction(iwc/*, school*/);
+					handleSaveAction(iwc);
 					break;	
 				case ACTION_CANCEL:
 					handleCancelAction();
@@ -203,21 +190,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		return school;		
 	}
 	
-	
-//	private User getUser(IWContext iwc){
-//		String userPid = iwc.getParameter(PAR_USER_SSN);
-//		User user = null;
-//		if (userPid != null && userPid.length() > 0){
-//			try{
-//				user = getUserBusiness(iwc.getApplicationContext()).getUser(userPid);
-//			}catch(FinderException ex){
-//				ex.printStackTrace(); 
-//			}
-//		}
-//		return user;	
-//	}
-		
-
 	/*
 	 * Returns the action constant for the action to perform based 
 	 * on the POST parameters in the specified context.
@@ -263,16 +235,14 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 
 		PaymentRecord pay = null;
-		InvoiceRecord details = null;
-		boolean isInvoiceRecordCreated = false;
+		int schoolId = -1;
+		Date periode = null;
 				
 		if (errorMessages.isEmpty()){
 			PaymentHeader payhdr = null;
 
 			
-			int schoolId = -1;
 			SchoolCategory category = null;
-			Date periode = null;
 			
 			//Finding paymentHeader (if existing)
 			try{
@@ -343,39 +313,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			}
 
 			pay.setPaymentHeader(payhdr);
-
-					
-			//Creating paymentDetailRecord ( = InvoiceRecord) if student is given
-			User student = null;
-			try{
-				String ssn = getValue(iwc, PAR_USER_SSN);
-				if (ssn != null && ssn.length() > 0){ //ssn == '' returns a user...
-					student = getUserBusiness(iwc).getUser(ssn); 
-				}
-			}catch(FinderException ex){
-				ex.printStackTrace();
-			}
-	
-			if (student != null){
-				try{
-					SchoolClassMemberHome scmHome = (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
-					SchoolClassMember member = scmHome.findLatestByUserAndSchool(student.getNodeID(), schoolId);
-					details = getInvoiceRecordHome().create();		
-					details.setSchoolClassMember(member);
-					details.setPaymentRecord(pay);				
-					details.setCreatedBy (getSignature (iwc.getCurrentUser ()));
-					details.setDateCreated (new Date (new java.util.Date ().getTime()));
-					isInvoiceRecordCreated = true;
-				}catch(RemoteException ex){
-					ex.printStackTrace();
-				}catch(FinderException ex){
-					errorMessages.put(ERROR_USER, localize(ERROR_USER, "Student has no active placement for chosen school"));
-					ex.printStackTrace();
-				}catch(CreateException ex){
-					ex.printStackTrace();
-					return;
-				}	
-			}
 					
 			//Store values in paymentRecord
 			long amountTotal = 0;
@@ -470,7 +407,25 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}else{		
 	
 			pay.store();	
-			if (isInvoiceRecordCreated)	details.store ();
+
+			//Creating paymentDetailRecord ( = InvoiceRecord) if student is given
+			User student = null;
+			try{
+				String ssn = getValue(iwc, PAR_USER_SSN);
+				if (ssn != null && ssn.length() > 0){ //ssn == '' returns a user...
+					student = getUserBusiness(iwc).getUser(ssn); 
+				}
+			}catch(FinderException ex){
+				ex.printStackTrace();
+			}
+	
+			if (student != null){
+				try{
+					createInvoiceRecord(iwc, student, schoolId, periode, pay);
+				} catch(Exception ex) {
+					ex.printStackTrace ();
+				}	
+			}
 
 			if (getResponsePage () != null){
 				iwc.forwardToIBPage(getParentPage(), getResponsePage ());
@@ -478,6 +433,50 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 
+	private InvoiceRecord createInvoiceRecord(IWContext iwc, User student, int schoolId, Date periode, PaymentRecord pay) throws IDOLookupException, FinderException, RemoteException, CreateException {
+		SchoolClassMemberHome scmHome = (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+		SchoolClassMember member = scmHome.findLatestByUserAndSchool(student.getNodeID(), schoolId);
+		PlacementTimes placementTimes = getPlacementTimes(member, new CalendarMonth (periode));
+		Date startDate = null != member	&& null != member.getRegisterDate ()
+				? new Date (member.getRegisterDate ().getTime ()) : null;
+		Date endDate = null != member && null != member.getRemovedDate ()
+				? new Date (member.getRemovedDate ().getTime ()) : null;
+		return getInvoiceBusiness (iwc).createInvoiceRecord(pay, member, null, placementTimes, startDate, endDate, getSignature (iwc.getCurrentUser ()));
+	}
+
+	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember, CalendarMonth month) {
+		Date sDate = null;
+		Date eDate = null;
+		if (schoolClassMember.getRegisterDate() != null) {
+			sDate = new Date(schoolClassMember.getRegisterDate().getTime());
+		}
+		if (schoolClassMember.getRemovedDate() != null) {
+			eDate = new Date(schoolClassMember.getRemovedDate().getTime());
+		}
+		PlacementTimes placementTimes = calculateTime(sDate, eDate, month);
+		return placementTimes;
+	}
+
+	private PlacementTimes calculateTime(Date start, Date end, CalendarMonth month){
+		IWTimestamp firstCheckDay = new IWTimestamp(start);
+		firstCheckDay.setAsDate();
+		IWTimestamp time = new IWTimestamp(month.getFirstDateOfMonth());
+		time.setAsDate();
+		if(!firstCheckDay.isLaterThan(time)){
+			firstCheckDay = time;
+		}
+		IWTimestamp lastCheckDay = new IWTimestamp(month.getLastDateOfMonth());
+		lastCheckDay.setAsDate();
+		if(end!=null){
+			time = new IWTimestamp(end.getTime ());
+			if(!lastCheckDay.isEarlierThan(time)){
+				lastCheckDay = time;
+			}
+		}
+		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
+		return placementTimes;
+	}
+	
 	private static String getSignature (final User user) {
 		if (null == user) return "not logged in user";
 		final String firstName = user.getFirstName ();
@@ -515,17 +514,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	}	
 		
 	
-	private InvoiceRecordHome getInvoiceRecordHome() {
-		InvoiceRecordHome home = null;
-		try{
-			home = (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
-			
-		}catch(IDOLookupException ex){
-			ex.printStackTrace();			
-		}
-		return home;
-	}		
-
 	private void handleEditAction(IWContext iwc){
 		handleEditAction(iwc, new HashMap());
 	}
@@ -571,7 +559,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 		inner.add(ofm, 2, 1);
 		inner.setColumnWidth(1, "" + MIN_LEFT_COLUMN_WIDTH);		
-//		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
 		return inner;
 	}	
 
@@ -745,11 +732,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			ex.printStackTrace();
 		}
 		table.add(postingBlock, 1, row++);
-						
-		
-//		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
-//		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
-		
+								
 		if (errorMessages.get(ERROR_NO_VAT) != null) {
 			table.mergeCells(2, row, 10, row);
 			table.add(getErrorText((String) errorMessages.get(ERROR_NO_VAT)), 2, row++);			
@@ -926,62 +909,16 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	 * @param row
 	 * @return
 	 */
-//	private Table addNoEmptyField(Table table, String parameter, String key, String value, int col, int row){
-//		TextInput input = getTextInput(parameter, value);
-//		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + key);
-//		return addWidget(table, key, input, col, row);
-//	}
-	
-	/**
-	 * Adds a label and a TextInput to a table
-	 * @param table
-	 * @param key is used both as localization key for the label and default label value
-	 * @param value
-	 * @param parameter
-	 * @param col
-	 * @param row
-	 * @return
-	 */
 	private Table addField(Table table, String parameter, String key, String value, int col, int row, int width){
 		return addWidget(table, key, getTextInput(parameter, value, width), col, row);
 	}
-	
-//	/**
-//	 * Adds a label and a TextInput to a table
-//	 * @param table
-//	 * @param key is used both as localization key for the label and default label value
-//	 * @param value
-//	 * @param parameter
-//	 * @param col
-//	 * @param row
-//	 * @return
-//	 */
-//	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
-//		TextInput input = getTextInput(parameter, value);
-//		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2); 
-//		return addWidget(table, key, input, col, row);
-//	}
-	
+		
 	private Table addIntField(Table table, String parameter, String key, String value, int col, int row){
 		TextInput input = getTextInput(parameter, value);
 		input.setAsPosNegIntegers(localize(LOCALIZER_PREFIX + "int_format_error", "Format-error: Expecting integer:" )+ " " + localize(key, "")); 
 		return addWidget(table, key, input, col, row);
 	}	
-		
-
-	/**
-	 * Adds a label and a value to a table
-	 * @param table
-	 * @param key is used both as localization key for the label and default label value
-	 * @param value
-	 * @param col
-	 * @param row
-	 * @return
-	 */
-//	private Table addField(Table table, String key, String value, int col, int row){
-//		return addWidget(table, key, getText(value), col, row);
-//	}	
-	
+			
 	/**
 	 * Adds a label and widget to a table
 	 * @param table
@@ -1005,4 +942,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
+
+	protected InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
+		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+	}	
 }

@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/25 13:44:26 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/26 10:51:20 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.113 $
+ * @version $Revision: 1.114 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -612,7 +612,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final Date startPlacementDate, final Date endPlacementDate,
 		 final String createdBySignature)	throws RemoteException, CreateException {
 		final InvoiceRecord result = getInvoiceRecordHome ().create ();
-		result.setAmount(AccountingUtil.roundAmount(checkPeriod.getMonths () * postingDetail.getAmount ()));
 		result.setCreatedBy (createdBySignature);
 		result.setDateCreated (new Date (System.currentTimeMillis ()));
 		result.setDays (checkPeriod.getDays ());
@@ -620,9 +619,18 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			result.setPaymentRecord (paymentRecord);
 		}
 		if (null != postingDetail) {
+			result.setAmount(AccountingUtil.roundAmount(checkPeriod.getMonths () * postingDetail.getAmount ()));
 			result.setInvoiceText(postingDetail.getTerm());
 			result.setRuleText(postingDetail.getTerm());
 			result.setOrderId(postingDetail.getOrderID());
+			try {
+				final RegulationSpecType regSpecType
+						= getRegulationSpecTypeHome ().findByRegulationSpecType
+						(postingDetail.getRuleSpecType ());
+				result.setRegSpecType (regSpecType);
+			} catch (Exception e) {
+				e.printStackTrace ();
+			}
 		}
 		result.setPeriodStartCheck (checkPeriod.getFirstCheckDay ().getDate ());
 		result.setPeriodEndCheck (checkPeriod.getLastCheckDay ().getDate ());
@@ -636,14 +644,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 		if (null != endPlacementDate) {
 			result.setPeriodEndPlacement (endPlacementDate);
-		}
-		try {
-			final RegulationSpecType regSpecType
-					= getRegulationSpecTypeHome ().findByRegulationSpecType
-					(postingDetail.getRuleSpecType ());
-			result.setRegSpecType (regSpecType);
-		} catch (Exception e) {
-			e.printStackTrace ();
 		}
 		result.store ();
 		return result;
