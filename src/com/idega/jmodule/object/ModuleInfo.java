@@ -25,9 +25,9 @@ public class ModuleInfo extends Object{
 
 private HttpServletRequest Request;
 private HttpServletResponse Response;
-private static String LOCALE_ATTRIBUTE="idegaweb_locale";
+private final static String LOCALE_ATTRIBUTE="idegaweb_locale";
 
-private static String WEAK_HASHMAP_KEY ="idegaweb_weak_hashmap";
+private final static String WEAK_HASHMAP_KEY ="idegaweb_weak_hashmap";
 
 //private HttpSession session;
 private String language; //Variable to set the language i.e. HTML
@@ -38,6 +38,8 @@ private String spokenLanguage;
 //private Hashtable sessionAttributes;
 private ServletContext servletContext;
 
+private boolean isCaching = false;
+private PrintWriter cacheWriter;
 
 
 public ModuleInfo(HttpServletRequest Request,HttpServletResponse Response){
@@ -608,7 +610,18 @@ public String getRequestURI(){
 }
 
 public PrintWriter getWriter()throws IOException{
-  return getResponse().getWriter();
+    if(cacheWriter==null){
+      return getResponse().getWriter();
+    }
+    else{
+      if(this.isCacheing()){
+        return cacheWriter;
+      }
+      else{
+        return getResponse().getWriter();
+      }
+
+    }
 }
 
 
@@ -669,6 +682,18 @@ private Map getWeakHashMap(){
 
 public void setContentType(String contentType){
   Response.setContentType(contentType);
+}
+
+void setCacheing(boolean ifCacheing){
+  this.isCaching=ifCacheing;
+}
+
+boolean isCacheing(){
+  return isCaching;
+}
+
+public void setCacheWriter(PrintWriter writer){
+  this.cacheWriter=writer;
 }
 
 }

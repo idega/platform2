@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.8 2001/07/09 16:18:28 tryggvil Exp $
+ * $Id: ModuleObjectContainer.java,v 1.9 2001/08/09 12:40:01 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -151,6 +151,7 @@ public class ModuleObjectContainer extends ModuleObject {
     if (!goneThroughMain) {
       initVariables(modinfo);
       try {
+        //super.main(modinfo);
         main(modinfo);
       }
       catch(Exception ex) {

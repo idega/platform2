@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.15 2001/07/25 17:15:56 tryggvil Exp $
+ * $Id: ModuleObject.java,v 1.16 2001/08/09 12:39:52 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -124,7 +124,7 @@ public class ModuleObject extends Object implements Cloneable {
     if (interfaceStyle == null) {
       interfaceStyle = "default";
     };
-    this.out = this.Response.getWriter();
+    this.out = modinfo.getWriter();
   }
 
   public void setDoPrint(boolean ifDoPrint) {
