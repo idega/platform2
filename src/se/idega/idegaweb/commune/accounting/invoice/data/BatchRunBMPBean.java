@@ -15,8 +15,8 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	private static final String ENTITY_NAME = "cacc_batch_run";
 	private static final String COLUMN_SCHOOL_CATEGORY_ID = "school_category_id";
 	private static final String COLUMN_PERIOD = "period";
-	private static final String COLUMN_START = "start";
-	private static final String COLUMN_STOP = "stop";
+	private static final String COLUMN_START = "start_date";
+	private static final String COLUMN_STOP = "stop_date";
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */

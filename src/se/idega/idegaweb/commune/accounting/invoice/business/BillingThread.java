@@ -78,6 +78,7 @@ public abstract class BillingThread extends Thread{
 		PaymentHeader paymentHeader;
 		PaymentRecord paymentRecord;
 	
+		System.out.println("About to create payment record");
 		//Get the payment header
 		try {
 			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).
@@ -92,6 +93,7 @@ public abstract class BillingThread extends Thread{
 			} else {
 				paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
 			}
+			paymentHeader.store();
 		}
 
 		//Update or create the payment record
@@ -102,6 +104,7 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
 			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+postingDetail.getVat()*months);
+			paymentRecord.store();
 		} catch (FinderException e1) {
 			//It didn't exist, so we create it
 			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
@@ -125,6 +128,7 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setDoublePosting(doublePosting);
 			paymentRecord.setVATType(postingDetail.getVatRegulationID());
 			paymentRecord.store();
+			System.out.println("Created payment record");
 		}
 		return paymentRecord;
 	}
@@ -177,11 +181,12 @@ public abstract class BillingThread extends Thread{
 	 * @throws RemoteException
 	 * @throws MissingMandatoryFieldException
 	 */
-	protected String[] compilePostingStrings(int category, int regSpecType, Provider provider) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
+	protected String[] compilePostingStrings(IWContext iwc, int category, int regSpecType, Provider provider) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		//Set the posting strings
-		PostingBusiness postingBusiness = (PostingBusiness)IDOLookup.create(PostingBusiness.class);
+		PostingBusiness postingBusiness = (PostingBusiness)IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 
 		PostingParameters parameters;
+		//TODO (JJ) fix the  params
 		parameters = postingBusiness.getPostingParameter(currentDate, category, regSpecType, 0, 0);
 
 		String ownPosting = parameters.getPostingString();
@@ -250,11 +255,14 @@ public abstract class BillingThread extends Thread{
 	 */
 	protected void createNewErrorMessage(String related, String desc){
 		try {
+			System.out.println("About to enter new error message");
+			System.out.println("About to enter a batch run error to header "+batchRunLogger.getPrimaryKey()+"  "+related+"  "+desc+"  "+errorOrder);
 			BatchRunError error = (BatchRunError) IDOLookup.create(BatchRunError.class);
-			error.setBatchRunID(batchRunLogger);
+			error.setBatchRunID(((Integer)batchRunLogger.getPrimaryKey()).intValue());
 			error.setRelated(related);
 			error.setDescription(desc);
 			error.setOrder(errorOrder);
+			error.store();
 			errorOrder++;
 		} catch (Exception e) {
 			System.out.println("Exception so complicated that it wasn't even possible to create an error message in the log!");
@@ -272,12 +280,15 @@ public abstract class BillingThread extends Thread{
 	 */
 	protected void createBatchRunLogger(SchoolCategory category) throws IDOLookupException, CreateException{
 		//First delete all old logging for this category
+		System.out.println("Entering createBatchRunLogger");
 		try {
 			batchRunLogger = ((BatchRunHome) IDOLookup.getHome(BatchRun.class)).findBySchoolCategory(category);
 			Iterator errorIter = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).findByBatchRun(batchRunLogger).iterator();
+			System.out.println("About to remobe BatchRunErrors");
 			while (errorIter.hasNext()) {
 				BatchRunError error = (BatchRunError) errorIter.next();
 				try {
+					System.out.println("Removing BatchRunLogError");
 					error.remove();
 				} catch (EJBException e) {
 					//If it cant be removed, it is just left... Not much to do about it.
@@ -289,12 +300,17 @@ public abstract class BillingThread extends Thread{
 			}
 		} catch (FinderException e1) {
 			//Excepiton OK We just create it instead
+			System.out.println("No logger found creating it instead");
 			batchRunLogger = (BatchRun) IDOLookup.create(BatchRun.class);
+			System.out.println("logger created");
 			batchRunLogger.setSchoolCategoryID(category);
+			
+			System.out.println("logger stored");
 		}
 		batchRunLogger.setPeriod(startPeriod.getDate());
 		batchRunLogger.setStart(currentDate);
 		batchRunLogger.setEnd(null);
+		batchRunLogger.store();
 	}
 	
 	protected void finalizeBatchRunLogger(){

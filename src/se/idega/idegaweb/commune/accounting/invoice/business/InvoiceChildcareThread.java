@@ -1,6 +1,8 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import is.idega.idegaweb.member.business.*;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoCohabitantFound;
+import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -16,13 +18,23 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.*;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
+import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
-import se.idega.idegaweb.commune.accounting.regulations.business.*;
+import se.idega.idegaweb.commune.accounting.regulations.business.IntervalConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
@@ -129,7 +141,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setOwnPosting(categoryPosting.getAccount());
 						invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
-						System.out.println("Store Invoice Header with Category "+category+" and custodian"+custodian);
+						System.out.println("Store Invoice Header with Category '"+category+"' and custodian "+custodian);
 						invoiceHeader.store();
 					}
 				
@@ -168,7 +180,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().
 							findByRegulationSpecType(RegSpecConstant.CHECK);
-					compilePostingStrings(childcare, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
+					compilePostingStrings(iwc, childcare, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, ownPosting, doublePosting);			//MUST create payment record first, since it is used in invoice record
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
@@ -190,9 +202,11 @@ public class InvoiceChildcareThread extends BillingThread{
 					Iterator regulationIter = regulationArray.iterator();
 					while(regulationIter.hasNext())
 					{
+						Regulation regulation = (Regulation)regulationIter.next();
 						postingDetail = regBus.getPostingDetailForContract(
 							totalSum,
-							contract);
+							contract,
+							regulation);
 
 						// **Create the invoice record
 						invoiceRecord = createInvoiceRecord(invoiceHeader);
