@@ -6,9 +6,8 @@
  */
 package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
-import is.idega.idegaweb.member.isi.block.clubs.business.ClubInfoBusiness;
+import is.idega.idegaweb.member.isi.block.clubs.business.ClubInfoBusinessBean;
 
-import java.rmi.RemoteException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +20,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.presentation.Block;
 import com.idega.presentation.DynamicJSMenu;
-import com.idega.presentation.IWContext; 
+import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 
@@ -39,19 +38,12 @@ public class ClubInfoBar extends Block {
 		_collator = Collator.getInstance(iwc.getLocale());
 		Group club = getClub(iwc);
 		if(club==null) {
-			handleError();
+			System.out.println("No club to show division menu for");
 			return;
 		}
 		System.out.println("creating link bar for club " + club.getName());
 		_biz = getBusiness(iwc);
-		Collection divisions = null;
-		try {
-			divisions = _biz.getDivisionsForClub(club);
-		} catch (RemoteException e) {
-			System.out.println("Exception getting divisions for club");
-			handleError();
-			e.printStackTrace();
-		}
+		Collection divisions = _biz.getDivisionsForClub(club);
 		Iterator divIter = divisions.iterator();
 		DynamicJSMenu divMenu = new DynamicJSMenu();
 		while(divIter.hasNext()) {
@@ -63,14 +55,7 @@ public class ClubInfoBar extends Block {
 	}
 	
 	private void addDivisionToMenu(DynamicJSMenu menu, Group division) {
-		List flocks = new ArrayList(division.getChildGroups()); /*null;
-		try {
-			flocks = _biz.getFlocksForDivision(division);
-		} catch (RemoteException e) {
-			System.out.println("Exception getting flocks for division");
-			handleError();
-			e.printStackTrace();
-		}*/
+		List flocks = new ArrayList(division.getChildGroups());
 		
 		Collections.sort(flocks, new Comparator() {
 			
@@ -91,42 +76,30 @@ public class ClubInfoBar extends Block {
 		
 		_menuCount++;
 	}
-	
-	public void setClub(String clubId) {
-		System.out.println("Setting club Id to " + clubId);
-		try {
-			_clubId = Integer.parseInt(clubId);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private String getClub() {
-		return Integer.toString(_clubId);
-	}
-	
+		
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	
 	private Group getClub(IWContext iwc) {
+		String clubId = iwc.getParameter(ClubPageIncluder.PARAM_ROOT_CLUB_ID);
 		Group club = null;
-		try {
-			GroupBusiness groupBiz = getGroupBusiness(iwc);
-			club = groupBiz.getGroupByGroupID(_clubId);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(clubId!=null) {
+			try {
+				GroupBusiness groupBiz = getGroupBusiness(iwc);
+				club = groupBiz.getGroupByGroupID(Integer.parseInt(clubId));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("no club id found");
 		}
 		return club;
 	}
-	
-	private void handleError() {
-		System.out.println("Error displaying club divisios menu");
-	}
-	
-	private ClubInfoBusiness getBusiness(IWContext iwc) {
+		
+	private ClubInfoBusinessBean getBusiness(IWContext iwc) {
 		try {
-			return (ClubInfoBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), ClubInfoBusiness.class);
+			return (ClubInfoBusinessBean) IBOLookup.getServiceInstance(iwc.getApplicationContext(), ClubInfoBusinessBean.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -142,8 +115,8 @@ public class ClubInfoBar extends Block {
 		}
 	}
 	
-	private int _clubId = 330185;
+	//private int _clubId = 330185;
 	private int _menuCount = 0;
-	private ClubInfoBusiness _biz;
+	private ClubInfoBusinessBean _biz;
 	private static Collator _collator = null;
 }
