@@ -1,5 +1,6 @@
 package com.idega.block.forum.presentation;
 
+import com.idega.event.IWPresentationState;
 import com.idega.core.data.*;
 import com.idega.core.user.data.User;
 import com.idega.core.business.CategoryBusiness;
@@ -33,7 +34,7 @@ import com.idega.core.user.business.UserBusiness;
  * @version 1.2
  */
 
-public class Forum extends CategoryBlock implements IWBlock {
+public class Forum extends CategoryBlock implements IWBlock, StatefullPresentation {
 
   private int _objectID = -1;
   private int _selectedObjectID = -1;
@@ -85,9 +86,31 @@ public class Forum extends CategoryBlock implements IWBlock {
   protected IWBundle _iwcb;
   private ForumBusiness forumBusiness;
 
+  private StatefullPresentationImplHandler stateHandler = null;
+
   public Forum() {
+
+    /**
+     * @todo implement Statehandling for Forum
+     */
+    stateHandler = new ForumTree().getStateHandler();
+
     setDefaultValues();
   }
+
+  /**
+   * Temporary implementation
+   * returning stateClass for the ForumTree Object
+   */
+  public Class getPresentationStateClass(){
+    return stateHandler.getPresentationStateClass();
+  }
+
+  public IWPresentationState getPresentationState(IWUserContext iwuc){
+    return stateHandler.getPresentationState(this,iwuc);
+  }
+
+
 
   public void main(IWContext iwc) throws Exception {
     _iwrb = getResourceBundle(iwc);
@@ -410,6 +433,12 @@ public class Forum extends CategoryBlock implements IWBlock {
 
   private ForumTree getForumTree(ForumData[] threads) {
     ForumTree tree = new ForumTree();
+    /**
+     * @todo chage later: legacy-fix
+     */
+     tree.setICObjectInstanceID(this.getICObjectInstanceID());
+     System.out.println("Forum: tree.setICObjectInstanceID("+this.getICObjectInstanceID()+");");
+
       tree.setHeadingColor(_headingColor);
       tree.setExtraHeadingColor(1,_headingColor);
       tree.setExtraHeadingColor(2,_headingColor);
