@@ -58,8 +58,9 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 	
 	public NewMarkWindow() {
 		setHeight(200);
-		setWidth(200);
+		setWidth(300);
 		setResizable(true);
+		setScrollbar(false);
 	}
 	
 	protected void initializeTexts(IWContext iwc) {

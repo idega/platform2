@@ -256,10 +256,11 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	}
 	public AttendanceEntity getAttendanceByUserIDandEntry(int userID, CalendarEntry entry) {
 		AttendanceEntity attendance = null;
-		Timestamp stamp = entry.getDate();
+//		Timestamp stamp = entry.getDate();
+		int entryID = entry.getEntryID();
 		try {
 			AttendanceEntityHome attendanceHome = (AttendanceEntityHome) getIDOHome(AttendanceEntity.class);
-			attendance = attendanceHome.findAttendanceByUserIDandTimestamp(userID,stamp);			
+			attendance = attendanceHome.findAttendanceByUserIDandEntryID(userID,entryID);			
 		} catch(Exception e) {
 			attendance = null;
 		}
@@ -949,8 +950,10 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				attendance = attendanceHome.create();
 			}
 			Timestamp date = entry.getDate();
+			int entryID = entry.getEntryID();
 			attendance.setUserID(userID);
 			attendance.setLedgerID(ledgerID);
+			attendance.setEntryID(entryID);
 			attendance.setAttendanceDate(date);
 			attendance.setAttendanceMark(mark);
 			attendance.store();
@@ -963,8 +966,10 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		AttendanceEntity attendance = getAttendanceEntity(attendanceID);
 		try {
 			Timestamp date = entry.getDate();
+			int entryID = entry.getEntryID();
 			attendance.setUserID(userID);
 			attendance.setLedgerID(ledgerID);
+			attendance.setEntryID(entryID);
 			attendance.setAttendanceDate(date);
 			attendance.setAttendanceMark(mark);
 			attendance.store();

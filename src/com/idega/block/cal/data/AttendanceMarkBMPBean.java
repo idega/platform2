@@ -23,7 +23,7 @@ public class AttendanceMarkBMPBean extends GenericEntity implements com.idega.bl
 		AttendanceMarkHome markHome = (AttendanceMarkHome) getIDOHome(AttendanceMark.class);
 		
 		final String [] data = { "x", "s", "v", "f", " " };
-		final String [] description = { "Mætt(ur)", "Sein(n)", "Veik(ur)", "Fjarverandi", " "};
+		final String [] description = { "Maett(ur)", "Sein(n)", "Veik(ur)", "Fjarverandi", " "};
 		for (int i = 0; i < data.length; i++) {
 			AttendanceMark mark = markHome.create();
 			mark.setMark(data[i]);
@@ -42,6 +42,7 @@ public class AttendanceMarkBMPBean extends GenericEntity implements com.idega.bl
 	public static String getColumnNameMarkID() { return "CAL_MARK_ID"; }
 	public static String getColumnNameMark() { return "CAL_MARK"; }
 	public static String getColumnNameMarkDescription() { return "CAL_MARK_DESCRIPTION"; }
+	
 	
 	public String getEntityName() {
 		return getEntityTableName();

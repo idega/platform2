@@ -24,7 +24,13 @@ public class AttendanceEntityHomeImpl extends com.idega.data.IDOFactory implemen
  	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
  	Object id = ((AttendanceEntityBMPBean)entity).ejbFindAttendanceByUserIDandTimestamp(userID,stamp);
  	this.idoCheckInPooledEntity(entity);
- 	return (AttendanceEntity) super.findByPrimaryKeyIDO(id);//getEntityCollectionForPrimaryKeys(ids);
+ 	return (AttendanceEntity) super.findByPrimaryKeyIDO(id);//getEntityCollectionForPrimaryKeys(ids); 	
+ }
+ public AttendanceEntity findAttendanceByUserIDandEntryID(int userID, int entryID) throws javax.ejb.FinderException{
+ 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+ 	Object id = ((AttendanceEntityBMPBean)entity).ejbFindAttendanceByUserIDandEntryID(userID,entryID);
+ 	this.idoCheckInPooledEntity(entity);
+ 	return (AttendanceEntity) super.findByPrimaryKeyIDO(id);//getEntityCollectionForPrimaryKeys(ids); 	
  	
  }
  public Collection findAttendancesByLedgerID(int ledgerID) throws javax.ejb.FinderException {

@@ -25,6 +25,7 @@ public class AttendanceEntityBMPBean extends GenericEntity implements com.idega.
 		addAttribute(getColumnNameUserID(), "UserID",true,true,Integer.class);
 		addAttribute(getColumnNameAttendanceDate(),"Attendance date",true,true,Timestamp.class);
 		addAttribute(getColumnNameAttendanceMark(),"Attendance mark",true,true,String.class);
+		addAttribute(getColumnNameEntryID(),"EntryID",true,true,Integer.class);
 	}
 	
 	public static String getEntityTableName() { return "CAL_ATTENDANCE"; }
@@ -33,6 +34,7 @@ public class AttendanceEntityBMPBean extends GenericEntity implements com.idega.
 	public static String getColumnNameUserID() { return com.idega.user.data.UserBMPBean.getColumnNameUserID(); }
 	public static String getColumnNameAttendanceDate() { return "CAL_ATTENDANCE_DATE"; }
 	public static String getColumnNameAttendanceMark() { return "CAL_ATTENDANCE_MARK"; }
+	public static String getColumnNameEntryID() { return com.idega.block.cal.data.CalendarEntryBMPBean.getColumnNameEntryID(); }
 	
 	public String getEntityName() {
 		return getEntityTableName();
@@ -41,6 +43,9 @@ public class AttendanceEntityBMPBean extends GenericEntity implements com.idega.
 	//GET
 	public int getAttendanceID() {
 		return getIntColumnValue(getColumnNameAttendanceID());
+	}
+	public int getEntryID() {
+		return getIntColumnValue(getColumnNameEntryID());
 	}
 	public int getLedgerID() {
 		return getIntColumnValue(getColumnNameLedgerID());
@@ -57,6 +62,9 @@ public class AttendanceEntityBMPBean extends GenericEntity implements com.idega.
 	//SET
 	public void setAttendanceID(int id) {
 		setColumn(getColumnNameAttendanceID(),id);
+	}
+	public void setEntryID(int entryID) {
+		setColumn(getColumnNameEntryID(),entryID);
 	}
 	public void setLedgerID(int id) {
 		setColumn(getColumnNameLedgerID(),id);
@@ -78,8 +86,18 @@ public class AttendanceEntityBMPBean extends GenericEntity implements com.idega.
 		query.append(getColumnNameAttendanceDate());
 		query.appendEqualSign();
 		query.append(stamp);
+		return super.idoFindOnePKByQuery(query);		
+	}
+	public Object ejbFindAttendanceByUserIDandEntryID(int userID,int entryID) throws FinderException{
+		Integer uid = new Integer(userID);
+		Integer eid = new Integer(entryID);
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEqualsQuoted(getColumnNameUserID(),uid.toString());
+		query.appendAnd();
+		query.append(getColumnNameEntryID());
+		query.appendEqualSign();
+		query.append(eid.toString());
 		return super.idoFindOnePKByQuery(query);
-		
 	}
 	public Collection ejbFindAttendancesByLedgerID(int ledgerID) throws FinderException {
 		IDOQuery query = idoQueryGetSelect();
