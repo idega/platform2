@@ -22,9 +22,16 @@ public class Group extends com.idega.data.genericentity.Group {
 		super(id);
 	}
 
+      public void initializeAttributes(){
+          super.initializeAttributes();
+          addManyToManyRelationShip("com.idega.projects.golf.entity.Union","union_group");
+      }
+
         public static String getClassName(){
           return "com.idega.project.golf.entity.Group";
         }
+
+
 
 
 

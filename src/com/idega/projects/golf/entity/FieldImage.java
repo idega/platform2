@@ -18,7 +18,8 @@ public class FieldImage extends GolfEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("field_id", "Völlur", true, true, "java.lang.Integer");
-		addAttribute("image_id", "Mynd", true, true, "java.lang.Integer");
+		//addAttribute("image_id", "Mynd", true, true, "java.lang.Integer");
+                      addAttribute("image_id","Image",false,false,"java.lang.Integer","one-to-many","com.idega.jmodule.image.data.ImageEntity");
 	}
 
 	public String getEntityName(){

@@ -27,7 +27,7 @@ public class TournamentTournamentGroup extends GolfEntity{
 		addAttribute("tournament_group_id","Hópur",false,false,"java.lang.Integer","many-to-one","com.idega.projects.golf.entity.TournamentGroup");
                 addAttribute("registration_fee","Gjald",true,true,"java.lang.Integer");
                 addAttribute("tee_color_id","Litur teigs",true,true,"java.lang.Integer","many-to-one","com.idega.projects.golf.entity.TeeColor");
-	}
+          }
 
 	public String getEntityName(){
 		return "tournament_tournament_group";

@@ -60,6 +60,9 @@ public class Tournament extends GolfEntity{
                 addAttribute("max_handicap","Hámarksforgjöf karla",true,true,"java.lang.Float");
                 // added 27.4.2001
                 addAttribute("max_female_handicap","Hámarksforgjöf kvenna",true,true,"java.lang.Float");
+
+                //addManyToManyRelationShip("com.idega.projects.golf.entity.TournamentGroup","tournament_tournament_group");
+
         }
 
 	public void setDefaultValues(){

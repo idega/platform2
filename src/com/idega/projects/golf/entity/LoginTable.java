@@ -64,4 +64,24 @@ public class LoginTable extends GolfEntity{
                 setColumn("member_id", new Integer(memberId));
         }
 
+        public void insertStartData()throws Exception{
+          Member member = new Member();
+          member.setFirstName("Administrator");
+          member.insert();
+
+          Group group = new Group();
+          group.setName("administrator");
+          group.setGroupType("accesscontrol");
+          group.setDescription("Default IdegaWeb Golf Administrator");
+          group.insert();
+
+          member.addTo(group);
+
+          LoginTable table = new LoginTable();
+          table.setMemberId(member.getID());
+          table.setUserLogin("admin");
+          table.setUserPassword("golf4u");
+          table.insert();
+        }
+
 }

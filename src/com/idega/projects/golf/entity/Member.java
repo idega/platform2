@@ -28,9 +28,15 @@ public class Member extends com.idega.data.genericentity.Member {
     addAttribute("gender","Kyn",true,true,"java.lang.String");
     addAttribute(getSocialSecurityNumberColumnName(),"Kennitala",true,true,"java.lang.String");
     addAttribute("email","Tölvupóstur",true,true,"java.lang.String");
-    addAttribute("image_id","MyndNúmer",false,false,"java.lang.Integer","one-to-many","com.idega.projects.golf.entity.ImageEntity");
+    addAttribute("image_id","Mynd",false,false,"java.lang.Integer","one-to-many","com.idega.jmodule.image.data.ImageEntity");
     addAttribute("workplace","Vinnustaður",true,true,"java.lang.String");
     addAttribute("job","Starfsheiti",true,true,"java.lang.String");
+
+    addManyToManyRelationShip("com.idega.projects.golf.entity.Address","member_address");
+    addManyToManyRelationShip("com.idega.projects.golf.entity.Card","member_card");
+    addManyToManyRelationShip("com.idega.projects.golf.entity.Phone","member_phone");
+    addManyToManyRelationShip("com.idega.projects.golf.entity.Group","group_member");
+
 
   }
 
@@ -479,5 +485,10 @@ public class Member extends com.idega.data.genericentity.Member {
   public static com.idega.data.genericentity.Member getStaticInstance(){
     return (com.idega.data.genericentity.Member)getStaticInstance("com.idega.projects.golf.entity.Member");
   }
+
+    public void insertStartData(){
+      //Administrator member created in LoginTable
+
+    }
 
 }

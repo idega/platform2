@@ -44,6 +44,8 @@ public class TournamentGroup extends Group{
 
 		//setVisible("group_type",false);
 		//setVisible("extra_info",false);
+
+                  //addManyToManyRelationShip("com.idega.projects.golf.entity.Tournament","tournament_tournament_group");
 	}
 
 	public String getEntityName(){

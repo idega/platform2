@@ -16,10 +16,10 @@ public class ImageEntity extends GenericEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("content_type","Image type",true,true,"java.lang.String");
-		//addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
+		addAttribute("image_value","The image Value",false,false,"com.idega.data.BlobWrapper");
                 addAttribute("image_name","Image name",true,true,"java.lang.String");
-		addAttribute("date_added","Date added or changed",true,true,"java.sql.Timestamp");
-		addAttribute("from_file","Image from file?",true,true,"java.lang.Boolean");
+                addAttribute("date_added","Date added or changed",true,true,"java.sql.Timestamp");
+	        addAttribute("from_file","Image from file?",true,true,"java.lang.Boolean");
                 addAttribute("image_text","Image text",true,true,"java.lang.String");
                 addAttribute("image_link","Image link",true,true,"java.lang.String");
                 addAttribute("image_link_owner","Which has a link the image/text/both/none?",true,true,"java.lang.String");
@@ -27,13 +27,17 @@ public class ImageEntity extends GenericEntity{
                 addAttribute("width","Image width",true,true,"java.lang.String");
                 addAttribute("height","Image height",true,true,"java.lang.String");
                 addAttribute("parent_id","Image parent",true,true,"java.lang.Integer");
-
-
-
 	}
 
-	public String getEntityName(){
-          return "image";
+    public void insertStartData()throws Exception{
+      ImageEntity image = new ImageEntity();
+      image.setName("Default no image");
+      image.insert();
+
+    }
+
+          public String getEntityName(){
+            return "image";
 	}
 
          public void setDefaultValues() {
@@ -86,7 +90,16 @@ public class ImageEntity extends GenericEntity{
         }
 
         public void setFromFile(String fromFile){
-          setColumn("from_file", fromFile);
+          if(fromFile.toUpperCase().equals("Y")){
+            setFromFile( true);
+          }
+          else{
+            setFromFile( false);
+          }
+        }
+
+        public void setFromFile(boolean fromFile){
+            setColumn("from_file", fromFile);
         }
 
 	public Timestamp getDateAdded(){

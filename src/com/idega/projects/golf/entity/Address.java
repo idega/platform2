@@ -25,7 +25,12 @@ public class Address extends GolfEntity{
 		addAttribute("address_type", "Tegund heimisfangs", true, true, "java.lang.String");
 		addAttribute("extra_info", "Auka uppl.", true, true, "java.lang.String");
 		addAttribute("country_id", "Land id", true, true, "java.lang.Integer","one-to-many","com.idega.projects.golf.entity.Country");
-	}
+
+                      addManyToManyRelationShip("com.idega.projects.golf.entity.Member","member_address");
+                      addManyToManyRelationShip("com.idega.projects.golf.entity.Union","union_address");
+
+
+        }
 
         public void setDefaultValues(){
           this.setStreetNumber("");

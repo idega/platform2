@@ -106,7 +106,9 @@ public class LoginBusiness implements IWEventListener{
         //throw (IdegaWebException)ex.fillInStackTrace();
     }
 
-  } private void registerLogin(ModuleInfo modinfo, String kennitala) throws IOException {
+  }
+
+  private void registerLogin(ModuleInfo modinfo, String kennitala) throws IOException {
             modinfo.getResponse().sendRedirect("/createlogin.jsp?kt="+kennitala);
     }
 
@@ -163,7 +165,8 @@ public class LoginBusiness implements IWEventListener{
 
 		for (int i = 0 ; i < login_table.length ; i++ ) {
                   if (login_table[i].getUserPassword().equals(password)) {
-                    modinfo.getSession().setAttribute("member_login",new Member(login_table[i].getMemberId())   );
+                    //modinfo.getSession().setAttribute("member_login",new Member(login_table[i].getMemberId())   );
+                    modinfo.setSessionAttribute(UserAttributeParameter,new Member(login_table[i].getMemberId()) );
                     returner = true;
                   }
 		}

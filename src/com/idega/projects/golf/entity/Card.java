@@ -21,10 +21,12 @@ public class Card extends GolfEntity{
 		//addAttribute("number_of_holes","Fjöldi hola",true,true,"java.lang.Integer");
 		addAttribute("card_number","Kortanúmer",true,true,"java.lang.String");
 		addAttribute("name","Korthafi",true,true,"java.lang.String");
-                addAttribute("social_security_number","Kennitala",true,true,"java.lang.String");
+                      addAttribute("social_security_number","Kennitala",true,true,"java.lang.String");
 		addAttribute("expire_date","Gildir til 00/00",true,true,"java.sql.Date");
 		addAttribute("card_company","Kortafyrirtæki",true,true,"java.lang.String");
 		addAttribute("card_type","Tegund korts",true,true,"java.lang.String");
+
+                      addManyToManyRelationShip("com.idega.projects.golf.entity.Member","member_card");
 	}
 
 	public String getEntityName(){

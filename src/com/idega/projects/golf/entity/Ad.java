@@ -8,9 +8,9 @@ import java.sql.*;
 public class Ad extends GolfEntity{
 
 	public Ad(){
-		super();	
+		super();
 	}
-	
+
 	public Ad(int id)throws SQLException{
 		super(id);
 	}
@@ -28,6 +28,8 @@ public class Ad extends GolfEntity{
 		addAttribute("url","url",true,true,"java.lang.String");
 		addAttribute("max_hits", "max_hits", true, true, "java.lang.Integer");
 
+                      addManyToManyRelationShip("com.idega.projects.golf.entity.AdCatagory","ad_ad_catagory");
+
 	}
 
 	public String getEntityName(){
@@ -37,14 +39,14 @@ public class Ad extends GolfEntity{
 	public String getUrl() {
 		return getStringColumnValue("url");
 	}
-	
+
 	public void setUrl(String url) {
 		setColumn("url",url);
 	}
-	
+
 	public int getImageID(boolean addImpression) {
 
-		if (addImpression) {	
+		if (addImpression) {
 			try {
 				setImpressions(getImpressions() +1);
 				this.update();
@@ -56,7 +58,7 @@ public class Ad extends GolfEntity{
 
 		return getIntColumnValue("image_id");
 	}
-		
+
 	public void delete()throws SQLException {
 		Connection Conn = getConnection();
 		try{
@@ -71,8 +73,8 @@ public class Ad extends GolfEntity{
 		finally{
 			freeConnection(Conn);
 		}
-		
-		
+
+
 	}
 
 	public int getImageID() {
@@ -86,11 +88,11 @@ public class Ad extends GolfEntity{
 	public Date getBeginDate() {
 		return (Date) getColumnValue("begin_date");
 	}
-	
+
 	public void setBeginDate(Date begin_date) {
 		setColumn("begin_date", begin_date);
 	}
-	
+
 	public Date getEndDate() {
 		return (Date) getColumnValue("end_date");
 	}
@@ -98,7 +100,7 @@ public class Ad extends GolfEntity{
 	public void setEndDate(Date end_date) {
 		setColumn("end_date", end_date);
 	}
-	
+
 	public int getMaxImpressions() {
 		return getIntColumnValue("max_impressions");
 	}
@@ -131,13 +133,13 @@ public class Ad extends GolfEntity{
 		setColumn("max_hits",new Integer(max_hits));
 	}
 
-	
+
 	public String getBannerName() {
 		return getStringColumnValue("banner_name");
 	}
 
 	public void setBannerName(String banner_name) {
-		setColumn("banner_name",banner_name);		
+		setColumn("banner_name",banner_name);
 	}
 
 

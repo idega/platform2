@@ -17,11 +17,14 @@ public class Phone extends GenericEntity{
 	}
 
 	public void initializeAttributes(){
-		addAttribute(getIDColumnName());
-		addAttribute("number","Númer",true,true,"java.lang.String");
-		addAttribute("country_id","Land",true,true,"java.lang.Integer","one-to-many","com.idega.projects.golf.entity.Country");
-		addAttribute("phone_type","Tegund",true,true,"java.lang.String");
+                addAttribute(getIDColumnName());
+                addAttribute("number","Númer",true,true,"java.lang.String");
+                addAttribute("country_id","Land",true,true,"java.lang.Integer","one-to-many","com.idega.projects.golf.entity.Country");
+                addAttribute("phone_type","Tegund",true,true,"java.lang.String");
                 addAttribute("phone_type_id","Tegund",true,true,"java.lang.Integer");
+
+                addManyToManyRelationShip("com.idega.projects.golf.entity.Member","member_phone");
+                addManyToManyRelationShip("com.idega.projects.golf.entity.Union","union_phone");
 
 	}
 

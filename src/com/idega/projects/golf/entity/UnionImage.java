@@ -18,7 +18,9 @@ public class UnionImage extends GolfEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("union_id", "Klúbbur", true, true, "java.lang.Integer");
-		addAttribute("image_id", "Mynd", true, true, "java.lang.Integer");
+		//addAttribute("image_id", "Mynd", true, true, "java.lang.Integer");
+                      addAttribute("image_id","Image",false,false,"java.lang.Integer","one-to-many","com.idega.jmodule.image.data.ImageEntity");
+
 	}
 
 	public String getEntityName(){

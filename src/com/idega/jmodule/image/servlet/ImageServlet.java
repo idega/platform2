@@ -52,28 +52,33 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
     myInputStream = RS.getBinaryStream("image_value");
     }
 
+
+
     response.setContentType(contentType);
 
-    DataOutputStream output = new DataOutputStream( response.getOutputStream() );
+    if(myInputStream!=null){
+      DataOutputStream output = new DataOutputStream( response.getOutputStream() );
 
-    byte	buffer[]= new byte[1024];
-    int		noRead	= 0;
+      byte	buffer[]= new byte[1024];
+      int		noRead	= 0;
 
-    noRead	= myInputStream.read( buffer, 0, 1024 );
 
-    //Write out the file to the browser
-    while ( noRead != -1 ){
-            output.write( buffer, 0, noRead );
-            noRead = myInputStream.read( buffer, 0, 1024 );
+      noRead	= myInputStream.read( buffer, 0, 1024 );
 
+      //Write out the file to the browser
+      while ( noRead != -1 ){
+              output.write( buffer, 0, noRead );
+              noRead = myInputStream.read( buffer, 0, 1024 );
+
+      }
+
+
+    //  if(cacheImagesToFiles) cacheImageToFile(imageId);
+
+   //   output.flush();
+      output.close();
+      myInputStream.close();
     }
-
-
-  //  if(cacheImagesToFiles) cacheImageToFile(imageId);
-
- //   output.flush();
-    output.close();
-    myInputStream.close();
 
     Stmt.close();
     RS.close();

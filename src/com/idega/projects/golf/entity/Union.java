@@ -33,6 +33,11 @@ public class Union extends GenericEntity implements idegaTreeNode{
 		addAttribute("abbrevation", "Skammstöfun", true, true, "java.lang.String");
 		addAttribute("number", "Númer", true, true, "java.lang.Integer");
 		addAttribute("union_type", "Tegund", true, true, "java.lang.String");
+
+                      addManyToManyRelationShip("com.idega.projects.golf.entity.Address","union_address");
+                      addManyToManyRelationShip("com.idega.projects.golf.entity.Phone","union_phone");
+                      addManyToManyRelationShip("com.idega.projects.golf.entity.Group","union_group");
+
 	}
 
 	public String getEntityName(){
@@ -589,6 +594,12 @@ public List getTournamentGroupsRecursive(){
       return (Union)Union.getStaticInstance(sClassName);
     }
 
+
+    public void insertStartData()throws Exception{
+      Union union = new Union();
+      union.setName("No Union");
+      union.insert();
+    }
 
 
 
