@@ -213,6 +213,7 @@ public class CampusApprover extends KeyEditor{
       T.add(headerText(iwrb.getLocalizedString("residence","Residence")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("po","PO")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("phone","Residence phone")),col++,row);
+      T.add(headerText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("v","V")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("p","P")),col++,row);
       int lastcol = 1;
@@ -225,11 +226,12 @@ public class CampusApprover extends KeyEditor{
         T.add(formatText(String.valueOf(i+1)),col++,row);
         String Name = A.getFirstName()+" "+A.getMiddleName()+" "+A.getLastName();
         T.add(formatText(Name),col++,row);
-        T.add(formatText(A.getSSN()),col++,row);
-        T.add(formatText(A.getLegalResidence()),col++,row);
-        T.add(formatText(A.getResidence()),col++,row);
-        T.add(formatText(A.getPO()),col++,row);
-        T.add(formatText(A.getResidencePhone()),col++,row);
+        T.add(formatText(A.getSSN()!=null?A.getSSN():""),col++,row);
+        T.add(formatText(A.getLegalResidence()!=null?A.getLegalResidence():""),col++,row);
+        T.add(formatText(A.getResidence()!=null?A.getResidence():""),col++,row);
+        T.add(formatText(A.getPO()!=null?A.getPO():""),col++,row);
+        T.add(formatText(A.getResidencePhone()!=null?A.getResidencePhone():""),col++,row);
+        T.add(formatText(A.getMobilePhone()!=null?A.getMobilePhone():""),col++,row);
         T.add((getPDFLink(printImage,A.getID())),col++,row);
         T.add( getApplicationLink(viewImage,a.getID()),col,row);
         if(lastcol < col)
@@ -432,6 +434,7 @@ public class CampusApprover extends KeyEditor{
       T.add(boldText(iwrb.getLocalizedString("residence","Residence")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("po","PO")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("email","Email")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
@@ -447,7 +450,7 @@ public class CampusApprover extends KeyEditor{
       T.add(formatText(eApplicant.getResidence()),col,row++);
       T.add(formatText(eApplicant.getPO()),col,row++);
       T.add(formatText(eApplicant.getResidencePhone()),col,row++);
-      idegaCalendar iC = new idegaCalendar();
+      T.add(formatText(eApplicant.getMobilePhone()),col,row++);
       T.add(formatText(eCampusApplication.getEmail()),col,row++);
       T.add(formatText(eCampusApplication.getFaculty()),col,row++);
       T.add(formatText(eCampusApplication.getStudyTrack()),col,row++);
@@ -485,6 +488,7 @@ public class CampusApprover extends KeyEditor{
       T.add(boldText(iwrb.getLocalizedString("residence","Residence")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("po","PO")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("email","Email")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
       T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
@@ -495,23 +499,25 @@ public class CampusApprover extends KeyEditor{
       col = 2;
       row = 2;
 
-      TextInput tiFullName = new TextInput("ti_full",eApplicant.getFullName());
+      TextInput tiFullName = new TextInput("ti_full",eApplicant.getFullName()!=null?eApplicant.getFullName():"");
       setStyle(tiFullName);
-      TextInput tiSsn = new TextInput("ti_ssn",eApplicant.getSSN());
+      TextInput tiSsn = new TextInput("ti_ssn",eApplicant.getSSN()!=null?eApplicant.getSSN():"");
       setStyle(tiSsn);
-      TextInput tiLegRes = new TextInput("ti_ssn",eApplicant.getLegalResidence());
+      TextInput tiLegRes = new TextInput("ti_legres",eApplicant.getLegalResidence()!=null?eApplicant.getLegalResidence():"");
       setStyle(tiLegRes);
-      TextInput tiRes = new TextInput("ti_legres",eApplicant.getResidence());
+      TextInput tiRes = new TextInput("ti_res",eApplicant.getResidence()!=null?eApplicant.getResidence():"");
       setStyle(tiRes);
-      TextInput tiPo = new TextInput("ti_po",eApplicant.getPO());
+      TextInput tiPo = new TextInput("ti_po",eApplicant.getPO()!=null?eApplicant.getPO():"");
       setStyle(tiPo);
-      TextInput tiResPho = new TextInput("ti_respho",eApplicant.getResidencePhone());
+      TextInput tiResPho = new TextInput("ti_respho",eApplicant.getResidencePhone()!=null?eApplicant.getResidencePhone():"");
       setStyle(tiResPho);
-      TextInput tiEmail = new TextInput("ti_email",eCampusApplication.getEmail());
+      TextInput tiMobPho = new TextInput("ti_mobpho",eApplicant.getMobilePhone()!=null?eApplicant.getMobilePhone():"");
+      setStyle(tiMobPho);
+      TextInput tiEmail = new TextInput("ti_email",eCampusApplication.getEmail()!=null?eCampusApplication.getEmail():"");
       setStyle(tiEmail);
-      TextInput tiFac = new TextInput("ti_facult",eCampusApplication.getFaculty());
+      TextInput tiFac = new TextInput("ti_facult",eCampusApplication.getFaculty()!=null?eCampusApplication.getFaculty():"");
       setStyle(tiFac);
-      TextInput tiTrack= new TextInput("ti_track",eCampusApplication.getStudyTrack());
+      TextInput tiTrack= new TextInput("ti_track",eCampusApplication.getStudyTrack()!=null?eCampusApplication.getStudyTrack():"");
       setStyle(tiTrack);
       TextInput tiIncome= new TextInput("ti_income",eCampusApplication.getIncome().toString());
       setStyle(tiIncome);
@@ -523,6 +529,7 @@ public class CampusApprover extends KeyEditor{
       T.add(tiRes,col,row++);
       T.add(tiPo,col,row++);
       T.add(tiResPho,col,row++);
+      T.add(tiMobPho,col,row++);
       T.add(tiEmail,col,row++);
       T.add(tiFac,col,row++);
       T.add(tiTrack,col,row++);
@@ -562,10 +569,13 @@ public class CampusApprover extends KeyEditor{
 
   public void updateApplicant(ModuleInfo modinfo,Applicant eApplicant,CampusApplication eCampusApplication){
     String sFullName =modinfo.getParameter("ti_full");
-    String sLegRes = modinfo.getParameter("ti_ssn");
-    String sRes = modinfo.getParameter("ti_legres");
+    String sSsn = modinfo.getParameter("ti_ssn");
+    String sLegRes = modinfo.getParameter("ti_legres");
+    String sRes = modinfo.getParameter("ti_res");
     String sPo = modinfo.getParameter("ti_po");
     String sResPho = modinfo.getParameter("ti_respho");
+    String sMobPho = modinfo.getParameter("ti_mobpho");
+    System.err.print(sMobPho);
     String sEmail = modinfo.getParameter("ti_email");
     String sFac = modinfo.getParameter("ti_facult");
     String sTrack= modinfo.getParameter("ti_track");
@@ -596,8 +606,10 @@ public class CampusApprover extends KeyEditor{
     eCampusApplication.setFaculty(sFac);
     eCampusApplication.setStudyTrack(sTrack);
     eApplicant.setLegalResidence(sLegRes);
+    eApplicant.setSSN(sSsn);
     eApplicant.setPO(sPo);
     eApplicant.setResidencePhone(sResPho);
+    eApplicant.setMobilePhone(sMobPho);
     eApplicant.setResidence(sRes);
     if(sFullName!= null){
       StringTokenizer st = new StringTokenizer(sFullName);
@@ -617,8 +629,6 @@ public class CampusApprover extends KeyEditor{
         eApplicant.setLastName(mid);
       }
     }
-
-
   }
 
   public ModuleObject getViewSpouse(CampusApplication eCampusApplication,IWResourceBundle iwrb){

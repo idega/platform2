@@ -18,6 +18,7 @@ import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.*;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idegaweb.campus.application.*;
@@ -38,7 +39,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CampusAllocator extends KeyEditor{
+public class CampusAllocator extends ModuleObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -55,9 +56,24 @@ public class CampusAllocator extends KeyEditor{
   private Parameter pTypeId = null,pComplexId = null;
   private SystemProperties SysProps = null;
   private String bottomThickness = "8";
+  protected boolean isAdmin = false;
+  protected String MiddleColor,LightColor,DarkColor,WhiteColor,TextFontColor,HeaderFontColor,IndexFontColor;
+  protected int fontSize = 2;
+  protected boolean fontBold = false;
+  protected String styleAttribute = "font-size: 8pt";
 
   public CampusAllocator(String sHeader) {
-    super(sHeader);
+    this();
+  }
+
+  public CampusAllocator() {
+    LightColor = "#D7DADF";
+    MiddleColor = "#9fA9B3";
+    DarkColor = "#27334B";
+    WhiteColor = "#FFFFFF";
+    TextFontColor = "#000000";
+    HeaderFontColor = DarkColor;
+    IndexFontColor = "#000000";
   }
 
   public void setDayBuffer(int buffer){
@@ -277,6 +293,17 @@ public class CampusAllocator extends KeyEditor{
 
   private ModuleObject getWaitingList(int aprtTypeId,int cmplxId){
     Table Frame = new Table();
+    int row = 1;
+    Frame.add(boldText(iwrb.getLocalizedString("number","Number")),1,row);
+    Frame.add(boldText(iwrb.getLocalizedString("allocate","Allocate")),2,row);
+    Frame.add(boldText(iwrb.getLocalizedString("name","Name")),3,row);
+    Frame.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),4,row);
+    Frame.add(boldText(iwrb.getLocalizedString("residence","Residence")),5,row);
+    Frame.add(boldText(iwrb.getLocalizedString("legal_residence","Legal residence")),6,row);
+    Frame.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),7,row);
+    Frame.add(boldText(iwrb.getLocalizedString("residence_phone","Residence phone")),8,row);
+    Frame.add(boldText(iwrb.getLocalizedString("application","Application")),9,row);
+
     List L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();
     boolean bcontracts = false;
@@ -284,18 +311,22 @@ public class CampusAllocator extends KeyEditor{
       bcontracts = true;
     if(L!=null){
       int len = L.size();
-      int row = 1;
+      row = 2;
       for (int i = 0; i < len; i++) {
         WaitingList WL = (WaitingList)L.get(i);
         try{
           Applicant A = new Applicant(WL.getApplicantId().intValue());
           Frame.add(formatText(WL.getOrder().intValue()),1,row);
-           Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),2,row);
           Frame.add(formatText(A.getFullName()),3,row);
-
-
+          Frame.add(formatText(A.getSSN()),4,row);
+          Frame.add(formatText(A.getResidence()),5,row);
+          Frame.add(formatText(A.getLegalResidence()),6,row);
+          Frame.add(formatText(A.getResidencePhone()),8,row);
+          Frame.add(formatText(A.getMobilePhone()),7,row);
+          Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),9,row);
           if(bcontracts && HT.containsKey(new Integer(A.getID()))){
             Contract C = (Contract) HT.get(new Integer(A.getID()));
+
             //Frame.add(formatText(getApartmentString(C)),4,i+1);
             Frame.add(getChangeLink(C.getID()),2,row);
           }
@@ -311,6 +342,18 @@ public class CampusAllocator extends KeyEditor{
     }
     else
       Frame.add(formatText(iwrb.getLocalizedString("not_to_allocate","Nothing to Allocate!")));
+    Frame.setCellpadding(2);
+    Frame.setCellspacing(1);
+    Frame.setHorizontalZebraColored(lightBlue,WhiteColor);
+    Frame.setRowColor(1,blueColor);
+    Frame.setRowColor(row,redColor);
+    Frame.mergeCells(1,row,9,row);
+    Frame.setWidth(1,"15");
+    Frame.add(formatText(" "),1,row);
+    Frame.setHeight(row,bottomThickness);
+    Frame.setWidth("100%");
+    Frame.setColumnAlignment(2,"center");
+    Frame.setColumnAlignment(9,"center");
     return Frame;
   }
 
@@ -711,7 +754,7 @@ public class CampusAllocator extends KeyEditor{
   private Text boldText(String text){
     Text T = new Text(text);
     T.setBold();
-    T.setFontColor(DarkColor);
+    T.setFontColor(WhiteColor);
     T.setFontSize(this.fontSize);
     return T;
   }
@@ -764,6 +807,30 @@ public class CampusAllocator extends KeyEditor{
     return sb.toString();
   }
 
-
+public Text formatText(String s){
+    Text T= new Text();
+    if(s!=null){
+      T= new Text(s);
+      if(this.fontBold)
+      T.setBold();
+      T.setFontColor(this.TextFontColor);
+      T.setFontSize(this.fontSize);
+    }
+    return T;
+  }
+  public Text formatText(int i){
+    return formatText(String.valueOf(i));
+  }
+  protected void setStyle(InterfaceObject O){
+    O.setAttribute("style",this.styleAttribute);
+  }
+  public void main(ModuleInfo modinfo){
+    try{
+    //isStaff = com.idega.core.accesscontrol.business.AccessControl
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
+  }
 
 }
