@@ -257,9 +257,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public int getNumberOfApplicationsByProvider(int providerID) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
+
+			return getChildCareApplicationHome().getNumberOfApplications(providerID, caseStatus);
+		} catch (IDOException ie) {
+			return 0;
+		} catch (RemoteException re) {
+			return 0;
+		}
+	}
+	
+	public int getNumberOfApplicationsByProvider(int providerID, int sortBy, Date fromDate, Date toDate) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
+
+			return getChildCareApplicationHome().getNumberOfApplications(providerID, caseStatus, sortBy, fromDate, toDate);
+		} catch (IDOException ie) {
+			return 0;
+		} catch (RemoteException re) {
+			return 0;
+		}
+	}
+	
 	public int getNumberInQueue(ChildCareApplication application) {
 		try {
-			return getChildCareApplicationHome().getPositionInQueue(application.getQueueOrder(), application.getProviderId());
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
+			return getChildCareApplicationHome().getPositionInQueue(application.getQueueOrder(), application.getProviderId(), caseStatus);
 		}
 		catch (RemoteException e) {
 			return -1;
@@ -287,6 +314,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
 
 			return home.findAllCasesByProviderAndNotInStatus(providerId, caseStatus, numberOfEntries, startingEntry);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		} catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry, int sortBy, Date fromDate, Date toDate) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
+
+			return home.findAllCasesByProviderAndNotInStatus(providerId, sortBy, fromDate, toDate, caseStatus, numberOfEntries, startingEntry);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return null;

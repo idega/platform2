@@ -1,37 +1,22 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import is.idega.idegaweb.member.business.NoCustodianFound;
-
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.school.data.SchoolChoice;
 
-import com.idega.block.school.data.School;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.core.data.Address;
 import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
-import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
-import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
-import com.idega.util.PersonalIDFormatter;
-import com.idega.util.URLUtil;
 
 /**
  * @author laddi

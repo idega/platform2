@@ -10,6 +10,7 @@ import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author laddi
@@ -19,11 +20,17 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected static final String PARAMETER_CHILD_CARE_ID = "cc_c_c_id";
 	protected static final String PARAMETER_USER_ID = "cc_user_id";
 	protected static final String PARAMETER_APPLICATION_ID = "cc_application_id";
+	protected static final String PARAMETER_FROM = "cc_from";
+	protected static final String PARAMETER_TO = "cc_to";
+	protected static final String PARAMETER_SORT_BY = "cc_sort_by";
 
 	protected int _childcareID = -1;
 	protected int _userID = -1;
 	protected int _childID = -1;
 	protected int _applicationID = -1;
+	protected int _sortBy = -1;
+	protected IWTimestamp fromTimestamp;
+	protected IWTimestamp toTimestamp;
 
 	public CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneUserBusiness.class);
@@ -144,6 +151,78 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public void setChildID(int childID) {
 		_childID = childID;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getParameterFrom() {
+		return PARAMETER_FROM;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getParameterSortBy() {
+		return PARAMETER_SORT_BY;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getParameterTo() {
+		return PARAMETER_TO;
+	}
+
+	/**
+	 * @return int
+	 */
+	public int getSortBy() {
+		return _sortBy;
+	}
+
+	/**
+	 * @return IWTimestamp
+	 */
+	public IWTimestamp getFromTimestamp() {
+		return fromTimestamp;
+	}
+
+	/**
+	 * @return IWTimestamp
+	 */
+	public IWTimestamp getToTimestamp() {
+		return toTimestamp;
+	}
+
+	/**
+	 * Sets the sortBy.
+	 * @param sortBy The sortBy to set
+	 */
+	public void setSortBy(int sortBy) {
+		_sortBy = sortBy;
+	}
+
+	/**
+	 * Sets the fromTimestamp.
+	 * @param fromTimestamp The fromTimestamp to set
+	 */
+	public void setFromTimestamp(String timestamp) {
+		if (timestamp != null)
+			this.fromTimestamp = new IWTimestamp(timestamp);
+		else
+			this.fromTimestamp = null;
+	}
+
+	/**
+	 * Sets the toTimestamp.
+	 * @param toTimestamp The toTimestamp to set
+	 */
+	public void setToTimestamp(String timestamp) {
+		if (timestamp != null)
+			this.toTimestamp = new IWTimestamp(timestamp);
+		else
+			this.toTimestamp = null;
 	}
 
 }

@@ -58,6 +58,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String APPLICATION_STATUS = "application_status";
 	protected final static String HAS_PRIORITY = "has_priority";
 	
+	protected final int SORT_DATE_OF_BIRTH = 1;
+	protected final int SORT_QUEUE_DATE = 2;
+	protected final int SORT_PLACEMENT_DATE = 3;
+	
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
 	 */
@@ -265,7 +269,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public void setApplicationStatus(char status) {
-		setColumn(MESSAGE,String.valueOf(status));	
+		setColumn(APPLICATION_STATUS,String.valueOf(status));	
 	}
 	
 	public void setHasPriority(boolean hasPriority) {
@@ -331,6 +335,34 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
+	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, int sortBy, Date fromDate, Date toDate, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		if (sortBy == SORT_DATE_OF_BIRTH)
+			sql.append(", ic_user u");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		if (caseStatus != null)
+			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		if (sortBy == SORT_DATE_OF_BIRTH) {
+			sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+			sql.appendAnd().append("u.date_of_birth").appendGreaterThanOrEqualsSign().append(fromDate);
+			sql.appendAnd().append("u.date_of_birth").appendLessThanOrEqualsSign().append(toDate);
+		}
+		else if (sortBy == SORT_QUEUE_DATE) {
+			sql.appendAnd().append("c."+QUEUE_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
+			sql.appendAnd().append("c."+QUEUE_DATE).appendLessThanOrEqualsSign().append(toDate);
+		}
+		else if (sortBy == SORT_PLACEMENT_DATE) {
+			sql.appendAnd().append("c."+FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
+			sql.appendAnd().append("c."+FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
+		}
+		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER);
+
+		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+	}	
+	
 	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
@@ -380,6 +412,17 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return super.idoFindPKsByQuery(sql);
 	}
 	
+	public Collection ejbFindApplicationByChildAndNotInStatus(int childID, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendOrderBy(CHOICE_NUMBER);
+		return super.idoFindPKsByQuery(sql);
+	}
+	
 	public Collection ejbFindApplicationsByProviderAndDate(int providerID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID,providerID);
@@ -404,15 +447,47 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
-		sql.appendAnd().append("p.case_status").appendInArray(caseStatus);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 
 		return idoGetNumberOfRecords(sql);
 	}
 	
-	public int ejbHomeGetPositionInQueue(int queueOrder, int providerID) throws IDOException {
+	public int ejbHomeGetNumberOfApplications(int providerID, String[] caseStatus, int sortBy, Date fromDate, Date toDate) throws IDOException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectCountFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		if (sortBy == SORT_DATE_OF_BIRTH)
+			sql.append(", ic_user u");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		if (caseStatus != null)
+			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		if (sortBy == SORT_DATE_OF_BIRTH) {
+			sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+			sql.appendAnd().append("u.date_of_birth").appendGreaterThanOrEqualsSign().append(fromDate);
+			sql.appendAnd().append("u.date_of_birth").appendLessThanOrEqualsSign().append(toDate);
+		}
+		else if (sortBy == SORT_QUEUE_DATE) {
+			sql.appendAnd().append("c."+QUEUE_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
+			sql.appendAnd().append("c."+QUEUE_DATE).appendLessThanOrEqualsSign().append(toDate);
+		}
+		else if (sortBy == SORT_PLACEMENT_DATE) {
+			sql.appendAnd().append("c."+FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
+			sql.appendAnd().append("c."+FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
+		}
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+
+		return idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetPositionInQueue(int queueOrder, int providerID, String[] caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
 		return idoGetNumberOfRecords(sql);
 	}

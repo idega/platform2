@@ -7,8 +7,11 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.core.data.Address;
+import com.idega.core.data.Email;
+import com.idega.core.data.Phone;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.GenericButton;
@@ -28,17 +31,19 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		Table table = new Table(1,5);
+		Table table = new Table(1,7);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
 		table.setHeight(2, 12);
-		table.setHeight(4, 12);
+		table.setHeight(4, 6);
+		table.setHeight(6, 12);
 		
 		if (getSession().getChildID() != -1 && getSession().getApplicationID() != -1) {
 			table.add(getInformationTable(iwc), 1, 1);
 			table.add(getApplicationTable(iwc), 1, 3);
-			table.add(getButtonTable(true), 1, 5);
+			table.add(getLegendTable(), 1, 5);
+			table.add(getButtonTable(true), 1, 7);
 		}
 		else {
 			table.add(this.getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
@@ -71,24 +76,44 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			
 			if (address != null) {
 				table.add(getLocalizedSmallHeader("child_care.address","Address"), 1, row);
-				table.add(getSmallText(address.getStreetAddress()), 3, row++);
+				table.add(getSmallText(address.getStreetAddress()), 3, row);
+				if (address.getPostalAddress() != null)
+					table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+				row++;
 			}
 			
 			table.setHeight(row++, 12);
 			
 			if (parents != null) {
 				table.add(getLocalizedSmallHeader("child_care.parents","Parents"), 1, row);
+				Phone phone;
+				Email email;
+
 				Iterator iter = parents.iterator();
 				while (iter.hasNext()) {
 					User parent = (User) iter.next();
 					address = getBusiness().getUserBusiness().getUsersMainAddress(parent);
+					email = getBusiness().getUserBusiness().getEmail(parent);
+					phone = getBusiness().getUserBusiness().getHomePhone(parent);
 
 					table.add(getSmallText(parent.getNameLastFirst(true)), 3, row);
 					table.add(getSmallText(" - "), 3, row);
 					table.add(getSmallText(PersonalIDFormatter.format(parent.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 			
 					if (address != null) {
-						table.add(getSmallText(address.getStreetAddress()), 3, row++);
+						table.add(getSmallText(address.getStreetAddress()), 3, row);
+						if (address.getPostalAddress() != null)
+							table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+						row++;
+					}
+					if (phone != null && phone.getNumber() != null) {
+						table.add(getSmallText(localize("child_care.phone","Phone")+": "), 3, row);
+						table.add(getSmallText(phone.getNumber()), 3, row++);
+					}
+					if (email != null && email.getEmailAddress() != null) {
+						Link link = getSmallLink(email.getEmailAddress());
+						link.setURL("mailto:"+email.getEmailAddress(), false, false);
+						table.add(link, 3, row++);
 					}
 			
 					table.setHeight(row++, 12);
@@ -141,10 +166,21 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			else
 				isCurrentProvider = false;
 				
-			if (row % 2 == 0)
-				table.setRowColor(row, getZebraColor1());
-			else
-				table.setRowColor(row, getZebraColor2());
+			if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
+				table.setRowColor(row, ACCEPTED_COLOR);
+			}
+			else if (application.getApplicationStatus() == getBusiness().getStatusParentsAccept()) {
+				table.setRowColor(row, PARENTS_ACCEPTED_COLOR);
+			}
+			else if (application.getApplicationStatus() == getBusiness().getStatusContract()) {
+				table.setRowColor(row, CONTRACT_COLOR);
+			}
+			else {
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+			}
 
 			table.add(getText(application.getProvider().getSchoolName(), isCurrentProvider), column++, row);
 			table.add(getText(getBusiness().getLocalizedCaseStatusDescription(application.getCaseStatus(), iwc.getCurrentLocale()), isCurrentProvider), column++, row);
@@ -154,6 +190,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			table.add(getText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isCurrentProvider), column++, row);
 			table.add(getText(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isCurrentProvider), column++, row++);
 		}
+		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		return table;
 	}

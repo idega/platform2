@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.event;
 import java.rmi.RemoteException;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
+import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IWEventListener;
@@ -14,30 +15,37 @@ import com.idega.presentation.IWContext;
  */
 public class ChildCareEventListener implements IWEventListener {
 
-	private int _childCareID = -1;
-	private int _childID = -1;
-	private int _applicationID = -1;
-	
 	/**
 	 * @see com.idega.business.IWEventListener#actionPerformed(com.idega.presentation.IWContext)
 	 */
 	public boolean actionPerformed(IWContext iwc) throws IWException {
 		try {
 			ChildCareSession session = getChildCareSession(iwc);
-			_childCareID = session.getChildCareID();	
 	
 			if (iwc.isParameterSet(session.getParameterChildCareID()))
-				_childCareID = Integer.parseInt(iwc.getParameter(session.getParameterChildCareID()));
+				session.setChildCareID(Integer.parseInt(iwc.getParameter(session.getParameterChildCareID())));
 
 			if (iwc.isParameterSet(session.getParameterUserID()))
-				_childID = Integer.parseInt(iwc.getParameter(session.getParameterUserID()));
+				session.setChildID(Integer.parseInt(iwc.getParameter(session.getParameterUserID())));
 
 			if (iwc.isParameterSet(session.getParameterApplicationID()))
-				_applicationID = Integer.parseInt(iwc.getParameter(session.getParameterApplicationID()));
+				session.setApplicationID(Integer.parseInt(iwc.getParameter(session.getParameterApplicationID())));
 
-			session.setChildCareID(_childCareID);
-			session.setChildID(_childID);
-			session.setApplicationID(_applicationID);
+			if (iwc.isParameterSet(session.getParameterFrom()))
+				session.setFromTimestamp(iwc.getParameter(session.getParameterFrom()));
+
+			if (iwc.isParameterSet(session.getParameterTo()))
+				session.setToTimestamp(iwc.getParameter(session.getParameterTo()));
+
+			if (iwc.isParameterSet(session.getParameterSortBy()))
+				session.setSortBy(Integer.parseInt(iwc.getParameter(session.getParameterSortBy())));
+				
+			if (session.getSortBy() == ChildCareAdmin.SORT_ALL) {
+				session.setSortBy(-1);
+				session.setFromTimestamp(null);
+				session.setToTimestamp(null);
+			}
+				
 			return true;
 		}
 		catch (RemoteException re) {
