@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.22 2003/10/10 00:51:40 kjell Exp $
+ * $Id: ProviderEditor.java,v 1.23 2003/10/15 11:25:18 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -63,10 +63,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/10 00:51:40 $ by $Author: kjell $
+ * Last modified: $Date: 2003/10/15 11:25:18 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -101,6 +101,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String PARAMETER_COUNTRY_ID = PP + "country_id";
 	private final static String PARAMETER_CENTRALIZED_ADMINISTRATION = PP + "centralized_administration";
 	private final static String PARAMETER_PAYMENT_BY_INVOICE = PP + "payment_by_invoice";
+	private final static String PARAMETER_STATE_SUBSIDY_GRANT = PP + "state_subsidy_grant";
 	private final static String PARAMETER_POSTGIRO = PP + "postgiro";
 	private final static String PARAMETER_BANKGIRO = PP + "bankgiro";
 	private final static String PARAMETER_STATISTICS_TYPE = PP + "statistics_type";
@@ -134,6 +135,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_COUNTRY = KP + "country";
 	private final static String KEY_CENTRALIZED_ADMINISTRATION = KP + "key_centralized_administration";
 	private final static String KEY_PAYMENT_BY_INVOICE = KP + "payment_by_invoice";
+	private final static String KEY_STATE_SUBSIDY_GRANT = KP + "state_subsidy_grant";
 	private final static String KEY_POSTGIRO = KP + "postgiro";
 	private final static String KEY_BANKGIRO = KP + "bankgiro";
 	private final static String KEY_STATISTICS_TYPE = KP + "statistics_type";
@@ -221,7 +223,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */	
 	private void handleNewAction(IWContext iwc) {
 		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", "-1", 
-				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
+				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
 	}
 
 	/*
@@ -278,6 +280,7 @@ public class ProviderEditor extends AccountingBlock {
 					"" + school.getCountryId(),
 					school.getCentralizedAdministration() ? "true" : "",
 					provider.getPaymentByInvoice() ? "true" : "",
+					provider.getStateSubsidyGrant() ? "true" : "",
 					provider.getPostgiro(),
 					provider.getBankgiro(),
 					provider.getStatisticsType(),
@@ -330,6 +333,7 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_COUNTRY_ID),
 					getParameter(iwc, PARAMETER_CENTRALIZED_ADMINISTRATION),
 					getParameter(iwc, PARAMETER_PAYMENT_BY_INVOICE),
+					getParameter(iwc, PARAMETER_STATE_SUBSIDY_GRANT),
 					getParameter(iwc, PARAMETER_POSTGIRO),
 					getParameter(iwc, PARAMETER_BANKGIRO),
 					getParameter(iwc, PARAMETER_STATISTICS_TYPE),
@@ -366,6 +370,7 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_COUNTRY_ID),
 					getParameter(iwc, PARAMETER_CENTRALIZED_ADMINISTRATION),
 					getParameter(iwc, PARAMETER_PAYMENT_BY_INVOICE),
+					getParameter(iwc, PARAMETER_STATE_SUBSIDY_GRANT),
 					getParameter(iwc, PARAMETER_POSTGIRO),
 					getParameter(iwc, PARAMETER_BANKGIRO),
 					getParameter(iwc, PARAMETER_STATISTICS_TYPE),
@@ -538,6 +543,7 @@ public class ProviderEditor extends AccountingBlock {
 			String countryId,
 			String centralizedAdministration,
 			String paymentByInvoice,
+			String stateSubsidyGrant,
 			String postgiro,
 			String bankgiro,
 			String statisticsType,
@@ -651,6 +657,8 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(getSmallHeader(localize(KEY_STATISTICS_TYPE, "Statistics type")), 1, row);
 		table.mergeCells(2, row, 4, row);
 		table.add(getStatisticsTypeDropdownMenu(PARAMETER_STATISTICS_TYPE, statisticsType), 2, row++);
+		table.mergeCells(2, row, 4, row);
+		table.add(getCheckBoxTable(PARAMETER_STATE_SUBSIDY_GRANT, stateSubsidyGrant, KEY_STATE_SUBSIDY_GRANT, "State subsidy grant"), 2, row++);
 		table.add(getSmallHeader(localize(KEY_TERMINATION_DATE, "Termination date")), 1, row);
 		table.mergeCells(2, row, 4, row);
 		DateInput di = new DateInput(PARAMETER_TERMINATION_DATE);

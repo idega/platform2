@@ -13,6 +13,7 @@ public interface ProviderAccountingProperties extends com.idega.data.IDOEntity
  public int getProviderTypeId();
  public com.idega.block.school.data.School getSchool();
  public int getSchoolId();
+ public boolean getStateSubsidyGrant();
  public java.lang.String getStatisticsType();
  public void initializeAttributes();
  public void setBankgiro(java.lang.String p0);
@@ -22,5 +23,6 @@ public interface ProviderAccountingProperties extends com.idega.data.IDOEntity
  public void setPostgiro(java.lang.String p0);
  public void setProviderTypeId(int p0);
  public void setSchoolId(int p0);
+ public void setStateSubsidyGrant(boolean p0);
  public void setStatisticsType(java.lang.String p0);
 }

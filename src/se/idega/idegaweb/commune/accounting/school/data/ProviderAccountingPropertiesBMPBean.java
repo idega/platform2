@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.3 2003/09/22 12:06:57 anders Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.4 2003/10/15 11:25:18 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2003/09/22 12:06:57 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/15 11:25:18 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 
@@ -31,6 +31,7 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 	private static final String COLUMN_PROVIDER_TYPE_ID = "provider_type_id";
 	private static final String COLUMN_STATISTICS_TYPE = "statistics_type";
 	private static final String COLUMN_PAYMENT_BY_INVOICE = "payment_by_invoice";
+	private static final String COLUMN_STATE_SUBSIDY_GRANT = "state_subsidy_grant";
 	private static final String COLUMN_POSTGIRO = "postgiro";
 	private static final String COLUMN_BANKGIRO = "bankgiro";
 	private static final String COLUMN_OWN_POSTING = "own_posting";
@@ -62,6 +63,7 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		addAttribute(COLUMN_STATISTICS_TYPE, "Provider statistics type (foreign key)", true, true, 
 				String.class, "many-to-one", ProviderStatisticsType.class);
 		addAttribute(COLUMN_PAYMENT_BY_INVOICE, "Invoice yes/no", true, true, Boolean.class);
+		addAttribute(COLUMN_STATE_SUBSIDY_GRANT, "State subsidy grant yes/no", true, true, Boolean.class);
 		addAttribute(COLUMN_POSTGIRO, "Postgiro", true, true, String.class);
 		addAttribute(COLUMN_BANKGIRO, "Bankgiro", true, true, String.class);
 		addAttribute(COLUMN_OWN_POSTING, "Own posting string", true, true, String.class, 1000);
@@ -90,6 +92,10 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 
 	public boolean getPaymentByInvoice() {
 		return ((Boolean) getColumnValue(COLUMN_PAYMENT_BY_INVOICE)).booleanValue();
+	}
+
+	public boolean getStateSubsidyGrant() {
+		return ((Boolean) getColumnValue(COLUMN_STATE_SUBSIDY_GRANT)).booleanValue();
 	}
 
 	public String getPostgiro() {
@@ -122,6 +128,10 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 
 	public void setPaymentByInvoice(boolean b) { 
 		setColumn(COLUMN_PAYMENT_BY_INVOICE, b); 
+	}
+
+	public void setStateSubsidyGrant(boolean b) { 
+		setColumn(COLUMN_STATE_SUBSIDY_GRANT, b); 
 	}
 
 	public void setPostgiro(String postgiro) { 
