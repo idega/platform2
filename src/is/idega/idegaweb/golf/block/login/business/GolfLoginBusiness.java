@@ -261,6 +261,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
         modinfo.removeSessionAttribute(ACCESSCONTROL_GROUP_PARAMETER);
         modinfo.removeSessionAttribute(CURRENT_GOLF_UNION_ID_ATTRIBUTE);
         modinfo.removeSessionAttribute(CLUB_ADMIN_GOLF_UNION_ID_ATTRIBUTE);
+        modinfo.removeSessionAttribute("member_id");
     }
 
     public void logOut(IWContext modinfo) throws Exception {

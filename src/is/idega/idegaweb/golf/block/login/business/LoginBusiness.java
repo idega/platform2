@@ -210,6 +210,7 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 		if (modinfo.getSessionAttribute(UserAccessAttributeParameter) != null) {
 			modinfo.removeSessionAttribute(UserAccessAttributeParameter);
 		}
+		modinfo.removeSessionAttribute("member_id");
 	}
 
 	public static boolean registerMemberLogin(int member_id, String user_login, String user_pass_one, String user_pass_two) throws SQLException {
