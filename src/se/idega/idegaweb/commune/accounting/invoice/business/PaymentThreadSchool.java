@@ -19,6 +19,8 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness;
@@ -34,8 +36,6 @@ import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
-import com.idega.block.school.data.SchoolManagementType;
-import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.business.IBOLookup;
@@ -82,6 +82,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 	protected void contracts(){
 		Collection regulationArray = new ArrayList();
 		ArrayList conditions = new ArrayList();
+//		conditions = new ArrayList();
+//		Iterator schoolTypeIter = school.getSchoolTypes().iterator();
+//		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,));
 //		boolean first;
 //		ExportDataMapping categoryPosting;
 		PostingDetail postingDetail;
@@ -90,11 +93,13 @@ public abstract class PaymentThreadSchool extends BillingThread{
 			//Set the category parameter to ElementarySchool
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
+			ProviderTypeHome providerTypeHome = (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
+			ProviderType providerType = (ProviderType)providerTypeHome.findPrivateType();
+			
+			int privateType = ((Integer)providerType.getPrimaryKey()).intValue();
 
 			RegulationsBusiness regBus = getRegulationsBusiness();
 			
-			String privateManagementType = (String)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
-
 			Iterator schoolIter = getSchoolHome().findAllInHomeCommuneByCategory(category).iterator();
 			//Go through all elementary schools
 			while(schoolIter.hasNext()){
@@ -105,32 +110,17 @@ public abstract class PaymentThreadSchool extends BillingThread{
 					//Only look at those not "payment by invoice"
 					//Check if it is private or in Nacka
 					if(school.getCommune().getIsDefault()||
-							(school.getManagementType().getPrimaryKey().equals(privateManagementType)&&
+							(provider.getProviderTypeId() == privateType &&
 							!provider.getPaymentByInvoice())){
 						
-						System.out.println("Getting regulations for school "+school.getName()+" with "
-								+category.getCategory()
-								+"  PaymentFlowConstant.OUT "+PaymentFlowConstant.OUT
-								+"  "+currentDate.toString()
-								+"  RuleTypeConstant.DERIVED "+RuleTypeConstant.DERIVED
-								+"  condition "+conditions.size()+"  "+conditions.toString()
-								);
-						//Get all the rules for this contract
-						regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-							category.getCategory(),//The ID that selects barnomsorg in the regulation
-							PaymentFlowConstant.OUT, 		//The payment flow is out
-							currentDate,					//Current date to select the correct date range
-							RuleTypeConstant.DERIVED,		//The conditiontype
-							conditions						//The conditions that need to fulfilled
-							);
-
-						System.out.println("Got "+regulationArray.size()+" regulations for "+school.getName());
-//						first = true;
-						Iterator regulationIter = regulationArray.iterator();
-						while(regulationIter.hasNext())
-						{
-							Regulation regulation = (Regulation)regulationIter.next();
-							//NOTE this should be changed to use ...ByDateRange when changed to date range rathre than day by day calculation
+						
+						//*****************
+						
+							
+							
+							//*****
+							
+							
 							
 							Iterator schoolClassMemberIter = getSchoolClassMemberHome().findBySchool(((Integer)school.getPrimaryKey()).intValue(),-1,category.getCategory(),currentDate).iterator();
 //							Iterator contractIter = getChildCareContractHome().findValidContractByProvider(((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
@@ -140,7 +130,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 //							ChildCareContract contract = null;
 							while(schoolClassMemberIter.hasNext()){
 								SchoolClassMember schoolClassMember = null;
-								try{
+//								try{
 									System.out.println("looking at school class memeber");
 
 //									ChildCareApplication application = (ChildCareApplication) applicationIter.next();
@@ -149,6 +139,43 @@ public abstract class PaymentThreadSchool extends BillingThread{
 									
 									System.out.println("Found "+schoolClassMember.getStudent().getName());
 									if( getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent()) ){
+										
+										
+										//****
+
+										conditions = new ArrayList();
+										conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey()));
+
+										System.out.println("Getting regulations for school "+school.getName()+" with "
+												+category.getCategory()
+												+"  PaymentFlowConstant.OUT "+PaymentFlowConstant.OUT
+												+"  "+currentDate.toString()
+												+"  RuleTypeConstant.DERIVED "+RuleTypeConstant.DERIVED
+												+"  condition "+conditions.size()+"  "+conditions.toString()
+												);
+										//Get all the rules for this contract
+										regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+											category.getCategory(),//The ID that selects barnomsorg in the regulation
+											PaymentFlowConstant.OUT, 		//The payment flow is out
+											currentDate,					//Current date to select the correct date range
+											RuleTypeConstant.DERIVED,		//The conditiontype
+											conditions						//The conditions that need to fulfilled
+											);
+
+										System.out.println("Got "+regulationArray.size()+" regulations for "+school.getName());
+//										first = true;
+										Iterator regulationIter = regulationArray.iterator();
+										while(regulationIter.hasNext())
+										{
+											Regulation regulation = (Regulation)regulationIter.next();
+											//NOTE this should be changed to use ...ByDateRange when changed to date range rathre than day by day calculation
+											
+											
+											//**********
+							
+
+
+
 //									if( isInDefaultCommune(schoolClassMember.getStudent()) ){
 //										address.getCommuneID();
 //										Header created in the createPaymentRecord()
@@ -184,6 +211,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
 										RegulationSpecType regSpecType = getRegulationSpecTypeHome().
 												findByRegulationSpecType(postingDetail.getRuleSpecType());
+
 										System.out.println("Getting posting string for"+
 												" category: "+category.getCategory()+
 												"  Type "+schoolClassMember.getSchoolType()+
@@ -284,15 +312,15 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											}
 										}
 									}
-								}catch(NullPointerException e){
+/*								}catch(NullPointerException e){
 									e.printStackTrace();
 									if(schoolClassMember != null){
 										createNewErrorMessage(schoolClassMember.getStudent().getName(),"invoice.Child with no school type for school placement");
 									}else{
-										createNewErrorMessage("invoice.ContractCreation","invoice.nullpointer");
+										createNewErrorMessage("invoice.PaymentSchool","invoice.nullpointer");
 									}
 								}
-							}
+*/							}
 						}
 					}
 				} catch (RemoteException e) {
@@ -311,19 +339,19 @@ public abstract class PaymentThreadSchool extends BillingThread{
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.ContractCreation","invoice.DBError");
+			createNewErrorMessage("invoice.PaymentSchool","invoice.DBError");
 		} catch (FinderException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.ContractCreation","invoice.CouldNotFindSchoolCategory");
+			createNewErrorMessage("invoice.PaymentSchool","invoice.CouldNotFindSchoolCategory");
 		} catch (EJBException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.ContractCreation","invoice.CouldNotFindHomeCommune");
+			createNewErrorMessage("invoice.PaymentSchool","invoice.CouldNotFindHomeCommune");
 		} catch (CreateException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.ContractCreation","invoice.CouldNotFindHomeCommune");
+			createNewErrorMessage("invoice.PaymentSchool","invoice.CouldNotFindHomeCommune");
 		} catch (Exception e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.ContractCreation","invoice.Exception");
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Exception");
 		}
 	}
 	
