@@ -298,6 +298,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 					IWTimestamp fromDate = new IWTimestamp(dates[i]);
 					if (canChangeApplication(appl, providerID, fromDate)) {
+						if (appl.getProviderId() != providerID) {
+							removeFromQueue(appl, user);
+							appl = getChildCareApplicationHome().create();
+						}
 						if (user != null)
 							appl.setOwner(user);
 						appl.setProviderId(providerID);
