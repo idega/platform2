@@ -69,11 +69,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/04 12:52:44 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/04 13:41:04 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.92 $
+ * @version $Revision: 1.93 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -89,7 +89,8 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			ACTION_SHOW_RECORD = 3,
 			ACTION_SAVE_RECORD = 4,
 			ACTION_REMOVE_RECORD = 5,
-			ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 6;
+			ACTION_REMOVE_PAYMENT = 6,
+			ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 7;
 	
 	private static final NumberFormat integerFormatter
 		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
@@ -149,6 +150,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 					removeRecord (context);
 					break;
 					
+				case ACTION_REMOVE_PAYMENT:
+					removePayment (context);
+					break;
+					
 				case ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF:
 					generateCheckAmountListPdf (context);
 					break;
@@ -194,6 +199,15 @@ public class PaymentRecordMaintenance extends AccountingBlock
 													formTable));
 	}
 
+	private void removePayment (final IWContext context)
+		throws RemoteException, FinderException, RemoveException {
+		// find payment header
+		final PaymentHeader header = getPaymentHeader (context);
+
+		// remove header
+		getInvoiceBusiness (context).removePaymentHeader (header);
+	}
+	
 	private void removeRecord (final IWContext context)
 		throws RemoteException, FinderException, RemoveException {
 		// find payment record
