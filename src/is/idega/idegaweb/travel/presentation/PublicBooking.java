@@ -839,12 +839,9 @@ public class PublicBooking extends Block  {
           }
         }
 
-        debug("Repps 3");
         TourBookingForm tbf = new TourBookingForm(iwc,product);
-        debug("Repps 4");
         int bookingId = tbf.handleInsert(iwc);
-          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-        debug("bookingId = "+bookingId);
+        gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
 
         if (bookingId == TourBookingForm.inquirySent) {
           inquirySent = true;
@@ -854,14 +851,12 @@ public class PublicBooking extends Block  {
             System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
             TPosMerchant merchant = null;
             try {
-//              GeneralBooking gBookTemp = ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
               int productSupplierId = gBooking.getService().getProduct().getSupplierId();
               Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
               merchant = suppTemp.getTPosMerchant();
               System.out.println("TPosMerchant found");
             }catch (Exception e) {
               System.out.println("TPosMerchant NOT found");
-              //e.printStackTrace(System.err);
             }
             if (merchant == null) {
               t = new com.idega.block.tpos.business.TPosClient(iwc);
@@ -944,6 +939,19 @@ public class PublicBooking extends Block  {
           debug("store");
         gBooking.store();
           debug("store ... done");
+        try {
+          debug("commiting");
+          tm.commit();
+        }catch(Exception ex) {
+          debug("commit failed");
+          ex.printStackTrace(System.err);
+          try {
+            tm.rollback();
+          }catch (javax.transaction.SystemException se) {
+            se.printStackTrace(System.err);
+          }
+        }
+
         gBooking = null;
         success = false;
       }catch (Exception e) {
