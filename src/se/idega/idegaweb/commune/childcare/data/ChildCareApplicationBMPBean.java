@@ -312,5 +312,13 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.append(" is null");
 		
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
-	}		
+	}	
+	
+	public Collection ejbFindAllCasesByUserAndStatus(User owner, String caseStatus) throws RemoteException, FinderException {
+		return super.ejbFindAllCasesByUserAndStatus(owner,caseStatus);
+	}
+	
+	public Collection ejbFindAllCasesByStatus(String caseStatus) throws RemoteException, FinderException {
+		return super.ejbFindAllCasesByStatus(caseStatus);
+	}
 }

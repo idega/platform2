@@ -25,8 +25,8 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	private static final String CASE_CODE_KEY = "MBANCHK";
 	private static final String CASE_CODE_DESCRIPTION = "Request for child care check";
 
-	private static final String[] CASE_STATUS_KEYS = { "NYTT", "UBEH", "OMPR", "BVJD" };
-	private static final String[] CASE_STATUS_DESCRIPTIONS = { "New case", "Case open", "Retrial", "Approved" };
+	private static final String[] CASE_STATUS_KEYS = { "NYTT", "UBEH", "OMPR", "BVJD", "CHIN" };
+	private static final String[] CASE_STATUS_DESCRIPTIONS = { "New case", "Case open", "Retrial", "Approved", "Redeemed" };
 
 	private static final String COLUMN_CHILD_CARE_TYPE = "CHILD_CARE_TYPE";
 	private static final String COLUMN_WORK_SITUATION_1 = "WORK_SITUATION_1";

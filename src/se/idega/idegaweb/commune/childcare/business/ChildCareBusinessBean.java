@@ -11,12 +11,12 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import com.idega.block.contract.business.ContractBusiness;
 import com.idega.block.contract.business.ContractWriter;
+import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.data.IDOLookup;
-import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -27,7 +27,6 @@ import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import java.rmi.RemoteException;
@@ -37,7 +36,6 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 /**
@@ -54,30 +52,28 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			t.begin();
 			ChildCareApplication appl = null;
 			ChildCareApplication parent = null;
+			CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
 			
 			IWTimestamp now = new IWTimestamp();
 			for (int i = 0; i < 5; i++) {
 				appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).create();
 				if (user != null)
 					appl.setOwner(user);
-//				appl.setChildrenCareTypeId(type);
 				appl.setProviderId(provider[i]);
 				IWTimestamp fromDate = new IWTimestamp(date[i]);
 				appl.setFromDate(fromDate.getDate());
 				appl.setChildId(childId);
-//				appl.setParentsAgree(agree);
 				appl.setQueueDate(now.getDate());
 				appl.setMethod(1);
 				appl.setChoiceNumber(i+1);
 				appl.setCheckId(checkId);
 				if (i == 0) {
-					appl.setCaseStatus(getCaseStatusOpen());
+					caseBiz.changeCaseStatus(appl,getCaseStatusOpen().getStatus(),user);
 				}
 				else {
-					appl.setCaseStatus(getCaseStatusInactive());
 					appl.setParentCase(parent);					
+					caseBiz.changeCaseStatus(appl,getCaseStatusInactive().getStatus(),user);
 				}
-				appl.store();
 				
 				parent = appl;				
 			}
@@ -216,21 +212,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean rejectApplication(ChildCareApplication application, String subject, String message) {
+	public boolean rejectApplication(ChildCareApplication application, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
-			application.setCaseStatus(getCaseStatusInactive());
+			CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
+//			application.setCaseStatus(getCaseStatusInactive());
 			IWTimestamp now = new IWTimestamp();
 			application.setRejectionDate(now.getDate());
-			application.store();
+//			application.store();
+			caseBiz.changeCaseStatus(application,getCaseStatusInactive().getStatus(),user);
 			
 			if (application.getChildCount() != 0) {
 				Iterator it = application.getChildren();
 				if (it.hasNext()) {
 					Case proc = (Case)it.next();
-					proc.setCaseStatus(getCaseStatusOpen());
-					proc.store();
+//					proc.setCaseStatus(getCaseStatusOpen());
+//					proc.store();
+					caseBiz.changeCaseStatus(proc,getCaseStatusOpen().getStatus(),user);
 					ChildCareApplication child = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(proc.getPrimaryKey());
 					sendMessageToProvider(new Integer(child.getProviderId()),subject,message);
 				}
@@ -253,11 +252,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;	
 	}
 	
-	public boolean rejectApplication(int applicationId, String subject, String message) {
+	public boolean rejectApplication(int applicationId, String subject, String message, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
-			return rejectApplication(appl,subject,message);
+			return rejectApplication(appl,subject,message,user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -269,12 +268,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 	
-	public boolean acceptApplication(ChildCareApplication application, String subject, String message) {
-		TransactionManager t = IdegaTransactionManager.getInstance();
+	public boolean acceptApplication(ChildCareApplication application, String subject, String message, User user) {
+		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
-			application.setCaseStatus(getCaseStatusPreliminary());
-			application.store();
+			CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
+//			application.setCaseStatus(getCaseStatusPreliminary());
+//			application.store();
+			caseBiz.changeCaseStatus(application,getCaseStatusPreliminary().getStatus(),user);
 			
 			MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
 			messageBiz.createUserMessage(application.getOwner(),subject,message);
@@ -296,12 +297,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;	
 	}
 	
-	public boolean acceptApplication(int applicationId, String subject, String message) {
+	public boolean acceptApplication(int applicationId, String subject, String message, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
 
-			return acceptApplication(appl,subject,message);
+			return acceptApplication(appl,subject,message,user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -313,7 +314,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean signApplication(ChildCareApplication application) {
+/*	public boolean signApplication(ChildCareApplication application) {
 		return false;	
 	}
 	
@@ -332,12 +333,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		
 		return false;
-	}	
+	}	*/
 	
 	public Collection getApplicationsByProvider(int providerId) {
 		try {			
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String caseStatus[] = {getCaseStatusOpen().toString(), getCaseStatusPreliminary().toString(), getCaseStatusContract().toString()};
+			String caseStatus[] = {getCaseStatusOpen().getStatus(), getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
 			
 			return home.findAllCasesByProviderStatus(providerId,caseStatus);
 		}
@@ -378,30 +379,31 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}	
 	
-	public boolean assignContractToApplication(int id, int userId) {
-		TransactionManager t = IdegaTransactionManager.getInstance();
+	public boolean assignContractToApplication(int id, User user) {
+		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
 			ChildCareApplication appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(new Integer(id));
+			CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
+
 			/**
 			 * @todo Fix hardcoding of category and add the other parameters to the contract.
 			 */
 			int contractId = ContractBusiness.createContract(2,IWTimestamp.RightNow(),IWTimestamp.RightNow(),"C",null);
 						
-			appl.setContractId(contractId);
-			appl.setCaseStatus(getCaseStatusContract());
-			appl.store();
-
 			Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
 			Font paraFont = new Font(Font.HELVETICA, 10, Font.BOLD);
 			Font nameFont = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
 			Font tagFont = new Font(Font.HELVETICA,9,Font.BOLDITALIC);
 			Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
 
-			int file_id = ContractWriter.writePDF(contractId, appl.getContract().getCategoryId().intValue(), Integer.toString(id), titleFont, paraFont, tagFont, textFont);
+			int file_id = ContractWriter.writePDF(contractId, 2, Integer.toString(id), titleFont, paraFont, tagFont, textFont);
 
 			appl.setContractFileId(file_id);
-			appl.store();
+			appl.setContractId(contractId);
+//			appl.setCaseStatus(getCaseStatusContract());
+			caseBiz.changeCaseStatus(appl,getCaseStatusContract().getStatus(),user);
+//			appl.store();
 
 			t.commit();
 		}
@@ -419,13 +421,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return true;	
 	}
 	
-	public boolean assignContractToApplication(String ids[], int userId) {
+	public boolean assignContractToApplication(String ids[], User user) {
 		boolean done = false;
 		
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
-				done = assignContractToApplication(Integer.parseInt(id),userId);
+				done = assignContractToApplication(Integer.parseInt(id),user);
 				if (!done)
 					return done;	
 			}
@@ -434,14 +436,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return done;	
 	}
 
-	public boolean assignApplication(int id, int userId, String subject, String body) {
-		TransactionManager t = IdegaTransactionManager.getInstance();
+	public boolean assignApplication(int id, User user, String subject, String body) {
+		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
 			ChildCareApplication appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(new Integer(id));
 
-			appl.setCaseStatus(getCaseStatusGranted());
-			appl.store();
+			CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
+			caseBiz.changeCaseStatus(appl,getCaseStatusGranted().getStatus(),user);
+
+//			appl.setCaseStatus(getCaseStatusGranted());
+//			appl.store();
 
 /*			MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
 			SystemArchivationMessage msg = messageBiz.createPrintArchivationMessage(((Integer)appl.getOwner().getPrimaryKey()).intValue(),userId,subject,body,appl.getContractFileId());
@@ -463,13 +468,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return true;	
 	}
 	
-	public boolean assignApplication(String ids[], int userId, String subject, String body) {
+	public boolean assignApplication(String ids[], User user, String subject, String body) {
 		boolean done = false;
 		
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
-				done = assignApplication(Integer.parseInt(id),userId,subject,body);
+				done = assignApplication(Integer.parseInt(id),user,subject,body);
 				if (!done)
 					return done;	
 			}
@@ -477,5 +482,90 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
 		return done;	
 	}
+
+	public Collection getGrantedApplicationsByUser(User owner) {
+		try {			
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			
+			return home.findAllCasesByUserAndStatus(owner,getCaseStatusGranted().getStatus());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}		
+	}
 	
+	public Collection findAllGrantedApplications() {
+		try {			
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			
+			return home.findAllCasesByStatus(getCaseStatusGranted().getStatus());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}		
+	}	
+	
+	public Collection findAllApplicationsWithChecksToRedeem() {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String statusRedeem = getCaseStatusRedeem().getStatus();
+			Collection appl = home.findAllCasesByStatus(getCaseStatusGranted().getStatus());
+			Iterator it = appl.iterator();
+			while (it.hasNext()) {
+				ChildCareApplication application = (ChildCareApplication)it.next();
+				Check check = application.getCheck();
+				if (check.getStatus().equals(statusRedeem))
+					it.remove();
+			}
+			
+			return appl;
+		}
+		catch(Exception e) {		
+			e.printStackTrace();	
+		}
+		
+		return null;	
+	}
+	
+	public ChildCareApplication getApplicationByPrimaryKey(String key) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			
+			return home.findByPrimaryKey(new Integer(key));
+		}
+		catch(Exception e) {		
+			e.printStackTrace();	
+		}
+		
+		return null;			
+	}	
+	
+	public boolean redeemApplication(String applicationId, User performer) {
+		ChildCareApplication appl = getApplicationByPrimaryKey(applicationId);
+		if (appl == null)
+			return false;
+		
+		CaseBusiness caseBiz;
+		try {
+			caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			caseBiz.changeCaseStatus(appl,getCaseStatusRedeem().getStatus(),performer);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			
+			return false;
+		}
+				
+		return true;
+	}
 }

@@ -5,17 +5,18 @@ import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.SchoolType;
 import com.idega.core.data.Address;
 import com.idega.core.data.PostalCode;
-import com.idega.user.Converter;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
-
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
+
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -36,7 +37,6 @@ import javax.ejb.FinderException;
  */
 
 public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness {
-
 	public static final String PROPERTIES_CHILD_CARE = "child_care";
 	public static final String PROPERTY_CHECK_FEE = "check_fee";
 	public static final String PROPERTY_CHECK_AMOUNT = "check_amount";
@@ -48,6 +48,10 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 
 	private CheckHome getCheckHome() throws RemoteException {
 		return (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
+	}
+
+	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
+		return (ChildCareApplicationHome) com.idega.data.IDOLookup.getHome(ChildCareApplication.class);
 	}
 
 	public Check getCheck(int checkId) throws RemoteException {
@@ -324,4 +328,5 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		
 		return null;
 	}
+	
 }

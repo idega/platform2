@@ -90,10 +90,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		if (iwc.getUser() != null)
-			_user = Converter.convertToNewUser(iwc.getUser());
-		else
-			_user = null;
+		_user = iwc.getCurrentUser();
 
 		if (_user != null) {
 			setResourceBundle(getResourceBundle(iwc));
@@ -304,7 +301,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	
 		if (ids != null) {
 			try {
-				return getChildCareBusiness(iwc).assignContractToApplication(ids,iwc.getUserId());
+				return getChildCareBusiness(iwc).assignContractToApplication(ids,iwc.getCurrentUser());
 			}
 			catch (RemoteException e) {
 			}
@@ -320,7 +317,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			String subject = localize(ASSIGN_SUBJECT,"A child has been assigned a spot");
 			String body = localize(ASSIGN_BODY,"Something about the child being allocated a spot...");
 			try {
-				return getChildCareBusiness(iwc).assignApplication(ids,iwc.getUserId(),subject,body);
+				return getChildCareBusiness(iwc).assignApplication(ids,iwc.getCurrentUser(),subject,body);
 			}
 			catch (RemoteException e) {
 			}
@@ -337,7 +334,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					String subject = localize(EMAIL_PROVIDER_SUBJECT,"Child care application");
 					String message = localize(EMAIL_PROVIDER_MESSAGE,"You have received a new childcare application");
 
-					return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),subject,message);
+					return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),subject,message,iwc.getCurrentUser());
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
@@ -364,7 +361,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 						message.append(presentation);	
 					}
 
-					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),subject,message.toString());
+					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),subject,message.toString(),iwc.getCurrentUser());
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
