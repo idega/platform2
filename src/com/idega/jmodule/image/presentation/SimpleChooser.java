@@ -95,7 +95,6 @@ import com.idega.util.idegaTimestamp;
       //Link L = new Link(mo,SimpleUploaderWindow.class);
       L.addParameter("submit","new");
       L.addParameter(sessImageParameterName,sessImageParameter);
-
       L.setTarget(target2);
       return L;
     }

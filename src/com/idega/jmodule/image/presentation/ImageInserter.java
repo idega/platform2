@@ -39,6 +39,7 @@ private boolean hasUseBox = true;
 private boolean selected = false;
 private boolean openInWindow = false;
 private Class windowClass = ImageEditorWindow.class;
+private Image setImage;
 
 private IWBundle iwb;
 private IWResourceBundle iwrb;
@@ -46,6 +47,11 @@ private IWResourceBundle iwrb;
 public ImageInserter(){
   this.imSessionImageName="image_id";
   this.sHiddenInputName = "image_id";
+}
+
+public ImageInserter(Image setImage){
+  this();
+  this.setImage=setImage;
 }
 
 public ImageInserter(int imageId) {
@@ -89,15 +95,17 @@ public ImageInserter(Class WindowToOpen) {
         modinfo.removeSessionAttribute(imSessionImageName);
       }
 
-      Image image;
-        if ( imageId == -1 ) {
-          image = iwrb.getImage("picture.gif",iwrb.getLocalizedString("new_image","New image"),138,90);
+      Image image=setImage;
+        if(image==null){
+          if ( imageId == -1 ) {
+            image = iwrb.getImage("picture.gif",iwrb.getLocalizedString("new_image","New image"),138,90);
+          }
+          else {
+            image = new Image(imageId);
+          }
+          image.setMaxImageWidth(this.maxImageWidth);
+          image.setNoImageLink();
         }
-        else {
-          image = new Image(imageId);
-        }
-        image.setMaxImageWidth(this.maxImageWidth);
-        image.setNoImageLink();
 
       Link imageAdmin = null;
       if(adminURL == null){
@@ -173,7 +181,7 @@ public ImageInserter(Class WindowToOpen) {
 
   public void setImSessionImageName(String imSessionImageName) {
     this.imSessionImageName=imSessionImageName;
-    this.sHiddenInputName = imSessionImageName;
+    this.sHiddenInputName=imSessionImageName;
   }
 
   public String getImSessionImageName() {
