@@ -5,6 +5,7 @@
 package se.idega.idegaweb.commune.printing.business;
 
 import java.util.Locale;
+import java.util.Map;
 
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 
@@ -26,6 +27,7 @@ public class DocumentPrintContext {
 	private PrintMessage msg =null;
 	private User user =null;
 	private IWApplicationContext iwac =null;
+	private Map tagMap = null;
 	
 	public DocumentPrintContext(){
 		
@@ -114,6 +116,20 @@ public class DocumentPrintContext {
 	 */
 	public void setIWApplicationContext(IWApplicationContext iwac) {
 		this.iwac = iwac;
+	}
+
+	/**
+	 * @return Returns the tagMap.
+	 */
+	public Map getTagMap() {
+		return tagMap;
+	}
+
+	/**
+	 * @param tagMap The tagMap to set.
+	 */
+	public void setTagMap(Map tagMap) {
+		this.tagMap = tagMap;
 	}
 
 }
