@@ -477,9 +477,7 @@ public class PKIServlet extends HttpServlet
 
 			LoginBusinessBean lb = new LoginBusinessBean();
 			//TODO Change this implementation to a more graceful usage of IWContext or equivalent
-			IWContext iwc = new IWContext(req, res);
-			iwc.setServletContext(this.getServletContext());
-			//
+			IWContext iwc = new IWContext(req, res,getServletContext());
 
 			lb.logInByPersonalID(iwc, personalID);
 
