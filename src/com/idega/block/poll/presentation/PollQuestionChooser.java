@@ -113,7 +113,6 @@ public PollQuestionChooser(){
 
       Table table = new Table(1,2);
         table.setCellpadding(8);
-        table.setAlignment("center");
         table.setWidth("100%");
 
       table.add(localeText,1,1);

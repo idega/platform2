@@ -132,7 +132,6 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 			Table imageTable = new Table(1, 1);
 			imageTable.setCellpadding(0);
 			imageTable.setCellspacing(0);
-			imageTable.setAlignment(productViewer._imageAlignment);
 			if (productViewer._showThumbnail) {
 				ProductItemThumbnail thumb = new ProductItemThumbnail(_product);
 				if (productViewer._imageWidth != null) {
@@ -143,6 +142,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 					}
 				}
 				imageTable.add(thumb);
+				table.setAlignment(1, row, productViewer._imageAlignment);
 				table.add(imageTable, 1, row);
 			}
 			else {
@@ -158,6 +158,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 					}
 				}
 				imageTable.add(pii);
+				table.setAlignment(1, row, productViewer._imageAlignment);
 				table.add(imageTable, 1, row);
 			}
 		}

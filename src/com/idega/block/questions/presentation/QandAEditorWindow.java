@@ -222,10 +222,10 @@ public class QandAEditorWindow extends IWAdminWindow {
 			SubmitButton close = new SubmitButton(PRM_CLOSE,iwrb.getLocalizedString("close","Close"));
 			Table buttonTable = new Table();
 			buttonTable.setWidth(Table.HUNDRED_PERCENT);
-			buttonTable.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 			buttonTable.setWidth(1,Table.HUNDRED_PERCENT);
 			buttonTable.add(save,2,1);
 			buttonTable.add(close,3,1);
+			table.setAlignment(2, 8, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.add(buttonTable,2,8);
 			// answer part
 			

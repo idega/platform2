@@ -2497,7 +2497,6 @@ public class Timesheet extends Block {
 		headerTable.setAlignment(1, 1, "left");
 		headerTable.setAlignment(2, 1, "center");
 		headerTable.setAlignment(3, 1, "right");
-		headerTable.setAlignment("center");
 		headerTable.add(iwb.getImage("shared/leftcorner.gif", ""), 1, 1);
 		headerTable.add(iwb.getImage("shared/rightcorner.gif", ""), 3, 1);
 		Text nafnPaMoned = new Text(iwrb.getLocalizedString(ACT_USER_PROJECTS, "My projects"));
