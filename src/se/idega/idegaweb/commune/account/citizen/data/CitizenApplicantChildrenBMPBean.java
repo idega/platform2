@@ -1,12 +1,13 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.data.GenericEntity;
+import com.idega.user.data.Gender;
 
 /**
- * Last modified: $Date: 2002/11/15 12:11:16 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/19 13:29:37 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CitizenApplicantChildrenBMPBean extends GenericEntity
     implements CitizenApplicantChildren {
@@ -16,6 +17,7 @@ public class CitizenApplicantChildrenBMPBean extends GenericEntity
 	private static final String COLUMN_FIRST_NAME = "first_name";
 	private static final String COLUMN_LAST_NAME = "last_name";
 	private static final String COLUMN_SSN = "ssn";
+    private final static String COLUMN_GENDER_ID = "gender_id";
 
 	public void initializeAttributes() {
 		addAttribute (getIDColumnName());
@@ -26,6 +28,8 @@ public class CitizenApplicantChildrenBMPBean extends GenericEntity
 		addAttribute (COLUMN_LAST_NAME, "Last Name", true, true, String.class,
                       40);
 		addAttribute (COLUMN_SSN, "SSN", true, true, String.class, 40);
+       	addAttribute (COLUMN_GENDER_ID, "Gender", true, true, Integer.class,
+                      "many-to-one", Gender.class);
 	}
 
 	public String getEntityName() {
@@ -55,6 +59,18 @@ public class CitizenApplicantChildrenBMPBean extends GenericEntity
         return getStringColumnValue (COLUMN_SSN);
     }
 
+    public Integer getGenderId () {
+        Integer genderId = null;
+        try {
+            genderId = getIntegerColumnValue (COLUMN_GENDER_ID);
+        } catch (Exception e) {
+            // nothing
+        }
+
+        return genderId;
+    }
+
+
     public void setApplicationId (final int applicationId) {
         setColumn (COLUMN_APPLICATION_ID, applicationId);
     }
@@ -69,5 +85,9 @@ public class CitizenApplicantChildrenBMPBean extends GenericEntity
 
     public void setSsn (final String ssn) {
         setColumn (COLUMN_SSN, ssn);
+    }
+
+    public void setGenderId (final int genderId) {
+        setColumn (COLUMN_GENDER_ID, genderId);
     }
 }
