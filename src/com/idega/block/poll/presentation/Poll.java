@@ -123,7 +123,7 @@ private idegaTimestamp _date;
 
   private Link getAdminPart(int pollID,boolean newObjInst,boolean newWithAttribute) {
     Link adminLink = new Link(_iwrb.getImage("pollmanager.gif"));
-      adminLink.setWindowToOpen(PollAdminWindow.class);
+      adminLink.setWindowToOpen(PollAdminWindow.class,this.getICObjectInstanceID());
       adminLink.addParameter(PollAdminWindow.prmID,pollID);
       if(newObjInst)
         adminLink.addParameter(PollAdminWindow.prmObjInstId,getICObjectInstanceID());

@@ -168,26 +168,26 @@ public class News extends PresentationObjectContainer implements IWBlock{
 
     if(iCategoryId > 0){
       Link ne = new Link(iwrb.getImage("newseditor.gif"));
-      ne.setWindowToOpen(NewsEditorWindow.class);
+      ne.setWindowToOpen(NewsEditorWindow.class,this.getICObjectInstanceID());
       ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       T.add(ne,1,1);
 
       Link change = new Link(iwrb.getImage("change.gif"));
-      change.setWindowToOpen(NewsEditorWindow.class);
+      change.setWindowToOpen(NewsEditorWindow.class,this.getICObjectInstanceID());
       change.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       change.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
       T.add(change,2,1);
 
       if ( enableDelete ) {
         Link delete = new Link(iwrb.getImage("delete.gif"));
-        delete.setWindowToOpen(NewsEditorWindow.class);
+        delete.setWindowToOpen(NewsEditorWindow.class,this.getICObjectInstanceID());
         delete.addParameter(NewsEditorWindow.prmDelete,iCategoryId);
         T.add(delete,3,1);
       }
     }
     if(newObjInst){
       Link newLink = new Link(iwrb.getImage("new.gif"));
-      newLink.setWindowToOpen(NewsEditorWindow.class);
+      newLink.setWindowToOpen(NewsEditorWindow.class,this.getICObjectInstanceID());
       if(newObjInst)
         newLink.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
 
@@ -325,11 +325,11 @@ public class News extends PresentationObjectContainer implements IWBlock{
   private PresentationObject getNewsAdminPart(NwNews news){
     Table links = new Table(2,1);
       Link newsEdit = new Link(iwrb.getImage("change.gif"));
-      newsEdit.setWindowToOpen(NewsEditorWindow.class);
+      newsEdit.setWindowToOpen(NewsEditorWindow.class,this.getICObjectInstanceID());
       newsEdit.addParameter(NewsEditorWindow.prmNwNewsId,news.getID());
 
       Link newsDelete = new Link(iwrb.getImage("delete.gif"));
-      newsDelete.setWindowToOpen(NewsEditorWindow.class);
+      newsDelete.setWindowToOpen(NewsEditorWindow.class,this.getICObjectInstanceID());
       newsDelete.addParameter(NewsEditorWindow.prmDelete,news.getID());
 
       links.setAlignment(1,1,"left");

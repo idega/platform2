@@ -57,7 +57,7 @@ public PollAdminWindow(){
     /**
      * @todo permission
      */
-    isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    isAdmin = AccessControl.hasEditPermission(this,iwc);
     superAdmin = AccessControl.isAdmin(iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
