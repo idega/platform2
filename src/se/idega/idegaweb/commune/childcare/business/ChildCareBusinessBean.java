@@ -1398,6 +1398,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							}
 							if (!iter.hasNext()) {
 								element.setEndDate(lastContract.getTerminatedDate());
+								element.setSchoolClass(new Integer(placement.getSchoolClassId()));
 								element.store();
 							}
 						}
@@ -1418,6 +1419,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					lastContract.store();
 					getSchoolBusiness().addToSchoolClassMemberLog(newPlacement, newPlacement.getSchoolClass(), new IWTimestamp(newPlacement.getRegisterDate()).getDate(), null, performer);
 				}
+			}
+			
+			try {
+				SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(placement, lastContract.getTerminatedDate() != null ? lastContract.getTerminatedDate() : lastContract.getValidFromDate());
+				if (schoolClassId != -1) {
+					log.setSchoolClass(new Integer(schoolClassId));
+					log.store();
+				}
+			}
+			catch (FinderException fe) {
+				//No log entry found...
 			}
 
 		}
