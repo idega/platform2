@@ -336,6 +336,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   private void syncUserList(Vector userlist){
+    this.removeAll();
    int length = userlist.size();
 
    for (int k = 0; k < length; k++) {
@@ -465,7 +466,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void stop() {
     packetToServlet = new Packet();
     packetToServlet.addProperty(new Property(LOG_OUT,sessionId));
-    cycle();
+    sendPacket(this.getURLConnection());
+
 
     if ( t != null ){
       runThread = false;
