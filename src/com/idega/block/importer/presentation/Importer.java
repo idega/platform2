@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.idega.block.importer.business.ImportBusiness;
-import com.idega.block.importer.data.ImportFile;
 import com.idega.block.importer.data.ImportFileClass;
 import com.idega.block.importer.data.ImportFileRecord;
 import com.idega.block.importer.data.ImportFileRecordHome;
@@ -18,7 +17,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
@@ -26,10 +24,8 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
-import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
+import com.idega.util.IWColor;
 
 /**
  * <p>Title: Importer</p>
@@ -48,7 +44,9 @@ public class Importer extends Block {
   private IWResourceBundle iwrb;
   private Group group = null;
   private String groupId = null;
-
+  private Table frameTable = null;
+  private IWColor headerColor = IWColor.getIWColorFromHex("#A0A0A0");
+  
   private static final String ACTION_PARAMETER = "im_ac"; //action
   private static final String SELECT_FILES = "im_sf"; //select files action
   private static final String IMPORT_FILES = "im_if"; //import files action
@@ -245,14 +243,18 @@ public class Importer extends Block {
 	          	Form form = new Form();
 	          	//name,size,creationdate(uploaddate),modificationdata(importdate),
 	          	//imported(status),reportlink,checkbox
-	          	Table fileTable = new Table(7,fileCount+3);
-	          	fileTable.setWidth(Table.HUNDRED_PERCENT);
+	          	Table fileTable = getFrameTable();
+	          	fileTable.resize(7,fileCount+3);
+	          	
 	          	form.add(fileTable);
 	          	
-	          	fileTable.mergeCells(1,1,5,1);//merge the header
+	          	
 	          	//header
+	          	Text heading = new Text(iwrb.getLocalizedString("importer.select.files.to.import","Importer : Select files to import"));
+	          	heading.setBold();
+	          	
 	          	fileTable.add(new HiddenInput(ACTION_PARAMETER,IMPORT_FILES),1,1); 
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.select.files.to.import","Importer : Select files to import")),1,1);
+	            fileTable.add(heading,1,1);
 	            
 	            fileTable.add(new Text(iwrb.getLocalizedString("importer.filename","File name")),1,2);
 	            fileTable.add(new Text(iwrb.getLocalizedString("importer.filesize","File size")),2,2);
@@ -330,12 +332,16 @@ public class Importer extends Block {
         if( folder.isDirectory() ){
 
           File[] files = folder.listFiles();
-          Table fileTable = new Table(2,files.length+4);
+          Table fileTable = getFrameTable();
+          fileTable.resize(2,files.length+4);
           
           Form form = new Form();
           form.add(fileTable);
 
-          fileTable.add(iwrb.getLocalizedString("importer.select_files","Select files to import."),1,1);
+		  Text headline = new Text(iwrb.getLocalizedString("importer.select_files","Select files to import."));
+		  headline.setBold();
+		  		  
+          fileTable.add(headline,1,1);
           fileTable.add(new HiddenInput(ACTION_PARAMETER,IMPORT_FILES),2,1);
 
           for (int i = 0; i < files.length; i++) {
@@ -409,6 +415,22 @@ public class Importer extends Block {
   	}
   	
   	
+  	private Table getFrameTable(){
+  		if(frameTable==null){
+  			frameTable = new Table(7,3);
+          	frameTable.setWidth(Table.HUNDRED_PERCENT);
+          	frameTable.mergeCells(1,1,7,1);//merge the header
+          	//header color
+          	frameTable.setRowColor(1,headerColor.getHexColorString());
+  		}
+  		
+  		return (Table) frameTable.clone();
+  		
+  	}
   	
+  	public void setHeaderColor(IWColor color){
+  		headerColor = color;	
+  		
+  	}
 
 }
