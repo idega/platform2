@@ -141,6 +141,7 @@ public class AppointmentBooking extends EHealthBlock {
 			table.add(getLocalizedText(prmHeadingCase,"Heading/case"), 1, row++);
 			
 			TextInput textSubject  = (TextInput) getStyledInterface(new TextInput(prmInform));
+			textSubject.setValue(age.getYears());
 			textSubject.setLength(50);
 			textSubject.setStyleClass("lul_text");
 			
