@@ -824,5 +824,12 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	public CreditCardMerchant getCreditCardMerchant() {
 		return ccMerchant;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.creditcard.business.CreditCardClient#supportsDelayedTransactions()
+	 */
+	public boolean supportsDelayedTransactions() {
+		return true;
+	} 
+
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.5 2004/10/07 11:01:04 birna Exp $
+ *  $Id: TPosClient.java,v 1.6 2004/10/14 11:39:44 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -204,7 +204,7 @@ public class TPosClient implements CreditCardClient{
     return (valid);
   }
   public String creditcardAuthorization(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException{
-  		return null;
+  	throw new CreditCardAuthorizationException("Unsupported");
   }
   	
 
@@ -243,8 +243,8 @@ public class TPosClient implements CreditCardClient{
   		System.out.println("Warning : TPosClient is NOT using CVC number");
   		return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3", parentDataPK);
   }
-  public void finishTransaction(String properties) throws TPosException{
-  	
+  public void finishTransaction(String properties) throws CreditCardAuthorizationException {
+  	throw new CreditCardAuthorizationException("Unsupported");
   }
   /**
    * Gets the bundleIdentifier attribute of the TPosClient object
@@ -541,5 +541,12 @@ public class TPosClient implements CreditCardClient{
 	 */
 	public CreditCardMerchant getCreditCardMerchant() {
 		return _merchant;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.creditcard.business.CreditCardClient#supportsDelayedTransactions()
+	 */
+	public boolean supportsDelayedTransactions() {
+		return false;
 	} 
 }

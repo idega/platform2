@@ -12,7 +12,6 @@ import com.idega.block.creditcard.data.CreditCardMerchant;
  */
 public interface CreditCardClient {
 
-//	public void setupClient(String merchant, String location, String user, String password, String terminal, String extraInfo);
 	public Collection getValidCardTypes();
 	public CreditCardMerchant getCreditCardMerchant();
 	
@@ -48,6 +47,33 @@ public interface CreditCardClient {
 	 */
 	public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException;
 	
+	
+	/**
+	 * Checks for authorization without actually doing the transaction
+	 * @param nameOnCard Name on card
+	 * @param cardnumber Card number, should only contain numbers. Example 1234123412341234
+	 * @param monthExpires Expire date MONTH, example 06
+	 * @param yearExpires	 Expire date YEAR, example 05
+	 * @param ccVerifyNumber	Creditcard verification code, example 123
+	 * @param amount	Amount
+	 * @param currency	Currency
+	 * @param referenceNumber	Reference number
+	 * @return Returns properties needed to finishTransaction later
+	 * @throws CreditCardAuthorizationException
+	 */
 	public String creditcardAuthorization(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException;
+	
+	
+	/**
+	 * Finishes a previously authorized transaciton
+	 * @param properties Properties gotten from creditcardAuthorization
+	 * @throws CreditCardAuthorizationException
+	 */
 	public void finishTransaction(String properties) throws CreditCardAuthorizationException;	
+	
+	/**
+	 * Checks if the client supports delayed transaction. (creditcardAuthorization() and finishTransaction)
+	 * @return
+	 */
+	public boolean supportsDelayedTransactions();
 }
