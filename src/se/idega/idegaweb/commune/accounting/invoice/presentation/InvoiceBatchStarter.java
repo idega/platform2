@@ -72,34 +72,38 @@ public class InvoiceBatchStarter extends AccountingBlock{
 				if(exportDataMapping.getAccountSettlementType() ==
 					exportBusiness.getAccountSettlementTypeSpecificDate())
 				{
-					readDateInput = new DateInput(PARAM_READ_DATE,true);
+					readDateInput = (DateInput) iwc.getApplicationAttribute(PARAM_READ_DATE);
+					if (readDateInput == null){
+						readDateInput = new DateInput(PARAM_READ_DATE,true);
+						readDateInput.setToCurrentDate();	
+						readDateInput.setToDisplayDayLast(true);
+						int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+						readDateInput.setYearRange(currentYear - 1, currentYear + 1);
+						
+					}
 					String date = iwc.getParameter(PARAM_READ_DATE);
 					if(date!=null){
 						readDateInput.setDate(new IWTimestamp(date).getDate());
-					}else{
-						readDateInput.setToCurrentDate();
 					}
-					readDateInput.setToDisplayDayLast(true);
-	
-					int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
-					readDateInput.setYearRange(currentYear - 1, currentYear + 1);
+					
 					InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
 					form.add(readDate);
 				}else{
-					monthInput = new DateInput(PARAM_MONTH,true);
+					monthInput = (DateInput) iwc.getApplicationAttribute(PARAM_MONTH);
+					if (monthInput == null) {
+						monthInput = new DateInput(PARAM_MONTH,true);
+						monthInput.setToCurrentDate();	
+						monthInput.setToShowDay(false);
+						int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+						monthInput.setYearRange(currentYear - 1, currentYear + 1);							
+						iwc.setApplicationAttribute(PARAM_MONTH, monthInput);						
+					}
 					String date = iwc.getParameter(PARAM_MONTH);
 					if(date!=null){
 						monthInput.setDate(new IWTimestamp(date).getDate());
-					}else{
-						monthInput.setToCurrentDate();
 					}
-					monthInput.setToShowDay(false);
-	
-					int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
-					monthInput.setYearRange(currentYear - 1, currentYear + 1);
-					
+
 					InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
-	
 					form.add(month);
 				}
 			} catch (IDOLookupException e) {
