@@ -2,7 +2,6 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
