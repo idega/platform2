@@ -503,12 +503,6 @@ public class GolfLogin extends GolfBlock {
 	}
 
 
-	///// additional mothods /////////
-
-	private void logOut(IWContext modinfo) throws Exception {
-		GolfLoginBusiness.logOut2(modinfo);
-	}
-
 	/**
 	 * @param formWhenLoggedOn The _showFormWhenLoggedOn to set.
 	 */
