@@ -674,7 +674,7 @@ public class FinanceFinder  {
         ex.printStackTrace();
       }
     }
-    return null;
+    return new Vector();
 
   }
 
