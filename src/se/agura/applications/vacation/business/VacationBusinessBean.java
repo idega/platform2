@@ -305,7 +305,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 				Iterator iter = times.iterator();
 				while (iter.hasNext()) {
 					VacationTime time = (VacationTime) iter.next();
-					hoursAndDays.append(time.getWeekNumber()).append("\t");
+					hoursAndDays.append(time.getWeekNumber()).append("\t\t");
 					hoursAndDays.append(time.getMonday() > 0 ? time.getMonday() : 0).append("\t");
 					hoursAndDays.append(time.getTuesday() > 0 ? time.getTuesday() : 0).append("\t");
 					hoursAndDays.append(time.getWednesday() > 0 ? time.getWednesday() : 0).append("\t");
@@ -318,7 +318,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 			}
 			
 			StringBuffer logBuffer = new StringBuffer();
-			hoursAndDays.append(getLocalizedString("vacation.message_to_employee", "Messages to employee")).append(":\n");
+			logBuffer.append(getLocalizedString("vacation.message_to_employee", "Messages to employee")).append(":\n");
 			Collection logs = getLogs(vacation);
 			if (logs != null) {
 				Iterator iter = logs.iterator();
@@ -346,7 +346,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					MessageFormat.format(
 							getLocalizedString(
 									"vacation_application.accepted_body",
-									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5}.\n\nThe vacation period is:\nfrom\t {3}\n to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\nComment to employee:\t{10}"),
+									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5}.\n\nThe vacation period is:\nfrom\t {3}\n to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
 							arguments), attachment);
 		}
 	}	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
