@@ -87,7 +87,7 @@ public class Register extends StyledIWAdminWindow {
 			po = getStage1Page(null);
 		}
 		
-		add(po);
+		add(po, _iwc);
 	}
 	
 	private PresentationObject getStage1Page(String message) {
