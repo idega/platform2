@@ -2627,7 +2627,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 			// test also for futurecontracts if oldContract is provided
-			IWTimestamp fromDate = new IWTimestamp(validFrom);
+			//IWTimestamp fromDate = new IWTimestamp(validFrom);
 			if(oldArchive!=null && hasFutureContracts(applicationID)){
 				try {
 					Collection futureContracts = getChildCareContractArchiveHome().findFutureContractsByApplication(applicationID,validFrom);
@@ -3677,7 +3677,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setHasExtraContractOther(extraContractOther);
 			if (extraContractOtherMessage != null) application.setExtraContractMessageOther(extraContractOtherMessage);
 
-			SchoolClassMember student = null;
+			//SchoolClassMember student = null;
 			if (!isUpdate || finalize) {
 				Timestamp removedDate = null;
 				if (toDate != null) removedDate = toDate.getTimestamp();
@@ -3687,7 +3687,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (groupID == -1) return false;
 				}
 				if (schoolTypeID == -1) schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
-				student = getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
+				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
 			}
 
 			if (finalize) {
@@ -3723,7 +3723,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						}
 					}
 
-					ChildCareContract archive = addContractToArchive(-1,-1, false,application, contractID, fromDate.getDate(), employmentTypeID,((Integer)parent.getPrimaryKey()).intValue(),admin,false,-1,-1,null);
+					addContractToArchive(-1,-1, false,application, contractID, fromDate.getDate(), employmentTypeID,((Integer)parent.getPrimaryKey()).intValue(),admin,false,-1,-1,null);
 					/* included in the addContractToArchive
 					if (archive != null) {
 						archive.setInvoiceReceiver(parent);
