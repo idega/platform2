@@ -11,6 +11,7 @@ import java.sql.Date;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.school.data.School;
 import com.idega.data.IDOLookupException;
 
 /**
@@ -35,4 +36,11 @@ public interface RegularPaymentBusiness extends com.idega.business.IBOService {
 	 * @return Collection of RegularPaymentEntry
 	 */
 	Collection findRegularPaymentsForPeriode(Date from, Date to);
+	/**
+	 * @param from
+	 * @param to
+	 * @param provider
+	 * @return
+	 */
+	Collection findRegularPaymentsForPeriodeAndSchool(Date from, Date to, School provider)  throws IDOLookupException, FinderException;
 }
