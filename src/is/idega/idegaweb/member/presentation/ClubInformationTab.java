@@ -327,8 +327,10 @@ public class ClubInformationTab extends UserGroupTab {
 	public void lineUpFields() {
 		String type = "";
 		try {
-			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
-			type = group.getGroupType();
+			if(getGroupId()>0){
+				Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+				type = group.getGroupType();
+			}
 		}
 		catch (IDOLookupException e) {
 			e.printStackTrace();
