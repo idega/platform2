@@ -56,10 +56,10 @@ import com.lowagie.text.Phrase;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/25 15:29:39 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/25 17:39:38 $ by $Author: joakim $
  *
  * @author Joakim
- * @version $Revision: 1.47 $
+ * @version $Revision: 1.48 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -136,12 +136,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param month
 	 */
 	public void removePreliminaryInvoice(Date month, String category) throws RemoveException {
-		//Remove invoices
-		//PaymentRecord paymentRecord;
+		PaymentRecord paymentRecord;
 		Iterator headerIter;
 		InvoiceHeader header;
-		//Iterator recordIter;
-		//InvoiceRecord invoiceRecord;
 
 		try {
 			SchoolCategory schoolCategory =
@@ -151,18 +148,18 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				header = (InvoiceHeader) headerIter.next();
 				removePreliminaryInvoice(header);
 			}
-			/*
-						//Remove payments... Probably shouldn't remove them since they can hold info that has 
-						// already been attested.
-						recordIter = getPaymentRecordHome().findByMonth(month).iterator();
-						while(recordIter.hasNext()){
-							paymentRecord = (PaymentRecord) recordIter.next();
-							paymentRecord.remove();
-						}
-			*/
+			if(getPaymentRecordHome().getCountForMonthAndStatusLH(month) == 0){
+				Iterator recordIter = getPaymentRecordHome().findByMonth(month).iterator();
+				while(recordIter.hasNext()){
+					paymentRecord = (PaymentRecord) recordIter.next();
+					paymentRecord.remove();
+				}
+			}else{
+				throw new RemoveException("invoice.remove_not_allowed");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RemoveException("Could not remove the records.");
+			throw new RemoveException("invoice.Could not remove the records.");
 		}
 	}
 
