@@ -65,55 +65,57 @@ public class InvoiceBatchStarter extends AccountingBlock{
 
 		form.add(getShoolDropDown());
 
-		try {
-			ExportBusiness exportBusiness = getBusiness().getExportBusiness();
-			ExportDataMapping exportDataMapping = exportBusiness.getExportDataMapping(schoolCategory);
-			if(exportDataMapping.getAccountSettlementType() ==
-				exportBusiness.getAccountSettlementTypeSpecificDate())
-			{
-				readDateInput = new DateInput(PARAM_READ_DATE,true);
-				String date = iwc.getParameter(PARAM_READ_DATE);
-				if(date!=null){
-					readDateInput.setDate(new IWTimestamp(date).getDate());
+		if(null!=schoolCategory){
+			try {
+				ExportBusiness exportBusiness = getBusiness().getExportBusiness();
+				ExportDataMapping exportDataMapping = exportBusiness.getExportDataMapping(schoolCategory);
+				if(exportDataMapping.getAccountSettlementType() ==
+					exportBusiness.getAccountSettlementTypeSpecificDate())
+				{
+					readDateInput = new DateInput(PARAM_READ_DATE,true);
+					String date = iwc.getParameter(PARAM_READ_DATE);
+					if(date!=null){
+						readDateInput.setDate(new IWTimestamp(date).getDate());
+					}else{
+						readDateInput.setToCurrentDate();
+					}
+					readDateInput.setToDisplayDayLast(true);
+	
+					int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+					readDateInput.setYearRange(currentYear - 1, currentYear + 1);
+					InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
+					form.add(readDate);
 				}else{
-					readDateInput.setToCurrentDate();
+					monthInput = new DateInput(PARAM_MONTH,true);
+					String date = iwc.getParameter(PARAM_MONTH);
+					if(date!=null){
+						monthInput.setDate(new IWTimestamp(date).getDate());
+					}else{
+						monthInput.setToCurrentDate();
+					}
+					monthInput.setToShowDay(false);
+	
+					int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+					monthInput.setYearRange(currentYear - 1, currentYear + 1);
+					
+					InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
+	
+					form.add(month);
 				}
-				readDateInput.setToDisplayDayLast(true);
-
-				int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
-				readDateInput.setYearRange(currentYear - 1, currentYear + 1);
-				InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
-				form.add(readDate);
-			}else{
-				monthInput = new DateInput(PARAM_MONTH,true);
-				String date = iwc.getParameter(PARAM_MONTH);
-				if(date!=null){
-					monthInput.setDate(new IWTimestamp(date).getDate());
-				}else{
-					monthInput.setToCurrentDate();
-				}
-				monthInput.setToShowDay(false);
-
-				int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
-				monthInput.setYearRange(currentYear - 1, currentYear + 1);
-				
-				InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
-
-				form.add(month);
+			} catch (IDOLookupException e) {
+				add(new ExceptionWrapper(e, this));
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				add(new ExceptionWrapper(e, this));
+				e.printStackTrace();
+			} catch (FinderException e) {
+				add(new ExceptionWrapper(e, this));
+				e.printStackTrace();
 			}
-		} catch (IDOLookupException e) {
-			add(new ExceptionWrapper(e, this));
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			add(new ExceptionWrapper(e, this));
-			e.printStackTrace();
-		} catch (FinderException e) {
-			add(new ExceptionWrapper(e, this));
-			e.printStackTrace();
+			
+			GenericButton saveButton = this.getSaveButton();
+			form.add(saveButton);
 		}
-		
-		GenericButton saveButton = this.getSaveButton();
-		form.add(saveButton);
 	}
 	
 	/**

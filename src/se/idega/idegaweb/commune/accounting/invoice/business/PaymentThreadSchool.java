@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/19 16:14:23 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/20 16:15:39 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.124 $
+ * @version $Revision: 1.125 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -174,16 +174,16 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			e.printStackTrace();
 			if (errorRelated != null) {
 				errorRelated.append(e);
-				createNewErrorMessage(errorRelated, getLocalizedString("invoice.Severe_DBError","Severe DataBase Error"));
+				createNewErrorMessage(errorRelated, getLocalizedString("invoice.RemoteException","Remote Exception"));
 			}
 			else {
-				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.Severe_DBError","Severe DataBase Error"));
+				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.RemoteException","Remote Exception"));
 			}
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
-				createNewErrorMessage(errorRelated, "invoice.Severe_CouldNotFindSchoolCategory");
+				createNewErrorMessage(errorRelated, getLocalizedString("invoice.Severe_CouldNotFindSchoolCategory","Severe. Could not find school category"));
 			}
 			else {
 				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.Severe_CouldNotFindSchoolCategory","Severe Could not find school category"));
@@ -192,7 +192,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		catch (EJBException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
-				createNewErrorMessage(errorRelated, "invoice.Severe_CouldNotFindHomeCommune");
+				createNewErrorMessage(errorRelated, getLocalizedString("invoice.Severe_CouldNotFindHomeCommune","Severe Could not find  home commune"));
 			}
 			else {
 				createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment School"), getLocalizedString("invoice.Severe_CouldNotFindHomeCommune","Severe Could not find  home commune"));
@@ -265,7 +265,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					}
 					catch (TooManyRegulationsException e) {
 						e.printStackTrace();
-						errorRelated.append("Regulations found:"+e.getRegulationNamesString());
+						errorRelated.append(getLocalizedString("invoice.Regulations_found","Regulations found")+":"+e.getRegulationNamesString());
 						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingTooManyRegulations","Error Finding too many regulations"));
 					}
 					catch (PostingException e) {
@@ -660,8 +660,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			null, oppenConditions //The conditions that need to fulfilled
 		);
 		if(regulationForTypeArray.size()!=1){
-			errorRelated.append("Number of regulations found for oppen verksamhet:"+regulationForTypeArray.size());
-			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForOppenVerksamhetNotCorrect");
+			errorRelated.append(getLocalizedString("invoice.Number_of_regulations_found_for_oppen_verksamhet","Number of regulations found for oppen verksamhet")+":"+regulationForTypeArray.size());
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.NumberOfRegulationsForOppenVerksamhetNotCorrect","Number of regulations for oppen verksamhet not correct"));
 		}
 		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
 			try {
@@ -672,7 +672,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
-				errorRelated.append("created payment info for Oppen verksamhet:" + schoolClassMember.getStudent().getName());
+//				errorRelated.append("created payment info for Oppen verksamhet:" + schoolClassMember.getStudent().getName());
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			}
 			catch (BruttoIncomeException e) {
@@ -733,10 +733,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
-				errorRelated = new ErrorLogger("RegularPaymentEntry ID:" + regularPaymentEntry.getPrimaryKey());
-				errorRelated.append("Placing:" + regularPaymentEntry.getPlacing());
-				errorRelated.append("Amount:" + regularPaymentEntry.getAmount());
-				errorRelated.append("School:" + regularPaymentEntry.getSchool());
+				errorRelated = new ErrorLogger(getLocalizedString("invoice.RegularPaymentEntryID","RegularPaymentEntry ID")+":" + regularPaymentEntry.getPrimaryKey());
+				errorRelated.append(getLocalizedString("invoice.Placing","Placing")+":" + regularPaymentEntry.getPlacing());
+				errorRelated.append(getLocalizedString("invoice.Amount","Amount")+":" + regularPaymentEntry.getAmount());
+				errorRelated.append(getLocalizedString("invoice.School","School")+":" + regularPaymentEntry.getSchool());
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				school = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(), regularPaymentEntry.getTo());
@@ -745,11 +745,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
 				}
 				catch (IDOLookupException e) {
-					createNewErrorMessage(errorRelated, "regularPayment.IDOLookup");
+					createNewErrorMessage(errorRelated, getLocalizedString("invoice.IDOLookup","IDOLookup"));
 					e.printStackTrace();
 				}
 				catch (CreateException e) {
-					createNewErrorMessage(errorRelated, "regularPayment.Create");
+					createNewErrorMessage(errorRelated, getLocalizedString("invoice.Create","Create"));
 					e.printStackTrace();
 				}
 				if(!running){

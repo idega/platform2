@@ -246,7 +246,7 @@ public abstract class BillingThread extends Thread{
 					postingStrings = this.getPostingBusiness().getPostingStrings(category,sType,regSpecTypeId,provider,startPeriod.getDate(),schoolYearId);
 				}
 				catch (RemoteException e) {
-					createNewErrorMessage(errorRelated,"invoice.RemoteException");
+					createNewErrorMessage(errorRelated,getLocalizedString("invoice.RemoteException","RemoteException"));
 					e.printStackTrace();
 				}
 				catch (PostingException e) {
@@ -255,7 +255,7 @@ public abstract class BillingThread extends Thread{
 //					errorRelated.append(getLocalizedString("billingthread_school_type","School Type")+":"+sType);
 //					errorRelated.append(getLocalizedString("billingthread_provider","Provider")+":"+provider);
 //					errorRelated.append(getLocalizedString("billingthread_period","Period")+":"+startPeriod.getDate());
-					errorRelated.append(getLocalizedString("billingthread_schoolyear","Schoolyear")+":"+sYear.getName());
+					errorRelated.append(getLocalizedString("invoice.schoolyear","Schoolyear")+":"+sYear.getName());
 					createNewErrorMessage(errorRelated,getLocalizedString("invoice.PostingException","PostingException"));
 					e.printStackTrace();
 				}	
@@ -430,8 +430,8 @@ public abstract class BillingThread extends Thread{
 		}
 		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
 		if(placementTimes.getDays()<0f){
-			errorRelated.append("PlacementDays"+placementTimes.getDays());
-			createNewErrorMessage(errorRelated, "invoice.WarningNegativePlacementTimeFound");
+			errorRelated.append(getLocalizedString("invoice.PlacementDays","Placement days")+":"+placementTimes.getDays());
+			createNewErrorMessage(errorRelated, getLocalizedString("invoice.WarningNegativePlacementTimeFound","Warning. Negative placement time found"));
 		}
 		return placementTimes;
 	}
@@ -504,11 +504,13 @@ public abstract class BillingThread extends Thread{
 //					System.out.println("Removing BatchRunLogError");
 					error.remove();
 				} catch (EJBException e) {
-					createNewErrorMessage("batchrun","batchrun.cannotRemoveOldBatchrunDataEJBException");
+					createNewErrorMessage(getLocalizedString("invoice.batchrun","batchrun"),
+							getLocalizedString("invoice.batchrun.cannotRemoveOldBatchrunDataEJBException","Cannot remove old batchrun data, EJBException"));
 					//If it cant be removed, it is just left... Not much to do about it.
 					e.printStackTrace();
 				} catch (RemoveException e) {
-					createNewErrorMessage("batchrun","batchrun.cannotRemoveOldBatchrunDataRemoveException");
+					createNewErrorMessage(getLocalizedString("invoice.batchrun","batchrun"),
+							getLocalizedString("invoice.batchrun.cannotRemoveOldBatchrunDataRemoveException","Cannot remove old batchrun data, RemoveException"));
 					//If it cant be removed, it is just left... Not much to do about it.
 					e.printStackTrace();
 				}
@@ -531,7 +533,8 @@ public abstract class BillingThread extends Thread{
 	protected void batchRunLoggerDone(){
 		if(batchRunLogger!=null){
 			if(!running){
-				createNewErrorMessage("invoice.Batchrun","invoice.Run_terminated_by_user");
+				createNewErrorMessage(getLocalizedString("invoice.batchrun","batchrun"),
+						getLocalizedString("invoice.Run_terminated_by_user","Run terminated by user"));
 			}
 			batchRunLogger.setEnd(IWTimestamp.getTimestampRightNow());
 			batchRunLogger.store();
