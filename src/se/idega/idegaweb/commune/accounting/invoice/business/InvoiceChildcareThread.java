@@ -47,6 +47,7 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderException;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 import se.idega.util.ErrorLogger;
 
@@ -54,6 +55,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
@@ -77,7 +79,7 @@ import com.idega.util.Age;
  */
 public class InvoiceChildcareThread extends BillingThread{
 
-	private static final String HOURS_PER_WEEK = "t/v ";		//Localize this text in the user interface
+	private static final String HOURS_PER_WEEK = "t/v ";		//Localize this text in the user interfaceC:\emacs\bin/
 	private static final String CHECK = "Check ";
 	private static final String DAYS = "dagar";
 	private ChildCareContract contract;
@@ -120,6 +122,9 @@ public class InvoiceChildcareThread extends BillingThread{
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
+			if (null != errorRelated) {
+				errorRelated.logToConsole ();
+			}
 			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
 			batchRunLoggerDone();
 		}
@@ -209,7 +214,9 @@ public class InvoiceChildcareThread extends BillingThread{
 				custodian = getInvoiceReceiver(contract);
 				errorRelated.append("Invoice receiver "+custodian.getName());
 				//**Fetch the reference at the provider
-				school = contract.getApplication().getProvider();
+				ChildCareApplication application = contract.getApplication();
+				Integer providerId = new Integer (application.getProviderId());
+				school = ((SchoolHome) IDOLookup.getHome(School.class)).findByPrimaryKey (providerId);
 				errorRelated.append("School "+school.getName(),1);
 				// **Get or create the invoice header
 				InvoiceHeader invoiceHeader;
@@ -242,7 +249,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					RegulationsBusiness regBus = getRegulationsBusiness();
 				
 					//Get all the parameters needed to select the correct contract
-					SchoolClassMember schoolClassMember = contract.getSchoolClassMmeber();
+					SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
 					User child = schoolClassMember.getStudent();
 					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
@@ -999,7 +1006,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
 			throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		invoiceRecord.setProvider(school);
-		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMmeber());
+		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMember());
 		invoiceRecord.setRuleText(postingDetail.getTerm());
 		invoiceRecord.setDays(placementTimes.getDays());
 		invoiceRecord.setPeriodStartCheck(placementTimes.getFirstCheckDay().getDate());
@@ -1012,7 +1019,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setAmountVAT(postingDetail.getVat()*placementTimes.getMonths());
 		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
-		invoiceRecord.setSchoolType(contract.getSchoolClassMmeber().getSchoolType());
+		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
 		errorRelated.append("Order ID = "+postingDetail.getOrderID(),1);
 		RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 		try {

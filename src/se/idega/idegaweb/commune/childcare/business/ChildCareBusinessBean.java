@@ -1073,7 +1073,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setApplicationStatus(getStatusCancelled());
 				changeCaseStatus(application, getCaseStatusCancelled().getStatus(), performer);
 			}
-			SchoolClassMember placement = firstContract.getSchoolClassMmeber();
+			SchoolClassMember placement = firstContract.getSchoolClassMember();
 			if (placement != null) {
 				placement.setRegisterDate((new IWTimestamp(application.getFromDate())).getTimestamp());
 				if (application.getRejectionDate() != null) {

@@ -110,7 +110,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return (ICFile) getColumnValue(COLUMN_CONTRACT_FILE_ID);
 	}
 	
-	public SchoolClassMember getSchoolClassMmeber() {
+	public SchoolClassMember getSchoolClassMember() {
 		return (SchoolClassMember) getColumnValue(COLUMN_SCH_CLASS_MEMBER);
 	}
 	
