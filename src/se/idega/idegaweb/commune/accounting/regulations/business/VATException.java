@@ -1,5 +1,5 @@
 /*
- * $Id: VATException.java,v 1.3 2003/08/25 14:41:24 anders Exp $
+ * $Id: VATException.java,v 1.4 2003/08/25 14:56:57 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,41 +9,22 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingException;
+
 /**
- * Exception for data input errors in VATBusiness.  
+ * Exception for data input errors and technical errors in VATBusiness.  
  * <p>
- * Last modified: $Date: 2003/08/25 14:41:24 $
+ * Last modified: $Date: 2003/08/25 14:56:57 $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class VATException extends Exception {
-
-
-	private String textKey = null;
-	private String defaultText = null;
+public class VATException extends AccountingException {
 	
 	/**
-	 * Constructs a VAT exception with the specified text key and default text.
-	 * @param textKey the text key for the error message
-	 * @param defaultText the default text for the error message
+	 * @see se.idega.idegaweb.commune.accounting.business.AccountingException
 	 */
 	public VATException(String textKey, String defaultText) {
-		this.textKey = textKey;
-		this.defaultText = defaultText;
-	}
-	
-	/**
-	 * Returns the error message text key.
-	 */
-	public String getTextKey() {
-		return textKey; 
-	}
-	
-	/**
-	 * Returns the default error message text.
-	 */
-	public String getDefaultText() {
-		return defaultText; 
+		super(textKey, defaultText);
 	}
 }
