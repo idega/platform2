@@ -8,6 +8,8 @@
 
 package is.idega.experimental;
 
+import java.math.BigDecimal;
+
 
 /**
  * @author palli
@@ -20,9 +22,11 @@ public class DoubleToFloatTest {
     public static void main(String[] args) {
         double d = 17774635.0d;
         
-        System.out.println("d = " + d);
+        BigDecimal bigd = new BigDecimal(d);
+
+        System.out.println("bigd.doubleValue() = " + bigd.doubleValue());
         
-        System.out.println("(float)d = " + (float)d);
+        System.out.println("bigd.floatValue() = " + bigd.floatValue());
         
         Double d2 = new Double(d);
         System.out.println("d2.floatValue() = " + d2.floatValue());
