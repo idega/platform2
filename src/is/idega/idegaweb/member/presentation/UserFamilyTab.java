@@ -179,7 +179,7 @@ public class UserFamilyTab extends UserTab {
 			table.add(spouseText, 1, 1);
 			table.mergeCells(1, 1, 2, 1);
 			table.add(getFamilyLink(spouse, getMemberFamilyLogic(getIWApplicationContext()).getSpouseRelationType()), 1, 2);
-			table.add(getUserPropertyLink(user), 2, 2);
+			table.add(getUserPropertyLink(spouse), 2, 2);
 //			table.add(new Text(spouse.getName() + ", " + spouse.getPersonalID()), 2, 2);
 			return table;
 		}
