@@ -56,7 +56,7 @@ public class CampusRequests extends Block {
     T.setAlignment("center");
       T.add(getLink(REPAIR),1,1);
       T.add(getLink(COMPUTER),1,2);
-      T.add(getLink(RESIGN),1,3);
+//      T.add(getLink(RESIGN),1,3);
     return T;
   }
 
@@ -96,7 +96,7 @@ public class CampusRequests extends Block {
     switch (Type) {
       case REPAIR: obj =  getRepairFields();  break;
       case COMPUTER: obj = getComputerFields(); break;
-      case RESIGN: obj = getResignFields(); break;
+//      case RESIGN: obj = getResignFields(); break;
     }
     return obj;
   }
@@ -106,7 +106,7 @@ public class CampusRequests extends Block {
     switch (Type) {
       case REPAIR: email =  "gunnar@fs.is";  break;
       case COMPUTER: email = "umsjon@fs.is"; break;
-      case RESIGN: email = "iris@fs.is"; break;
+//      case RESIGN: email = "iris@fs.is"; break;
     }
     return email;
   }
@@ -116,7 +116,7 @@ public class CampusRequests extends Block {
     switch (Type) {
       case REPAIR: subject =  iwrb.getLocalizedString("repairrequest","Viðgerðarbeiðni");  break;
       case COMPUTER: subject = iwrb.getLocalizedString("computerrequest","Tölvuviðgerðarbeiðni"); break;
-      case RESIGN: subject = iwrb.getLocalizedString("resignrequest","Uppsagnarbeiðni"); break;
+//      case RESIGN: subject = iwrb.getLocalizedString("resignrequest","Uppsagnarbeiðni"); break;
     }
     return subject;
   }
@@ -212,7 +212,7 @@ public class CampusRequests extends Block {
     String info = null;
     switch (type) {
       case REPAIR: info = getRepairInfo(iwc);        break;
-      case RESIGN: info = getResignInfo(iwc);        break;
+//      case RESIGN: info = getResignInfo(iwc);        break;
       case COMPUTER: info = getComputerInfo(iwc);        break;
     }
     return info;

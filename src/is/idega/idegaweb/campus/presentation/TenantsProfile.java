@@ -348,8 +348,12 @@ public static final String darkRed = CampusColors.DARKRED;
     row++;
 
     Link requestLink = new Link(iwrb.getImage("request.gif"));
-      requestLink.addParameter("user_id",_userID);
+    requestLink.addParameter("user_id",_userID);
       //requestLink.setWindowToOpen(RequestView.class);
+    requestLink.addParameter(TabAction.sAction,0);
+    requestLink.addParameter(CampusFactory.getParameter(60));
+
+
     table.mergeCells(1,row,3,row);
     table.setAlignment(1,row,"right");
     table.add(requestLink,1,row);
