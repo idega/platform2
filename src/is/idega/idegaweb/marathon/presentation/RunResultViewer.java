@@ -250,7 +250,7 @@ public class RunResultViewer extends Block {
 				runs.addAll(getRunsForRunners(runners));
 			}
 			sortRuns(runs);
-			System.out.println("Number of runners: " + runs.size());
+			//System.out.println("Number of runners: " + runs.size());
 			
 			List groupRunners = new ArrayList();
 			Iterator iter = runs.iterator();
@@ -260,7 +260,7 @@ public class RunResultViewer extends Block {
 					groupRunners.add(runner);
 				}
 			}
-			System.out.println("Number of group runners: " + groupRunners.size());
+			//System.out.println("Number of group runners: " + groupRunners.size());
 
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
@@ -271,11 +271,11 @@ public class RunResultViewer extends Block {
 				if (runnerGroup == null) {
 					runnerGroup = new RunGroup(runner.getRunGroupName());
 					runGroups.put(runner.getRunGroupName(), runnerGroup);
-					System.out.println("Creating run group: " + runnerGroup.getGroupName());
+					//System.out.println("Creating run group: " + runnerGroup.getGroupName());
 				}
 				map.put(runnerGroup, runner);
 			}
-			System.out.println("Number of groups: " + map.size());
+			//System.out.println("Number of groups: " + map.size());
 			
 			Map orderedGroups = new TreeMap();
 			iterator = map.keySet().iterator();
@@ -283,7 +283,7 @@ public class RunResultViewer extends Block {
 				RunGroup group = (RunGroup) iterator.next();
 				orderedGroups.put(group.getCounter(), group);
 			}
-			System.out.println("Number of ordered groups: " + orderedGroups.size());
+			//System.out.println("Number of ordered groups: " + orderedGroups.size());
 			
 			iterator = orderedGroups.values().iterator();
 			while (iterator.hasNext()) {
