@@ -1,291 +1,340 @@
+/*
+ * $Id: PrintedLetterMessageHomeImpl.java 1.1 7.10.2004 aron Exp $
+ * Created on 7.10.2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package se.idega.idegaweb.commune.message.data;
 
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOFactory;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
-
-public class PrintedLetterMessageHomeImpl extends com.idega.data.IDOFactory implements PrintedLetterMessageHome
-{
- protected Class getEntityInterfaceClass(){
-  return PrintedLetterMessage.class;
- }
-
-
- public Message create() throws javax.ejb.CreateException{
-	return (Message) super.createIDO();
- }
-
-
-
- public java.util.Collection findMessages(com.idega.user.data.Group p0, String[] status)throws javax.ejb.FinderException{
-	 com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	 java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessagesByStatus(p0, status);
-	 this.idoCheckInPooledEntity(entity);
-	 return this.getEntityCollectionForPrimaryKeys(ids);
- }
-
-public java.util.Collection findAllLettersBySchool(int p0,java.lang.String p1,java.lang.String p2,com.idega.util.IWTimestamp p3,com.idega.util.IWTimestamp p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindAllLettersBySchool(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findAllPrintedLetters()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindAllPrintedLetters();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findAllUnPrintedLetters()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindAllUnPrintedLetters();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findByBulkFile(int p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindByBulkFile(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findLetters(java.lang.String[] p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindLetters(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findLettersByChildcare(int p0,java.lang.String p1,java.lang.String p2,com.idega.util.IWTimestamp p3,com.idega.util.IWTimestamp p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindLettersByChildcare(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindMessages(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findMessages(com.idega.user.data.User p0, String[] status)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessagesByStatus(p0, status);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findMessagesByStatus(com.idega.user.data.User p0,java.lang.String[] p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindMessagesByStatus(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findPrintedDefaultLetters()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindPrintedDefaultLetters();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindPrintedLettersByType(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findPrintedLettersByType(java.lang.String p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindPrintedLettersByType(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findPrintedPasswordLetters()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindPrintedPasswordLetters();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findSingleByTypeAndStatus(java.lang.String p0,java.lang.String p1,com.idega.util.IWTimestamp p2,com.idega.util.IWTimestamp p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindSingleByTypeAndStatus(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findSinglePrintedLettersByType(java.lang.String p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindSinglePrintedLettersByType(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findSingleUnPrintedLettersByType(java.lang.String p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindSingleUnPrintedLettersByType(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findUnPrintedDefaultLetters()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindUnPrintedDefaultLetters();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findUnPrintedLettersByType(java.lang.String p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindUnPrintedLettersByType(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findUnPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindUnPrintedLettersByType(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findUnPrintedPasswordLetters()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindUnPrintedPasswordLetters();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public Message findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
- return (Message) super.findByPrimaryKeyIDO(pk);
-}
-
-
-public java.lang.String[] getLetterTypes(){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.lang.String[] theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetLetterTypes();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfLettersByStatusAndType(java.lang.String p0,java.lang.String p1){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetNumberOfLettersByStatusAndType(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfPrintedDefaultLetters(){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetNumberOfPrintedDefaultLetters();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfPrintedLettersByType(java.lang.String p0){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetNumberOfPrintedLettersByType(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfPrintedPasswordLetters(){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetNumberOfPrintedPasswordLetters();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfUnPrintedDefaultLetters(){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetNumberOfUnPrintedDefaultLetters();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfUnPrintedPasswordLetters(){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetNumberOfUnPrintedPasswordLetters();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfUnprintedLettersByType(java.lang.String p0){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetNumberOfUnprintedLettersByType(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public java.lang.String[] getPrintMessageTypes(){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.lang.String[] theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetPrintMessageTypes();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-
-/* (non-Javadoc)
- * @see se.idega.idegaweb.commune.message.data.MessageHome#findMessages(com.idega.user.data.User, java.lang.String[], int, int)
+/**
+ * 
+ *  Last modified: $Date: 7.10.2004 10:56:43 $ by $Author: aron $
+ * 
+ * @author <a href="mailto:aron@idega.com">aron</a>
+ * @version $Revision: 1.1 $
  */
-public Collection findMessages(User p0, String[] status, int numberOfEntries, int startingEntry) throws FinderException {
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessagesByStatus(p0, status, numberOfEntries, startingEntry);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+public class PrintedLetterMessageHomeImpl extends IDOFactory implements
+        PrintedLetterMessageHome {
+    protected Class getEntityInterfaceClass() {
+        return PrintedLetterMessage.class;
+    }
 
+    public PrintedLetterMessage create() throws javax.ejb.CreateException {
+        return (PrintedLetterMessage) super.createIDO();
+    }
 
-/* (non-Javadoc)
- * @see se.idega.idegaweb.commune.message.data.MessageHome#findMessages(com.idega.user.data.Group, java.lang.String[], int, int)
- */
-public Collection findMessages(Group p0, String[] status, int numberOfEntries, int startingEntry) throws FinderException {
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessagesByStatus(p0, status, numberOfEntries, startingEntry);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public PrintedLetterMessage findByPrimaryKey(Object pk)
+            throws javax.ejb.FinderException {
+        return (PrintedLetterMessage) super.findByPrimaryKeyIDO(pk);
+    }
 
-/* (non-Javadoc)
- * @see se.idega.idegaweb.commune.message.data.MessageHome#getNumberOfMessages(com.idega.user.data.User, java.lang.String[])
- */
-public int getNumberOfMessages(User p0, String[] status) throws com.idega.data.IDOException {
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((UserMessageBMPBean)entity).ejbHomeGetCountCasesByUserAndStatusArray(p0,status);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+    public Collection findMessages(User user) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindMessages(user);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-/* (non-Javadoc)
- * @see se.idega.idegaweb.commune.message.data.MessageHome#getNumberOfMessages(com.idega.user.data.User, java.util.Collection, java.lang.String[])
- */
-public int getNumberOfMessages(User p0, Collection groups, String[] status) throws com.idega.data.IDOException {
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((UserMessageBMPBean)entity).ejbHomeGetCountCasesByUserAndGroupsAndStatusArray(p0,groups,status);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+    public Collection findMessagesByStatus(User user, String[] status)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindMessagesByStatus(user, status);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
+    public Collection findAllUnPrintedLetters() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindAllUnPrintedLetters();
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-/* (non-Javadoc)
- * @see se.idega.idegaweb.commune.message.data.MessageHome#findMessages(com.idega.user.data.Group, java.util.Collection, java.lang.String[], int, int)
- */
-public Collection findMessages(User p0, Collection groups, String[] status, int numberOfEntries, int startingEntry) throws FinderException {
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessagesByStatus(p0, groups, status, numberOfEntries, startingEntry);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllPrintedLetters() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindAllPrintedLetters();
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public int getNumberOfUnprintedLettersByType(String letterType) {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        int theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetNumberOfUnprintedLettersByType(letterType);
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public int getNumberOfPrintedLettersByType(String letterType) {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        int theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetNumberOfPrintedLettersByType(letterType);
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public int getNumberOfLettersByStatusAndType(String caseStatus,
+            String letterType) {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        int theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetNumberOfLettersByStatusAndType(caseStatus,
+                        letterType);
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public int getNumberOfUnPrintedPasswordLetters() {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        int theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetNumberOfUnPrintedPasswordLetters();
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public int getNumberOfPrintedPasswordLetters() {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        int theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetNumberOfPrintedPasswordLetters();
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public int getNumberOfUnPrintedDefaultLetters() {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        int theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetNumberOfUnPrintedDefaultLetters();
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public int getNumberOfPrintedDefaultLetters() {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        int theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetNumberOfPrintedDefaultLetters();
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public String[] getLetterTypes() {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        String[] theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetLetterTypes();
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public Collection findPrintedLettersByType(String letterType,
+            int resultSize, int startingIndex) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindPrintedLettersByType(letterType, resultSize,
+                        startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findPrintedLettersByType(String letterType,
+            IWTimestamp from, IWTimestamp to, int resultSize, int startingIndex)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindPrintedLettersByType(letterType, from, to, resultSize,
+                        startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findSinglePrintedLettersByType(String letterType,
+            IWTimestamp from, IWTimestamp to, int resultSize, int startingIndex)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindSinglePrintedLettersByType(letterType, from, to,
+                        resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findByBulkFile(int file, String letterType,
+            String status, int resultSize, int startingIndex)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindByBulkFile(file, letterType, status, resultSize,
+                        startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findSingleByTypeAndStatus(String letterType,
+            String status, IWTimestamp from, IWTimestamp to, int resultSize,
+            int startingIndex) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindSingleByTypeAndStatus(letterType, status, from, to,
+                        resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findUnPrintedLettersByType(String letterType,
+            int resultSize, int startingIndex) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindUnPrintedLettersByType(letterType, resultSize,
+                        startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findUnPrintedLettersByType(String letterType,
+            IWTimestamp from, IWTimestamp to, int resultSize, int startingIndex)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindUnPrintedLettersByType(letterType, from, to,
+                        resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findSingleUnPrintedLettersByType(String letterType,
+            IWTimestamp from, IWTimestamp to, int resultSize, int startingIndex)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindSingleUnPrintedLettersByType(letterType, from, to,
+                        resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findUnPrintedPasswordLetters(int resultSize,
+            int startingIndex) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindUnPrintedPasswordLetters(resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findPrintedPasswordLetters(int resultSize,
+            int startingIndex) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindPrintedPasswordLetters(resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findUnPrintedDefaultLetters(int resultSize,
+            int startingIndex) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindUnPrintedDefaultLetters(resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findPrintedDefaultLetters(int resultSize,
+            int startingIndex) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindPrintedDefaultLetters(resultSize, startingIndex);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public String[] getPrintMessageTypes() {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        String[] theReturn = ((PrintedLetterMessageBMPBean) entity)
+                .ejbHomeGetPrintMessageTypes();
+        this.idoCheckInPooledEntity(entity);
+        return theReturn;
+    }
+
+    public Collection findLettersByChildcare(int providerID, String ssn,
+            String msgId, IWTimestamp from, IWTimestamp to)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindLettersByChildcare(providerID, ssn, msgId, from, to);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findAllLettersBySchool(int providerID, String ssn,
+            String msgId, IWTimestamp from, IWTimestamp to)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindAllLettersBySchool(providerID, ssn, msgId, from, to);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findLetters(String[] msgId) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindLetters(msgId);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findMessagesByStatus(User user, String[] status,
+            int numberOfEntries, int startingEntry) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindMessagesByStatus(user, status, numberOfEntries,
+                        startingEntry);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findMessagesByStatus(Group group, String[] status)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindMessagesByStatus(group, status);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findMessagesByStatus(Group group, String[] status,
+            int numberOfEntries, int startingEntry) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindMessagesByStatus(group, status, numberOfEntries,
+                        startingEntry);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public Collection findMessagesByStatus(User user, Collection groups,
+            String[] status, int numberOfEntries, int startingEntry)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PrintedLetterMessageBMPBean) entity)
+                .ejbFindMessagesByStatus(user, groups, status, numberOfEntries,
+                        startingEntry);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
 }

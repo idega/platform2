@@ -9,8 +9,13 @@ import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
-import com.idega.data.IDOQuery;
+//import com.idega.data.IDOQuery;
 import com.idega.data.IDORuntimeException;
+import com.idega.data.query.Criteria;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -23,7 +28,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements PrintedLetterMessage, PrintMessage, Case {
+public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements PrintedLetterMessage,PrintMessage, Case {
 
 	private static final String COLUMN_SUBJECT = "SUBJECT";
 	private static final String COLUMN_BODY = "BODY";
@@ -220,12 +225,12 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		return super.ejbFindAllCasesByStatus(super.getCaseStatusReady());
 	}
 	
-	protected IDOQuery idoQueryGetCountDefaultLettersWithStatus(String caseStatus){
-		return idoQueryGetLettersCountByStatusAndType(caseStatus,LETTER_TYPE_DEFAULT);
+	protected SelectQuery idoSelectQueryGetCountDefaultLettersWithStatus(String caseStatus){
+		return idoSelectQueryGetLettersCountByStatusAndType(caseStatus,LETTER_TYPE_DEFAULT);
 	}
 		
-	protected IDOQuery idoQueryGetCountPasswordLettersWithStatus(String caseStatus){
-		return idoQueryGetLettersCountByStatusAndType(caseStatus,COLUMN_LETTER_TYPE);
+	protected SelectQuery idoSelectQueryGetCountPasswordLettersWithStatus(String caseStatus){
+		return idoSelectQueryGetLettersCountByStatusAndType(caseStatus,COLUMN_LETTER_TYPE);
 	}
 	
 	
@@ -244,7 +249,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	 */
 	public int ejbHomeGetNumberOfUnprintedLettersByType(String letterType){
 		try{
-			IDOQuery sql = idoQueryGetLettersCountByStatusAndType(getUnPrintedCaseStatusForType(letterType),letterType);				
+			SelectQuery sql = idoSelectQueryGetLettersCountByStatusAndType(getUnPrintedCaseStatusForType(letterType),letterType);				
 			return super.idoGetNumberOfRecords(sql);
 		}
 		catch (IDOException sqle)
@@ -258,7 +263,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	 */
 	public int ejbHomeGetNumberOfPrintedLettersByType(String letterType){
 		try{
-			IDOQuery sql = idoQueryGetLettersCountByStatusAndType(getUnPrintedCaseStatusForType(letterType),letterType);				
+			SelectQuery sql = idoSelectQueryGetLettersCountByStatusAndType(getUnPrintedCaseStatusForType(letterType),letterType);				
 			return super.idoGetNumberOfRecords(sql);
 		}
 		catch (IDOException sqle)
@@ -274,7 +279,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	{
 		try
 		{
-			IDOQuery sql = idoQueryGetLettersCountByStatusAndType(caseStatus,letterType);
+			SelectQuery sql = idoSelectQueryGetLettersCountByStatusAndType(caseStatus,letterType);
 			return super.idoGetNumberOfRecords(sql);
 		}
 		
@@ -292,7 +297,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	{
 		try
 		{
-			IDOQuery sql = idoQueryGetCountPasswordLettersWithStatus(getCaseStatusOpen());
+			SelectQuery sql = idoSelectQueryGetCountPasswordLettersWithStatus(getCaseStatusOpen());
 			return super.idoGetNumberOfRecords(sql);
 		}
 		catch (IDOException sqle)
@@ -308,7 +313,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	{
 		try
 		{
-			IDOQuery sql = idoQueryGetCountPasswordLettersWithStatus(getCaseStatusReview());
+			SelectQuery sql = idoSelectQueryGetCountPasswordLettersWithStatus(getCaseStatusReview());
 			return super.idoGetNumberOfRecords(sql);
 		}
 		catch (IDOException sqle)
@@ -326,7 +331,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	{
 		try
 		{
-			IDOQuery sql = idoQueryGetCountDefaultLettersWithStatus(getCaseStatusOpen());
+			SelectQuery sql = idoSelectQueryGetCountDefaultLettersWithStatus(getCaseStatusOpen());
 			return super.idoGetNumberOfRecords(sql);
 		}
 		catch (IDOException sqle)
@@ -342,7 +347,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	{
 		try
 		{
-			IDOQuery sql = idoQueryGetCountDefaultLettersWithStatus(getCaseStatusReview());
+			SelectQuery sql = idoSelectQueryGetCountDefaultLettersWithStatus(getCaseStatusReview());
 			return super.idoGetNumberOfRecords(sql);
 		}
 		catch (IDOException sqle)
@@ -358,75 +363,94 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 
-	protected IDOQuery idoQueryGetPrintedLettersByType(String letterType) {
+	protected SelectQuery idoSelectQueryGetPrintedLettersByType(String letterType) {
 		try {
-			return idoQueryGetLettersByStatusAndType(getCaseStatusReady(), letterType);
+			return idoSelectQueryGetLettersByStatusAndType(getCaseStatusReady(), letterType);
 		}
 		catch (Exception e) {
 			throw new IDORuntimeException(e, this);
 		}
 	}
 	
-	protected IDOQuery idoQueryGetPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
+	protected SelectQuery idoSelectQueryGetPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
 		try {
-			return idoQueryGetLettersByStatusAndType(getCaseStatusReady(), letterType,from,to);
+			return idoSelectQueryGetLettersByStatusAndType(getCaseStatusReady(), letterType,from,to);
 		}
 		catch (Exception e) {
 			throw new IDORuntimeException(e, this);
 		}
 	}
 	
-	protected IDOQuery idoQueryGetSinglePrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
+	protected SelectQuery idoSelectQueryGetSinglePrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
 			try {
-				return idoQueryGetSingleLettersByStatusAndType(getCaseStatusReady(), letterType,from,to);
+				return idoSelectQueryGetSingleLettersByStatusAndType(getCaseStatusReady(), letterType,from,to);
 			}
 			catch (Exception e) {
 				throw new IDORuntimeException(e, this);
 			}
 		}
 
-	protected IDOQuery idoQueryGetUnPrintedLettersByType(String letterType) {
+	protected SelectQuery idoSelectQueryGetUnPrintedLettersByType(String letterType) {
 		try {
-			return idoQueryGetLettersByStatusAndType(getCaseStatusOpen(), letterType);
+			return idoSelectQueryGetLettersByStatusAndType(getCaseStatusOpen(), letterType);
 		}
 		catch (Exception e) {
 			throw new IDORuntimeException(e, this);
 		}
 	}
 	
-	protected IDOQuery idoQueryGetUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
+	protected SelectQuery idoSelectQueryGetUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
 		try {
-			return idoQueryGetLettersByStatusAndType(getCaseStatusOpen(), letterType,from,to);
+			return idoSelectQueryGetLettersByStatusAndType(getCaseStatusOpen(), letterType,from,to);
 		}
 		catch (Exception e) {
 			throw new IDORuntimeException(e, this);
 		}
 	}
 	
-	protected IDOQuery idoQueryGetSingleUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
+	protected SelectQuery idoSelectQueryGetSingleUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
 			try {
-				return idoQueryGetSingleLettersByStatusAndType(getCaseStatusOpen(), letterType,from,to);
+				return idoSelectQueryGetSingleLettersByStatusAndType(getCaseStatusOpen(), letterType,from,to);
 			}
 			catch (Exception e) {
 				throw new IDORuntimeException(e, this);
 			}
 		}
 		
-	
+	/*
 	protected IDOQuery idoQueryGetLettersByStatusAndType(String caseStatus, String letterType) {
 		IDOQuery query = super.idoQueryGetAllCasesByStatus(caseStatus);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
 		return query;
 	}
+	*/
+	protected Criteria idoCriteriaForLetterType(String type){
+	    return new MatchCriteria(idoTableSubCase(),COLUMN_LETTER_TYPE,MatchCriteria.EQUALS,type,true);
+	}
 	
+	protected SelectQuery idoSelectQueryGetLettersByStatusAndType(String caseStatus, String letterType){
+	    SelectQuery query = idoSelectQueryGetAllCasesByStatus(caseStatus);
+	    query.addCriteria(idoCriteriaForLetterType(letterType));
+	    return query;
+	}
+	/*
 	protected IDOQuery idoQueryGetLettersByStatusAndType(String caseStatus, String letterType,IWTimestamp from, IWTimestamp to) {
 		IDOQuery query = super.idoQueryGetAllCasesByStatus(caseStatus,from,to);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
 		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
 		query.append(" desc ");
 		return query;
-	}
+	}*/
 	
+	protected SelectQuery idoSelectQueryGetLettersByStatusAndType(String caseStatus, String letterType,IWTimestamp from, IWTimestamp to) {
+	    	SelectQuery query = idoSelectQueryGetAllCases();
+	    	query.addCriteria(idoCriteriaForStatus(caseStatus));
+	    	query.addCriteria(idoCriteriaForCreatedWithinDates(from,to));
+	    	query.addCriteria(idoCriteriaForLetterType(letterType));
+	    	query.addOrder(idoOrderByCreationDate(false));
+	    	return query;
+	}
+	/*
 	protected IDOQuery idoQueryGetSingleLettersByStatusAndType(String caseStatus, String letterType,IWTimestamp from, IWTimestamp to) {
 		IDOQuery query = super.idoQueryGetAllCasesByStatus(caseStatus,from,to);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
@@ -435,8 +459,19 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		query.append(" desc ");
 
 		return query;
+	}*/
+	
+	protected SelectQuery idoSelectQueryGetSingleLettersByStatusAndType(String caseStatus, String letterType,IWTimestamp from, IWTimestamp to) {
+	    SelectQuery query = idoSelectQueryGetAllCases();
+	    query.addCriteria(idoCriteriaForStatus(caseStatus));
+	    query.addCriteria(idoCriteriaForCreatedWithinDates(from,to));
+	    query.addCriteria(idoCriteriaForLetterType(letterType));
+	    query.addOrder(idoOrderByCreationDate(false));
+	    return query;
 	}
 	
+	
+	/*
 	protected IDOQuery idoQueryGetLettersByBulkFile(int file,String caseStatus,String letterType) {
 			IDOQuery query = super.idoQueryGetAllCasesByStatus(caseStatus);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
@@ -445,65 +480,80 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 			query.append(" desc ");
 			//System.err.println(query.toString());
 			return query;
-		}
-
+		}*/
+	protected SelectQuery idoSelectQueryGetLettersByBulkFile(int file, String caseStatus, String letterType){
+	    SelectQuery query = idoSelectQueryGetAllCases();
+	    query.addCriteria(idoCriteriaForStatus(caseStatus));
+	    query.addCriteria(idoCriteriaForLetterType(letterType));
+	    query.addCriteria(new MatchCriteria(idoTableSubCase(),COLUMN_BULK_DATA,MatchCriteria.EQUALS,file));
+	    query.addOrder(idoOrderByCreationDate(false));
+	    return query;
+	}
+/*
 	protected IDOQuery idoQueryGetLettersCountByStatusAndType(String caseStatus, String letterType) {
 		IDOQuery query = super.idoQueryGetCountCasesWithStatus(caseStatus);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
 		return query;
 	}
+	*/
+	protected SelectQuery idoSelectQueryGetLettersCountByStatusAndType(String caseStatus, String letterType) {
+		SelectQuery query = super.idoSelectQueryGetCountCasesWithStatus(caseStatus);
+		query.addCriteria(idoCriteriaForLetterType(letterType));
+		return query;
+	}
 
-	public Collection ejbFindPrintedLettersByType(String letterType) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetPrintedLettersByType(letterType));
+	public Collection ejbFindPrintedLettersByType(String letterType,int resultSize,int startingIndex) throws FinderException {
+		return super.idoFindPKsByQuery(idoSelectQueryGetPrintedLettersByType(letterType),resultSize,startingIndex);
 	}
 	
-	public Collection ejbFindPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetPrintedLettersByType(letterType,from,to));
+	public Collection ejbFindPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
+		return super.idoFindPKsByQuery(idoSelectQueryGetPrintedLettersByType(letterType,from,to),resultSize,startingIndex);
 	}
 	
-	public Collection ejbFindSinglePrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetSinglePrintedLettersByType(letterType,from,to));
+	public Collection ejbFindSinglePrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
+		SelectQuery query = idoSelectQueryGetSinglePrintedLettersByType(letterType,from,to);
+	    return super.idoFindPKsByQuery(query,resultSize,startingIndex);
 	}
 	
-	public Collection ejbFindByBulkFile(int file,String letterType, String status) throws FinderException {
-			return super.idoFindPKsByQuery(idoQueryGetLettersByBulkFile(file,status,letterType));
+	public Collection ejbFindByBulkFile(int file,String letterType, String status,int resultSize,int startingIndex) throws FinderException {
+			return super.idoFindPKsByQuery(idoSelectQueryGetLettersByBulkFile(file,status,letterType),resultSize,startingIndex);
 	}
 	
-	public Collection ejbFindSingleByTypeAndStatus(String letterType,String status,IWTimestamp from, IWTimestamp to) throws FinderException {
-			return super.idoFindPKsByQuery(idoQueryGetSingleLettersByStatusAndType(status,letterType,from,to));
+	public Collection ejbFindSingleByTypeAndStatus(String letterType,String status,IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
+			return super.idoFindPKsByQuery(idoSelectQueryGetSingleLettersByStatusAndType(status,letterType,from,to),resultSize,startingIndex);
 	}
 	
-	public Collection ejbFindUnPrintedLettersByType(String letterType) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetUnPrintedLettersByType(letterType));
+	public Collection ejbFindUnPrintedLettersByType(String letterType,int resultSize,int startingIndex) throws FinderException {
+		return super.idoFindPKsByQuery(idoSelectQueryGetUnPrintedLettersByType(letterType));
 	}
 	
-	public Collection ejbFindUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetUnPrintedLettersByType(letterType,from,to));
+	public Collection ejbFindUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
+		return super.idoFindPKsByQuery(idoSelectQueryGetUnPrintedLettersByType(letterType,from,to));
 	}
 	
-	public Collection ejbFindSingleUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) throws FinderException {
-		return super.idoFindPKsByQuery(idoQueryGetSingleUnPrintedLettersByType(letterType,from,to));
+	public Collection ejbFindSingleUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
+		return super.idoFindPKsByQuery(idoSelectQueryGetSingleUnPrintedLettersByType(letterType,from,to));
 	}
 	
 
-	public Collection ejbFindUnPrintedPasswordLetters() throws FinderException {
+	public Collection ejbFindUnPrintedPasswordLetters(int resultSize,int startingIndex) throws FinderException {
 		String letterType = LETTER_TYPE_PASSWORD;
-		return ejbFindUnPrintedLettersByType(letterType);
+		return ejbFindUnPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 
-	public Collection ejbFindPrintedPasswordLetters() throws FinderException {
+	public Collection ejbFindPrintedPasswordLetters(int resultSize,int startingIndex) throws FinderException {
 		String letterType = LETTER_TYPE_PASSWORD;
-		return ejbFindPrintedLettersByType(letterType);
+		return ejbFindPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 
-	public Collection ejbFindUnPrintedDefaultLetters() throws FinderException {
+	public Collection ejbFindUnPrintedDefaultLetters(int resultSize,int startingIndex) throws FinderException {
 		String letterType = LETTER_TYPE_DEFAULT;
-		return ejbFindUnPrintedLettersByType(letterType);
+		return ejbFindUnPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 
-	public Collection ejbFindPrintedDefaultLetters() throws FinderException {
+	public Collection ejbFindPrintedDefaultLetters(int resultSize,int startingIndex) throws FinderException {
 		String letterType = LETTER_TYPE_DEFAULT;
-		return ejbFindPrintedLettersByType(letterType);
+		return ejbFindPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 	
 	public String getPrintType() {
@@ -516,7 +566,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	
 	//TODO Handle this in more general way...
 	public Collection ejbFindLettersByChildcare(int providerID, String ssn, String msgId, IWTimestamp from, IWTimestamp to) throws FinderException {
-		IDOQuery sql = idoQuery();
+		com.idega.data.IDOQuery sql = idoQuery();
 		String sqlFrom = this.getEntityName() + " m, proc_case p, comm_childcare c";
 		if (ssn != null && ! ssn.equals("")){
 			sqlFrom += ", ic_user u";
@@ -560,7 +610,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public Collection ejbFindAllLettersBySchool(int providerID, String ssn, String msgId, IWTimestamp from, IWTimestamp to) throws FinderException {
-		IDOQuery sql = idoQuery();
+		com.idega.data.IDOQuery sql = idoQuery();
 		String sqlFrom = this.getEntityName() + " m, proc_case p, comm_sch_choice c";
 		if (ssn != null && ! ssn.equals("")){
 			sqlFrom += ", ic_user u";
@@ -605,18 +655,45 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	
 		
 	public Collection ejbFindLetters(String[] msgId) throws FinderException {
-		IDOQuery sql = idoQuery();
+		/*IDOQuery sql = idoQuery();
 		
 		sql.appendSelectAllFrom(this.getEntityName() + " m");
 		sql.appendWhere("m.msg_letter_message_id");
 		sql.appendInArray(msgId);
-		
+		*/
 //		System.out.println("########### SQL:" + sql.toString() + ".");
-		
-		Collection tmp = this.idoFindPKsByQuery(sql);
+		SelectQuery query = idoSelectQuery();
+		query.addCriteria(new InCriteria(idoQueryTable(),getIDColumnName(),msgId));
+		Collection tmp = this.idoFindPKsByQuery(query);
 		return tmp;
 		
 	}	
+	
+		
+		public Collection ejbFindMessagesByStatus(User user, String[] status, int numberOfEntries, int startingEntry)throws FinderException{
+			return super.ejbFindAllCasesByUserAndStatusArray(user, status, numberOfEntries, startingEntry);
+		}
+		
+		public Collection ejbFindMessagesByStatus(Group group, String[] status)throws FinderException{
+			return super.ejbFindAllCasesByGroupAndStatusArray(group, status);
+		}	
+	 
+		public Collection ejbFindMessagesByStatus(Group group, String[] status, int numberOfEntries, int startingEntry)throws FinderException{
+			return super.ejbFindAllCasesByGroupAndStatusArray(group, status, numberOfEntries, startingEntry);
+		}	
+	 
+		public Collection ejbFindMessagesByStatus(User user, Collection groups, String[] status, int numberOfEntries, int startingEntry)throws FinderException{
+			return super.ejbFindAllCasesByUserAndGroupsAndStatusArray(user, groups, status, numberOfEntries, startingEntry);
+		}	
+	 
+		public int ejbGetNumberOfMessagesByStatus(User user, String[] status) throws IDOException {
+			return super.ejbHomeGetCountCasesByUserAndStatusArray(user, status);
+		}
+
+		public int ejbGetNumberOfMessagesByStatus(User user, Collection groups, String[] status) throws IDOException {
+			return super.ejbHomeGetCountCasesByUserAndGroupsAndStatusArray(user, groups, status);
+		}
+		
 	
 	
 

@@ -109,11 +109,34 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 		return super.ejbFindAllCasesByUserAndGroupsAndStatusArray(user, groups, status, numberOfEntries, startingEntry);
 	}	
  
-	public int ejbGetNumberOfMessagesByStatus(User user, String[] status) throws IDOException {
+	public int ejbHomeGetNumberOfMessagesByStatus(User user, String[] status) throws IDOException {
 		return super.ejbHomeGetCountCasesByUserAndStatusArray(user, status);
 	}
 
-	public int ejbGetNumberOfMessagesByStatus(User user, Collection groups, String[] status) throws IDOException {
+	public int ejbHomeGetNumberOfMessagesByStatus(User user, Collection groups, String[] status) throws IDOException {
 		return super.ejbHomeGetCountCasesByUserAndGroupsAndStatusArray(user, groups, status);
 	}
+	
+
+	 public java.util.Collection ejbFindMessages(com.idega.user.data.User user, String[] status)throws javax.ejb.FinderException{
+	     return super.ejbFindAllCasesByUserAndStatusArray(user,status);
+	 }
+	 public java.util.Collection ejbFindMessages(com.idega.user.data.Group group, String[] status)throws javax.ejb.FinderException{
+	     return super.ejbFindAllCasesByGroupAndStatusArray(group,status);
+	 }
+	 public java.util.Collection ejbFindMessages(com.idega.user.data.User user, String[] status, int numberOfEntries, int startingEntry)throws javax.ejb.FinderException{
+	    return super.ejbFindAllCasesByUserAndStatusArray(user,status,numberOfEntries,startingEntry);    
+	 }
+	 public java.util.Collection ejbFindMessages(com.idega.user.data.Group group, String[] status, int numberOfEntries, int startingEntry)throws javax.ejb.FinderException{
+	     return super.ejbFindAllCasesByGroupAndStatusArray(group,status,numberOfEntries,startingEntry);
+	 }
+	 public java.util.Collection ejbFindMessages(com.idega.user.data.User user, java.util.Collection groups, String[] status, int numberOfEntries, int startingEntry)throws javax.ejb.FinderException{
+	     return super.ejbFindAllCasesByUserAndGroupsAndStatusArray(user,groups,status,numberOfEntries,startingEntry);
+	 }
+	 public int ejbHomeGetNumberOfMessages(com.idega.user.data.User user, String[] status) throws IDOException{
+	     return super.ejbHomeGetCountCasesByUserAndStatusArray(user, status);
+	 }
+	 public int ejbHomeGetNumberOfMessages(com.idega.user.data.User user, java.util.Collection groups, String[] status) throws IDOException{
+	     return super.ejbHomeGetCountCasesByUserAndGroupsAndStatusArray(user,groups,status);
+	 }
 }

@@ -12,7 +12,6 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.message.data.PrintMessage;
-import se.idega.idegaweb.commune.message.data.PrintMessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.presentation.ColumnList;
@@ -308,7 +307,7 @@ public class PrintMessageViewer extends CommuneBlock {
 		}
 	}
 	public Collection getPrintedMessagesByPrimaryKeys(String[] primaryKeys) throws FinderException {
-		PrintMessageHome msgHome = null;
+		PrintedLetterMessageHome msgHome = null;
 		PrintMessage msg;
 		ArrayList coll = new ArrayList(primaryKeys.length);
 		msgHome = getPrintedLetterMessageHome();

@@ -9,7 +9,7 @@ import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
-import com.idega.data.IDOQuery;
+import com.idega.data.query.SelectQuery;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 /**
@@ -166,24 +166,32 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	}
 
 	public Collection ejbFindPrintedMessages()throws FinderException{
-		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusReady()));
+		return super.idoFindPKsByQuery(super.idoSelectQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusReady()));
 	}
 	
 	public Collection ejbFindUnPrintedMessages()throws FinderException{
-		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusOpen()));
+		return super.idoFindPKsByQuery(super.idoSelectQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusOpen()));
 	}
 	
 	public Collection ejbFindPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException {
-		IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusReady(),from,to);
-		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
-		query.append(" desc ");
+		//IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusReady(),from,to);
+		//query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
+		//query.append(" desc ");
+	    SelectQuery query = idoSelectQueryGetAllCases();
+	    query.addCriteria(idoCriteriaForStatus(getCaseStatusReady()));
+	    query.addCriteria(idoCriteriaForCreatedWithinDates(from,to));
+	    query.addOrder(idoOrderByCreationDate(false));
 		return super.idoFindPKsByQuery(query);
 	}
 	
 	public Collection ejbFindUnPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException {
-		IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusOpen(),from,to);
-		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
-		query.append(" desc ");
+		//IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusOpen(),from,to);
+		//query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
+		//query.append(" desc ");
+	    SelectQuery query = idoSelectQueryGetAllCases();
+	    query.addCriteria(idoCriteriaForStatus(getCaseStatusOpen()));
+	    query.addCriteria(idoCriteriaForCreatedWithinDates(from,to));
+	    query.addOrder(idoOrderByCreationDate(false));
 		return super.idoFindPKsByQuery(query);
 	}
 	
@@ -194,7 +202,7 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	{
 		try
 		{
-			IDOQuery sql = super.idoQueryGetCountCasesWithStatus(getCaseStatusOpen());
+			SelectQuery sql = super.idoSelectQueryGetCountCasesWithStatus(getCaseStatusOpen());
 			return super.idoGetNumberOfRecords(sql);
 		}
 		catch (IDOException sqle)

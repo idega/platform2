@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.62 2004/05/20 12:53:08 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.63 2004/10/12 08:32:54 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -22,14 +22,15 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
-import se.idega.idegaweb.commune.message.data.MessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome;
 import se.idega.idegaweb.commune.message.data.UserMessage;
+import se.idega.idegaweb.commune.message.data.UserMessageHome;
 
 import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBORuntimeException;
@@ -52,8 +53,9 @@ import com.idega.util.IWTimestamp;
  * @author Anders Lindman , <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class MessageBusinessBean extends com.idega.block.process.business.CaseBusinessBean implements MessageBusiness {
+public class MessageBusinessBean extends CaseBusinessBean implements MessageBusiness,CaseBusiness {
 
+   
   private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 	public static final String MESSAGE_PROPERTIES = "message_properties";
 	public static final String MAIL_PROPERTIES = "mail_properties";
@@ -71,11 +73,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
 	public MessageBusinessBean() {
 	}
-
+/*
 	private MessageHome getMessageHome(String messageType) throws java.rmi.RemoteException {
 //		System.out.println("Getting MessageHome for messageType = " + messageType);
 		if (messageType.equals(TYPE_USER_MESSAGE)) {
-			return (MessageHome) this.getIDOHome(UserMessage.class);
+			return getUserMessageHome();
 		}
 		if (messageType.equals(TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE)) {
 			return getSystemArchivationMessageHome();
@@ -86,6 +88,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		else {
 			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
 		}
+	}
+	*/
+	
+	private UserMessageHome getUserMessageHome()throws RemoteException{
+	    return (UserMessageHome) this.getIDOHome(UserMessage.class);
 	}
 	
 	protected PrintedLetterMessageHome getPrintedLetterMessageHome(){
@@ -107,7 +114,18 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	public void deleteMessage(String messageType, int messageID) throws FinderException,RemoveException,java.rmi.RemoteException {
-		getMessageHome(messageType).findByPrimaryKey(new Integer(messageID)).remove();
+		if (messageType.equals(TYPE_USER_MESSAGE)) {
+			 getUserMessageHome().findByPrimaryKey(new Integer(messageID)).remove();
+		}
+		if (messageType.equals(TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE)) {
+			 getSystemArchivationMessageHome().findByPrimaryKey(new Integer(messageID)).remove();
+		}
+		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
+			 getPrintedLetterMessageHome().findByPrimaryKey(new Integer(messageID)).remove();
+		}
+		else {
+			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
+		}
 	}
 	
 	public void deleteUserMessage(int messageID) {
@@ -165,8 +183,19 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return this;	
 	}
 
-	public Message getMessage(String messageType, int messageId) throws FinderException, RemoteException {
-		return getMessageHome(messageType).findByPrimaryKey(new Integer(messageId));
+	public Message getMessage(String messageType, int messageID) throws FinderException, RemoteException {
+	    if (messageType.equals(TYPE_USER_MESSAGE)) {
+			return getUserMessageHome().findByPrimaryKey(new Integer(messageID));
+		}
+		if (messageType.equals(TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE)) {
+			return getSystemArchivationMessageHome().findByPrimaryKey(new Integer(messageID));
+		}
+		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
+			return getPrintedLetterMessageHome().findByPrimaryKey(new Integer(messageID));
+		}
+		else {
+			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
+		}
 	}
 
 	public Message getUserMessage(int messageId) throws FinderException, RemoteException {
@@ -175,13 +204,13 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
 	public int getNumberOfMessages(User user) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-		return getMessageHome(TYPE_USER_MESSAGE).getNumberOfMessages(user,validStatuses);
+		return getUserMessageHome().getNumberOfMessages(user,validStatuses);
 	}
 	
 	public int getNumberOfNewMessages(User user) throws IDOException {
 		try {
 			String[] validStatuses = { getCaseStatusOpen().getStatus() };
-			return getMessageHome(TYPE_USER_MESSAGE).getNumberOfMessages(user,validStatuses);
+			return getUserMessageHome().getNumberOfMessages(user,validStatuses);
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
@@ -190,33 +219,33 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	
 	public int getNumberOfMessages(User user, Collection groups) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-		return getMessageHome(TYPE_USER_MESSAGE).getNumberOfMessages(user,groups,validStatuses);
+		return getUserMessageHome().getNumberOfMessages(user,groups,validStatuses);
 	}
 	
 
 	public Collection findMessages(User user) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,validStatuses);
+		return getUserMessageHome().findMessages(user,validStatuses);
 	}
 	
 	public Collection findMessages(User user, int numberOfEntries, int startingEntry) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,validStatuses,numberOfEntries,startingEntry);
+		return getUserMessageHome().findMessages(user,validStatuses,numberOfEntries,startingEntry);
 	}
 	
 	public Collection findMessages(User user, Collection groups, int numberOfEntries, int startingEntry) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,groups,validStatuses,numberOfEntries,startingEntry);
+		return getUserMessageHome().findMessages(user,groups,validStatuses,numberOfEntries,startingEntry);
 	}
 	
 	public Collection findMessages(Group group) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-		return getMessageHome(TYPE_USER_MESSAGE).findMessages(group, validStatuses);
+		return getUserMessageHome().findMessages(group, validStatuses);
 	}	
 
 	public Collection findMessages(Group group, int numberOfEntries, int startingEntry) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-		return getMessageHome(TYPE_USER_MESSAGE).findMessages(group,validStatuses,numberOfEntries,startingEntry);
+		return getUserMessageHome().findMessages(group,validStatuses,numberOfEntries,startingEntry);
 	}
 	
 	public Message createUserMessage(User user, String subject, String body) {
@@ -270,27 +299,46 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return createUserMessage(parentCase, receiver, sender, handler, subject, body, letterBody, pSendLetterIfNoEmail, contentCode, alwaysSendLetter, true); 
 	}
 	
-	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean pSendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter, boolean sendEMail) {
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean sendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter, boolean sendMail) {
+	    MessageValue value = new MessageValue();
+	    value.parentCase = parentCase;
+	    value.receiver = receiver;
+	    value.sender = sender;
+	    value.handler = handler;
+	    value.subject = subject;
+	    value.body = body;
+	    value.letterBody = letterBody;
+	    value.sendLetterIfNoEmail= new Boolean(sendLetterIfNoEmail); 
+	    value.contentCode = contentCode;
+	    value.alwaysSendLetter = new Boolean(alwaysSendLetter);
+	    value.sendMail = new Boolean(sendMail);
+	    return createUserMessage(value);
+	    
+	}
+	
+	public Message createUserMessage(MessageValue msgValue){
+	    
 		try {
-			if (letterBody == null) {
-				letterBody = body;
+			if (msgValue.letterBody == null) {
+			    msgValue.letterBody = msgValue.body;
 			}
 			
 			Message message = null;
-			boolean sendMail = getIfUserPreferesMessageByEmail(receiver) && sendEMail;
-			boolean sendToBox = getIfUserPreferesMessageInMessageBox(receiver);
+			boolean sendMail = getIfUserPreferesMessageByEmail(msgValue.receiver) && msgValue.sendMail.booleanValue();
+			boolean sendToBox = getIfUserPreferesMessageInMessageBox(msgValue.receiver);
 			boolean canSendEmail = getIfCanSendEmail();
 			boolean sendLetterEvenWhenHavingEmail=getIfCreateLetterMessageHavingEmail();
 			//By default: copies in-parameter value:
-			boolean doSendLetter=pSendLetterIfNoEmail;
+			boolean doSendLetter=msgValue.sendLetterIfNoEmail.booleanValue();
 			
 			if (sendToBox) {
-				message = createMessage(getTypeUserMessage(), receiver, sender, handler, subject, body, parentCase);
+			    msgValue.messageType = getTypeUserMessage();
+				message = createMessage(msgValue);
 			}
 			
 			if (sendMail) {
 				boolean sendEmail = false;
-				Email mail = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserMail(receiver);	
+				Email mail = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserMail(msgValue.receiver);	
 				if (mail != null) {
 					if (mail.getEmailAddress() != null)
 						sendEmail = true;
@@ -299,7 +347,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 				if ( sendEmail ) {
 					if (canSendEmail)
 						try {
-							sendMessage(mail.getEmailAddress(),subject,body);
+							sendMessage(mail.getEmailAddress(),msgValue.subject,msgValue.body);
 							if(!sendLetterEvenWhenHavingEmail){
 								//do not send message letter when having email address
 								doSendLetter=false;
@@ -321,23 +369,23 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			//	if (pSendLetterIfNoEmail)
 			//		createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			//}
-			if (alwaysSendLetter) {
+			if (msgValue.alwaysSendLetter.booleanValue()) {
 				doSendLetter = true;
 			}
 			if(doSendLetter){
-				createPrintedLetterMessage(parentCase, receiver, subject, letterBody, null, contentCode);
+				createPrintedLetterMessage(msgValue);
 			}
 
 			if (IWMainApplication.isDebugActive()) {
-				System.out.println("[MessageBusiness] Creating user message with subject:" + subject);
-				System.out.println("[MessageBusiness] Body: " + body);
-				if (parentCase != null)
-					System.out.println("[MessageBusiness] Parent case:" + parentCase.getClass().getName() + " (" + parentCase.getPrimaryKey().toString() + ")");
-				System.out.println("[MessageBusiness] Receiver: " + receiver.getName() + " (" + receiver.getPrimaryKey().toString() + ")");
-				if (sender != null)
-					System.out.println("[MessageBusiness] Sender: " + sender.getName() + " (" + sender.getPrimaryKey().toString() + ")");
-				if (handler != null)
-					System.out.println("[MessageBusiness] Handler: " + handler.getName() + " (" + handler.getPrimaryKey().toString() + ")");
+				System.out.println("[MessageBusiness] Creating user message with subject:" + msgValue.subject);
+				System.out.println("[MessageBusiness] Body: " + msgValue.body);
+				if (msgValue.parentCase != null)
+					debug("[MessageBusiness] Parent case:" + msgValue.parentCase.getClass().getName() + " (" + msgValue.parentCase.getPrimaryKey().toString() + ")");
+				System.out.println("[MessageBusiness] Receiver: " + msgValue.receiver.getName() + " (" + msgValue.receiver.getPrimaryKey().toString() + ")");
+				if (msgValue.sender != null)
+				    debug("[MessageBusiness] Sender: " + msgValue.sender.getName() + " (" + msgValue.sender.getPrimaryKey().toString() + ")");
+				if (msgValue.handler != null)
+				    debug("[MessageBusiness] Handler: " + msgValue.handler.getName() + " (" + msgValue.handler.getPrimaryKey().toString() + ")");
 			}
 
 			//return message;
@@ -369,31 +417,6 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return createUserMessage(user, subject, body);
 	}
 
-	public Message createPrintedLetterMessage(User user, String subject, String body) throws CreateException, RemoteException {
-		Message message = createPrintedLetterMessage(null, user, subject, body, null);
-		return message;
-	}
-
-	private Message createPrintedLetterMessage(Case parentCase, User user, String subject, String body) throws CreateException, RemoteException {
-		Message message = createPrintedLetterMessage(parentCase, user, subject, body, null);
-		return message;
-	}
-
-	public Message createPrintedLetterMessage(int userID, String subject, String body) throws CreateException, RemoteException {
-		return createPrintedLetterMessage(null, userID, subject, body);
-	}
-
-	private Message createPrintedLetterMessage(Case parentCase, int userID, String subject, String body) throws CreateException, RemoteException {
-		User user;
-		try {
-			user = getUser(userID);
-		}
-		catch (FinderException fex) {
-			throw new IDOCreateException(fex);
-		}
-
-		return createPrintedLetterMessage(parentCase, user, subject, body);
-	}
 	
 	/**	 * @return Collection of PrintedLetterMessage that have already been printed	 */
 	public Collection getPrintedLetterMessages()throws FinderException{
@@ -403,19 +426,19 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed
 	 */
-	public Collection getPrintedLetterMessagesByType(String type)throws FinderException{
-		return getPrintedLetterMessageHome().findPrintedLettersByType(type);	
+	public Collection getPrintedLetterMessagesByType(String type,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findPrintedLettersByType(type,resultSize,startingIndex);	
 	}
 	
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed, created between dates
 	 */
-	public Collection getPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-		return getPrintedLetterMessageHome().findPrintedLettersByType(type,from,to);	
+	public Collection getPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findPrintedLettersByType(type,from,to,resultSize,startingIndex);	
 	}
 	
-	public Collection getSinglePrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-		return getPrintedLetterMessageHome().findSinglePrintedLettersByType(type,from,to);	
+	public Collection getSinglePrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findSinglePrintedLettersByType(type,from,to,resultSize,startingIndex);	
 	}
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
@@ -427,27 +450,27 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
-	public Collection getUnPrintedLetterMessagesByType(String type)throws FinderException{
-		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type);	
+	public Collection getUnPrintedLetterMessagesByType(String type,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type,resultSize,startingIndex);	
 	}
 	
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
-	public Collection getUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type,from,to);	
+	public Collection getUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type,from,to,resultSize,startingIndex);	
 	}
 	
-	public Collection getSingleUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-		return getPrintedLetterMessageHome().findSingleUnPrintedLettersByType(type,from,to);	
+	public Collection getSingleUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findSingleUnPrintedLettersByType(type,from,to,resultSize,startingIndex);	
 	}
 		
-	public Collection getSingleLettersByTypeAndStatus(String type,String status,IWTimestamp from,IWTimestamp to)throws FinderException{
-		return getPrintedLetterMessageHome().findSingleByTypeAndStatus(type,status,from,to);	
+	public Collection getSingleLettersByTypeAndStatus(String type,String status,IWTimestamp from,IWTimestamp to,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findSingleByTypeAndStatus(type,status,from,to,resultSize,startingIndex);	
 	}
 	
-	public Collection getLettersByBulkFile(int file, String type , String status)throws FinderException{
-		return getPrintedLetterMessageHome().findByBulkFile(file,type,status);	
+	public Collection getLettersByBulkFile(int file, String type , String status,int resultSize,int startingIndex)throws FinderException{
+		return getPrintedLetterMessageHome().findByBulkFile(file,type,status,resultSize,startingIndex);	
 	}
 	
 	/**
@@ -492,7 +515,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	
 
 	public Message createPrintArchivationMessage(User user, String subject, String body) throws CreateException, RemoteException {
-		Message message = createMessage(getTypeArchivationMessage(), user, subject, body);
+	    MessageValue msgValue = new MessageValue();
+	    msgValue.receiver = user;
+	    msgValue.subject = subject;
+	    msgValue.body = body;
+		Message message = createMessage(msgValue);
 		return message;
 	}
 
@@ -529,7 +556,12 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		 * @todo implement support for creator
 		 */
 		try{
-			Message message = createMessage(getTypeArchivationMessage(), forUserID, subject, body);
+		    MessageValue msgValue = new MessageValue();
+		    msgValue.messageType = getTypeArchivationMessage();
+		    msgValue.receiver = getUser(forUserID);
+		    msgValue.subject = subject;
+		    msgValue.body = body;
+			Message message = createMessage(msgValue);
 			SystemArchivationMessage saMessage = (SystemArchivationMessage)message;
 			saMessage.setAttachedFile(attatchementFileID);
 			message.store();
@@ -540,45 +572,35 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 
 	}
-
-	private Message createMessage(String messageType, int userID, String subject, String body) throws CreateException, RemoteException {
-		User user;
-		try {
-			user = getUser(userID);
+	
+	private Message createMessage(String messageType) throws RemoteException, CreateException{
+	    if (messageType.equals(TYPE_USER_MESSAGE)) {
+			return getUserMessageHome().create();
 		}
-		catch (FinderException fex) {
-			throw new IDOCreateException(fex);
+		if (messageType.equals(TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE)) {
+			return getSystemArchivationMessageHome().create();
 		}
-
-		return createMessage(messageType, user, subject, body);
-	}
-
-	private Message createMessage(String messageType, User user, String subject, String body) throws CreateException, RemoteException {
-		return createMessage(messageType, user, subject, body, null);
+		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
+			return getPrintedLetterMessageHome().create();
+		}
+		else {
+			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
+		}
 	}
 	
-	private Message createMessage(String messageType, User user, String subject, String body, Case parentCase) throws CreateException, RemoteException {
-		return createMessage(messageType, user, null, subject, body, parentCase);
-	}
-
-	private Message createMessage(String messageType, User receiver, User sender, String subject, String body, Case parentCase) throws CreateException, RemoteException {
-		return createMessage(messageType, receiver, sender, null, subject, body, parentCase);
-	}
-	
-	private Message createMessage(String messageType, User receiver, User sender, Group handler, String subject, String body, Case parentCase) throws CreateException, RemoteException {
-		MessageHome home = this.getMessageHome(messageType);
-		Message message = home.create();
-		message.setOwner(receiver);
-		if (sender != null){
-			message.setSender(sender);
+	private Message createMessage(MessageValue msgValue) throws RemoteException, CreateException{
+		Message message = createMessage(msgValue.messageType);
+		message.setOwner(msgValue.receiver);
+		if (msgValue.sender != null){
+			message.setSender(msgValue.sender);
 		}
-		if (handler != null){
-			message.setHandler(handler);
+		if (msgValue.handler != null){
+			message.setHandler(msgValue.handler);
 		}
-		message.setSubject(subject);
-		message.setBody(body);
-		if (parentCase != null){
-			message.setParentCase(parentCase);
+		message.setSubject(msgValue.subject);
+		message.setBody(msgValue.body);
+		if (msgValue.parentCase != null){
+			message.setParentCase(msgValue.parentCase);
 		}
 		
 		try {
@@ -590,7 +612,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public PrintedLetterMessage createPrintedPasswordLetterMessage(User user, String subject, String body) throws CreateException, RemoteException {
-		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
+		PrintedLetterMessageHome home = getPrintedLetterMessageHome();
 		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
 		message.setOwner(user);
 		message.setSubject(subject);
@@ -606,8 +628,8 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	public PrintedLetterMessage createPasswordMessage(User user, String username,String password) throws CreateException, RemoteException {
-		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
-		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
+		PrintedLetterMessageHome home = getPrintedLetterMessageHome();
+		PrintedLetterMessage message = home.create();
 		message.setOwner(user);
 		message.setSubject("Username and Password");
 		message.setBody(username+"|"+password);
@@ -621,25 +643,19 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return message;
 	}
 
-	public PrintedLetterMessage createPrintedLetterMessage(User user, String subject, String body,String printedLetterType) throws CreateException, RemoteException {
-		return createPrintedLetterMessage(null, user, subject, body, printedLetterType);
-	}
-	private PrintedLetterMessage createPrintedLetterMessage(Case parentCase, User user, String subject, String body,String printedLetterType) throws CreateException, RemoteException {
-		return createPrintedLetterMessage(parentCase,user,subject,body,printedLetterType,null);
-	}
-	private PrintedLetterMessage createPrintedLetterMessage(Case parentCase, User user, String subject, String body,String printedLetterType,String contentCode) throws CreateException, RemoteException {
-		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
-		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
-		message.setOwner(user);
-		message.setSubject(subject);
-		message.setBody(body);
-		if (parentCase != null)
-			message.setParentCase(parentCase);
-		if(printedLetterType!=null){
-			message.setLetterType(printedLetterType);
+	private PrintedLetterMessage createPrintedLetterMessage(MessageValue msgValue) throws CreateException, RemoteException {
+		PrintedLetterMessageHome home = getPrintedLetterMessageHome();
+		PrintedLetterMessage message = home.create();
+		message.setOwner(msgValue.receiver);
+		message.setSubject(msgValue.subject);
+		message.setBody(msgValue.body);
+		if (msgValue.parentCase != null)
+			message.setParentCase(msgValue.parentCase);
+		if(msgValue.printedLetterType!=null){
+			message.setLetterType(msgValue.printedLetterType);
 		}
-		if(contentCode!=null){
-			message.setContentCode(contentCode);
+		if(msgValue.contentCode!=null){
+			message.setContentCode(msgValue.contentCode);
 		}
 		try {
 			message.store();
@@ -649,6 +665,18 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 		return message;
 	}
+	
+	 public Message createPrintedLetterMessage(int userID, String subject,String body)throws CreateException, RemoteException  {
+	     try {
+	         MessageValue msgValue = new MessageValue();
+            msgValue.receiver = getUser(userID);
+            msgValue.subject = subject;
+            msgValue.body = body;
+            return createPrintedLetterMessage(msgValue);
+	    } catch (FinderException e) {
+            throw new IDOCreateException(e);
+        }
+	 }
 
 	public void sendMessage(String email, String subject, String body) {
 		sendMessage(email, subject, body, null);
