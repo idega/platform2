@@ -1544,9 +1544,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER + age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 
-		ReportableField bothGendersEqualOverAge = new ReportableField("bothGendersEqualOverAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER + age, "all "+age+"+"), currentLocale);
-		reportCollection.addField(bothGendersEqualOverAge);
+		ReportableField bothGendersEqualOrOverAge = new ReportableField("bothGendersEqualOrOverAge", Integer.class);
+		bothGendersEqualOrOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER + age, "all "+age+"+"), currentLocale);
+		reportCollection.addField(bothGendersEqualOrOverAge);
 	
 		ReportableField bothGendersAllAge = new ReportableField("bothGendersAllAge", Integer.class);
 		bothGendersAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all "), currentLocale);
@@ -1593,7 +1593,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						leagueStatsData.addData(menUnderAgeLimit,new Integer(0));
 						leagueStatsData.addData(menOverOrEqualAgeLimit, new Integer(0));
 						leagueStatsData.addData(bothGendersUnderAge, new Integer(0));
-						leagueStatsData.addData(bothGendersEqualOverAge, new Integer(0));
+						leagueStatsData.addData(bothGendersEqualOrOverAge, new Integer(0));
 						leagueStatsData.addData(bothGendersAllAge, new Integer(0));
 					}
 				
@@ -1611,7 +1611,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					leagueStatsData = addToIntegerCount(menOverOrEqualAgeLimit, leagueStatsData, menOver);
 					
 					leagueStatsData = addToIntegerCount(bothGendersUnderAge, leagueStatsData, menUnder + womenUnder);
-					leagueStatsData = addToIntegerCount(bothGendersEqualOverAge, leagueStatsData, menOver + womenOver);
+					leagueStatsData = addToIntegerCount(bothGendersEqualOrOverAge, leagueStatsData, menOver + womenOver);
 					leagueStatsData = addToIntegerCount(bothGendersAllAge, leagueStatsData, menUnder + womenUnder + menOver + womenOver);				
 				
 					//put it back again
