@@ -28,6 +28,8 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.MetaData;
 import com.idega.data.MetaDataCapable;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
@@ -887,10 +889,13 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 		Table table = new Table(this);
 		Table poolTable = new Table(pool);
 		
+		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
 
 		query.addManyToManyJoin(table, poolTable);
+		
+		query.addCriteria(new MatchCriteria(new Column(table, getColumnNameIsValid()), MatchCriteria.EQUALS, true));
 		
 		return idoFindPKsByQuery(query);
 	}
