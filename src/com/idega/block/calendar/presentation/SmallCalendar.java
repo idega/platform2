@@ -51,6 +51,8 @@ private Vector parameterValue = new Vector();
 private Hashtable dayColors = null;
 private Hashtable dayFontColors = null;
 
+private boolean useTarget = false;
+
 
 public Table T;
 
@@ -72,10 +74,10 @@ public SmallCalendar() {
 
   public void main(IWContext iwc){
     //if (stamp == null) {
-      if(isTarget()){
-        String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-        String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-        String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+      String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+      String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+      String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+      if(isTarget() || !useTarget ){
         stamp = CalendarBusiness.getTimestamp(day,month,year);
       }
       else if(iwc.getSessionAttribute("smcal"+getICObjectInstanceID())!=null){

@@ -190,6 +190,8 @@ public CalendarEditor(){
 
     DateInput entryDate = new DateInput(CalendarBusiness.PARAMETER_ENTRY_DATE);
       entryDate.setYearRange(new idegaTimestamp().getYear()-5,new idegaTimestamp().getYear()+10);
+      if(_stamp!=null)
+        _stamp = idegaTimestamp.RightNow();
       entryDate.setDay(_stamp.getDay());
       entryDate.setMonth(_stamp.getMonth());
       entryDate.setYear(_stamp.getYear());

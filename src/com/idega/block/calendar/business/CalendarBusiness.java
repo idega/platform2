@@ -133,7 +133,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     CalendarEntry entry = null;
     if ( update ) {
-      entry = CalendarFinder.getEntry(entryID);
+      entry = CalendarFinder.getInstance().getEntry(entryID);
       if ( entry == null ) {
         entry = new CalendarEntry();
         update = false;
@@ -201,7 +201,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
   }
 
   public static void deleteEntry(int entryID) {
-    CalendarEntry cal = CalendarFinder.getEntry(entryID);
+    CalendarEntry cal = CalendarFinder.getInstance().getEntry(entryID);
     if ( cal != null ) {
       try {
         cal.removeFrom(LocalizedText.getStaticInstance(LocalizedText.class));
@@ -222,7 +222,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     CalendarEntryType type = null;
     if ( update ) {
-      type = CalendarFinder.getEntryType(typeID);
+      type = CalendarFinder.getInstance().getEntryType(typeID);
       if ( type == null ) {
         type = new CalendarEntryType();
         update = false;
@@ -294,7 +294,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
   }
 
   public static void deleteEntryType(int typeID) {
-    CalendarEntryType type = CalendarFinder.getEntryType(typeID);
+    CalendarEntryType type = CalendarFinder.getInstance().getEntryType(typeID);
     if ( type != null ) {
       try {
         CalendarEntry[] entries = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumn(CalendarEntry.getColumnNameEntryTypeID(),typeID);

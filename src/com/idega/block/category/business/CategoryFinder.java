@@ -122,8 +122,7 @@ public class CategoryFinder {
   public static int[] getObjectInstanceCategoryIds(int iObjectInstanceId,boolean CreateNew,String type){
     int[] ids = new int[0];
     try {
-      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
-      ids = getObjectInstanceCategoryIds(obj);
+      ids = getObjectInstanceCategoryIds(iObjectInstanceId);
       if(ids.length == 0 && CreateNew ){
         ids = new int[1];
         ids[0] = CategoryBusiness.createCategory(iObjectInstanceId ,type);
@@ -161,9 +160,33 @@ public class CategoryFinder {
     }
   }
 
-  public static int[] getObjectInstanceCategoryIds(ICObjectInstance eObjectInstance){
+  public static int[] getObjectInstanceCategoryIds(int ICObjectInstanceId){
+    //select ic_category_id from IC_CATEGORY_ic_object_instance where ic_object_instance_ID=51
+    StringBuffer sql = new StringBuffer("select ");
+    ICCategory cat = (ICCategory) ICCategory.getStaticInstance(ICCategory.class);
+    ICObjectInstance obj = (ICObjectInstance) ICObjectInstance.getStaticInstance(ICObjectInstance.class);
+    sql.append(cat.getIDColumnName()).append(" from ");
+    sql.append(EntityControl.getManyToManyRelationShipTableName(ICCategory.class,ICObjectInstance.class));
+    sql.append(" where ").append(obj.getIDColumnName()).append(" = ").append(ICObjectInstanceId);
     try {
+      String[] sids = com.idega.data.SimpleQuerier.executeStringQuery(sql.toString());
+      if(sids!=null && sids.length >0){
+        int[] ids = new int[sids.length];
+        for (int i = 0; i < sids.length; i++) {
+          ids[i] = Integer.parseInt(sids[i]);
+        }
+        return ids;
+      }
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return new int[0];
+    /*
+    try {
+      EntityFinder.debug = true;
       List L = EntityFinder.findRelated(eObjectInstance ,(GenericEntity)ICCategory.getStaticInstance(ICCategory.class));
+      EntityFinder.debug = false;
       if(L!= null){
         java.util.Iterator iter = L.iterator();
         int[] ids = new int[L.size()];
@@ -179,6 +202,7 @@ public class CategoryFinder {
       ex.printStackTrace();
       return new int[0];
     }
+    */
   }
 
   public static List listOfCategoryForObjectInstanceId(int instanceid){

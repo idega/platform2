@@ -250,25 +250,34 @@ public class CategoryWindow extends IWAdminWindow {
       ICCategory cat ;
       CheckBox box;
       RadioButton rad;
+      Link deleteLink;
+      int id;
       while(iter.hasNext()){
         col = 1;
         cat = (ICCategory) iter.next();
-        if(cat.getID() == chosenId){
+        id = cat.getID();
+        if(id == chosenId){
           name.setContent(cat.getName());
           info.setContent(cat.getDescription());
           T.add(name,2,row);
-          //T.add(info,2,row);
-          T.add(new HiddenInput(prmCategoryId,String.valueOf(cat.getID())));
+          T.add(info,3,row);
+          T.add(new HiddenInput(prmCategoryId,String.valueOf(id)));
           formAdded = true;
         }
         else{
           Link Li = new Link(formatText(cat.getName()));
-          Li.addParameter(prmCategoryId,cat.getID());
+          Li.addParameter(prmCategoryId,id);
           Li.addParameter(prmCategoryType,sType);
           Li.addParameter(prmObjInstId,String.valueOf(iObjectInstanceId));
           T.add(Li,2,row);
-          //T.add(formatText(cat.getDescription()),2,row);
-
+          T.add(formatText(cat.getDescription()),3,row);
+          deleteLink = new Link(core.getImage("/shared/delete.gif"));
+          deleteLink.addParameter(actDelete,"true");
+          deleteLink.addParameter(prmCategoryId,id);
+          deleteLink.addParameter(prmCategoryType,sType);
+          deleteLink.addParameter(prmObjInstId,String.valueOf(iObjectInstanceId));
+          deleteLink.addParameter(actForm,"true");
+          T.add(deleteLink,4,row);
         }
         if(multi){
           box = new CheckBox("id_box",String.valueOf(cat.getID()));

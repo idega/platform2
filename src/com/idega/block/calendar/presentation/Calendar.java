@@ -89,14 +89,14 @@ public String getCategoryType(){
 
     switch (_view) {
       case CalendarBusiness.DAY:
-	drawDay(iwc);
-	break;
+      drawDay(iwc);
+      break;
       case CalendarBusiness.MONTH:
-	drawMonth(iwc);
-	break;
+      drawMonth(iwc);
+      break;
       case CalendarBusiness.YEAR:
-	drawYear(iwc);
-	break;
+      drawYear(iwc);
+      break;
     }
 	}
 
@@ -105,13 +105,13 @@ public String getCategoryType(){
       if ( _width != null )
       entriesTable.setWidth(_width);
 
-    String[] localeStrings = null;
-    Text headlineText = null;
-    Text bodyText = null;
-    idegaTimestamp stamp = null;
-    boolean hasImage = true;
-    int imageID;
-    int ypos = 1;
+      String[] localeStrings = null;
+      Text headlineText = null;
+      Text bodyText = null;
+      idegaTimestamp stamp = null;
+      boolean hasImage = true;
+      int imageID;
+      int ypos = 1;
 
     if ( _isAdmin ) {
       entriesTable.add(getAddIcon(),1,ypos);
@@ -124,96 +124,97 @@ public String getCategoryType(){
 
     List entries = null;
     if ( _isSelectedDay ) {
-      entries = CalendarFinder.listOfEntries(_stamp,getCategoryId());
+
+      entries = CalendarFinder.getInstance().listOfEntries(_stamp,getCategoryIds());
       if ( entries != null )
-	numberOfShown = entries.size();
+	      numberOfShown = entries.size();
     }
     else {
-      entries = CalendarFinder.listOfWeekEntries(_stamp,_daysAhead,_daysBack,getCategoryId());
+      entries = CalendarFinder.getInstance().listOfWeekEntries(_stamp,_daysAhead,_daysBack,getCategoryIds());
       if ( entries != null) {
-	 if ( entries.size() > _numberOfShown )
-	  numberOfShown = _numberOfShown;
-	else
-	  numberOfShown = entries.size();
+	      if ( entries.size() > _numberOfShown )
+	        numberOfShown = _numberOfShown;
+	      else
+	        numberOfShown = entries.size();
       }
     }
 
     if ( entries != null ) {
       CalendarEntry entry;
       for ( int a = 0; a < numberOfShown; a++ ) {
-	Image typeImage = null;
-	entry = (CalendarEntry) entries.get(a);
-	localeStrings = CalendarFinder.getEntryStrings(entry,_iLocaleID);
-	imageID = CalendarFinder.getImageID(entry.getEntryTypeID());
+        Image typeImage = null;
+        entry = (CalendarEntry) entries.get(a);
+        localeStrings = CalendarFinder.getInstance().getEntryStrings(entry,_iLocaleID);
+        imageID = CalendarFinder.getInstance().getImageID(entry.getEntryTypeID());
 
-	if ( imageID != -1 ) {
-	  try {
-	    typeImage = new Image(imageID);
-	    typeImage.setHorizontalSpacing(3);
-	  }
-	  catch (Exception e) {
-	    typeImage = null;
-	  }
-	}
-	if ( typeImage == null ) {
-	  typeImage = _iwbCalendar.getImage("shared/day_dot.gif");
-	}
+        if ( imageID != -1 ) {
+          try {
+            typeImage = new Image(imageID);
+            typeImage.setHorizontalSpacing(3);
+          }
+          catch (Exception e) {
+            typeImage = null;
+          }
+        }
+        if ( typeImage == null ) {
+          typeImage = _iwbCalendar.getImage("shared/day_dot.gif");
+        }
 
-	if ( localeStrings != null ) {
-	  if ( localeStrings[0] != null )
-	    headlineText = new Text(localeStrings[0]);
-	  else
-	    headlineText = null;
+        if ( localeStrings != null ) {
+          if ( localeStrings[0] != null )
+            headlineText = new Text(localeStrings[0]);
+          else
+            headlineText = null;
 
-	  if ( localeStrings[1] != null )
-	    bodyText = new Text(localeStrings[1]);
-	  else
-	    bodyText = null;
-	}
+          if ( localeStrings[1] != null )
+            bodyText = new Text(localeStrings[1]);
+          else
+            bodyText = null;
+        }
 
-	int xpos = 1;
+	      int xpos = 1;
 
-	if ( headlineText != null ) {
-	  if ( typeImage != null ) {
-	    typeImage.setName(CalendarFinder.getEntryTypeName(entry.getEntryTypeID(),_iLocaleID));
-	    entriesTable.add(typeImage,xpos,ypos);
-	    hasImage = true;
-	    xpos++;
-	  }
+        if ( headlineText != null ) {
+          if ( typeImage != null ) {
+            typeImage.setName(CalendarFinder.getInstance().getEntryTypeName(entry.getEntryTypeID(),_iLocaleID));
+            entriesTable.add(typeImage,xpos,ypos);
+            hasImage = true;
+            xpos++;
+          }
 
-	  headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
-	  entriesTable.setWidth(xpos,ypos,"100%");
-	  entriesTable.add(headlineText,xpos,ypos);
+        headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
+        entriesTable.setWidth(xpos,ypos,"100%");
+        entriesTable.add(headlineText,xpos,ypos);
 
-	  stamp = new idegaTimestamp(entry.getDate());
-	  String date = TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear());
-	  Text dateText = new Text(date);
-	    dateText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: "+_dateColor+";");
+        stamp = new idegaTimestamp(entry.getDate());
+        String date = TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear());
+        Text dateText = new Text(date);
+          dateText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: "+_dateColor+";");
 
-	  xpos++;
-	  entriesTable.setAlignment(xpos,ypos,"right");
-	  entriesTable.add(dateText,xpos,ypos);
+        xpos++;
+        entriesTable.setAlignment(xpos,ypos,"right");
+        entriesTable.add(dateText,xpos,ypos);
 
-	  if ( _isAdmin ) {
-	    xpos++;
-	    entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
-	  }
+        if ( _isAdmin ) {
+          xpos++;
+          entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
+        }
 
-	  if ( bodyText != null ) {
-	    ypos++;
-	    bodyText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; color: "+_bodyColor+";");
-	    if ( hasImage ) {
-	      entriesTable.mergeCells(2,ypos,entriesTable.getColumns(),ypos);
-	      entriesTable.add(bodyText,2,ypos);
-	    }
-	    else {
-	      entriesTable.mergeCells(1,ypos,entriesTable.getColumns(),ypos);
-	      entriesTable.add(bodyText,1,ypos);
-	    }
-	  }
+        if ( bodyText != null ) {
+          ypos++;
+          bodyText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; color: "+_bodyColor+";");
+          if ( hasImage ) {
+            entriesTable.mergeCells(2,ypos,entriesTable.getColumns(),ypos);
+            entriesTable.add(bodyText,2,ypos);
+          }
+          else {
+            entriesTable.mergeCells(1,ypos,entriesTable.getColumns(),ypos);
+            entriesTable.add(bodyText,1,ypos);
+          }
+        }
 
-	  ypos++;
-	}
+        ypos++;
+      }
       }
     }
 
@@ -233,19 +234,20 @@ public String getCategoryType(){
   private void drawMonth(IWContext iwc) {
     SmallCalendar cal = getCalendar(_stamp);
     cal.setICObjectInstanceID(this.getICObjectInstanceID());
+
     if ( _width != null ) {
       try {
-	cal.setWidth(Integer.parseInt(_width));
+	      cal.setWidth(Integer.parseInt(_width));
       }
       catch (NumberFormatException e) {
-	cal.setWidth(110);
+	      cal.setWidth(110);
       }
     }
 
-    Table monthTable = new Table();
+      Table monthTable = new Table();
       monthTable.setCellpadding(0);
       monthTable.setCellspacing(0);
-    int ypos = 1;
+      int ypos = 1;
 
     if ( _isAdmin ) {
       monthTable.add(getAddIcon(),1,ypos);
@@ -259,19 +261,19 @@ public String getCategoryType(){
   }
 
   private SmallCalendar getCalendar(idegaTimestamp stamp) {
-    List list = CalendarFinder.getMonthEntries(stamp,getCategoryId());
+    List list = CalendarFinder.getInstance().getMonthEntries(stamp,getCategoryIds());
 
     SmallCalendar calendar = new SmallCalendar(stamp);
       calendar.setDaysAsLink(true);
       calendar.setDayTextColor(_noActionDay);
       if ( _page != null ) {
-	calendar.setPage(_page);
+	      calendar.setPage(_page);
       }
 
     if ( list != null ) {
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
-	calendar.setDayFontColor(new idegaTimestamp(((CalendarEntry) iter.next()).getDate()),_actionDay);
+	      calendar.setDayFontColor(new idegaTimestamp(((CalendarEntry) iter.next()).getDate()),_actionDay);
       }
     }
 
@@ -304,7 +306,7 @@ public String getCategoryType(){
 
       xpos = xpos % 3 + 1;
       if(xpos == 1)
-	ypos++;
+	      ypos++;
     }
 
     add(yearTable);
@@ -313,10 +315,10 @@ public String getCategoryType(){
   private Link getAddIcon() {
     Image image = _iwb.getImage("shared/create.gif");
     Link link = new Link(image);
-      link.setWindowToOpen(CalendarEditor.class);
-      link.addParameter(CalendarBusiness.PARAMETER_IC_CAT,getCategoryId());
-      if ( this._isSelectedDay )
-	link.addParameter(CalendarBusiness.PARAMETER_ENTRY_DATE,_stamp.toSQLString());
+    link.setWindowToOpen(CalendarEditor.class);
+    link.addParameter(CalendarBusiness.PARAMETER_IC_CAT,getCategoryId());
+    if ( this._isSelectedDay )
+	    link.addParameter(CalendarBusiness.PARAMETER_ENTRY_DATE,_stamp.toSQLString());
     return link;
   }
 
@@ -327,11 +329,11 @@ public String getCategoryType(){
     return link;
   }
 
-   private Link getCategoryIcon() {
+  private Link getCategoryIcon() {
     Image image = _iwb.getImage("shared/edit.gif","Categories");
     Link link = getCategoryLink(new CalendarCategory().getCategoryType());
     link.setImage(image);
-      link.setWindowToOpen(CalendarTypeEditor.class);
+     // link.setWindowToOpen(CalendarTypeEditor.class);
     return link;
   }
 

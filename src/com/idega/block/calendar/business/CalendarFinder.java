@@ -19,8 +19,15 @@ import com.idega.block.text.data.LocalizedText;
 
 public class CalendarFinder {
 
+  private static CalendarFinder calendarFinder;
 
-   public static CalendarEntry[] getEntries(idegaTimestamp stamp) {
+  public static CalendarFinder getInstance(){
+    if(calendarFinder == null)
+      calendarFinder = new CalendarFinder();
+    return calendarFinder;
+  }
+
+   public CalendarEntry[] getEntries(idegaTimestamp stamp) {
     try {
       CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toString(),CalendarEntry.getColumnNameEntryTypeID(),"=");
       if ( cal.length > 0 )
@@ -33,13 +40,20 @@ public class CalendarFinder {
     }
   }
 
-  public static List listOfEntries(idegaTimestamp stamp,int iCategoryId) {
+  public List listOfEntries(idegaTimestamp stamp,int[] iCategoryIds) {
     try {
       java.io.StringWriter writer;
       StringBuffer sql = new StringBuffer("select * from ").append(CalendarEntry.getEntityTableName());
       sql.append(" where ").append(CalendarEntry.getColumnNameEntryDate()).append("= '").append(stamp.toString()).append("'");
-      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append("= ").append(iCategoryId);
-      sql.append("order by ").append(CalendarEntry.getColumnNameEntryTypeID());
+      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append(" in (  ");
+      for (int i = 0; i < iCategoryIds.length; i++) {
+        if(i > 0)
+          sql.append(",");
+        sql.append(iCategoryIds[i]);
+      }
+      sql.append(" ) ");
+      sql.append(" order by ").append(CalendarEntry.getColumnNameEntryTypeID());
+      //System.err.println(sql.toString());
       return EntityFinder.findAll(CalendarEntry.getStaticInstance(),sql.toString());
     }
     catch (SQLException e) {
@@ -49,11 +63,11 @@ public class CalendarFinder {
     return null;
   }
 
-  public static CalendarEntry getEntry(int entryID) {
+  public CalendarEntry getEntry(int entryID) {
     return (CalendarEntry) CalendarEntry.getEntityInstance(CalendarEntry.class,entryID);
   }
 
-  public static CalendarEntry[] getWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack) {
+  public CalendarEntry[] getWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
         stampPlus.addDays(daysAhead);
@@ -78,7 +92,7 @@ public class CalendarFinder {
     }
   }
 
-  public static List listOfWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack,int iCategoryId) {
+  public List listOfWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack,int[] iCategoryIds) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
         stampPlus.addDays(daysAhead);
@@ -95,8 +109,15 @@ public class CalendarFinder {
       StringBuffer sql = new StringBuffer("select * from ").append(CalendarEntry.getEntityTableName());
       sql.append(" where ").append(CalendarEntry.getColumnNameEntryDate()).append(" < '").append(stampPlus.toString()).append("'");
       sql.append(" and ").append(CalendarEntry.getColumnNameEntryDate()).append(" >= '").append(stamp.toString()).append("'");
-      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append("= ").append(iCategoryId);
+      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append(" in ( ");
+      for (int i = 0; i < iCategoryIds.length; i++) {
+        if(i > 0)
+          sql.append(",");
+        sql.append(iCategoryIds[i]);
+      }
+      sql.append(" ) ");
       sql.append("order by ").append(CalendarEntry.getColumnNameEntryDate());
+      //System.err.println(sql.toString());
       return EntityFinder.findAll(CalendarEntry.getStaticInstance(),sql.toString());
     }
     catch (SQLException e) {
@@ -106,7 +127,7 @@ public class CalendarFinder {
     return null;
   }
 
-  public static List getMonthEntries(idegaTimestamp stamp,int iCategoryId) {
+  public List getMonthEntries(idegaTimestamp stamp,int[] iCategoryIds) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
         stampPlus.addMonths(1);
@@ -124,8 +145,15 @@ public class CalendarFinder {
       StringBuffer sql = new StringBuffer("select distinct * from ").append(CalendarEntry.getEntityTableName());
       sql.append(" where ").append(CalendarEntry.getColumnNameEntryDate()).append(" < '").append(stampPlus.toString()).append("'");
       sql.append(" and ").append(CalendarEntry.getColumnNameEntryDate()).append(" >= '").append(stampMinus.toString()).append("'");
-      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append("= ").append(iCategoryId);
-      sql.append("order by ").append(CalendarEntry.getColumnNameEntryDate());
+      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append(" in ( ");
+      for (int i = 0; i < iCategoryIds.length; i++) {
+        if(i > 0)
+          sql.append(",");
+        sql.append(iCategoryIds[i]);
+      }
+      sql.append(" ) ");
+      sql.append(" order by ").append(CalendarEntry.getColumnNameEntryDate());
+      //System.err.println(sql.toString());
       return EntityFinder.findAll(CalendarEntry.getStaticInstance(),sql.toString());
 
     }
@@ -136,7 +164,7 @@ public class CalendarFinder {
     return null;
   }
 
-  public static List getMonthEntries(idegaTimestamp stamp) {
+  public List getMonthEntries(idegaTimestamp stamp) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
         stampPlus.addMonths(1);
@@ -150,7 +178,6 @@ public class CalendarFinder {
         stampPlus.setMinute(0);
         stampPlus.setHour(0);
         stampPlus.setSecond(0);
-
       return EntityFinder.findAllByColumnOrdered(CalendarEntry.getStaticInstance(),CalendarEntry.getColumnNameEntryDate(),stampPlus.toString(),CalendarEntry.getColumnNameEntryDate(),stampMinus.toString(),CalendarEntry.getColumnNameEntryDate(),"<",">=","distinct",CalendarEntry.getColumnNameEntryDate());
     }
     catch (SQLException e) {
@@ -159,7 +186,7 @@ public class CalendarFinder {
     }
   }
 
-  public static CalendarEntryType getEntryType(int typeID) {
+  public CalendarEntryType getEntryType(int typeID) {
     try {
       return new CalendarEntryType(typeID);
     }
@@ -168,11 +195,11 @@ public class CalendarFinder {
     }
   }
 
-  public static String getEntryTypeName(int typeID,int localeID) {
+  public String getEntryTypeName(int typeID,int localeID) {
     return getEntryTypeName(getEntryType(typeID),localeID);
   }
 
-  public static String getEntryTypeName(CalendarEntryType type,int localeID) {
+  public String getEntryTypeName(CalendarEntryType type,int localeID) {
     if ( type != null ) {
       LocalizedText loc = TextFinder.getLocalizedText(type,localeID);
       if ( loc != null ) {
@@ -183,7 +210,7 @@ public class CalendarFinder {
     return "";
   }
 
-  public static String[] getEntryStrings(CalendarEntry entry,int localeID) {
+  public String[] getEntryStrings(CalendarEntry entry,int localeID) {
     String[] returnString = {null,null};
     if ( entry != null ) {
       LocalizedText loc = TextFinder.getLocalizedText(entry,localeID);
@@ -195,7 +222,7 @@ public class CalendarFinder {
     return returnString;
   }
 
-  public static int getImageID(int typeID) {
+  public int getImageID(int typeID) {
     try {
       return new CalendarEntryType(typeID).getImageID();
     }
