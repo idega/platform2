@@ -60,6 +60,10 @@ public class Reporter extends CategoryBlock implements IWBlock,Reports{
     setCategoryId(iCategory);
   }
 
+  public String getCategoryType(){
+    return "reports";
+  }
+
   public void setReportCategoryId(int iCategory){
     setCategoryId(iCategory);
   }
