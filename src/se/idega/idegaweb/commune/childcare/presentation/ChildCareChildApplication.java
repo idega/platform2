@@ -221,7 +221,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private void submitForm(IWContext iwc) {
 		boolean done = false;
 		try {
-			int numberOfApplications = hasActivePlacement ? 5 : 4;
+			int numberOfApplications = hasActivePlacement ? 4 : 5;
 			int[] providers = new int[numberOfApplications];
 			String[] dates = new String[numberOfApplications];
 			Date[] queueDates = new Date[numberOfApplications];
@@ -304,7 +304,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		ChildCareApplication application = null;
 		int areaID = -1;
-		int numberOfApplications = hasActivePlacement ? 5 : 4;
+		int numberOfApplications = hasActivePlacement ? 4 : 5;
 		for (int i = 1; i < (numberOfApplications + 1); i++) {
 			try {
 				application = getBusiness().getNonActiveApplication(getSession().getChildID(), i);
@@ -414,7 +414,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t if (dropTwo.selectedIndex > 0) {\n\t\t two = dropTwo.options[dropTwo.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropThree.selectedIndex > 0) {\n\t\t three = dropThree.options[dropThree.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropFour.selectedIndex > 0) {\n\t\t four = dropFour.options[dropFour.selectedIndex].value;\n\t\t length++;\n\t }");
-		buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t }");
+		if (!hasActivePlacement) {
+			buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t }");
+		}
 
 		buffer.append("\n\t if(length > 0){");
 		buffer.append("\n\t\t if(one > 0 && (one == two || one == three || one == four || one == five)){");
@@ -448,9 +450,11 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
-		message = localize("child_care.less_than_five_chosen", "You have chosen less than five choices.  An offer can not be guaranteed within three months.");
-		buffer.append("\n\t if(length < 5)\n\t\t return confirm('").append(message).append("');");
-		buffer.append("\n\t return true;");
+		if (!hasActivePlacement) {
+			message = localize("child_care.less_than_five_chosen", "You have chosen less than five choices.  An offer can not be guaranteed within three months.");
+			buffer.append("\n\t if(length < 5)\n\t\t return confirm('").append(message).append("');");
+			buffer.append("\n\t return true;");
+		}
 		buffer.append("\n}\n");
 		return buffer.toString();
 	}
