@@ -56,11 +56,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/29 10:39:19 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/29 11:21:17 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.86 $
+ * @version $Revision: 1.87 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -554,46 +554,52 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return record;
 	}
 
-	public void saveInvoiceRecord(final Integer recordId, final User currentUser, final Integer placementId, Integer providerId, final String invoiceText, final String invoiceText2, final String ruleText, final String note, final Date checkEndPeriod, final Date checkStartPeriod, final Date placementStartPeriod, final Date placementEndPeriod, final String ownPosting, final String doublePosting, final Integer amount, final Integer vatAmount, final Integer vatRule, final Integer regSpecTypeId) throws RemoteException, FinderException {
+	public void saveInvoiceRecord
+		(final Integer recordId, final User currentUser, final Integer placementId,
+		 Integer providerId, final String invoiceText, final String invoiceText2,
+		 final String ruleText, final String note, final Date checkEndPeriod,
+		 final Date checkStartPeriod, final Date placementStartPeriod,
+		 final Date placementEndPeriod, final String ownPosting,
+		 final String doublePosting, final Integer amount, final Integer vatAmount,
+		 final Integer vatRule, final Integer regSpecTypeId)
+		throws RemoteException, FinderException {
 
+		// find record to update
 		final InvoiceRecord record
 				= getInvoiceRecordHome ().findByPrimaryKey (recordId);
+
+		// count some values to store in record
 		final Integer numberOfDays
 				= new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
 		if (null == providerId && null != placementId) {
+			// unknown provider - find it from the placement
 			final SchoolBusiness schoolBusiness = getSchoolBusiness ();
 			final SchoolClassMemberHome placementHome
 					= schoolBusiness.getSchoolClassMemberHome ();
 			final SchoolClassMember placement
 					= placementHome.findByPrimaryKey (placementId);
-			providerId = (Integer)
-					placement.getSchoolClass ().getSchool ().getPrimaryKey ();
+			providerId
+					= (Integer) placement.getSchoolClass ().getSchool ().getPrimaryKey ();
 		}
+		final Date dateChanged = now ();
 
-		// set updated values
-		record.setAmount (amount.floatValue ());
-		record.setAmountVAT (vatAmount.floatValue ());
+		// set updated values in record
+		final float oldAmount = record.getAmount ();
+		if (null != amount) record.setAmount (amount.floatValue ());
+		final float oldAmountVat = record.getAmountVAT ();
+		if (null != vatAmount) record.setAmountVAT (vatAmount.floatValue ());
 		final String changedBy = getSignature (currentUser);
 		record.setChangedBy (changedBy);
-		try {
-			final InvoiceHeader header = record.getInvoiceHeader ();
-			header.setChangedBy (changedBy);
-			final Date dateChanged = now ();
-			record.setDateChanged (dateChanged);
-			header.setDateAdjusted (dateChanged);
-			header.store ();
-		} catch (Exception e) {
-			e.printStackTrace ();
-		}
+		record.setDateChanged (dateChanged);
 		if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
-		record.setDoublePosting (doublePosting);
 		record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
 													 ? invoiceText : ruleText);
 		record.setInvoiceText2
 				(null != invoiceText2 && 0 < invoiceText2.length ()
 				 ? invoiceText2 : "");
-		record.setNotes (note);
-		record.setOwnPosting (ownPosting);
+		if (null != note) record.setNotes (note);
+		if (null != ownPosting) record.setOwnPosting (ownPosting);
+		if (null != doublePosting) record.setDoublePosting (doublePosting);
 		record.setPeriodStartCheck (checkStartPeriod);
 		record.setPeriodEndCheck (checkEndPeriod);
 		record.setPeriodStartPlacement (placementStartPeriod);
@@ -608,6 +614,30 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		
 		// store updated record
 		record.store ();
+
+		// update invoice header
+		try {
+			final InvoiceHeader header = record.getInvoiceHeader ();
+			header.setChangedBy (changedBy);
+			header.setDateAdjusted (dateChanged);
+			header.store ();
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+
+		// update payment record, if this is an detailed payment record
+		try {
+			final PaymentRecord paymentRecord = record.getPaymentRecord ();
+			paymentRecord.setTotalAmount (paymentRecord.getTotalAmount ()
+																		+ record.getAmount () - oldAmount);
+			paymentRecord.setTotalAmountVAT (paymentRecord.getTotalAmountVAT ()
+																			 + record.getAmountVAT () - oldAmountVat);
+			paymentRecord.store ();
+		} catch (NullPointerException e) {
+			// no problem, this is not an detailed payement record
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}			
 	}
 
 
