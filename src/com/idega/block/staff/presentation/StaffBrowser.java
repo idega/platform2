@@ -37,6 +37,7 @@ import com.idega.util.text.TextStyler;
 
 public class StaffBrowser extends Block implements IWBlock {
 
+	private String _emailAlignment;
 	private boolean _isAdmin = false;
 	private int _userID = -1;
 	private int _localeID;
@@ -180,6 +181,7 @@ public class StaffBrowser extends Block implements IWBlock {
 		Text phoneText = null;
 		StaffHolder holder = null;
 		int column = 1;
+		int emailColumn = -1;
 
 		if (users != null) {
 			if (_sortAlphabetically)
@@ -226,6 +228,10 @@ public class StaffBrowser extends Block implements IWBlock {
 				if (emailLink != null) {
 					if (_emailWidth != null)
 						table.setWidth(column, _emailWidth);
+					if (_emailAlignment != null) {
+						emailColumn = column;
+						table.setAlignment(column, staffRow, _emailAlignment);
+					}
 					table.add(emailLink, column++, staffRow);
 				}
 
@@ -244,8 +250,10 @@ public class StaffBrowser extends Block implements IWBlock {
 		int centeredColumn = 2;
 		if (_showListTitle)
 			centeredColumn = 3;
-		for (int a = centeredColumn; a <= table.getColumns(); a++)
-			table.setColumnAlignment(a, extraAlignment);
+		for (int a = centeredColumn; a <= table.getColumns(); a++) {
+			if (a != emailColumn)
+				table.setColumnAlignment(a, extraAlignment);
+		}
 		if (_nameWidth != null)
 			table.setWidth(1, _nameWidth);
 		_myTable.add(table, 1, row);
@@ -937,6 +945,13 @@ public class StaffBrowser extends Block implements IWBlock {
 	 */
 	public void setSortGroupsAlphabetically(boolean sortGroupsAlphabetically) {
 		this._sortGroupsAlphabetically = sortGroupsAlphabetically;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setEmailAlignment(String string) {
+		_emailAlignment = string;
 	}
 
 }
