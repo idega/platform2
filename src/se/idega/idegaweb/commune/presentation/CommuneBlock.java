@@ -1,9 +1,11 @@
 package se.idega.idegaweb.commune.presentation;
 
+import java.util.HashMap;
+
 import com.idega.builder.data.IBPage;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 /**
  * Title:
@@ -17,6 +19,18 @@ import com.idega.presentation.text.*;
 public class CommuneBlock extends com.idega.presentation.Block {
   public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
+  private final static String COMMUNE_STYLE = "Commune_";
+  private final static String STYLENAME_TEXT = COMMUNE_STYLE+"Text";
+  private final static String STYLENAME_SMALL_TEXT = COMMUNE_STYLE+"SmallText";
+  private final static String STYLENAME_HEADER = COMMUNE_STYLE+"Header";
+  private final static String STYLENAME_SMALL_HEADER = COMMUNE_STYLE+"SmallHeader";
+  private final static String STYLENAME_LINK = COMMUNE_STYLE+"Link";
+  private final static String STYLENAME_LIST_HEADER = COMMUNE_STYLE+"ListHeader";
+  private final static String STYLENAME_LIST_TEXT = COMMUNE_STYLE+"ListText";
+  private final static String STYLENAME_LIST_LINK = COMMUNE_STYLE+"ListLink";
+  private final static String STYLENAME_ERROR_TEXT = COMMUNE_STYLE+"ErrorText";
+  private final static String STYLENAME_SMALL_ERROR_TEXT = COMMUNE_STYLE+"SmallErrorText";
+ 
   private final static String DEFAULT_BACKGROUND_COLOR = "#f0f0f0";
   private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
   private final static String DEFAULT_SMALL_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
@@ -153,7 +167,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
   public Text getText(String s){
     Text t = new Text(s);
-    t.setFontStyle(getTextFontStyle());
+    t.setFontClass(this.STYLENAME_TEXT);
     return t;
   }
 
@@ -163,7 +177,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
   public Text getSmallText(String s){
     Text t = new Text(s);
-    t.setFontStyle(getSmallTextFontStyle());
+    t.setFontClass(this.STYLENAME_SMALL_TEXT);
     return t;
   }
 
@@ -173,7 +187,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
   public Text getHeader(String s){
     Text header = new Text(s);
-    header.setFontStyle(getHeaderFontStyle());
+    header.setFontClass(this.STYLENAME_HEADER);
     return header;
   }
 
@@ -183,7 +197,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
   public Text getSmallHeader(String s){
     Text header = new Text(s);
-    header.setFontStyle(getSmallHeaderFontStyle());
+    header.setFontClass(this.STYLENAME_SMALL_HEADER);
     return header;
   }
 
@@ -193,7 +207,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
   public Link getLink(String s){
     Link l = new Link(s);
-    l.setFontStyle(getLinkFontStyle());
+    l.setStyle(this.STYLENAME_LINK);
     return l;
   }
 
@@ -203,13 +217,13 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
   public Text getErrorText(String s){
     Text t = new Text(s);
-    t.setFontStyle(getErrorTextFontStyle());
+    t.setFontClass(this.STYLENAME_ERROR_TEXT);
     return t;
   }
 
   public Text getSmallErrorText(String s){
     Text t = new Text(s);
-    t.setFontStyle(getSmallErrorTextFontStyle());
+    t.setFontClass(this.STYLENAME_SMALL_ERROR_TEXT);
     return t;
   }
 
@@ -220,4 +234,25 @@ public class CommuneBlock extends com.idega.presentation.Block {
   public void setResponsePage(IBPage page){
     this.formResponsePage = page;
   }
+	
+	/**
+	 * @see com.idega.presentation.Block#getStyleNames()
+	 */
+	public HashMap getStyleNames() {
+  	HashMap map = new HashMap();
+  	String[] styleNames = {STYLENAME_TEXT,STYLENAME_SMALL_TEXT,STYLENAME_HEADER,STYLENAME_SMALL_HEADER,
+  												 STYLENAME_LINK,STYLENAME_LIST_HEADER,STYLENAME_LIST_TEXT,STYLENAME_LIST_LINK,
+  												 STYLENAME_ERROR_TEXT,STYLENAME_SMALL_ERROR_TEXT};
+  	String[] styleValues = {DEFAULT_TEXT_FONT_STYLE,DEFAULT_SMALL_TEXT_FONT_STYLE,DEFAULT_HEADER_FONT_STYLE,
+  													DEFAULT_SMALL_HEADER_FONT_STYLE,DEFAULT_LINK_FONT_STYLE,DEFAULT_LIST_HEADER_FONT_STYLE,
+  													DEFAULT_LIST_FONT_STYLE,DEFAULT_LIST_LINK_FONT_STYLE,DEFAULT_ERROR_TEXT_FONT_STYLE,
+  													DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE};
+  		
+  	for ( int a = 0; a < styleNames.length; a++ ) {
+  		map.put(styleNames[a], styleValues[a]);	
+  	}
+  	
+  	return map;	
+	}
+
 }
