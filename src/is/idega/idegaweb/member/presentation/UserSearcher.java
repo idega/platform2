@@ -23,6 +23,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
@@ -125,6 +126,9 @@ public class UserSearcher extends Block {
 	
 	private Collection monitoredSearchIdentifiers =  null;
 	private Map monitorMap = null;
+	
+	/** flag for making links do form submit */
+	private boolean setToFormSubmit = false;
 	
 	private void initStyleNames() {
 		if (textFontStyleName == null)
@@ -415,10 +419,30 @@ private Table presentateFoundUsers(IWContext iwc) {
 		int row = 1;
 		int col = 1;
 		int colAdd = 1;
+
+
+		boolean primaryKeyAdded = false;
+		String pkId = "";
+		
 		while (iter.hasNext()) {
 			User u = (User) iter.next();
 			T.add(u.getPersonalID(), colAdd, row);
 			userLink = new Link(u.getName());
+			
+			//Added by Roar 29.10.03
+			if (setToFormSubmit){
+				userLink.setToFormSubmit(getParentForm());
+				Parameter primaryKey = getUniqueUserParameter((Integer) u.getPrimaryKey());
+				if (! primaryKeyAdded){
+					HiddenInput h = new HiddenInput(primaryKey.getName(), "");
+					pkId = h.getID();
+					getParentForm().add(h);
+					primaryKeyAdded = true;
+				}				
+				userLink.setOnClick("getElementById('"+ pkId +"').value='"+ primaryKey.getValue() +"'");
+				addParameters(getParentForm());				
+			}
+			
 			userLink.addParameter(getUniqueUserParameter((Integer) u.getPrimaryKey()));
 			addParameters(userLink);
 			T.add(userLink, colAdd + 1, row);
@@ -462,9 +486,22 @@ private void addParameters(Link link) {
 			link.addParameter((String)entry.getKey(),(String)entry.getValue());
 		}
 	}
-	
-	
 }
+
+private void addParameters(Form form) {
+	for (Iterator iter = maintainedParameters.iterator(); iter.hasNext();) {
+		Parameter element = (Parameter) iter.next();
+		form.addParameter(element.getName(), element.getValue());
+	}
+	if(monitorMap!=null){
+		for (Iterator iter = monitorMap.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			form.addParameter((String)entry.getKey(),(String)entry.getValue());
+		}
+	}
+}
+
+
 /**
  * Flags the first name field in the user search
  * @param b
@@ -897,6 +934,14 @@ public void addMonitoredSearchIdentifier(String identifier){
 	if(monitoredSearchIdentifiers==null)
 		monitoredSearchIdentifiers = new Vector();
 	monitoredSearchIdentifiers.add(identifier);
+}
+
+public void setToFormSubmit(boolean b){
+	setToFormSubmit = b;
+}
+
+public boolean getToFormSubmit(){
+	return setToFormSubmit;
 }
 
 }
