@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.16 2001/08/21 23:02:51 laddi Exp $
+ * $Id: CampusApplicationForm.java,v 1.17 2001/08/22 09:50:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -548,11 +548,11 @@ public class CampusApplicationForm extends ApplicationForm {
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(t2);
-    t2.add(text1,1,1);
+    t2.add(text1_1,1,1);
     t2.add(required,1,1);
     t2.add(studyBeginMo,2,1);
     t2.add(studyBeginYr,2,1);
-    t2.add(text2,1,2);
+    t2.add(text2_1,1,2);
     t2.add(required,1,2);
     t2.add(studyEndMo,2,2);
     t2.add(studyEndYr,2,2);
