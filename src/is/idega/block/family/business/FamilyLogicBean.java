@@ -581,7 +581,16 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 		UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
 		userStatusService.setUserAsDeceased(user.getIDInteger(),deceasedDate);
 	}
-	
+
+	public void registerAsDeceased(User user, Date deceasedDate, User performer) throws RemoteException {
+		removeAllFamilyRelationsForUser(user, performer);
+		UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
+		userStatusService.setUserAsDeceased(user.getIDInteger(),deceasedDate);
+	}
+
+	/**
+	 * @deprecated use removeAllFamilyRelationsForUser(User user, User performer)
+	 */
 	public void removeAllFamilyRelationsForUser(User user) throws RemoteException{
 		try {
 			Collection children = getChildrenFor(user);
@@ -667,6 +676,102 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 				while (sibling.hasNext()) {
 					User sibl = (User) sibling.next();
 					removeAsSiblingFor(sibl,user);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}		
+		catch (NoSiblingFound x){}	
+		
+	}
+	
+	public void removeAllFamilyRelationsForUser(User user, User performer) throws RemoteException{
+		try {
+			Collection children = getChildrenFor(user);
+			if( children != null ){
+				Iterator kids = children.iterator();
+				while (kids.hasNext()) {
+					User child = (User) kids.next();
+					removeAsChildFor(child,user,performer);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}
+		catch (NoChildrenFound x){}
+		
+		try {
+			Collection children = getChildrenInCustodyOf(user);
+			if( children != null ){
+				Iterator kids = children.iterator();
+				while (kids.hasNext()) {
+					User child = (User) kids.next();
+					removeAsCustodianFor(user,child,performer);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}
+		catch (NoChildrenFound x){}
+
+		try {
+			User spouse = getSpouseFor(user);
+			if( spouse != null ){
+				removeAsSpouseFor(spouse,user,performer);
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}
+		catch(NoSpouseFound x){}
+
+		try {
+			Collection parents = getParentsFor(user);
+			if( parents != null ){
+				Iterator ents = parents.iterator();
+				while (ents.hasNext()) {
+					User ent = (User) ents.next();
+					removeAsParentFor(ent,user,performer);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}		
+		catch (NoParentFound x){}	
+		
+		try {
+			Collection custodians = getCustodiansFor(user);
+			if( custodians != null ){
+				Iterator ents = custodians.iterator();
+				while (ents.hasNext()) {
+					User ent = (User) ents.next();
+					removeAsParentFor(ent,user,performer);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}		
+		catch (NoCustodianFound x){}	
+		
+		
+		try {
+			Collection siblings = getSiblingsFor(user);
+			if( siblings != null ){
+				Iterator sibling = siblings.iterator();
+				while (sibling.hasNext()) {
+					User sibl = (User) sibling.next();
+					removeAsSiblingFor(sibl,user,performer);
 				}
 			}
 	
