@@ -1290,4 +1290,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public SchoolUserBusiness getSchoolUserBusiness() throws RemoteException{
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);	
 	}
+	
+	public boolean hasSchoolRelationToYear(School school, SchoolYear schoolYear) throws RemoteException {
+		try {
+			int relations = getSchoolHome().getNumberOfRelations(school, schoolYear);
+			if (relations > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException ie) {
+			return false;
+		}
+		
+	}
 }

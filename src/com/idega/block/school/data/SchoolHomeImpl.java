@@ -87,6 +87,13 @@ public School findBySchoolName(java.lang.String p0)throws javax.ejb.FinderExcept
   return (School) super.findByPrimaryKeyIDO(pk);
  }
 
+ public int getNumberOfRelations(School school, SchoolYear schoolYear)throws com.idega.data.IDOException{
+	 com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	 int theReturn = ((SchoolBMPBean)entity).ejbHomeGetNumberOfRelations(school, schoolYear);
+	 this.idoCheckInPooledEntity(entity);
+	 return theReturn;
+ }
+
 
 
 }

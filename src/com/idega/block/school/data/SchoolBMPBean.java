@@ -338,6 +338,16 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		sql.append(" order by s.").append(NAME);
 		return super.idoFindPKsBySQL(sql.toString());
 	}
+	
+	public int ejbHomeGetNumberOfRelations(School school, SchoolYear year) throws IDOException {
+		StringBuffer sql = new StringBuffer();
+		sql.append("select count(*) from sch_school s, sch_school_sch_school_year middle");
+		sql.append(" where middle.sch_school_ID = ").append(school.getPrimaryKey().toString());
+		sql.append(" and middle.sch_school_year_ID = ").append(year.getPrimaryKey().toString());
+		sql.append(" and middle.sch_school_id = s.sch_school_id");
+		System.out.println(sql.toString());
+		return super.idoGetNumberOfRecords(sql.toString());
+	}
 
 	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException, RemoteException{
 		Collection coll = getText();
