@@ -231,7 +231,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	
 	          
 	          //buttons
-	          if( userIsSuperAdmin && iwc.getAccessController().isAdmin(iwc)){
+	         // if( userIsSuperAdmin && iwc.getAccessController().isAdmin(iwc)){
 	            Link approve = new Link(new Text("Approve"));
 	            approve.setWindowToOpen(ChangeStatusWindow.class);
 	            approve.addParameter(ChangeStatusWindow.GROUP_APPLICATION_ID_PARAM ,((Integer) app.getPrimaryKey()).intValue());
@@ -249,7 +249,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	            userTable.add("&nbsp;",7,line);
 	            userTable.add(deny,7,line);
 	          
-	          }
+	        //  }
 	
 	          line++;
 	
