@@ -59,7 +59,7 @@ public class SchoolAreaBMPBean extends GenericEntity implements SchoolArea {
 	
 	public Integer ejbFindSchoolAreaByAreaName(String name) throws javax.ejb.FinderException {
 		IDOQuery sql = new IDOQuery();
-		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEquals(this.NAME,name);
+		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(this.NAME,name);
 		
 		return (Integer)super.idoFindOnePKByQuery(sql);
 	}

@@ -190,6 +190,13 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		return super.idoFindAllIDsByColumnBySQL(NAME, schoolName);
 	}
 
+	public Integer ejbFindBySchoolName(String schoolName) throws javax.ejb.FinderException {
+		IDOQuery sql = new IDOQuery();
+		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(this.NAME,schoolName);
+		
+		return (Integer)super.idoFindOnePKByQuery(sql);
+	}
+
 	public Collection ejbFindAllBySchoolArea(int areaId) throws javax.ejb.FinderException {
 		return super.idoFindPKsBySQL("select * from " + SCHOOL + " where " + SCHOOLAREA + " = " + areaId);
 	}
