@@ -92,7 +92,6 @@ public BoxCategoryEditor(){
     if ( iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
       try {
         _boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
-        iwc.setApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID,Integer.toString(_boxCategoryID));
       }
       catch (NumberFormatException e) {
         _boxCategoryID = -1;
@@ -105,6 +104,16 @@ public BoxCategoryEditor(){
       }
       else if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_SAVE) ) {
         saveCategory(iwc,iLocaleId);
+        _boxCategoryID = -1;
+      }
+    }
+
+    if ( iwc.getApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
+      try {
+        _boxCategoryID = Integer.parseInt((String)iwc.getApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID));
+        iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
+      }
+      catch (NumberFormatException e) {
         _boxCategoryID = -1;
       }
     }
@@ -138,6 +147,7 @@ public BoxCategoryEditor(){
       categoryDrop.setToSubmit();
       categoryDrop.setSelectedElement(Integer.toString(_boxCategoryID));
     categoryTable.add(categoryDrop,1,1);
+    categoryTable.add(new Link(_iwb.getImage("shared/create.gif")),3,1);
     SubmitButton categoryButton = new SubmitButton(_iwb.getImage("shared/delete.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_DELETE);
     if ( _boxCategoryID != -1 )
       categoryTable.add(categoryButton,3,1);
@@ -149,7 +159,7 @@ public BoxCategoryEditor(){
 
     TextInput nameInput = new TextInput(BoxBusiness.PARAMETER_CATEGORY_NAME);
       nameInput.setLength(24);
-      if ( _update && categoryName != null ) {
+      if ( categoryName != null ) {
         nameInput.setContent(categoryName);
       }
 
@@ -181,7 +191,6 @@ public BoxCategoryEditor(){
   }
 
   private void closePollQuestion(IWContext iwc) {
-    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
     setParentToReload();
     close();
   }

@@ -110,9 +110,6 @@ public BoxEditorWindow(){
         _type = -1;
       }
     }
-    if ( _type == -1 ) {
-      _type = BoxBusiness.LINK;
-    }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_TARGET) != null ) {
       _target = iwc.getParameter(BoxBusiness.PARAMETER_TARGET);
@@ -128,12 +125,7 @@ public BoxEditorWindow(){
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE) != null ) {
-      _newObjInst = true;
-      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
-    }
-
-    if ( (String) iwc.getApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE) != null ) {
-      _newObjInst = true;
+      _newObjInst = false;
     }
 
     if ( iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID) != null ) {
@@ -197,6 +189,7 @@ public BoxEditorWindow(){
         closeEditor(iwc);
       }
       else if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_SAVE) ) {
+        System.out.println("Saving...");
         saveBoxLink(iwc,iLocaleId,true);
       }
     }
@@ -229,32 +222,31 @@ public BoxEditorWindow(){
         _target = Link.TARGET_BLANK_WINDOW;
       }
     }
-
-    Table categoryTable = new Table(3,1);
-      categoryTable.setCellpadding(0);
-      categoryTable.setCellspacing(0);
-      categoryTable.setWidth(2,1,"6");
+    if ( _type == -1 && _update ) {
+      if ( link.getPageID() != -1 )
+        _type = BoxBusiness.PAGE;
+      else if ( link.getFileID() != -1 )
+        _type = BoxBusiness.FILE;
+      else if ( link.getURL() != null )
+        _type = BoxBusiness.LINK;
+    }
+    if ( _type == -1 ) {
+      _type = BoxBusiness.LINK;
+    }
 
     DropdownMenu categoryDrop = BoxBusiness.getCategories(BoxBusiness.PARAMETER_CATEGORY_ID,iLocaleID,BoxFinder.getBox(_boxID),_userID);
-      categoryDrop.setAttribute("style",STYLE);
       if ( _update ) {
         categoryDrop.setSelectedElement(Integer.toString(link.getBoxCategoryID()));
       }
       else if ( _boxCategoryID != -1 ) {
         categoryDrop.setSelectedElement(Integer.toString(_boxCategoryID));
       }
-    categoryTable.add(categoryDrop,1,1);
-
-    Link categoryLink = new Link(_editImage);
-      categoryLink.setWindowToOpen(BoxCategoryEditor.class);
-      categoryLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
-      categoryLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,_boxCategoryID);
-    categoryTable.add(categoryLink,3,1);
 
     TextInput linkName = new TextInput(BoxBusiness.PARAMETER_LINK_NAME);
       linkName.setLength(36);
       if ( _update && locString != null ) {
         linkName.setContent(locString);
+        addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,"false"));
       }
 
     DropdownMenu typeDrop = new DropdownMenu(BoxBusiness.PARAMETER_TYPE);
@@ -285,9 +277,17 @@ public BoxEditorWindow(){
      */
 
     IBFileChooser fileChooser = new IBFileChooser(BoxBusiness.PARAMETER_FILE_ID,STYLE);
+    if ( link != null && _update ) {
+      if ( link.getFileID() != -1 )
+        fileChooser.setSelectedFile(BoxFinder.getFile(link.getFileID()));
+    }
     IBPageChooser pageChooser = new IBPageChooser(BoxBusiness.PARAMETER_PAGE_ID,STYLE);
+    if ( link != null && _update ) {
+      if ( link.getPageID() != -1 )
+        pageChooser.setSelectedPage(BoxFinder.getPage(link.getPageID()));
+    }
 
-    addLeft(_iwrb.getLocalizedString("category","Category")+":",categoryTable,true,false);
+    addLeft(_iwrb.getLocalizedString("category","Category")+":",categoryDrop,true);
     addLeft(_iwrb.getLocalizedString("link_name","Name")+":",linkName,true);
     addLeft(_iwrb.getLocalizedString("type","Type")+":",typeDrop,true);
 
@@ -345,21 +345,20 @@ public BoxEditorWindow(){
     }
 
     if ( localeString != null && boxLinkName != null ) {
-      linkID = BoxBusiness.saveLink(_userID,_boxID,_boxCategoryID,_linkID,boxLinkName,_fileID,_pageID,boxLinkURL,_target,Integer.parseInt(localeString));
-      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(linkID));
-    }
+      try {
+        linkID = BoxBusiness.saveLink(_userID,_boxID,_boxCategoryID,_linkID,boxLinkName,_fileID,_pageID,boxLinkURL,_target,Integer.parseInt(localeString));
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
 
-    if ( setToClose ) {
-      iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
-      iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
-      setParentToReload();
-      close();
+      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(linkID));
     }
   }
 
   private void deleteBoxLink(IWContext iwc) {
+    System.out.println("Deleting...");
     iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
-    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
     BoxBusiness.deleteLink(_linkID);
     setParentToReload();
     close();
@@ -367,7 +366,6 @@ public BoxEditorWindow(){
 
   private void closeEditor(IWContext iwc) {
     iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
-    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
     if ( this._newObjInst ) {
       deleteBoxLink(iwc);
     }

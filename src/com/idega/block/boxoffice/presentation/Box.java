@@ -32,6 +32,7 @@ protected IWBundle _iwb;
 private Image _deleteImage;
 private Image _createImage;
 private Image _editImage;
+private Image _detachImage;
 
 private Table _myTable;
 private boolean _newObjInst = false;
@@ -61,21 +62,22 @@ public Box(){
 
 public Box(int boxID){
   this();
-	_boxID = boxID;
+  _boxID = boxID;
 }
 
 public Box(String attribute){
   this();
-	_attribute = attribute;
+  _attribute = attribute;
 }
 
-	public void main(IWContext iwc) throws Exception {
+  public void main(IWContext iwc) throws Exception {
     _iwrb = getResourceBundle(iwc);
     _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
     _createImage = _iwb.getImage("shared/create.gif");
     _deleteImage = _iwb.getImage("shared/delete.gif");
     _editImage = _iwb.getImage("shared/edit.gif");
+    _detachImage = _iwb.getImage("shared/detach.gif");
 
     _isAdmin = iwc.hasEditPermission(this);
     //_isAdmin = true;
@@ -172,16 +174,6 @@ public Box(String attribute){
           categoryString = "$language$";
         }
 
-        if ( _isAdmin ) {
-          Image deleteImage = (Image) _deleteImage.clone();
-            deleteImage.setAlignment("left");
-          Link detachCategory = new Link(deleteImage);
-            detachCategory.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
-            detachCategory.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
-            detachCategory.addParameter(BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_DETACH);
-          table.add(detachCategory,1,1);
-        }
-
         Text categoryText = new Text(categoryString);
           categoryText.setFontStyle(_categoryStyle);
         table.add(categoryText,1,1);
@@ -189,6 +181,8 @@ public Box(String attribute){
         Table linksTable = new Table();
           linksTable.setRows(_numberOfDisplayed+1);
           linksTable.setWidth("100%");
+          if ( _isAdmin )
+            linksTable.setHeight("100%");
         table.add(linksTable,1,2);
 
         int linkRow = 1;
@@ -281,13 +275,28 @@ public Box(String attribute){
     return boxTable;
   }
 
-  private Link getAdminPart() {
+  private Table getAdminPart() {
+    Table adminTable = new Table();
+      adminTable.setCellpadding(0);
+      adminTable.setCellspacing(0);
+
     Link adminLink = new Link(_createImage);
       adminLink.setWindowToOpen(BoxEditorWindow.class);
       adminLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
       adminLink.addParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
+    adminTable.add(adminLink,1,1);
 
-    return adminLink;
+    Link categoryLink = new Link(_editImage);
+      categoryLink.setWindowToOpen(BoxCategoryEditor.class);
+      categoryLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
+    adminTable.add(categoryLink,2,1);
+
+    Link detachLink = new Link(_detachImage);
+      detachLink.setWindowToOpen(BoxCategoryChooser.class);
+      detachLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
+    adminTable.add(detachLink,2,1);
+
+    return adminTable;
   }
 
   private void setDefaultValues() {
@@ -297,7 +306,7 @@ public Box(String attribute){
     _inlineColor = "#FFFFFF";
     _boxWidth = "120";
     _boxHeight = "120";
-    _boxSpacing = 5;
+    _boxSpacing = 3;
     _numberOfDisplayed = 4;
     _categoryStyle = "font-face: Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: bold";
     _linkStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000; text-decoration: none;";

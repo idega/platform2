@@ -2,6 +2,8 @@ package com.idega.block.boxoffice.business;
 
 import com.idega.data.EntityFinder;
 import com.idega.block.boxoffice.data.*;
+import com.idega.core.data.ICFile;
+import com.idega.builder.data.IBPage;
 import java.sql.SQLException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
@@ -17,6 +19,24 @@ import java.util.List;
  */
 
 public class BoxFinder {
+
+  public static IBPage getPage(int pageID) {
+    try {
+      return new IBPage(pageID);
+    }
+    catch (SQLException e) {
+      return new IBPage();
+    }
+  }
+
+  public static ICFile getFile(int fileID) {
+    try {
+      return new ICFile(fileID);
+    }
+    catch (SQLException e) {
+      return new ICFile();
+    }
+  }
 
   public static BoxEntity getBox(String attribute){
     try {
@@ -133,6 +153,31 @@ public class BoxFinder {
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  public static List getCategoriesNotInBox(int boxID) {
+    try {
+      BoxEntity box = BoxFinder.getBox(boxID);
+      if ( box != null )
+        return EntityFinder.findNonRelated(box,BoxCategory.getStaticInstance(BoxCategory.class));
+      return null;
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  public static List getCategoriesInBox(int boxID) {
+    try {
+      BoxEntity box = BoxFinder.getBox(boxID);
+      if ( box != null )
+        return EntityFinder.findRelated(box,BoxCategory.getStaticInstance(BoxCategory.class));
+      return null;
+    }
+    catch (Exception e) {
       return null;
     }
   }

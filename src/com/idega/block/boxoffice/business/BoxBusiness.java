@@ -47,6 +47,8 @@ public static final String PARAMETER_TARGET = "target";
 public static final String PARAMETER_TRUE = "true";
 public static final String PARAMETER_TYPE = "type";
 
+public static final String CATEGORY_SELECTION = "related_groups";
+
 public static final int LINK = 1;
 public static final int FILE = 2;
 public static final int PAGE = 3;
@@ -215,10 +217,6 @@ public static final int PAGE = 3;
       catch (SQLException e) {
         e.printStackTrace(System.err);
       }
-    }
-
-    if ( boxCategoryID != -1 ) {
-      addToBox(BoxFinder.getBox(boxID),boxCategoryID);
     }
 
     LocalizedText locText = TextFinder.getLocalizedText(link,iLocaleID);
