@@ -113,9 +113,9 @@ public class AccessControl{
 			}
         }
 
-        public static boolean isClubAdmin(ModuleInfo modinfo) {
+        public static boolean isClubWorker(ModuleInfo modinfo) {
 			if (modinfo.getSession().getAttribute("member_access") != null) {
-				if (modinfo.getSession().getAttribute("member_access").equals("club_admin")) {
+				if (modinfo.getSession().getAttribute("member_access").equals("club_worker")) {
 					return true;
 				}
 				else {
@@ -129,7 +129,7 @@ public class AccessControl{
 
 
 
-	public static boolean isClubWorker(ModuleInfo modinfo)throws SQLException{
+	public static boolean isClubAdmin(ModuleInfo modinfo)throws SQLException{
 		Member member = getMember(modinfo);
                 if(member!=null && member instanceof com.idega.projects.golf.entity.Member){
                   com.idega.projects.golf.entity.Member membi = (com.idega.projects.golf.entity.Member)member;
@@ -139,7 +139,7 @@ public class AccessControl{
                             return true;
                     }
 
-                    if ("club_worker".equals(access[i].getName())){
+                    if ("club_admin".equals(access[i].getName())){
                       Object ID = modinfo.getSessionAttribute("golf_union_id");
                       if( ID != null){
                         int uni_id = membi.getMainUnionID();
