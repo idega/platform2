@@ -125,7 +125,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null);
+		if (club != null)
 			reportCollection.addExtraHeaderParameter(
 				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
@@ -275,7 +275,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null);
+		if (club != null)
 		reportCollection.addExtraHeaderParameter(
 				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
@@ -419,7 +419,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null);
+		if (club != null)
 		reportCollection.addExtraHeaderParameter(
 				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
@@ -576,10 +576,11 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null);
-		reportCollection.addExtraHeaderParameter(
+		if (club != null) {
+			reportCollection.addExtraHeaderParameter(
 				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
+		}
 
 		reportCollection.addExtraHeaderParameter(
 				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
@@ -728,7 +729,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null);
+		if (club != null)
 		reportCollection.addExtraHeaderParameter(
 				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
@@ -898,7 +899,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
-		if (club != null);
+		if (club != null)
 		reportCollection.addExtraHeaderParameter(
 				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
 				"club_name", club.getName());
@@ -1048,8 +1049,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			//if no club is found we throw the exception
 			throw new FinderException(user.getName());
 		}
-		else 
-			return club;
+
+		return club;
 	}
 	
 	private String getPhoneNumber(User user) {
