@@ -192,7 +192,7 @@ public void main(ModuleInfo modinfo)throws Exception{
         System.out.println("inni í categoryshit");
     }else if( (news_category_id==null) && (news_id != null) ){ //yup only one to see if this. owns the newscategory!
       System.out.println("(news_category_id==null) && (news_id =="+news_id);
-      if( categoryId != 0 ){
+      /*if( categoryId != 0 ){
          System.out.println("categoryId != 0 ");
         if( news[0].getNewsCategoryId() == categoryId ) {
           System.out.println("My category! ");
@@ -203,6 +203,8 @@ public void main(ModuleInfo modinfo)throws Exception{
        System.out.println("categoryId is 0 ");
        showSingleNews = true;
       }
+      */
+      showSingleNews = true;
     }
 
     if(isAdmin) {
