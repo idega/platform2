@@ -65,7 +65,7 @@ public class SQLQueryer extends Block{
         input.setWidth(50);
         input.setHeight(4);
         if(queryString!=null){
-          input.setValue(queryString);
+          input.setContent(queryString);
         }
         Table innertTable =new Table(1,2);
         form.add(innertTable);
