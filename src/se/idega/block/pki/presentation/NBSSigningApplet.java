@@ -300,8 +300,14 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		} else if (iwc.getParameter("ib_page") != null) {
 			loginForm.addParameter("ib_page", iwc.getParameter("ib_page"));	
 		}
-		loginForm.addParameter("idega_session_id",iwc.getSessionId());
-		loginForm.addParameter("iw_language",iwc.getParameter("iw_language"));
+		String idegaSessionVal = iwc.getSessionId();
+		if(idegaSessionVal!=null){
+			loginForm.addParameter("idega_session_id",idegaSessionVal);
+		}
+		String iwLanguageVal = iwc.getParameter("iw_language");
+		if(iwLanguageVal!=null){
+			loginForm.addParameter("iw_language",iwLanguageVal);
+		}
 		
 		size = _parameters.size();
 		for (int i = 0; i < size; i++) {
