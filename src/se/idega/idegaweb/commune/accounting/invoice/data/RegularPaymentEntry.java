@@ -35,6 +35,7 @@ public interface RegularPaymentEntry extends IDOEntity {
 	VATRegulation getVatRegulation();	
 	int getVatRegulationId();	
 	User getUser();	
+	int getUserId();		
 	
 	void setSchoolId(int schoolId);
 	void setPlacing(String plascing);
