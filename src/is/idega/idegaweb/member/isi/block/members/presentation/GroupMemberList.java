@@ -38,8 +38,6 @@ public class GroupMemberList extends Block {
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
-	public static final String PARAM_NAME_SHOW_STATUS = "show_status";
-	public static final String PARAM_NAME_SHOW_GROUP = "show_group";
 	
 	private IWResourceBundle _iwrb = null;
 	
@@ -94,7 +92,7 @@ public class GroupMemberList extends Block {
 				table.setColor(column++, row, color);
 				nameAdded = true;
 				if(showStatus) {
-					String status = "";
+					String status = null;
 					try {
 						int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
 						if(status_id != -1) {
@@ -104,9 +102,7 @@ public class GroupMemberList extends Block {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					if(status.length()>0) {
-						status = _iwrb.getLocalizedString("member_status_" + status, "");
-					}
+					status = _iwrb.getLocalizedString("member_status_" + status, "Undefined");
 					table.add(status, column, row);
 					table.setColor(column++, row, color);
 				}

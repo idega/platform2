@@ -163,9 +163,7 @@ public class MemberOverview extends Block {
 		table.add(phoneLabel, 1, row);
 		table.add(phone, 2, row++);
 		table.add(emailLabel, 1, row);
-		table.mergeCells(2, row, 2, row+emails.getRows());
-		table.add(emails, 2, row);
-		row += emails.getRows();
+		table.add(emails, 2, row++);
 		table.mergeCells(1, row, 2, row);
 		table.add(clubs, 1, row++);
 		if(image!=null) {
