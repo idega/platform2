@@ -46,7 +46,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
     }
     catch(Exception ex){
       ex.printStackTrace();
-      return new java.util.Vector();
+      return com.idega.util.ListUtil.getEmptyList();
     }
   }
 
@@ -57,7 +57,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
     }
     catch(Exception ex){
       ex.printStackTrace();
-      return new java.util.Vector();
+      return com.idega.util.ListUtil.getEmptyList();
     }
   }
 
