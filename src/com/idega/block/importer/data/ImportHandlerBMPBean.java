@@ -76,7 +76,7 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
   
   public void insertStartData() throws SQLException {
 	//temporary remove
-	try{
+	/*try{
 		ImportHandler nacka = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
 		nacka.setName("Nacka citizen importer");
 		nacka.setDescription("Imports the KIR data for Nacka.");
@@ -119,7 +119,7 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
     catch (Exception ex) {
       ex.printStackTrace();
     }
-	
+	*/
   }
 
   public Collection ejbFindAllImportHandlers()throws FinderException{
