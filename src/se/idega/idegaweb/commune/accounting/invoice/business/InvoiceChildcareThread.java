@@ -305,7 +305,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.setCreatedBy(BATCH_TEXT);
 					invoiceRecord.setAmount(regularInvoiceEntry.getAmount()*months);
 					invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
-					invoiceRecord.setVATType(regularInvoiceEntry.getVatRegulationId());
+					invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
 					invoiceRecord.setRuleSpecType(regularInvoiceEntry.getRegSpecType());
 
 					invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
