@@ -3904,6 +3904,30 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (status == getStatusCancelled()) {
 			return getLocalizedString("child_care.status_cancelled_abbr", "Cancelled");
 		}
+		else if (status == getStatusContract()) {
+			return getLocalizedString("child_care.status_contract_abbr", "Contract");
+		}
+		else if (status == getStatusAccepted()) {
+			return getLocalizedString("child_care.status_accepted_abbr", "Accepted");
+		}
+		else if (status == getStatusMoved()) {
+			return getLocalizedString("child_care.status_moved_abbr", "Moved");
+		}
+		else if (status == getStatusSentIn()) {
+			return getLocalizedString("child_care.status_open_abbr", "Open");
+		}
+		else if (status == getStatusParentsAccept()) {
+			return getLocalizedString("child_care.status_parents_accept_abbr", "Parents accept");
+		}
+		else if (status == getStatusReady()) {
+			return getLocalizedString("child_care.status_ready_abbr", "Ready");
+		}
+		else if (status == getStatusPriority()) {
+			return getLocalizedString("child_care.status_priority_abbr", "Priority");
+		}
+		else if (status == getStatusNewChoice()) {
+			return getLocalizedString("child_care.status_new_choice_abbr", "New Choice");
+		}
 		else if (status == getStatusRejected()) {
 			return getLocalizedString("child_care.status_rejected_abbr", "Rejected");
 		}
