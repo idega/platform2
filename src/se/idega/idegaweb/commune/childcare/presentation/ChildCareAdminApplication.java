@@ -530,10 +530,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		
 		if (iwc.isParameterSet(PARAMETER_CREATE_CONTRACT)) {
 			if (iwc.getParameter(PARAMETER_CREATE_CONTRACT).equals(ACTION_CREATE_REGULAR_CONTRACT)) {
-				getBusiness().assignContractToApplication(getSession().getApplicationID(), -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+				getBusiness().assignContractToApplication(getSession().getApplicationID(), -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 			}
 			else if (iwc.getParameter(PARAMETER_CREATE_CONTRACT).equals(ACTION_CREATE_BANKID_CONTRACT)) {
-				getBusiness().assignContractToApplication(getSession().getApplicationID(), -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+				getBusiness().assignContractToApplication(getSession().getApplicationID(), -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 			}
 		}
 	}
