@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 
 import se.nexus.nbs.sdk.HttpMessage;
