@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.4 2001/06/26 00:30:27 palli Exp $
+ * $Id: Applicant.java,v 1.5 2001/06/28 10:33:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -154,5 +154,11 @@ public class Applicant extends GenericEntity {
 
   public String getPO() {
     return((String)getColumnValue(po_));
+  }
+  public String getFullName(){
+    return (getFirstName()!= null?getFirstName():"")+
+    " "+(getMiddleName()!= null?getMiddleName():"")+
+    " "+(getLastName()!= null?getLastName():"");
+
   }
 }

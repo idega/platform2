@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.2 2001/06/22 11:33:55 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.3 2001/06/28 10:35:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -234,11 +234,11 @@ public class CampusTariffEditor extends KeyEditor{
     List AK = Finder.getAccountKeys();
     TariffIndex[] TI = getTariffIndices();
     Hashtable hash = BuildingFinder.getLodgingsHash();
-    List BL = BuildingFinder.ListOfBuilding();
-    List FL= BuildingFinder.ListOfFloor();
-    List TL = BuildingFinder.ListOfApartmentType();
-    List CL = BuildingFinder.ListOfApartmentCategory();
-    List XL = BuildingFinder.ListOfComplex();
+    List BL = BuildingFinder.listOfBuilding();
+    List FL= BuildingFinder.listOfFloor();
+    List TL = BuildingFinder.listOfApartmentType();
+    List CL = BuildingFinder.listOfApartmentCategory();
+    List XL = BuildingFinder.listOfComplex();
 
     String sIndex ,sHindex ;
     if(factor != 1){
