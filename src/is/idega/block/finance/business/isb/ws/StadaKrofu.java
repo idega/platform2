@@ -17,17 +17,17 @@ public class StadaKrofu implements java.io.Serializable {
         _table_.put(_value_,this);
     }
 
-    public static final java.lang.String _ÓGREIDD = "ÓGREIDD";
+    public static final java.lang.String _OGREIDD = "ÓGREIDD";
     public static final java.lang.String _GREIDD = "GREIDD";
     public static final java.lang.String _MILLINNHEIMTA = "MILLINNHEIMTA";
-    public static final java.lang.String _LÖGFRÆÐIINNHEIMTA = "LÖGFRÆÐIINNHEIMTA";
-    public static final java.lang.String _NIÐURFELLD = "NIÐURFELLD";
+    public static final java.lang.String _LOGFRAEDIINNHEIMTA = "LÖGFRÆÐIINNHEIMTA";
+    public static final java.lang.String _NIDURFELLD = "NIÐURFELLD";
     public static final java.lang.String _VILLA = "VILLA";
-    public static final StadaKrofu ÓGREIDD = new StadaKrofu(_ÓGREIDD);
+    public static final StadaKrofu OGREIDD = new StadaKrofu(_OGREIDD);
     public static final StadaKrofu GREIDD = new StadaKrofu(_GREIDD);
     public static final StadaKrofu MILLINNHEIMTA = new StadaKrofu(_MILLINNHEIMTA);
-    public static final StadaKrofu LÖGFRÆÐIINNHEIMTA = new StadaKrofu(_LÖGFRÆÐIINNHEIMTA);
-    public static final StadaKrofu NIÐURFELLD = new StadaKrofu(_NIÐURFELLD);
+    public static final StadaKrofu LOGFRAEDIINNHEIMTA = new StadaKrofu(_LOGFRAEDIINNHEIMTA);
+    public static final StadaKrofu NIDURFELLD = new StadaKrofu(_NIDURFELLD);
     public static final StadaKrofu VILLA = new StadaKrofu(_VILLA);
     public java.lang.String getValue() { return _value_;}
     public static StadaKrofu fromValue(java.lang.String value)
