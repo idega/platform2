@@ -29,7 +29,6 @@ import com.idega.data.SimpleQuerier;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -53,7 +52,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 	private boolean viewOnly;
 	private boolean onlineRegistration;
 	private boolean useBorder;
-	private boolean forPrinting;
+	private boolean forPrinting=false;
 	private Form form;
 	
 	public TournamentStartingtimeList(Tournament tournament, String tournament_round_id, boolean viewOnly, boolean onlineRegistration, boolean useBorder, boolean forPrinting) {
@@ -107,35 +106,35 @@ public class TournamentStartingtimeList extends GolfBlock {
 		else {
 			form = new Form();
 			form.add(new HiddenInput("viewOnly", "" + viewOnly));
-
+			
+			
+			Table topTable = new Table();
 			Table table = new Table();
-			table.setBorder(1);
-			if (useBorder) {
-				table.setBorder(0);
-			}
+			Table borderTable = new Table();
+			borderTable.setWidth(Table.HUNDRED_PERCENT);
+			borderTable.setCellpaddingAndCellspacing(0);
+			borderTable.setCellBorder(1, 1, 1, "#3A5A20", "solid");
+			
 			if (forPrinting) {
 				table.setWidth("600");
+				topTable.setWidth("600");
+				borderTable.setWidth("600");
 			}
 			else {
-				table.setWidth("100%");
+				table.setWidth(Table.HUNDRED_PERCENT);
+				topTable.setWidth(Table.HUNDRED_PERCENT);
+				borderTable.setWidth(Table.HUNDRED_PERCENT);
 			}
 			table.setCellpadding(0);
 			table.setCellspacing(0);
-			form.add(table);
+			topTable.setCellpaddingAndCellspacing(0);
+			
+			form.add(topTable);
+			borderTable.add(table);
+			form.add(borderTable);
 			int row = 1;
 			int numberOfMember = 0;
 
-			String headerColor = getHeaderColor();
-			String darkColor = getZebraColor2();
-			String lightColor = getZebraColor1();
-			String activeColor = darkColor;
-
-			if (forPrinting) {
-				headerColor = "#000000";
-				darkColor = "#FFFFFF";
-				lightColor = "#FFFFFF";
-				activeColor = "#FFFFFF";
-			}
 
 			TournamentRound[] tourRounds = tournament.getTournamentRounds();
 
@@ -189,21 +188,18 @@ public class TournamentStartingtimeList extends GolfBlock {
 				tourDay = new IWTimestamp(tournamentRound.getRoundDate());
 				tepText = getText(getResourceBundle().getLocalizedString("tournament.round", "Round") + " " + tournamentRound.getRoundNumber() + " " + tourDay.getISLDate(".", true));
 				cepText = getText(tournament.getName());
-				table.add(cepText, 1, row);
-				table.add(tepText, 4, row);
-				table.mergeCells(1, row, 3, row);
-				table.mergeCells(4, row, 7, row);
-				table.setAlignment(4, row, "right");
+				topTable.add(cepText, 1, 1);
+				topTable.add(tepText, 2, 1);
+				topTable.setAlignment(2, row, "right");
 			}
 			else {
-				table.mergeCells(1, row, 7, row);
-				table.setAlignment(1, row, "right");
-				table.setCellpaddingRight(1, row, 5);
-				table.add(rounds, 1, row);
+				topTable.setAlignment(1, 1, "right");
+				topTable.setCellpaddingRight(1, 1, 5);
+				topTable.add(rounds, 1, 1);
 			}
-			table.setHeight(row, 40);
+			topTable.setHeight(1, 40);
 
-			++row;
+			
 
 			Text dMemberSsn;
 			Text dMemberName;
@@ -263,9 +259,6 @@ public class TournamentStartingtimeList extends GolfBlock {
 				displayTee = true;
 			}
 
-			HorizontalRule hr = new HorizontalRule("100%");
-			hr.setNoShade(true);
-			hr.setWidth("100%");
 			int groupCounterNum = 0;
 
 			for (int y = 1; y <= tournamentRound.getStartingtees(); y++) {
@@ -307,21 +300,10 @@ public class TournamentStartingtimeList extends GolfBlock {
 					++groupCounterNum;
 					startInGroup = 0;
 
-					if (activeColor.equals(darkColor)) {
-						activeColor = lightColor;
-					}
-					else {
-						activeColor = darkColor;
-					}
-
 					timeText = (Text) tTime.clone();
 					timeText.setText(Text.NON_BREAKING_SPACE + extraZero.format(startHour.getHour()) + ":" + extraZero.format(startHour.getMinute()) + Text.NON_BREAKING_SPACE);
 					table.add(timeText, 1, row);
-					//time = new
-					// Flash("http://jgenerator.sidan.is/time.swt?type=gif&grc=true&time="
-					// + extraZero.format(startHour.getHour()) + ":" +
-					// extraZero.format(startHour.getMinute()), 60, 38);
-					//table.add(time, 1, row);
+
 					table.setAlignment(1, row, "center");
 					if (forPrinting) {
 						table.setVerticalAlignment(1, row, "top");
@@ -329,21 +311,12 @@ public class TournamentStartingtimeList extends GolfBlock {
 					else {
 						table.setVerticalAlignment(1, row, "middle");
 					}
-					//				table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
 					table.mergeCells(1, row, 1, row + (numberInGroup - 1));
 					table.setStyleClass(1, row, getBigRowClass());
-					//				table.setVerticalAlignment(1,row,"top");
 
 					sView = TournamentController.getStartingtimeView(tournamentRound.getID(), "", "", "grup_num", groupCounter + "", tee_number, "");
 
-					// old sView =
-					// TournamentController.getStartingtimeView(tournamentRound.getID(),"startingtime_date","'"+startHour.toSQLDateString()+"'","grup_num",groupCounter+"",tee_number,"");
-					//sView = (StartingtimeView[]) (new
-					// StartingtimeView()).findAll("Select sv.* from startingtime_view sv,
-					// tournament_round_startingtime trs where sv.startingtime_id =
-					// trs.startingtime_id AND trs.tournament_id =
-					// "+tournamentRound.getID()+" AND sv.startingtime_date = '"
-					// +startHour.toSQLDateString()+"' AND sv.grup_num ="+groupCounter );
+
 					startInGroup = sView.length;
 
 					String styleClass = null;
@@ -373,7 +346,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 							}
 							else {
 								dMemberSsn = new Text("-");
-								dMemberName = new Text(getResourceBundle().getLocalizedString("tournament.reserved", "Frátekið"));
+								dMemberName = new Text(getResourceBundle().getLocalizedString("tournament.reserved", "Reserved"));
 								dMemberUnion = new Text("-");
 								dMemberHand = new Text("-");
 							}
@@ -386,11 +359,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 							table.setStyleClass(4, row, styleClass);
 							table.add(dMemberHand, 5, row);
 							table.setStyleClass(5, row, styleClass);
-							//table.add(sView[i].getSocialSecurityNumber(),2,row);
-							//abbrevation = sView[i].getAbbrevation();
-							//table.add(sView[i].getName() ,3,row);
-							//table.add(abbrevation,4,row);
-							//table.add(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()),5,row);
+
 							if (!viewOnly) {
 								if (!onlineRegistration) {
 									paid = getCheckBox("paid", Integer.toString(sView[i].getMemberId()));
@@ -451,20 +420,14 @@ public class TournamentStartingtimeList extends GolfBlock {
 					}
 					startHour.addMinutes(minutesBetween);
 
-					if (forPrinting) {
-						table.mergeCells(1, row, 7, row);
-						table.setHeight(1, row, "1");
-						table.add(hr, 1, row);
-					}
-					else {
-						--row;
-					}
+
+					--row;
 				}
 			}
 
 			++row;
 			table.setHeight(row, 10);
-			table.setRowColor(row, headerColor);
+			table.setRowStyleClass(row,getHeaderRowClass());
 			table.mergeCells(1, row, 3, row);
 			Text many = getSmallHeader(getResourceBundle().getLocalizedString("tournament.number_of_participants", "Number of participants") + " : " + numberOfMember);
 			table.add(many, 1, row);

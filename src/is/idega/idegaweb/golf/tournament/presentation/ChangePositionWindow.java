@@ -22,7 +22,7 @@ public class ChangePositionWindow extends GolfWindow {
 	 * 
 	 */
 	public ChangePositionWindow() {
-		this("TournamentAdmin",350,200);
+		this("TournamentAdmin",350,250);
 	}
 
 	/**

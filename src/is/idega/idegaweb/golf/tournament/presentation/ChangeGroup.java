@@ -62,10 +62,10 @@ public class ChangeGroup extends GolfBlock {
 			DropdownMenu menu = new DropdownMenu(TournamentController.getTournamentGroups(member, tournament));
 			menu.setSelectedElement("" + tournament.getTournamentGroupId(member));
 
-			myTable.addText("Veldu hóp:", 1, 1);
+			myTable.addText(localize("tournament.choose_group","Choose group")+":", 1, 1);
 			myTable.add(menu, 1, 2);
 			myTable.add(new SubmitButton(localize("tournament.confirm","Confirm")), 2, 3);
-			myTable.add(new CloseButton(localize("tournament.back","Back")), 1, 3);
+			myTable.add(new CloseButton(localize("tournament.cancel","Cancel")), 1, 3);
 
 			myForm.add(myTable);
 			Text breakText = new Text("<br>");

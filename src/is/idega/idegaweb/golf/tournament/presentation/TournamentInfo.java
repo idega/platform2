@@ -19,13 +19,9 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -104,7 +100,7 @@ public class TournamentInfo extends GolfBlock {
 	
 			IWTimestamp firstRegStamp = new IWTimestamp(tournament.getFirstRegistrationDate());
 			IWTimestamp lastRegStamp = new IWTimestamp(tournament.getLastRegistrationDate());
-			Text RegDate = getText(firstRegStamp.getDate() + "/" + firstRegStamp.getMonth() + "/" + firstRegStamp.getYear() + " - " + lastRegStamp.getDate() + "/" + lastRegStamp.getMonth() + "/" + lastRegStamp.getYear());
+			Text RegDate = getText(firstRegStamp.getDay() + "/" + firstRegStamp.getMonth() + "/" + firstRegStamp.getYear() + " - " + lastRegStamp.getDay() + "/" + lastRegStamp.getMonth() + "/" + lastRegStamp.getYear());
 			table.add(RegDate, 2, 6);
 	
 			Text tournamentType = getText(tournament.getTournamentType().getName());
@@ -126,23 +122,19 @@ public class TournamentInfo extends GolfBlock {
 	
 			if (AccessControl.isAdmin(modinfo) || AccessControl.isClubAdmin(modinfo)) {
 				if ((!ongoing) && (!finished)) {
-					Form form4 = new Form();
-					form4.setWindowToOpen(TournamentDeleteWindow.class);
-					form4.add(new Parameter("tournament_id", tournament.getID() + ""));
-					form4.add(getButton(new SubmitButton(localize("tournament.delete_tournament","Delete Tournament"))));
-					table.add(form4, 1, row);
+					GenericButton deleteButton = getButton(new GenericButton(localize("tournament.delete_tournament","Delete Tournament")));
+					deleteButton.setWindowToOpen(TournamentDeleteWindow.class);
+					deleteButton.addParameter("tournament_id", tournament.getID());
+					table.add(deleteButton, 2, 7);
 				}
 			}
-			table.setAlignment(1, row, "left");
 	
 			if (TournamentController.isOnlineRegistration(tournament)) {
-				Image registerImage = getResourceBundle().getImage("shared/tournament/register.gif");
-				registerImage.setName(iwrb.getLocalizedString("tournament.register_me", "Register me"));
-				Link register = getLocalizedLink("tournament_register","Register");
+				GenericButton register = getButton(new GenericButton(localize("tournament_register","Register")));
 				register.setWindowToOpen(RegistrationForMembersWindow.class);
 				register.addParameter("action", "open");
 				register.addParameter("tournament_id", Integer.toString(tournament.getID()));
-				table.add(register, 2, 3);
+				table.add(register, 2, 7);
 			}
 			add(table);
 

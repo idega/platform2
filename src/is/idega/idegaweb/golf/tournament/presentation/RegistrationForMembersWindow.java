@@ -34,6 +34,7 @@ public class RegistrationForMembersWindow extends GolfWindow {
 		super(name, width, height);
 		this.setGolfClassToInstanciate(RegistrationForMembers.class);
 		this.setResizable(true);
+		this.setScrollbar(true);
 	}
 	
 	public void main(IWContext iwc) throws Exception {

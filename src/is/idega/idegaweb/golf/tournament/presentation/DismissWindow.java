@@ -22,7 +22,7 @@ public class DismissWindow extends GolfWindow {
 	 * 
 	 */
 	public DismissWindow() {
-		this("TournamentAdmin",350,250);
+		this("TournamentAdmin",470,280);
 	}
 
 	/**
@@ -33,6 +33,8 @@ public class DismissWindow extends GolfWindow {
 	public DismissWindow(String name, int width, int height) {
 		super(name, width, height);
 		this.setGolfClassToInstanciate(Dismiss.class);
+		this.setScrollbar(true);
+		this.setResizable(true);
 	}
 	
 	public void main(IWContext iwc) {

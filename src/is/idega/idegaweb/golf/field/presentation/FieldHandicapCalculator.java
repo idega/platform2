@@ -39,6 +39,7 @@ public class FieldHandicapCalculator extends GolfWindow {
 		setHeight(230);
 		setTitle("Field handicap calculator");
 		add(new Calculator());
+		this.setScrollbar(true);
 	}
 
 	public void main(IWContext iwc) throws Exception {

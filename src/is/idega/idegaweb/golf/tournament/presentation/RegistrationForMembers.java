@@ -19,9 +19,9 @@ import java.util.List;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -58,8 +58,9 @@ public class RegistrationForMembers extends GolfBlock {
                   String action = modinfo.getParameter("action");
 
                   if (action == null) {
-                      add("Villa kom upp<br>");
-                      add(new CloseButton());
+                  	  add(getLocalizedMessage("tournament.error_occurred","Error occurred"));
+                      add(Text.getBreak());
+                      add(getButton(new CloseButton()));
                   }else if (action.equalsIgnoreCase("open")) {
                       register(modinfo, iwrb);
                   }else if (action.equals("directRegistrationMembersChosen")) {
@@ -68,17 +69,21 @@ public class RegistrationForMembers extends GolfBlock {
               }
               else {
                   add("<center>");
-                  add(member.getName() + " er skrá›ur i móti›  \""+tournament.getName()+"\" ");
+                  add(getMessageText(member.getName() +" "+ localize("tournament.is_registered_in_the_tournament_named","is registered in the tournament named") +" \""+tournament.getName()+"\" "));
                   add("</center>");
               }
           }else {
-              add("Ekkert mót vali›<br>");
+              add(getLocalizedMessage("tournament.no_tournament_selected","No tournament selected"));
+              add(Text.getBreak());
               add(closeButton);
           }
       }
       else {
-          add("<center><br>");
-          add("ﬁú ver›ur a› ská ﬂig inn í kerfi› me› notendanafni og lykilor›i<br><br>");
+          add("<center>");
+          add(Text.getBreak());
+          add(getLocalizedMessage("tournament.you_have_to_register_to_the_system_using_login_and_password","You have to register to the system using login and password"));
+          add(Text.getBreak());
+          add(Text.getBreak());
           add(closeButton);
           add("</center>");
       }
@@ -128,7 +133,11 @@ public class RegistrationForMembers extends GolfBlock {
               }
           }
           else {
-              add("<br><center>ﬁú er ﬂegar skrá›ur í móti›<br><br>");
+          	add(Text.getBreak());
+              add("<center>");
+              add(getLocalizedMessage("tournament.you_are_already_registered_to_this_tournament","You are already registered to this tournament"));
+              add(Text.getBreak());
+              add(Text.getBreak());
               add(closeButton);
               add("</center>");
           }
@@ -162,11 +171,11 @@ public class RegistrationForMembers extends GolfBlock {
       table.setAlignment(1,1,"center");
       table.setAlignment(1,3,"center");
       table.setAlignment(2,3,"center");
-      table.add("Skrá \""+member.getName()+"\" í móti› \""+getTournament(modinfo).getName() +"\"?");
+      table.add(getText(localize("tournament.register","Register")+" \""+member.getName()+"\" "+localize("tournament.to_the_tournament_named","to the tournament named")+" \""+getTournament(modinfo).getName() +"\"?"));
       table.add(yesForm,1,3);
       table.add(noForm,2,3);
 
-      add("<br>");
+      add(Text.getBreak());
       add(table);
   }
 
@@ -189,7 +198,7 @@ public class RegistrationForMembers extends GolfBlock {
 
               DropdownMenu groupsMenu = new DropdownMenu(groups);
 
-              table.add("Veldu flokk til a› spila í");
+              table.add(getLocalizedText("tournament.choose_group_to_play_in","Choose group to play in"));
               table.mergeCells(1,1,2,1);
               table.add(member.getName(),1,2);
               table.add(groupsMenu,2,2);
@@ -199,15 +208,19 @@ public class RegistrationForMembers extends GolfBlock {
               table.add(afram,2,3);
 
 
-              add("<br>");
+              add(Text.getBreak());
               form.add(table);
               add(form);
 
 
           }else {
-              add("<br><center>");
-              add("ﬁú hefur ekki réttindi til ﬂess a› skrá ﬂig í móti›.<br>");
-              add("Haf›u samband vi› klúbbinn ef ﬂú telur ﬂetta ekki vera rétt.<br><br>");
+          	  add(Text.getBreak());
+              add("<center>");
+              add(getLocalizedMessage("tournament.you_do_not_have_permission_to_register","You do not have permission to register"));
+              add(Text.getBreak());
+              add(getLocalizedMessage("tournament.contact_the_club","Contact the club"));
+              add(Text.getBreak());
+              add(Text.getBreak());
               add(closeButton);
               add("</center>");
             }
@@ -224,8 +237,9 @@ public class RegistrationForMembers extends GolfBlock {
       Tournament tournament = getTournament(modinfo);
 
       TournamentController.registerMember(member,tournament,tournament_group_id);
-      add("Skrá›ur í móti›<br>");
-      add(new CloseButton(new Image("/pics/formtakks/loka.gif","Loka glugga")));
+      add(getLocalizedText("tounament.registered_to_the_tournament","Registered to the tournament"));
+      add(Text.getBreak());
+      add(getButton(new CloseButton()));
 
   }
 
@@ -243,30 +257,30 @@ public class RegistrationForMembers extends GolfBlock {
 
       if (tournament_round_id != null) {
 
-          add("<br><center>");
+      	  add(Text.getBreak());
+          add("<center>");
 
           Table table = new Table();
-            table.setBorder(0);
             table.setWidth("90%");
-            table.mergeCells(1,1,2,1);
-            table.setAlignment(1,1,"left");
+
+            table.setAlignment(2,1,"left");
             table.setAlignment(2,2,"left");
-            table.setAlignment(2,3,"left");
+            table.setAlignment(1,1,"right");
             table.setAlignment(1,2,"right");
-            table.setAlignment(1,3,"right");
 
-            table.add("<b>Skráning í mót</b>");
-            table.add("1",1,2);
-            table.add("Slá inn kennitölu á lausan rástima.  Hægt er a› skrá fleiri en einn keppanda í senn",2,2);
+            addHeading(localize("tournament.tournament_registration","Tournament registration"));
+            table.add("1",1,1);
+            
+            table.add(getLocalizedText("tournament.choose_teetime_and_enter_ssn_in_the_textbox.__it_is_posible_to_register_more_than_one_at_a_time","Choose teetime and enter social security number.  It is posible to register more than one at a time."),2,1);
 
-            table.add("2",1,3);
-            table.add("†ttu á \"VISTA\" takkann sem er sta›settur ne›st á sí›unni",2,3);
+            table.add("2",1,2);
+            table.add(getText(localize("tournament.press_the","Press the")+" \""+localize("tournament.save","Save")+"\" "+localize("tournament.button_located_at_the_bottom_of_the_page","button located at the bottom of the page.")),2,2);
 
           PresentationObject form = TournamentController.getStartingtimeTable(tournament,tournament_round_id,false,true);
 
           add(table);
           add("<hr>");
-          add("<br>");
+          add(Text.getBreak());
           add(form);
           add("</center>");
 
@@ -280,9 +294,13 @@ public class RegistrationForMembers extends GolfBlock {
 
 
   public void incorrectSetup() {
-      add("<br><center>");
-      add("Móti› er ekki rétt sett upp.<br>");
-      add("Haf›u samband vi› klúbbinn og láttu kippa ﬂessu í li›inn.<br><br>");
+  	add(Text.getBreak());
+  	  add("<center>");
+      add(getLocalizedMessage("tournament.tournament_setup_is_not_right","Tournament setup is not right"));
+      add(Text.getBreak());
+      add(getLocalizedMessage("tournament.contact_the_club","Contact the club"));
+      add(Text.getBreak());
+      add(Text.getBreak());
       add(closeButton);
       add("</center>");
   }
@@ -313,27 +331,25 @@ public class RegistrationForMembers extends GolfBlock {
         Table table = new Table();
             table.setBorder(0);
             int tableRow = 1;
-            table.setWidth("100%");
-            table.add("<u>Nafn</u>",1,tableRow);
-            table.add("<u>Flokkur</u>",3,tableRow);
-            table.add("<u>Forgjˆf</u>",5,tableRow);
-            //table.add("<u>LeirÈtting</u>",7,tableRow);
-            //form.add(table);
+            table.setWidth(Table.HUNDRED_PERCENT);
+            table.add(getLocalizedText("tournament.name","Name"),1,tableRow);
+            table.add(getLocalizedText("tournament.group","Group"),3,tableRow);
+            table.add(getLocalizedText("tournament.handicap","Handicap"),5,tableRow);
 
         Table other = new Table();
             other.setBorder(1);
             int otherRow = 1;
-            other.setWidth("100%");
-            other.add("<u>Fundust ekki / Rangt inn slegnar</u>");
+            other.setWidth(Table.HUNDRED_PERCENT);
+            other.add(getLocalizedText("tournament.were_not_found","were not found"));
 
         Table done = new Table();
             done.setBorder(0);
             int doneRow = 1;
-            done.add("<u>ﬁegar skrá›ir í móti›</u>");
+            done.add(getLocalizedText("tournament.are_already_registered","are already registered"));
         Table rejects = new Table();
             rejects.setBorder(0);
             int rejectsRow = 1;
-            rejects.add("<u>Hafa ekki réttindi</u>");
+            rejects.add(getLocalizedText("tournament.do_not_have_permission","do not have permission"));
 
 
         int[] errors = new int[4];
@@ -478,20 +494,20 @@ public class RegistrationForMembers extends GolfBlock {
                   instructionTable.setAlignment(1,2,"right");
                   instructionTable.setAlignment(1,3,"right");
 
-                  instructionTable.add("<b>Skráning í mót</b>");
+                  instructionTable.add(getSmallHeader(localize("tournament.tournament_registration","Tournament registration")));
                   instructionTable.add("3",1,2);
-                  instructionTable.add("Ef ﬂú ert gjaldgeng/ur í fleiri en einn flokk, veldu ﬂá réttan flokk",3,2);
+                  instructionTable.add(getLocalizedText("tournaemnt.if_you_fit_in_more_than_one_group_then_choose_group","If you fit in more than one group, then choose group."),3,2);
 
                   instructionTable.add("4",1,3);
-                  instructionTable.add("†ttu á \"ÁFRAM\" takkann. ﬁar me› er skráningu loki›.",3,3);
+                  instructionTable.add(getText(localize("tournament.press_the","Press the")+" \""+localize("trounament.continue","continue")+"\" "+localize("tournament.button_and_the_registration_is_finished","button and the registration is finished.")),3,3);
 
                   instructionTable.add("5",1,4);
                   instructionTable.setVerticalAlignment(1,4,"top");
-                  instructionTable.add("Ef kylfingur hefur hærri forgjöf en hámarksforgjöf móts ﬂá stendur forgjöf hans í sviga fyrir aftan leikforgjöf.",3,4);
+                  instructionTable.add(getText(localize("tournament.if_player_has_higher_handicap_than_the_max_handicap_for_the_tournament_then_his_handicap_is_visible_within_parenthesis_after_his_gamehandicap","if_player_has_higher_handicap_than_the_max_handicap_for_the_tournament_then_his_handicap_is_visible_within_parenthesis_after_his_gamehandicap")),3,4);
 
                   instructionTable.add("6",1,5);
-                  instructionTable.add("Far›u yfir skráningu í rástimatöflu",3,5);
-              add("<br>");
+                  instructionTable.add(getMessageText(localize("tournament.check_registration_in_teetime_table","Check registration in teetime table.")),3,5);
+                  add(Text.getBreak());
               add(instructionTable);
                 add("<hr>");
         }
@@ -514,7 +530,7 @@ public class RegistrationForMembers extends GolfBlock {
 
         Table buttonTable = new Table(1,1);
             buttonTable.setAlignment(1,1,"right");
-            buttonTable.setWidth("100%");
+            buttonTable.setWidth(Table.HUNDRED_PERCENT);
             buttonTable.add(TournamentController.getAheadButton(modinfo,"",""));
         form.add(buttonTable);
 

@@ -13,6 +13,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -62,7 +63,15 @@ public class Dismiss extends GolfBlock {
 
 				myTable.addText(iwrb.getLocalizedString("tournament.reason","Reason")+":",1,1);
 				myTable.add(dismissal,1,2);
-				myTable.add(getButton(new SubmitButton(localize("tournament.confirm","Confirm"))),1,3);
+				Table buttonTable = new Table(2,1);
+				buttonTable.setCellpaddingAndCellspacing(0);
+				buttonTable.setCellpaddingLeft(2,1,10);
+				
+				
+				buttonTable.add(getButton(new CloseButton(localize("tournament.cancel","Cancel"))),1,1);
+				buttonTable.add(getButton(new SubmitButton(localize("tournament.confirm","Confirm"))),2,1);
+				
+				myTable.add(buttonTable,1,3);
 
 			myForm.add(myTable);
 

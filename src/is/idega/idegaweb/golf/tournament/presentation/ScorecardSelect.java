@@ -322,14 +322,14 @@ public class ScorecardSelect extends TournamentBlock {
 					myTable.addText(out_differ + "", 10, a + 2);
 				}
 
-				Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
+				Image changeImage = iwb.getImage("shared/icons/tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"));
 				changeImage.setAlignment("absmiddle");
 				Link changeLink = new Link(changeImage);
 				changeLink.setWindowToOpen(HandicapUtility.class);
 				changeLink.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, scorecard_id);
 				changeLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_CHANGE_TEES);
 
-				Image changeImage2 = iwb.getImage("shared/correct_handicap.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 11, 13);
+				Image changeImage2 = iwb.getImage("shared/icons/updown.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"));
 				changeImage2.setAlignment("absmiddle");
 				Link changeLink2 = new Link(changeImage2);
 				changeLink2.setWindowToOpen(HandicapUtility.class);
@@ -338,14 +338,14 @@ public class ScorecardSelect extends TournamentBlock {
 				changeLink2.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_UPDATE_HANDICAP);
 
 
-				Image positionImage = iwb.getImage("shared/updown.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"), 9, 13);
+				Image positionImage = iwb.getImage("shared/icons/position.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"));
 				positionImage.setAlignment("absmiddle");
 				Link positionLink = new Link(positionImage);
 				positionLink.setWindowToOpen(ChangePositionWindow.class);
 				positionLink.addParameter("member_id", members[a].getMemberID());
 				positionLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				Image groupImage = iwb.getImage("shared/change_group.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"), 11, 13);
+				Image groupImage = iwb.getImage("shared/icons/edit.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"));
 				groupImage.setAlignment("absmiddle");
 				Link groupLink = new Link(groupImage);
 				groupLink.setWindowToOpen(ChangeGroupWindow.class);
@@ -353,7 +353,7 @@ public class ScorecardSelect extends TournamentBlock {
 				groupLink.addParameter("tournament_id", members[a].getTournamentID());
 
 
-				Image dismissImage = iwb.getImage("shared/red.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"), 10, 10);
+				Image dismissImage = iwb.getImage("shared/icons/delete.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"));
 				dismissImage.setAlignment("absmiddle");
 				Link dismissLink = new Link(dismissImage);
 				dismissLink.setWindowToOpen(DismissWindow.class);
@@ -467,14 +467,14 @@ public class ScorecardSelect extends TournamentBlock {
 				}
 
 
-				Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
+				Image changeImage = iwb.getImage("shared/icons/tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"));
 				changeImage.setAlignment("absmiddle");
 				Link changeLink = new Link(changeImage);
 				changeLink.setWindowToOpen(HandicapUtility.class);
 				changeLink.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, scorecard_id);
 				changeLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_CHANGE_TEES);
 
-				Image changeImage2 = iwb.getImage("shared/correct_handicap.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 11, 13);
+				Image changeImage2 = iwb.getImage("shared/icons/updown.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"));
 				changeImage2.setAlignment("absmiddle");
 				Link changeLink2 = new Link(changeImage2);
 				changeLink2.setWindowToOpen(HandicapUtility.class);
@@ -482,21 +482,21 @@ public class ScorecardSelect extends TournamentBlock {
 				changeLink2.addParameter(HandicapUtility.PARAMETER_TOURNAMENT_ID, members[a].getTournamentID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_UPDATE_HANDICAP);
 
-				Image positionImage = iwb.getImage("shared/updown.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"), 9, 13);
+				Image positionImage = iwb.getImage("shared/icons/position.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"));
 				positionImage.setAlignment("absmiddle");
 				Link positionLink = new Link(positionImage);
 				positionLink.setWindowToOpen(ChangePositionWindow.class);
 				positionLink.addParameter("member_id", members[a].getMemberID());
 				positionLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				Image groupImage = iwb.getImage("shared/change_group.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"), 11, 13);
+				Image groupImage = iwb.getImage("shared/icons/edit.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"));
 				groupImage.setAlignment("absmiddle");
 				Link groupLink = new Link(groupImage);
 				groupLink.setWindowToOpen(ChangeGroupWindow.class);
 				groupLink.addParameter("member_id", members[a].getMemberID());
 				groupLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				Image dismissImage = iwb.getImage("shared/red.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"), 10, 10);
+				Image dismissImage = iwb.getImage("shared/icons/delete.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"));
 				dismissImage.setAlignment("absmiddle");
 				Link dismissLink = new Link(dismissImage);
 				dismissLink.setWindowToOpen(DismissWindow.class);
