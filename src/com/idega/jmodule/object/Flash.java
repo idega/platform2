@@ -8,17 +8,14 @@ import java.sql.*;
 
 public class Flash extends ModuleObject{
 
-private Hashtable params;
+private Map params;
 
 public Flash(){
   this("");
 }
 
 public Flash(String url){
-	this(url,"untitled");
-	setParam("quality","high");
-	setHeight("100%");
-	setWidth("100%");
+  this(url,"untitled");
 }
 
 public Flash(String url,String name){
@@ -64,20 +61,19 @@ public void setParam(String name,String value){
 }
 
 public String getParams(){
-  /*
-  StringBuffer params = new StringBuffer();
-  Enumeration enum = cache.elements();
-  while( enum.hasMoreElements() ){
-    params.append() pathAndFile = realPath + java.net.URLDecoder.decode(TextSoap.findAndReplace( (String)enum.nextElement() ,"/",FileUtil.getFileSeparator()) );
-    System.out.println(pathAndFile);
-    FileUtil.delete( pathAndFile );
+  StringBuffer paramString = new StringBuffer();
+  Iterator iter = params.entrySet().iterator();
+  String key;
+  while( iter.hasNext() ){
+    key = (String)iter.next();
+    paramString.append("<param name=\"");
+    paramString.append(key);
+    paramString.append("\" value=\"");
+    paramString.append(params.get(key));
+    paramString.append("\" >\n");
   }
-  params += "<param name=\""+name+"\" value=\""+value+"\" >\n";
 
-
-  return params;
-  */
-    return null;
+  return paramString.toString();
 }
 
 
