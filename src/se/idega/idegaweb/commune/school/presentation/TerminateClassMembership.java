@@ -1,30 +1,19 @@
 package se.idega.idegaweb.commune.school.presentation;
 
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.*;
-import com.idega.business.IBOLookup;
-import com.idega.core.location.data.Address;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.presentation.*;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.*;
-import com.idega.user.data.User;
-import com.idega.user.presentation.UserSearcher;
-import com.idega.util.IWTimestamp;
-
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.HashSet;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -34,14 +23,39 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolYear;
+import com.idega.block.school.data.SchoolYearHome;
+import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
+import com.idega.user.presentation.UserSearcher;
+import com.idega.util.IWTimestamp;
+
 /**
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/11/18 12:59:50 $ by $Author: malin $
+ * Last modified: $Date: 2004/12/10 14:01:18 $ by $Author: malin $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -150,6 +164,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 			log (exception);
 			add ("Det inträffade ett fel. Försök igen senare.");
 		}
+		
+		
 	}
 	
 	/**
@@ -473,34 +489,37 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 			IWTimestamp registerDate = new IWTimestamp(student.getRegisterDate());
 			IWTimestamp earliestPossiblePlacementDate = null;
 			boolean early2Contact = false;
-			if (today.isEarlierThan(registerDate)){
-				registerDate.addDays(1);
-				earliestPossiblePlacementDate = new IWTimestamp(registerDate);
-				early2Contact = true;
-			}
-			else if (today.isLaterThan(registerDate)){
-				todayCompare.addWeeks(-2);
-				if (todayCompare.isEarlierThan(registerDate)){
+			if (!isAdmin(context)){
+				if (today.isEarlierThan(registerDate)){
 					registerDate.addDays(1);
-					earliestPossiblePlacementDate= registerDate;
+					earliestPossiblePlacementDate = new IWTimestamp(registerDate);
 					early2Contact = true;
 				}
-				else {
-					today.addWeeks(-2);
-					earliestPossiblePlacementDate = today; 
+				else if (today.isLaterThan(registerDate)){
+					todayCompare.addWeeks(-2);
+					if (todayCompare.isEarlierThan(registerDate)){
+						registerDate.addDays(1);
+						earliestPossiblePlacementDate= registerDate;
+						early2Contact = true;
+					}
+					else {
+						today.addWeeks(-2);
+						earliestPossiblePlacementDate = today; 
+					}
 				}
-			}
-			else { //same day
-				today.addDays(1);
-				earliestPossiblePlacementDate = today; 
-				early2Contact = true;
-			}
-							
-			if (early2Contact){
-				terminationDateInput.setEarliestPossibleDate(earliestPossiblePlacementDate.getDate(), localize(EARLIESTTERMINATIONDATE_KEY, EARLIESTTERMINATIONDATE_DEFAULT) + ": " + new IWTimestamp(earliestPossiblePlacementDate).getLocaleDate(context.getCurrentLocale(), IWTimestamp.SHORT)+ " " + localize(EARLIESTTERMINATIONDATE2_KEY, EARLIESTTERMINATIONDATE2_DEFAULT));	
-			}
-			else {
-				terminationDateInput.setEarliestPossibleDate(earliestPossiblePlacementDate.getDate(), localize(EARLIESTTERMINATIONDATE_KEY, EARLIESTTERMINATIONDATE_DEFAULT) + ": " + new IWTimestamp(earliestPossiblePlacementDate).getLocaleDate(context.getCurrentLocale(), IWTimestamp.SHORT));
+				else { //same day
+					today.addDays(1);
+					earliestPossiblePlacementDate = today; 
+					early2Contact = true;
+				}
+				
+				if (early2Contact){
+					terminationDateInput.setEarliestPossibleDate(earliestPossiblePlacementDate.getDate(), localize(EARLIESTTERMINATIONDATE_KEY, EARLIESTTERMINATIONDATE_DEFAULT) + ": " + new IWTimestamp(earliestPossiblePlacementDate).getLocaleDate(context.getCurrentLocale(), IWTimestamp.SHORT)+ " " + localize(EARLIESTTERMINATIONDATE2_KEY, EARLIESTTERMINATIONDATE2_DEFAULT));	
+				}
+				else {
+					terminationDateInput.setEarliestPossibleDate(earliestPossiblePlacementDate.getDate(), localize(EARLIESTTERMINATIONDATE_KEY, EARLIESTTERMINATIONDATE_DEFAULT) + ": " + new IWTimestamp(earliestPossiblePlacementDate).getLocaleDate(context.getCurrentLocale(), IWTimestamp.SHORT));
+				}
+				
 			}
 			
 			
@@ -653,4 +672,18 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 			return null;
 		}
 	}	
+	
+	protected boolean isAdmin(IWContext iwc) {
+		if (iwc.hasEditPermission(this))
+			return true;
+
+		try {
+			return getBusiness().getUserBusiness().isRootCommuneAdministrator(iwc.getCurrentUser());
+		}
+		catch (RemoteException re) {
+			return false;
+		}
+	}
+	
+	
 }
