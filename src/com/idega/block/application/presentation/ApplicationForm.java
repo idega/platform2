@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.13 2001/10/05 07:59:58 tryggvil Exp $
+ * $Id: ApplicationForm.java,v 1.14 2001/12/07 13:24:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -175,12 +175,15 @@ public class ApplicationForm extends PresentationObjectContainer {
     TextInput input1 = (TextInput)textInputTemplate.clone();
     input1.setName("firstName");
     input1.setStyle("formstyle");
+    input1.setLength(40);
     TextInput input2 = (TextInput)textInputTemplate.clone();
     input2.setName("middleName");
     input2.setStyle("formstyle");
+    input2.setLength(40);
     TextInput input3 = (TextInput)textInputTemplate.clone();
     input3.setName("lastName");
     input3.setStyle("formstyle");
+    input3.setLength(40);
     TextInput input4 = (TextInput)textInputTemplate.clone();
     input4.setName("ssn");
     input4.setLength(11);
@@ -188,9 +191,11 @@ public class ApplicationForm extends PresentationObjectContainer {
     TextInput input5 = (TextInput)textInputTemplate.clone();
     input5.setName("legalResidence");
     input5.setStyle("formstyle");
+    input5.setLength(40);
     TextInput input6 = (TextInput)textInputTemplate.clone();
     input6.setName("residence");
     input6.setStyle("formstyle");
+    input6.setLength(40);
     TextInput input7 = (TextInput)textInputTemplate.clone();
     input7.setName("residencePhone");
     input7.setLength(8);

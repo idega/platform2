@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApply.java,v 1.3 2001/11/29 11:17:34 palli Exp $
+ * $Id: CampusApply.java,v 1.4 2001/12/07 13:24:42 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,9 +17,14 @@ import com.idega.idegaweb.IWBundle;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
 
 /**
- * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
- * @version 1.1
+ * Title:   idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
+ * @version 1.0
  */
+
 public class CampusApply extends PresentationObjectContainer {
   private static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
 

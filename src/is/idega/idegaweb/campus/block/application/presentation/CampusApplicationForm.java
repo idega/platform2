@@ -174,7 +174,7 @@ public class CampusApplicationForm extends ApplicationForm {
     Form form = new Form();
     Table t = new Table(3,5);
       t.setWidth(1,"250");
-      t.setWidth("100%");
+      //t.setWidth("100%");
       t.setCellpadding(5);
 
     Text heading = (Text)textTemplate.clone();
@@ -219,10 +219,12 @@ public class CampusApplicationForm extends ApplicationForm {
     Image apartmentImage = iwb.getImage("list.gif",iwrb_.getLocalizedString("get_apartment","Click for information about apartment"));
       apartmentImage.setAlignment("absmiddle");
       apartmentImage.setHorizontalSpacing(4);
-    Link apartmentLink = new Link(apartmentImage,window);
+    Link apartmentLink = new Link(apartmentImage);
+    apartmentLink.setWindowToOpen(com.idega.block.building.presentation.ApartmentTypeWindow.class);
     Text apartmentText = new Text(iwrb_.getLocalizedString("see_apartment","view"));
       apartmentText.setFontStyle("font-family:arial; font-size:9px; color:#000000");
-    Link apartmentLink2 = new Link(apartmentText,window);
+    Link apartmentLink2 = new Link(apartmentText);
+    apartmentLink2.setWindowToOpen(com.idega.block.building.presentation.ApartmentTypeWindow.class);
 
     if (apartment1 > -1) {
       try {
