@@ -330,6 +330,7 @@ private String headerTextColor = "#FFFFFF";
 	private void getForm() throws IOException {
 
 		myForm.add(new HiddenInput("member_id",member_id));
+                myForm.add(new HiddenInput("handicap_action","overView"));
 
 			DropdownMenu start_y = new DropdownMenu("start_year");
 				for ( int y = 2000 ; y <= year ; y++ ) {
