@@ -14,6 +14,7 @@ import com.idega.presentation.ui.SelectDropdownDouble;
 public class SchoolClassDropdownDouble extends SelectDropdownDouble {
 
 	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
+	private String noClassListEntry = null;
 
 	/**
 	 * 
@@ -38,6 +39,9 @@ public class SchoolClassDropdownDouble extends SelectDropdownDouble {
 			SchoolClass schoolClass = (SchoolClass) value;
 			return schoolClass.getSchoolClassName();
 		}
+		else if(noClassListEntry!=null){
+			return noClassListEntry;
+		}
 		else {
 			IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 			return iwrb.getLocalizedString("school.select_class","Select class...");
@@ -55,5 +59,9 @@ public class SchoolClassDropdownDouble extends SelectDropdownDouble {
 		else {
 			return key.toString();
 		}
+	}
+	
+	public void setDataListEntry(String entry){
+		this.noClassListEntry = entry;
 	}
 }
