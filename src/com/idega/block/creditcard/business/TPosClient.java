@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.1 2004/04/22 21:40:27 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.2 2004/04/23 00:12:58 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ public class TPosClient implements CreditCardClient{
   public final static String TPOS_KEY_RECEIVE_PASSWD = "tpos_keyreceivepasswd";
   public final static String TPOS_IP_SET = "tpos_ipset";
 
-  private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.tpos";
+  private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.creditcard";
   private TPOS3Client _client = null;
   private IWBundle _iwb = null;
   private IWApplicationContext _iwc = null;
