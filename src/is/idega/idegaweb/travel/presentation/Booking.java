@@ -913,12 +913,39 @@ public class Booking extends TravelManager {
       }
       return returner;
     }catch (Exception e) {
-      e.printStackTrace(System.err);
+      //e.printStackTrace(System.err);
+			add(Text.BREAK);
+      add(bookingError(e));
 
       return -1;
     }
   }
 
+
+	private Table bookingError(Exception e) throws RemoteException {
+		Text bookingFailed = (Text) super.theBoldText.clone();
+		bookingFailed.setText(iwrb.getLocalizedString("travel.booking_failed","Booking failed"));
+
+		Text reason = (Text) super.theText.clone();
+			reason.setText(e.getMessage());
+			reason.setFontColor(BLACK);
+			
+		Link link = super.getBackLink();
+
+		Table table = new Table();
+			table.setColor(super.WHITE);
+			table.setCellpaddingAndCellspacing(1);
+			
+			table.add(bookingFailed, 1, 1);
+			table.setRowColor(1, super.backgroundColor);
+			table.add(reason, 1, 2);
+			table.setRowColor(2, super.GRAY);
+			table.add(link, 1, 3);
+			table.setRowColor(3, super.GRAY);
+			table.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_LEFT);
+
+		return table;		
+	}
 
   private Table bookingInformation(IWContext iwc, int bookingId) throws RemoteException{
     try {
