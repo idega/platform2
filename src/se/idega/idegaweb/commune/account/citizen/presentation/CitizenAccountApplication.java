@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.23 2002/11/14 10:03:17 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.24 2002/11/14 11:09:57 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/14 10:03:17 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/14 11:09:57 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -309,32 +309,6 @@ public class CitizenAccountApplication extends CommuneBlock {
         }
     }
             
-            /*
-              final String ssn = parameters.get (SSN_KEY).toString ();
-              final String email = parameters.get (EMAIL_KEY).toString ();
-              final String phoneHome
-              = parameters.get (PHONE_HOME_KEY).toString ();
-              final String phoneWork
-              = parameters.get (PHONE_WORK_KEY).toString ();
-              final String name = parameters.get (FIRST_NAME_KEY) + " "
-              + parameters.get (LAST_NAME_KEY);
-              final Integer genderIdAsInteger
-              = (Integer) parameters.get (GENDER_KEY);
-              final int genderId = genderIdAsInteger.intValue ();
-              final String street = parameters.get (STREET_KEY).toString ();
-              final String zipCode = parameters.get (ZIP_CODE_KEY).toString ();
-              final String city = parameters.get (CITY_KEY).toString ();
-              final String hasCohabitantAsString
-              = parameters.get (HAS_COHABITANT_KEY).toString ();
-              final boolean hasCohabitant
-              = hasCohabitantAsString.equals (YES_KEY);
-              final Integer childrenCountAsInteger
-              = (Integer) parameters.get (CHILDREN_COUNT_KEY);
-              final int childrenCount = childrenCountAsInteger.intValue ();
-              final String applicationReason
-              = parameters.get (APPLICATION_REASON_KEY).toString ();
-            */
-    
 	private void viewUnknownCitizenApplicationForm2 (final IWContext iwc) {
 		final Form form = new Form();
         copyParameterToHidden (iwc, form, SSN_KEY);
@@ -350,10 +324,11 @@ public class CitizenAccountApplication extends CommuneBlock {
         copyParameterToHidden (iwc, form, HAS_COHABITANT_KEY);
         copyParameterToHidden (iwc, form, CHILDREN_COUNT_KEY);
         copyParameterToHidden (iwc, form, APPLICATION_REASON_KEY);
-        
+        copyParameterToHidden (iwc, form, CIVIL_STATUS_KEY);        
+
         final Table table = createTable (this);
         int row = 1;
-        if (iwc.getParameter (HAS_COHABITANT_KEY).equals (YES_KEY)) {
+        if (getBooleanParameter (iwc, HAS_COHABITANT_KEY)) {
             // applicant has cohabitant
             final Text cohabitantHeader
                     = getLocalizedHeader (COHABITANT_KEY, COHABITANT_DEFAULT);
@@ -456,29 +431,114 @@ public class CitizenAccountApplication extends CommuneBlock {
 		add (form);
     }
     
-    private static void copyParameterToHidden
-        (final IWContext iwc, final Form form, final String key) {
-        if (iwc.isParameterSet (key)) {
-            final String value = iwc.getParameter (key);
-            final HiddenInput hiddenInput = new HiddenInput (key, value);
-            form.add (hiddenInput);
-        }
-    }
-    
     private void submitUnknownCitizenForm2 (final IWContext iwc) {
-        add (new Text ("SSN_KEY=" + iwc.getParameter (SSN_KEY) + "<br>"));
-        add (new Text ("EMAIL_KEY=" + iwc.getParameter (EMAIL_KEY) + "<br>"));
-        add (new Text ("PHONE_WORK_KEY=" + iwc.getParameter (PHONE_WORK_KEY) + "<br>"));
-        add (new Text ("PHONE_HOME_KEY=" + iwc.getParameter (PHONE_HOME_KEY) + "<br>"));
-        add (new Text ("FIRST_NAME_KEY=" + iwc.getParameter (FIRST_NAME_KEY) + "<br>"));
-        add (new Text ("LAST_NAME_KEY=" + iwc.getParameter (LAST_NAME_KEY) + "<br>"));
-        add (new Text ("STREET_KEY=" + iwc.getParameter (STREET_KEY) + "<br>"));
-        add (new Text ("ZIP_CODE_KEY=" + iwc.getParameter (ZIP_CODE_KEY) + "<br>"));
-        add (new Text ("CITY_KEY=" + iwc.getParameter (CITY_KEY) + "<br>"));
-        add (new Text ("GENDER_KEY=" + iwc.getParameter (GENDER_KEY) + "<br>"));
-        add (new Text ("HAS_COHABITANT_KEY=" + iwc.getParameter (HAS_COHABITANT_KEY) + "<br>"));
-        add (new Text ("CHILDREN_COUNT_KEY=" + iwc.getParameter (CHILDREN_COUNT_KEY) + "<br>"));
-        add (new Text ("APPLICATION_REASON_KEY=" + iwc.getParameter (APPLICATION_REASON_KEY) + "<br>"));
+        final Collection mandatoryParameterNames = new ArrayList ();
+        mandatoryParameterNames.addAll (Arrays.asList (new String []
+            { SSN_KEY, EMAIL_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY,
+              STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+              HAS_COHABITANT_KEY, APPLICATION_REASON_KEY, GENDER_KEY,
+              CHILDREN_COUNT_KEY }));
+        final Collection stringParameterNames = new ArrayList ();
+        stringParameterNames.addAll (Arrays.asList (new String [] {
+            EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY,
+            LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+            HAS_COHABITANT_KEY, APPLICATION_REASON_KEY }));
+        final Collection ssnParameterNames = new ArrayList ();
+        ssnParameterNames.add (SSN_KEY);
+        final Collection integerParameters = new ArrayList ();
+        integerParameters.addAll (Arrays.asList (new String [] {
+            GENDER_KEY, CHILDREN_COUNT_KEY }));
+
+        try {
+            final Map parameters = parseParameters
+                    (getResourceBundle (), iwc, mandatoryParameterNames,
+                     stringParameterNames, ssnParameterNames,
+                     integerParameters);
+        } catch (final Exception e) {
+            final Text text = new Text(e.getMessage (), true, false, false);
+            text.setFontColor ("#ff0000");
+            add (text);
+            add (Text.getBreak ());
+			viewUnknownCitizenApplicationForm1 (iwc);
+            return;
+        }
+        final boolean hasCohabitant = getBooleanParameter (iwc,
+                                                           HAS_COHABITANT_KEY);
+        if (hasCohabitant) {
+            mandatoryParameterNames.addAll (Arrays.asList (new String [] {
+                FIRST_NAME_KEY + COHABITANT_KEY, LAST_NAME_KEY + COHABITANT_KEY,
+                SSN_KEY + COHABITANT_KEY, CIVIL_STATUS_KEY + COHABITANT_KEY,
+                PHONE_WORK_KEY + COHABITANT_KEY }));
+            stringParameterNames.addAll (Arrays.asList (new String [] {
+                FIRST_NAME_KEY + COHABITANT_KEY, LAST_NAME_KEY + COHABITANT_KEY,
+                CIVIL_STATUS_KEY + COHABITANT_KEY,
+                PHONE_WORK_KEY + COHABITANT_KEY }));
+            ssnParameterNames.add (SSN_KEY + COHABITANT_KEY);
+        }
+
+        final int childrenCount = getIntParameter (iwc, CHILDREN_COUNT_KEY);
+        for (int i = 0; i < childrenCount; i++) {
+            mandatoryParameterNames.addAll (Arrays.asList (new String [] {
+                FIRST_NAME_KEY + CHILDREN_KEY + i,
+                LAST_NAME_KEY + CHILDREN_KEY + i,
+                SSN_KEY + CHILDREN_KEY + i }));
+            stringParameterNames.addAll (Arrays.asList (new String [] {
+                FIRST_NAME_KEY + CHILDREN_KEY + i,
+                LAST_NAME_KEY + CHILDREN_KEY + i }));
+            ssnParameterNames.add (SSN_KEY + CHILDREN_KEY + i);            
+        }
+        
+        final String applicationReason
+                = iwc.getParameter (APPLICATION_REASON_KEY);
+        if (applicationReason.equals (MOVING_TO_NACKA_KEY)) {
+            mandatoryParameterNames.addAll (Arrays.asList (new String [] {
+                MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY }));
+            stringParameterNames.addAll (Arrays.asList (new String [] {
+                MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY,
+                PROPERTY_TYPE_KEY }));
+        } else if (applicationReason.equals (PUT_CHILDREN_IN_NACKA_KEY)) {
+            mandatoryParameterNames.addAll (Arrays.asList (new String [] {
+                CURRENT_KOMMUN_KEY, HAS_SCHOOL_CHECK_KEY }));
+            stringParameterNames.addAll (Arrays.asList (new String [] {
+                CURRENT_KOMMUN_KEY, HAS_SCHOOL_CHECK_KEY }));
+        }
+
+        try {
+            final Map parameters = parseParameters
+                    (getResourceBundle (), iwc, mandatoryParameterNames,
+                     stringParameterNames, ssnParameterNames,
+                     integerParameters);
+            System.out.println (parameters.toString ());
+        } catch (final Exception e) {
+            final Text text = new Text(e.getMessage (), true, false, false);
+            text.setFontColor ("#ff0000");
+            add (text);
+            add (Text.getBreak ());
+			viewUnknownCitizenApplicationForm2 (iwc);
+            return;
+        }
+
+        /*
+          final String ssn = parameters.get (SSN_KEY).toString ();
+          final String email = parameters.get (EMAIL_KEY).toString ();
+          final String phoneHome
+          = parameters.get (PHONE_HOME_KEY).toString ();
+          final String phoneWork
+          = parameters.get (PHONE_WORK_KEY).toString ();
+          final String name = parameters.get (FIRST_NAME_KEY) + " "
+          + parameters.get (LAST_NAME_KEY);
+          final Integer genderIdAsInteger
+          = (Integer) parameters.get (GENDER_KEY);
+          final int genderId = genderIdAsInteger.intValue ();
+          final String street = parameters.get (STREET_KEY).toString ();
+          final String zipCode = parameters.get (ZIP_CODE_KEY).toString ();
+          final String city = parameters.get (CITY_KEY).toString ();
+          final Integer childrenCountAsInteger
+          = (Integer) parameters.get (CHILDREN_COUNT_KEY);
+          final int childrenCount = childrenCountAsInteger.intValue ();
+          final String applicationReason
+          = parameters.get (APPLICATION_REASON_KEY).toString ();
+        */
         
         /*
           boolean isInserted = false;
@@ -616,6 +676,13 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add (submitButton, 1, row);
     }
     
+    private static boolean getBooleanParameter (final IWContext iwc,
+                                                final String key) {
+        final String value = iwc.getParameter (key);
+        return value != null && value.equals (YES_KEY);
+
+    }
+
     private static int getIntParameter (final IWContext iwc, final String key) {
         final String valueAsString = iwc.getParameter (key);
         final Integer valueAsInteger = new Integer (valueAsString);
@@ -655,6 +722,15 @@ public class CitizenAccountApplication extends CommuneBlock {
             return null;
         }
         return digitOnlyInput.toString ();
+    }
+    
+    private static void copyParameterToHidden
+        (final IWContext iwc, final Form form, final String key) {
+        if (iwc.isParameterSet (key)) {
+            final String value = iwc.getParameter (key);
+            final HiddenInput hiddenInput = new HiddenInput (key, value);
+            form.add (hiddenInput);
+        }
     }
     
 	private static int parseAction (final IWContext iwc) {
