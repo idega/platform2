@@ -1280,7 +1280,7 @@ public class Booking extends TravelManager {
         if (book.booleanValue() == false) {
             responseString.append("Beiðninni er hafnað");
         }else if (book.booleanValue() == true) {
-            responseString.append("Beiðnin er samþykk, búið er að bóka");
+            responseString.append("Beiðnin er samþykkt, búið er að bóka");
               booking.setIsValid(true);
             booking.update();
         }
@@ -1290,18 +1290,28 @@ public class Booking extends TravelManager {
         inquery.update();
 
         Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
-        tm.commit();
+        try {
+          System.err.println("Printed in is.idega.travel.presentation.Booking : inqueryResonse");
+          System.err.println("Supplier email = "+supplier.getEmail().getEmailAddress());
+          System.err.println("Inquiry email  = "+inquery.getEmail());
+          System.err.println("mailHost       = "+mailHost);
+          System.err.println("mailSubject    = "+mailSubject);
+          System.err.println("responseString = "+responseString.toString());
+          sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+          if (reseller != null) {  // if this is not a reseller deleting his own inquiry
+            if (resellers != null) { // if there was a reseller who send the inquiry
+              responseString = new StringBuffer();
+              responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
+              for (int i = 0; i < resellers.length; i++) {
+                if (resellers[i].getEmail() != null)
+                sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
 
-        sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
-        if (reseller != null) {  // if this is not a reseller deleting his own inquiry
-          if (resellers != null) { // if there was a reseller who send the inquery
-            responseString = new StringBuffer();
-            responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
-            for (int i = 0; i < resellers.length; i++) {
-              if (resellers[i].getEmail() != null)
-              sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
+              }
             }
           }
+          tm.commit();
+        }catch (javax.mail.internet.AddressException ae) {
+          throw ae;
         }
 
       }catch (Exception e) {
