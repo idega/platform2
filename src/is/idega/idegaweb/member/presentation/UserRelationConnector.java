@@ -115,6 +115,9 @@ public class UserRelationConnector extends Window {
 		int row = 1;
 
 		UserSearcher searcher = new UserSearcher();
+		searcher.setPersonalIDLength(15);
+		searcher.setFirstNameLength(25);
+		searcher.setLastNameLength(25);
 		searcher.setShowMiddleNameInSearch(false);
 		searcher.maintainParameter(new Parameter(PARAM_USER_ID, userID.toString()));
 		if (type != null)
