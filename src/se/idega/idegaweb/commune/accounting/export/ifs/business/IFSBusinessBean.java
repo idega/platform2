@@ -501,7 +501,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
-					bWriter.write(IWTimestamp.getDaysBetween(executionDate, paymentDate));
+					bWriter.write(Integer.toString(IWTimestamp.getDaysBetween(executionDate, paymentDate)));
 					//				bWriter.write("7");
 					bWriter.write(";");
 					bWriter.write("SEK");
