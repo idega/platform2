@@ -4,6 +4,7 @@
  */
 package is.idega.block.counters.presentation;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -232,5 +233,13 @@ public class Countdown extends Block {
 	 */
 	public void setTargetDate(Date targetDate) {
 		this.targetDate = targetDate;
+	}
+	
+	public void setTargetTimestamp(Timestamp time){
+		this.targetDate = new Date(time.getTime());
+	}
+	
+	public void setTargetTimestamp(String timestamp){
+		this.targetDate = new com.idega.util.IWTimestamp(timestamp).getDate();
 	}
 }
