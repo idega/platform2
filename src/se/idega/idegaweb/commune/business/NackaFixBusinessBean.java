@@ -1,5 +1,5 @@
 /*
- * $Id: NackaFixBusinessBean.java,v 1.4 2004/12/08 13:05:45 tryggvil Exp $
+ * $Id: NackaFixBusinessBean.java,v 1.5 2004/12/08 13:10:44 tryggvil Exp $
  * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,8 +15,8 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.care.data.ChildCareContract;
-import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
+//import se.idega.idegaweb.commune.care.data.ChildCareContract;
+//import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;
@@ -33,10 +33,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2004/12/08 13:05:45 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/12/08 13:10:44 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBusiness{
 /*
