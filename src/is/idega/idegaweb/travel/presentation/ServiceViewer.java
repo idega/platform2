@@ -41,6 +41,7 @@ import java.text.DecimalFormat;
  */
 
 public class ServiceViewer extends Window {
+  public static final String CACHE_KEY = "iw_tr_sv_cachekey_";
 
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
   public static final String IW_TRAVEL_SERVICE_ID = "iw_tr_serv_id";
@@ -597,6 +598,7 @@ public class ServiceViewer extends Window {
     pTable.setCellspacing(0);
     return pTable;
   }
+
 /*
   private Table getServicePriceNew(IWContext iwc, Service service, boolean cutOff) {
       Table pTable = new Table();
