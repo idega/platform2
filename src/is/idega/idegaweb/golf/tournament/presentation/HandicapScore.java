@@ -66,7 +66,7 @@ public class HandicapScore extends GolfWindow {
 			TeeColor tee_color = group_id.getTeeColor();
 			int tee_color_id = tee_color.getID();
 			String litur = "";
-			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumn("field_id", String.valueOf(field_id), "tee_color_id", String.valueOf(tee_color_id));
+			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnOrdered("field_id", String.valueOf(field_id), "tee_color_id", String.valueOf(tee_color_id), "hole_number");
 
 			switch (tee_color_id) {
 				case 1:
@@ -192,7 +192,9 @@ public class HandicapScore extends GolfWindow {
 			int rounds_played = 0;
 
 			for (int a = 0; a < tee.length; a++) {
-				Text hole = getSmallHeader(String.valueOf(a + 1));
+				
+				Text hole = getSmallHeader(Integer.toString(tee[a].getHoleNumber()));
+//				Text hole = getSmallHeader(String.valueOf(a + 1));
 
 				int holelength = tee[a].getIntColumnValue("tee_length");
 				total_length += holelength;
