@@ -263,6 +263,34 @@ public class ProductPriceDesigner extends TravelWindow {
 	          sql.printStackTrace(System.out);
 	        }
 	      }
+	      
+	      
+			  row = insertMiscellaneousProductCategories(table, row, misc, -1, -1);
+	      
+/*	      
+			  if (misc.length > 0) {
+					++row;
+					catName = getText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
+					catName.setFontColor(TravelManager.WHITE);
+					table.add(catName, 1, row);
+					table.setRowColor(row, TravelManager.backgroundColor);
+			  }
+	
+			  ProductPrice[] miscPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1, false, _currencyId);
+			  for (int i = 0; i < misc.length; i++) {
+					table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, "-1"),1,row);
+					table.add(new HiddenInput(PARAMETER_ADDRESS_ID, "-1"),1,row);
+		
+					try {
+						  insertCategoryIntoTable(table, row, misc[i], miscPrices);
+					}
+					catch (SQLException ex) {
+					  ex.printStackTrace(System.err);
+					}
+					++row;
+				}
+*/	      
+	      
     	}else {
 				for (int i = 0; i < tFrames.length; i++ ) {
 					++row;
@@ -284,7 +312,30 @@ public class ProductPriceDesigner extends TravelWindow {
 		          sql.printStackTrace(System.out);
 		        }
 		      }
-		      
+
+				  row = insertMiscellaneousProductCategories(table, row, misc, tFrames[i].getID(),-1);
+/*				  if (misc.length > 0) {
+						++row;
+						catName = getText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
+						catName.setFontColor(TravelManager.WHITE);
+						table.add(catName, 1, row);
+						table.setRowColor(row, TravelManager.backgroundColor);
+				  }
+			  
+				  ProductPrice[] miscPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1, false, _currencyId);
+				  for (int j = 0; j < misc.length; j++) {
+						table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, "-1"),1,row);
+						table.add(new HiddenInput(PARAMETER_ADDRESS_ID, "-1"),1,row);
+			
+						try {
+							  insertCategoryIntoTable(table, row, misc[j], miscPrices);
+						}
+						catch (SQLException ex) {
+						  ex.printStackTrace(System.err);
+						}
+						++row;
+					}
+	*/	      
 				}
     	}
     	
@@ -321,27 +372,7 @@ public class ProductPriceDesigner extends TravelWindow {
           }
         }
 
-        if (misc.length > 0) {
-          ++row;
-          catName = getText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
-          catName.setFontColor(TravelManager.WHITE);
-          table.add(catName, 1, row);
-          table.setRowColor(row, TravelManager.backgroundColor);
-        }
-
-        ProductPrice[] miscPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(), false, _currencyId);
-        for (int i = 0; i < misc.length; i++) {
-          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrames[k].getID())),1,row);
-          table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(address.getID())),1,row);
-
-          try {
-            insertCategoryIntoTable(table, row, misc[i], miscPrices);
-          }
-          catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-          }
-          ++row;
-        }
+				row = insertMiscellaneousProductCategories(table, row, misc, tFrames[k].getID(),address.getID());
       }
     }
 
@@ -353,6 +384,33 @@ public class ProductPriceDesigner extends TravelWindow {
     add(Text.BREAK);
     return table;
   }
+
+	private int insertMiscellaneousProductCategories(Table table, int row,	PriceCategory[] misc, int tFrameId, int addressId) {
+		Text catName;
+
+		if (misc.length > 0) {
+		  ++row;
+		  catName = getText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
+		  catName.setFontColor(TravelManager.WHITE);
+		  table.add(catName, 1, row);
+		  table.setRowColor(row, TravelManager.backgroundColor);
+		}
+		
+		ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, _currencyId);
+		for (int i = 0; i < misc.length; i++) {
+		  table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrameId)),1,row);
+		  table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(addressId)),1,row);
+		
+		  try {
+		    insertCategoryIntoTable(table, row, misc[i], prices);
+		  }
+		  catch (SQLException ex) {
+		    ex.printStackTrace(System.err);
+		  }
+		  ++row;
+		}
+		return row;
+	}
 
   private boolean priceCategorySave(IWContext iwc) {
     String[] timeframeIds = (String[]) iwc.getParameterValues(PARAMETER_TIMEFRAME_ID);
