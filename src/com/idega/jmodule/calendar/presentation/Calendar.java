@@ -252,17 +252,17 @@ private String DatastoreType;
 
 
 	private String getDate(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getRequest().getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getRequest().getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getRequest().getParameter("idega_calendar_day");
+		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
+		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
+		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
 
 		return temp_dom2 + " " + temp_manudu + " " + temp_ar2;
 	}
 
         private Timestamp getTimestamp(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getRequest().getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getRequest().getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getRequest().getParameter("idega_calendar_day");
+		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
+		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
+		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
 
                 Timestamp returner = null;
                 if ((temp_manudu != null) && (temp_ar2 != null) && (temp_dom2 != null) ) {
@@ -274,9 +274,9 @@ private String DatastoreType;
         }
 
         private void forwardDate(ModuleInfo modinfo,Form form) {
-		String	temp_manudu = modinfo.getRequest().getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getRequest().getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getRequest().getParameter("idega_calendar_day");
+		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
+		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
+		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
 
                 form.add(new HiddenInput("idega_calendar_month",temp_manudu));
                 form.add(new HiddenInput("idega_calendar_year",temp_ar2));
@@ -285,9 +285,9 @@ private String DatastoreType;
 
 
 	private String getSQLDate(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getRequest().getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getRequest().getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getRequest().getParameter("idega_calendar_day");
+		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
+		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
+		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
 
 		return temp_ar2 + "-" + temp_manudu + "-" + dom2;
 	}
@@ -295,7 +295,7 @@ private String DatastoreType;
 
         private int getSubmittedDay(ModuleInfo modinfo) {
             int returner = 0;
-            String temp = modinfo.getRequest().getParameter("idega_calendar_day");
+            String temp = modinfo.getParameter("idega_calendar_day");
             if (temp != null) {
                 returner = Integer.parseInt(temp);
             }
@@ -303,7 +303,7 @@ private String DatastoreType;
         }
         private int getSubmittedMonth(ModuleInfo modinfo) {
             int returner = 0;
-            String temp = modinfo.getRequest().getParameter("idega_calendar_month");
+            String temp = modinfo.getParameter("idega_calendar_month");
             if (temp != null) {
                 returner = Integer.parseInt(temp);
             }
@@ -311,7 +311,7 @@ private String DatastoreType;
         }
         private int getSubmittedYear(ModuleInfo modinfo) {
             int returner = 0;
-            String temp = modinfo.getRequest().getParameter("idega_calendar_year");
+            String temp = modinfo.getParameter("idega_calendar_year");
             if (temp != null) {
                 returner = Integer.parseInt(temp);
             }
@@ -319,9 +319,9 @@ private String DatastoreType;
         }
 
 	private void Calculate(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getRequest().getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getRequest().getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getRequest().getParameter("idega_calendar_day");
+		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
+		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
+		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
 
 		if (( temp_manudu != null) && (temp_ar2 != null) && (temp_dom2 != null))  {
 			manudu = temp_manudu;
@@ -329,7 +329,7 @@ private String DatastoreType;
 			dom2 = temp_dom2;
 		}
 
-		String temp_typa = modinfo.getRequest().getParameter("idega_calendar_skoda");
+		String temp_typa = modinfo.getParameter("idega_calendar_skoda");
 		if (temp_typa != null) {
 			typa = temp_typa;
 		}
@@ -983,7 +983,8 @@ private String DatastoreType;
 	Link link;
 
 
-	Table myTable = new Table(7,10);
+	Table myTable = new Table();
+	//Table myTable = new Table(7,10);
 		myTable.setAlignment(table_alignment);
 		myTable.setHorizontalZebraColored(color_1,color_2);
 		myTable.setCellpadding(0);
@@ -1504,7 +1505,7 @@ private String formatText(String textString)
 
 protected void deleteEntry(ModuleInfo modinfo)  throws Exception{
       try {
-            String faerslur_id = modinfo.getRequest().getParameter("idega_calendar_faerslu_id");
+            String faerslur_id = modinfo.getParameter("idega_calendar_faerslu_id");
 
             CalendarEntry entry = new CalendarEntry(Integer.parseInt(faerslur_id));
             idegaTimestamp i_stamp = new idegaTimestamp(entry.getDate());
@@ -1534,9 +1535,9 @@ protected void deleteEntry(ModuleInfo modinfo)  throws Exception{
 
 
 private void viewToday(ModuleInfo modinfo) throws SQLException {
-	String day   = modinfo.getRequest().getParameter("idega_calendar_day");
-	String month = modinfo.getRequest().getParameter("idega_calendar_month");
-	String year  = modinfo.getRequest().getParameter("idega_calendar_year");
+	String day   = modinfo.getParameter("idega_calendar_day");
+	String month = modinfo.getParameter("idega_calendar_month");
+	String year  = modinfo.getParameter("idega_calendar_year");
 
 	String dateString = "";
 	Text header = new Text(this.getDate(modinfo));
@@ -1589,7 +1590,7 @@ private void viewToday(ModuleInfo modinfo) throws SQLException {
 
 
 private void view(ModuleInfo modinfo) throws SQLException {
-	String faerslu_id = modinfo.getRequest().getParameter("idega_calendar_faerslur_id");
+	String faerslu_id = modinfo.getParameter("idega_calendar_faerslur_id");
 
         CalendarEntry  entry = new CalendarEntry(Integer.parseInt(faerslu_id));
 
@@ -1669,7 +1670,7 @@ private void nytt(ModuleInfo modinfo, boolean update) throws SQLException{
             addMenu();
         }
 
-        String faerslur_id = modinfo.getRequest().getParameter("idega_calendar_faerslu_id");
+        String faerslur_id = modinfo.getParameter("idega_calendar_faerslu_id");
         String titleText = "";
         String contentText = "";
         if (update) {
@@ -1717,7 +1718,7 @@ private void nytt(ModuleInfo modinfo, boolean update) throws SQLException{
                 myTable.mergeCells(1,4,2,4);
           contentTable.add(myTable,1,2);
 
-	String head = modinfo.getRequest().getParameter("idega_calendar_day") + ". " + cal.getNameOfMonth(modinfo.getRequest().getParameter("idega_calendar_month")) + " "+modinfo.getRequest().getParameter("idega_calendar_year");
+	String head = modinfo.getParameter("idega_calendar_day") + ". " + cal.getNameOfMonth(modinfo.getParameter("idega_calendar_month")) + " "+modinfo.getParameter("idega_calendar_year");
 	Text header = new Text(head);
 		header.setBold();
 		header.setFontColor(this.header_text_color);
@@ -1764,10 +1765,10 @@ private void nytt(ModuleInfo modinfo, boolean update) throws SQLException{
 
 
 private void saveModified(ModuleInfo modinfo) throws Exception{
-	String forda_id_string = modinfo.getRequest().getParameter("forda_id_string");
-	String comment = modinfo.getRequest().getParameter("comment");
+	String forda_id_string = modinfo.getParameter("forda_id_string");
+	String comment = modinfo.getParameter("comment");
 
-	String faerslur_id = modinfo.getRequest().getParameter("idega_calendar_faerslu_id");
+	String faerslur_id = modinfo.getParameter("idega_calendar_faerslu_id");
 
 
 	boolean villa = false;
@@ -1810,10 +1811,10 @@ private void saveModified(ModuleInfo modinfo) throws Exception{
 
 
 private void saveNytt(ModuleInfo modinfo) throws Exception{
-	String forda_id_string = modinfo.getRequest().getParameter("forda_id_string");
-	String comment = modinfo.getRequest().getParameter("comment");
+	String forda_id_string = modinfo.getParameter("forda_id_string");
+	String comment = modinfo.getParameter("comment");
 
-//	String modifySt = modinfo.getRequest().getParameter("idega_calendar_modify");
+//	String modifySt = modinfo.getParameter("idega_calendar_modify");
 
 	boolean villa = false;
 //        System.out.println("Kominn í idega_calendar_nytt_save FALLIÐ");
@@ -1831,9 +1832,9 @@ private void saveNytt(ModuleInfo modinfo) throws Exception{
 		}
 		try {
                         System.out.println("Kominn í idega_calendar_nytt_save TRY");
-			String	temp_manudu = modinfo.getRequest().getParameter("idega_calendar_month");
-			String	temp_ar2 = modinfo.getRequest().getParameter("idega_calendar_year");
-			String	temp_dom2 = modinfo.getRequest().getParameter("idega_calendar_day");
+			String	temp_manudu = modinfo.getParameter("idega_calendar_month");
+			String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
+			String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
                         System.out.println("Save to this date : "+this.ar+"-"+TextSoap.addZero(this.manudur)+"-"+TextSoap.addZero(this.dagur));
 
 
@@ -1867,10 +1868,10 @@ private void saveNytt(ModuleInfo modinfo) throws Exception{
 private void newEntry(ModuleInfo modinfo) throws SQLException {
 
         addMenu();
-	HttpServletRequest request = modinfo.getRequest();
+	//HttpServletRequest request = modinfo.getRequest();
 
 
-	String timi = request.getParameter("timi");
+	String timi = modinfo.getParameter("timi");
 	double timifra;
 	double timitil;
 
@@ -2197,8 +2198,8 @@ private void saveNewEntry(ModuleInfo modinfo) throws Exception {
 
            setSpokenLanguage(modinfo);
 
-		URI = modinfo.getRequest().getRequestURI();
-		String action = modinfo.getRequest().getParameter("idega_calendar_action");
+		URI = modinfo.getRequestURI();
+		String action = modinfo.getParameter("idega_calendar_action");
 
 		if (action == null) {
   		  Calculate(modinfo);
