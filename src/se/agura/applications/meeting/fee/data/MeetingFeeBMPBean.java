@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBMPBean.java,v 1.4 2004/12/13 14:35:10 anna Exp $ Created on
+ * $Id: MeetingFeeBMPBean.java,v 1.5 2004/12/14 01:02:49 laddi Exp $ Created on
  * 23.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,7 +28,7 @@ import com.idega.user.data.User;
  * Last modified: 23.11.2004 09:44:45 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee {
 
@@ -117,6 +117,8 @@ public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee
 	public void initializeAttributes() {
 		addAttribute(COLUMN_MEETING_FEE_ID);
 		setAsPrimaryKey(COLUMN_MEETING_FEE_ID, true);
+
+		addGeneralCaseRelation();
 
 		addAttribute(COLUMN_MEETING_DATE, "Meeting date", Date.class);
 		addAttribute(COLUMN_SIGNED_DATE, "Signed date", Date.class);

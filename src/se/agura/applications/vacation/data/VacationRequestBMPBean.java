@@ -61,6 +61,9 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 	public void initializeAttributes() {
 		addAttribute(COLUMN_VACATION_REQUEST_ID);
 		setAsPrimaryKey(COLUMN_VACATION_REQUEST_ID, true);
+
+		addGeneralCaseRelation();
+
 		addAttribute(COLUMN_FROM_DATE, "Date from", Date.class);
 		addAttribute(COLUMN_TO_DATE, "Date to", Date.class);
 		addAttribute(COLUMN_ORDINARY_WORKING_HOURS, "Ordinal working hours", Integer.class);
