@@ -587,12 +587,7 @@ public class ProductCatalog extends CategoryBlock {
 			returnString = returnString + "_" + iwc.getParameter(CATEGORY_ID);
 		}
 		if (prod != null) {
-			try {
-				returnString = returnString + "_" + prod.getID();
-			}
-			catch (RemoteException re) {
-				throw new RuntimeException(re.getMessage());
-			}
+			returnString = returnString + "_" + prod.getID();
 		}
 		return returnString;
 	}

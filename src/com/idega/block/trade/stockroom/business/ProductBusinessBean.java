@@ -13,6 +13,7 @@ import javax.ejb.FinderException;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductCategoryHome;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
@@ -28,6 +29,7 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
@@ -274,14 +276,9 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
     //return getProducts(supplierId, null);
     List list = new Vector();
     try {
-      Collection coll = getProductHome().getProducts(supplierId);
-      Product product;
+      Collection coll = getProductHome().findProducts(supplierId);
       if (coll != null) {
-        Iterator iter = coll.iterator();
-        while (iter.hasNext()) {
-          product = getProductHome().findByPrimaryKey( iter.next() );
-          list.add(product);
-        }
+      		list = new Vector(coll);
       }
     }catch (FinderException fe) {
       fe.printStackTrace(System.err);
@@ -350,14 +347,9 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
     if (products == null) {
       products = new Vector();
-      Collection coll = getProductHome().getProducts(supplierId, productCategoryId, from, to);
+      Collection coll = getProductHome().findProducts(supplierId, productCategoryId, from, to);
       if (coll != null) {
-        Iterator iter = coll.iterator();
-        Product product;
-        while (iter.hasNext()) {
-          product = getProductHome().findByPrimaryKey( iter.next() );
-          products.add(product);
-        }
+      		products = new Vector(coll);
       }
     }
 
@@ -497,6 +489,16 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
    * @deprecated
    */
   public List getProductCategories() throws IDOFinderException{
+  		try {
+			ProductCategoryHome pcHome = (ProductCategoryHome) IDOLookup.getHome(ProductCategory.class);
+			return new Vector(pcHome.findAll());
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
     return EntityFinder.getInstance().findAllOrdered(ProductCategory.class, com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.getColumnName());
   }
 

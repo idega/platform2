@@ -250,7 +250,7 @@ public class ServiceViewer extends Window {
       prodlist = getProductBusiness(iwc).getProducts(supplier.getID(),dateFrom,dateTo);
     }
     else{
-      Collection coll = getProductHome().getProducts(supplier.getID());
+      Collection coll = getProductHome().findProducts(supplier.getID());
       prodlist = new Vector(coll);
 //      prodlist = getProductHome().getProducts(supplier.getID());
     }
@@ -282,7 +282,7 @@ public class ServiceViewer extends Window {
 
       ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
        while( (iter!=null) && iter.hasNext() ) {
-        Product prod = pHome.findByPrimaryKey(iter.next());
+        Product prod = (Product) iter.next();
 //        Product prod = (Product) iter.next();
         try{
           serv = tsb.getService(prod);

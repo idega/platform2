@@ -1,57 +1,273 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
+import javax.ejb.FinderException;
+import com.idega.block.text.data.TxText;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOException;
+import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.MetaDataCapable;
+import com.idega.util.IWTimestamp;
 
 
-public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDataCapable//, BasketItem
-{
- public void addArrivalAddress(com.idega.core.location.data.Address p0) throws java.rmi.RemoteException;
- public boolean addCategory(com.idega.block.trade.stockroom.data.ProductCategory p0) throws java.rmi.RemoteException;
- public void addICFile(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
- public void addText(com.idega.block.text.data.TxText p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
- public void addTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
- public void addTravelAddress(com.idega.block.trade.stockroom.data.TravelAddress p0) throws java.rmi.RemoteException;
- public void addTravelAddresses(int[] p0)throws com.idega.data.IDOAddRelationshipException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.List getArrivalAddresses()throws com.idega.data.IDOFinderException, java.rmi.RemoteException;
- public java.sql.Timestamp getCreationDate() throws java.rmi.RemoteException;
- public java.util.List getDepartureAddresses(boolean p0)throws com.idega.data.IDOFinderException, java.rmi.RemoteException;
- public int getDiscountTypeId() throws java.rmi.RemoteException;
- public java.sql.Timestamp getEditDate() throws java.rmi.RemoteException;
- public com.idega.core.file.data.ICFile getFile() throws java.rmi.RemoteException;
- public int getFileId() throws java.rmi.RemoteException;
- public java.util.Collection getICFile()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
- public int getID() throws java.rmi.RemoteException;
- public boolean getIsValid() throws java.rmi.RemoteException;
- public java.lang.String getNumber() throws java.rmi.RemoteException;
- public java.util.Collection getProductCategories()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
- public java.lang.String getProductDescription(int p0) throws java.rmi.RemoteException;
- public java.lang.String getProductName(int p0) throws java.rmi.RemoteException;
- public java.lang.String getProductName(int p0, String returnIfNull) throws java.rmi.RemoteException;
- public java.lang.String getProductTeaser(int p0) throws java.rmi.RemoteException;
- public Supplier getSupplier();
- public int getSupplierId() throws java.rmi.RemoteException;
- public com.idega.block.text.data.TxText getText()throws java.sql.SQLException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Timeframe getTimeframe()throws java.sql.SQLException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Timeframe[] getTimeframes()throws java.sql.SQLException, java.rmi.RemoteException;
- public void initializeAttributes() throws java.rmi.RemoteException;
- public void invalidate()throws com.idega.data.IDOException, java.rmi.RemoteException;
- public void removeAllFrom(java.lang.Class p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
- public void removeCategory(com.idega.block.trade.stockroom.data.ProductCategory p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
- public void removeICFile(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
- public void removeTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
- public void removeTravelAddress(com.idega.block.trade.stockroom.data.TravelAddress p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
- public void setCreationDate(com.idega.util.IWTimestamp p0) throws java.rmi.RemoteException;
- public void setCreationDate(java.sql.Timestamp p0) throws java.rmi.RemoteException;
- public void setDiscountTypeId(int p0) throws java.rmi.RemoteException;
- public void setFileId(java.lang.Integer p0) throws java.rmi.RemoteException;
- public void setFileId(int p0) throws java.rmi.RemoteException;
- public void setIsValid(boolean p0) throws java.rmi.RemoteException;
- public void setNumber(java.lang.String p0) throws java.rmi.RemoteException;
- public void setProductCategories(int[] p0)throws com.idega.data.IDORemoveRelationshipException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void setProductDescription(int p0,java.lang.String p1) throws java.rmi.RemoteException;
- public void setProductName(int p0,java.lang.String p1) throws java.rmi.RemoteException;
- public void setProductTeaser(int p0,java.lang.String p1) throws java.rmi.RemoteException;
- public void setSupplierId(int p0) throws java.rmi.RemoteException;
- public void setSupplierId(java.lang.Integer p0) throws java.rmi.RemoteException;
- public void setRefundable(boolean refundable);
- public boolean getRefundable();
+/**
+ * @author gimmi
+ */
+public interface Product extends IDOLegacyEntity, MetaDataCapable {
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#invalidate
+	 */
+	public void invalidate() throws IDOException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getID
+	 */
+	public int getID();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setSupplierId
+	 */
+	public void setSupplierId(int id);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setSupplierId
+	 */
+	public void setSupplierId(Integer id);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setFileId
+	 */
+	public void setFileId(int id);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setFileId
+	 */
+	public void setFileId(Integer id);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setIsValid
+	 */
+	public void setIsValid(boolean valid);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setDiscountTypeId
+	 */
+	public void setDiscountTypeId(int discountTypeId);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setNumber
+	 */
+	public void setNumber(String number);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setCreationDate
+	 */
+	public void setCreationDate(IWTimestamp timestamp);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setCreationDate
+	 */
+	public void setCreationDate(Timestamp timestamp);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getSupplierId
+	 */
+	public int getSupplierId();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getSupplier
+	 */
+	public Supplier getSupplier();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getFileId
+	 */
+	public int getFileId();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getFile
+	 */
+	public ICFile getFile();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getIsValid
+	 */
+	public boolean getIsValid();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getDiscountTypeId
+	 */
+	public int getDiscountTypeId();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getNumber
+	 */
+	public String getNumber();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getTimeframes
+	 */
+	public Timeframe[] getTimeframes() throws SQLException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getTimeframe
+	 */
+	public Timeframe getTimeframe() throws SQLException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getCreationDate
+	 */
+	public Timestamp getCreationDate();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getEditDate
+	 */
+	public Timestamp getEditDate();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getText
+	 */
+	public TxText getText() throws SQLException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getProductCategories
+	 */
+	public Collection getProductCategories() throws IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setProductCategories
+	 */
+	public void setProductCategories(int[] categoryIds) throws RemoteException, FinderException,
+			IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#addCategory
+	 */
+	public boolean addCategory(ProductCategory productCategory);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#removeCategory
+	 */
+	public void removeCategory(ProductCategory productCategory) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#removeAllFrom
+	 */
+	public void removeAllFrom(Class entityInterface) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#addTravelAddresses
+	 */
+	public void addTravelAddresses(int[] addressIds) throws RemoteException, FinderException,
+			IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#addTravelAddress
+	 */
+	public void addTravelAddress(TravelAddress address);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#removeTravelAddress
+	 */
+	public void removeTravelAddress(TravelAddress address) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getProductName
+	 */
+	public String getProductName(int localeId, String returnIfNull);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getProductName
+	 */
+	public String getProductName(int localeId);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setProductName
+	 */
+	public void setProductName(int localeId, String name);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getProductDescription
+	 */
+	public String getProductDescription(int localeId);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setProductDescription
+	 */
+	public void setProductDescription(int localeId, String description);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getProductTeaser
+	 */
+	public String getProductTeaser(int localeId);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setProductTeaser
+	 */
+	public void setProductTeaser(int localeId, String teaser);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getDepartureAddresses
+	 */
+	public List getDepartureAddresses(boolean ordered) throws IDOFinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#addArrivalAddress
+	 */
+	public void addArrivalAddress(Address address);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getArrivalAddresses
+	 */
+	public List getArrivalAddresses() throws IDOFinderException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getICFile
+	 */
+	public Collection getICFile() throws IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#removeICFile
+	 */
+	public void removeICFile(ICFile file) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#addICFile
+	 */
+	public void addICFile(ICFile file) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#addTimeframe
+	 */
+	public void addTimeframe(Timeframe frame) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#removeTimeframe
+	 */
+	public void removeTimeframe(Timeframe frame) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#addText
+	 */
+	public void addText(TxText text) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#setRefundable
+	 */
+	public void setRefundable(boolean refundable);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#getRefundable
+	 */
+	public boolean getRefundable();
 }

@@ -324,15 +324,15 @@ public class BookingOverview extends TravelManager {
           ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
           try {
 						if (productId == Integer.parseInt(this.parameterViewAll)) {
-	          	if (supplier != null) {
-		              products = pHome.getProductsOrderedByProductCategory(supplier.getID(), this.fromStamp, this.toStamp );
-	          	}else if (reseller != null) {
-		          		Product[] prodArr = getContractBusiness(iwc).getProductsForReseller(iwc, reseller.getID());
-		          		products = new Vector();
-		          		for ( int i = 0; i < prodArr.length; i++) {
-		          			products.add(new Integer(prodArr[i].getID()));	
-		          		}
-	          	}
+		          	if (supplier != null) {
+			              products = pHome.findProductsOrderedByProductCategory(supplier.getID(), this.fromStamp, this.toStamp );
+		          	}else if (reseller != null) {
+			          		Product[] prodArr = getContractBusiness(iwc).getProductsForReseller(iwc, reseller.getID());
+			          		products = new Vector();
+			          		for ( int i = 0; i < prodArr.length; i++) {
+			          			products.add(prodArr[i]);	
+			          		}
+		          	}
 						}else {
 							products = new Vector();
 							products.add(pHome.findByPrimaryKey(new Integer(productId)));
@@ -359,7 +359,7 @@ public class BookingOverview extends TravelManager {
             Iterator iter = products.iterator();
             while (iter.hasNext()) {
               getTable = false;
-              prod = pHome.findByPrimaryKey(iter.next());
+              prod = (Product) iter.next();
               cats = super.getProductCategoryFactory(iwc).getProductCategory(prod);
               Iterator iter2 = cats.iterator();
               if (iter2.hasNext()) {

@@ -625,19 +625,19 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     }
   }
 
-  public Collection ejbHomeGetProductsOrderedByProductCategory(int supplierId) throws FinderException {
-    return ejbHomeGetProductsOrderedByProductCategory(supplierId, null, null);
+  public Collection ejbFindProductsOrderedByProductCategory(int supplierId) throws FinderException {
+    return ejbFindProductsOrderedByProductCategory(supplierId, null, null);
   }
 
-  public Collection ejbHomeGetProductsOrderedByProductCategory(int supplierId, IWTimestamp stamp) throws FinderException {
-    return ejbHomeGetProductsOrderedByProductCategory(supplierId, stamp, null);
+  public Collection ejbFindProductsOrderedByProductCategory(int supplierId, IWTimestamp stamp) throws FinderException {
+    return ejbFindProductsOrderedByProductCategory(supplierId, stamp, null);
   }
 
-  public Collection ejbHomeGetProductsOrderedByProductCategory(int supplierId, IWTimestamp from, IWTimestamp to) throws FinderException {
-    return ejbHomeGetProducts(supplierId, -1, from, to, ProductCategoryBMPBean.getEntityTableName()+"."+ProductCategoryBMPBean.getColumnName(), -1, -1, false);
+  public Collection ejbFindProductsOrderedByProductCategory(int supplierId, IWTimestamp from, IWTimestamp to) throws FinderException {
+    return ejbFindProducts(supplierId, -1, from, to, ProductCategoryBMPBean.getEntityTableName()+"."+ProductCategoryBMPBean.getColumnName(), -1, -1, false);
   }
 
-  public Collection ejbHomeGetProducts(int supplierId) throws FinderException {
+  public Collection ejbFindProducts(int supplierId) throws FinderException {
     String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
 
     StringBuffer sqlQuery = new StringBuffer();
@@ -652,23 +652,23 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
   }
 
 
-  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to) throws FinderException{
-    return ejbHomeGetProducts(supplierId, productCategoryId, from, to, null);
+  public Collection ejbFindProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to) throws FinderException{
+    return ejbFindProducts(supplierId, productCategoryId, from, to, null);
   }
 
-  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy) throws FinderException{
-    return ejbHomeGetProducts(supplierId, productCategoryId, from, to, orderBy, -1, -1);
+  public Collection ejbFindProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy) throws FinderException{
+    return ejbFindProducts(supplierId, productCategoryId, from, to, orderBy, -1, -1);
   }
 
   public int ejbHomeGetProductFilterNotConnectedToAnyProductCategory() {
     return FILTER_NOT_CONNECTED_TO_CATEGORY;
   }
 
-  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter) throws FinderException{
-		return ejbHomeGetProducts(supplierId, productCategoryId, from, to, orderBy, localeId, filter, true);
+  public Collection ejbFindProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter) throws FinderException{
+		return ejbFindProducts(supplierId, productCategoryId, from, to, orderBy, localeId, filter, true);
   }
   
-  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter, boolean useTimeframes) throws FinderException{
+  public Collection ejbFindProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter, boolean useTimeframes) throws FinderException{
     Collection coll;
 
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
@@ -716,7 +716,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 
     // Hondla ef supplierId != -1
     Collection tempProducts = null;;
-    if (supplierId != -1) tempProducts = ejbHomeGetProducts(supplierId);
+    if (supplierId != -1) tempProducts = ejbFindProducts(supplierId);
     if (tempProducts != null)
     if (tempProducts.size() > 0) {
       timeframeSQL.append(" AND ");
