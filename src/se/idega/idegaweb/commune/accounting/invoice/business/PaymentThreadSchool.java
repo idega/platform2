@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/08 01:36:11 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/08 11:19:38 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.92 $
+ * @version $Revision: 1.93 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -296,6 +296,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
 		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
 		final boolean placementIsInValidGroup = schoolClassMember.getSchoolClass().getValid();
+		errorRelated.append("Default Commune "+userIsInDefaultCommune);
+		errorRelated.append("Valid group "+placementIsInValidGroup);
 		if (placementIsInValidGroup && placementIsInPeriod
 				&& (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)) {
 			ArrayList conditions = getConditions(schoolClassMember, provider);
