@@ -63,11 +63,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/16 19:22:23 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/16 21:02:03 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.63 $
+ * @version $Revision: 1.64 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -115,10 +115,12 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RegulationsBusiness regBus = getRegulationsBusiness();
 
 			//Go through all elementary schools
-			for (Iterator i = getSchools().iterator(); i.hasNext();) {
+//			for (Iterator i = getSchools().iterator(); i.hasNext();) {
+			for (int i = 0; i < 1; i++) {
 				dispTime("Enter main loop");
 				try {
-					school = (School) i.next();
+//					school = (School) i.next();
+					school = getSchoolHome().findByPrimaryKey(new Integer(8));
 //					System.err.print("### school = " + school.getName());
 					errorRelated = new ErrorLogger();
 					errorRelated.append("School " + school.getName(),1);
@@ -135,7 +137,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						errorRelated.append("; investigate school = yes",1);
 						
 						ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated.toString());
-						for (Iterator j = getSchoolClassMembers(school).iterator(); j.hasNext();) {
+						Collection pupils = getSchoolClassMembers(school);
+						Iterator j = pupils.iterator();
+//						for (Iterator j = getSchoolClassMembers(school).iterator(); j.hasNext();) {
+						System.out.println("Found " + pupils.size() + " class members");
+						for (; j.hasNext();) {
 							try {
 								errorRelated = new ErrorLogger(tmpErrorRelated);
 								SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
@@ -250,7 +256,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
 			}
 		}
-		catch (CreateException e) {
+/*		catch (CreateException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
 				createNewErrorMessage(errorRelated, "invoice.Severe_CouldNotFindHomeCommune");
@@ -258,7 +264,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			else {
 				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
 			}
-		}
+		}*/
 		catch (IDOException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
