@@ -108,7 +108,7 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
       Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(c.*) FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
+        buffer.append("SELECT distinct c.* FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
         if (supplierId != -1) {
           buffer.append(", "+ProductBMPBean.getProductEntityName()+" p");
         }
