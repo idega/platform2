@@ -7,9 +7,7 @@
 package se.idega.block.pki.presentation;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import se.nexus.nbs.sdk.NBSMessageHttp;
@@ -21,7 +19,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 
 /**
@@ -55,7 +52,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 	
 	private HashMap appletParameterMap = new HashMap();
 	private HashMap formParameterMap = new HashMap();
-	private Map _hiddenInputs = null;
 	
 	private String _action = "";
 	
@@ -313,13 +309,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 			loginForm.add(parm);
 		}
 		
-		if (_hiddenInputs != null) {
-			Iterator i = _hiddenInputs.entrySet().iterator();
-			while (i.hasNext()){
-				Map.Entry e = (Map.Entry) i.next();
-				loginForm.add(new HiddenInput((String) e.getKey(), (String) e.getValue()));
-			}		
-		}
 		
 		//if some eventListenerClassName is set then a hidden input is added to the form 
 		//same as form.setEventListener(String str) 
@@ -498,10 +487,6 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 	
 	public void setErrorPageUrl(String url){
 		_errorPageUrl = url;
-	}
-	
-	public void setHiddenInputs (Map hiddenInputs){
-		_hiddenInputs = hiddenInputs;
 	}
 	
 
