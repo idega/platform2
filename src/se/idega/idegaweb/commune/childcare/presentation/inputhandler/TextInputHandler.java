@@ -28,7 +28,7 @@ public class TextInputHandler extends TextInput implements InputHandler {
 			this.setContent(stringValue);
 		}
 		this.setStyleClass("commune_Interface");
-		this.setWidth("10");
+		this.setWidth("2");
 		this.setAsIntegers("Only integers");
 		return this;
 	}
@@ -47,6 +47,6 @@ public class TextInputHandler extends TextInput implements InputHandler {
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.Object, com.idega.presentation.IWContext)
 	 */
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
-		return (String)value;
+		return value.toString();
 	}
 }
