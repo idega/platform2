@@ -19,34 +19,34 @@ import java.sql.SQLException;
 
 public class GolferPageFriendsData extends GenericEntity {
 
-  public final String FRIENDS_DATA_NAME = "FRIENDS_DATA_NAME";
-  public final String FRIENDS_DATA_EMAIL = "FRIENDS_DATA_EMAIL";
-  public final String FRIENDS_DATA_ADRESS = "FRIENDS_DATA_ADRESS";
-  public final String FRIENDS_DATA_SIGNING_DATE = "FRIENDS_DATA_SIGNING_DATE";
-  public final String FRIENDS_DATA_CREDIT_CARD_TYPE = "FRIENDS_CREDIT_CARD_TYPE";
-  public final String FRIENDS_DATA_CREDIT_CARD_EXP_DATE = "FRIENDS_CREDIT_CARD_EXP_DATE";
-  public final String FRIENDS_DATA_CREDIT_CARD_NUMBER = "FRIENDS_CREDIT_CARD_NUMBER";
-  public final String FRIENDS_DATA_NAME_APPEARANCE = "FRIENDS_NAME_APPEARANCE";
- //public final String FRIENDS_DATA_PAYMENT_TYPE = "FRIENDS_PAYMENT_TYPE";
-  public final String FRIENDS_DATA_PAYMENT_DURATION = "FRIENDS_PAYMENT_DURATION";
-//  public final String FRIENDS_DATA_BANK_ACCOUNT = "FRIENDS_BANK_ACCOUNT";
-//  public final String FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER = "FRIENDS_BANK_ACCOUNT_SS_NUMBER";
-//  public final String FRIENDS_DATA_GIRO_PAYMENT = "FRIENDS_GIRO_PAYMENT";
-  public final String FRIENDS_DATA_SOCIAL_SECURITY_NUMBER = "FRIENDS_SOCIAL_SECURITY_NUMBER";
-  public final String FRIENDS_DATA_PAYMENT_AMOUNT = "FRIENDS_PAYMENT_AMOUNT";
+  public static final String FRIENDS_DATA_NAME = "FRIENDS_DATA_NAME";
+  public static final String FRIENDS_DATA_EMAIL = "FRIENDS_DATA_EMAIL";
+  public static final String FRIENDS_DATA_ADRESS = "FRIENDS_DATA_ADRESS";
+  public static final String FRIENDS_DATA_SIGNING_DATE = "FRIENDS_DATA_SIGNING_DATE";
+  public static final String FRIENDS_DATA_CREDIT_CARD_TYPE = "FRIENDS_CREDIT_CARD_TYPE";
+  public static final String FRIENDS_DATA_CREDIT_CARD_EXP_DATE = "FRIENDS_CREDIT_CARD_EXP_DATE";
+  public static final String FRIENDS_DATA_CREDIT_CARD_NUMBER = "FRIENDS_CREDIT_CARD_NUMBER";
+  public static final String FRIENDS_DATA_NAME_APPEARANCE = "FRIENDS_NAME_APPEARANCE";
+ //public static final String FRIENDS_DATA_PAYMENT_TYPE = "FRIENDS_PAYMENT_TYPE";
+  public static final String FRIENDS_DATA_PAYMENT_DURATION = "FRIENDS_PAYMENT_DURATION";
+//  public static final String FRIENDS_DATA_BANK_ACCOUNT = "FRIENDS_BANK_ACCOUNT";
+//  public static final String FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER = "FRIENDS_BANK_ACCOUNT_SS_NUMBER";
+//  public static final String FRIENDS_DATA_GIRO_PAYMENT = "FRIENDS_GIRO_PAYMENT";
+  public static final String FRIENDS_DATA_SOCIAL_SECURITY_NUMBER = "FRIENDS_SOCIAL_SECURITY_NUMBER";
+  public static final String FRIENDS_DATA_PAYMENT_AMOUNT = "FRIENDS_PAYMENT_AMOUNT";
 
-  public final String FRIENDS_DATA_BILL_ADRESS = "FRIENDS_BILL_ADRESS";
-  public final String FRIENDS_DATA_BILL_NAME = "FRIENDS_BILL_NAME";
-  public final String FRIENDS_DATA_BILL_SS_NUMBER = "FRIENDS_BILL_SS_NUMBER";
-  public final String FRIENDS_DATA_NAME_TO_VIEW = "FRIENDS_NAME_TO_VIEW";
-  public final String FRIENDS_DATA_GOLFER_NAME = "FRIENDS_GOLFER_NAME";
+  public static final String FRIENDS_DATA_BILL_ADRESS = "FRIENDS_BILL_ADRESS";
+  public static final String FRIENDS_DATA_BILL_NAME = "FRIENDS_BILL_NAME";
+  public static final String FRIENDS_DATA_BILL_SS_NUMBER = "FRIENDS_BILL_SS_NUMBER";
+  public static final String FRIENDS_DATA_NAME_TO_VIEW = "FRIENDS_NAME_TO_VIEW";
+  public static final String FRIENDS_DATA_GOLFER_NAME = "FRIENDS_GOLFER_NAME";
 
 
   public GolferPageFriendsData() {
   }
 
-  public GolferPageFriendsData(int id) throws SQLException{
-    super(id);
+  public GolferPageFriendsData(int iD) throws SQLException{
+    super(iD);
   }
 
   public void setName(String name){
@@ -225,6 +225,10 @@ public class GolferPageFriendsData extends GenericEntity {
   public Timestamp getSigningDate(){
   //  return ((!isNull(FRIENDS_DATA_SIGNING_DATE)) ? getStringColumnValue(FRIENDS_DATA_SIGNING_DATE) : "");
     return (Timestamp) getColumnValue(FRIENDS_DATA_SIGNING_DATE);
+  }
+
+  public String getStringValueSigningDate(){
+    return ((!isNull(FRIENDS_DATA_SIGNING_DATE)) ? ((Timestamp) getColumnValue(FRIENDS_DATA_SIGNING_DATE)).toString() : "");
   }
 
   public String getCreditCardType(){
