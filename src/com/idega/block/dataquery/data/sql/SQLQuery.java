@@ -152,8 +152,9 @@ public class SQLQuery implements DynamicExpression {
   	
   	// table names.... 
   	 // create table name for this instance (unique identifier is user id) 
+  	long currentTime = System.currentTimeMillis();
   	String myTableName = new StringBuffer("Q_").append(uniqueIdentifier).
-  	append("_").append(++counter).toString();
+  	append('_').append(++counter).append('_').append(currentTime).toString();
   	 // add the table name for this instance to the map
   	 queryTablesNames.put(path, myTableName);
   	// add the new one AND all already existing table names

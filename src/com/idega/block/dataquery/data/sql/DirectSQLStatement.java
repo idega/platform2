@@ -41,7 +41,10 @@ public class DirectSQLStatement implements DynamicExpression {
   	identifierValueMap.putAll(variableValueMap);
   	identifierInputDescriptionMap.putAll(sqlPart.getInputDescriptionValueMap());
   	keys = variableValueMap.keySet();
-  	this.uniqueIdentifier = uniqueIdentifier.toString();
+  	long currentTime = System.currentTimeMillis();
+  	StringBuffer buffer = new StringBuffer(uniqueIdentifier);
+  	buffer.append('_').append(currentTime);
+  	this.uniqueIdentifier = buffer.toString();
   	postStatement = sqlPart.getPostStatement();
   }
 
