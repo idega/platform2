@@ -43,6 +43,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.SocialSecurityNumber;
 import com.idega.util.text.StyleConstants;
 import com.idega.util.text.TextStyler;
 
@@ -254,6 +255,8 @@ public class TenantsProfile extends CampusBlock {
     //addToTable(table,row++,localize("ssn","SSN"),_applicant.getSSN(),new TextInput(SSN),10);
     //addToTable(table,row++,localize("email","email"),campusApplication.getEmail(),new TextInput(EMAIL),20);
     addToTable(table,row++,localize("name","Name"),user.getName(),new TextInput(NAME),35);
+    TextInput ssnInput = new TextInput(SSN);
+    ssnInput.setAsIcelandicSSNumber(localize("provide_icelandic_ss","Please provide a valid Icelandic personal ID"));
     addToTable(table,row++,localize("ssn","SSN"),user.getPersonalID(),new TextInput(SSN),10);
     Collection emails = user.getEmails();
     String email = "";
@@ -563,7 +566,7 @@ public class TenantsProfile extends CampusBlock {
 
     if ( ssn != null ) {
       _applicant.setSSN(ssn);
-      if(!ssn.equals(user.getPersonalID())){
+      if(!ssn.equals(user.getPersonalID()) && SocialSecurityNumber.isValidSocialSecurityNumber(ssn,getCampusSettings(iwc).getSystemLocale())){
       	user.setPersonalID(ssn);
       	storeUser = true;
       }

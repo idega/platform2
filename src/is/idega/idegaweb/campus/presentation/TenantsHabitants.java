@@ -7,8 +7,8 @@ import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
 import is.idega.idegaweb.campus.business.HabitantsCollector;
 import is.idega.idegaweb.campus.business.HabitantsComparator;
-import is.idega.idegaweb.campus.business.HabitantsFinder;
 import is.idega.idegaweb.campus.data.Habitant;
+import is.idega.idegaweb.campus.data.HabitantHome;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -27,6 +27,8 @@ import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.ComplexHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -55,6 +57,7 @@ public class TenantsHabitants extends CampusBlock implements Campus{
   private final static String PARAMETER_ORDER_ID = "order_id";
   private final static String APPLICATION_VARIABLE = "cam_tenants";
   private final static String APPLICATION_REFRESH_RATE = "cam_ten_refresh_rate";
+  private final static String PRM_REFRESH = "refresh";
 
   
   private boolean _isAdmin = false;
@@ -199,7 +202,7 @@ public class TenantsHabitants extends CampusBlock implements Campus{
     }
 
     Integer CMPLX_ID = new Integer(iComplexId);
-    if(collectionMap!=null && collectionMap.containsKey(CMPLX_ID) && !refresh ){
+    if(!iwc.isParameterSet(PRM_REFRESH) && collectionMap!=null && collectionMap.containsKey(CMPLX_ID) && !refresh ){
       //System.err.println("getting from memory");
       return (List) collectionMap.get(CMPLX_ID);
     }
@@ -208,11 +211,20 @@ public class TenantsHabitants extends CampusBlock implements Campus{
       CampusPhone phone = null;
       //System.err.println("not getting from memory");
       //List list = ContractFinder.listOfContractsInComplex(_campusID,new Boolean(true));
-      List list = HabitantsFinder.findHabitants(_campusID);
+      //List list = HabitantsFinder.findHabitants(_campusID);
+      Collection habitants= null;
+		try {
+			HabitantHome hHome = (HabitantHome)IDOLookup.getHome(Habitant.class);
+			  habitants = hHome.findByComplex(new Integer(_campusID));
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
       Habitant hab;
-      if ( list != null ) {
-        for ( int a = 0; a < list.size(); a++ ) {
-          hab = (Habitant) list.get(a);
+      if ( habitants != null ) {
+      	for (Iterator iter = habitants.iterator(); iter.hasNext();) {
+      	 hab = (Habitant)  iter.next();
           collector = new HabitantsCollector();
           collector.setUserID(hab.getUserId());
           collector.setApartment(hab.getApartment());
