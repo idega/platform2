@@ -17,7 +17,7 @@ import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.*;
 /** @todo  */
 // get rid of this interconnection
-import com.idega.block.finance.data.TariffIndex;
+import com.idega.block.finance.data.*;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -231,8 +231,7 @@ public class CampusContractWriter{
 
   private static ContractText getHeader(){
     try {
-      ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
-      List L = EntityFinder.findAllByColumn(CT,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getLanguageColumnName(),TIIS);
+      List L = EntityFinder.getInstance().findAllByColumn(ContractText.class,ContractTextBMPBean.getLanguageColumnName(),TIIS);
       if(L!= null){
         return (ContractText)L.get(0);
       }
@@ -240,17 +239,17 @@ public class CampusContractWriter{
         return null;
       }
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       return null;
     }
   }
 
   private static float getTariffIndex(){
-    TariffIndex ti = ((com.idega.block.finance.data.TariffIndexHome)com.idega.data.IDOLookup.getHomeLegacy(TariffIndex.class)).createLegacy();
+
     try {
-      List L = EntityFinder.findAllDescendingOrdered(ti,com.idega.block.finance.data.TariffIndexBMPBean.getColumnNameDate());
+      List L = EntityFinder.getInstance().findAllDescendingOrdered(TariffIndex.class,TariffIndexBMPBean.getColumnNameDate());
       if(L!= null){
-        ti = (TariffIndex)L.get(0);
+        TariffIndex ti = (TariffIndex)L.get(0);
         return ti.getIndex();
       }
       else{

@@ -3,7 +3,7 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.block.allocation.data.ContractText;
+import is.idega.idegaweb.campus.block.allocation.data.*;
 import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
 import is.idega.idegaweb.campus.block.allocation.presentation.ContractFiler;
 import com.idega.idegaweb.*;
@@ -392,10 +392,10 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     List L = null;
 
     try {
-      ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
-      L = EntityFinder.findAllByColumnOrdered(CT,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getLanguageColumnName(),IS,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getOrdinalColumnName());
+
+      L = EntityFinder.getInstance().findAllByColumnOrdered(ContractText.class,ContractTextBMPBean.getLanguageColumnName(),IS,ContractTextBMPBean.getOrdinalColumnName());
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
 
     }
     return L;
@@ -405,14 +405,13 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     List L = null;
 
     try {
-      ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
-      L = EntityFinder.findAllByColumnOrdered(CT,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getLanguageColumnName(),TIS,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getOrdinalColumnName());
+      L = EntityFinder.getInstance().findAllByColumnOrdered(ContractText.class,ContractTextBMPBean.getLanguageColumnName(),TIS,ContractTextBMPBean.getOrdinalColumnName());
       if(L!= null)
         return (ContractText) L.get(0);
       else
         return null;
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       return null;
     }
   }
