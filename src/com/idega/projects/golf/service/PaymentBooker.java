@@ -836,21 +836,21 @@ import com.idega.idegaweb.IWResourceBundle;
 
       LinkTable.setWidth(sTablewidth);
 
-      Link MainLink = new Link(iwrb.getImage(menuNr == 1?"ratelist.gif":"ratelist1.gif"),"/tarif/tarif.jsp");
+      Link MainLink = new Link(menuNr == 1?iwrb.getImage("ratelist.gif"):iwrb.getImage("ratelist1.gif"),"/tarif/tarif.jsp");
       MainLink.addParameter("catal_action","view");
       MainLink.addParameter("union_id",this.sUnionID);
 
-      Link UpdateLink = new Link(iwrb.getImage(menuNr == 2?"find.gif":"find1.gif"));
+      Link UpdateLink = new Link(menuNr == 1?iwrb.getImage("find.gif"):iwrb.getImage("find1.gif"));
       UpdateLink.addParameter("payment_action","main");
 
-      Link OutLink = new Link(iwrb.getImage(menuNr == 3?"/pics/tarif/utskrift.gif":"/pics/tarif/utskrift1.gif"));
+      Link OutLink = new Link(menuNr == 1?iwrb.getImage("utskrift.gif"):iwrb.getImage("/pics/tarif/utskrift1.gif"));
       OutLink.addParameter(sParameterPrefix+"action","view");
 
-      Link RollbackLink = new Link(iwrb.getImage(menuNr == 4?"correction.gif":"correction1.gif"),"/tarif/rollbackpaym.jsp");
+      Link RollbackLink = new Link(menuNr == 1?iwrb.getImage("correction.gif"):iwrb.getImage("correction1.gif"),"/tarif/rollbackpaym.jsp");
       //Rollback.addParameter("catal_action","rollback");
       RollbackLink.addParameter("union_id",sUnionID);
 
-      Link UploadLink = new Link(iwrb.getImage(menuNr == 5?"/pics/tarif/skraning.gif":"/pics/tarif/skraning1.gif"));
+      Link UploadLink = new Link(menuNr == 1?iwrb.getImage("skraning.gif"):iwrb.getImage("skraning1.gif"));
       UploadLink.addParameter(sParameterPrefix+"action","fetch");
 
 
@@ -879,7 +879,6 @@ import com.idega.idegaweb.IWResourceBundle;
       return P;
     }
 
-
     public void main(ModuleInfo modinfo) throws IOException {
       //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
       /** @todo: fixa Admin*/
@@ -888,4 +887,8 @@ import com.idega.idegaweb.IWResourceBundle;
       isAdmin = true;
       control(modinfo);
     }
+
+    public String getBundleIdentifier(){
+      return IW_BUNDLE_IDENTIFIER;
+  }
 }// class PaymentBooker
