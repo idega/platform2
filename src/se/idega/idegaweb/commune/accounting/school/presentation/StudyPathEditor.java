@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
+ * $Id: StudyPathEditor.java,v 1.5 2003/09/12 12:23:48 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,11 +9,14 @@
  */
 package se.idega.idegaweb.commune.accounting.school.presentation;
 
+/*
 import java.util.Collection;
 import java.util.Iterator;
 import java.rmi.RemoteException;
+*/
 
 import com.idega.presentation.IWContext;
+/*
 import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.ui.SubmitButton;
@@ -21,25 +24,28 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 
 import com.idega.block.school.data.SchoolStudyPath;
+*/
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+/*
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
+*/
 
 /** 
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/09 14:09:44 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/12 12:23:48 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class StudyPathEditor extends AccountingBlock {
-
+/*
 	private final static int ACTION_DEFAULT = 0;
 	private final static int ACTION_CANCEL = 1;
 	private final static int ACTION_NEW = 3;
@@ -76,11 +82,14 @@ public class StudyPathEditor extends AccountingBlock {
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm_message";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
-
+*/
 	/**
 	 * @see com.idega.presentation.Block#main()
 	 */
+
 	public void init(final IWContext iwc) {
+iwc.toString();
+/*
 		try {
 			int action = parseAction(iwc);
 			switch (action) {
@@ -107,12 +116,15 @@ public class StudyPathEditor extends AccountingBlock {
 		catch (Exception e) {
 			add(new ExceptionWrapper(e, this));
 		}
+*/		
 	}
+
 
 	/*
 	 * Returns the action constant for the action to perform based 
 	 * on the POST parameters in the specified context.
 	 */
+/*
 	private int parseAction(IWContext iwc) {
 		int action = ACTION_DEFAULT;
 		
@@ -130,10 +142,12 @@ public class StudyPathEditor extends AccountingBlock {
 
 		return action;
 	}
+*/
 
 	/*
 	 * Handles the default action for this block.
 	 */	
+/*
 	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Studievägskoder");
@@ -142,10 +156,12 @@ public class StudyPathEditor extends AccountingBlock {
 		app.setButtonPanel(getButtonPanel());
 		add(app);
 	}
+*/
 
 	/*
 	 * Handles the new action for this block.
-	 */	
+	 */
+/*	
 	private void handleNewAction(IWContext iwc) {
 		add(getStudyPathForm(
 				getParameter(iwc, PARAMETER_STUDY_PATH_CODE),
@@ -154,10 +170,12 @@ public class StudyPathEditor extends AccountingBlock {
 				true)
 		);
 	}
+*/
 
 	/*
 	 * Handles the open action (link clicked in the list) for this block.
 	 */	
+/*
 	private void handleOpenAction(IWContext iwc) {
 		try {
 			StudyPathBusiness spb = getStudyPathBusiness(iwc);
@@ -174,10 +192,12 @@ public class StudyPathEditor extends AccountingBlock {
 			add(localize(e.getTextKey(), e.getDefaultText()));
 		}
 	}
+*/
 
 	/*
 	 * Handles the save action for this block.
 	 */
+/*
 	private void handleSaveAction(IWContext iwc) {
 		String errorMessage = null;
 
@@ -205,10 +225,12 @@ public class StudyPathEditor extends AccountingBlock {
 		}
 		
 	}
-	
+*/
+
 	/*
 	 * Handles the delete action for this block.
 	 */	
+/*
 	private void handleDeleteAction(IWContext iwc) {
 		String errorMessage = null;
 		try {
@@ -236,20 +258,24 @@ public class StudyPathEditor extends AccountingBlock {
 			handleDefaultAction(iwc);
 		}
 	}
+*/
 	 
 	/*
 	 * Returns the search panel for this block.
 	 */
+/*
 	private Table getSearchPanel() {
 		Table table = new Table();
 		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
 		table.add(getLocalizedText(KEY_UPPER_SECONDARY_SCHOOL, "Gymnasieskola"), 2, 1);
 		return table;
 	}	
+*/
 	
 	/*
 	 * Returns the list of study paths.
 	 */
+/*
 	private Table getStudyPathList(IWContext iwc) {
 		Collection studyPaths = null;
 
@@ -300,19 +326,23 @@ public class StudyPathEditor extends AccountingBlock {
 		
 		return mainPanel;
 	}
+*/
 
 	/*
 	 * Returns the default button panel for this block.
 	 */
+/*
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
 		return bp;
 	}
+*/
 	
 	/*
 	 * Returns the application form for creating or editing a study path.
 	 */
+/*
 	private ApplicationForm getStudyPathForm(
 			String studyPathCode,
 			String description,
@@ -360,11 +390,14 @@ public class StudyPathEditor extends AccountingBlock {
 		
 		return app;		
 	}
+*/
 
 	/*
 	 * Returns a study path business object
 	 */
+/*
 	private StudyPathBusiness getStudyPathBusiness(IWContext iwc) throws RemoteException {
 		return (StudyPathBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, StudyPathBusiness.class);
 	}	
+*/
 }
