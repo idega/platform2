@@ -619,50 +619,73 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 	private Table getThreadLinks(IWContext iwc, ForumData thread) {
 		Table table = new Table();
+		table.setCellspacing(0);
+		table.setCellpadding(2);
 		int column = 1;
 
 		Image replyImage = _iwb.getImage("shared/reply.gif");
-		replyImage.setHorizontalSpacing(2);
+		replyImage.setPaddingRight(2);
 		replyImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-		table.add(replyImage, column, 1);
 
 		if (_hasReplyPermission) {
+			Link replyImageLink = new Link(replyImage);
+			replyImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+			replyImageLink.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getID());
+			replyImageLink.setWindowToOpen(ForumThreadEditor.class);
+
 			Link reply = getStyleLink(_iwrb.getLocalizedString("reply", "Reply"), LINK_STYLE);
 			reply.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
 			reply.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getID());
 			reply.setWindowToOpen(ForumThreadEditor.class);
+
+			table.add(replyImageLink, column++, 1);
 			table.add(reply, column++, 1);
 		}
 		else {
 			Text text = getStyleText(_iwrb.getLocalizedString("reply", "Reply"), SMALL_TEXT_STYLE);
+			table.add(replyImage, column, 1);
 			table.add(text, column++, 1);
 		}
 
 		if (thread.getUserID() != -1 && iwc.getUserId() == thread.getUserID() && thread.getChildCount() == 0) {
 			Image editImage = _iwb.getImage("shared/edit.gif");
-			editImage.setHorizontalSpacing(2);
+			editImage.setPaddingRight(2);
 			editImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-			table.add(editImage, column, 1);
 
+			Link editImageLink = new Link(editImage);
+			editImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+			editImageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
+			editImageLink.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
+			editImageLink.setWindowToOpen(ForumThreadEditor.class);
+			
 			Link edit = getStyleLink(_iwrb.getLocalizedString("edit", "Edit"), LINK_STYLE);
 			edit.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
 			edit.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
 			edit.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
 			edit.setWindowToOpen(ForumThreadEditor.class);
+
+			table.add(editImageLink, column, 1);
 			table.add(edit, column++, 1);
 		}
 
 		if (_hasDeletePermission) {
 			Image deleteImage  = _iwb.getImage("shared/delete.gif");
-			deleteImage.setHorizontalSpacing(2);
+			deleteImage.setPaddingRight(2);
 			deleteImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-			table.add(deleteImage, column, 1);
+			
+			Link deleteImageLink = new Link(deleteImage);
+			deleteImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+			deleteImageLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
+			deleteImageLink.addParameter(ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_DELETE);
+			deleteImageLink.setWindowToOpen(ForumThreadEditor.class);
 
 			Link delete = getStyleLink(_iwrb.getLocalizedString("delete", "Delete"), LINK_STYLE);
 			delete.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
 			delete.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
 			delete.addParameter(ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_DELETE);
 			delete.setWindowToOpen(ForumThreadEditor.class);
+
+			table.add(deleteImageLink, column, 1);
 			table.add(delete, column++, 1);
 		}
 
@@ -671,31 +694,45 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 	private Table getForumLinks() {
 		Table table = new Table();
+		table.setCellspacing(0);
+		table.setCellpadding(2);
 		int column = 1;
 
 		if (_topicID != -1) {
 			Image newImage = _iwb.getImage("shared/new.gif");
-			newImage.setHorizontalSpacing(2);
+			newImage.setPaddingRight(2);
 			newImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-			table.add(newImage, column, 1);
 
 			if (_hasAddPermission) {
+				Link newImageLink = new Link(newImage);
+				newImageLink.setWindowToOpen(ForumThreadEditor.class);
+				newImageLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+				
 				Link newLink = getStyleLink(_iwrb.getLocalizedString("new_thread"), LINK_STYLE);
 				newLink.setWindowToOpen(ForumThreadEditor.class);
 				newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+
+				table.add(newImageLink, column, 1);
 				table.add(newLink, column++, 1);
 			}
 			else {
 				Text newText = getStyleText(_iwrb.getLocalizedString("new_thread"), SMALL_TEXT_STYLE);
+				table.add(newImage, column, 1);
 				table.add(newText, column++, 1);
 			}
 		}
 
 		if (_showOverviewLink) {
 			Image overviewImage = _iwb.getImage("shared/forum.gif");
-			overviewImage.setHorizontalSpacing(2);
+			overviewImage.setPaddingRight(2);
 			overviewImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-			table.add(overviewImage, column, 1);
+			
+			Link overviewImageLink = new Link(overviewImage);
+			overviewImageLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_TOPICS);
+			if (_page != null)
+				overviewImageLink.setPage(_page);
+			
+			table.add(overviewImageLink, column, 1);
 			table.add(getOverviewLink(), column, 1);
 		}
 
