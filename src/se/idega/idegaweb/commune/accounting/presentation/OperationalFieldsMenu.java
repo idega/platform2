@@ -26,7 +26,7 @@ public class OperationalFieldsMenu extends AccountingBlock implements IWPageEven
 		if (getSession().getOperationalField() != null)
 			operationalField.setSelectedElement(getSession().getOperationalField());
 		
-		if (operationalField.getForm() == null) {
+		if (getParentForm() == null) {
 			Form form = new Form();
 			form.setEventListener(this.getClass());
 			form.add(operationalField);
