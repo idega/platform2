@@ -1,5 +1,6 @@
 package com.idega.block.filter.presentation;
 
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
@@ -25,13 +26,18 @@ public class Filter extends PresentationObjectContainer {
 	public void _main(IWContext iwc) throws Exception {
 		if(!iwc.isInEditMode()) { // always show block if were editing in the builder
 			if(_showOnUserLoged!=null) {
-				if(_showOnUserLoged.booleanValue()) {
-					_show = iwc.isLoggedOn();
-					System.out.println("show set to " + _show + " because a user is loged on");
-				} else {
-					_show = !iwc.isLoggedOn();
-					System.out.println("show set to " + _show + " because a user is not loged on");
+				boolean isLogedOn = true;
+				try {
+					isLogedOn = iwc.getCurrentUserId()!=-1;
+				} catch(NotLoggedOnException e) {
+					isLogedOn = false;
 				}
+				if(_showOnUserLoged.booleanValue()) {
+					_show = isLogedOn;
+				} else {
+					_show = !isLogedOn;
+				}
+				System.out.println("show set to " + _show + ", logedOn is " + isLogedOn);
 			}
 			if(_show) { // if it has already been decided to hide block, it must be hidden
 				if(_showParameter!=null) {
