@@ -461,6 +461,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     EntityBrowser browser = new EntityBrowser();
     browser.setLeadingEntity(WorkReportClubAccountRecord.class);
     browser.setShowMirroredView(true);
+    browser.setCellspacing(20);
     // no settings button 
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     browser.setEntities("dummy_string", entities);
