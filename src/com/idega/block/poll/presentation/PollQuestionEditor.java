@@ -29,7 +29,9 @@ private boolean save = false;
 private boolean update = false;
 private int pollQuestionID = -1;
 private int pollID = -1;
-private static String prmQuestionParameter = "poll.question";
+private static String prmQuestionParameter = "question";
+private static String prmStartDateParameter = "start_date";
+private static String prmEndDateParameter = "end_date";
 
 private IWBundle iwb;
 private IWResourceBundle iwrb;
@@ -38,6 +40,7 @@ public PollQuestionEditor(){
   setWidth(570);
   setHeight(430);
   setUnMerged();
+  setMethod("get");
 }
 
   public void main(ModuleInfo modinfo) throws Exception {
@@ -141,7 +144,23 @@ public PollQuestionEditor(){
         questionInput.setContent(pollQuestion);
       }
 
+    idegaTimestamp stampur = new idegaTimestamp();
+
+    DateInput startDate = new DateInput(prmStartDateParameter,true);
+      startDate.setYearRange(stampur.getYear(),stampur.getYear()+10);
+      if ( update && PollBusiness.getStartDate(pollQuestionID) != null ) {
+        startDate.setDate(new java.sql.Date(PollBusiness.getStartDate(pollQuestionID).getTimestamp().getTime()));
+      }
+
+    DateInput endDate = new DateInput(prmEndDateParameter,true);
+      endDate.setYearRange(stampur.getYear(),stampur.getYear()+10);
+      if ( update && PollBusiness.getEndDate(pollQuestionID) != null ) {
+        endDate.setDate(new java.sql.Date(PollBusiness.getEndDate(pollQuestionID).getTimestamp().getTime()));
+      }
+
     addLeft(iwrb.getLocalizedString("question","Question")+":",questionInput,true);
+    addLeft(iwrb.getLocalizedString("start_date","Start date:"),startDate,true);
+    addLeft(iwrb.getLocalizedString("end_date","End date:"),endDate,true);
     addHiddenInput(new HiddenInput(Poll._prmPollID,Integer.toString(pollID)));
     addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID)));
     addHiddenInput(new HiddenInput("iLocaleID",Integer.toString(iLocaleID)));
@@ -158,7 +177,10 @@ public PollQuestionEditor(){
   }
 
   private void savePollQuestion(ModuleInfo modinfo,int iLocaleID, boolean close) {
-    String pollQuestionString = modinfo.getParameter(this.prmQuestionParameter);
+    String pollQuestionString = modinfo.getParameter(prmQuestionParameter);
+    String pollStartDate = modinfo.getParameter(prmStartDateParameter);
+    String pollEndDate = modinfo.getParameter(prmEndDateParameter);
+
     String localeString = modinfo.getParameter("iLocaleID");
     int _pollQuestionID = -1;
     int _userID = -1;
@@ -174,7 +196,7 @@ public PollQuestionEditor(){
       pollQuestionString = iwrb.getLocalizedString("no_text","No question entered");
     }
     if ( localeString != null ) {
-      _pollQuestionID = PollBusiness.savePollQuestion(_userID,pollID,pollQuestionID,pollQuestionString,Integer.parseInt(localeString));
+      _pollQuestionID = PollBusiness.savePollQuestion(_userID,pollID,pollQuestionID,pollQuestionString,pollStartDate,pollEndDate,Integer.parseInt(localeString));
     }
     modinfo.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(_pollQuestionID));
 
