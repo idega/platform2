@@ -73,7 +73,7 @@ public class CitizenLogin extends Login {
 		int row = 1;
 		
 		WelcomeMessage welcomeMessage = new WelcomeMessage();
-		welcomeMessage.showUserName(false);
+		welcomeMessage.setShowUserName(false);
 		welcomeMessage.setStyleClass(getStyleName(iMessageStyleName));
 		table.mergeCells(1, row, 2, row);
 		table.add(welcomeMessage, 1, row++);
@@ -92,7 +92,7 @@ public class CitizenLogin extends Login {
 		String message = "";
 		if (numberOfMessages > 0) {
 			Object[] arguments = { String.valueOf(numberOfMessages) };
-			message = MessageFormat.format(getResourceBundle().getLocalizedString("number_of_messages", "You have {0}Ênew messages"), arguments);
+			message = MessageFormat.format(getResourceBundle().getLocalizedString("number_of_messages", "You have {0}ï¿½new messages"), arguments);
 		}
 		else {
 			message = getResourceBundle().getLocalizedString("no_new_messages", "You have no new messages");
