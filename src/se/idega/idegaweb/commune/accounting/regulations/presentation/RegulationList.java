@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.11 2003/10/13 21:04:09 kjell Exp $
+ * $Id: RegulationList.java,v 1.12 2003/10/14 21:28:26 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -41,10 +41,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.11 2003/10/13 21:04:09 kjell Exp $
+ * $Id: RegulationList.java,v 1.12 2003/10/14 21:28:26 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -188,7 +188,7 @@ public class RegulationList extends AccountingBlock {
 			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
 		} else {
 			_currentFromDate = iwc.isParameterSet(PARAM_RETURN_FROM_DATE) ? 
-					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : new Date(System.currentTimeMillis());
+					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : getFlattenedTodaysDate();
 		}
 		
 		if (iwc.isParameterSet(PARAM_TO)) {
@@ -197,11 +197,12 @@ public class RegulationList extends AccountingBlock {
 			_currentToDate = iwc.isParameterSet(PARAM_RETURN_TO_DATE) ? 
 					parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE)) : parseDate("9999-12-31");
 		}
+		
 		if(_currentToDate == null) {
 			_currentToDate = parseDate("9999-12-31");
 		}
 		if(_currentFromDate == null) {
-			_currentFromDate = new Date(System.currentTimeMillis());
+			_currentFromDate = getFlattenedTodaysDate();
 		}
 		_currentFromDate = parseDate(formatDate(_currentFromDate, 4));
 		_currentToDate = parseDate(formatDate(_currentToDate, 4));
@@ -444,6 +445,14 @@ public class RegulationList extends AccountingBlock {
 //	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
 //		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 //	}
+
+	private Date getFlattenedTodaysDate() {
+		Date date = new Date(System.currentTimeMillis());
+		String dd = formatDate(date, 4);
+		date = parseDate(dd.substring(0,2)+"01");
+		return date;
+	}
+
 
 	private RegulationsBusiness getRegulationBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
