@@ -1918,6 +1918,41 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}
 	}
+	
+	
+	public boolean createNewPlacement(int applicationID, int schooltypeID, int schoolclassID,User user){
+		UserTransaction transaction = getSessionContext().getUserTransaction();
+		try {
+			transaction.begin();
+			if (schoolclassID != -1) {
+				ChildCareApplication application = getApplication(applicationID);
+				ChildCareContract archive = getContractFile(application.getContractFileId());
+				IWTimestamp endDate = new IWTimestamp(application.getFromDate());
+				endDate.addDays(-1);
+				SchoolClassMember member = archive.getSchoolClassMember();
+				member.setRemovedDate(endDate.getTimestamp());
+				member.store();
+				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+				getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), schoolclassID, schooltypeID, fromDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());	
+			}
+			transaction.commit();
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				transaction.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			return false;
+		}
+
+		return true;
+	
+	
+	}
 
 	public boolean assignContractToApplication(int applicationID, int childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
