@@ -1020,6 +1020,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			IWTimestamp removed = new IWTimestamp();
+			application.setRejectionDate(removed.getDate());
 			application.setApplicationStatus(getStatusNotAnswered());
 			caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 

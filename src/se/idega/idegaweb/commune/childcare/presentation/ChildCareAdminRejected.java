@@ -12,6 +12,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
@@ -39,6 +40,8 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 	
 	private Form getApplicationTable(IWContext iwc) throws RemoteException {
 		Form form = new Form();
+		form.setMethod("get");
+		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, ""));
 		
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -88,7 +91,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column, row);
 				column++;
 				if (application.getApplicationStatus() == getBusiness().getStatusNotAnswered() && application.getQueueDate() != null) {
-					activateApplication = new SubmitButton(getDeleteIcon(localize("child_care.activate_application", "Click to reactivate application")),PARAMETER_APPLICATION_ID, "");
+					activateApplication = new SubmitButton(getDeleteIcon(localize("child_care.activate_application", "Click to reactivate application")));
 					activateApplication.setDescription(localize("child_care.activate_application", "Click to reactivate application"));
 					activateApplication.setValueOnClick(PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 					activateApplication.setSubmitConfirm(localize("school.confirm_activation","Are you sure you want to reactivate this application?"));
