@@ -2,12 +2,10 @@ package is.idega.idegaweb.travel.service.hotel.data;
 
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.data.ServiceBMPBean;
-
 import java.sql.SQLException;
 import java.util.Collection;
-
+import java.util.Iterator;
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.ProductBMPBean;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierBMPBean;
@@ -140,13 +138,13 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
   /**
    * Used only for the wait period, will be removed later
    */
-	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId, Object[] supplierId, String supplierName) throws FinderException {
-		return ejbFind(fromStamp, toStamp, roomTypeId, new Object[]{}, postalCodeId, supplierId, -1, -1, supplierName);
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Collection postalCodes, Object[] supplierId, String supplierName) throws FinderException {
+		return ejbFind(fromStamp, toStamp, roomTypeId, new Object[]{}, postalCodes, supplierId, -1, -1, supplierName);
 	}  
   
-	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] hotelTypeId, Object[] postalCodeId, Object[] supplierId, float minRating, float maxRating, String supplierName) throws FinderException {
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] hotelTypeId, Collection postalCodes, Object[] supplierId, float minRating, float maxRating, String supplierName) throws FinderException {
 		
-		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
+		boolean postalCode = (postalCodes != null && !postalCodes.isEmpty()); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
 		boolean roomType = (roomTypeId != null && roomTypeId.length > 0);
 		boolean hotelType = ( hotelTypeId != null && hotelTypeId.length > 0);
@@ -208,6 +206,7 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			.append(" AND p.").append(ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
 			
 			if (supplier) {
+				sql.append(" AND su."+supplierTableIDColumnName+"= p."+supplierTableIDColumnName);
 				sql.append(" AND su.").append(supplierTableIDColumnName).append(" in (");
 				for (int i = 0; i < supplierId.length; i++) {
 					if (i != 0) {
@@ -216,6 +215,9 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 					sql.append(supplierId[i].toString());
 				}
 				sql.append(")");
+				if(name) {
+					sql.append(" AND su.").append(SupplierBMPBean.COLUMN_NAME_NAME_ALL_CAPS ).append(" like ").append("'%" + supplierName.toUpperCase() + "%'");
+				}
 			}
 
 			if (postalCode) {
@@ -225,12 +227,19 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 				// HARDCODE OF DEATH ... courtesy of AddressBMPBean
 				.append(" AND a.postal_code_id = pc.").append(postalCodeTableIDColumnName)
 				.append(" AND pc.").append(postalCodeTableIDColumnName).append(" in (");
-				for (int i = 0; i < postalCodeId.length; i++) {
-					if (i != 0) {
+				Iterator iter = postalCodes.iterator();
+				while (iter.hasNext()) {
+					sql.append(((GenericEntity) iter.next()).getPrimaryKey());
+					if (iter.hasNext()) {
 						sql.append(", ");
 					}
-					sql.append(postalCodeId[i]);
 				}
+//				for (int i = 0; i < postalCodeId.length; i++) {
+//					if (i != 0) {
+//						sql.append(", ");
+//					}
+//					sql.append(postalCodeId[i]);
+//				}
 				sql.append(")");
 			}
 			
@@ -266,12 +275,9 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			if (maxRating > -1) {
 				sql.append(" AND h.").append(getColumnNameRating()).append(" <= ").append(maxRating);
 			}
-			if(name) {
-				sql.append(" AND su.").append(SupplierBMPBean.COLUMN_NAME_NAME_ALL_CAPS ).append(" like ").append("'%" + supplierName.toUpperCase() + "%'");
-			}
 			//sql.append(" order by ").append();
 			
-			//System.out.println(sql.toString());
+			System.out.println(sql.toString());
 			return this.idoFindPKsBySQL(sql.toString());
 		}catch (IDOLookupException e) {
 			return null;

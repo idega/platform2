@@ -1,20 +1,84 @@
 package is.idega.idegaweb.travel.service.hotel.data;
 
+import java.util.Collection;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 
-public interface Hotel extends com.idega.data.IDOEntity
-{
- public void addHotelTypeId(java.lang.Object p0)throws com.idega.data.IDOAddRelationshipException;
- public void addRoomTypeId(java.lang.Object p0)throws com.idega.data.IDOAddRelationshipException;
- public void addRoomTypeId(int p0)throws com.idega.data.IDOAddRelationshipException;
- public java.util.Collection getHotelTypes()throws com.idega.data.IDORelationshipException;
- public int getMaxPerUnit();
- public int getNumberOfUnits();
- public float getRating();
- public java.util.Collection getRoomTypes()throws com.idega.data.IDORelationshipException;
- public void setHotelTypeIds(int[] p0)throws com.idega.data.IDOAddRelationshipException,com.idega.data.IDORemoveRelationshipException;
- public void setMaxPerUnit(int p0);
- public void setNumberOfUnits(int p0);
- public void setPrimaryKey(java.lang.Object p0);
- public void setRating(float p0);
- public void setRoomTypeIds(int[] p0)throws com.idega.data.IDORemoveRelationshipException,com.idega.data.IDOAddRelationshipException;
+
+/**
+ * @author gimmi
+ */
+public interface Hotel extends IDOEntity {
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#getNumberOfUnits
+	 */
+	public int getNumberOfUnits();
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#setNumberOfUnits
+	 */
+	public void setNumberOfUnits(int units);
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#getMaxPerUnit
+	 */
+	public int getMaxPerUnit();
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#setMaxPerUnit
+	 */
+	public void setMaxPerUnit(int maxPerUnit);
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#getRoomTypes
+	 */
+	public Collection getRoomTypes() throws IDORelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#setRoomTypeIds
+	 */
+	public void setRoomTypeIds(int[] roomTypeIds) throws IDORemoveRelationshipException, IDOAddRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#setHotelTypeIds
+	 */
+	public void setHotelTypeIds(int[] hotelTypeIds) throws IDOAddRelationshipException, IDORemoveRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#addHotelTypeId
+	 */
+	public void addHotelTypeId(Object primaryKey) throws IDOAddRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#addRoomTypeId
+	 */
+	public void addRoomTypeId(int roomTypeId) throws IDOAddRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#addRoomTypeId
+	 */
+	public void addRoomTypeId(Object primaryKey) throws IDOAddRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#getHotelTypes
+	 */
+	public Collection getHotelTypes() throws IDORelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#setRating
+	 */
+	public void setRating(float rating);
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#getRating
+	 */
+	public float getRating();
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.hotel.data.HotelBMPBean#setPrimaryKey
+	 */
+	public void setPrimaryKey(Object object);
 }

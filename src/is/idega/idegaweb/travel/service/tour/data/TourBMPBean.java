@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -161,9 +162,9 @@ public class TourBMPBean extends GenericEntity implements Tour {
   	}
   }
 
-	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] tourTypeId, Object[] postalCodeId, Object[] supplierId, String supplierName) throws FinderException {
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] tourTypeId, Collection postalCodes, Object[] supplierId, String supplierName) throws FinderException {
 		
-		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
+		boolean postalCode = (postalCodes != null && !postalCodes.isEmpty()); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
 		boolean tourType = (tourTypeId != null && tourTypeId.length > 0);
 		boolean supplier = (supplierId != null && supplierId.length > 0);
@@ -226,6 +227,7 @@ public class TourBMPBean extends GenericEntity implements Tour {
 			.append(" AND p.").append(ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
 			
 			if (supplier) {
+				sql.append(" AND su."+supplierTableIDColumnName+"= p."+supplierTableIDColumnName);
 				sql.append(" AND su.").append(supplierTableIDColumnName).append(" in (");
 				for (int i = 0; i < supplierId.length; i++) {
 					if (i != 0) {
@@ -234,6 +236,9 @@ public class TourBMPBean extends GenericEntity implements Tour {
 					sql.append(supplierId[i].toString());
 				}
 				sql.append(")");
+				if(name) {
+					sql.append(" AND su.").append(SupplierBMPBean.COLUMN_NAME_NAME_ALL_CAPS ).append(" like ").append("'%" + supplierName.toUpperCase() + "%'");
+				}
 			}
 
 			if (postalCode) {
@@ -243,19 +248,33 @@ public class TourBMPBean extends GenericEntity implements Tour {
 				// HARDCODE OF DEATH ... courtesy of AddressBMPBean
 				.append(" AND a.postal_code_id = pc.").append(postalCodeTableIDColumnName)
 				.append(" AND ( pc.").append(postalCodeTableIDColumnName).append(" in (");
-				for (int i = 0; i < postalCodeId.length; i++) {
-					if (i != 0) {
+				Iterator iter = postalCodes.iterator();
+				while (iter.hasNext()) {
+					sql.append(((PostalCode) iter.next()).getPrimaryKey());
+					if (iter.hasNext()) {
 						sql.append(", ");
 					}
-					sql.append(postalCodeId[i]);
 				}
+//				for (int i = 0; i < postalCodeId.length; i++) {
+//					if (i != 0) {
+//						sql.append(", ");
+//					}
+//					sql.append(postalCodeId[i]);
+//				}
 				sql.append(") OR ica.postal_code_id in (");
-				for (int i = 0; i < postalCodeId.length; i++) {
-					if (i != 0) {
+				iter = postalCodes.iterator();
+				while (iter.hasNext()) {
+					sql.append(((PostalCode) iter.next()).getPrimaryKey());
+					if (iter.hasNext()) {
 						sql.append(", ");
 					}
-					sql.append(postalCodeId[i]);
 				}
+//				for (int i = 0; i < postalCodeId.length; i++) {
+//					if (i != 0) {
+//						sql.append(", ");
+//					}
+//					sql.append(postalCodeId[i]);
+//				}
 				sql.append(")");
 
 				sql.append(")");
@@ -272,9 +291,6 @@ public class TourBMPBean extends GenericEntity implements Tour {
 					sql.append(tourTypeId[i]);
 				}			
 				sql.append(") ");
-			}
-			if(name) {
-				sql.append(" AND su.").append(SupplierBMPBean.COLUMN_NAME_NAME_ALL_CAPS ).append(" like ").append("'%" + supplierName.toUpperCase() + "%'");
 			}
 
 			//sql.append(" order by ").append();

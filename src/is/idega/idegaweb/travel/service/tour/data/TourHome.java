@@ -1,10 +1,23 @@
 package is.idega.idegaweb.travel.service.tour.data;
 
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.data.IDOHome;
+import com.idega.util.IWTimestamp;
 
-public interface TourHome extends com.idega.data.IDOHome
-{
- public Tour create() throws javax.ejb.CreateException;
- public Tour findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection find(com.idega.util.IWTimestamp p0,com.idega.util.IWTimestamp p1,java.lang.Object[] p2,java.lang.Object[] p3,java.lang.Object[] p4,String p5)throws javax.ejb.FinderException;
 
+/**
+ * @author gimmi
+ */
+public interface TourHome extends IDOHome {
+
+	public Tour create() throws javax.ejb.CreateException;
+
+	public Tour findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.service.tour.data.TourBMPBean#ejbFind
+	 */
+	public Collection find(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] tourTypeId, Collection postalCodes,
+			Object[] supplierId, String supplierName) throws FinderException;
 }
