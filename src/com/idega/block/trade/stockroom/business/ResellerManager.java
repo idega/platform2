@@ -292,5 +292,96 @@ public class ResellerManager {
     return resellers;
   }
 
+  public static Supplier[] getSuppliersWithContracts(int resellerId) {
+    return getSuppliersWithContracts(resellerId, null);
+  }
+
+  public static Supplier[] getSuppliersWithContracts(int resellerId, String orderBy) {
+    Supplier[] suppliers =  {};
+    try {
+      Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+      Product product = (Product) Product.getStaticInstance(Product.class);
+      Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
+
+      StringBuffer buffer = new StringBuffer();
+        buffer.append("SELECT distinct(s.*) FROM "+supplier.getSupplierTableName()+" s, "+contract.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append(" WHERE ");
+        buffer.append("c."+contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append(" AND ");
+        buffer.append("c."+contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append(" AND ");
+        buffer.append("p."+product.getColumnNameSupplierId()+" = s."+supplier.getIDColumnName());
+        if (orderBy != null && !orderBy.equals("")) {
+        buffer.append(" ORDER BY s."+orderBy);
+        }
+
+      suppliers = (Supplier[]) supplier.findAll(buffer.toString());
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return suppliers;
+  }
+
+  public static Product[] getProductsWithContracts(int resellerId, int supplierId) {
+    return getProductsWithContracts(resellerId, supplierId, null);
+  }
+
+  public static Product[] getProductsWithContracts(int resellerId, int supplierId, String orderBy) {
+    Product[] products =  {};
+    try {
+      Product product = (Product) Product.getStaticInstance(Product.class);
+      Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
+
+      StringBuffer buffer = new StringBuffer();
+        buffer.append("SELECT distinct(p.*) FROM  "+contract.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append(" WHERE ");
+        buffer.append("c."+contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append(" AND ");
+        buffer.append("c."+contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append(" AND ");
+        buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
+        if (orderBy != null && !orderBy.equals("")) {
+        buffer.append(" ORDER BY p."+orderBy);
+        }
+
+      products = (Product[]) product.findAll(buffer.toString());
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return products;
+  }
+
+  public static boolean isActiveContract(int supplierId, int resellerId, int productId) {
+    boolean returner = false;
+
+    try {
+      Product product = (Product) Product.getStaticInstance(Product.class);
+      Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
+
+      StringBuffer buffer = new StringBuffer();
+        buffer.append("SELECT distinct(c.*) FROM  "+contract.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append(" WHERE ");
+        buffer.append("c."+contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append(" AND ");
+        buffer.append("c."+contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append(" AND ");
+        buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
+        buffer.append(" AND ");
+        buffer.append("p."+product.getIDColumnName()+" = "+productId);
+
+      String[] resuls = SimpleQuerier.executeStringQuery(buffer.toString());
+      if (resuls != null && resuls.length > 0) {
+        returner = true;
+      }
+
+      //products = (Product[]) product.findAll(buffer.toString());
+    }catch (Exception sql) {
+      sql.printStackTrace(System.err);
+    }
+
+
+
+    return returner;
+  }
 
 }

@@ -13,7 +13,7 @@ import com.idega.presentation.text.*;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
 
 
@@ -265,5 +265,6 @@ public class Inquirer {
 
     return table;
   }
+
 
 }

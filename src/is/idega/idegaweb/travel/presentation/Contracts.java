@@ -11,6 +11,7 @@ import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.business.*;
 import com.idega.util.idegaTimestamp;
 
 /**
@@ -43,6 +44,7 @@ public class Contracts extends TravelManager {
   private String parameterAddReseller = "contractAddReseller";
   private String parameterAddResellerSave = "contractAddResellerSave";
   private String parameterCheckBox = "parameterCheckBox";
+  private String paramaterDeleteContract = "parameterDeleteContract";
 
   private String parameterSupplierId = "parameterSupplierId";
   private String parameterViewContract = "parameterViewContract";
@@ -89,6 +91,9 @@ public class Contracts extends TravelManager {
         }else if (action.equals(this.parameterViewProducts)) {
           assignReseller(iwc);
           //add(viewProducts(iwc));
+        }else if (action.equals(this.paramaterDeleteContract)) {
+          deleteContract(iwc);
+          assignReseller(iwc);
         }
     }else {
       add(super.getLoggedOffTable(iwc));
@@ -106,7 +111,7 @@ public class Contracts extends TravelManager {
       if (supplier != null)
         resellers = getResellers(supplier);
       if (reseller != null)
-        suppliers = ResellerManager.getSuppliers(reseller.getID(), Supplier.getColumnNameName());
+        suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), Supplier.getColumnNameName() );
 
   }
 
@@ -570,6 +575,7 @@ public class Contracts extends TravelManager {
     }else if (reseller != null) {
       resellerId = reseller.getID();
     }
+
     if (reseller != null) tReseller = reseller;
 
     Form form = new Form();
@@ -589,7 +595,8 @@ public class Contracts extends TravelManager {
       products = tsb.getProducts(supplier.getID());
     }else if (reseller != null) {
       supplier_id = iwc.getParameter(this.parameterSupplierId);
-      products = tsb.getProducts(Integer.parseInt(supplier_id));
+      products = ResellerManager.getProductsWithContracts(reseller.getID(), Integer.parseInt(supplier_id), Product.getColumnNameProductName());
+      //products = tsb.getProducts(Integer.parseInt(supplier_id));
     }
 
     int[] serviceDays;
@@ -604,6 +611,7 @@ public class Contracts extends TravelManager {
 
 
     Text pName;
+    Text pIsActive;
 
     Timeframe timeframe;
 
@@ -636,9 +644,10 @@ public class Contracts extends TravelManager {
           pName.setFontColor(super.BLACK);
 
         table.add(pName,1,row);
-        table.mergeCells(1,row,3,row);
+//        table.mergeCells(1,row,3,row);
 
         if (products[i].getID() == productId) {
+          table.mergeCells(1,row,3,row);
             form.add(new HiddenInput(this.parameterResellerId , Integer.toString(tReseller.getID())));
             form.add(new HiddenInput(this.parameterProductId , Integer.toString(products[i].getID())));
 
@@ -651,6 +660,19 @@ public class Contracts extends TravelManager {
             table.mergeCells(1,row,4,row);
             table.add(viewContract(iwc,products[i]),1,row);
         }else {
+          if (supplier != null) {
+            if (ResellerManager.isActiveContract(supplier.getID() , tReseller.getID(), products[i].getID())) {
+              pIsActive = (Text) theBoldText.clone();
+                pIsActive.setFontColor(BLACK);
+                pIsActive.setText(iwrb.getLocalizedString("travel.active_contract","Active contract"));
+                pIsActive.addToText(Text.NON_BREAKING_SPACE );
+              table.add(pIsActive, 3, row);
+              table.setAlignment(3,row,"right");
+              table.mergeCells(1,row,2,row);
+            }else {
+              table.mergeCells(1,row,3,row);
+            }
+          }
           temp = (Link) closerLook.clone();
             temp.addParameter(this.parameterProductId, products[i].getID());
           table.setAlignment(4,row,"right");
@@ -674,7 +696,9 @@ public class Contracts extends TravelManager {
     String sContractId = iwc.getParameter(this.parameterContractId);
 
     String discount = iwc.getParameter("discount");
+      if (discount.equals("")) discount = "0";
     String alotment = iwc.getParameter("alotment");
+      if (alotment.equals("")) alotment = "0";
 
     String allDays = iwc.getParameter("all_days");
     String mondays = iwc.getParameter("mondays");
@@ -688,6 +712,7 @@ public class Contracts extends TravelManager {
     String activeFrom = iwc.getParameter("from");
     String activeTo = iwc.getParameter("to");
     String valid = iwc.getParameter("valid");
+      if (valid.equals("")) valid = "0";
 
     javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
 
@@ -712,6 +737,7 @@ public class Contracts extends TravelManager {
         }else {
           contract = new Contract();
         }
+
           contract.setAlotment(Integer.parseInt(alotment));
           contract.setDiscount(discount);
           contract.setServiceId(productId);
@@ -884,10 +910,12 @@ public class Contracts extends TravelManager {
       tReseller = reseller;
     }
 
-    Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(resellerId), Contract.getColumnNameServiceId(), Integer.toString(productId));
     Contract contract = null;
-    if (contracts.length > 0) {
-      contract = contracts[0];
+    if (product != null) {
+      Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(resellerId), Contract.getColumnNameServiceId(), Integer.toString(productId));
+      if (contracts.length > 0) {
+        contract = contracts[0];
+      }
     }
     Text tNumberOfSeatsPerTour = (Text) theText.clone();
       tNumberOfSeatsPerTour.setText(iwrb.getLocalizedString("travel.number_of_seats_per_tour","Number of seats per tour"));
@@ -1006,6 +1034,15 @@ public class Contracts extends TravelManager {
             pFrom = new DateInput("from");
             pTo = new DateInput("to");
 
+            Table infoTable = new Table();
+              infoTable.setBorder(0);
+              infoTable.setCellspacing(0);
+              infoTable.setWidth("100%");
+              infoTable.setColor(super.backgroundColor);
+
+            int infoRow = 1;
+
+
             if (contract != null) {
                 pAlot.setContent(Integer.toString(contract.getAlotment()));
                 pDays.setContent(Integer.toString(contract.getExpireDays()) );
@@ -1021,7 +1058,7 @@ public class Contracts extends TravelManager {
                   if (days[j] == ResellerDay.SUNDAY) sundays.setChecked(true);
                 }
 
-                table.add(new HiddenInput(this.parameterContractId,Integer.toString(contract.getID())));
+                infoTable.add(new HiddenInput(this.parameterContractId,Integer.toString(contract.getID())));
             }
 
 
@@ -1043,13 +1080,6 @@ public class Contracts extends TravelManager {
             }
 
 
-            Table infoTable = new Table();
-              infoTable.setBorder(0);
-              infoTable.setCellspacing(0);
-              infoTable.setWidth("100%");
-              infoTable.setColor(super.backgroundColor);
-
-            int infoRow = 1;
 
             infoTable.add(tDiscount,1,infoRow);
             infoTable.add(pDiscount,3,infoRow);
@@ -1079,13 +1109,31 @@ public class Contracts extends TravelManager {
 
             ++infoRow;
             //table.setRowColor(row, theColor);
-            SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
-            if (supplier != null)
-            infoTable.add(submit,4,infoRow);
-            infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+            if (supplier != null) {
+              if (contract != null) {
+                SubmitButton deleter = new SubmitButton(iwrb.getImage("buttons/delete.gif"), this.sAction, this.paramaterDeleteContract);
+                infoTable.add(deleter,4,infoRow);
+                infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+              }
+              SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
+              infoTable.add(submit,4,infoRow);
+              infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+            }
             infoTable.setAlignment(4,infoRow,"right");
             //table.mergeCells(1,row,3,row);
             //table.setRowColor(row, theColor);
       return infoTable;
+  }
+
+  private void deleteContract(IWContext iwc) {
+    String contractId = iwc.getParameter(this.parameterContractId);
+    try {
+      if (contractId != null) {
+        Contract con = new Contract(Integer.parseInt(contractId));
+          con.delete();
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
   }
 }

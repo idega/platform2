@@ -197,10 +197,9 @@ public class TourDesigner extends TravelManager {
           Product product = service.getProduct();
           if (product.getFileId() != -1) {
             imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
-            //imageInserter.setImageId(product.getFileId());
           }
       }
-        //imageInserter.setWindowToReload(true);
+        imageInserter.setWindowToReload(true);
 
 
       table.setVerticalAlignment(1,row,"top");
