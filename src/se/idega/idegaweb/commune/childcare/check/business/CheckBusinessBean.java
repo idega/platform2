@@ -226,6 +226,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	}
 
 	public User getUserById(int userId) throws Exception {
+		if (userId == -1)
+			return null;
 		try {
 			return getUserBusiness().getUser(userId);
 		} catch (EJBException e) {

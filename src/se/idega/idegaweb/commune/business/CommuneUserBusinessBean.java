@@ -71,6 +71,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	private final String ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME = "customer_choice_group_id";
 	private final String ROOT_CITIZEN_DECEASED_ID_PARAMETER_NAME = "citizen_deceased_group_id";
 	
+	private final int SCHOOLCHILDREN_AGE = 12;
+	
 	private Group rootCitizenGroup;
 	private Group rootOtherCommuneCitizenGroup;
 	private Group rootProtectedCitizenGroup;
@@ -1149,14 +1151,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException {
 		return moveCitizenToProtectedCitizenGroup(user,IWTimestamp.getTimestampRightNow());
 	}
-	
-	public Collection findUsersBySearchString(String searchString) {
+		
+	public Collection findSchoolChildrenBySearchCondition(String searchString) {
 		try {
 			Collection users = new ArrayList();
 			StringTokenizer tokenizer = new StringTokenizer(searchString, " ");
 			while (tokenizer.hasMoreElements()) {
 				String element = (String) tokenizer.nextElement();
-				Collection results = this.getUserHome().findUsersBySearchCondition(trimSearchString(element), true);
+				Collection results = this.getUserHome().findUsersBySearchConditionAndMaxAge(trimSearchString(element), true, SCHOOLCHILDREN_AGE);
 				if (results != null) {
 					if (users.isEmpty())
 						users.addAll(results);

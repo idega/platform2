@@ -54,7 +54,7 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 	private void parseAction(IWContext iwc) throws RemoteException {
 		if (iwc.isParameterSet(PARAMETER_SEARCH)) {
 			String searchString = iwc.getParameter(PARAMETER_SEARCH);
-			users = getUserBusiness(iwc).findUsersBySearchString(searchString);
+			users = getUserBusiness(iwc).findSchoolChildrenBySearchCondition(searchString);
 		} else if (iwc.isParameterSet(PARAMETER_FIRST_NAME) || iwc.isParameterSet(PARAMETER_MIDDLE_NAME) || iwc.isParameterSet(PARAMETER_LAST_NAME) || iwc.isParameterSet(PARAMETER_PERSONAL_ID)) {
 			String first = iwc.getParameter(PARAMETER_FIRST_NAME);
 			String middle = iwc.getParameter(PARAMETER_MIDDLE_NAME);

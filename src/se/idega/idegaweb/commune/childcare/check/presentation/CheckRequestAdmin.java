@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.check.presentation;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
@@ -135,6 +136,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 		Collection checks = getCheckBusiness(iwc).findUnhandledChecks();
 		Iterator iter = checks.iterator();
+		HashMap caseStatusMap = new HashMap();		
 		while (iter.hasNext()) {
 			check = (Check) iter.next();
 			child = getCheckBusiness(iwc).getUserById(check.getChildId());
@@ -150,7 +152,13 @@ public class CheckRequestAdmin extends CommuneBlock {
 			if (manager != null)
 				managerName = manager.getName();
 				
-			String caseStatus = getCheckBusiness(iwc).getLocalizedCaseStatusDescription(check.getCaseStatus(), iwc.getCurrentLocale());
+			String caseStatus = null;												
+			if (!caseStatusMap.containsKey(check.getStatus())) {			
+				caseStatus = getCheckBusiness(iwc).getLocalizedCaseStatusDescription(check.getCaseStatus(), iwc.getCurrentLocale());
+				caseStatusMap.put(check.getStatus(), caseStatus);
+			}
+			else 				
+				caseStatus = (String) caseStatusMap.get(check.getStatus());			
 
 			if (row % 2 == 0)
 				table.setRowColor(row, getZebraColor1());

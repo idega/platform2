@@ -124,5 +124,5 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	 */
 	public Group getRootDeceasedCitizensGroup() throws CreateException, FinderException, RemoteException;
 
-	public Collection findUsersBySearchString(String searchString) throws RemoteException;
+	public Collection findSchoolChildrenBySearchCondition(String searchString)throws RemoteException;
 }
