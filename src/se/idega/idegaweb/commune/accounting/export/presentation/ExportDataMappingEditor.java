@@ -54,7 +54,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	private void drawForm() throws RemoteException {
 		Form form = new Form();
 		
-		Table table = new Table(3, 21);
+		Table table = new Table(3, 23);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, 12);
