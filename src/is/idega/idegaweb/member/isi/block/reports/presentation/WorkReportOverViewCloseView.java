@@ -53,12 +53,34 @@ public class WorkReportOverViewCloseView extends Block {
   private static final String CHECK_BOX = "checkBox";
 
 
+	private static final String REPORT_YEAR = WorkReport.class.getName()+".YEAR_OF_REPORT";
+	private static final String REGIONAL_UNION_NUMBER = WorkReport.class.getName()+".REG_UNI_NR";
+	private static final String REGIONAL_UNION_ABBR = WorkReport.class.getName()+".REG_UNI_ABBR";
 
+	
   private static final String GROUP_NUMBER = WorkReportDivisionBoard.class.getName()+".IC_GROUP_ID";
 	private static final String MEMBER_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_MEMBERS";
 	private static final String PLAYER_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_PLAYERS";
 	private static final String LEAGUE = WorkReportDivisionBoard.class.getName()+".ISI_WR_GROUP_ID";
+	private static final String HAS_NATIONAL_LEAGUE = WorkReportDivisionBoard.class.getName()+".HAS_NATIONAL_LEAGUE";
+	
+	
+	
   
+	// define path short keys and map corresponding converters
+		 //year of report
+		 //regional union nr
+		 //regional union abbr
+		 //has national league checkbox
+		 //club type
+		 //Leagues nr and abbr.
+		 //Total members
+		 //Total players
+		 //is
+			 //memberpart
+			 //accountpart
+			 //board part arrived
+			 
   private boolean editable = true;
    
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
@@ -107,11 +129,29 @@ public class WorkReportOverViewCloseView extends Block {
     params.add(WorkReportWindow.ACTION);
     
     // define path short keys and map corresponding converters
+    //year of report
+    //regional union nr
+    //regional union abbr
+    //has national league checkbox
+    //club type
+    //Leagues nr and abbr.
+    //Total members
+    //Total players
+    //is
+    	//memberpart
+    	//accountpart
+    	//board part arrived
+    
+    
+    
+    
     Object[] columns = {
+    	REPORT_YEAR,null,
 			GROUP_NUMBER,null,
 			MEMBER_COUNT,null,
 			PLAYER_COUNT,null,
 			LEAGUE,null,
+			HAS_NATIONAL_LEAGUE,null,
 			"back",new BackButtonConverter(resourceBundle),
 		};
       
