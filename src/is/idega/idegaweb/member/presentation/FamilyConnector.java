@@ -8,6 +8,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -37,6 +38,9 @@ public class FamilyConnector extends StyledIWAdminWindow {
 	public static final String _PARAM_METHOD = "method";
 	
 	private static final String FAMILY_RELATION_CUSTODIAN_AND_PARENT = "fam_rel_cust_par";
+	
+	private static final String HELP_TEXT_KEY_ATTATCH = "family_connector_attatch";
+	private static final String HELP_TEXT_KEY_DETATCH = "family_connector_detatch";
 
 	public static final int _METHOD_ATTACH = 1;
 	public static final int _METHOD_DETACH = 2;
@@ -93,8 +97,8 @@ public class FamilyConnector extends StyledIWAdminWindow {
 
 		Table frameTable = new Table(2, 3);
 		frameTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
-		frameTable.mergeCells(1, 3, 2, 3);
-		frameTable.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
+		frameTable.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_LEFT);
+		frameTable.setAlignment(2,3, Table.HORIZONTAL_ALIGN_RIGHT);
 		frameTable.setWidth(210);
 		frameTable.setHeight(130);
 		frameTable.setStyleClass(mainStyleClass);
@@ -105,13 +109,15 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","Type")), 1, 2);
 		frameTable.add(new TextInput(_PARAM_RELATED_USER_ID), 2, 1);
 		frameTable.add(getRelationMenu(iwc), 2, 2);
+		Help help = getHelp(HELP_TEXT_KEY_ATTATCH);
+		frameTable.add(help,1,3);
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("usr_fam_win_save","Save"));
 		submit.setAsImageButton(true);
-		frameTable.add(submit, 1, 3);
-		frameTable.add(Text.NON_BREAKING_SPACE,1,3);
+		frameTable.add(submit, 2, 3);
+		frameTable.add(Text.NON_BREAKING_SPACE,2,3);
 		CloseButton close = new CloseButton(iwrb.getLocalizedString("usr_fam_win_cancel","Cancel"));
 		close.setAsImageButton(true);
-		frameTable.add(close, 1, 3);
+		frameTable.add(close, 2, 3);
 
 		form.add(frameTable);
 		add(form,iwc);
@@ -125,16 +131,20 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		form.add(new HiddenInput(_PARAM_METHOD, String.valueOf(_METHOD_DETACH)));
 		form.add(new HiddenInput(_PARAM_ACTION, String.valueOf(_ACTION_SAVE)));
 
-		Table frameTable = new Table(1, 2);
-		frameTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
-		frameTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
+		Table frameTable = new Table(2, 2);
+		frameTable.setStyleClass(mainStyleClass);
+		frameTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		frameTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_LEFT);
+		frameTable.setAlignment(2,2, Table.HORIZONTAL_ALIGN_RIGHT);
 		frameTable.setWidth("100%");
 		frameTable.setHeight("100%");
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		Help help = getHelp(HELP_TEXT_KEY_DETATCH);
+		frameTable.add(help,1,2);
 		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_sure","Are you sure ?")), 1, 1);
-		frameTable.add(new CloseButton(iwrb.getLocalizedString("usr_fam_win_cancel","Cancel")), 1, 2);
-		frameTable.add(new SubmitButton(iwrb.getLocalizedString("usr_fam_win_yes","Yes")), 1, 2);
+		frameTable.add(new CloseButton(iwrb.getLocalizedImageButton("usr_fam_win_cancel","Cancel")), 2, 2);
+		frameTable.add(new SubmitButton(iwrb.getLocalizedImageButton("usr_fam_win_yes","Yes")), 2, 2);
 
 		form.add(frameTable);
 		add(form,iwc);
