@@ -47,13 +47,16 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			//find the player groups relations and set them to passive_pending
 			if (parentGroups != null && !parentGroups.isEmpty() && children!=null && !children.isEmpty() ) {//user must have parents!
 				Iterator iter = parentGroups.iterator();
-
+				
+				boolean existsInFromDivision = false;
+				
 				while (iter.hasNext()) {
 					Group parent = (Group) iter.next();
 					String type = parent.getGroupType();
 					if (type.equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)) {
 						Collection par = groupBiz.getParentGroupsRecursive(parent);
 						if (par.contains(fromDiv)) {
+							existsInFromDivision = true;
 							Collection col = groupBiz.getGroupRelationHome().findGroupsRelationshipsContainingBiDirectional( ((Integer)fromDiv.getPrimaryKey()).intValue(), ((Integer)parent.getPrimaryKey()).intValue() , "ST_ACTIVE" ); //Status liklega otharfi
 							if(col!=null && !col.isEmpty()){
 								Iterator iterator = col.iterator();
@@ -69,22 +72,24 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 					}
 				}
 			
-				//set the users relations to the new divisions temporary group to active_pending
-				Iterator iter2 = children.iterator();
-
-				while (iter2.hasNext()) {
-					Group child = (Group) iter2.next();
-					String type = child.getGroupType();
-					if (type.equals(IWMemberConstants.GROUP_TYPE_TEMPORARY)) {
-						
-						GroupRelation rel = groupBiz.getGroupRelationHome().create();
-						rel.setRelatedGroup(user);
-						rel.setGroup(child);
-						rel.setRelationshipType("GROUP_PARENT");
-						rel.setActivePending();
-						rel.setInitiationDate(init.getTimestamp());
-						rel.store();
-						
+				if(existsInFromDivision){
+					//set the users relations to the new divisions temporary group to active_pending
+					Iterator iter2 = children.iterator();
+	
+					while (iter2.hasNext()) {
+						Group child = (Group) iter2.next();
+						String type = child.getGroupType();
+						if (type.equals(IWMemberConstants.GROUP_TYPE_TEMPORARY)) {
+							
+							GroupRelation rel = groupBiz.getGroupRelationHome().create();
+							rel.setRelatedGroup(user);
+							rel.setGroup(child);
+							rel.setRelationshipType("GROUP_PARENT");
+							rel.setActivePending();
+							rel.setInitiationDate(init.getTimestamp());
+							rel.store();
+							break;//should only have one temp group!
+						}
 					}
 				}
 				
@@ -125,13 +130,18 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	
 	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException{
 		Collection tops = getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwuc);
-		
-		if(tops!=null){
-			
-			
+		List list = new Vector();
+		if(tops!=null && !tops.isEmpty()){
+			Iterator iter = tops.iterator();
+			while (iter.hasNext()) {
+				Group group = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_LEAGUE.equals(group.getGroupType())){
+					list.add(group);
+				}
+			}
 			
 		}
-		return null;
+		return list;
 		
 		
 	}
