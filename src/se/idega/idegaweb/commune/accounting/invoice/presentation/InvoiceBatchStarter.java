@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.Date;
 
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
@@ -16,6 +15,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InputContainer;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Joakim
@@ -26,6 +26,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	private static String PREFIX="cacc_invbs_";
 	private static String PARAM_MONTH=PREFIX+"month";
 	private static String PARAM_READ_DATE=PREFIX+"read_date";
+	DateInput monthInput;
+	DateInput readDateInput;	
 
 	public void init(IWContext iwc){
 		
@@ -34,14 +36,14 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		Form form = new Form();
 		add(form);
 		
-		DateInput monthInput = new DateInput(PARAM_MONTH,true);
+		monthInput = new DateInput(PARAM_MONTH,true);
 		monthInput.setToCurrentDate();
 		monthInput.setToShowDay(false);
 		
 		InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
 		form.add(month);
 
-		DateInput readDateInput = new DateInput(PARAM_READ_DATE,true);	
+		readDateInput = new DateInput(PARAM_READ_DATE,true);	
 
 		InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
 		form.add(readDate);
@@ -67,7 +69,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	private void handleSave(IWContext iwc) {
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-			invoiceBusiness.startPostingBatch(new Date(System.currentTimeMillis()), iwc);
+			invoiceBusiness.startPostingBatch(new IWTimestamp(iwc.getParameter(PARAM_MONTH)).getDate(), iwc);
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}
