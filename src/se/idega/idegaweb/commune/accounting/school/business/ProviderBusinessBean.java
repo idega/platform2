@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.18 2004/10/15 10:36:39 thomas Exp $
+ * $Id: ProviderBusinessBean.java,v 1.19 2005/01/10 12:03:12 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.care.data.ProviderAccountingPropertiesHome;
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2004/10/15 10:36:39 $ by $Author: thomas $
+ * Last modified: $Date: 2005/01/10 12:03:12 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -46,12 +46,14 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 	public final static String KEY_SCHOOL_NAME_ALREADY_EXISTS = KP + "school_already_exists";
 	public final static String KEY_CANNOT_SAVE_PROVIDER = KP + "cannot_save_provider";
 	public final static String KEY_CANNOT_DELETE_PROVIDER = KP + "cannot_delete_provider";
+	public final static String KEY_PROVIDER_STRING_ID_MISSING = KP + "provider_string_id_missing";
 
 	public final static String DEFAULT_NAME_MISSING = "The name of the provider must be entered.";
 	public final static String DEFAULT_ILLEGAL_ORGANIZATION_NUMBER = "Illegal organization number.";
 	public final static String DEFAULT_SCHOOL_NAME_ALREADY_EXISTS = "A provider with this name already exists.";
 	public final static String DEFAULT_CANNOT_SAVE_PROVIDER = "The provider cannot be stored due to technical error.";
 	public final static String DEFAULT_CANNOT_DELETE_PROVIDER = "The provider cannot be deleted due to technical error.";
+	public final static String DEFAULT_PROVIDER_STRING_ID_MISSING = "A prover id must be entered.";
 
 	/**
 	 * Finds all study paths.
@@ -78,6 +80,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 	 */
 	public void saveProvider(
 			String schoolId,
+			String providerStringId,
 			String name,
 			String info,
 			String address,
@@ -105,8 +108,18 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			String bankgiro,
 			String statisticsType,
 			String ownPosting,
-			String doublePosting) throws ProviderException {
+			String doublePosting,
+			boolean useProviderStringId) throws ProviderException {
 
+		// Provider string id
+		if (useProviderStringId) {
+			providerStringId = providerStringId.trim();
+			if (providerStringId.length() == 0) {
+				throw new ProviderException(KEY_PROVIDER_STRING_ID_MISSING, DEFAULT_PROVIDER_STRING_ID_MISSING);				
+			}
+		}
+		
+		
 		// Provider name
 		String s = name.trim();
 		if (s.equals("")) {
@@ -178,7 +191,8 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 					getInteger(communeId),
 					getInt(countryId),
 					getBoolean(centralizedAdministration),
-					getBoolean(invisibleForCitizen));
+					getBoolean(invisibleForCitizen),
+					providerStringId);
 			int id = ((Integer) school.getPrimaryKey()).intValue();
 			ProviderAccountingProperties pap = null;
 			ProviderAccountingPropertiesHome home = getProviderAccountingPropertiesHome();

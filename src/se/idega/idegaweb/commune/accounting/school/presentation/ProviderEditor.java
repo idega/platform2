@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.33 2004/10/15 10:41:51 thomas Exp $
+ * $Id: ProviderEditor.java,v 1.34 2005/01/10 12:03:28 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -62,10 +62,10 @@ import com.idega.presentation.ui.TextArea;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2004/10/15 10:41:51 $ by $Author: thomas $
+ * Last modified: $Date: 2005/01/10 12:03:28 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -80,6 +80,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String PP = "cacc_provider_editor_"; // Parameter prefix 
 
 	private final static String PARAMETER_SCHOOL_ID = PP + "school_id";
+	private final static String PARAMETER_PROVIDER_STRING_ID = PP + "provider_string_id";
 	private final static String PARAMETER_NAME = PP + "name";
 	private final static String PARAMETER_ADDRESS = PP + "address";
 	private final static String PARAMETER_ZIP_CODE = PP + "zip_code";
@@ -124,6 +125,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_TITLE_EDIT = KP + "title_edit";
 	private final static String KEY_TITLE_DELETE = KP + "title_delete";
 	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
+	private final static String KEY_PROVIDER_STRING_ID = KP + "provider_string_id";
 	private final static String KEY_NAME = KP + "name";
 	private final static String KEY_ADDRESS = KP + "address";
 	private final static String KEY_ZIP_CODE = KP+ "zip_code";
@@ -167,6 +169,7 @@ public class ProviderEditor extends AccountingBlock {
 	
 
 	private boolean _useCancelButton = true;
+	private boolean _useProviderStringId = false;
 	private boolean requireAreaChoiceForDefaultCommune = true;
 	
 	public boolean getUseCancelButton() {
@@ -175,6 +178,14 @@ public class ProviderEditor extends AccountingBlock {
 	
 	public void setUseCancelButton(boolean b) {
 		_useCancelButton = b;
+	}
+	
+	public boolean getUseProviderStringId() {
+		return _useProviderStringId;
+	}
+	
+	public void setUseProviderStringId(boolean b) {
+		_useProviderStringId = b;
 	}
 	
 	/**
@@ -255,7 +266,7 @@ public class ProviderEditor extends AccountingBlock {
 	 * Handles the new action for this block.
 	 */	
 	private void handleNewAction(IWContext iwc) {
-		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", getParameter(iwc, PARAMETER_SCHOOL_AREA_ID), getParameter(iwc, PARAMETER_SCHOOL_SUB_AREA_ID), 
+		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", "", getParameter(iwc, PARAMETER_SCHOOL_AREA_ID), getParameter(iwc, PARAMETER_SCHOOL_SUB_AREA_ID), 
 				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
 	}
 	
@@ -279,6 +290,7 @@ public class ProviderEditor extends AccountingBlock {
 		
 		add(getProviderForm(iwc, 
 			getParameter(iwc, PARAMETER_SCHOOL_ID),
+			getParameter(iwc, PARAMETER_PROVIDER_STRING_ID),
 			getParameter(iwc, PARAMETER_NAME),
 			getParameter(iwc, PARAMETER_INFO),
 			getParameter(iwc, PARAMETER_ADDRESS),
@@ -345,6 +357,7 @@ public class ProviderEditor extends AccountingBlock {
 			add(getProviderForm(
 					iwc,
 					school.getPrimaryKey().toString(),
+					school.getProviderStringId(),
 					school.getSchoolName(),
 					school.getSchoolInfo(),
 					school.getSchoolAddress(),
@@ -415,6 +428,7 @@ public class ProviderEditor extends AccountingBlock {
 			ProviderBusiness pb = getProviderBusiness(iwc);
 			pb.saveProvider(
 					getParameter(iwc, PARAMETER_SCHOOL_ID),
+					getParameter(iwc, PARAMETER_PROVIDER_STRING_ID),
 					getParameter(iwc, PARAMETER_NAME),
 					getParameter(iwc, PARAMETER_INFO),
 					getParameter(iwc, PARAMETER_ADDRESS),
@@ -442,7 +456,8 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_BANKGIRO),
 					getParameter(iwc, PARAMETER_STATISTICS_TYPE),
 					ownPosting, 
-					doublePosting); 
+					doublePosting,
+					_useProviderStringId); 
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -456,6 +471,7 @@ public class ProviderEditor extends AccountingBlock {
 			add(getProviderForm(
 					iwc,
 					getParameter(iwc, PARAMETER_SCHOOL_ID),
+					getParameter(iwc, PARAMETER_PROVIDER_STRING_ID),
 					getParameter(iwc, PARAMETER_NAME),
 					getParameter(iwc, PARAMETER_INFO),
 					getParameter(iwc, PARAMETER_ADDRESS),
@@ -665,6 +681,7 @@ public class ProviderEditor extends AccountingBlock {
 	private ApplicationForm getProviderForm(
 			IWContext iwc,
 			String schoolId,
+			String providerStringId,
 			String name,
 			String info,
 			String address,
@@ -696,6 +713,7 @@ public class ProviderEditor extends AccountingBlock {
 			String errorMessage,
 			boolean isNew) {
 
+		providerStringId = providerStringId == null ? "" : providerStringId;
 		name = name == null ? "" : name;
 		address = address == null ? "" : address;
 		zipCode = zipCode == null ? "" : zipCode;
@@ -724,6 +742,11 @@ public class ProviderEditor extends AccountingBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		int row = 1;
+		if (_useProviderStringId) {
+			table.add(getSmallHeader(localize(KEY_PROVIDER_STRING_ID, "Provider ID")), 1, row);
+			table.mergeCells(2, row, 4, row);
+			table.add(getTextInput(PARAMETER_PROVIDER_STRING_ID, providerStringId, 140), 2, row++);
+		}
 		table.add(getSmallHeader(localize(KEY_NAME, "Name")), 1, row);
 		table.mergeCells(2, row, 4, row);
 		table.add(getTextInput(PARAMETER_NAME, name, 140), 2, row++);

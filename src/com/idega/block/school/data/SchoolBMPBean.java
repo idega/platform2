@@ -84,6 +84,8 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public final static String M2M_TX_TEXT_SCH_SCHOOL="TX_TEXT_SCH_SCHOOL";
 	public final static String M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL="TX_LOCALIZED_TEXT_SCH_SCHOOL";
 	public final static String INVISIBLE_FOR_CITIZEN = "invisible_for_citizen";
+	/** Anders 10 Jan 2005 */
+	public final static String PROVIDER_STRING_ID = "provider_string_id";
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -131,6 +133,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		addAttribute(INVISIBLE_FOR_CITIZEN, "Do not show this provider for citizens", true, true, Boolean.class);
 		this.addMetaDataRelationship();
 		this.addManyToManyRelationShip(SchoolStudyPath.class, "sch_school_study_path");
+		this.addAttribute(PROVIDER_STRING_ID, "Extra provider id", true, true, String.class, 40);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -326,6 +329,14 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	
 	public void setInvisibleForCitizen(boolean b) {
 		setColumn(INVISIBLE_FOR_CITIZEN, b);
+	}
+
+	public String getProviderStringId() {
+		return this.getStringColumnValue(PROVIDER_STRING_ID);
+	}
+	
+	public void setProviderStringId(String id) {
+		this.setColumn(PROVIDER_STRING_ID, id);
 	}
 	
 	private Date getCurrentDate() {
