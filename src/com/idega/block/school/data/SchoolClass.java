@@ -12,6 +12,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public int getSchoolSeasonId();
  public com.idega.block.school.data.SchoolType getSchoolType();
  public int getSchoolTypeId();
+ public com.idega.block.school.data.SchoolYear getSchoolYear();
  public int getSchoolYearId();
  public int getTeacherId();
  public boolean getValid();

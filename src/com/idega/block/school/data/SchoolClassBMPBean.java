@@ -71,6 +71,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public SchoolType getSchoolType(){
     return (SchoolType) getColumnValue(SCHOOLTYPE);
   }
+  public SchoolYear getSchoolYear(){
+    return (SchoolYear) getColumnValue(SCHOOLYEAR);
+  }
   public void setSchoolTypeId(int id){
 	this.setColumn(SCHOOLTYPE,id);
   }

@@ -13,13 +13,6 @@ public class SchoolClassHomeImpl extends com.idega.data.IDOFactory implements Sc
  }
 
 
-public SchoolClass findByNameAndSchool(java.lang.String p0,com.idega.block.school.data.School p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((SchoolClassBMPBean)entity).ejbFindByNameAndSchool(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
 public SchoolClass findByNameAndSchool(java.lang.String p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassBMPBean)entity).ejbFindByNameAndSchool(p0,p1);
@@ -27,11 +20,11 @@ public SchoolClass findByNameAndSchool(java.lang.String p0,int p1)throws javax.e
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findBySchool(com.idega.block.school.data.School p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public SchoolClass findByNameAndSchool(java.lang.String p0,com.idega.block.school.data.School p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchool(p0);
+	Object pk = ((SchoolClassBMPBean)entity).ejbFindByNameAndSchool(p0,p1);
 	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
+	return this.findByPrimaryKey(pk);
 }
 
 public java.util.Collection findBySchool(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
@@ -41,14 +34,21 @@ public java.util.Collection findBySchool(int p0)throws javax.ejb.FinderException
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolAndSeason(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findBySchool(com.idega.block.school.data.School p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchool(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeason(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findBySchoolAndSeason(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeason(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -118,13 +118,6 @@ public SchoolClass findBySchoolClassNameSchoolSchoolYearSchoolSeason(java.lang.S
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findBySeason(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySeason(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findBySeason(com.idega.block.school.data.SchoolSeason p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySeason(p0);
@@ -132,9 +125,9 @@ public java.util.Collection findBySeason(com.idega.block.school.data.SchoolSeaso
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySeasonAndYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findBySeason(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySeasonAndYear(p0,p1);
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySeason(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -146,14 +139,21 @@ public java.util.Collection findBySeasonAndYear(int p0,int p1)throws javax.ejb.F
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByTeacher(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findBySeasonAndYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySeasonAndYear(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByTeacher(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindByTeacher(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByTeacher(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findByTeacher(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindByTeacher(p0);
 	this.idoCheckInPooledEntity(entity);
