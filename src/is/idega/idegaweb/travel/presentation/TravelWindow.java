@@ -19,7 +19,7 @@ import com.idega.idegaweb.IWResourceBundle;
 public class TravelWindow extends Window {
 
   private Table table = new Table(3,2);
-  private Page jPage;
+  protected Page jPage;
 
   protected Text text = new Text();
   protected IWResourceBundle iwrb;
@@ -52,6 +52,7 @@ public class TravelWindow extends Window {
     if (reloadParent)
       jPage.setParentToReload();
     jPage.close();
+
   }
 
   private void setTemplate(ModuleInfo modinfo) {

@@ -422,15 +422,16 @@ public class BookingOverview extends TravelManager {
                               iBooked = Booker.getNumberOfBookings(service.getID(), tempStamp);
                               iAssigned = Assigner.getNumberOfAssignedSeats(service.getID(), tempStamp);
 
-                              iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
+                              iInquery = Inquirer.getInqueredSeats(service.getID(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
+                              //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
                               iAvailable = iCount - iBooked - iAssigned;
                           }else if (reseller != null) {
                               iCount = contract.getAlotment();
                               iBooked = Booker.getNumberOfBookings(reseller.getID() ,service.getID(), tempStamp);
                               iAssigned = 0;
 
-                              iInquery = 0;
-                              iAvailable = iCount - iBooked - iAssigned;
+                              iInquery = Inquirer.getInqueredSeats(service.getID(),tempStamp,reseller.getID(), true);
+                              iAvailable = iCount - iBooked - iAssigned -iInquery;
                           }
                           countTextBold.setText(Integer.toString(iCount));
 
@@ -583,15 +584,15 @@ public class BookingOverview extends TravelManager {
           if (supplier != null) {
             seats = tour.getTotalSeats();
             assigned = Assigner.getNumberOfAssignedSeats(service.getID(), currentStamp);
-            iInqueries = Inquirer.getInqueredSeats(service.getID() ,currentStamp, true);
+            iInqueries = Inquirer.getInqueredSeats(service.getID() , currentStamp, true);
             booked = Booker.getNumberOfBookings(service.getID(), currentStamp);
             available = seats - booked;
           }else if (reseller != null) {
             seats = contract.getAlotment();
             assigned = 0;
-            iInqueries = 0;
+            iInqueries = Inquirer.getInqueredSeats(service.getID() , currentStamp, reseller.getID(), true);
             booked = Booker.getNumberOfBookings(reseller.getID(),service.getID(), currentStamp);
-            available = seats - booked;
+            available = seats - booked - iInqueries;
           }
 
           dateTextBold.setText(currentStamp.getLocaleDate(modinfo));
@@ -670,7 +671,9 @@ public class BookingOverview extends TravelManager {
 
 
           // ------------------ INQUERIES ------------------------
-          Inquery[] inqueries = Inquirer.getInqueries(service.getID(), currentStamp, true, Inquery.getNameColumnName());
+          Inquery[] inqueries = null;
+          if (supplier != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, true, Inquery.getNameColumnName());
+          if (reseller != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, reseller.getID(),true, Inquery.getNameColumnName());
           for (int i = 0; i < inqueries.length; i++) {
             ++row;
             Tname = (Text) super.theSmallBoldText.clone();

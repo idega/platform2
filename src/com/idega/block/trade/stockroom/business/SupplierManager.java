@@ -54,7 +54,7 @@ public class SupplierManager {
     User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,idegaTimestamp.RightNow(),null);
     LoginDBHandler.createLogin(user.getID(), userName, password);
 
-    sGroup.addTo(user);
+    sGroup.addUser(user);
 
     int[] userIDs = {user.getID()};
 

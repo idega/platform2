@@ -154,10 +154,14 @@ public class StockroomBusiness /* implements SupplyManager */ {
     if(gr != null){
       Iterator iter = gr.iterator();
       while (iter.hasNext()) {
+        System.err.println("Inni i iter");
         GenericGroup item = (GenericGroup)iter.next();
+        System.err.println("item.groupType() : "+item.getGroupType());
         if(item.getGroupType().equals(((SupplierStaffGroup)SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
+        System.err.println("if 1");
           GenericEntity[] supp = ((Supplier)Supplier.getStaticInstance(Supplier.class)).findAllByColumn(Supplier.getColumnNameGroupID(),item.getID());
           if(supp != null && supp.length > 0){
+          System.err.println("If 2");
             return supp[0].getID();
           }
         }

@@ -61,7 +61,7 @@ public class Booking extends TravelManager {
 
   private idegaTimestamp stamp;
 
-  int available = -1;
+  int available = -1234;
 
   public Booking() {
   }
@@ -338,8 +338,16 @@ public class Booking extends TravelManager {
             }else {
               table.setColor(1,row,super.backgroundColor);
             }
-          }else {
-            table.setColor(1,row,super.backgroundColor);
+          }
+          else if (reseller != null) {
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, Inquery.getInqueryPostDateColumnName());
+
+            if (inqueries.length > 0) {
+              table.add(getInqueries(modinfo, inqueries),1,row);
+              table.setColor(1,row,super.YELLOW);
+            }else {
+              table.setColor(1,row,super.backgroundColor);
+            }
           }
 
           table.setColor(6,row,super.backgroundColor);
@@ -512,7 +520,7 @@ public class Booking extends TravelManager {
         }
         else if (supplier != null) {
           for (int i = 1; i <= lengthOfMonth; i++) {
-            if (Inquirer.getNumberOfUnansweredInqueries(productId, temp) > 0) {
+            if (Inquirer.getInqueredSeats(productId, temp, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
             }else if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
@@ -522,7 +530,9 @@ public class Booking extends TravelManager {
         }
         else {
           for (int i = 1; i <= lengthOfMonth; i++) {
-            if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
+            if (Inquirer.getInqueredSeats(productId, temp,resellerId, true) > 0) {
+              sm.setDayColor(temp, colorForInquery);
+            }else if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
             }
             temp.addDays(1);
@@ -592,20 +602,29 @@ public class Booking extends TravelManager {
           ++row;
           table.mergeCells(2,row,3,row);
           table.setAlignment(2,row,"right");
-          answerYes = new Link("T - Staðfesta bókun");
-            answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
-            answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
-            answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
 
-          answerNo = new Link("T - Hafna bókun");
-            answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
-            answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
-            answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
+          if (supplier != null) {
+              answerYes = new Link("T - Staðfesta bókun");
+                answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
+                answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
+                answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
 
-          table.add(answerYes,2,row);
-          table.add("&nbsp;&nbsp;",2,row);
-          table.add(answerNo,2,row);
+              answerNo = new Link("T - Hafna bókun");
+                answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
+                answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
+                answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
 
+              table.add(answerYes,2,row);
+              table.add("&nbsp;&nbsp;",2,row);
+              table.add(answerNo,2,row);
+          }else if (reseller != null) {
+              answerNo = new Link("T - Ógilda fyrirspurn");
+                answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
+                answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
+                answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
+
+              table.add(answerNo,2,row);
+          }
       }
 
 
@@ -674,11 +693,11 @@ public class Booking extends TravelManager {
             iBooked = Booker.getNumberOfBookings(resellerId, service.getID(), this.stamp);
             bookedTextBold.setText(Integer.toString(iBooked));
 
-            iInquery = 0;
+            iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, reseller.getID(), true);
             inqTextBold.setText(Integer.toString(iInquery));
 
             if (iCount >0) {
-              iAvailable = iCount - iBooked;
+              iAvailable = iCount - iBooked -iInquery;
               available = iAvailable;
               availableTextBold.setText(Integer.toString(iAvailable));
             }
@@ -689,7 +708,7 @@ public class Booking extends TravelManager {
           if (TravelStockroomBusiness.getIfDay(modinfo, this.product, this.stamp)) {
             iCount = tour.getTotalSeats();
             iBooked = Booker.getNumberOfBookings(service.getID(), this.stamp);
-            iInquery = Inquirer.getInqueredSeats(service.getID() ,stamp, true);
+            iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, true);
 
             if (supplier != null) {
               if (iCount >0) {
@@ -1020,7 +1039,7 @@ public class Booking extends TravelManager {
 
     int iAvailable = Integer.parseInt(available);
 
-    if (iAvailable != -1) {
+    if (iAvailable != -1234) {
       String many;
       int iMany = 0;
       ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
@@ -1231,12 +1250,14 @@ public class Booking extends TravelManager {
         tm.commit();
 
         sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
-        if (resellers != null) {
-          responseString = new StringBuffer();
-          responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(modinfo)+"\n");
-          for (int i = 0; i < resellers.length; i++) {
-            if (resellers[i].getEmail() != null)
-            sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
+        if (reseller != null) {  // if this is not a reseller deleting his own inquiry
+          if (resellers != null) { // if there was a reseller who send the inquery
+            responseString = new StringBuffer();
+            responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(modinfo)+"\n");
+            for (int i = 0; i < resellers.length; i++) {
+              if (resellers[i].getEmail() != null)
+              sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
+            }
           }
         }
 

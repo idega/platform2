@@ -59,7 +59,7 @@ public class ResellerManager {
     User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,idegaTimestamp.RightNow(),null);
     LoginDBHandler.createLogin(user.getID(), userName, password);
 
-    sGroup.addTo(user);
+    sGroup.addUser(user);
 
     int[] userIDs = {user.getID()};
 

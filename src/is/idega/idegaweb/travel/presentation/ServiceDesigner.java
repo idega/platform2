@@ -40,6 +40,8 @@ public class ServiceDesigner extends TravelManager {
   private String PriceCategorySave = "save_categories";
   private String ServiceSessionAttribute = "service_designer_service_id";
 
+  public static String NAME_OF_FORM = "service_designer_form";
+
   private static Boolean priceCategoryCreation;
 
   public ServiceDesigner() {
@@ -83,6 +85,7 @@ public class ServiceDesigner extends TravelManager {
   private void displayForm(ModuleInfo modinfo) {
 
       Form form = new Form();
+        form.setName(NAME_OF_FORM);
       Table table = new Table();
 
       ShadowBox sb = new ShadowBox();
@@ -98,16 +101,21 @@ public class ServiceDesigner extends TravelManager {
 
       TextInput name = new TextInput("name_of_trip");
           name.setSize(40);
+          name.keepStatusOnAction();
       TextArea description = new TextArea("description");
           description.setWidth(50);
           description.setHeight(12);
+          description.keepStatusOnAction();
       DateInput active_from = new DateInput("active_from");
           active_from.setDate(stamp.getSQLDate());
+          active_from.keepStatusOnAction();
       DateInput active_to = new DateInput("active_to");
           stamp.addDays(92);
           active_to.setDate(stamp.getSQLDate());
+          active_to.keepStatusOnAction();
       BooleanInput active_yearly = new BooleanInput("active_yearly");
         active_yearly.setSelected(false);
+        active_yearly.keepStatusOnAction();
 
 
       CheckBox allDays = new CheckBox("all_days");
@@ -118,36 +126,41 @@ public class ServiceDesigner extends TravelManager {
       CheckBox fridays = new CheckBox("fridays");
       CheckBox saturdays = new CheckBox("saturdays");
       CheckBox sundays = new CheckBox("sundays");
-
-      /*
-        allDays.setOnClick("this.form."+mondays.getName()+".disabled=true");
-        allDays.setOnClick("this.form."+tuesdays.getName()+".disabled=true");
-        allDays.setOnClick("this.form."+wednesdays.getName()+".disabled=true");
-        allDays.setOnClick("this.form."+thursdays.getName()+".disabled=true");
-        allDays.setOnClick("this.form."+fridays.getName()+".disabled=true");
-        allDays.setOnClick("this.form."+saturdays.getName()+".disabled=true");
-        allDays.setOnClick("this.form."+sundays.getName()+".disabled=true");
-      */
+        allDays.keepStatusOnAction();
+        mondays.keepStatusOnAction();
+        tuesdays.keepStatusOnAction();
+        wednesdays.keepStatusOnAction();
+        thursdays.keepStatusOnAction();
+        saturdays.keepStatusOnAction();
+        sundays.keepStatusOnAction();
 
 
       TextInput departure_from = new TextInput("departure_from");
           departure_from.setSize(40);
+          departure_from.keepStatusOnAction();
       TimeInput departure_time = new TimeInput("departure_time");
           departure_time.setHour(8);
           departure_time.setMinute(0);
+          departure_time.keepStatusOnAction();
       TextInput arrival_at = new TextInput("arrival_at");
           arrival_at.setSize(40);
+          arrival_at.keepStatusOnAction();
       TimeInput arrival_time = new TimeInput("arrival_time");
           arrival_time.setHour(8);
           arrival_time.setMinute(0);
+          arrival_time.keepStatusOnAction();
 
       RadioButton hotelPickupYes = new RadioButton("hotel_pickup","yes");
           hotelPickupYes.setSelected();
+          hotelPickupYes.keepStatusOnAction();
       RadioButton hotelPickupNo = new RadioButton("hotel_pickup","no");
+        hotelPickupYes.keepStatusOnAction();
       TimeInput hotelPickupTime = new TimeInput("hotel_pickup_time");
           hotelPickupTime.setHour(8);
           hotelPickupTime.setMinute(0);
+          hotelPickupTime.keepStatusOnAction();
       TextInput hotelPickup = new TextInput("hotel_pickup_address");
+        hotelPickup.keepStatusOnAction();
 
         hotelPickup.setSize(40);
         hotelPickupYes.setOnClick("this.form."+hotelPickup.getName()+".disabled=false");
@@ -158,6 +171,7 @@ public class ServiceDesigner extends TravelManager {
         hotelPickupNo.setOnClick("this.form."+hotelPickupTime.getMinuteName()+".disabled=true");
 
       TextInput numberOfSeats = new TextInput("number_of_seats");
+        numberOfSeats.keepStatusOnAction();
 //        numberOfSeats.setAsIntegers("TEMP _ Must be numbers");
 //        numberOfSeats.setAsNotEmpty("TEMP _ Must not be empty");
 
