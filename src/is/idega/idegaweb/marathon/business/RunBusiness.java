@@ -18,11 +18,11 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 
+
 /**
  * @author laddi
  */
-public interface RunBusiness {
-
+public interface RunBusiness extends com.idega.business.IBOService{
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#saveUser
 	 */
@@ -129,8 +129,19 @@ public interface RunBusiness {
 	public Collection getCountries() throws java.rmi.RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getCountryByNationality
+	 * 
 	 */
 	public Country getCountryByNationality(Object nationality) throws java.rmi.RemoteException;
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#updateTeamName
+	 */
+	public void updateTeamName(int userID, int groupID, String teamName);
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByUserAndGroup
+	 */
+	public Run getRunObjByUserAndGroup(int userID, int groupID);
+
 
 }

@@ -39,6 +39,7 @@ public interface RunHome extends IDOHome {
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbFindByUserIDandDistanceID
 	 */
+	public Collection findByUserAndParentGroups(int userID,int runGroupID,int yearGroupID,int distanceGroupID) throws FinderException;
 	public Run findByUserIDandDistanceID(int userID, int distanceID) throws FinderException;
 
 	/**

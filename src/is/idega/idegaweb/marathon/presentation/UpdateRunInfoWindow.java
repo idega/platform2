@@ -12,6 +12,7 @@ import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -20,7 +21,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -31,12 +31,13 @@ import com.idega.user.data.User;
  * @author birna
  *
  */
-public class UpdateRunInfoWindow extends Window {
+public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 	private static final String PARAMETER_ACTION = "prm_action";
 	private static final int ACTION_DISPLAY = 1;
 	private static final int ACTION_SAVE = 2;
 	
 	//texts
+	private Text userNameText;
 	private Text yearText;
 	private Text runText;
 	private Text distanceText;
@@ -51,8 +52,10 @@ public class UpdateRunInfoWindow extends Window {
 	private Text payMethodText;
 	private Text payedAmountText;
 	private Text nationalityText;
+	private Text teamNameText;
 
 	//fields
+	private Text userNameField;
 	private Text runField;
 	private Text yearField;
 	private Text distanceField;
@@ -87,11 +90,19 @@ public class UpdateRunInfoWindow extends Window {
 	
 	private TextInput payedAmountField;
 	
+	private TextInput teamNameField;
+	
 	private Form f;
+	
+	public UpdateRunInfoWindow() {
+		super();
+		setResizable(true);
+	}
 	
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		userNameText = new Text(iwrb.getLocalizedString("run_tab.user_name", "User Name"));
 		yearText = new Text(iwrb.getLocalizedString("run_tab.year", "Year"));
 		runText = new Text(iwrb.getLocalizedString("run_tab.run", "Run"));
 		distanceText = new Text(iwrb.getLocalizedString("run_tab.distance", "Distance"));
@@ -106,6 +117,7 @@ public class UpdateRunInfoWindow extends Window {
 		payMethodText = new Text(iwrb.getLocalizedString("run_tab.pay_method", "Pay method"));
 		payedAmountText = new Text(iwrb.getLocalizedString("run_tab.payed_amount", "Payed amount"));
 		nationalityText = new Text(iwrb.getLocalizedString("run_tab.nationality", "Nationality"));
+		teamNameText = new Text(iwrb.getLocalizedString("run_tab.team_name", "Team name"));
 	}
 	
 	public void initializeFields() {
@@ -113,11 +125,15 @@ public class UpdateRunInfoWindow extends Window {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		RunBusiness runBiz = getRunBiz(iwc);
 		String userID = iwc.getParameter("ic_user_id");
+		String selectedGroupID = iwc.getParameter("selected_ic_group_id");
 		String runGroupID = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN);
 		User user = null;
 		if(userID != null) {
 			try {
 				user = getUserBiz().getUser(Integer.parseInt(userID));
+				if(user != null) {
+					userNameField = new Text(user.getName());
+				}
 			}
 			catch (NumberFormatException e1) {
 				e1.printStackTrace();
@@ -147,6 +163,8 @@ public class UpdateRunInfoWindow extends Window {
 			runField = new Text(iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()));
 		}
 		Run run = null;
+		if(userID != null && selectedGroupID != null) {
+			run = getRunBiz(iwc).getRunObjByUserAndGroup(Integer.parseInt(userID),Integer.parseInt(selectedGroupID));
 		try {
 			Group dis = getRunBiz(iwc).getDistanceByUserID(Integer.parseInt(userID));
 			f.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,dis.getPrimaryKey().toString());
@@ -154,9 +172,12 @@ public class UpdateRunInfoWindow extends Window {
 				run = getRunBiz(iwc).getRunObjByUserIDandDistanceID(Integer.parseInt(userID),Integer.parseInt(dis.getPrimaryKey().toString()));
 			}
 		}
-		catch (RemoteException re) {
+		catch (Exception re) {
 			log(re);
 		}
+		}
+		
+		
 		participantNumberField = new TextInput(IWMarathonConstants.PARAMETER_PARTICIPANT_NUMBER);
 		chipNumberField = new TextInput(IWMarathonConstants.PARAMETER_CHIP_NUMBER);
 		tShirtField = new DropdownMenu(IWMarathonConstants.PARAMETER_TSHIRT);
@@ -187,14 +208,6 @@ public class UpdateRunInfoWindow extends Window {
 		tShirtField.addOption(mediumKids);
 		tShirtField.addOption(largeKids);
 		tShirtField.addOption(xlargeKids);
-
-		if(run != null) {
-			participantNumberField.setContent(String.valueOf(run.getParticipantNumber()));
-			chipNumberField.setContent(String.valueOf(run.getChipNumber()));
-			tShirtField.setSelectedElement(run.getTShirtSize());
-		}
-		submitButton = new SubmitButton(iwrb.getLocalizedString("run_tab.save", "Save"),PARAMETER_ACTION,Integer.toString(ACTION_SAVE));
-		submitButton.setAsImageButton(true);
 		
 		payMethodField = new DropdownMenu(IWMarathonConstants.PARAMETER_PAY_METHOD);
 		notPayed = new SelectOption(iwrb.getLocalizedString("run_tab.not_payed", "Not payed"), "not_payed");
@@ -208,6 +221,46 @@ public class UpdateRunInfoWindow extends Window {
 		payMethodField.addOption(cash);
 		
 		payedAmountField = new TextInput(IWMarathonConstants.PARAMETER_AMOUNT);
+		
+		teamNameField = new TextInput(IWMarathonConstants.PARAMETER_GROUP_NAME);
+
+		if(run != null) {
+			int disID = run.getRunDistanceGroupID();
+			int grID = run.getRunGroupGroupID();
+			Group dis = null;
+			Group gr = null;
+			try {
+				dis = getGroupBiz().getGroupByGroupID(disID);
+				gr = getGroupBiz().getGroupByGroupID(grID);
+			}
+			catch (IBOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+			if(dis != null) {
+				distanceField = new Text(iwrb.getLocalizedString(dis.getName(),dis.getName()));
+			}
+			if(gr != null) {
+				groupField = new Text(iwrb.getLocalizedString(gr.getName(),gr.getName()));
+			}
+			
+			participantNumberField.setContent(String.valueOf(run.getParticipantNumber()));
+			chipNumberField.setContent(String.valueOf(run.getChipNumber()));
+			tShirtField.setSelectedElement(run.getTShirtSize());
+			payMethodField.setSelectedElement(run.getPayMethod());
+			payedAmountField.setContent(run.getPayedAmount());
+			teamNameField.setContent(run.getRunGroupName());
+			
+		}
+		submitButton = new SubmitButton(iwrb.getLocalizedString("run_tab.save", "Save"),PARAMETER_ACTION,Integer.toString(ACTION_SAVE));
+		submitButton.setAsImageButton(true);
+		
+		
 	}
 
 	public boolean store(IWContext iwc) {
@@ -215,8 +268,9 @@ public class UpdateRunInfoWindow extends Window {
 		String payedAmount = iwc.getParameter(IWMarathonConstants.PARAMETER_AMOUNT);
 		String participantNr = iwc.getParameter(IWMarathonConstants.PARAMETER_PARTICIPANT_NUMBER);
 		String chipNr = iwc.getParameter(IWMarathonConstants.PARAMETER_CHIP_NUMBER);
-		String distance = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
+		String teamName = iwc.getParameter(IWMarathonConstants.PARAMETER_GROUP_NAME);
 		String userIDString = iwc.getParameter("ic_user_id");
+		String groupIDString = iwc.getParameter("selected_ic_group_id");
 		User user = null;
 		if(userIDString != null && !userIDString.equals("")) {
 			try {
@@ -230,12 +284,19 @@ public class UpdateRunInfoWindow extends Window {
 			}
 		}
 		
-		int userID = Integer.parseInt(user.getPrimaryKey().toString());
-		int disID = Integer.parseInt(distance);
+		int userID = -1;
+		if(user != null) {
+			userID = Integer.parseInt(user.getPrimaryKey().toString());
+		}
+		int groupID = -1;
+		if(groupIDString != null && !groupIDString.equals("")) {
+			groupID = Integer.parseInt(groupIDString);
+		}
 		try {
-//			getRunBiz(iwc).savePayment(userID,disID,payMethod,payedAmount);
 			getRunBiz(iwc).savePaymentByUserID(userID,payMethod,payedAmount);
 			getRunBiz(iwc).updateParticipantAndChip(userID,participantNr,chipNr);
+			getRunBiz(iwc).updateTeamName(userID,groupID,teamName);
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -260,7 +321,7 @@ public class UpdateRunInfoWindow extends Window {
 				store(iwc);
 				break;
 		}
-		add(f);
+		add(f,iwc);
 	}
 
 	private int parseAction(IWContext iwc) {
@@ -275,23 +336,39 @@ public class UpdateRunInfoWindow extends Window {
 		Table t = new Table();
 		t.setCellpadding(0);
 		t.setCellspacing(0);
-		t.add(runText + ": ",1,1);
-		t.add(runField,2,1);
-		t.add(distanceText + ": ",1,2);
-		t.add(distanceField,2,2);
-		t.add(groupText + ": ",1,3);
-		t.add(groupField,2,3);
-		t.add(payMethodText + ": ",1,4);
-		t.add(payMethodField, 2,4);
-		t.add(payedAmountText + ": ", 1,5);
-		t.add(payedAmountField,2,5);
-		t.add(participantNumberText + ": ",1,6);
-		t.add(participantNumberField,2,6);
-		t.add(chipNumberText + ": ",1,7);
-		t.add(chipNumberField,2,7);
-		t.add(tshirtText + ": ",1,8);
-		t.add(tShirtField,2,8);
-		t.add(submitButton,1,9);
+		t.setStyleClass("main");
+		t.add(userNameText + ": ",1,1);
+		t.add(userNameField,1,2);
+		t.add(runText + ": ",2,1);
+		t.add(runField,2,2);
+		t.setHeight(1,3,8);
+		t.setHeight(2,3,8);
+		t.add(distanceText + ": ",1,4);
+		t.add(distanceField,1,5);
+		t.add(groupText + ": ",2,4);
+		t.add(groupField,2,5);
+		t.setHeight(1,6,8);
+		t.setHeight(2,6,8);
+		t.add(payMethodText + ": ",1,7);
+		t.add(payMethodField, 1,8);
+		t.add(payedAmountText + ": ", 2,7);
+		t.add(payedAmountField,2,8);
+		t.setHeight(1,9,8);
+		t.setHeight(2,9,8);
+		t.add(participantNumberText + ": ",1,10);
+		t.add(participantNumberField,1,11);
+		t.add(chipNumberText + ": ",2,10);
+		t.add(chipNumberField,2,11);
+		t.setHeight(1,12,8);
+		t.setHeight(2,12,8);
+		t.add(tshirtText + ": ",1,13);
+		t.add(tShirtField,1,14);
+		t.add(teamNameText + ": ",2,13);
+		t.add(teamNameField,2,14);
+		t.setHeight(1,15,8);
+		t.setHeight(2,15,8);
+		t.setAlignment(2,16,Table.HORIZONTAL_ALIGN_RIGHT);
+		t.add(submitButton,2,16);
 		f.add(t);
 	}
 	public String getBundleIdentifier() {

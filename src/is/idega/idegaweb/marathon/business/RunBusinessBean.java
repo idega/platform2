@@ -432,8 +432,12 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				while(runIt.hasNext()) {
 					Run run = (Run) runIt.next();
 					if(run != null) {
-						run.setParticipantNumber(Integer.parseInt(partiNr));
-						run.setChipNumber(chipNr);
+						if(partiNr != null && !partiNr.equals("")) {
+							run.setParticipantNumber(Integer.parseInt(partiNr));
+						}
+						if(chipNr != null && !chipNr.equals("")) {
+							run.setChipNumber(chipNr);
+						}
 						run.store();
 					}
 				}
@@ -453,6 +457,15 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			e.printStackTrace();
 		}
 	}
+	public void updateTeamName(int userID, int groupID, String teamName) {
+		Run run = getRunObjByUserAndGroup(userID, groupID);
+		if(run != null) {
+			if(teamName != null && !teamName.equals("")) {
+				run.setRunGroupName(teamName);
+				run.store();
+			}
+		}
+	}
 	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID) {
 		try {
 			RunHome runHome = (RunHome) getIDOHome(Run.class);
@@ -466,6 +479,64 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		 
 		return null;
+	}
+	public Run getRunObjByUserAndGroup(int userID, int groupID) {
+		Run run = null;
+		int yearGroupID = -1;
+		int distanceGroupID = -1;
+		int runGroupID = -1;
+		Group group = null;
+		Collection parentGroups = null;
+		try {
+			group = getGroupBiz().getGroupByGroupID(groupID);
+			if(group != null) {
+				parentGroups = getGroupBiz().getParentGroupsRecursive(group);
+			}
+		}
+		catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		if(parentGroups != null && !parentGroups.isEmpty()) {
+			Iterator groupIter = parentGroups.iterator();
+			while(groupIter.hasNext()) {
+				Group parentGroup = (Group) groupIter.next();
+				if(parentGroup.getGroupType().equals(IWMarathonConstants.GROUP_TYPE_RUN)) {
+					runGroupID = Integer.parseInt(parentGroup.getPrimaryKey().toString());
+				}
+				else if(parentGroup.getGroupType().equals(IWMarathonConstants.GROUP_TYPE_RUN_YEAR)) {
+					yearGroupID = Integer.parseInt(parentGroup.getPrimaryKey().toString());
+				}
+				else if(parentGroup.getGroupType().equals(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE)) {
+					distanceGroupID = Integer.parseInt(parentGroup.getPrimaryKey().toString());
+				}
+			}
+		}
+		try {
+			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			if(runGroupID != -1 && yearGroupID != -1 && distanceGroupID != -1) {
+				Collection runObjs = runHome.findByUserAndParentGroups(userID,runGroupID,2004,distanceGroupID);
+				if(runObjs != null && !runObjs.isEmpty()) {
+					Iterator runIt = runObjs.iterator();
+					while(runIt.hasNext()) {
+						Run runObj = (Run) runIt.next();
+						run = runObj;
+					}
+				}
+			}
+		}
+		catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+		return run;
 	}
 	
 	public Collection getRunnersByDistance(Group distance, Group runGroup) {

@@ -89,6 +89,7 @@ public class UserRunTab extends UserTab{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		RunBusiness runBiz = getRunBiz(iwc);
 		String userID = iwc.getParameter("ic_user_id");
+		String selectedGroupID = iwc.getParameter("selected_ic_group_id");
 		User user = null;
 		if(userID != null) {
 			try {
@@ -124,6 +125,7 @@ public class UserRunTab extends UserTab{
 				l.setStyleClass("styledLink");
 				l.addParameter(IWMarathonConstants.GROUP_TYPE_RUN,run.getPrimaryKey().toString());
 				l.addParameter("ic_user_id",Integer.parseInt(userID));
+				l.addParameter("selected_ic_group_id",Integer.parseInt(selectedGroupID));
 				l.setWindowToOpen(UpdateRunInfoWindow.class);
 				if(l != null) {
 					t.add(l,1,row++);

@@ -344,6 +344,16 @@ public class RunBMPBean extends GenericEntity implements Run {
 		query.appendAndEquals(getColumnNameRunDistanceGroupID(),distanceID);
 		return (Integer) super.idoFindOnePKByQuery(query);
 	}
+	
+	public Collection ejbFindByUserAndParentGroup(int userID, int runGroupID, int yearGroupID, int distanceGroupID) throws FinderException{
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(getColumnNameUserID(),userID);
+		query.appendAndEquals(getColumnNameRunTypeGroupID(),runGroupID);
+//		query.appendAndEquals(getColumnNameRunYearGroupID(),yearGroupID);
+		query.appendAndEquals(getColumnNameRunDistanceGroupID(),distanceGroupID);
+		return super.idoFindPKsByQuery(query);
+	
+	}
 	public Collection ejbFindByUserID(int userID) throws FinderException{
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(getColumnNameUserID(),userID);
