@@ -198,7 +198,8 @@ public class NewsFinder {
     sql.append(" order by C.");
     sql.append(Content.getColumnNameUpdated());
     sql.append(" desc ");
-    //System.err.println(sql.toString());
+    //
+		//System.err.println(sql.toString());
     try {
       return EntityFinder.findAll(new NwNews(),sql.toString());
     }
