@@ -14,6 +14,8 @@ import com.idega.data.EntityAttribute;
 import com.idega.util.datastructures.HashtableMultivalued;
 import com.idega.business.GenericState;
 import is.idega.idegaweb.project.business.EntityNavigationListState;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 import java.util.List;
 import java.util.Hashtable;
@@ -62,7 +64,7 @@ public abstract class EntityNavigationList extends Block {
 
   public static final String _SELECTED_ENTITY_ID = "enav_selentid";
 
-  private Object FirstDisplayText = "Allt";
+  private Object _firstLinkDisplayObj = "All";
 
   public EntityNavigationList() {
     super();
@@ -172,7 +174,7 @@ public abstract class EntityNavigationList extends Block {
         return "link";
       }
     }else{
-      return FirstDisplayText;
+      return null;
     }
   }
 
@@ -190,11 +192,18 @@ public abstract class EntityNavigationList extends Block {
     addLinkBefore = value;
   }
 
-  public void setFirstLinkFace(Object face){
-    FirstDisplayText = face;
+  public void setFirstLinkFace(PresentationObject face){
+    _firstLinkDisplayObj = face;
+  }
+
+  public void setFirstLinkText(String localizedKey){
+    _firstLinkDisplayObj = localizedKey;
   }
 
   public void main(IWContext iwc) throws Exception {
+
+    IWBundle iwb = this.getBundle(iwc);
+    IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
     //System.err.println("EntityNavigationList hashcode: "+ this.hashCode());
     EntityNavigationListState state = (EntityNavigationListState)this.getState(iwc);
     //temp table.empty();
@@ -207,24 +216,26 @@ public abstract class EntityNavigationList extends Block {
 
     if(addLinkBefore){
         Object tObj = getDisplayedText(null);
+        if(tObj == null){
+          if(_firstLinkDisplayObj instanceof String){
+            tObj = iwrb.getLocalizedString((String)_firstLinkDisplayObj,(String)_firstLinkDisplayObj);
+          } else {
+            tObj = _firstLinkDisplayObj;
+          }
+        }
         if(selectedItem <=0 && initSelectedElement == 1){
           selectedElement = 1;
-          /*if (tObj instanceof String){
-            firstT = new Text((String)tObj);
-            ((Text)firstT).setFontSize(1);
-          } else {
-            firstT = (PresentationObject)tObj;
-          }*/
-        } //else {
-          if (tObj instanceof String){
-            firstT = new Link((String)tObj);
-          } else {
-            firstT = new Link((PresentationObject)tObj);
+        }
+        if (tObj instanceof String){
+          firstT = new Link((String)tObj);
+          if(selectedElement == 1){
+            ((Link)firstT).setBold(true);
           }
           ((Link)firstT).setFontSize(1);
-          addParameters(iwc, null, (Link)firstT);
-        //}
-
+        } else {
+          firstT = new Link((PresentationObject)tObj);
+        }
+        addParameters(iwc, null, (Link)firstT);
     }
 
     List projects = getEntityList(iwc);
@@ -247,6 +258,13 @@ public abstract class EntityNavigationList extends Block {
         }
         PresentationObject t = null;
         Object tObj = getDisplayedText(lItem);
+        if(tObj == null){
+          if(_firstLinkDisplayObj instanceof String){
+            tObj = iwrb.getLocalizedString((String)_firstLinkDisplayObj,(String)_firstLinkDisplayObj);
+          } else {
+            tObj = _firstLinkDisplayObj;
+          }
+        }
         /*if(selectedElement > 0 && (selectedElement == index)){
           if (tObj instanceof String){
             t = new Text((String)tObj);
@@ -257,10 +275,13 @@ public abstract class EntityNavigationList extends Block {
         } else {*/
           if (tObj instanceof String){
             t = new Link((String)tObj);
+            ((Link)t).setFontSize(1);
+            if(selectedItem == lItem.getID()){
+              ((Link)t).setBold(true);
+            }
           } else {
             t = new Link((PresentationObject)tObj);
           }
-          ((Link)t).setFontSize(1);
           addParameters(iwc, lItem, (Link)t);
         //}
         table.add(t,nameColumn,index);

@@ -278,7 +278,7 @@ public class ParticipantList extends AbstractContentList {
             }
             break;
           case 8:
-            text.setText("fax");
+            text.setText("");
             break;
           case 10:
             if(staffHolder.getEmail() != null){

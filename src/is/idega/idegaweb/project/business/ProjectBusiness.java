@@ -44,6 +44,7 @@ public class ProjectBusiness {
   public final static String _PRM_UPDATE = "ip_update";
   public final static String _PRM_DELETE = "ip_delete";
   public final static String _APPADDRESS_PROJECTPAGES = "IP_PAGE_MAP";
+  public final static String IW_PROJECT_IDENTIFIER = "is.idega.idegaweb.project";
 
   public static int tmpHardcodedPageTriggerInfoId = 1;
 
