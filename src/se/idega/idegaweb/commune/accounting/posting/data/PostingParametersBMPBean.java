@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.2 2003/08/18 12:51:41 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.3 2003/08/18 13:23:21 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -7,7 +7,6 @@
  * Use is subject to license terms.
  * 
  */
- 
 package se.idega.idegaweb.commune.accounting.posting.data;
     
 import java.sql.Date;
@@ -24,16 +23,19 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
 
-
 /**
- * Holds information about default posting info.
+ * PostingParameters Holds information about default posting info.
+ * 
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
- * @author Kjell Lindman 
+ * <p>
+ * $Id: PostingParametersBMPBean.java,v 1.3 2003/08/18 13:23:21 kjell Exp $
+ * 
+ * @author <a href="http://www.lindman.se">Kjell Lindman</a>
+ * @version $Revision: 1.3 $
  */
-
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters, IDOLegacyEntity
 {
 	private static final String ENTITY_NAME = "cacc_posting_parameters";
