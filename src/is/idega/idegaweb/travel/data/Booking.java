@@ -45,10 +45,12 @@ public class Booking extends GenericEntity{
     addAttribute(getPostalCodeColumnName(), "Póstnúmer", true, true, String.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
     addAttribute(getProductPriceIDColumnName(), "product price id", true, true, Integer.class, "many-to-one",ProductPrice.class);
+    addAttribute(getParentIdColumnName(), "parent_id", true, true, Integer.class, "many-to-one",Booking.class);
   }
 
   public void setDefaultValues() {
       this.setIsValid(true);
+      this.setParentId(0);
   }
 
 
@@ -185,6 +187,14 @@ public class Booking extends GenericEntity{
     setColumn(getProductPriceIDColumnName(), id);
   }
 
+  public void setParentId(int bookingId) {
+    setColumn(getParentIdColumnName(), bookingId);
+  }
+
+  public int getParentId() {
+    return getIntColumnValue(getParentIdColumnName());
+  }
+
   public static String getBookingTableName(){return "TB_BOOKING";}
   public static String getNameColumnName() {return "NAME";}
   public static String getTelephoneNumberColumnName() {return "TELEPHONE_NUMBER";}
@@ -201,7 +211,7 @@ public class Booking extends GenericEntity{
   public static String getPostalCodeColumnName() {return "POSTAL_CODE";}
   public static String getIsValidColumnName() {return "IS_VALID";}
   public static String getProductPriceIDColumnName() {return "SR_PRODUCT_PRICE_ID";}
-
+  public static String getParentIdColumnName() {return "PARENT_ID";}
 
 
 

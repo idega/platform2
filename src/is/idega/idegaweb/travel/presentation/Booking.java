@@ -697,6 +697,7 @@ public class Booking extends TravelManager {
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
               HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this.service);
               DropdownMenu pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
+                pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
 
               table.add(hotelText,1,row);
               table.add(pickupMenu,2,row);
@@ -705,24 +706,18 @@ public class Booking extends TravelManager {
 
 
           Text pPriceCatNameText;
-          TextInput pPriceText;
+          ResultOutput pPriceText;
           TextInput pPriceMany;
           PriceCategory category;
 
           Text totalText = (Text) theBoldText.clone();
             totalText.setText("T - Total");
-//          TextInput TotalPassTextInput = new TextInput("total_pass","0");
-//          ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
-//            TotalPassTextInput.setDisabled(true);
-//            TotalPassTextInput.setSize(5);
-//          ResultOutput TotalTextInput = new ResultOutput("total","0");
-//            TotalTextInput.setDisabled(true);
- //           TotalTextInput.setSize(8);
-
-          ResultOutput flipps = new ResultOutput();
+          ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
+            TotalPassTextInput.setSize(5);
+          ResultOutput TotalTextInput = new ResultOutput("total","0");
+            TotalTextInput.setSize(8);
 
           ++row;
-
 
           for (int i = 0; i < pPrices.length; i++) {
               ++row;
@@ -731,8 +726,7 @@ public class Booking extends TravelManager {
               pPriceCatNameText = (Text) theText.clone();
                 pPriceCatNameText.setText(category.getName());
 
-              pPriceText = new TextInput("thePrice"+i,"0");
-                pPriceText.setDisabled(true);
+              pPriceText = new ResultOutput("thePrice"+i,"0");
                 pPriceText.setSize(8);
 
               pPriceMany = new TextInput("priceCategory"+i ,"0");
@@ -740,32 +734,10 @@ public class Booking extends TravelManager {
                 pPriceMany.setAsNotEmpty("T - Ekki tómt");
                 pPriceMany.setAsIntegers("T - Bara tölur takk");
 
-          //      TotalTextInput.add(pPriceText);
-          flipps.add(pPriceText);
-          flipps.add(pPriceMany);
-                //TotalPassTextInput.add(pPriceMany);
+              pPriceText.add(pPriceMany,"*"+price);
+              TotalPassTextInput.add(pPriceMany);
+              TotalTextInput.add(pPriceMany,"*"+price);
 
-
-            /**
-             * @todo implementa fyrir og bil...
-             * @todo laga total reikninga
-             */
-
-                pPriceMany.setOnBlur("this.form."+pPriceText.getName()+".value=("+price+"*this.form."+pPriceMany.getName()+".value)");
-/*
-                String totalCalc = "this.form."+TotalTextInput.getName()+".value=(";
-                String totalPass = "this.form."+TotalPassTextInput.getName()+".value=(";
-                for (int j = 0; j < pPrices.length; j++) {
-                  if (j != 0) totalCalc += " + ";
-                  if (j != 0) totalPass += " + ";
-                  totalCalc += "("+((int) pPrices[j].getPrice())+"*this.form.priceCategory"+j+".value)";
-                  totalPass += "(1*this.form.priceCategory"+j+".value)";
-                }
-                totalCalc += ")";
-                totalPass += ")";
-                pPriceMany.setOnBlur(totalCalc);
-                pPriceMany.setOnBlur(totalPass);
-*/
 
               table.add(pPriceCatNameText, 1,row);
               table.add(pPriceMany,2,row);
@@ -774,18 +746,13 @@ public class Booking extends TravelManager {
           ++row;
 
           table.add(totalText,1,row);
-          //table.add(TotalPassTextInput,2,row);
-          //table.add(TotalTextInput,2,row);
-table.add(flipps,2,row);
-
-
-
+          table.add(TotalPassTextInput,2,row);
+          table.add(TotalTextInput,2,row);
 
           ++row;
           ++row;
           table.add(new SubmitButton("TEMP BÓKA"),4,row);
           table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
-//          table.add(new HiddenInput(Product.getProductEntityName(),Integer.toString(service.getID())),4,row);
           table.setAlignment(4,row,"right");
       }else {
           table.add("T - Verðflokkar ekki settir upp");

@@ -36,6 +36,9 @@ public class Service extends GenericEntity{
     this.addManyToManyRelationShip(Timeframe.class ,"TB_SERVICE_TIMEFRAME");
   }
 
+  /**
+   * @deprecated
+   */
   public void delete() throws SQLException {
       HotelPickupPlace[] hpp = (HotelPickupPlace[]) this.findRelated(HotelPickupPlace.getStaticInstance(HotelPickupPlace.class));
       for (int i = 0; i < hpp.length; i++) {
@@ -135,61 +138,6 @@ public class Service extends GenericEntity{
     }
   }
 
-
-/*
-  public boolean getIsHotelPickup() {
-    return getHotelPickup();
-  }
-
-  public boolean getHotelPickup() {
-    return getBooleanColumnValue(getHotelPickupColumnName());
-  }
-
-  public void setIsHotelPickup(boolean pickup) {
-    setHotelPickup(pickup);
-  }
-
-  public void setHotelPickup(boolean pickup) {
-    setColumn(getHotelPickupColumnName(),pickup);
-  }
-*/
-/*
-  public Supplier getSupplier() {
-    return (Supplier) getColumnValue(getSupplierIDColumnName());
-  }
-
-  public int getSupplierID() {
-    return getIntColumnValue(getSupplierIDColumnName());
-  }
-
-  public void setSupplierID(int supplierID) {
-    setColumn(getSupplierIDColumnName(),supplierID);
-  }
-*//*
-  public HotelPickupPlace getHotelPickupPlace() {
-    return (HotelPickupPlace) getColumnValue(getHotelPickupPlaceIDColumnName());
-  }
-
-  public int getHotelPickupPlaceID() {
-    return getIntColumnValue(getHotelPickupPlaceIDColumnName());
-  }
-
-  public void setHotelPickupPlaceID(int id) {
-    setColumn(getHotelPickupPlaceIDColumnName(),id);
-  }
-
-  public Address getAddress() {
-    return (Address) getColumnValue(getAddressIDColumnName());
-  }
-
-  public int getAddressID() {
-    return getIntColumnValue(getAddressIDColumnName());
-  }
-
-  public void setAddressID(int id) {
-    setColumn(getAddressIDColumnName(),id);
-  }
-*/
 
   public static String getServiceTableName(){return "TB_SERVICE";}
   public static String getArrivalTimeColumnName() {return "ARRIVAL_TIME";}
