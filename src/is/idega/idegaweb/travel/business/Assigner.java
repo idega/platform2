@@ -21,9 +21,6 @@ public class Assigner {
   public Assigner() {
   }
 
-  /**
-   * @deprecated
-   */
   public static int getNumberOfAssignedSeats(int serviceId, idegaTimestamp stamp) {
     return getNumberOfAssignedSeats(serviceId, -1, stamp);
   }

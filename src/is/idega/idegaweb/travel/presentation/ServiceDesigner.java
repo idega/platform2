@@ -11,6 +11,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.travel.business.TravelStockroomBusiness;
 import com.idega.util.idegaCalendar;
+import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
 
@@ -237,7 +238,11 @@ public class ServiceDesigner extends TravelManager {
 //                categories.keepStatusOnAction();
 
               try {
-                priceDiscount.setContent(Integer.toString((int)prices[i-1].getPrice()));
+                if (prices[i-1].getPriceType() == ProductPrice.PRICETYPE_PRICE) {
+                  priceDiscount.setContent(Integer.toString((int)prices[i-1].getPrice()));
+                }else {
+                  priceDiscount.setContent(Float.toString(prices[i-1].getPrice()));
+                }
                 categories.setSelectedElement(Integer.toString(prices[i-1].getPriceCategoryID()));
                 table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[i-1].getID())),1,row);//PriceCategoryID())),1,row);
               }catch (ArrayIndexOutOfBoundsException a) {
@@ -301,8 +306,11 @@ public class ServiceDesigner extends TravelManager {
               pCategory = new PriceCategory(priceCategoryId);
 
               if (pCategory.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+                priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
                 tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
               }else if (pCategory.getType().equals(PriceCategory.PRICETYPE_PRICE)) {
+                priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],",");
+                priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
                 tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
               }
           }

@@ -222,7 +222,7 @@ public class InitialData extends TravelManager {
               //table.setRowColor(row,super.backgroundColor);
 
               user = (User) users.get(j);
-              logTable = LoginDBHandler.findUserLogin(user.getID());
+              logTable = LoginDBHandler.getUserLogin(user.getID());
               suppLoginText = (Text) theText.clone();
               suppLoginText.setText(logTable.getUserLogin());
               suppLoginText.setFontColor(super.BLACK);

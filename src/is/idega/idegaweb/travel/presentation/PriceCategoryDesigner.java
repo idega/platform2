@@ -51,8 +51,9 @@ public class PriceCategoryDesigner extends TravelWindow {
 
 
   public PriceCategoryDesigner() {
-    super.setHeight(400);
+    super.setHeight(450);
     super.setWidth(650);
+    super.setScrollbar(false);
     super.setTitle("idegaWeb Travel");
   }
 
@@ -104,7 +105,11 @@ public class PriceCategoryDesigner extends TravelWindow {
       if (newCat || fillForm)
       add(getBodyForm(iwc));
 
-      Paragraph p = new Paragraph("right");
+      Table p = new Table(1,1);
+        p.setAlignment("center");
+        p.setWidth("90%");
+        p.setAlignment(1,1,"right");
+
       SubmitButton close = new SubmitButton(iwrb.getImage("/buttons/close.gif"),this.action,this.parameterClose );
       p.add(close);
       form.add(p);
@@ -114,31 +119,41 @@ public class PriceCategoryDesigner extends TravelWindow {
       Table table = new Table();
         table.setAlignment("center");
         table.setWidth("90%");
+        table.setColor(TravelManager.WHITE);
+        table.setBorder(0);
+        table.setCellspacing(1);
+
 
       PriceCategory[] categories = TravelStockroomBusiness.getPriceCategories(this.supplierId);
       DropdownMenu cats = new DropdownMenu(categories,"price_category_id");
         cats.setSelectedElement(sCatId);
 
       Text tPriceCategory = (Text) text.clone();
-        tPriceCategory.setFontSize(Text.FONT_SIZE_12_HTML_3);
         tPriceCategory.setBold();
         tPriceCategory.setText("T - PriceCategory");
 
-      SubmitButton sNew = new SubmitButton("T-nýr",action, parameterNew);
+      SubmitButton sNew = new SubmitButton(iwrb.getImage("buttons/new.gif"),action, parameterNew);
       SubmitButton sDel = new SubmitButton(iwrb.getImage("/buttons/delete.gif"),action, parameterDelete);
       SubmitButton sClo= new SubmitButton(iwrb.getImage("/buttons/closer.gif"),action, parameterCloserLook);
 
+      add(Text.BREAK);
+
       table.add(tPriceCategory,1,1);
-      table.mergeCells(1,1,3,1);
-
-      table.add(cats,1,2);
+      table.add(Text.BREAK,1,1);
+      table.add(Text.BREAK,1,1);
+      table.mergeCells(1,1,2,1);
+      table.add(sNew,1,2);
       table.mergeCells(1,2,2,2);
-      table.add(sClo,3,2);
 
-      table.add(sNew,1,3);
-      table.add(sDel,3,3);
+      table.add(cats,1,3);
+      table.setColor(1,3,TravelManager.GRAY);
+      table.setColor(2,3,TravelManager.GRAY);
+      table.add(sClo,2,3);
+      table.add(Text.NON_BREAKING_SPACE,2,3);
+      table.add(sDel,2,3);
 
-      table.setAlignment(3,3,"right");
+
+      table.setAlignment(2,3,"right");
 
     return table;
   }
