@@ -23,9 +23,10 @@ public class TextChooser extends AbstractChooser {
 
 
   public TextChooser(String chooserName) {
-    addForm(false);
+    //addForm(false);
     addTextInput(false);
     setChooserParameter(chooserName);
+    super.setParameterValue("","");
   }
 
   public TextChooser(String chooserName,String style) {
@@ -51,7 +52,7 @@ public class TextChooser extends AbstractChooser {
   }
 
   public void setSelectedText(TxText text){
-    super.setChooserValue(text.getName(),text.getID());
+    super.setChooserValue("",text.getID());
   }
 
   public void setValue(Object text){

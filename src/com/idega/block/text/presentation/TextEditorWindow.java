@@ -41,18 +41,20 @@ public class TextEditorWindow extends AbstractChooserWindow{
   private boolean save = false;
   private int iUserId = -1;
   private int iObjInsId = -1;
-  public  static String prmAttribute = "txe_attribute";
-  public  static String prmTextId = "txep_txtextid";
-  public  static String prmDelete = "txep_txdeleteid";
-  public  static String prmLocale = "txep_localedrp";
-  public  static String prmObjInstId = "txep_icobjinstid";
-  private static String prmHeadline = "txep_headline";
-  private static String prmBody = "txep_body";
-  public static String imageAttributeKey = "txre_im_prop";
+  public final static String prmAttribute = "txe_attribute";
+  public final static String prmTextId = "txep_txtextid";
+  public final static String prmDelete = "txep_txdeleteid";
+  public final static String prmLocale = "txep_localedrp";
+  public final static String prmObjInstId = "txep_icobjinstid";
+  private final static String prmHeadline = "txep_headline";
+  private final static String prmBody = "txep_body";
+  public final static String imageAttributeKey = "txre_im_prop";
+
+  private String prmUsedTextId = prmTextId;
   //debug
   //private static String prmImageId = "txep.imageid";
   private static String prmImageId = "txep_imageid";
-  private static String prmTxTextId = "txep_txtextid";
+  //private static String prmTextId = "txep_txtextid";
   private static String prmLocalizedTextId = "txep_loctextid";
   private static String prmUseImage = "txep_useimage";
   private static String prmDeleteFile = "txep_deletefile";
@@ -85,7 +87,22 @@ public class TextEditorWindow extends AbstractChooserWindow{
     setUnMerged();
   }
 
+
+
   private void control(IWContext iwc)throws Exception{
+    //Checks if the Window is being usen by the TextChooser
+    //if chooserParameterName is null it is not being used by TextChooser
+    String chooserParameterName = super.getSelectionParameter(iwc);
+    if(chooserParameterName!=null){
+      System.out.println("chooserParameterName!=null");
+      System.out.println("chooserParameterName="+chooserParameterName);
+      System.out.println("iwc.getParameter(chooserParameterName)="+iwc.getParameter(chooserParameterName));
+      prmUsedTextId=chooserParameterName;
+    }
+    else{
+      System.out.println("chooserParameterName==null");
+    }
+
     boolean doView = true;
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
@@ -125,8 +142,8 @@ public class TextEditorWindow extends AbstractChooserWindow{
     sAttribute = iwc.getParameter(prmAttribute);
 
     // Text Id Request :
-    if(iwc.getParameter(prmTxTextId) != null){
-      sTextId = iwc.getParameter(prmTxTextId);
+    if(iwc.getParameter(prmUsedTextId) != null){
+      sTextId = iwc.getParameter(prmUsedTextId);
     }
     // Attribute Request :
     else if(iwc.getParameter(prmAttribute)!=null){
@@ -246,7 +263,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
     }
 
     if( hasTxText )
-      addHiddenInput(new HiddenInput(prmTxTextId,Integer.toString(txText.getID())));
+      addHiddenInput(new HiddenInput(prmUsedTextId,Integer.toString(txText.getID())));
     if(sAttribute != null)
       addHiddenInput(new HiddenInput(prmAttribute,sAttribute));
     if(iObjInsId > 0)
@@ -292,7 +309,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
           Link edit = com.idega.block.media.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
           delete.addParameter(prmDeleteFile,f.getID());
-          delete.addParameter(prmTxTextId,txText.getID());
+          delete.addParameter(prmUsedTextId,txText.getID());
           imageTable.add(edit,2,row);
           imageTable.add(delete,3,row);
           row++;
