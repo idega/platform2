@@ -365,13 +365,14 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			id = null;
 		}
 
-		service.saveApartmentCategory(id, sName, sInfo, imageid, textId);
+		service.storeApartmentCategory(id, sName, sInfo, imageid, textId);
 
 	}
 	private void storeApartmentType(IWContext iwc) throws RemoteException{
 
 		String sName = iwc.getParameter("bm_name").trim();
 		String sInfo = iwc.getParameter("bm_info").trim();
+		String abbrev = iwc.getParameter("abbrev").trim();
 		String sExtraInfo = iwc.getParameter("extra_info").trim();
 		String sId = iwc.getParameter("dr_id");
 		String sRoomCount = iwc.getParameter("bm_roomcount");
@@ -441,7 +442,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 			count = null;
 		}
 
-		service.storeApartmentType(id, sName, sInfo, sExtraInfo, planid, imageid, categoryid, textId, area, count, rent, balcony, bath, kitchen, storage, study,furniture , loft);
+		service.storeApartmentType(id, sName, sInfo,abbrev, sExtraInfo, planid, imageid, categoryid, textId, area, count, rent, balcony, bath, kitchen, storage, study,furniture , loft);
 
 	}
 	private void storeApartment(IWContext iwc)throws RemoteException {
@@ -1004,6 +1005,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		boolean e = eApartmentType != null ? true : false;
 		String sName = e ? eApartmentType.getName() : "";
 		String sInfo = e ? eApartmentType.getInfo() : "";
+		String sAbbrev = e ? eApartmentType.getAbbreviation() : "";
 		String sCategory = e ? String.valueOf(eApartmentType.getApartmentCategoryId()) : "";
 		String sArea = e ? String.valueOf(eApartmentType.getArea()) : "";
 		String sRoomCount = e ? String.valueOf(eApartmentType.getRoomCount()) : "";
@@ -1049,6 +1051,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		Table InnerTable = new Table();
 		//InnerTable.setWidth("100%");
 		TextInput name = new TextInput("bm_name", sName);
+		TextInput abbrev = new TextInput("abbrev", sAbbrev);
 		DropdownMenu roomcount = drpCount("bm_roomcount", "--", sRoomCount, 6);
 		TextInput area = new TextInput("bm_area", sArea);
 		area.setLength(4);
@@ -1085,6 +1088,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		HiddenInput HA = new HiddenInput(sAction, String.valueOf(TYPE));
 		name.setLength(30);
 		setStyle(name);
+		setStyle(abbrev);
 		setStyle(area);
 		setStyle(rent);
 		setStyle(roomcount);
@@ -1104,11 +1108,13 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		T.add(apartmenttypes, 1, 1);
 		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 1, 2);
+		T.add(formatText(iwrb.getLocalizedString("abbreviation", "Abbreviation")), 1, 4);
 		T.add(formatText(iwrb.getLocalizedString("text", "Text")), 2, 2);
 		T.add(name, 1, 3);
 		T.add(makeTextInput(iTextId), 2, 3);
-		T.add(formatText(iwrb.getLocalizedString("category", "Category") + " "), 1, 4);
-		T.add(categories, 1, 5);
+		T.add(abbrev,1,5);
+		T.add(formatText(iwrb.getLocalizedString("category", "Category") + " "), 1, 6);
+		T.add(categories, 1, 7);
 		InnerTable.add(formatText(iwrb.getLocalizedString("room_count", "Room count")), 1, 1);
 		InnerTable.add(roomcount, 2, 1);
 		InnerTable.add(formatText(iwrb.getLocalizedString("area", "Area(m2)")), 3, 1);
@@ -1129,15 +1135,15 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		InnerTable.add(balc, 2, 5);
 		InnerTable.add(formatText(iwrb.getLocalizedString("rent", "Rent")), 1, 6);
 		InnerTable.add(rent, 2, 6);
-		T.add(InnerTable, 1, 6);
-		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 7);
+		T.add(InnerTable, 1, 8);
+		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 1, 9);
 
-		T.add(makeTextArea(sInfo), 1, 8);
-		T.add(formatText(iwrb.getLocalizedString("extra_info", "ExtraInfo")), 1, 9);
+		T.add(makeTextArea(sInfo), 1, 10);
+		T.add(formatText(iwrb.getLocalizedString("extra_info", "ExtraInfo")), 1, 11);
 
-		T.add(makeTextArea("extra_info", sExtraInfo), 1, 10);
-		T.mergeCells(1, 8, 2, 8);
+		T.add(makeTextArea("extra_info", sExtraInfo), 1, 12);
 		T.mergeCells(1, 10, 2, 10);
+		T.mergeCells(1, 12, 2, 12);
 		T2.add(formatText(iwrb.getLocalizedString("photo", "Photo")), 1, 1);
 		T2.add(this.makeImageInput(iImageId, "tphotoid"), 1, 1);
 		T2.add(formatText(iwrb.getLocalizedString("plan", "Plan")), 1, 2);
