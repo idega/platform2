@@ -19,6 +19,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
@@ -101,6 +102,8 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   /** Used when an e-mail should always be sent and never a letter (unless user has no e-mail) */
   private boolean alwaysSendEmail = false;
 
+  private static final String hasAppliedForPsw = "has_applied_before";
+  
   /** Sets the page where a user can apply for a new account.
    * @param citizenAccountApplicationPage the page where the user can apply for a new account.
    */
@@ -156,7 +159,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	/**
 	 * Builds a presentation containing the link to the citizen application page.
 	 */
-	private void viewCitizienAccountApplication() {        
+	private void viewCitizienAccountApplication() {    
     IWResourceBundle bundle = getResourceBundle(); 
     Text text = new Text(bundle.getLocalizedString(ACCOUNT_APPLICATION_KEY,ACCOUNT_APPLICATION_DEFAULT),true, false, false);
     Text linkText = new Text(bundle.getLocalizedString(ACCOUNT_APPLICATION_LINK_KEY,ACCOUNT_APPLICATION_LINK_DEFAULT),true, false, false);
@@ -177,56 +180,63 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
    * @throws CreateException
    */
   private void handleKnownUser(User user, IWContext iwc) throws RemoteException, CreateException {
-    int userID = ((Integer)user.getPrimaryKey()).intValue();
-    LoginTable loginTable = LoginDBHandler.getUserLogin(userID);
-    if (loginTable == null) {
-      viewCitizienAccountApplication();
-      return;
-    }
-    
-    IWResourceBundle bundle = getResourceBundle();    
-    // check if user has ever logged in
-    int loginID = ((Integer)loginTable.getPrimaryKey()).intValue();
-    boolean lastLoginRecordWasFound;
-    try {
-      ((LoginRecordHome) com.idega.data.IDOLookup.getHomeLegacy(LoginRecord.class)).findByLoginID(loginID);
-        // last login was found
-      lastLoginRecordWasFound = true;  
-    }
-    catch (FinderException ex) {
-      // last login record was not found  
-      lastLoginRecordWasFound = false;
-    }
-    if (alwaysSendEmail) {
-    		lastLoginRecordWasFound = true;
-    }
-    String message;
-    // different messages are returned depending on the result 
-    // if the user has ever logged in
-    if (lastLoginRecordWasFound)  {
-      // email is sent
-      handleKnownUserLoggedIn(loginTable, user, iwc);
-      message = bundle.getLocalizedString(EMAIL_SENT_KEY, EMAIL_SENT_DEFAULT);
-    }
-    else {
-      // letter is sent
-      handleKnownUserNeverLoggedIn(loginTable, user, iwc);
-      message = bundle.getLocalizedString(LETTER_SENT_KEY, LETTER_SENT_DEFAULT);
-    }
-		
-    String password = bundle.getLocalizedString(PASSWORD_CREATED_KEY, PASSWORD_CREATED_DEFAULT);
-		if (getParentPage() != null) {
-			getParentPage().setAlertOnLoad(password);
+		if(iwc.getSessionAttribute(hasAppliedForPsw) != null) {
+			add(getErrorText(localize("cafp_already_applied_for_password", "You have already asked for a new password!")));
+	    add(new Break(2));
 		}
 		else {
-	    Text textPassword = new Text(password, true, false, false);
-	    Text textMessage = new Text(message ,true, false, false);
-	    textPassword.setFontColor(COLOR_RED);
-	    textMessage.setFontColor(COLOR_RED);
-	    add(textPassword);
-	    add(Text.getBreak());
-	    add(textMessage);
-		}      
+	    int userID = ((Integer)user.getPrimaryKey()).intValue();
+	    LoginTable loginTable = LoginDBHandler.getUserLogin(userID);
+	    if (loginTable == null) {
+	      viewCitizienAccountApplication();
+	      return;
+	    }
+	    
+	    IWResourceBundle bundle = getResourceBundle();    
+	    // check if user has ever logged in
+	    int loginID = ((Integer)loginTable.getPrimaryKey()).intValue();
+	    boolean lastLoginRecordWasFound;
+	    try {
+	      ((LoginRecordHome) com.idega.data.IDOLookup.getHomeLegacy(LoginRecord.class)).findByLoginID(loginID);
+	        // last login was found
+	      lastLoginRecordWasFound = true;  
+	    }
+	    catch (FinderException ex) {
+	      // last login record was not found  
+	      lastLoginRecordWasFound = false;
+	    }
+	    if (alwaysSendEmail) {
+	    		lastLoginRecordWasFound = true;
+	    }
+	    String message;
+	    // different messages are returned depending on the result 
+	    // if the user has ever logged in
+	    if (lastLoginRecordWasFound)  {
+	      // email is sent
+	      handleKnownUserLoggedIn(loginTable, user, iwc);
+	      message = bundle.getLocalizedString(EMAIL_SENT_KEY, EMAIL_SENT_DEFAULT);
+	    }
+	    else {
+	      // letter is sent
+	      handleKnownUserNeverLoggedIn(loginTable, user, iwc);
+	      message = bundle.getLocalizedString(LETTER_SENT_KEY, LETTER_SENT_DEFAULT);
+	    }
+	    String password = bundle.getLocalizedString(PASSWORD_CREATED_KEY, PASSWORD_CREATED_DEFAULT);
+			if (getParentPage() != null) {
+				getParentPage().setAlertOnLoad(password);
+			}
+			else {
+		    Text textPassword = new Text(password, true, false, false);
+		    Text textMessage = new Text(message ,true, false, false);
+		    textPassword.setFontColor(COLOR_RED);
+		    textMessage.setFontColor(COLOR_RED);
+		    add(textPassword);
+		    add(Text.getBreak());
+		    add(textMessage);
+			}
+	    iwc.setSessionAttribute(hasAppliedForPsw, Boolean.TRUE.toString());
+		}
+		viewForm(iwc);
   }
 
 	/**
