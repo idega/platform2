@@ -10,6 +10,7 @@ package com.idega.jmodule.image.presentation;
  *
  */
 
+
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -561,8 +562,6 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   Form form = new Form();
   form.setMethod("GET");
 
-  form.addAtBeginning(new HiddenInput("edit","true"));
-
   Link delete = new Link(new Image("/pics/jmodules/image/buttons/delete.gif","Delete the image"));
   delete.addParameter("action","delete");
   delete.addParameter("edit","true");
@@ -572,14 +571,17 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   gray.addParameter("action","Grayscale");
   gray.addParameter("edit","true");
   toolbarBelow.add(gray,1,1);
+
   Link emboss = new Link(new Image("/pics/jmodules/image/buttons/emboss.gif","Emboss the image"));
   emboss.addParameter("action","emboss");
   emboss.addParameter("edit","true");
   toolbarBelow.add(emboss,1,1);
+
   Link sharpen = new Link(new Image("/pics/jmodules/image/buttons/sharpen.gif","Sharpen the image"));
   sharpen.addParameter("action","sharpen");
   sharpen.addParameter("edit","true");
   toolbarBelow.add(sharpen,1,1);
+
   Link invert = new Link(new Image("/pics/jmodules/image/buttons/invert.gif","Invert the image"));
   invert.addParameter("action","Invert");
   invert.addParameter("edit","true");
@@ -611,7 +613,7 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   constrained.setChecked(true);
   toolbarBelow.add(constrained,3,2);
   toolbarBelow.add(new SubmitButton(new Image("/pics/jmodules/image/buttons/scale.gif"),"scale","true"),4,2);
-
+  toolbarBelow.add(new HiddenInput("edit","true"),4,2);
   Link undo = new Link(new Image("/pics/jmodules/image/buttons/undo.gif","Undo the last changes"));
   undo.addParameter("action","undo");
   undo.addParameter("edit","true");
@@ -709,8 +711,6 @@ private Form getEditForm(){
   Table frameTable = new Table(1,2);
   frameTable.setCellpadding(0);
   frameTable.setCellspacing(0);
-  frameForm.add(frameTable);
-
 
   List catagories = ImageBusiness.getAllImageCatagories();
   int catagorieslength = (catagories != null) ? catagories.size() : 0;
@@ -762,6 +762,8 @@ private Form getEditForm(){
   frameTable.add(buttonTable,1,2);
   frameTable.setAlignment(1,2,"right");
   //Buttons ends
+
+  frameForm.add(frameTable);
 
   return frameForm;
 
