@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.73 2004/07/19 11:44:08 aron Exp $
+ * $Id: CampusAllocator.java,v 1.74 2004/07/19 13:54:48 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1480,7 +1480,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			contractID = Integer.valueOf(iwc.getParameter("contract_id"));
 		}
 		catch (NumberFormatException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		/** @todo  contract overlap */
