@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.12 2002/09/25 11:32:35 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.13 2002/10/02 22:28:07 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
@@ -47,6 +48,9 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	private static String PROP_SYSTEM_SMTP_MAILSERVER="messagebox_smtp_mailserver";
 	private static String PROP_MESSAGEBOX_FROM_ADDRESS="messagebox_from_mailaddress";
 	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS="messagebox@idega.com";
+	
+	public static final String USER_PROP_SEND_TO_MESSAGE_BOX = "msg_send_box";
+	public static final String USER_PROP_SEND_TO_EMAIL = "msg_send_email";
 
 	public MessageBusinessBean() {
 	}
@@ -126,14 +130,15 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public Message createUserMessage(User user, String subject, String body) {
 		try {
 			Message message = null;
-	    IWPropertyList property = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserProperties(user).getProperties(IW_BUNDLE_IDENTIFIER);
-			boolean sendMail = true;
-			boolean sendToBox = true;
-			
-			if ( property.getProperty(MessageBusiness.SEND_TO_EMAIL) != null )
-				sendMail = new Boolean(property.getProperty(MessageBusiness.SEND_TO_EMAIL)).booleanValue();
-			if ( property.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX) != null )
-				sendToBox = new Boolean(property.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX)).booleanValue();
+	   	 	//IWPropertyList property = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserProperties(user).getProperties(IW_BUNDLE_IDENTIFIER);
+			boolean sendMail = getIfUserPreferesMessageByEmail(user);
+			boolean sendToBox = getIfUserPreferesMessageInMessageBox(user);
+			/*
+			if ( property.getProperty(USER_PROP_SEND_TO_EMAIL) != null )
+				sendMail = new Boolean(property.getProperty(USER_PROP_SEND_TO_EMAIL)).booleanValue();
+			if ( property.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX) != null )
+				sendToBox = new Boolean(property.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX)).booleanValue();
+			*/
 			
 			if ( sendToBox )
 				message = createMessage(getTypeUserMessage(), user, subject, body);
@@ -178,6 +183,26 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 
 		return createPrintedLetterMessage(user, subject, body);
+	}
+	
+	/**	 * @return Collection of PrintedLetterMessage that have already been printed	 */
+	public Collection getPrintedLetterMessages(){
+		throw new UnsupportedOperationException("getPrintedLetterMessages() not implemented");	
+	}
+	/**
+	 * @return Collection of PrintedLetterMessage that have already been printed
+	 */	
+	public Collection getUnPrintedLetterMessages(){
+		throw new UnsupportedOperationException("getPrintedLetterMessages() not implemented");	
+	}
+	/**
+	 * Mark the status of the message so that it is printed.
+	 * @param performer The User that makes the change
+	 * @param message the message to be marked
+	 */
+	public void flagPrintedLetterAsPrinted(User performer,PrintedLetterMessage message)throws RemoteException{
+		String newCaseStatus=getCaseStatusReady().getStatus();
+		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
 
 	public Message createPrintArchivationMessage(User user, String subject, String body) throws CreateException, RemoteException {
@@ -246,4 +271,51 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());
 		}
 	}
+
+
+	protected IWPropertyList getUserPreferences(User user)
+	{
+		try{
+			IWPropertyList property = ((UserBusiness)getServiceInstance(UserBusiness.class)).getUserProperties(user).getProperties(IW_BUNDLE_IDENTIFIER);	
+			return property;
+		}
+		catch(Exception e){
+			throw new EJBException("MessageBusiness: Exception getting UserBusiness: "+e.getMessage());	
+		}
+	}
+
+	public boolean getIfUserPreferesMessageByEmail(User user){
+		IWPropertyList propertyList = getUserPreferences(user);
+		String property = propertyList.getProperty(USER_PROP_SEND_TO_EMAIL);
+		if(property!=null){
+			return Boolean.getBoolean(property);
+		}
+		else{
+			return true;
+		}
+	}
+
+	public boolean getIfUserPreferesMessageInMessageBox(User user){
+		IWPropertyList propertyList = getUserPreferences(user);
+		String property = propertyList.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX);
+		if(property!=null){
+			return Boolean.getBoolean(property);
+		}
+		else{
+			return true;
+		}
+	}
+
+	public void setIfUserPreferesMessageByEmail(User user,boolean preference){
+		IWPropertyList propertyList = getUserPreferences(user);
+		propertyList.setProperty(USER_PROP_SEND_TO_EMAIL, new Boolean(preference));
+		propertyList.store();
+	}
+
+	public void setIfUserPreferesMessageInMessageBox(User user,boolean preference){
+		IWPropertyList propertyList = getUserPreferences(user);
+		propertyList.setProperty(USER_PROP_SEND_TO_MESSAGE_BOX, new Boolean(preference));
+		propertyList.store();
+	}
+
 }

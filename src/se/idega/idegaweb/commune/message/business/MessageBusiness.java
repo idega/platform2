@@ -1,11 +1,18 @@
 package se.idega.idegaweb.commune.message.business;
 
+import java.rmi.RemoteException;
 import javax.ejb.*;
+
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+
+import com.idega.user.data.User;
+
+import java.util.Collection;
 
 public interface MessageBusiness extends com.idega.business.IBOService
 {
-  public static final String SEND_TO_MESSAGE_BOX = "msg_send_box";
-  public static final String SEND_TO_EMAIL = "msg_send_email";
+  //public static final String SEND_TO_MESSAGE_BOX = "msg_send_box";
+  //public static final String SEND_TO_EMAIL = "msg_send_email";
 
  public void deleteUserMessage(int p0)throws javax.ejb.FinderException,javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createPrintArchivationMessage(int p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
@@ -24,4 +31,27 @@ public interface MessageBusiness extends com.idega.business.IBOService
  public void markMessageAsRead(se.idega.idegaweb.commune.message.data.Message p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createPrintedLetterMessage(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.process.data.CaseCode getCaseCodePrintedLetterMessage()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+
+	/**
+	 * @return Collection of PrintedLetterMessage that have already been printed
+	 */
+	public Collection getPrintedLetterMessages()throws RemoteException;
+	/**
+	 * @return Collection of PrintedLetterMessage that have already been printed
+	 */	
+	public Collection getUnPrintedLetterMessages()throws RemoteException;
+	/**
+	 * Mark the status of the message so that it is printed.
+	 * @param performer The User that makes the change
+	 * @param message the message to be marked
+	 */
+	public void flagPrintedLetterAsPrinted(User performer,PrintedLetterMessage message)throws RemoteException;
+
+
+	public boolean getIfUserPreferesMessageByEmail(User user)throws RemoteException;
+	public boolean getIfUserPreferesMessageInMessageBox(User user)throws RemoteException;
+	public void setIfUserPreferesMessageByEmail(User user,boolean preference)throws RemoteException;
+	public void setIfUserPreferesMessageInMessageBox(User user,boolean preference)throws RemoteException;
+
+
 }

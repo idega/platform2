@@ -10,7 +10,7 @@ import se.idega.idegaweb.commune.message.data.*;
 import se.idega.idegaweb.commune.message.business.*;
 
 import com.idega.block.process.data.CaseStatus;
-import com.idega.core.user.data.User;
+import com.idega.user.data.User;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
@@ -46,8 +46,6 @@ public class MessageBox extends CommuneBlock {
   private final static String PARAM_TO_MSG_BOX = "msg_to_msg_box";
   private final static String PARAM_TO_EMAIL = "msg_to_email";
    
-  private IWPropertyList userProperties;
-
   private Table mainTable = null;
 
   public MessageBox() {
@@ -59,7 +57,6 @@ public class MessageBox extends CommuneBlock {
 
   public void main(IWContext iwc){
     this.setResourceBundle(getResourceBundle(iwc));
-    userProperties = getUserProperties(iwc);
     
     try{
       int action = parseAction(iwc);
@@ -97,7 +94,7 @@ public class MessageBox extends CommuneBlock {
     mainTable.add(po);
   }
 
-  private int parseAction(IWContext iwc){
+  private int parseAction(IWContext iwc)throws Exception{
     int action = ACTION_VIEW_MESSAGE_LIST;
 
     if(iwc.isParameterSet(PARAM_VIEW_MESSAGE)){
@@ -134,7 +131,9 @@ public class MessageBox extends CommuneBlock {
     messageList.setHeader(localize("message.date","Date"),2);
     
     if ( iwc.isLoggedOn() ) {
-	    Collection messages = getMessageBusiness(iwc).findMessages(Converter.convertToNewUser(iwc.getUser()));
+    	MessageBusiness messageBusiness = getMessageBusiness(iwc);
+    	User user = iwc.getCurrentUser();
+	    Collection messages = messageBusiness.findMessages(user);
 	    Link subject = null;
 	    Text date = null;
 	    CheckBox deleteCheck = null;
@@ -170,15 +169,15 @@ public class MessageBox extends CommuneBlock {
 	  	table.add(settingsTable,1,2);
 	  	
 	  	CheckBox msgBox = new CheckBox(PARAM_TO_MSG_BOX);
-	  		msgBox.setChecked(true);
+	  		msgBox.setChecked(messageBusiness.getIfUserPreferesMessageInMessageBox(user));
 	  	CheckBox email = new CheckBox(PARAM_TO_EMAIL);
-	  		email.setChecked(true);
-	  	
+	  		email.setChecked(messageBusiness.getIfUserPreferesMessageByEmail(user));
+	/*  	
 	  	if ( userProperties != null && userProperties.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX) != null )
 	  		msgBox.setChecked(new Boolean(userProperties.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX)).booleanValue());
 	  	if ( userProperties != null && userProperties.getProperty(MessageBusiness.SEND_TO_EMAIL) != null )
 	  		email.setChecked(new Boolean(userProperties.getProperty(MessageBusiness.SEND_TO_EMAIL)).booleanValue());
-	  		
+	 */ 		
 	  	settingsTable.add(msgBox,1,1);
 	  	settingsTable.add(email,1,2);
 	  	settingsTable.add(getText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)),2,1);
@@ -290,21 +289,25 @@ public class MessageBox extends CommuneBlock {
     }
   }
 
-  private void saveSettings(IWContext iwc) {
-  	if ( userProperties != null ) {
+  private void saveSettings(IWContext iwc) throws Exception{
+
+	  	MessageBusiness messageBusiness = getMessageBusiness(iwc);
+	  	User user = iwc.getCurrentUser();
 	  	String toMsgBox = iwc.getParameter(PARAM_TO_MSG_BOX);
+	  	
 	  	if ( toMsgBox == null )
-	  		userProperties.setProperty(MessageBusiness.SEND_TO_MESSAGE_BOX, new Boolean(false));
+	  		messageBusiness.setIfUserPreferesMessageInMessageBox(user,false);
 	  	else
-	  		userProperties.setProperty(MessageBusiness.SEND_TO_MESSAGE_BOX, new Boolean(true));
+	  		messageBusiness.setIfUserPreferesMessageInMessageBox(user,true);
 	  		
 	  	String toEmail = iwc.getParameter(PARAM_TO_EMAIL);
 	  	if ( toEmail == null )
-	  		userProperties.setProperty(MessageBusiness.SEND_TO_EMAIL, new Boolean(false));
+	  		messageBusiness.setIfUserPreferesMessageByEmail(user,false);
 	  	else
-	  		userProperties.setProperty(MessageBusiness.SEND_TO_EMAIL, new Boolean(true));
-	  	iwc.getUserProperties().store();
-  	}
+	  		messageBusiness.setIfUserPreferesMessageByEmail(user,false);
+	  	
+	  	//iwc.getUserProperties().store();
+  	
   }
   
   private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
