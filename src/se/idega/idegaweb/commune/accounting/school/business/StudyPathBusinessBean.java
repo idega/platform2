@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathBusinessBean.java,v 1.2 2003/09/09 08:53:27 anders Exp $
+ * $Id: StudyPathBusinessBean.java,v 1.3 2003/09/12 12:31:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,22 +9,24 @@
  */
 package se.idega.idegaweb.commune.accounting.school.business;
 
+/*
 import java.util.Collection;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
+*/
 
-import com.idega.block.school.data.SchoolStudyPathHome;
-import com.idega.block.school.data.SchoolStudyPath;
+//import com.idega.block.school.data.SchoolStudyPathHome;
+//import com.idega.block.school.data.SchoolStudyPath;
 
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/09 08:53:27 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/12 12:31:02 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean implements StudyPathBusiness  {
 
@@ -49,15 +51,18 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	/**
 	 * Return study path home. 
 	 */	
+/*
 	protected SchoolStudyPathHome getSchoolStudyPathHome() throws RemoteException {
 		return (SchoolStudyPathHome) com.idega.data.IDOLookup.getHome(SchoolStudyPath.class);
 	}	
+*/
 	
 	/**
 	 * Finds all study paths.
 	 * @return collection of study path objects
 	 * @see se.idega.idegaweb.commune.accounting.school.data.StudyPath 
 	 */
+	/*
 	public Collection findAllStudyPaths() {
 		try {
 			SchoolStudyPathHome home = getSchoolStudyPathHome();
@@ -68,6 +73,7 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 			return null;
 		}
 	}	
+*/
 	
 	/**
 	 * Saves a study path object.
@@ -76,6 +82,7 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 	 * @param description the description of the age regulation
 	 * @throws StudyPathException if invalid parameters
 	 */
+/*
 	public void saveStudyPath(
 			String studyPathCode,
 			String description) throws StudyPathException {
@@ -115,12 +122,14 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 			throw new StudyPathException(KEY_CANNOT_SAVE_STUDY_PATH, DEFAULT_CANNOT_SAVE_STUDY_PATH);
 		}		
 	}
+*/
 	
 	/**
 	 * Deletes the study path object with the specified id.
 	 * @param code the study path code
 	 * @throws StudyPathException if the study path could not be deleted
 	 */ 
+/*
 	public void deleteStudyPath(String code) throws StudyPathException {
 		try {
 			SchoolStudyPathHome home = getSchoolStudyPathHome();
@@ -132,14 +141,16 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 			throw new StudyPathException(KEY_CANNOT_DELETE_STUDY_PATH, DEFAULT_CANNOT_DELETE_STUDY_PATH);
 		} catch (RemoveException e) { 
 			throw new StudyPathException(KEY_CANNOT_DELETE_STUDY_PATH, DEFAULT_CANNOT_DELETE_STUDY_PATH);
-		}		
+		}
 	}
-	
+*/
+		
 	/**
 	 * Returns the study path with the specified code.
 	 * @param code the study path code
 	 * @throws StudyPathException if study path not found
 	 */
+/*
 	public SchoolStudyPath getStudyPath(String code) throws StudyPathException {
 		SchoolStudyPath sp = null;
 		try {
@@ -153,4 +164,5 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 		
 		return sp;		
 	}
+*/
 }
