@@ -191,7 +191,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			return names.toString();
 
 		}
-		return "";
+		return this.getResourceBundle(iwc).getLocalizedString("GroupSelectionBox.all_or_none_selected","All");
 	}
 	/**
 	 * @return the set group type
