@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/14 16:05:08 $ by $Author: palli $
+ * Last modified: $Date: 2004/01/15 22:09:21 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.107 $
+ * @version $Revision: 1.108 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -537,7 +537,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					
 					String[] postings =  getPostingStrings(category, schoolType, 
 							((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, 
-							((Integer)schoolYear.getPrimaryKey()).intValue(), schoolClassMember.getSchoolClassId());
+							((Integer)schoolYear.getPrimaryKey()).intValue(), schoolClassMember.getStudyPathId());
 				
 					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
 							placementTimes.getMonths(), school);
@@ -580,7 +580,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				Regulation regulation = (Regulation) i.next();
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions,placementTimes);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-				String[] postings =  getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue(), schoolClassMember.getSchoolClassId());
+				String[] postings =  getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue(), schoolClassMember.getStudyPathId());
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
@@ -747,7 +747,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	protected String[] getPostingStrings(SchoolCategory category, SchoolType schoolType, int regSpecTypeId, Provider provider, Date calculationDate, int schoolYearId, int studyPathId) throws PostingException, RemoteException {
 		if (studyPathId == -1)
 			studyPathId = -1;
-		return getPostingBusiness().getPostingStrings(category, schoolType, regSpecTypeId, provider, calculationDate,schoolYearId, studyPathId, false);		
+		return getPostingBusiness().getPostingStrings(category, schoolType, regSpecTypeId, provider, calculationDate,schoolYearId, -1, false);		
 	}
 
 	protected CommuneHome getCommuneHome() throws RemoteException {
