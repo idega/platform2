@@ -60,7 +60,7 @@ public TextEditor(){
 				newText(modinfo);
 			}
 
-			else if ( mode.equals("Vista") ) {
+			else if ( mode.equals("save") ) {
 				save = true;
 
 				if ( action.equals("update") ) { update = true; }
@@ -172,6 +172,7 @@ public TextEditor(){
 
     SubmitButton vista = new SubmitButton(iwrb.getImage("save.gif"));
     rightTable.add(vista,1,2);
+    myForm.add(new HiddenInput("mode","save"));
 
     Text name_text = new Text(iwrb.getLocalizedString("title","Title"));
       name_text.setFontSize(Text.FONT_SIZE_7_HTML_1);
@@ -234,21 +235,26 @@ public TextEditor(){
 
 		idegaTimestamp date = new idegaTimestamp();
 
-		TextModule text = new TextModule();
+		try {
+      TextModule text = new TextModule();
 
-		if ( update ) { text = new TextModule(Integer.parseInt(text_id)); }
+      if ( update ) { text = new TextModule(Integer.parseInt(text_id)); }
 
-		text.setTextHeadline( text_headline );
-		text.setTextBody( text_body );
-		text.setIncludeImage(include_image);
-		text.setImageId( Integer.parseInt(image_id) );
-    text.setTextDate( date.getTimestampRightNow());
+      text.setTextHeadline( text_headline );
+      text.setTextBody( text_body );
+      text.setIncludeImage(include_image);
+      text.setImageId( Integer.parseInt(image_id) );
+      text.setTextDate( date.getTimestampRightNow());
 
-		if ( update ) {
-      text.update();
-    }
-		else {
-      text.insert();
+      if ( update ) {
+        text.update();
+      }
+      else {
+        text.insert();
+      }
+		}
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
     }
 
     this.getParentPage().setParentToReload();
