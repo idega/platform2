@@ -134,6 +134,8 @@ public class UserSearcher extends Block {
 	/** flag for making links do form submit */
 	private boolean setToFormSubmit = false;
 	
+	private String legalNonDigitPIDLetters = null;
+	
 	private void initStyleNames() {
 		if (textFontStyleName == null)
 			textFontStyleName = getStyleName(STYLENAME_TEXT);
@@ -273,8 +275,15 @@ public class UserSearcher extends Block {
 			if(useFlexiblePersonalID){
 				StringBuffer sb = new StringBuffer();
 				for (int i=0; i<pid.length(); i++) {
-					if (Character.isDigit(pid.charAt(i)))
-						sb.append(pid.charAt(i));
+					char ch = pid.charAt(i);
+					if (Character.isDigit(ch)){
+						sb.append(ch);
+					}
+					else if(legalNonDigitPIDLetters!=null){
+						if(legalNonDigitPIDLetters.indexOf(ch)>=0){
+							sb.append(ch);
+						}
+					}
 				}
 				//sb.insert(0,"%");
 				pid = sb.toString();
@@ -974,4 +983,18 @@ public void setUseFlexiblePersonalID(boolean flag){
 public boolean isUseFlexiblePersonalID(){
 	return useFlexiblePersonalID;
 }
+	/**
+	 * @return Returns the legalNonDigitPIDLetters.
+	 */
+	public String getLegalNonDigitPIDLetters() {
+		return legalNonDigitPIDLetters;
+	}
+
+	/**
+	 * @param legalNonDigitPIDLetters The legalNonDigitPIDLetters to set.
+	 */
+	public void setLegalNonDigitPIDLetters(String legalNonDigitPIDLetters) {
+		this.legalNonDigitPIDLetters = legalNonDigitPIDLetters;
+	}
+
 }
