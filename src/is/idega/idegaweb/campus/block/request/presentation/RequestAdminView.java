@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.10 2002/11/21 15:57:59 tryggvil Exp $
+ * $Id: RequestAdminView.java,v 1.11 2003/08/11 20:56:04 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -108,7 +108,7 @@ public class RequestAdminView extends Block {
       grp.setSelected(selected);
     }
 
-    List requests = RequestFinder.getAllRequestsByType(selected);
+    List requests = RequestFinder.getAllRequestsByStatus(selected);
     Request request = null;
     RequestHolder holder = null;
 

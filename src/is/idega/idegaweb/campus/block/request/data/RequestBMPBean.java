@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBMPBean.java,v 1.1 2002/04/15 16:10:09 palli Exp $
+ * $Id: RequestBMPBean.java,v 1.2 2003/08/11 20:56:04 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,9 @@ import com.idega.data.IDOLegacyEntity;
 import com.idega.core.user.data.User;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -154,5 +157,21 @@ public class RequestBMPBean extends com.idega.data.GenericEntity implements is.i
 
   public void setSpecialTime(String time) {
     setColumn(getColumnSpecialTime(),time);
+  }
+  
+  public Collection ejbFindAll() throws FinderException{
+	  return super.idoFindPKsByQuery(idoQueryGetSelect());
+  }
+  
+  public Collection ejbFindByType(String type) throws FinderException{
+  	return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnRequestType(),type));
+  }
+  
+  public Collection ejbFindByStatus(String status) throws FinderException{
+	  return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnStatus(),status));
+	}
+	
+  public Collection ejbFindByUser(Integer user) throws FinderException{
+     return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getColumnUserId(),user.intValue()));
   }
 }
