@@ -88,7 +88,7 @@ public class Register extends Block {
 			T.mergeCells(1,1,1,2);
 			T.add(message, 1, 1);
 		}
-		String labelPersonNumber = _iwrb.getLocalizedString("register.person_number", "Kennitala");
+		String labelPersonNumber = _iwrb.getLocalizedString("register.person_number", "SSN");
 		TextInput inputPersonalNumber = new TextInput("reg_personal_number");
 		if (_iwc.isParameterSet("reg_personal_number")) {
 			inputPersonalNumber.setContent(_iwc.getParameter("reg_personal_number"));
@@ -115,20 +115,20 @@ public class Register extends Block {
 		String kt = _iwc.getParameter("reg_personal_number");
 		kt = getNumericalsOnly(kt);
 		if(kt.length()!=10) {
-			return _iwrb.getLocalizedString("register.personal_number_invalid", "Kennitala ekki logleg");
+			return _iwrb.getLocalizedString("register.personal_number_invalid", "SSN invalid");
 		}
 		try {
 			System.out.println("getting user with kt PN: " + kt);
 			User user = getUserBusiness().getUser(kt);
 			if(user==null) {
-				return _iwrb.getLocalizedString("register.pn_not_found", "Engin fannst med gefna kennitolu");
+				return _iwrb.getLocalizedString("register.pn_not_found", "No user found with given SSN");
 			}
 			if(user.getGroupID()==-1) {
-				return _iwrb.getLocalizedString("register.user_not_in_any_group", "Notandi verdur ad vera i eihverjum hop.");
+				return _iwrb.getLocalizedString("register.user_not_in_any_group", "User must be a member of a group.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return _iwrb.getLocalizedString("register.error_looking_pn", "Villa kom upp vid leit eftir kennitolu");
+			return _iwrb.getLocalizedString("register.error_looking_pn", "Error searching for user by SSN");
 		}
 		_kt = kt;
 		return null;
@@ -141,16 +141,16 @@ public class Register extends Block {
 			T.add(message, 1, 1);
 		}
 		
-		String labelPassword = _iwrb.getLocalizedString("register.password", "Lykilord");
+		String labelPassword = _iwrb.getLocalizedString("register.password", "Password");
 		TextInput inputPassword = new PasswordInput("reg_password");
-		String labelPasswordConfirmed = _iwrb.getLocalizedString("register.password_confirmed", "Lykilord Aftur");
+		String labelPasswordConfirmed = _iwrb.getLocalizedString("register.password_confirmed", "Retyps Password");
 		TextInput inputPasswordConfirmed = new PasswordInput("reg_password_confirmed");
-		String labelHintQuestion = _iwrb.getLocalizedString("register.hint_question", "Visbendingaspurning");
+		String labelHintQuestion = _iwrb.getLocalizedString("register.hint_question", "Hint question");
 		TextInput inputHintQuestion = new TextInput("reg_hint_question");
-		String labelHintAnswer = _iwrb.getLocalizedString("register.hint_answer", "Svar");
+		String labelHintAnswer = _iwrb.getLocalizedString("register.hint_answer", "Answer");
 		TextInput inputHintAnswer = new TextInput("reg_hint_answer");
 		
-		String textHint = _iwrb.getLocalizedString("reg_hint_instructions", "Gefdu upp spurningu sem hjalpar ther ef thu gleymir lykilordi. Ma sleppa.");
+		String textHint = _iwrb.getLocalizedString("reg_hint_instructions", "Provide a question that only you know the answer of, and the answer. This will help you if you forget your password (optional)");
 		
 		T.add(labelPassword, 1, 2);
 		T.add(inputPassword, 2, 2);
@@ -195,15 +195,15 @@ public class Register extends Block {
 			_kt = kt;
 		}
 		if(password==null) {
-			return _iwrb.getLocalizedString("register.no_password", "Ekkert lykilord slegid inn");
+			return _iwrb.getLocalizedString("register.no_password", "No password entered");
 		}
 		if(!password.equals(passwordConfirmed)) {
-			return _iwrb.getLocalizedString("register.password_mismatch", "Lykilord stemma ekki");
+			return _iwrb.getLocalizedString("register.password_mismatch", "Retyped password different from first password");
 		}
 		hintQ = hintQ==null?"":hintQ;
 		hintA = hintA==null?"":hintA;
 		if( (hintQ.length()==0 && hintA.length()!=0) || (hintQ.length()!=0 && hintA.length()==0)) {
-			return _iwrb.getLocalizedString("register.hint_answer_invalid", "Gefdu upp baedi spurningu og svar eda hvorugt.");
+			return _iwrb.getLocalizedString("register.hint_answer_invalid", "Provide both a question and an answer or neither.");
 		}
 		User user = null;
 		boolean ok = true;
@@ -215,7 +215,7 @@ public class Register extends Block {
 			ok = false;
 		}
 		if(user == null || !ok) {
-			return _iwrb.getLocalizedString("register.error_editing_user", "Villa kom upp vid ad skra upplysingar, Lykilord ekki sett");
+			return _iwrb.getLocalizedString("register.error_editing_user", "Error registering, Password not set");
 		}
 		try {
 			LoginTable lt = getLoginTable(user);
@@ -226,7 +226,7 @@ public class Register extends Block {
 			sendMessage(user, kt, password);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return _iwrb.getLocalizedString("register.error_changing_password", "Villa kom upp vid ad breyta lykilordi. Lykilord obreytt");
+			return _iwrb.getLocalizedString("register.error_changing_password", "Error changing password, password unchanged");
 		}
 		if(hintQ.length() != 0) {
 			System.out.println("Setting hint question and answer");
@@ -243,7 +243,7 @@ public class Register extends Block {
 			T.add(message, 1, 1);
 		}
 		
-		String done = _iwrb.getLocalizedString("register.done", "Skraningu lokid.");
+		String done = _iwrb.getLocalizedString("register.done", "Registration finished.");
 		T.add(done, 1, 2);
 		
 		CloseButton close =
@@ -294,7 +294,7 @@ public class Register extends Block {
 		String letter =
 						_iwrb.getLocalizedString(
 						"register.email_body",
-						"Thu hefur verid skradur a Felix.\nNotendanafn : {0} \nLykilord: {1} \n");
+						"You have been registered on Felix.\nUsername : {0} \nPassword: {1} \n");
 
 		if (letter != null) {
 			try {
@@ -314,7 +314,7 @@ public class Register extends Block {
 							"",
 							"",
 							server,
-							_iwrb.getLocalizedString("register.email_subject", "Nyskraning a Felix"),
+							_iwrb.getLocalizedString("register.email_subject", "Felix Registration"),
 							body);
 					}
 				}
