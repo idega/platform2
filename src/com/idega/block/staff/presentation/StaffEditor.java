@@ -38,7 +38,6 @@ public StaffEditor(){
   setWidth(590);
   setHeight(590);
   setUnMerged();
-  setMethod("get");
 }
 
   public void main(IWContext iwc) throws Exception {
