@@ -158,7 +158,7 @@ private int listPrices(IWContext iwc, Table contentTable,	int contRow,	Service s
 	Text nameOfCategory;
 	Text priceText;
 	Currency currency;
-	ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_product.getID(), timeframeId, -1, false);
+	ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_product.getID(), timeframeId, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
 	if (prices.length > 0) {
 	  contentTable.setVerticalAlignment(2,contRow,"top");
 	  contentTable.setVerticalAlignment(3,contRow,"top");

@@ -208,7 +208,7 @@ public class TourOverview extends AbstractServiceOverview {
           contentTable.setRowColor(contRow, super.GRAY);
           ++contRow;
           for (int k = 0; k < timeframes.length; k++) {
-            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), false);
+            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
             if (prices.length > 0) {
               timeframeTxt = (Text) theBoldText.clone();
                 timeframeTxt.setFontColor(super.BLACK);
@@ -240,13 +240,20 @@ public class TourOverview extends AbstractServiceOverview {
             }
 
             for (int j = 0; j < prices.length; j++) {
-              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-              nameOfCategory = (Text) theText.clone();
-                nameOfCategory.setFontColor(super.BLACK);
-                nameOfCategory.setText(prices[j].getPriceCategory().getName());
-                nameOfCategory.addToText(":");
-              priceText = (Text) theBoldText.clone();
-                priceText.setFontColor(super.BLACK);
+							try {
+								  currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+							} catch (SQLException e) {
+								currency = null;
+							}
+
+						  nameOfCategory = (Text) theText.clone();
+						    nameOfCategory.setFontColor(super.BLACK);
+						    nameOfCategory.setText(prices[j].getPriceCategory().getName());
+						    nameOfCategory.addToText(":");
+
+						  priceText = (Text) theBoldText.clone();
+						    priceText.setFontColor(super.BLACK);
+
               try {
                 if (service == null) {debug("SERVICE");}
                 if (prices[j] == null) {debug("PRICES");}
@@ -254,7 +261,12 @@ public class TourOverview extends AbstractServiceOverview {
                 if (depAddress == null) {debug("ADDRESS");}
                 priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddress.getID() ) ));
                 priceText.addToText(Text.NON_BREAKING_SPACE);
-                priceText.addToText(currency.getCurrencyAbbreviation());
+                if (currency != null) {
+	                priceText.addToText(currency.getCurrencyAbbreviation());
+                }else {
+                	priceText.addToText(_iwrb.getLocalizedString("travel.currency_not_found_error_message","-ERROR-"));
+                }
+                
               }catch (ProductPriceException p) {
                 priceText.setText("Rangt upp sett");
               }

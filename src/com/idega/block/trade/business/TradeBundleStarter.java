@@ -33,7 +33,7 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
     timer.addActionListener(this);
     //Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
     // -- Fix for working properly on Interebase with entity-auto-create-on.
-    timer.start(3*60*1000);
+    timer.start(15*1000);
     System.out.println("Trade bundle starter: starting");
   }
 

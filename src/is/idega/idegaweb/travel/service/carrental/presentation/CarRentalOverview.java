@@ -208,7 +208,7 @@ public class CarRentalOverview extends AbstractServiceOverview {
           contentTable.setRowColor(contRow, super.GRAY);
           ++contRow;
           for (int k = 0; k < timeframes.length; k++) {
-            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), false);
+            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
             if (prices.length > 0) {
               timeframeTxt = (Text) theBoldText.clone();
                 timeframeTxt.setFontColor(super.BLACK);

@@ -61,6 +61,7 @@ public class ProductPriceDesigner extends TravelWindow {
   private Settings _settings;
   private Supplier _supplier;
   private int _currencyId = -1;
+  private int _visibility = 3;
 
   public ProductPriceDesigner() {
     super.setWidth(800);
@@ -249,7 +250,7 @@ public class ProductPriceDesigner extends TravelWindow {
     DecimalFormat df = new DecimalFormat("0.00");
     if (!iter.hasNext()) {
     	if (tFrames.length == 0) {
-	      ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1, false, 0, _currencyId);
+	      ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), -1, -1,  0, _currencyId, _visibility);
 	      for (int i = 0; i < cats.length; i++) {
 	        try {
 	          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, "-1"),1,row);
@@ -268,7 +269,7 @@ public class ProductPriceDesigner extends TravelWindow {
 	        table.add(timeframeText,3,row);
 	        table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		      ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[i].getID(), -1, false, 0, _currencyId);
+		      ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[i].getID(), -1,  0, _currencyId, _visibility);
 		      for (int p = 0; p < cats.length; p++) {
 		        try {
 		          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrames[i].getID() ) ),1,row);
@@ -302,7 +303,7 @@ public class ProductPriceDesigner extends TravelWindow {
         timeframeText.setFontColor(TravelManager.WHITE);
         table.add(timeframeText,3,row);
 
-        ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(), false, 0, _currencyId);
+        ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(),  0, _currencyId, _visibility);
         for (int i = 0; i < cats.length; i++) {
           try {
             table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, Integer.toString(tFrames[k].getID())),1,row);
@@ -404,6 +405,7 @@ public class ProductPriceDesigner extends TravelWindow {
                 price = (float) Float.parseFloat(priceDiscount[i]);
               }
               pPrice = getTravelStockroomBusiness(iwc).setPrice(productPriceId,((Integer)_product.getPrimaryKey()).intValue() , priceCategoryId, _currencyId,IWTimestamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, iTimeframeId, iAddressId);
+//						System.out.println("[ProductPriceDesigner] pCategory save price (id) : "+pPrice.getPrice()+ "("+pPrice.getID()+")");
             }
           }
         }
