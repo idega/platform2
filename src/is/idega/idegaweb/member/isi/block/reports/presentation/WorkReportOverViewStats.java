@@ -35,9 +35,10 @@ public class WorkReportOverViewStats extends Block {
 			year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
 		}
 		
+		
 		Table table = new Table(2,14);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setLineFrame(true);
+		table.setStyleAttribute("border","2px solid #000000");
 		table.setRowColor(1,	COLOR_MIDDLE );
 		table.setCellspacing(0);
 		table.mergeCells(1,1,2,1);
