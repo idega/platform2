@@ -239,7 +239,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 			query.appendAndEquals(this.COLUMN_SUB_GROUP, true);
 		}
 		else {
-			query.appendLeftParenthesis().appendAndEquals(COLUMN_SUB_GROUP, false).appendOr().append(COLUMN_SUB_GROUP).appendIsNull().appendRightParenthesis();
+			query.appendAnd().appendLeftParenthesis().appendEquals(COLUMN_SUB_GROUP, false).appendOr().append(COLUMN_SUB_GROUP).appendIsNull().appendRightParenthesis();
 		}
 		query.appendOrderBy(NAME);
 		return idoFindPKsByQuery(query);
