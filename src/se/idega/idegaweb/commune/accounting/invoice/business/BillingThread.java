@@ -10,6 +10,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
@@ -130,8 +131,8 @@ public abstract class BillingThread extends Thread{
 			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 
-			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
-			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+postingDetail.getVat()*months);
+			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+AccountingUtil.roundAmount(postingDetail.getAmount()*months));
+			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+AccountingUtil.roundAmount(postingDetail.getVat()*months));
 			paymentRecord.store();
 		} catch (FinderException e1) {
 			//It didn't exist, so we create it
@@ -149,8 +150,8 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setCreatedBy(BATCH_TEXT);
 			paymentRecord.setPlacements(1);
 			paymentRecord.setPieceAmount(postingDetail.getAmount());
-			paymentRecord.setTotalAmount(postingDetail.getAmount()*months);
-			paymentRecord.setTotalAmountVAT(postingDetail.getVat()*months);
+			paymentRecord.setTotalAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*months));
+			paymentRecord.setTotalAmountVAT(AccountingUtil.roundAmount(postingDetail.getVat()*months));
 			paymentRecord.setRuleSpecType(ruleSpecType);
 			paymentRecord.setOwnPosting(ownPosting);
 			paymentRecord.setDoublePosting(doublePosting);
@@ -179,7 +180,7 @@ public abstract class BillingThread extends Thread{
 		 final Date startPlacementDate, final Date endPlacementDate)
 		throws RemoteException, CreateException {
 		final InvoiceRecord result = getInvoiceRecordHome ().create ();
-		result.setAmount (checkPeriod.getMonths () * postingDetail.getAmount ());
+		result.setAmount(AccountingUtil.roundAmount(checkPeriod.getMonths () * postingDetail.getAmount ()));
 		result.setCreatedBy (BATCH_TEXT);
 		result.setDateCreated (new Date (System.currentTimeMillis ()));
 		result.setDays (checkPeriod.getDays ());

@@ -17,6 +17,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
@@ -209,7 +210,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		Age age;
 		int hours;
 		PlacementTimes placementTimes = null;
-		float totalSum;
+		long totalSum;
 		InvoiceRecord invoiceRecord, subvention;
 		School school;
 
@@ -333,7 +334,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							checkPost[0], checkPost[1], placementTimes, school, contract);
 					log.info("created invoice record");
 
- 					totalSum = postingDetail.getAmount()*placementTimes.getMonths();
+ 					totalSum = AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
 					int siblingOrder;
  					try{
 						siblingOrder = getSiblingOrder(contract, siblingOrders);
@@ -393,7 +394,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
 								subvention = invoiceRecord;
 							}
-							totalSum += postingDetail.getAmount()*placementTimes.getMonths();
+							totalSum += AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
 							errorRelated.append("Total sum so far: "+totalSum);
 						}
 						catch (BruttoIncomeException e) {
@@ -449,7 +450,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					if(totalSum<0){
 						if(subvention!=null){
 							errorRelated.append("Sum too low, changing subvention from "+subvention.getAmount()+"...to "+subvention.getAmount()+totalSum,1);
-							subvention.setAmount(subvention.getAmount()+totalSum);
+							subvention.setAmount(subvention.getAmount()-totalSum);
 							subvention.store();
 						} else {
 							errorRelated.append("Sum too low, but no subvention found. Creating error message",1);
@@ -647,7 +648,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setPeriodEndPlacement(placementTimes.getLastCheckDay().getDate());
 						invoiceRecord.setDateCreated(currentDate);
 						invoiceRecord.setCreatedBy(BATCH_TEXT);
-						float amount =regularInvoiceEntry.getAmount()*months;
+						long amount = AccountingUtil.roundAmount(regularInvoiceEntry.getAmount()*months);
 						invoiceRecord.setAmount(amount);
 						totalSum += amount;
 						if(totalSum<0){
@@ -1038,8 +1039,8 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setPeriodEndPlacement(contract.getTerminatedDate());
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
-		invoiceRecord.setAmount(postingDetail.getAmount()*placementTimes.getMonths());
-		invoiceRecord.setAmountVAT(postingDetail.getVat()*placementTimes.getMonths());
+		invoiceRecord.setAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths()));
+		invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVat()*placementTimes.getMonths()));
 		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
 		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
