@@ -156,24 +156,24 @@ public class ProductComparator implements Comparator {
 			} else {
 				try {
 					pr1 = getStockroomBusiness().getPrice(-1, p1.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
-					System.out.println("[ProductComparator] : price for p1 = "+pr1+" (p1="+p1.getID()+")");
+					System.out.println("[ProductComparator] : price for p1 = "+pr1+" ("+p1.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p1.getID()+")");
 				}
 				catch (ProductPriceException e) {
-					System.out.println("[ProductComparator] : cannot get priceCategory specific price (p1="+p1.getID()+")");
+					System.out.println("[ProductComparator] : cannot get priceCategory specific price ("+p1.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p1.getID()+")");
 				}
 				catch (Exception e) {
-					System.out.println("[ProductComparator] : cannot get priceCategory specific price (p1="+p1.getID()+")");
+					System.out.println("[ProductComparator] : cannot get priceCategory specific price ("+p1.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p1.getID()+")");
 					e.printStackTrace();
 				}
 				try {
 					pr2 = getStockroomBusiness().getPrice(-1, p2.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
-					System.out.println("[ProductComparator] : price for p2 = "+pr2+" (p2="+p2.getID()+")");
+					System.out.println("[ProductComparator] : price for p2 = "+pr2+" ("+p2.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p2.getID()+")");
 				}
 				catch (ProductPriceException e) {
-					System.out.println("[ProductComparator] : cannot get priceCategory specific price (p2="+p2.getID()+")");
+					System.out.println("[ProductComparator] : cannot get priceCategory specific price ("+p2.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p2.getID()+")");
 				}
 				catch (Exception e) {
-					System.out.println("[ProductComparator] : cannot get priceCategory specific price (p2="+p2.getID()+")");
+					System.out.println("[ProductComparator] : cannot get priceCategory specific price ("+p2.getProductName(IWContext.getInstance().getCurrentLocaleId())+"="+p2.getID()+")");
 					e.printStackTrace();
 				}
 			}
