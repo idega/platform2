@@ -206,7 +206,6 @@ public class ProductEditorWindow extends IWAdminWindow {
            */
 //           teaser = TextSoap.formatText(teaser);
 //           description = TextSoap.formatText(description);
-
           _productId = ProductBusiness.createProduct(fileId, name, number, description, true, iLocaleID);
           _product = ProductBusiness.getProduct(_productId);
           ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);

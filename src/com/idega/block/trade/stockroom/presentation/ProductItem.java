@@ -73,5 +73,4 @@ public class ProductItem extends Block {
     this._fontStyle = style;
   }
 
-
 }

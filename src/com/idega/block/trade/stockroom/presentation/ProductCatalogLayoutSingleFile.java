@@ -88,6 +88,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
             }
 
             if (fileId != -1) {
+
               //image = new Image(fileId);
               //table.add(image, 4, row);
               //table.add("MYND FYLGIR", 4, row);

@@ -58,8 +58,8 @@ public class ProductCatalog extends CategoryBlock{
   boolean _hasEditPermission = false;
   boolean _allowMulitpleCategories = true;
 
-
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
+
 
   public ProductCatalog() {
   }

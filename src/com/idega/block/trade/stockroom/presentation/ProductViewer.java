@@ -132,5 +132,4 @@ public class ProductViewer extends Block {
       cnf.printStackTrace(System.err);
     }
   }
-
 }

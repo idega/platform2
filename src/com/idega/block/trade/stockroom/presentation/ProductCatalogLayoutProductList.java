@@ -180,5 +180,4 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
     return form;
   }
-
 }
