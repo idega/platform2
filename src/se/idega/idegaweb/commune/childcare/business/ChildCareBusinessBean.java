@@ -897,11 +897,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, int schoolTypeID, User user, Locale locale) throws RemoteException {
+	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, int schoolTypeID, int employmentTypeID, User user, Locale locale) throws RemoteException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
-			alterValidFromDate(application, application.getFromDate(), locale, user);
+			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
 			if (groupID != -1) {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 				getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
@@ -915,17 +915,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 	
-	public void alterValidFromDate(int applicationID, Date newDate, Locale locale, User user) throws RemoteException {
+	public void alterValidFromDate(int applicationID, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
-			alterValidFromDate(application, newDate, locale, user); 
+			alterValidFromDate(application, newDate, employmentTypeID, locale, user); 
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
 		}		
 	}
 
-	public void alterValidFromDate(ChildCareApplication application, Date newDate, Locale locale, User user) throws RemoteException {
+	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException {
 		application.setApplicationStatus(getStatusReady());
 		int oldFileID = application.getContractFileId();
 		IWTimestamp fromDate = new IWTimestamp(newDate);
@@ -939,7 +939,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		application.setContractFileId(fileID);
 		application.setFromDate(newDate);
 		changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
-		addContractToArchive(oldFileID, application, -1, fromDate.getDate());
+		addContractToArchive(oldFileID, application, -1, fromDate.getDate(), employmentTypeID);
 		
 		try {
 			SchoolClassMember member = getLatestPlacement(application.getChildId(), application.getProviderId());
@@ -1428,7 +1428,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean assignContractToApplication(int applicationID, int childCareTime, IWTimestamp validFrom, User user, Locale locale, boolean changeStatus) {
+	public boolean assignContractToApplication(int applicationID, int childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
@@ -1512,7 +1512,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					String body = getLocalizedString("child_care.alter_caretime_body"+localizeBankIdPrefix, defaultContractChangedBody, locale);
 					sendMessageToParents(application, subject, body);
 				}
-				addContractToArchive(-1, application, contractID, validFrom.getDate());
+				addContractToArchive(-1, application, contractID, validFrom.getDate(), employmentTypeID);
 			}
 			transaction.commit();
 		}
@@ -1576,7 +1576,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
-				done = assignContractToApplication(Integer.parseInt(id), -1, null, user, locale, false);
+				done = assignContractToApplication(Integer.parseInt(id), -1, null, -1, user, locale, false);
 				if (!done)
 					return done;
 			}
@@ -1973,7 +1973,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	private void addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom) {
+	private void addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID) {
 		try {
 			ChildCareContract archive = null;
 			if (contractFileID != -1)
@@ -1991,6 +1991,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (application.getRejectionDate() != null)
 				archive.setTerminatedDate(application.getRejectionDate());
 			archive.setCareTime(application.getCareTime());
+			if (employmentTypeID != -1)
+				archive.setEmploymentType(employmentTypeID);
 			try {
 				SchoolClassMember student = getLatestPlacement(application.getChildId(), application.getProviderId());
 				archive.setSchoolClassMember(student);
@@ -2782,7 +2784,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					changeCaseStatus(application, getCaseStatusReady().getStatus(), admin);
 				}
 				
-				addContractToArchive(-1, application, contractID, fromDate.getDate());
+				addContractToArchive(-1, application, contractID, fromDate.getDate(), -1);
 				Timestamp removedDate = null;
 				if (toDate != null)
 					removedDate = toDate.getTimestamp();

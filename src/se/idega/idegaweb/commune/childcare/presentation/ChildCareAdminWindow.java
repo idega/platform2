@@ -85,8 +85,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";
 	public static final String PARAMETER_PRE_SCHOOL = "cc_pre_school";	
 	public static final String PARAMETER_SCHOOL_TYPES = "cc_school_types";	
-	
-	
+	public static final String PARAMETER_EMPLOYMENT_TYPE = "cc_employment_type";
 	
 	private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
@@ -621,7 +620,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(textInput, 1, row++);
 		}
 
-		Table dropdownTable = new Table(2, 2);
+		Table dropdownTable = new Table(2, 3);
 		int dropRow = 1;
 		DropdownMenu groups = getGroups(-1, -1);
 		groups.addMenuElementFirst("-1","");
@@ -635,7 +634,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		schoolTypes.setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
 		
 		dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
-		dropdownTable.add(schoolTypes, 2, dropRow);
+		dropdownTable.add(schoolTypes, 2, dropRow++);
+		
+		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
+		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
+		
+		dropdownTable.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, dropRow);
+		dropdownTable.add(employmentTypes, 2, dropRow);
 		
 		table.add(dropdownTable, 1, row++);
 
@@ -706,6 +711,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
+
+		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
+		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
+		
+		table.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(employmentTypes, 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
 		form.setToDisableOnSubmit(placeInGroup, true);
@@ -1362,7 +1374,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void alterCareTime(IWContext iwc) throws RemoteException {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
-		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
+		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
+		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
 
 		close();
 	}
@@ -1370,8 +1383,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void alterValidFromDate(IWContext iwc) throws RemoteException {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int careTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
-		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), iwc.getCurrentLocale(), iwc.getCurrentUser());
-		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), -1, iwc.getCurrentLocale(), iwc.getCurrentUser());
+		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, -1, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
 		
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
@@ -1431,13 +1444,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void createContract(IWContext iwc) throws RemoteException {
-		getBusiness().assignContractToApplication(_applicationID, -1, null, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+		getBusiness().assignContractToApplication(_applicationID, -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		close();
 	}
 	
 	private void createContractForBankID(IWContext iwc) throws RemoteException {
-		getBusiness().assignContractToApplication(_applicationID, -1, null, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+		getBusiness().assignContractToApplication(_applicationID, -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		close();
 	}
@@ -1464,10 +1477,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
 		int typeID = Integer.parseInt(iwc.getParameter(getSession().getParameterSchoolTypeID()));
+		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
 		
 		String subject = localize("child_care.placing_subject","Your child placed in child care.");
 		String body = localize("child_care.placing_body","{0} has been placed in a group at {1}.");
-		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, typeID, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, typeID, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		close();
 	}
@@ -1560,10 +1574,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			application,
 			localize(
 				"ccnctw_new_caretime_msg_parents_subject",
-				"Begäran om ändrad omsorgstid gjord"),
+				"Begï¿½ran om ï¿½ndrad omsorgstid gjord"),
 			localize(
 				"ccnctw_new_caretime_msg_parents_message",
-				"Du har skickat en begäran om ändrad omsorgstid för ")
+				"Du har skickat en begï¿½ran om ï¿½ndrad omsorgstid fï¿½r ")
 				+ child.getName()
 				+ " "
 				+ child.getPersonalID());
@@ -1572,18 +1586,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			application,
 			localize(
 				"ccnctw_new_caretime_msg_provider_subject",
-				"Begäran om ändrad omsorgstid"),
+				"Begï¿½ran om ï¿½ndrad omsorgstid"),
 			owner.getName()
 				+ " "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message1",
-					"har begärt ändrad omsorgstid till")
+					"har begï¿½rt ï¿½ndrad omsorgstid till")
 				+ " "
 				+ iwc.getParameter(PARAMETER_CHILDCARE_TIME)
 				+ " "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message2",
-					"tim/vecka för")
+					"tim/vecka fï¿½r")
 				+ " "
 				+ child.getName()
 				+ " "
@@ -1591,7 +1605,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				+ ". "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message3",
-					"Den nya omsorgstiden skall gälla fr.o.m.")
+					"Den nya omsorgstiden skall gï¿½lla fr.o.m.")
 				+ " "
 				+ iwc.getParameter(PARAMETER_CHANGE_DATE)
 				+ ".",

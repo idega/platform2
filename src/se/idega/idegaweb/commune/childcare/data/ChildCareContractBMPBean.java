@@ -33,6 +33,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public static final String COLUMN_VALID_FROM_DATE = "valid_from_date";
 	public static final String COLUMN_TERMINATED_DATE = "terminated_date";
 	public static final String COLUMN_CARE_TIME = "care_time";
+	public static final String COLUMN_WORK_SITUATION = "work_situation";
 	
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -56,6 +57,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		addOneToOneRelationship(COLUMN_CONTRACT_FILE_ID,ICFile.class);
 		addOneToOneRelationship(COLUMN_CONTRACT_ID,Contract.class);
 		addOneToOneRelationship(COLUMN_SCH_CLASS_MEMBER,SchoolClassMember.class);
+		addManyToOneRelationship(COLUMN_WORK_SITUATION,EmploymentType.class);
 	}
 	
 	public Date getCreatedDate() {
@@ -108,6 +110,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	
 	public SchoolClassMember getSchoolClassMmeber() {
 		return (SchoolClassMember) getColumnValue(COLUMN_SCH_CLASS_MEMBER);
+	}
+	
+	public EmploymentType getEmploymentType() {
+		return (EmploymentType) getColumnValue(COLUMN_WORK_SITUATION);
 	}
 	
 	public void setCreatedDate(Date createdDate) {
@@ -169,6 +175,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public void setTerminationDateAsNull(boolean setAsNull) {
 		if (setAsNull)
 			removeFromColumn(COLUMN_TERMINATED_DATE);
+	}
+	
+	public void setEmploymentType(int employmentTypeID) {
+		setColumn(COLUMN_WORK_SITUATION, employmentTypeID);
 	}
 	
 	public Collection ejbFindByChild(int childID) throws FinderException {

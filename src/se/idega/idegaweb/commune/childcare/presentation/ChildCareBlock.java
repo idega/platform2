@@ -129,6 +129,14 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		return (DropdownMenu) getStyledInterface(menu);	
 	}
 
+	protected DropdownMenu getEmploymentTypes(String parameterName, int selectedType) throws RemoteException {
+		SelectorUtility util = new SelectorUtility();
+		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(parameterName), getBusiness().findAllEmploymentTypes(), "getLocalizationKey", getResourceBundle());
+		menu.addMenuElementFirst("-1", "");
+		if (selectedType != -1)
+			menu.setSelectedElement(selectedType);
+		return menu;
+	}
 
 	protected DropdownMenu getGroups(int groupID, int groupToIgnoreID) throws RemoteException {
 		DropdownMenu menu = new DropdownMenu(getSession().getParameterGroupID());
