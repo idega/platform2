@@ -253,7 +253,7 @@ public class UserStatusTab extends UserTab {
 				int group_id = this.getGroupID();
 				int status_id = Integer.parseInt(status);
 				
-				getUserStatusBusiness(iwc).setUserGroupStatus(user_id,group_id,status_id); 	
+				getUserStatusBusiness(iwc).setUserGroupStatus(user_id,group_id,status_id,iwc.getCurrentUserId()); 	
 			}
 		}
 		catch(Exception e) {
