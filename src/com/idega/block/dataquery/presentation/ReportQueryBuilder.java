@@ -61,6 +61,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
+import com.idega.util.datastructures.HashMatrix;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -90,8 +91,6 @@ public class ReportQueryBuilder extends Block {
 	public static final String PARAM_CANCEL = "cancel";
 	public static final String PARAM_SAVE = "save";
 	public static final String PARAM_SAVE_MODE ="save_mode";
-	private static final String PARAM_ADD = "add";
-	private static final String PARAM_DROP = "drop";
 	private static final String PARAM_SET_EXPRESSION = "setExpression";
 	private static final String PARAM_SET_HANDLER = "setHandler";
 	private static final String PARAM_DYNAMIC = "dynamic";
@@ -102,15 +101,8 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_FIELDS = "entity_fields";
 	private static final String PARAM_ORDER_FIELDS = "order_fields";
 	private static final String PARAM_ORDER_FUNCTION = "order_function";
-	private static final String PARAM_CONDITION = "field_pattern";
-	private static final String PARAM_COND_TYPE = "field_type";
-	private static final String PARAM_COND_FIELD = "field";
 	private static final String PARAM_DISTINCT = "distinct";
 	private static final String PARAM_QUERY_DESCRIPTION = "query_description";
-	//private static final String PARAM_COND_ENTITY = "entity";
-	private static final String PARAM_COND_DESCRIPTION = "cond_description";
-	private static final String PARAM_BOOLEAN_EXPRESSION = "booleanExpression";
-//	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
 	public static final String PARAM_LAYOUT_FOLDER_ID ="qb_layoutId";
 	public static final String PARAM_QUERY_ID = "qb_qid";
 	public static final String PARAM_QUERY_NAME = "q_name";
@@ -119,7 +111,30 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_LOCK = "lock";
 	private static final String PARAM_FUNCTION = "mkfunction";
 	
+	// parameter used for condition step
+	// input fields
+	private static final String PARAM_COND_PATTERN = "field_pattern";
+	private static final String PARAM_COND_TYPE = "field_type";
+	private static final String PARAM_COND_FIELD = "field";
+	private static final String PARAM_COND_DESCRIPTION = "cond_description";
+	private static final String PARAM_COND_FIELD_AS_CONDITION = "setFieldsAsDynamicPattern";
+	private static final String PARAM_COND_BOOLEAN_EXPRESSION = "booleanExpression";
+	// buttons
+	private static final String PARAM_COND_ADD = "add";
+	private static final String PARAM_COND_DROP = "drop";
+	private static final String PARAM_COND_EDIT_START = "edit_condition";
+	private static final String PARAM_COND_EDIT_SAVE = "save_edit_condition";
+	private static final String PARAM_COND_EDIT_CANCEL = "cancel_edit_condition";
+	private static final String PARAM_COND_EDIT_MODE = "edit_mode_condition";
+	
+	private static final String VALUE_DO_NOT_USE_FIELD_AS_CONDITION = "do_not_use_a_field";
+
+
+	
+	
 	public static final int MAX_INVESTIGATIONS_LEVEL = 6;
+	public static final String DEFAULT_PATTERN = "";
+	public static final int NEW_INSTANCE = -1;
 	
 	private static final String PARAM_IS_PRIVATE_QUERY = "param_private_query";
 	
@@ -133,12 +148,10 @@ public class ReportQueryBuilder extends Block {
 	private int queryFolderID = -1;
 	private String layoutFolderID;
 	private int userQueryID = -1;
-	// thomas: not used
-	//private int relationDepth = 4;
+
 	private int investigationLevel = 6;
 	private int tableBorder = 0;
-	//private String zebraColor1 = "#CCCC99";
-	//private String zebraColor2 = "#FFFFFF";
+
 	private String stepTableColor = "#ffffff";
 	private String stepTableStyle = "main";
 	private String stepFontStyle = "headingFont";
@@ -146,10 +159,11 @@ public class ReportQueryBuilder extends Block {
 	private boolean allowEmptyConditions = true;
 	private boolean showSourceEntityInSelectBox = true;
 	private boolean showQueries = true;
-	//private boolean closeParentWindow = false;
 	private boolean allowFunctions = true;
+	private int editId = NEW_INSTANCE;
 	private QuerySession sessionBean;
-	private String defaultDynamicPattern = "";
+	private Form form = null;
+
 	
 	// added by thomas
 	// the second step is skipped when expert mode is false 
@@ -225,7 +239,7 @@ public class ReportQueryBuilder extends Block {
 				processForm(iwc);
 				//System.err.println("this step is after process" + step);
 				Table table = new Table(1, 3);
-				Form form = new Form();
+				form = new Form();
 				// thomas changed: queryFolder  id is always set
 				// if (queryFolderID > 0 && step < 5)
 				if (userQueryID > 0) {
@@ -257,7 +271,12 @@ public class ReportQueryBuilder extends Block {
 				if (! expertMode) {
 					displayStep = (step == 1)? 1 : step -1;
 				}
-				headerTable.add(getStepText(iwrb.getLocalizedString("step", "Step") + " " + displayStep), 1, 1);
+				String queryName = (userQueryID > 0) ? helper.getUserQuery().getName() : 
+						iwrb.getLocalizedString("step_5_default_queryname", "My query");
+				StringBuffer buffer = new StringBuffer(queryName);
+				buffer.append(" , ");
+				buffer.append(getStepText(iwrb.getLocalizedString("step", "Step") + " " + displayStep));
+				headerTable.add(buffer.toString(), 1, 1);
 				headerTable.add(getMsgText(getStepMessage()), 1, 2);
 				headerTable.mergeCells(2, 1, 2, 2);
 //				headerTable.add(iwb.getImage("wizard.png"), 2, 1);
@@ -322,46 +341,38 @@ public class ReportQueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_SET_EXPRESSION)) {
 			processBooleanExpression(iwc);
 		}
-		else if (iwc.isParameterSet(PARAM_ADD)) {
-			
-			String field = iwc.getParameter(PARAM_COND_FIELD);
-			String equator = iwc.getParameter(PARAM_COND_TYPE);
-			String[] patterns = iwc.getParameterValues(PARAM_CONDITION);
-			String description = iwc.getParameter(PARAM_COND_DESCRIPTION);
-			if (!"".equals(patterns) || iwc.isParameterSet(PARAM_DYNAMIC)){
-				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
-				helper.addHiddenField(fieldPart);
-				List patternsAsList = null;
-				if(patterns ==null || "".equals(patterns)){
-					patternsAsList = new ArrayList();
-					patternsAsList.add(defaultDynamicPattern);
-				}
-				else {
-					// change to collection-based API
-					patternsAsList = Arrays.asList(patterns);
-				}
-				int id = helper.getNextIdForCondition();
-				QueryConditionPart part = new QueryConditionPart(id, fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, patternsAsList, description);
-				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
-				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
-				helper.addCondition(part);
-				processBooleanExpression(iwc);
-			}
+		// handle step 5, conditions
+		else if (iwc.isParameterSet(PARAM_COND_ADD)) {
+			saveCondition(iwc);
 		}
-		else if (iwc.isParameterSet(PARAM_DROP)) {
-			String dropvalue = iwc.getParameter(PARAM_DROP);
-
-			if (dropvalue != null && helper.hasConditions()) {
+		else if (iwc.isParameterSet(PARAM_COND_EDIT_START)) {
+			editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_START));
+		}
+		else if (iwc.isParameterSet(PARAM_COND_EDIT_SAVE)) {
+			editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_SAVE));
+			saveCondition(iwc);
+			editId = NEW_INSTANCE;
+		}
+		else if (iwc.isParameterSet(PARAM_COND_EDIT_CANCEL)) {
+			editId = NEW_INSTANCE;
+		}
+		else if (iwc.isParameterSet(PARAM_COND_DROP)) {
+			int dropId = Integer.parseInt(iwc.getParameter(PARAM_COND_DROP));
+			if (helper.hasConditions()) {
 				List conditions = helper.getListOfConditions();
 				for (int i = 0; i < conditions.size(); i++) {
 					QueryConditionPart element = (QueryConditionPart) conditions.get(i);
-					if (element.encode().equals(dropvalue)) {
+					if (element.getIdNumber() == dropId) {
 						conditions.remove(i);
 					}
 				}
 				// update boolean expression
 				processBooleanExpression(iwc);
+				editId = NEW_INSTANCE;
 			}
+		}
+		else if (iwc.isParameterSet(PARAM_COND_EDIT_MODE)) {
+			editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_MODE));
 		}
 		else if (iwc.isParameterSet(PARAM_SAVE)) {
 			String description = iwc.getParameter(PARAM_QUERY_DESCRIPTION);
@@ -425,7 +436,84 @@ public class ReportQueryBuilder extends Block {
 		}
 		return false;
 	}
+
+	private void saveCondition(IWContext iwc) { 
+		String field = iwc.getParameter(PARAM_COND_FIELD);
+		String equator = iwc.getParameter(PARAM_COND_TYPE);
+		String description = iwc.getParameter(PARAM_COND_DESCRIPTION);
+		QueryFieldPart fieldPart = QueryFieldPart.decode(field);
+		helper.addHiddenField(fieldPart);
+		QueryConditionPart part = null; 
+		if (editId == NEW_INSTANCE) {
+			part = new QueryConditionPart();
+			int id = helper.getNextIdForCondition();
+			part.setIdUsingPrefix(id);
+		}
+		else {
+			if (helper.hasConditions()) {
+				List conditions = helper.getListOfConditions();
+					for (int i = 0; i < conditions.size(); i++) {
+					QueryConditionPart element = (QueryConditionPart) conditions.get(i);
+					if (element.getIdNumber() == editId) {
+						part = element;
+					}
+				}
+			}
+		}
+		part.setEntity(fieldPart.getEntity());
+		part.setPath(fieldPart.getPath());
+		part.setField(fieldPart.getName());
+		part.setType(equator);
+		part.setDescription(description);
+		if (isFieldAsPatternSet(iwc)) {
+			// ignore user settings if a pattern as field was chosen
+			part.setDynamic(false);
+			setFieldAsPatternByParsing(iwc, part);
+		}
+		else {
+			part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
+			setPatternByParsing(iwc, part);
+		}
+		helper.addCondition(part);
+		processBooleanExpression(iwc);
+	}
 	
+	/** 
+	 * @param iwc
+	 * @param part
+	 */
+	private void setPatternByParsing(IWContext iwc, QueryConditionPart part) {
+		// call method isFieldAsPatternSet before
+		String[] patterns = iwc.getParameterValues(PARAM_COND_PATTERN);
+		if (patterns == null || "".equals(patterns)){
+			part.setPattern(DEFAULT_PATTERN);
+		}
+		else if (patterns.length == 1) {
+			part.setPattern(patterns[0]);
+		}
+		else { 
+			// change to collection-based API
+			List patternsAsList = Arrays.asList(patterns);
+			part.setPatterns(patternsAsList);
+		}
+	}
+		
+	/** Returns true if the a field is used as pattern else false */
+	private boolean isFieldAsPatternSet(IWContext iwc) {
+		String fieldAsPattern = iwc.getParameter(PARAM_COND_FIELD_AS_CONDITION);
+		return !(fieldAsPattern == null || VALUE_DO_NOT_USE_FIELD_AS_CONDITION.equals(fieldAsPattern)); 
+	}
+		
+	private void setFieldAsPatternByParsing(IWContext iwc, QueryConditionPart part) {
+		// call method isFieldAsPatternSet before
+		// field is used as pattern
+		String fieldAsPattern = iwc.getParameter(PARAM_COND_FIELD_AS_CONDITION);
+		QueryFieldPart queryFieldAsPattern = QueryFieldPart.decode(fieldAsPattern);
+		helper.addHiddenField(queryFieldAsPattern);
+		part.setPatternPath(queryFieldAsPattern.getPath());
+		part.setPatternField(queryFieldAsPattern.getName());
+	}
+
 	private boolean processStep5(IWContext iwc) {
 		if (helper.hasConditions()) {
 			// has conditions, ask for the corresponding boolean expression
@@ -437,8 +525,8 @@ public class ReportQueryBuilder extends Block {
 	
 	private boolean processBooleanExpression(IWContext iwc) {
 		String booleanExpression = "";
-		if (iwc.isParameterSet(PARAM_BOOLEAN_EXPRESSION)) {
-			booleanExpression = iwc.getParameter(PARAM_BOOLEAN_EXPRESSION);
+		if (iwc.isParameterSet(PARAM_COND_BOOLEAN_EXPRESSION)) {
+			booleanExpression = iwc.getParameter(PARAM_COND_BOOLEAN_EXPRESSION);
 		}
 		QueryBooleanExpressionPart booleanExpressionPart = helper.getBooleanExpressionForConditions();
 		if (booleanExpressionPart == null) {
@@ -782,7 +870,7 @@ public class ReportQueryBuilder extends Block {
 			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
 			select.setHeight("20");
 			select.setWidth("300");
-
+			// get queries
 			Collection queries = ReportQueryOverview.getQueries(iwc);
 			Iterator iterator = queries.iterator();
 			while (iterator.hasNext()) {
@@ -796,7 +884,10 @@ public class ReportQueryBuilder extends Block {
 					displayName.append(" - ");
 					displayName.append(iwrb.getLocalizedString("query_builder_private", "private"));
 				}
-				select.addMenuElement(id, displayName.toString());				
+				// do not show the query that you are editing in the drop down menu
+				if (! id.equals(Integer.toString(userQueryID))) {
+					select.addMenuElement(id, displayName.toString());
+				}
 			}
   		if (helper.hasPreviousQuery()) {
   			List previousQueries = helper.previousQueries();
@@ -1097,141 +1188,101 @@ public class ReportQueryBuilder extends Block {
 
 	public PresentationObject getStep5(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
+		HashMatrix mapOfFields = getMapOfFields();
 		int row = 1;
-		table.add(getMsgText(iwrb.getLocalizedString("field_id","Id")), 2, row);
-		table.setColor(2,row, "#dfdfdf");
-//		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 3, row);
-//		table.setColor(3,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_name", "Name")), 3, row);
-		table.setColor(3,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_operator", "Operator")), 4, row);
-		table.setColor(4,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
-		table.setColor(5,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 6, row);
-		table.setColor(6,row,"#dfdfdf");
-		if (hasTemplatePermission) {
-//			table.add(getMsgText(iwrb.getLocalizedString("field_lock", "Lock")), 8, row);
-//			table.setColor(8,row,"#dfdfdf");
-			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")), 8 ,row);
-			table.setColor(8 ,row,"#dfdfdf");
-		}
-
-		row++;
+		addHeaderToConditionTable(table, row++);
 		List conditions = null;
 		if (helper.hasConditions()) {
 			conditions = helper.getListOfConditions();
-			Map mapOfFields = getMapOfFieldsByName();
 			for (Iterator iter = conditions.iterator(); iter.hasNext();) {
 				QueryConditionPart part = (QueryConditionPart) iter.next();
-				QueryFieldPart field = (QueryFieldPart) mapOfFields.get(part.getField());
-				InputHandler fieldInputHandler = null;
-				if (field != null) {
-					//table.add(iwrb.getLocalizedString(field.getEntity(), field.getEntity()), 3, row);
-					table.add(getDisplay(field), 3, row);
-					fieldInputHandler = getInputHandler(field);
-				}
-				table.add(part.getId(), 2, row);
-				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 4, row);
-				// display the pattern
-				if (part.hasMoreThanOnePattern()) {
-					Collection patternColl = part.getPatterns();
-					if (fieldInputHandler != null) {
-						String[] patternArray = (String[]) patternColl.toArray(new String[0]);
-						Object resultingObjects = null;
-						String display = null;
-						try {
-							resultingObjects = fieldInputHandler.getResultingObject(patternArray, iwc);
-							display = fieldInputHandler.getDisplayNameOfValue(resultingObjects, iwc);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							log(e);
-							display = "";
-						}
-						table.add(display, 5, row);
-					}
-					else {
-						StringBuffer buffer = new StringBuffer();
-						Iterator objectIterator = patternColl.iterator();
-						while (objectIterator.hasNext()) {
-							String display = (String) objectIterator.next();
-							buffer.append(display);
-							if (objectIterator.hasNext()) {
-								buffer.append(" , ");
-							}
-						}
-						table.add(buffer.toString(), 5, row);
-					}
+				if (editId == part.getIdNumber() && ! iwc.isParameterSet(PARAM_COND_EDIT_START)) {
+					addInputForNewInstanceToConditionTable(iwc, table, row, mapOfFields, editId);
 				}
 				else {
-					String singlePattern = part.getPattern();
-					if (fieldInputHandler != null) {
-						String[] patternArray = { singlePattern };
-						Object resultingObjects = null;
-						String display = null;
-						try {
-							resultingObjects = fieldInputHandler.getResultingObject(patternArray, iwc);
-							display = fieldInputHandler.getDisplayNameOfValue(resultingObjects, iwc);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							log(e);
-							display = "";
-						}
-						table.add(display, 5, row);
-					}
-					else {
-						table.add(singlePattern, 5, row);
-					}
+					addEntryToConditionTable(iwc, table, row, part, mapOfFields, null);
 				}
-				table.add(part.getDescription(), 6, row);
-				
-								
-				if (hasTemplatePermission){ 
-//LOCK					if(	part.isLocked()) 
-//LOCK						table.add("x", 8, row);
-					if(part.isDynamic())
-						table.add("x",8,row);
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
-				}
-				else if(!(part.isLocked() || part.isDynamic())){
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
-				}
-				row++;
+				addButtonsToConditionTable(table, row, part);
+				row = (editId == part.getIdNumber()) ? row+ 2 : row + 1;
 			}
 		}
 		table.add(Text.getBreak(), 1, row++);
+		if (editId == NEW_INSTANCE) {
+			addInputForNewInstanceToConditionTable(iwc, table, row, mapOfFields, editId);
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_COND_ADD), 8, row);
+		}
+		// set fields as source
+		row++;
+		row = addBooleanExpressionToConditionTable(table, row);
+		// add input handler chooser
+//		if (expertMode) {
+//			row++;
+//			InputHandlerChooser inputHandlerChooser = new InputHandlerChooser();
+//			if (fieldPart != null) {
+//				inputHandlerChooser.setField(fieldPart.getName());
+//				inputHandlerChooser.setEntity(fieldPart.getEntity());
+//			}
+//			table.mergeCells(3, row, 6, row);
+//			table.add(inputHandlerChooser, 3, row);
+//			table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set handler", "Set handler"), PARAM_SET_HANDLER, PARAM_SET_HANDLER),7 ,row);
+//		}
+		return table;
+	}
 
-		DropdownMenu equators = getConditionTypeDropdown();
-		DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc);//getFieldDropdown();
-		chosenFields.setOnChange("this.form.submit()");//was set onclick
-		// set the prior selected field
-		String fieldPartCode = iwc.getParameter(PARAM_COND_FIELD);
-		QueryFieldPart fieldPart = null;
-		PresentationObject inputWidget = null;
-		if (fieldPartCode != null) {
-			fieldPart = QueryFieldPart.decode(fieldPartCode);
-			chosenFields.setSelectedElement(fieldPartCode);
-			InputHandler inputHandler = getInputHandler(fieldPart);
-			if (inputHandler != null) {
-				inputWidget = inputHandler.getHandlerObject(PARAM_CONDITION, null, iwc);
+	/**
+	 * @param iwc
+	 * @param table
+	 * @param row
+	 * @param mapOfFields
+	 * @throws RemoteException
+	 */
+	private void addInputForNewInstanceToConditionTable(IWContext iwc, Table table, int row, HashMatrix mapOfFields, int editId) throws RemoteException {
+		Map temporaryParameterMap = new HashMap(1);
+		QueryConditionPart newInstance = new QueryConditionPart();
+		if (	! iwc.isParameterSet(PARAM_COND_EDIT_SAVE) && 
+					! iwc.isParameterSet(PARAM_COND_EDIT_CANCEL) &&
+					! iwc.isParameterSet(PARAM_COND_DROP) &&
+					! iwc.isParameterSet(PARAM_COND_ADD)) {
+			String equator = iwc.getParameter(PARAM_COND_TYPE);
+			String description = iwc.getParameter(PARAM_COND_DESCRIPTION);
+			newInstance.setDescription(description);
+			newInstance.setType(equator);
+			newInstance.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
+			if (! isFieldAsPatternSet(iwc)) {
+				setPatternByParsing(iwc, newInstance);
 			}
+			temporaryParameterMap.put(PARAM_COND_FIELD, iwc.getParameter(PARAM_COND_FIELD));
+			temporaryParameterMap.put(PARAM_COND_FIELD_AS_CONDITION, iwc.getParameter(PARAM_COND_FIELD_AS_CONDITION));
 		}
-		// take the default input handler
-		if (inputWidget == null) {
-			inputWidget = new TextInput(PARAM_CONDITION);
-		}
-		table.add(chosenFields, 3, row);
-		table.add(equators, 4, row);
-		table.add(inputWidget, 5, row);
-		TextInput description = new TextInput(PARAM_COND_DESCRIPTION);
-		table.add(description, 6, row);
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 7, row);
-		if(hasTemplatePermission){
-		
-			CheckBox dynamic = new CheckBox(PARAM_DYNAMIC);
-			table.add(dynamic,8,row);
-		}
-		
+		newInstance.setIdUsingPrefix(editId);
+		addEntryToConditionTable(iwc, table, row, newInstance, mapOfFields, temporaryParameterMap);
+	}
+
+	/**
+	 * @param iwc
+	 * @param table
+	 * @param row
+	 * @param part
+	 * @param mapOfFields
+	 * @throws RemoteException
+	 */
+	private void addEntryToConditionTable(IWContext iwc, Table table, int row, QueryConditionPart part, HashMatrix mapOfFields, Map temporaryParameterMap) throws RemoteException {
+		addIdentifierToConditionTable(table, row, part);
+		addFieldToConditionTable(iwc, table, row, part, mapOfFields, temporaryParameterMap);
+		addCondtionTypeToCondtionTable(table, row, part);
+		// display the pattern
+		addPatternToConditionTable(iwc, table, row, part, mapOfFields, temporaryParameterMap);
+		addDescriptionToConditionTable(table, row, part);
+		addDynamicPropertyToConditionTable(table, row, part);
+		addFieldAsPatternToConditionTable(iwc, table, row, part, mapOfFields, temporaryParameterMap);
+	}
+
+	/**
+	 * @param table
+	 * @param row
+	 * @return
+	 */
+	private int addBooleanExpressionToConditionTable(Table table, int row) {
 		// boolean expression
 		QueryBooleanExpressionPart booleanExpressionPart = helper.getBooleanExpressionForConditions();
 		String booleanExpression = "";
@@ -1240,7 +1291,7 @@ public class ReportQueryBuilder extends Block {
 			booleanExpressionPart.getBooleanExpression() :
 			booleanExpressionPart.getBadSyntaxBooleanExpression();
 		}
-		TextInput textInput = new TextInput(PARAM_BOOLEAN_EXPRESSION, booleanExpression);
+		TextInput textInput = new TextInput(PARAM_COND_BOOLEAN_EXPRESSION, booleanExpression);
 		textInput.setLength(100);
 		row++;
 		table.mergeCells(3, row, 6, row);
@@ -1251,20 +1302,243 @@ public class ReportQueryBuilder extends Block {
 		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("Example", "Example"));
 		buffer.append(": ( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )");
 		table.add(buffer.toString(), 3, row);
-		
-		// add input handler chooser
-		if (expertMode) {
-			row++;
-			InputHandlerChooser inputHandlerChooser = new InputHandlerChooser();
-			if (fieldPart != null) {
-				inputHandlerChooser.setField(fieldPart.getName());
-				inputHandlerChooser.setEntity(fieldPart.getEntity());
-			}
-			table.mergeCells(3, row, 6, row);
-			table.add(inputHandlerChooser, 3, row);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set handler", "Set handler"), PARAM_SET_HANDLER, PARAM_SET_HANDLER),7 ,row);
+		return row;
+	}
+
+	/**
+	 * @param table
+	 * @param row
+	 * @param part
+	 */
+	private void addButtonsToConditionTable(Table table, int row, QueryConditionPart part) {
+		String partId = Integer.toString(part.getIdNumber());
+		if (editId == NEW_INSTANCE) {
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_COND_DROP, partId), 8,	row);
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("step_5_edit_condition", "Edit"), PARAM_COND_EDIT_START, partId), 9, row);
 		}
-		return table;
+		else if (part.getIdNumber() == editId) {
+			form.addParameter(PARAM_COND_EDIT_MODE, partId);
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("step_5_save", "Save"), PARAM_COND_EDIT_SAVE, partId), 8, row);
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("step_5_cancel", "Cancel"), PARAM_COND_EDIT_CANCEL, partId), 9, row);
+		}
+	}
+
+	/**
+	 * @param table
+	 * @param row
+	 * @param part
+	 */
+	private void addCondtionTypeToCondtionTable(Table table, int row, QueryConditionPart part) {
+		String type = part.getType();
+		if (part.getIdNumber() == editId) {
+			DropdownMenu equators = getConditionTypeDropdown();
+			if (type != null) {
+				equators.setSelectedElement(type);
+			}
+			table.add(equators, 4, row);
+		}
+		else {
+			table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 4, row);
+		}
+	}
+
+	/**
+	 * @param table
+	 * @param row
+	 * @param field
+	 */
+	private void addFieldToConditionTable(IWContext iwc, Table table, int row, QueryConditionPart part, HashMatrix mapOfFields, Map temporaryParameterMap) throws RemoteException {
+		String path = part.getPath();
+		String fieldName= part.getField();
+		if (part.getIdNumber() == editId) {
+			DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc, PARAM_COND_FIELD);
+			chosenFields.setOnChange("this.form.submit()");
+			// set the prior selected field
+			String fieldEncoded = null;
+			if (path != null && fieldName != null) {
+				QueryFieldPart field = (QueryFieldPart) mapOfFields.get(path, fieldName);
+				fieldEncoded = field.encode();
+			}
+			else {
+				fieldEncoded = (temporaryParameterMap == null) ? null : (String) temporaryParameterMap.get(PARAM_COND_FIELD);
+			}
+			if (fieldEncoded != null) {
+				chosenFields.setSelectedElement(fieldEncoded);
+			}
+			else {
+				// put into the temporaryParameterMap to be able to set the right inputhandler
+				String selectedFieldEncoded = chosenFields.getSelectedElementValue();
+				temporaryParameterMap.put(PARAM_COND_FIELD, selectedFieldEncoded);
+			}
+			table.add(chosenFields, 3,row);
+		}
+		else {
+			QueryFieldPart field = (QueryFieldPart) mapOfFields.get(path, fieldName);
+			table.add(getDisplay(field), 3, row);
+		}
+	}
+	
+	private void addFieldAsPatternToConditionTable(IWContext iwc, Table table, int row, QueryConditionPart part, HashMatrix mapOfFields, Map temporaryParameterMap) throws RemoteException {
+		String path = part.getPatternPath();
+		String fieldName= part.getPatternField();
+		if (part.getIdNumber() == editId) {
+			DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc, PARAM_COND_FIELD_AS_CONDITION);
+			String doNotUseAField = iwrb.getLocalizedString("step_5_do_not_use_field","don't use a field");
+			chosenFields.addMenuElementFirst(VALUE_DO_NOT_USE_FIELD_AS_CONDITION, doNotUseAField );
+			// set the prior selected field
+			String fieldEncoded = null;
+			if (path != null && fieldName != null) {
+				QueryFieldPart field = (QueryFieldPart) mapOfFields.get(path, fieldName);
+				fieldEncoded = field.encode();
+			}
+			else {
+				fieldEncoded = (temporaryParameterMap == null) ? null: (String) temporaryParameterMap.get(PARAM_COND_FIELD_AS_CONDITION);
+			}
+			if (fieldEncoded != null) {
+				chosenFields.setSelectedElement(fieldEncoded);
+			}
+			table.add(chosenFields, 5 ,row + 1);
+		}
+		else if (path != null && fieldName != null) {
+			QueryFieldPart field = (QueryFieldPart) mapOfFields.get(path, fieldName);
+			table.add(getDisplay(field), 5 , row);
+		}
+	}
+
+	/**
+	 * @param table
+	 * @param row
+	 * @param part
+	 */
+	private void addIdentifierToConditionTable(Table table, int row, QueryConditionPart part) {
+		// do not show the id number "-1"
+		if (NEW_INSTANCE != part.getIdNumber()) {
+			table.add(part.getId(), 2, row);
+		}
+	}
+
+	/**
+	 * @param table
+	 * @param row
+	 * @param part
+	 */
+	private void addDescriptionToConditionTable(Table table, int row, QueryConditionPart part) {
+		String description = part.getDescription();
+		if (part.getIdNumber() ==  editId) {
+			TextInput descriptionInput = new TextInput(PARAM_COND_DESCRIPTION);
+			descriptionInput.setValue(description);
+			table.add(descriptionInput, 6, row);
+		}
+		else {
+			table.add(part.getDescription(), 6, row);
+		}
+	}
+
+	/**
+	 * @param table
+	 * @param row
+	 * @param part
+	 */
+	private void addDynamicPropertyToConditionTable(Table table, int row, QueryConditionPart part) {
+		boolean isDynamic =part.isDynamic();
+		if (part.getIdNumber() == editId) {
+			CheckBox dynamic = new CheckBox(PARAM_DYNAMIC);
+			dynamic.setChecked(isDynamic);
+			table.add(dynamic,7,row);
+		}
+		else if (isDynamic) {
+			table.add("x", 7, row);
+		}
+	}
+
+	/**
+	 * @param iwc
+	 * @param table
+	 * @param row
+	 * @param part
+	 * @param fieldInputHandler
+	 */
+	private void addPatternToConditionTable(IWContext iwc, Table table, int row, QueryConditionPart part, HashMatrix mapOfFields, Map temporaryParameterMap) {
+		// because the user interface is so complicated there are so many null checks - really bad
+		String path = part.getPath();
+		String field = part.getField();
+		QueryFieldPart fieldPart = null;
+		if (path == null && field == null) {
+			String fieldEncoded = (temporaryParameterMap == null) ? null : (String) temporaryParameterMap.get(PARAM_COND_FIELD);
+			fieldPart = (fieldEncoded == null) ? null : QueryFieldPart.decode(fieldEncoded);
+		}
+		else {
+			fieldPart = (QueryFieldPart) mapOfFields.get(part.getPath(), part.getField());
+		}
+		boolean hasMoreThanOnePattern = part.hasMoreThanOnePattern();
+		String singlePattern = (hasMoreThanOnePattern) ? null : part.getPattern();
+		Collection patterns = (hasMoreThanOnePattern) ? part.getPatterns() : null;
+		InputHandler inputHandler = (fieldPart ==null) ? null : getInputHandler(fieldPart);
+		
+		// display with editing options
+		if (part.getIdNumber() == editId) {
+			PresentationObject inputWidget;
+
+			if (inputHandler != null) {
+				//TODO: extend interface of handler that it can handle multiselection 
+				// that is the case singlePattern is null, patterns is not null
+				inputWidget = inputHandler.getHandlerObject(PARAM_COND_PATTERN, singlePattern, iwc);
+			}
+			else {
+				inputWidget = new TextInput(PARAM_COND_PATTERN);
+				if (singlePattern != null) {
+					// type casting is necessary to prevent calling the method 
+					// PresentationObject>>setValue(Object)
+					// The right method is setValue(String)
+					((TextInput)inputWidget).setValue(singlePattern);
+				}
+			}
+			table.add(inputWidget, 5, row);
+		}
+		else if (singlePattern == null && patterns == null) {
+			// nothing to display!!!!
+			return;
+		}
+		// normal display without any inputs
+		else if (inputHandler != null) {
+			String[] patternArray = (hasMoreThanOnePattern) ? (String[]) patterns.toArray(new String[0]) : new String[]  { singlePattern };
+			Object resultingObjects = null;
+			String display = null;
+			try {
+				resultingObjects = inputHandler.getResultingObject(patternArray, iwc);
+				display = inputHandler.getDisplayNameOfValue(resultingObjects, iwc);
+			} 	catch (Exception e)	 {
+				log(e);
+				display = "";
+			}
+			table.add(display, 5, row);
+		}
+		else {
+			table.add(singlePattern, 5, row);
+		}
+	}
+
+
+	
+	
+	
+	/**
+	 * @param table
+	 * @param row
+	 */
+	private void addHeaderToConditionTable(Table table, int row) {
+		table.add(getMsgText(iwrb.getLocalizedString("field_id","Id")), 2, row);
+		table.setColor(2,row, "#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_name", "Name")), 3, row);
+		table.setColor(3,row,"#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_operator", "Operator")), 4, row);
+		table.setColor(4,row,"#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
+		table.setColor(5,row,"#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 6, row);
+		table.setColor(6,row,"#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")), 7 ,row);
+		table.setColor(7 ,row,"#dfdfdf");
 	}
 
 	public PresentationObject getStep6() {
@@ -1278,7 +1552,7 @@ public class ReportQueryBuilder extends Block {
 		
 		
 		queryNameInput.setLength(20);
-		if (this.userQueryID > 0) {
+		if (userQueryID > 0) {
 			String queryName = helper.getUserQuery().getName();
 			queryNameInput.setContent(queryName);
 			table.add(iwrb.getLocalizedString("step_5_change_queryname", "Change query name"), 1, row++);
@@ -1436,13 +1710,13 @@ public class ReportQueryBuilder extends Block {
 		return map;
 	}
 
-	public Map getMapOfFieldsByName() {
-		Map map = new HashMap();
+	public HashMatrix getMapOfFields() {
+		HashMatrix map = new HashMatrix();
 		if (helper.hasFields()) {
 			Iterator iter = helper.getListOfFields().iterator();
 			while (iter.hasNext()) {
 				QueryFieldPart part = (QueryFieldPart) iter.next();
-				map.put(part.getName(), part);
+				map.put(part.getPath(), part.getName(), part);
 			}
 		}
 		return map;
@@ -1483,10 +1757,10 @@ public class ReportQueryBuilder extends Block {
 	}
 
 	
-	private DropdownMenu getAvailableFieldsDropdown(IWContext iwc)throws RemoteException {
+	private DropdownMenu getAvailableFieldsDropdown(IWContext iwc, String keyName) throws RemoteException {
 		QueryService service = getQueryService(iwc);
 		Map drpMap = new HashMap();
-		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
+		DropdownMenu drp = new DropdownMenu(keyName);
 		drp.setWidth("200");
 
 		if (helper.hasPreviousQuery())	{
@@ -1532,21 +1806,24 @@ public class ReportQueryBuilder extends Block {
 	
 	private void fillDropDown(QueryService service,QueryEntityPart entityPart,Map drpMap,DropdownMenu drp)throws RemoteException {
 		Iterator iter = service.getListOfFieldParts(iwrb, entityPart, expertMode).iterator();
-		String enc;
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
-			enc = part.encode();
+			String enc = part.encode();
 			if(!drpMap.containsKey(enc)){
 				addMenuElement(drp, part);
 			}
 		}
 	}
 	
+	
 	private void addMenuElement(DropdownMenu dropdownMenu, QueryFieldPart part) {
 		dropdownMenu.addMenuElement(part.encode(),	getDisplay(part));
 	}
 	
 	private String getDisplay(QueryFieldPart part) {
+		if (part == null) {
+			return "";
+		}
 		String entity = part.getEntity();
 		String displayName = part.getDisplay();//localizable key
 		String fieldName = part.getName();//the real database field name
@@ -1648,21 +1925,6 @@ public class ReportQueryBuilder extends Block {
 
 	}
 
-	/**
-	 * @return
-	 */
-	public String getDefaultDynamicPattern() {
-		return defaultDynamicPattern;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setDefaultDynamicPattern(String string) {
-		defaultDynamicPattern = string;
-	}
- 
-  
   private InputHandler getInputHandler(QueryFieldPart fieldPart) {
   	InputHandler inputHandler = null;
   	String predefinedClassName = fieldPart.getHandlerClass();
