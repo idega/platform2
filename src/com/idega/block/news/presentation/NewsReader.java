@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.59 2001/12/11 13:45:00 aron Exp $
+ * $Id: NewsReader.java,v 1.60 2001/12/11 17:24:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -348,17 +348,22 @@ public class NewsReader extends Block implements IWBlock {
     Text hFiles = formatText(iwrb.getLocalizedString("files","Files")+" : ",true);
     Text hFrom = formatText( iwrb.getLocalizedString("publish_from","Publish from")+" : ",true);
     Text hTo = formatText(iwrb.getLocalizedString("publish_to","Publish to")+" : ",true);
+    Text hCreated = formatText( iwrb.getLocalizedString("created","Created")+" : ",true);
+    Text hUpdated = formatText(iwrb.getLocalizedString("updated","Updated")+" : ",true);
     Text tLetters = formatText(String.valueOf(letterCount ),false);
     Text tFiles = formatText(String.valueOf(fileCount ),false);
 
     idegaTimestamp now = idegaTimestamp.RightNow();
     idegaTimestamp from = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishFrom());
     idegaTimestamp to = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishTo());
+    idegaTimestamp created = new idegaTimestamp(newsHelper.getContentHelper().getContent().getCreated());
+    idegaTimestamp updated = new idegaTimestamp(newsHelper.getContentHelper().getContent().getLastUpdated());
 
-    Text tFrom = formatText(df.format((java.util.Date)from.getTimestamp()),false);
-    Text tTo = formatText(df.format((java.util.Date)to.getTimestamp()),false);
-    tFrom.setBold();
-    tTo.setBold();
+    Text tFrom = formatText(df.format((java.util.Date)from.getTimestamp()),true);
+    Text tTo = formatText(df.format((java.util.Date)to.getTimestamp()),true);
+    Text tCreated = formatText(df.format((java.util.Date)created.getTimestamp()),false);
+    Text tUpdated = formatText(df.format((java.util.Date)updated.getTimestamp()),false);
+
 		// Unpublished
     if(from.isLaterThan(now)){
       tFrom.setFontColor("#FFDE00");
@@ -388,6 +393,10 @@ public class NewsReader extends Block implements IWBlock {
       infoTable.add(tFrom,4,1);
       infoTable.add(hTo,3,2);
       infoTable.add(tTo,4,2);
+      infoTable.add(hCreated,5,1);
+      infoTable.add(tCreated,6,1);
+      infoTable.add(hUpdated,5,2);
+      infoTable.add(tUpdated,6,2);
 
     int row = 1;
     T.add(newsInfo,1,row++);

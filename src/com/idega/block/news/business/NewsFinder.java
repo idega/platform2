@@ -135,37 +135,37 @@ public class NewsFinder {
     return null;
   }
 
-	 public static List listOfPublishingNews(int newsCategoryId,int iLocaleId,boolean ignorePublishingDates){
-		String middleTable = new Content().getLocalizedTextMiddleTableName(new LocalizedText(),new Content());
-    StringBuffer sql = new StringBuffer("SELECT N.* FROM ");
-    sql.append(NwNews.getEntityTableName());
-    sql.append(" N, ");
-		sql.append(LocalizedText.getEntityTableName());
-    sql.append(" T, ");
-		sql.append(middleTable);
-    sql.append(" M, ");
-    sql.append(Content.getEntityTableName());
-    sql.append(" C ");
-		sql.append("WHERE N.");
-    sql.append(NwNews.getColumnNameContentId());
-    sql.append(" = C.");
-    sql.append(Content.getEntityTableName());
-    sql.append("_ID AND ");
-    sql.append(NwNews.getColumnNameNewsCategoryId());
-    sql.append(" = ");
-    sql.append(newsCategoryId);
-		sql.append(" AND C.");
-		sql.append(Content.getEntityTableName());
-		sql.append("_ID = M.");
-		sql.append(Content.getEntityTableName());
-		sql.append("_ID AND M.");
-		sql.append(LocalizedText.getEntityTableName());
-		sql.append("_ID = T.");
-		sql.append(LocalizedText.getEntityTableName());
-		sql.append("_ID AND T.");
-		sql.append(LocalizedText.getColumnNameLocaleId());
-		sql.append(" = ");
-		sql.append(iLocaleId);
+    public static List listOfPublishingNews(int newsCategoryId,int iLocaleId,boolean ignorePublishingDates){
+      String middleTable = new Content().getLocalizedTextMiddleTableName(new LocalizedText(),new Content());
+      StringBuffer sql = new StringBuffer("SELECT N.* FROM ");
+      sql.append(NwNews.getEntityTableName());
+      sql.append(" N, ");
+      sql.append(LocalizedText.getEntityTableName());
+      sql.append(" T, ");
+      sql.append(middleTable);
+      sql.append(" M, ");
+      sql.append(Content.getEntityTableName());
+      sql.append(" C ");
+      sql.append("WHERE N.");
+      sql.append(NwNews.getColumnNameContentId());
+      sql.append(" = C.");
+      sql.append(Content.getEntityTableName());
+      sql.append("_ID AND ");
+      sql.append(NwNews.getColumnNameNewsCategoryId());
+      sql.append(" = ");
+      sql.append(newsCategoryId);
+      sql.append(" AND C.");
+      sql.append(Content.getEntityTableName());
+      sql.append("_ID = M.");
+      sql.append(Content.getEntityTableName());
+      sql.append("_ID AND M.");
+      sql.append(LocalizedText.getEntityTableName());
+      sql.append("_ID = T.");
+      sql.append(LocalizedText.getEntityTableName());
+      sql.append("_ID AND T.");
+      sql.append(LocalizedText.getColumnNameLocaleId());
+      sql.append(" = ");
+      sql.append(iLocaleId);
 
     // USE BETWEEN
     /*
@@ -196,7 +196,7 @@ public class NewsFinder {
     }
 
     sql.append(" order by C.");
-    sql.append(Content.getColumnNameUpdated());
+    sql.append(Content.getColumnNameCreated());
     sql.append(" desc ");
     //
 		//System.err.println(sql.toString());
@@ -342,81 +342,80 @@ public class NewsFinder {
   }
 
 
-  public static NwNews getNews(int iNewsId){
+    public static NwNews getNews(int iNewsId){
+      try {
+        return new NwNews(iNewsId);
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+        return null;
+      }
+    }
+
+    public static int	countNewsInCategory(int iCategoryId){
+      try {
+              NwNews news = (NwNews)NwNews.getStaticInstance(NwNews.class);
+              return news.getNumberOfRecords(news.getColumnNameNewsCategoryId(),iCategoryId);
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+      return 0;
+    }
+
+    public static int countNewsInCategory(int iCategoryId, int PublishType){
+      StringBuffer sql = new StringBuffer("select count(*) from ");
+      sql.append(NwNews.getEntityTableName());
+      sql.append(" n,");
+      sql.append(Content.getEntityTableName());
+      sql.append(" c where n.");
+      sql.append(NwNews.getColumnNameContentId());
+      sql.append(" = c.");
+      sql.append(Content.getEntityTableName());
+      sql.append("_id and ");
+      sql.append(NwNews.getColumnNameNewsCategoryId());
+      sql.append(" = ");
+      sql.append(iCategoryId);
+      if(PublishType > 0){
+              String today = idegaTimestamp.RightNow().toSQLString();
+      switch (PublishType) {
+        case UNPUBLISHED :
+                        sql.append(" and c.");
+                        sql.append(Content.getColumnNamePublishFrom() );
+                        sql.append(" >= '");
+                        sql.append(today);
+                        sql.append("' ");
+        break;
+        case PUBLISHISING:
+                        sql.append(" and c.");
+                        sql.append(Content.getColumnNamePublishFrom() );
+                        sql.append(" <= '");
+                        sql.append(today);
+                        sql.append("' and c.");
+                        sql.append(Content.getColumnNamePublishTo());
+                        sql.append(" >= '");
+                        sql.append(today);
+                        sql.append("' ");
+        break;
+        case PUBLISHED:
+          sql.append(" and c.");
+                sql.append(Content.getColumnNamePublishTo());
+                sql.append(" <= '");
+                sql.append(today);
+                sql.append("' ");
+        break;
+      }
+    }
+    NwNews ge = (NwNews)NwNews.getStaticInstance(NwNews.class);
     try {
-      return new NwNews(iNewsId);
+      //System.err.println(sql.toString());
+      return ge.getIntTableValue(sql.toString());
     }
     catch (SQLException ex) {
-      ex.printStackTrace();
-      return null;
+
     }
+    return 0;
   }
-
-	public static int	countNewsInCategory(int iCategoryId){
-		try {
-			NwNews news = (NwNews)NwNews.getStaticInstance(NwNews.class);
-			return news.getNumberOfRecords(news.getColumnNameNewsCategoryId(),iCategoryId);
-		}
-		catch (SQLException ex) {
-		  ex.printStackTrace();
-		}
-		return 0;
-
-	}
-
-	public static int countNewsInCategory(int iCategoryId, int PublishType){
-	  StringBuffer sql = new StringBuffer("select count(*) from ");
-		sql.append(NwNews.getEntityTableName());
-		sql.append(" n,");
-		sql.append(Content.getEntityTableName());
-		sql.append(" c where n.");
-		sql.append(NwNews.getColumnNameContentId());
-		sql.append(" = c.");
-		sql.append(Content.getEntityTableName());
-		sql.append("_id and ");
-		sql.append(NwNews.getColumnNameNewsCategoryId());
-		sql.append(" = ");
-		sql.append(iCategoryId);
-		if(PublishType > 0){
-			String today = idegaTimestamp.RightNow().toSQLString();
-			switch (PublishType) {
-				case UNPUBLISHED :
-						sql.append(" and c.");
-						sql.append(Content.getColumnNamePublishFrom() );
-						sql.append(" >= '");
-						sql.append(today);
-						sql.append("' ");
-				break;
-				case PUBLISHISING:
-						sql.append(" and c.");
-						sql.append(Content.getColumnNamePublishFrom() );
-						sql.append(" <= '");
-						sql.append(today);
-						sql.append("' and c.");
-						sql.append(Content.getColumnNamePublishTo());
-						sql.append(" >= '");
-						sql.append(today);
-						sql.append("' ");
-				break;
-				case PUBLISHED:
-				  sql.append(" and c.");
-					sql.append(Content.getColumnNamePublishTo());
-					sql.append(" <= '");
-					sql.append(today);
-					sql.append("' ");
-				break;
-			}
-		}
-		NwNews ge = (NwNews)NwNews.getStaticInstance(NwNews.class);
-		try {
-			//System.err.println(sql.toString());
-			return ge.getIntTableValue(sql.toString());
-		}
-		catch (SQLException ex) {
-
-		}
-		return 0;
-	}
 
   public static List listOfLocales(){
     return ICLocaleBusiness.listLocaleCreateIsEn();
