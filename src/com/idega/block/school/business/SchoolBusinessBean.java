@@ -763,7 +763,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public SchoolClass storeSchoolClass(String schoolClassName, School school, SchoolYear year, SchoolSeason season) {
-		return storeSchoolClass(-1, schoolClassName, ((Integer) school.getPrimaryKey()).intValue(), ((Integer) season.getPrimaryKey()).intValue(), ((Integer) year.getPrimaryKey()).intValue(), -1);
+		if (year != null && season != null)
+			return storeSchoolClass(-1, schoolClassName, ((Integer) school.getPrimaryKey()).intValue(), ((Integer) season.getPrimaryKey()).intValue(), ((Integer) year.getPrimaryKey()).intValue(), -1);
+		else
+			return storeSchoolClass(-1, schoolClassName, ((Integer) school.getPrimaryKey()).intValue(), -1, -1, -1);
 	}
 
 	public SchoolClassMember storeSchoolClassMember(SchoolClass sClass, User user) {
