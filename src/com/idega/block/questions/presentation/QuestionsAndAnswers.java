@@ -12,6 +12,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
+import com.idega.block.questions.business.QAndALayoutHandler;
 import com.idega.block.questions.business.QuestionsService;
 import com.idega.block.questions.data.Question;
 import com.idega.block.text.business.ContentHelper;
@@ -66,6 +67,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	private boolean showDeleteButton = true;
 	private boolean showMoveButtons = true;
 	private boolean showHomeButton = true;
+	private boolean showCategoryNames = true;
+   
+	private boolean displayOneRandomQuestion = false;
 	
 	private String questionPrefixText = "Q:";
 	private String answerPrefixText = "A:";
@@ -89,6 +93,8 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	public final static String DEFAULT_A_PREFIX = "font-style:normal;color:#000000;font-size:13px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";;
 	public final static String DEFAULT_C_TITLE = "font-style:normal;color:#000000;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
 	public final static String DEFAULT_Q_COUNT = "font-weight:plain;";
+	
+	private int layout = QAndALayoutHandler.DEFAULT_LAYOUT;
 	
 	
 	public QuestionsAndAnswers(){
@@ -118,29 +124,33 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		core = iwc.getIWMainApplication().getCoreBundle();
-
 		isAdmin = iwc.hasEditPermission(this);
 		
 		questionsService = (QuestionsService)IBOLookup.getServiceInstance(iwc,QuestionsService.class);
-		
 		currentLocale = iwc.getCurrentLocale();
 		
-		valViewCategory = iwc.getParameter(prmViewCategory);
-		// form processing
-		processForm(iwc);
-	
-		Table T = new Table();
-		int row = 1;
-		if(isAdmin){
-      		T.add(getAdminPart(iwc),1,row++);
-		}
-		Table QandATable = new Table();
-		Table QATable =(Table) getQATable(iwc,QandATable);
-		T.add(QATable,1,row++);
-		if(showAll)
-			T.add(QandATable,1,row++);
 		
-		add(T);
+		if(layout==QAndALayoutHandler.SINGLE_RANDOM_LAYOUT){
+		    add(getRandomQAndA(iwc));
+		}
+		else{
+			valViewCategory = iwc.getParameter(prmViewCategory);
+			// form processing
+			processForm(iwc);
+		
+			Table T = new Table();
+			int row = 1;
+			if(isAdmin){
+	      		T.add(getAdminPart(iwc),1,row++);
+			}
+			Table QandATable = new Table();
+			Table QATable =(Table) getQATable(iwc,QandATable);
+			T.add(QATable,1,row++);
+			if(showAll)
+				T.add(QandATable,1,row++);
+			
+			add(T);
+		}
 	}
 	
 	public PresentationObject getAdminPart(IWContext iwc){
@@ -163,6 +173,14 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	    return L;
 	  }
 
+	public PresentationObject getRandomQAndA(IWContext iwc)throws RemoteException{
+	    Table T = new Table(),QandATable = new Table();
+	    Question randomQuestion = questionsService.getRandomQuestion(this.getCategoryIds());
+	    if(randomQuestion!=null){
+	        createQuestionInfo(iwc,randomQuestion,null,null,-1,1,T,QandATable,null);
+	    }
+	    return QandATable;
+	}
 	
 	public PresentationObject getQATable(IWContext iwc,Table QandATable)throws RemoteException{
 		Table QTable = new Table();
@@ -194,23 +212,23 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		 
 		while(iter.hasNext()){
 			ICCategory cat = (ICCategory) iter.next();
-			String primKey = cat.getPrimaryKey().toString();
+			Integer catID = (Integer)cat.getPrimaryKey();
 			boolean headerAdded = false;
 			int headerRow = row;
 			row++;
 			if(cat.isLeaf()){
-				if(showAllCategories || (!showAllCategories && primKey.equals(valViewCategory))){
+				if(showAllCategories || (!showAllCategories && catID.toString().equals(valViewCategory))){
 					Table questionsTable =(Table) getCategoryQuestions(iwc,cat,QandATable);
 					if(showQuestionList)
 						T.add(questionsTable,2,row++);
 					if(isAdmin){
 						Question nullQuestion=null;
-						T.add(getQuestionForm(iwc,cat,nullQuestion,(Question)null,(Question)null),2,row++);
+						T.add(getQuestionForm(iwc,catID,nullQuestion,(Question)null,(Question)null),2,row++);
 					}
 				}
 				if(!showAllCategories){
 					Link headerLink = new Link(getStyleText( cat.getName(currentLocale),STYLENAME_C_TITLE));
-					headerLink.addParameter(prmViewCategory,primKey);
+					headerLink.addParameter(prmViewCategory,catID.toString());
 					T.add(headerLink,1,headerRow);
 					headerAdded = true;
 				}
@@ -221,19 +239,19 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}
 			
 			if(!headerAdded){
-				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(currentLocale),STYLENAME_C_TITLE),"Cat"+primKey);
+				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(currentLocale),STYLENAME_C_TITLE),"Cat"+catID.toString());
 				T.add(anc,1,headerRow);
-				T.add(new Anchor("bc"+primKey),1,headerRow);
+				T.add(new Anchor("bc"+catID.toString()),1,headerRow);
 			}
 			row++;
 		}
 	}
 	
-	private PresentationObject getQuestionForm(IWContext iwc,ICCategory cat,Question question,Question previous,Question latter)throws RemoteException{
+	private PresentationObject getQuestionForm(IWContext iwc,Integer cat,Question question,Question previous,Question latter)throws RemoteException{
 		Form form = new Form();
 		Table table = new Table();
 		
-		Integer categoryID = (Integer)cat.getPrimaryKey();
+		Integer categoryID = cat!=null?cat:new Integer(question.getCategoryId());
 		table.add(new HiddenInput("save_cat",categoryID.toString()));
 		boolean isForOneQuestion = true;
 		Link QandAEditorLink = new Link();
@@ -444,8 +462,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		Table T = new Table();
 		int row=1;
 		Collection questions = new Vector();
+		Integer catID = (Integer)cat.getPrimaryKey();
 		try{
-			questions = questionsService.getQuestionHome().findAllByCategory(((Integer)cat.getPrimaryKey()).intValue());
+			questions = questionsService.getQuestionHome().findAllByCategory(catID.intValue());
 		}catch(FinderException ex){}
 		Question quest,previous = null,latter= null;
 		int QuestCount = 1;
@@ -462,7 +481,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 				latter = (Question) list.get(i+1);
 			if(i == size-1)
 				latter = null;
-			createQuestionInfo(iwc,quest,previous,latter,QuestCount,row,T,QandATable,cat);
+			createQuestionInfo(iwc,quest,previous,latter,QuestCount,row,T,QandATable,catID);
 			QuestCount++;
 			row++;
 		}
@@ -470,7 +489,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	
 	}
 	
-	private void createQuestionInfo(IWContext iwc,Question quest,Question previous,Question latter, int QuestCount,int row,Table T,Table QandATable,ICCategory cat)throws RemoteException{
+	private void createQuestionInfo(IWContext iwc,Question quest,Question previous,Question latter, int QuestCount,int row,Table T,Table QandATable,Integer cat)throws RemoteException{
 		if(quest.getQuestionID() > 0){
 			ContentHelper helper = TextFinder.getContentHelper(quest.getQuestionID(),currentLocale);
 			String headline = helper.getLocalizedText()!=null? helper.getLocalizedText().getHeadline():"";
@@ -492,7 +511,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		}
 	}
 	
-	public void createQuestionsAndAnswers(IWContext iwc,ContentHelper quest,Question question,ICCategory cat,Table QandATable)throws RemoteException{
+	public void createQuestionsAndAnswers(IWContext iwc,ContentHelper quest,Question question,Integer cat,Table QandATable)throws RemoteException{
 		Table T = new Table();
 		int row = 1;
 		Anchor anc = new Anchor("Q"+question.getPrimaryKey().toString());
@@ -521,10 +540,10 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			String abody = ans.getLocalizedText()!=null?ans.getLocalizedText().getBody():"";
 			if(showQuestionTitle && aheadline!=null && aheadline.length()>0)
 				T.add(getStyleText(aheadline,STYLENAME_A_TITLE),2,row++);
-			if(showQuestionBody && abody!=null && abody.length()>0){
+			if(cat!=null && showQuestionBody && abody!=null && abody.length()>0){
 				T.add(getStyleText(abody,STYLENAME_A_BODY),2,row++);
 				if(showHomeButton && showAllCategories)
-				T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.getPrimaryKey().toString()),1,row);
+				T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.toString()),1,row);
 			}
 			
 		}
@@ -618,6 +637,13 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		this.showDeletedQuestions = showDeletedQuestions;
 	}
 	
+	 /**
+     * @param showCategoryNames The showCategoryNames to set.
+     */
+    public void setShowCategoryNames(boolean showCategoryNames) {
+        this.showCategoryNames = showCategoryNames;
+    }
+	
 	public void setQuestionPrefixText(String questionPrefixText){
 		this.questionPrefixText = questionPrefixText;
 	}
@@ -649,4 +675,10 @@ public class QuestionsAndAnswers extends CategoryBlock {
     	return obj;
   }
 	
+    /**
+     * @param layout The layout to set.
+     */
+    public void setLayout(int layout) {
+        this.layout = layout;
+    }
 }

@@ -1,11 +1,14 @@
 package com.idega.block.questions.data;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.category.data.CategoryEntityBMPBean;
 import com.idega.block.text.data.TxText;
+import com.idega.data.IDOQuery;
 
 /**
  * 
@@ -88,6 +91,14 @@ public class QuestionBMPBean extends CategoryEntityBMPBean implements Question{
 		sql.append(" order by ").append(SEQUENCE);
 		return this.idoFindPKsBySQL(sql.toString());
 	} 
+	
+	public Object ejbFindRandom(String[] categoryIds)throws FinderException{
+	   IDOQuery query = idoQueryGetSelect().appendWhere().append(getColumnCategoryId()).appendInArray(categoryIds);
+	   Collection ids = this.idoFindPKsByQuery(query);
+	   ArrayList list = new ArrayList(ids);
+	   int index = new Random().nextInt(list.size());
+	   return list.get(index);
+	}
 	
 	
 }

@@ -180,4 +180,20 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 		return (TextService)getServiceInstance(TextService.class);
 	}
 	
+	
+    /* (non-Javadoc)
+     * @see com.idega.block.questions.business.QuestionsService#getRandomQuestion(int[])
+     */
+    public Question getRandomQuestion(int[] categoryIds)throws RemoteException {
+        try {
+            String[] ids = new String[categoryIds.length];
+            for (int i = 0; i < categoryIds.length; i++) {
+                ids[i] = String.valueOf(categoryIds[i]);
+            }
+            return getQuestionHome().findRandom(ids);
+        } catch (FinderException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

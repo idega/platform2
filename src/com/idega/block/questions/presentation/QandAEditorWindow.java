@@ -47,6 +47,7 @@ public class QandAEditorWindow extends IWAdminWindow {
 		setWidth(600);
 		setHeight(550);
 		setResizable(true);
+		setScrollbar(true);
 	}
 	
 	
