@@ -45,6 +45,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
+import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService.SiblingOrderException;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 import se.idega.util.ErrorLogger;
@@ -307,7 +308,15 @@ public class InvoiceChildcareThread extends BillingThread{
 					log.info("created invoice record");
 
  					totalSum = postingDetail.getAmount()*placementTimes.getMonths();
-					int siblingOrder = getSiblingOrder(contract, siblingOrders);
+					int siblingOrder;
+ 					try{
+						siblingOrder = getSiblingOrder(contract, siblingOrders);
+					} catch (SiblingOrderException e) {
+						e.printStackTrace();
+						errorRelated.append(e.getMessage ());
+						createNewErrorMessage(errorRelated,"invoice.CouldNotGetSiblingOrder");
+						siblingOrder = 1;
+					}
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 							new Integer(siblingOrder)));
 					errorRelated.append(" Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
@@ -473,14 +482,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						createNewErrorMessage(errorRelated,"invoice.EJBError");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
-					}
-				} catch (se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderException e) {
-					e.printStackTrace();
-					if(errorRelated != null){
-						errorRelated.append(e.getMessage ());
-						createNewErrorMessage(errorRelated,"invoice.CouldNotGetSiblingOrder");
-					} else{
-						createNewErrorMessage(contract.getChild().getName() + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
 					}
 				}
 				catch (MissingFlowTypeException e) {
@@ -835,7 +836,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @return the sibling order for the child connected to the contract
 	 */
 
-	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderException, IDOLookupException, RemoteException, CreateException{
+	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, CreateException, RemoteException, SiblingOrderException{
 			User contractChild = contract.getChild ();	
 			UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
 			return userInfo.getSiblingOrder(contractChild, siblingOrders, startPeriod);
