@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.36 2003/10/05 11:39:51 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.37 2003/10/05 12:04:05 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -134,8 +134,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		if (operation.compareTo("0") == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_MAIN_OPERATION, "Huvudverksamhet måste väljas");			
 		}
-
-
 		
 		if (periodeFrom.after(periodeTo)) {
 			throw new RegulationException(KEY_ERROR_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
@@ -146,6 +144,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		if (conditionOrder.length() == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_ORDER_EMPTY, "Villkorsordning saknas!");			
 		}
+
 		try {
 			home = (RegulationHome) IDOLookup.getHome(Regulation.class);
 
