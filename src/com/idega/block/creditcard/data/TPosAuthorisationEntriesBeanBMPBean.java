@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.4 2004/10/30 08:09:56 gimmi Exp $
+ *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.5 2004/11/01 12:37:49 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -103,7 +103,7 @@ public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implement
     addAttribute(getCardCharacteristicsColumnName(), "", true, true, java.lang.String.class, 5);
     addAttribute(getCardTypeColumnName(), "", true, true, java.lang.String.class, 10);
     addAttribute(getCardNameColumnName(), "", true, true, java.lang.String.class, 20);
-    addAttribute(getEntryDateColumnName(), "", true, true, java.lang.String.class, 6);
+    addAttribute(getEntryDateColumnName(), "", true, true, java.lang.String.class, 8);
     addAttribute(getDetailExpectedColumnName(), "", true, true, java.lang.String.class);
     addAttribute(getErrorNoColumnName(), "", true, true, java.lang.String.class, 10);
     addAttribute(getErrorTextColumnName(), "", true, true, java.lang.String.class);
