@@ -8,11 +8,11 @@ import com.idega.jmodule.banner.presentation.*;
 import com.idega.jmodule.sidemenu.presentation.Sidemenu;
 import com.idega.presentation.Image;
 import com.idega.presentation.text.Link;
-import com.idega.jmodule.login.business.AccessControl;
 import com.idega.jmodule.news.presentation.NewsReader;
 import java.util.Vector;
 import java.sql.SQLException;
-import is.idega.idegaweb.golf.HandicapOverview;
+
+import is.idega.idegaweb.golf.handicap.presentation.HandicapOverview;
 import com.idega.presentation.text.*;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
@@ -213,13 +213,13 @@ public class GolfersPage extends Page {
     Maintable.add(imageToAdd,1,1);
   }
 
-  public void main(IWContext iwc) throws Exception{
+  public void main(IWContext modinfo) throws Exception{
     try {
-      isAdmin =  AccessControl.isAdmin(iwc);
+      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException E) {    }
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
 
     Image dotLineBackgroundImage;
     dotLineBackgroundImage = iwb.getImage("shared/brotalina.gif");

@@ -3,18 +3,19 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
+import is.idega.block.modernus.presentation.Modernus;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+
 import java.sql.SQLException;
 import java.util.Vector;
 
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.moduleobject.Modernus;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 /**
  * @author laddi

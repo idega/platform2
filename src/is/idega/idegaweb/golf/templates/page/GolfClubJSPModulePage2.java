@@ -1,23 +1,9 @@
 package is.idega.idegaweb.golf.templates.page;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import is.idega.idegaweb.golf.*;
-import is.idega.idegaweb.golf.moduleobject.GolfLogin;
-import com.idega.jmodule.*;
-import com.idega.jmodule.banner.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.jmodule.text.data.*;
-import com.idega.jmodule.poll.moduleobject.*;
-import com.idega.presentation.ui.*;
-import com.idega.jmodule.boxoffice.presentation.*;
-import com.idega.jmodule.banner.presentation.BannerContainer;
+import java.io.IOException;
+import java.sql.SQLException;
 
-import java.sql.*;
-import is.idega.idegaweb.golf.entity.*;
-import java.io.*;
+import com.idega.presentation.IWContext;
 
 
 public class GolfClubJSPModulePage2 extends GolfClubJSPModulePage{

@@ -1,14 +1,19 @@
 package is.idega.idegaweb.golf.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-
-import com.idega.idegaweb.*;
-
 import is.idega.idegaweb.golf.business.UnionCreator;
-import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.Country;
+import is.idega.idegaweb.golf.entity.Union;
+
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:        idegaclasses

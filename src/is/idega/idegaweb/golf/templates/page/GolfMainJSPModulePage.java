@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.5 2004/04/01 15:20:20 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.6 2004/04/01 15:45:30 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,23 +10,33 @@
 package is.idega.idegaweb.golf.templates.page;
 
 import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.*;
-import is.idega.idegaweb.golf.presentation.*;
-import is.idega.idegaweb.golf.tournament.presentation.*;
-import is.idega.idegaweb.golf.moduleobject.GolfLogin;
-import com.idega.jmodule.*;
-import com.idega.jmodule.banner.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.jmodule.poll.moduleobject.*;
-import com.idega.jmodule.boxoffice.presentation.*;
-import com.idega.util.*;
-import java.sql.*;
-import java.io.*;
+import is.idega.idegaweb.golf.login.presentation.GolfLogin;
+import is.idega.idegaweb.golf.presentation.ClubNewsBox;
+import is.idega.idegaweb.golf.tournament.presentation.TournamentBox;
+
+import java.io.IOException;
+import java.sql.SQLException;
+
+import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.jmodule.boxoffice.presentation.BoxReader;
+import com.idega.jmodule.poll.moduleobject.BasicPollVoter;
+import com.idega.presentation.Block;
+import com.idega.presentation.Flash;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HeaderTable;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Gudmundur idega iceland
@@ -232,10 +242,10 @@ public class GolfMainJSPModulePage extends MainPage {
 		///HeaderTable chatBox = getChat();
 		//chatBox.setCacheable("ChatBox",3600000);
 		//leftTable.add(JModuleObject.getCacheableObject(chatBox,"ChatBox",3600000),1,9);
-		ForumBox forums = new ForumBox();
-		forums.setLeft(true);
+		//ForumBox forums = new ForumBox();
+		//forums.setLeft(true);
 
-		leftTable.add(forums, 1, 25);
+		//leftTable.add(forums, 1, 25);
 
 		return leftTable;
 	}
@@ -658,10 +668,10 @@ public class GolfMainJSPModulePage extends MainPage {
 		HeaderTable poll = getPollVoter();
 		rightTable.add(Block.getCacheableObject(poll, "poll", 3600000), 1, 1); //1,5
 
-		ForumBox forums = new ForumBox();
-		forums.setRight(true);
+		//ForumBox forums = new ForumBox();
+		//forums.setRight(true);
 
-		rightTable.add(forums, 1, 3);
+		//rightTable.add(forums, 1, 3);
 
 		HeaderTable asses = getGSIAssociates();
 		rightTable.add(Block.getCacheableObject(asses, "asses", 86400000), 1, 5); //1,7

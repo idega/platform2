@@ -20,8 +20,8 @@ public class GolfersPage2 extends GolfersPage {
   public GolfersPage2() {
   }
 
-  public void main(IWContext iwc) throws Exception{
-    super.main(iwc);
+  public void main(IWContext modinfo) throws Exception{
+    super.main(modinfo);
     LinkMenu linkMenu = new LinkMenu();
     addMenuLinks(linkMenu);
     CornerImageController cornerImageController = new CornerImageController();
@@ -49,6 +49,6 @@ public class GolfersPage2 extends GolfersPage {
 
     FakeSideMenu fakeSideMenu = new FakeSideMenu();
     this.addLeftLink(fakeSideMenu);
-    add(GolferPageViewController.getView(iwc));
+    add(GolferPageViewController.getView(modinfo));
   }
 }

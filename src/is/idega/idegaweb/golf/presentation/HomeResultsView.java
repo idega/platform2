@@ -1,19 +1,13 @@
 package is.idega.idegaweb.golf.presentation;
 
-import com.idega.presentation.Block;
-import is.idega.idegaweb.golf.HandicapOverview;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import com.idega.jmodule.news.presentation.NewsReader;
-import java.lang.String;
+import is.idega.idegaweb.golf.handicap.presentation.HandicapOverview;
+
 import java.sql.SQLException;
-import com.idega.presentation.text.*;
-import com.idega.jmodule.text.presentation.TextReader;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.golf.entity.GolferPageData;
+
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 /**
  * Title:        idegaWeb Classes
