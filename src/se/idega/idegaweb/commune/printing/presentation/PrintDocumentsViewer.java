@@ -689,7 +689,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 	
 	private DownloadLink getViewLink(String display, int fileID){
-		DownloadLink viewLink = new DownloadLink();
+		DownloadLink viewLink = new DownloadLink(display);
 		viewLink.setFile(fileID);
 		return viewLink;
 	}
