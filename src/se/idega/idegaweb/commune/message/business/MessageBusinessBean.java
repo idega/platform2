@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.60 2004/03/26 12:02:41 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.61 2004/04/13 14:05:07 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -130,7 +130,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 	}
 	
-	public boolean isMessageRead(Message message) throws RemoteException {
+	public boolean isMessageRead(Message message) {
 		if ( (message.getCaseStatus()).equals(getCaseStatusGranted()) )
 			return true;
 		return false;
@@ -256,13 +256,17 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean pSendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter) {
+		return createUserMessage(parentCase, receiver, sender, handler, subject, body, letterBody, pSendLetterIfNoEmail, contentCode, alwaysSendLetter, true); 
+	}
+	
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, String letterBody, boolean pSendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter, boolean sendEMail) {
 		try {
 			if (letterBody == null) {
 				letterBody = body;
 			}
 			
 			Message message = null;
-			boolean sendMail = getIfUserPreferesMessageByEmail(receiver);
+			boolean sendMail = getIfUserPreferesMessageByEmail(receiver) && sendEMail;
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(receiver);
 			boolean canSendEmail = getIfCanSendEmail();
 			boolean sendLetterEvenWhenHavingEmail=getIfCreateLetterMessageHavingEmail();
@@ -342,7 +346,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return getBundle().getBooleanProperty("create_letter_message_having_email",false);
 	}
 
-	public Message createUserMessage(int userID, String subject, String body) throws CreateException, RemoteException {
+	public Message createUserMessage(int userID, String subject, String body) throws CreateException {
 		User user;
 		try {
 			user = getUser(userID);
@@ -440,36 +444,36 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	 * @param performer The User that makes the change
 	 * @param message the message to be marked
 	 */
-	public void flagPrintedLetterAsPrinted(User performer,PrintedLetterMessage message)throws RemoteException{
+	public void flagPrintedLetterAsPrinted(User performer,PrintedLetterMessage message) {
 		String newCaseStatus=getCaseStatusReady().getStatus();
 		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
 	
-	public void flagMessageAsPrinted(User performer,Message message)throws RemoteException{
+	public void flagMessageAsPrinted(User performer,Message message) {
 		String newCaseStatus=getCaseStatusReady().getStatus();
 		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
 	
-	public void flagMessageAsUnPrinted(User performer,Message message)throws RemoteException{
+	public void flagMessageAsUnPrinted(User performer,Message message) {
 		String newCaseStatus=getCaseStatusOpen().getStatus();
 		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
 	
-	public void flagMessageAsInactive(User performer,Message message)throws RemoteException{
+	public void flagMessageAsInactive(User performer,Message message) {
 		String newCaseStatus=getCaseStatusInactive().getStatus();
 		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
 	
-	public void flagMessagesAsInactive(User performer, String[] msgKeys)throws RemoteException,FinderException{
+	public void flagMessagesAsInactive(User performer, String[] msgKeys)throws FinderException{
 		String newCaseStatus=getCaseStatusInactive().getStatus();
 		flagMessagesWithStatus(performer,msgKeys,newCaseStatus);
 	}
 	
-	public void  flagMessageWithStatus(User performer,Message message,String status) throws RemoteException{
+	public void  flagMessageWithStatus(User performer,Message message,String status) {
 		super.changeCaseStatus(message,status,performer);
 	}
 	
-	public void flagMessagesWithStatus(User performer, String[] msgKeys,String status)throws RemoteException,FinderException{
+	public void flagMessagesWithStatus(User performer, String[] msgKeys,String status)throws FinderException{
 			for (int i = 0; i < msgKeys.length; i++) {
 				super.changeCaseStatus( Integer.parseInt(msgKeys[i]),status,performer);
 			}
