@@ -48,9 +48,7 @@ public class ClubInformationTab extends UserGroupTab {
 
 	private TextInput _numberField;
 	private TextInput _ssnField;
-	private TextInput _abbreviationField;
-	private TextInput _shortNameField;
-	private TextInput _nameField;
+
 	private DateInput _foundedField;
 	//	private DropdownMenu _typeField;
 	private CheckBox _memberUMFIField;
@@ -63,9 +61,7 @@ public class ClubInformationTab extends UserGroupTab {
 
 	private Text _numberText;
 	private Text _ssnText;
-	private Text _abrvText;
-	private Text _shortNameText;
-	private Text _nameText;
+
 	private Text _foundedText;
 	//	private Text _typeText;
 	private Text _memberUMFIText;
@@ -78,9 +74,6 @@ public class ClubInformationTab extends UserGroupTab {
 
 	private String _numberFieldName;
 	private String _ssnFieldName;
-	private String _abrvFieldName;
-	private String _shortNameFieldName;
-	private String _nameFieldName;
 	private String _foundedFieldName;
 	private String _typeFieldName;
 	private String _memberUMFIFieldName;
@@ -111,9 +104,6 @@ public class ClubInformationTab extends UserGroupTab {
 	public void initializeFieldNames() {
 		_numberFieldName = "cit_number";
 		_ssnFieldName = "cit_ssn";
-		_abrvFieldName = "cit_abrv";
-		_shortNameFieldName = "cit_short";
-		_nameFieldName = "cit_name";
 		_foundedFieldName = "cit_founded";
 		_typeFieldName = "cit_type";
 		_memberUMFIFieldName = "cit_memberOfUMFI";
@@ -132,9 +122,6 @@ public class ClubInformationTab extends UserGroupTab {
 		fieldValues = new Hashtable();
 		fieldValues.put(_numberFieldName, "");
 		fieldValues.put(_ssnFieldName, "");
-		fieldValues.put(_abrvFieldName, "");
-		fieldValues.put(_shortNameFieldName, "");
-		fieldValues.put(_nameFieldName, "");
 		fieldValues.put(_foundedFieldName, new IWTimestamp().getDate().toString());
 		fieldValues.put(_typeFieldName, "");
 		fieldValues.put(_memberUMFIFieldName, new Boolean(false));
@@ -153,9 +140,6 @@ public class ClubInformationTab extends UserGroupTab {
 		lineUpFields();
 		_numberField.setContent((String) fieldValues.get(_numberFieldName));
 		_ssnField.setContent((String) fieldValues.get(_ssnFieldName));
-		_abbreviationField.setContent((String) fieldValues.get(_abrvFieldName));
-		_shortNameField.setContent((String) fieldValues.get(_shortNameFieldName));
-		_nameField.setContent((String) fieldValues.get(_nameFieldName));
 		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
 		//		_typeField.setSelectedElement((String) fieldValues.get(_typeFieldName));
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
@@ -194,9 +178,6 @@ public class ClubInformationTab extends UserGroupTab {
 
 		_numberField = new TextInput(_numberFieldName);
 		_ssnField = new TextInput(_ssnFieldName);
-		_abbreviationField = new TextInput(_abrvFieldName);
-		_shortNameField = new TextInput(_shortNameFieldName);
-		_nameField = new TextInput(_nameFieldName);
 		_foundedField = new DateInput(_foundedFieldName);
 		_foundedField.setYearRange(1900, GregorianCalendar.getInstance().get(GregorianCalendar.YEAR));
 		//_typeField = new DropdownMenu(_typeFieldName);
@@ -242,9 +223,6 @@ public class ClubInformationTab extends UserGroupTab {
 
 		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
 		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
-		_abrvText = new Text(iwrb.getLocalizedString(_abrvFieldName, "Abbreviation") + ":");
-		_shortNameText = new Text(iwrb.getLocalizedString(_shortNameFieldName, "Short name") + ":");
-		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Long name") + ":");
 		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded") + ":");
 		//		_typeText = new Text(iwrb.getLocalizedString(_typeFieldName, "Type") + ":");
 		_memberUMFIText = new Text(iwrb.getLocalizedString(_memberUMFIFieldName, "UMFI membership") + ":");
@@ -262,35 +240,29 @@ public class ClubInformationTab extends UserGroupTab {
 	public void lineUpFields() {
 		empty();
 
-		Table t = new Table(2, 14);
+		Table t = new Table(2, 10);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
 		t.add(_ssnText, 1, 2);
 		t.add(_ssnField, 2, 2);
-		t.add(_abrvText, 1, 3);
-		t.add(_abbreviationField, 2, 3);
-		t.add(_shortNameText, 1, 4);
-		t.add(_shortNameField, 2, 4);
-		t.add(_nameText, 1, 5);
-		t.add(_nameField, 2, 5);
-		t.add(_foundedText, 1, 6);
-		t.add(_foundedField, 2, 6);
+		t.add(_foundedText, 1, 3);
+		t.add(_foundedField, 2, 3);
 		//		t.add(_typeText, 1, 7);
 		//		t.add(_typeField, 2, 7);
-		t.add(_memberUMFIText, 1, 7);
-		t.add(_memberUMFIField, 2, 7);
-		t.add(_makeText, 1, 8);
-		t.add(_makeField, 2, 8);
-		t.add(_connectionToSpecialText, 1, 9);
-		t.add(_connectionToSpecialField, 2, 9);
-		t.add(_regionalUnionText, 1, 11);
-		t.add(_regionalUnionField, 2, 11);
-		t.add(_statusText, 1, 12);
-		t.add(_statusField, 2, 12);
-		t.add(_inOperationText, 1, 13);
-		t.add(_inOperationField, 2, 13);
-		t.add(_usingMemberSystemText, 1, 14);
-		t.add(_usingMemberSystemField, 2, 14);
+		t.add(_memberUMFIText, 1, 4);
+		t.add(_memberUMFIField, 2, 4);
+		t.add(_makeText, 1, 5);
+		t.add(_makeField, 2, 5);
+		t.add(_connectionToSpecialText, 1, 6);
+		t.add(_connectionToSpecialField, 2, 6);
+		t.add(_regionalUnionText, 1, 7);
+		t.add(_regionalUnionField, 2, 7);
+		t.add(_statusText, 1, 8);
+		t.add(_statusField, 2, 8);
+		t.add(_inOperationText, 1, 9);
+		t.add(_inOperationField, 2, 9);
+		t.add(_usingMemberSystemText, 1, 10);
+		t.add(_usingMemberSystemField, 2, 10);
 
 		add(t);
 	}
@@ -302,9 +274,6 @@ public class ClubInformationTab extends UserGroupTab {
 		if (iwc != null) {
 			String number = iwc.getParameter(_numberFieldName);
 			String ssn = iwc.getParameter(_ssnFieldName);
-			String abrv = iwc.getParameter(_abrvFieldName);
-			String shortName = iwc.getParameter(_shortNameFieldName);
-			String name = iwc.getParameter(_nameFieldName);
 			String founded = iwc.getParameter(_foundedFieldName);
 			String type = iwc.getParameter(_typeFieldName);
 			String member = iwc.getParameter(_memberUMFIFieldName);
@@ -322,18 +291,6 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_ssnFieldName, ssn);
 			else
 				fieldValues.put(_ssnFieldName, "");
-			if (abrv != null)
-				fieldValues.put(_abrvFieldName, abrv);
-			else
-				fieldValues.put(_abrvFieldName, "");
-			if (shortName != null)
-				fieldValues.put(_shortNameFieldName, shortName);
-			else
-				fieldValues.put(_shortNameFieldName, "");
-			if (name != null)
-				fieldValues.put(_nameFieldName, name);
-			else
-				fieldValues.put(_nameFieldName, "");
 			if (founded != null)
 				fieldValues.put(_foundedFieldName, founded);
 			else
@@ -374,9 +331,6 @@ public class ClubInformationTab extends UserGroupTab {
 
 			String number = (String) fieldValues.get(_numberFieldName);
 			String ssn = (String) fieldValues.get(_ssnFieldName);
-			String abrv = (String) fieldValues.get(_abrvFieldName);
-			String shortName = (String) fieldValues.get(_shortNameFieldName);
-			String name = (String) fieldValues.get(_nameFieldName);
 			String founded = (String) fieldValues.get(_foundedFieldName);
 			String type = (String) fieldValues.get(_typeFieldName);
 			Boolean memberUMFI = (Boolean) fieldValues.get(_memberUMFIFieldName);
@@ -388,9 +342,6 @@ public class ClubInformationTab extends UserGroupTab {
 
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER, number);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_SSN, ssn);
-			group.setMetaData(IWMemberConstants.META_DATA_CLUB_ABRV, abrv);
-			group.setMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME, shortName);
-			group.setMetaData(IWMemberConstants.META_DATA_CLUB_NAME, name);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED, founded);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_TYPE, type);
 			if (memberUMFI != null)
@@ -456,9 +407,7 @@ public class ClubInformationTab extends UserGroupTab {
 
 			String number = group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
 			String ssn = group.getMetaData(IWMemberConstants.META_DATA_CLUB_SSN);
-			String abrv = group.getMetaData(IWMemberConstants.META_DATA_CLUB_ABRV);
-			String shortName = group.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME);
-			String name = group.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME);
+
 			String founded = group.getMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED);
 			String type = group.getMetaData(IWMemberConstants.META_DATA_CLUB_TYPE);
 			String member = group.getMetaData(IWMemberConstants.META_DATA_CLUB_MEMBER);
@@ -472,12 +421,6 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_numberFieldName, number);
 			if (ssn != null)
 				fieldValues.put(_ssnFieldName, ssn);
-			if (abrv != null)
-				fieldValues.put(_abrvFieldName, abrv);
-			if (shortName != null)
-				fieldValues.put(_shortNameFieldName, shortName);
-			if (name != null)
-				fieldValues.put(_nameFieldName, name);
 			if (founded != null)
 				fieldValues.put(_foundedFieldName, founded);
 			if (type != null)
