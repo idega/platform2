@@ -193,7 +193,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     try{
         // connect to the servlet
         System.out.println("Connecting to servlet...");
-        URL servlet = new URL(hostURL,servletURL);
+        URL servlet = new URL(hostURL,servletURL+"/");
 
         servletConnection = servlet.openConnection();
         System.out.println("Connected");
