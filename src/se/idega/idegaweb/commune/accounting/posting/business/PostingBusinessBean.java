@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.58 2004/01/14 16:05:08 palli Exp $
+ * $Id: PostingBusinessBean.java,v 1.59 2004/01/14 18:51:42 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -333,6 +333,98 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					com_id, 
 					com_bel_id, 
 					schoolYear1_id, -1, false
+			);
+			if (pp == null) {
+				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Could not find parameter");
+			}
+			
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+		return pp;
+	}	
+
+	/**
+	 * Slight mutation of the function above, to reflect what I think the function is supposed to do
+	 * (JJ)
+	 * @param date
+	 * @param act_id
+	 * @param reg_id
+	 * @param com_id
+	 * @param com_bel_id
+	 * @param schoolYear1_id
+	 * @return
+	 * @throws PostingParametersException
+	 */
+	public PostingParameters getPostingParameterWithoutStudypath(Date date, int act_id, 
+			int reg_id, String com_id, int com_bel_id, int schoolYear1_id) throws PostingParametersException {
+		logDebug("date: " + date);				
+		logDebug("act_id: " + act_id);				
+		logDebug("reg_id: " + reg_id);				
+		logDebug("com_id: " + com_id);				
+		logDebug("com_bel_id: " + com_bel_id);				
+		logDebug("schoolYear1_id: " + schoolYear1_id);
+		
+		PostingParameters pp = null;
+		
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			
+			pp = home.findPostingParameter(
+					date, 
+					act_id,
+					reg_id, 
+					com_id, 
+					com_bel_id, 
+					schoolYear1_id, -1, true
+			);
+			if (pp == null) {
+				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Could not find parameter");
+			}
+			
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+		return pp;
+	}	
+
+	/**
+	 * Slight mutation of the function above, to reflect what I think the function is supposed to do
+	 * (JJ)
+	 * @param date
+	 * @param act_id
+	 * @param reg_id
+	 * @param com_id
+	 * @param com_bel_id
+	 * @param schoolYear1_id
+	 * @return
+	 * @throws PostingParametersException
+	 */
+	public PostingParameters getPostingParameterWithStudypath(Date date, int act_id, 
+			int reg_id, String com_id, int com_bel_id, int schoolYear1_id, int studyPathID) throws PostingParametersException {
+		logDebug("date: " + date);				
+		logDebug("act_id: " + act_id);				
+		logDebug("reg_id: " + reg_id);				
+		logDebug("com_id: " + com_id);				
+		logDebug("com_bel_id: " + com_bel_id);				
+		logDebug("schoolYear1_id: " + schoolYear1_id);
+		
+		PostingParameters pp = null;
+		
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			
+			pp = home.findPostingParameter(
+					date, 
+					act_id,
+					reg_id, 
+					com_id, 
+					com_bel_id, 
+					schoolYear1_id, studyPathID, false
 			);
 			if (pp == null) {
 				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Could not find parameter");
@@ -807,11 +899,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			throw new PostingException("postingException.missing_provider", "No provider found");
 		}			
 		
-		//TODO Remove
-		if (noStudyPathId)
-			if (studyPathId == -1)
-				studyPathId = -1;
-		
 		String ownPosting = null, doublePosting = null;
 		try{
 			Commune commune = provider.getSchool().getCommune();
@@ -822,7 +909,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			findByPrimaryKeyIDO(category.getPrimaryKey());				
 			//Set the posting strings
 			
-			PostingParameters  parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId);
+			PostingParameters  parameters = null;
+			if(noStudyPathId){
+				//must not be study path?
+				parameters = getPostingParameterWithoutStudypath(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId);
+			}else{
+				parameters = getPostingParameterWithStudypath(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId, studyPathId);
+			}
 			
 			ownPosting = parameters.getPostingString();
 //			logDebug("ownPosting1: " + ownPosting);
