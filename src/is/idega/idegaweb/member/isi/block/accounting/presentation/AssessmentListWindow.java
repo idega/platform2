@@ -36,7 +36,7 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 	
 	protected static final String LABEL_DIVISION = "isi_acc_alw_div";
 	protected static final String LABEL_GROUP = "isi_acc_alw_group";
-	protected static final String LABEL_TARIFF_TYPE = "isi_acc_alw_tariff_type";
+	protected static final String LABEL_TARIFF = "isi_acc_alw_tariff";
 	protected static final String LABEL_USER = "isi_acc_alw_user";
 	protected static final String LABEL_DATE = "isi_acc_alw_date";
 	protected static final String LABEL_AMOUNT = "isi_acc_alw_amount";
@@ -93,8 +93,8 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_USER, "User"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelTariffType = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE, "Tariff type"));
-		labelTariffType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelTariff = new Text(iwrb.getLocalizedString(LABEL_TARIFF, "Tariff"));
+		labelTariff.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelDate = new Text(iwrb.getLocalizedString(LABEL_DATE, "Date"));
 		labelDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT, "Amount"));
@@ -106,15 +106,11 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		Text labelSum = new Text(iwrb.getLocalizedString(LABEL_SUM, "Sum"));
 		labelSum.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		
-//		Text labelStatus = new Text(iwrb.getLocalizedString(LABEL_STATUS, "Status"));
-//		labelStatus.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		
 		t.add(labelDiv, 1, row);		
 		t.add(labelGroup, 2, row);
 		t.add(labelUser, 3, row);
-		t.add(labelTariffType, 4, row);
+		t.add(labelTariff, 4, row);
 		t.add(labelAmount, 5, row);
-//		t.add(labelStatus, 5, row++);
 		row++;
 		
 		NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
@@ -142,8 +138,8 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 						t.add(entry.getDivision().getName(), 1, row);
 					t.add(entry.getGroup().getName(), 2, row);
 					t.add(entry.getUser().getName(), 3, row);
-					if (entry.getTariffType() != null)
-						t.add(entry.getTariffType().toString(), 4, row);
+					if (entry.getTariff() != null)
+						t.add(entry.getTariff().getText(), 4, row);
 					t.add(nf.format(entry.getAmount()), 5, row);
 					t.setAlignment(5, row, "RIGHT");
 					sum += entry.getAmount();

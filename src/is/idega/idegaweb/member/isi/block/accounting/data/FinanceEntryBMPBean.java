@@ -28,7 +28,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String COLUMN_CLUB_ID = "club_id";
 	protected final static String COLUMN_DIVISION_ID = "division_id";
 	protected final static String COLUMN_GROUP_ID = "group_id";
-	protected final static String COLUMN_TARIFF_TYPE = "tariff_type";
+	protected final static String COLUMN_TARIFF = "tariff";
 	protected final static String COLUMN_AMOUNT = "amount";
 	protected final static String COLUMN_STATUS = "status";
 	protected final static String COLUMN_TYPE = "entry_type";
@@ -61,7 +61,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
 		addManyToOneRelationship(COLUMN_DIVISION_ID, Group.class);
 		addManyToOneRelationship(COLUMN_GROUP_ID, Group.class);
-		addManyToOneRelationship(COLUMN_TARIFF_TYPE, ClubTariffType.class);
+		addManyToOneRelationship(COLUMN_TARIFF, ClubTariff.class);
 		addAttribute(COLUMN_AMOUNT, "Amount", true, true, Double.class);
 		addAttribute(COLUMN_STATUS, "Status", true, true, String.class, 1);
 		addAttribute(COLUMN_TYPE, "Type", true, true, String.class, 1);
@@ -202,20 +202,20 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		setColumn(COLUMN_INFO, info);
 	}
 	
-	public int getTariffTypeID() {
-		return getIntColumnValue(COLUMN_TARIFF_TYPE);
+	public int getTariffID() {
+		return getIntColumnValue(COLUMN_TARIFF);
 	}
 
-	public void setTariffTypeID(int id) {
-		setColumn(COLUMN_TARIFF_TYPE ,id);
+	public void setTariffID(int id) {
+		setColumn(COLUMN_TARIFF ,id);
 	}
 
-	public ClubTariffType getTariffType() {
-		return (ClubTariffType) getColumnValue(COLUMN_TARIFF_TYPE);
+	public ClubTariff getTariff() {
+		return (ClubTariff) getColumnValue(COLUMN_TARIFF);
 	}
 	
-	public void setGroup(ClubTariffType tariffType) {
-		setColumn(COLUMN_TARIFF_TYPE, tariffType);
+	public void setTariff(ClubTariff tariff) {
+		setColumn(COLUMN_TARIFF, tariff);
 	}
 	
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {
