@@ -48,12 +48,12 @@ public interface Run extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getRunTime
 	 */
-	public int getRunTime();
+	public double getRunTime();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipTime
 	 */
-	public int getChipTime();
+	public double getChipTime();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipOwnershipStatus

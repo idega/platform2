@@ -63,8 +63,8 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 	private SubmitButton submitButton;
 	private TextInput participantNumberField;
 	private TextInput chipNumberField;
-	private String runTimeField;
-	private String chipTimeField;
+	private TextInput runTimeField;
+	private TextInput chipTimeField;
 	private TextInput bestTimeField;
 	private TextInput goalTimeField;
 	private DropdownMenu nationalityField;
@@ -223,6 +223,9 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 		payedAmountField = new TextInput(IWMarathonConstants.PARAMETER_AMOUNT);
 		
 		teamNameField = new TextInput(IWMarathonConstants.PARAMETER_GROUP_NAME);
+		
+		runTimeField = new TextInput(IWMarathonConstants.PARAMETER_RUN_TIME);
+		chipTimeField = new TextInput(IWMarathonConstants.PARAMETER_CHIP_TIME);
 
 		if(run != null) {
 			int disID = run.getRunDistanceGroupID();
@@ -230,8 +233,10 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 			Group dis = null;
 			Group gr = null;
 			try {
-				dis = getGroupBiz().getGroupByGroupID(disID);
-				gr = getGroupBiz().getGroupByGroupID(grID);
+				if(disID != -1)
+					dis = getGroupBiz().getGroupByGroupID(disID);
+				if(grID != -1)
+					gr = getGroupBiz().getGroupByGroupID(grID);
 			}
 			catch (IBOLookupException e) {
 				e.printStackTrace();
@@ -255,6 +260,8 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 			payMethodField.setSelectedElement(run.getPayMethod());
 			payedAmountField.setContent(run.getPayedAmount());
 			teamNameField.setContent(run.getRunGroupName());
+			runTimeField.setContent(String.valueOf(run.getRunTime()));
+			chipTimeField.setContent(String.valueOf(run.getChipTime()));
 			
 		}
 		submitButton = new SubmitButton(iwrb.getLocalizedString("run_tab.save", "Save"),PARAMETER_ACTION,Integer.toString(ACTION_SAVE));
@@ -269,6 +276,8 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 		String participantNr = iwc.getParameter(IWMarathonConstants.PARAMETER_PARTICIPANT_NUMBER);
 		String chipNr = iwc.getParameter(IWMarathonConstants.PARAMETER_CHIP_NUMBER);
 		String teamName = iwc.getParameter(IWMarathonConstants.PARAMETER_GROUP_NAME);
+		String runTime = iwc.getParameter(IWMarathonConstants.PARAMETER_RUN_TIME);
+		String chipTime = iwc.getParameter(IWMarathonConstants.PARAMETER_CHIP_TIME);
 		String userIDString = iwc.getParameter("ic_user_id");
 		String groupIDString = iwc.getParameter("selected_ic_group_id");
 		User user = null;
@@ -296,6 +305,7 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 			getRunBiz(iwc).savePaymentByUserID(userID,payMethod,payedAmount);
 			getRunBiz(iwc).updateParticipantAndChip(userID,participantNr,chipNr);
 			getRunBiz(iwc).updateTeamName(userID,groupID,teamName);
+			getRunBiz(iwc).updateRunAndChipTimes(userID,groupID,runTime,chipTime);
 			
 		}
 		catch (Exception e) {
@@ -367,8 +377,12 @@ public class UpdateRunInfoWindow extends StyledIWAdminWindow {
 		t.add(teamNameField,2,14);
 		t.setHeight(1,15,8);
 		t.setHeight(2,15,8);
-		t.setAlignment(2,16,Table.HORIZONTAL_ALIGN_RIGHT);
-		t.add(submitButton,2,16);
+		t.add(runTimeText + ": ",1,16);
+		t.add(runTimeField,1,17);
+		t.add(chipTimeText + ": ",2,16);
+		t.add(chipTimeField,2,17);
+		t.setAlignment(2,18,Table.HORIZONTAL_ALIGN_RIGHT);
+		t.add(submitButton,2,18);
 		f.add(t);
 	}
 	public String getBundleIdentifier() {

@@ -139,6 +139,11 @@ public interface RunBusiness extends com.idega.business.IBOService{
 	public void updateTeamName(int userID, int groupID, String teamName);
 	
 	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#updateRunAndChipTimes
+	 */
+	public void updateRunAndChipTimes(int userID, int groupID, String runTime, String chipTime);
+	
+	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByUserAndGroup
 	 */
 	public Run getRunObjByUserAndGroup(int userID, int groupID);

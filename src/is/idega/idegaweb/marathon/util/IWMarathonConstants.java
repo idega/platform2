@@ -61,6 +61,8 @@ public class IWMarathonConstants {
   public static final String PARAMETER_PAY_METHOD = "prm_pay_method";
   public static final String PARAMETER_AMOUNT = "prm_amount";
   public static final String PARAMETER_PARTICIPANT_NUMBER = "prm_parti_nr";
+  public static final String PARAMETER_RUN_TIME = "prm_run_time";
+  public static final String PARAMETER_CHIP_TIME = "prm_chip_time";
   
   //localized strings
   public static final String RR_INFO_RED_STAR = "run_reg.info_red_star";

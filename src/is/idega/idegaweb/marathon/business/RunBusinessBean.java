@@ -458,12 +458,37 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	public void updateTeamName(int userID, int groupID, String teamName) {
-		Run run = getRunObjByUserAndGroup(userID, groupID);
+		Run run = null;
+		if(groupID != -1) {
+			run = getRunObjByUserAndGroup(userID, groupID);
+		}
 		if(run != null) {
 			if(teamName != null && !teamName.equals("")) {
 				run.setRunGroupName(teamName);
 				run.store();
 			}
+		}
+	}
+	public void updateRunAndChipTimes(int userID, int groupID, String runTime, String chipTime) {
+		Run run = null;
+		if(groupID != -1) {
+			run = getRunObjByUserAndGroup(userID, groupID);
+		}
+		if(run != null) {
+			if(runTime != null && !runTime.equals("")) {
+				double d = Double.valueOf(runTime).doubleValue();
+				System.out.println(d);
+				System.out.println(d);
+				System.out.println(d);
+				System.out.println(d);
+				System.out.println(d);
+				System.out.println(d);
+				run.setRunTime(Double.valueOf(runTime).doubleValue());
+			}
+			if(chipTime != null && !chipTime.equals("")) {
+				run.setChipTime(Double.valueOf(chipTime).doubleValue());
+			}
+			run.store();
 		}
 	}
 	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID) {
