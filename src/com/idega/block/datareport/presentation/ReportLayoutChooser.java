@@ -99,6 +99,8 @@ public class ReportLayoutChooser extends Block {
     parameterMap.put(SELECTION_QUERY_KEY,"");
     parameterMap.put(SELECTION_REPORT_DESIGN_KEY,"");
     parameterMap.put(REPORT_HEADLINE_KEY,"");
+    parameterMap.put(SET_ID_OF_QUERY_FOLDER_KEY,"");
+    parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY,"");
   }
 
   
@@ -243,14 +245,6 @@ public class ReportLayoutChooser extends Block {
   }    
   
   private void parseParameters(IWResourceBundle resourceBundle, IWContext iwc) {
-    // look for special init parameters
-    ICFile file;
-    if ((file = getFileForParameter(iwc, SET_ID_OF_QUERY_FOLDER_KEY)) != null) {
-      setQueryFolder(file);
-    }
-    if ((file =getFileForParameter(iwc, SET_ID_OF_DESIGN_FOLDER_KEY)) != null) {
-      setReportDesignFolder(file);
-    }
     // check parameters
     Iterator iterator = parameterMap.entrySet().iterator();
     boolean isAnyParameterSet = false;
@@ -258,9 +252,15 @@ public class ReportLayoutChooser extends Block {
       Map.Entry entry = (Map.Entry) iterator.next(); 
       String key = (String) entry.getKey();
       String value;
-      if (iwc.isParameterSet(key))  {
-        isAnyParameterSet = true;
+      if (iwc.isParameterSet(key)) {
         value = iwc.getParameter(key);
+        // if there was already a parameter do not check again
+        if (   isAnyParameterSet ||
+            // but ignore the init parameter!
+           ( (! SET_ID_OF_QUERY_FOLDER_KEY.equals(key)) &&  
+             (! SET_ID_OF_DESIGN_FOLDER_KEY.equals(key))))  {
+          isAnyParameterSet = true;
+        }
       }
       else {
         value = "";
@@ -272,6 +272,14 @@ public class ReportLayoutChooser extends Block {
     if (! isAnyParameterSet) {
       initializeParameters(resourceBundle);
     }
+    // set special init paramters
+    ICFile file;
+    if ((file = getFileForParameter(SET_ID_OF_QUERY_FOLDER_KEY)) != null) {
+      setQueryFolder(file);
+    }
+    if ((file =getFileForParameter(SET_ID_OF_DESIGN_FOLDER_KEY)) != null) {
+      setReportDesignFolder(file);
+    }
     // change type of some values
     // query id
     String queryId = (String) parameterMap.get(SELECTION_QUERY_KEY);
@@ -281,21 +289,21 @@ public class ReportLayoutChooser extends Block {
     parameterMap.put(SELECTION_REPORT_DESIGN_KEY, stringToInteger(designId));
   }
   
-  private ICFile getFileForParameter(IWContext iwc, String parameter)  {
-    if (iwc.isParameterSet(parameter))  {
-      String idString = iwc.getParameter(parameter);
-      Integer id = null;
-      try {
-        id = new Integer(idString);
-      }  
-      catch (NumberFormatException ex)  {
-        System.err.println("[ReportLayoutChooser] Can't parse integer. Message is: "+ ex.getMessage());
-        ex.printStackTrace(System.err);
-        return null;
-      }
-      return getFile(id);
+  private ICFile getFileForParameter(String parameter)  {
+    String idString = (String) parameterMap.get(parameter);
+    if (idString.length() == 0) {
+      return null;
     }
-    return null;
+    Integer id = null;
+    try {
+      id = new Integer(idString);
+    }  
+    catch (NumberFormatException ex)  {
+      System.err.println("[ReportLayoutChooser] Can't parse integer. Message is: "+ ex.getMessage());
+      ex.printStackTrace(System.err);
+      return null;
+    }
+    return getFile(id);
   }
     
   private Integer stringToInteger(String integerString) {
