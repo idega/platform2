@@ -3,7 +3,6 @@ package com.idega.block.reports.data;
 import java.sql.*;
 import java.util.StringTokenizer;
 import com.idega.data.*;
-import com.idega.block.reports.business.ColumnspanList;
 
 /**
  * Title:

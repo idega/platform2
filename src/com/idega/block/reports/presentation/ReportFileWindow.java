@@ -53,7 +53,6 @@ public class ReportFileWindow extends IWAdminWindow implements Reports{
       url.append("&").append(ReportWriter.prmReportInfoId).append("=").append(iwc.getParameter(ReportWriter.prmReportInfoId));
       url.append("&").append(ReportWriter.PRM_WRITABLE_CLASS).append("=").append(IWMainApplication.getEncryptedClassName(ReportWriter.class));
       setToRedirect(url.toString());
-      close();
     }
     else{
       String title = iwrb.getLocalizedString("report_filer","Report Filer");
