@@ -73,7 +73,7 @@ public SmallCalendar() {
   }
 
   public void main(IWContext iwc){
-    //if (stamp == null) {
+    if (stamp == null) {
       String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
       String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
       String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
@@ -85,7 +85,7 @@ public SmallCalendar() {
       }
       else
 	stamp = IWTimestamp.RightNow();
-    //}
+    }
     make(iwc);
   }
 
