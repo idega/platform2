@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.14 2003/09/05 16:09:27 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.15 2003/09/05 16:22:28 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -368,7 +368,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 	}	
 
-
+	/**
+	 * Gets all Operations. This is used to get certain data from different 
+	 * parts of the system.
+	 * 
+	 * @return collection of ConditionHolders
+	 * @see se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder#
+	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
+	 * @author Kjell
+	 */
 	public Collection findAllOperations() {
 
 			ArrayList arr = new ArrayList();
