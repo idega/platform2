@@ -8,5 +8,6 @@ public interface InvoiceRecordHome extends com.idega.data.IDOHome
  public java.util.Collection findByInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0)throws javax.ejb.FinderException;
  public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.FinderException;
  public java.util.Collection findByPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord p0)throws javax.ejb.FinderException;
+ public int getPlacementCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException;
 
 }

@@ -21,7 +21,6 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public float getTotalAmount();
  public float getTotalAmountVAT();
  public int getVATType();
- public void initializeAttributes();
  public void setChangedBy(java.lang.String p0);
  public void setCreatedBy(java.lang.String p0);
  public void setDateChanged(java.sql.Date p0);

@@ -32,16 +32,22 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool{
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
 			
-			createBatchRunLogger(category);
-			//Create all the billing info derrived from the contracts
-			contracts();
-			//Create all the billing info derrived from the regular payments
-			regularPayment();
-			//VAT
-			calcVAT();
-			batchRunLoggerDone();
+			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(startPeriod.getDate(),category.getCategory()) == 0){
+				createBatchRunLogger(category);
+				//Create all the billing info derrived from the contracts
+				contracts();
+				//Create all the billing info derrived from the regular payments
+				regularPayment();
+				//VAT
+				calcVAT();
+				batchRunLoggerDone();
+			}else{
+				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");
+				batchRunLoggerDone();
+			}
 		} catch (NotEmptyException e) {
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
+			batchRunLoggerDone();
 			e.printStackTrace();
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them

@@ -63,11 +63,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/16 12:08:06 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/16 13:22:29 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.56 $
+ * @version $Revision: 1.57 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -170,6 +170,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 								}
 							}
 						}
+					}else{
+						log.info("School "+school.getName()+" is not in home commune and not private or gets payment by invoice");
 					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -622,10 +624,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		time = t - stop;
 		log.info(s + "  total time:" + (tt / 1000f) + "  from last stop, time:" + (time / 1000f));
 		stop = t;
-	}
-    
-	private boolean hasPlacements() throws FinderException, IDOException, RemoteException, EJBException {
-		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), currentDate) > 0;
 	}
 
 	private ExportDataMapping getCategoryPosting() throws FinderException, IDOLookupException, EJBException {

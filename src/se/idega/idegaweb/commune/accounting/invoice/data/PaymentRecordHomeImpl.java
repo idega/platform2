@@ -60,6 +60,13 @@ public int getCountForMonthAndStatusLH(java.sql.Date p0)throws javax.ejb.FinderE
 	return theReturn;
 }
 
+public int getCountForMonthCategoryAndStatusLH(java.sql.Date p0,java.lang.String p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetCountForMonthCategoryAndStatusLH(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getPlacementCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(p0,p1);

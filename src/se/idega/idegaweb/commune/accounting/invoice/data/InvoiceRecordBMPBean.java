@@ -1,15 +1,19 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.util.IWTimestamp;
-import java.sql.Date;
-import java.util.Collection;
-import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 
 /**
  * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
@@ -296,4 +300,29 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		return idoFindPKsByQuery (sql);
 	}
 
+	/**
+	 * Gets the # of placements handled for the given category and period
+	 * @param schoolCategoryID
+	 * @param period
+	 * @return # of placements
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		
+		IDOQuery sql = idoQuery();
+		sql.append("select count(r.cacc_invoice_record_id) from "+getEntityName());
+		sql.append(" r, cacc_invoice_header h ");
+		sql.appendWhereEqualsQuoted("h.school_category_id", schoolCategoryID);
+		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("r."+COLUMN_INVOICE_HEADER+" = h.cacc_invoice_header_id");
+		return idoGetNumberOfRecords(sql);
+	}
+	
 }

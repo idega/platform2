@@ -288,6 +288,31 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}
 
 	/**
+	 * 
+	 * @param month
+	 * @return
+	 * @throws FinderException
+	 */
+	public int ejbHomeGetCountForMonthCategoryAndStatusLH(Date month, String category) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(month);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		IDOQuery sql = idoQuery();
+		sql.append("select count(r.cacc_payment_record_id) from "+getEntityName());
+		sql.append(" r, cacc_payment_header h ");
+		sql.appendWhere("r."+COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("r."+COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
+		sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
+		sql.appendAndEqualsQuoted("h.school_category_id", category);
+		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+
+		return idoGetNumberOfRecords(sql);
+	}
+
+	/**
 	 * Gets the # of placements handled for the given category and period
 	 * @param schoolCategoryID
 	 * @param period

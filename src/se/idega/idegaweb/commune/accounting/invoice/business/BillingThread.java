@@ -40,6 +40,7 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
@@ -356,9 +357,15 @@ public abstract class BillingThread extends Thread{
 		batchRunLogger.store();
 	}
 	
+	protected boolean hasPlacements() throws FinderException, IDOException, RemoteException, EJBException {
+		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), currentDate) > 0;
+	}
+
 	protected void batchRunLoggerDone(){
-		batchRunLogger.setEnd(IWTimestamp.getTimestampRightNow());
-		batchRunLogger.store();
+		if(batchRunLogger!=null){
+			batchRunLogger.setEnd(IWTimestamp.getTimestampRightNow());
+			batchRunLogger.store();
+		}
 	}
 	
 	protected void finalizeBatchRunLogger(){

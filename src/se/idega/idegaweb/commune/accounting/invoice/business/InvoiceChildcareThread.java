@@ -57,6 +57,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
@@ -94,16 +95,25 @@ public class InvoiceChildcareThread extends BillingThread{
 			category = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(category.getPrimaryKey());
 
-			createBatchRunLogger(category);
-			//Create all the billing info derrived from the contracts
-			contracts();
-			//Create all the billing info derrived from the regular invoices
-			regularInvoice();
-			//Create all the billing info derrived from the regular payments
-			regularPayment();
-			//VAT
-			calcVAT();
+			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(startPeriod.getDate(),category.getCategory()) == 0){
+				createBatchRunLogger(category);
+				//Create all the billing info derrived from the contracts
+				contracts();
+				//Create all the billing info derrived from the regular invoices
+				regularInvoice();
+				//Create all the billing info derrived from the regular payments
+				regularPayment();
+				//VAT
+				calcVAT();
+				batchRunLoggerDone();
+			}else{
+				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");
+				batchRunLoggerDone();
+			}
+		} catch (NotEmptyException e) {
+			createNewErrorMessage("invoice.severeError", "invoice.Severe_MustFirstEmptyOldData");
 			batchRunLoggerDone();
+			e.printStackTrace();
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
@@ -116,7 +126,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the childcare contracts
 	 */
-	private void contracts(){
+	private void contracts() throws NotEmptyException{
 		Collection contractArray = new ArrayList();
 		Collection regulationArray = new ArrayList();
 		User custodian;
@@ -127,8 +137,11 @@ public class InvoiceChildcareThread extends BillingThread{
 		InvoiceRecord invoiceRecord, subvention;
 		School school;
 
-
 		try {
+			if (hasPlacements()) {
+				throw new NotEmptyException("invoice.must_first_empty_old_data");
+			}
+
 			contractArray = getChildCareContractHome().findByDateRangeWhereStatusActive(startPeriod.getDate(), endPeriod.getDate());
 			log.info("# of contracts = "+contractArray.size());
 			Iterator contractIter = contractArray.iterator();
@@ -458,6 +471,12 @@ public class InvoiceChildcareThread extends BillingThread{
 		} catch (FinderException e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
+		} catch (EJBException e) {
+			e.printStackTrace();
+			createNewErrorMessage("invoice.severeError","invoice.EJBException");
+		} catch (IDOException e) {
+			e.printStackTrace();
+			createNewErrorMessage("invoice.severeError","invoice.IDOException");
 		}
 	}
 	
@@ -870,4 +889,9 @@ public class InvoiceChildcareThread extends BillingThread{
 	
 		return invoiceRecord;
 	}
+	
+	protected boolean hasInvoices() throws FinderException, IDOException, RemoteException, EJBException {
+		return getInvoiceRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), currentDate) > 0;
+	}
+
 }
