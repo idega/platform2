@@ -207,6 +207,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 				try {				
 					PostalCode poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,getIcelandicCountryPK());
 					postalCodes.put(po, poCode);
+					System.out.println("NationalRegisterBusinessBean : looking up postal code "+po);
 					return poCode;
 				}
 				catch(FinderException e) {
@@ -223,6 +224,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			GenderHome home = (GenderHome) getIDOHome(Gender.class);
 			maleGender = home.getMaleGender();
 			femaleGender = home.getFemaleGender();
+			System.out.println("NationalRegisterBusinessBean : setting up gender");
 		}
 		
 		if (sex.equals("1") || sex.equals("3")) {
@@ -237,6 +239,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		if (icelandCountryPK < 1) {
 			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
 			icelandCountryPK = ((Integer) country.getPrimaryKey()).intValue();
+			System.out.println("NationalRegisterBusinessBean : setting icelandCountryPK ("+icelandCountryPK+")");
 		}
 		return icelandCountryPK;
 	}
