@@ -145,6 +145,7 @@ public class ClientManager implements PacketManager{
       MessageManager.moveMessages(fromId,toId);
       existed = true;
     }
+    clients.remove(fromId);
 
     return existed;
   }

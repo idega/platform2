@@ -295,48 +295,37 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private void processPacket(){
 
     System.out.println("processing the packet ...");
-    //packet.getProperties(); //get properties to change
+
     if( packetFromServlet!=null ){
       packetFromServlet.process(this);
+
+      //Message stuff
       Vector messages = packetFromServlet.getMessages();
       if( messages!= null) dispatchMessagesToDialogs(messages);
 
+      //Property stuff userlists etc.
       Vector props = packetFromServlet.getProperties();
       Vector userlist = null;
-      String listVersion = null;
 
       if( props!=null ){
         int length = props.size();
         for (int i = 0; i < length; i++) {
           if( ((Property)props.elementAt(i)).getKey().equals(USER_LIST) ){
-             userlist = (Vector)((Property)props.elementAt(i)).getValue();
+            userlist = (Vector)((Property)props.elementAt(i)).getValue();
+            //update the userlist
+            if(userlist!=null){
+              syncUserList(userlist);
+            }
           }
           else if (((Property)props.elementAt(i)).getKey().equals(USER_LIST_VERSION) ){
-           listVersion = (String)((Property)props.elementAt(i)).getValue();
+           userListVersion = (String)((Property)props.elementAt(i)).getValue();
           }
         }
-/**@todo check if latter check is neccessary this should have been done in ClientManager*/
-       if( (userlist!=null) && (!userListVersion.equalsIgnoreCase(listVersion)) ){
-       // this.removeAll();//debug
-     //   dialogs.clear();
-
-         userListVersion = listVersion;
-         int length2 = userlist.size();
-         for (int k = 0; k < length2; k++) {
-           Property user = (Property)userlist.elementAt(k);
-           addToUserList( user.getKey() , (String)user.getValue() );
-          }
-
-         System.out.println("MessengerApplet: userListVersion : "+userListVersion);
-
-        }
-
-      }else System.out.println("MessengerApplet: PROPERTIES IS NULL");
+      }
 
     }else{
      System.err.println("MessengerApplet : packetFromServlet == null !!");
     }
-
     System.out.println("DONE! processing the packet");
 
     refresh();
@@ -344,6 +333,17 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     packetToServlet = null;
 
 
+  }
+
+  private void syncUserList(Vector userlist){
+   int length = userlist.size();
+
+   for (int k = 0; k < length; k++) {
+     Property user = (Property)userlist.elementAt(k);
+     addToUserList( user.getKey() , (String)user.getValue() );//new user
+    }
+
+    System.out.println("MessengerApplet: userListVersion : "+userListVersion);
   }
 
   private void addToUserList(String sendToId, String name){
@@ -361,7 +361,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.addActionListener(this);
 
       //item.setSize(18,150);
-      if( faceLabel!= null ) item.add(faceLabel);
+      item.add(faceLabel);
       item.add(new Label(name));
 
       refresh();
