@@ -20,6 +20,7 @@ import javax.ejb.FinderException;
 
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -30,6 +31,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.IntegerInput;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -59,6 +62,8 @@ public class TeeTimeSearch extends GolfBlock {
 	private ICPage _teeTimesPage = null;
 	
 	private int width = 160;
+	
+	private boolean lockedAsWapLayout = false;
 
 
 	public void main(IWContext modinfo) throws Exception {
@@ -107,10 +112,18 @@ public class TeeTimeSearch extends GolfBlock {
 //			startTable.add(getSearchForm(modinfo, funcDate), 1, 2);
 //		}
 //		add(startTable);
-
-		add(getSearchForm(modinfo, funcDate));
 		
-		if ((String) modinfo.getParameter("results") != null) {
+		boolean results = (modinfo.getParameter("results") != null);
+		
+		if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+			if(!results) {
+				add(getWapSearchForm(modinfo, funcDate));
+			}
+		} else {
+			add(getSearchForm(modinfo, funcDate));
+		}
+		
+		if (results) {
 			if (modinfo.getParameterValues("fields") != null && modinfo.getParameter("fjoldi") != null && !modinfo.getParameter("fjoldi").equals("")) {
 				if (numericString(modinfo.getParameter("fjoldi"))) {
 					String[] myParameters = modinfo.getParameterValues("fields");
@@ -121,7 +134,12 @@ public class TeeTimeSearch extends GolfBlock {
 						Today = getFieldInfo(fields, funcDate.toSQLDateString());
 						try {
 							Groups = search(funcDate, modinfo, myField, Today, Integer.parseInt(modinfo.getParameter("fjoldi").toString()), modinfo.getParameter("date").toString(), modinfo.getParameter("ftime").toString(), modinfo.getParameter("ltime").toString(), 0, 36);
-							this.add(getResultTable(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns));
+							if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+								addWapResults(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns);
+							} else {
+								this.add(getResultTable(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns));
+							}
+														
 						} catch (Exception E) {
 							if (E.getMessage().equals("Error1")) {
 								Table Error1 = new Table(1, 1);
@@ -205,6 +223,94 @@ public class TeeTimeSearch extends GolfBlock {
 		return myLink;
 	}
 
+	public Form getWapSearchForm(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException {
+		Form myForm = new Form();
+		myForm.add(new HiddenInput("state", "search"));
+		
+		Table table = new Table();
+		
+		InterfaceObject fieldDropdownMenu = getFieldDropdownMenu(modinfo);
+		InterfaceObject playerCountInputBox = insertEditBox("fjoldi", 2);
+		InterfaceObject firstTimeDropdownMenu = insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30);
+		InterfaceObject lastTimeDropdownMenu = insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30);
+		InterfaceObject dateDropdownMenu = insertDropdown("date", dateFunc, getMaxDaysShown(), modinfo);
+		
+		Label vollur = new Label(getResourceBundle().getLocalizedString("start.search.course", "Course"),fieldDropdownMenu);
+		Label fjoldi = new Label(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"),playerCountInputBox);
+		Label fKL = new Label(getResourceBundle().getLocalizedString("start.search.from", "From"),firstTimeDropdownMenu);
+		Label tKL = new Label(getResourceBundle().getLocalizedString("start.search.to", "To"),lastTimeDropdownMenu);
+		Label dags = new Label(getResourceBundle().getLocalizedString("start.search.date", "Date"),dateDropdownMenu);
+
+		int row = 1;
+		table.add(vollur,1,row++);
+		table.add(fieldDropdownMenu,1,row++);
+		
+		table.add(fjoldi,1,row++);
+		table.add(playerCountInputBox,1,row++);
+		
+		table.add(dags,1,row++);
+		
+//		String funcyDateRS = dateFunc.toSQLDateString();
+
+//		DropdownMenu myDropdown = new DropdownMenu("date");
+//		for (int i = 0; i < getMaxDaysShown(); i++) {
+//			myDropdown.addMenuElement(getNextDaysRS(dateFunc, funcyDateRS, i), getNextDays(dateFunc, funcyDateRS, i));
+//		}
+//		myDropdown.keepStatusOnAction();
+		
+		table.add(dateDropdownMenu,1,row++);
+
+		
+		table.add(fKL,1,row++);
+//		DropdownMenu fHours = new DropdownMenu("ftime_h");
+//		for(int i = 0;i<24;i++) {
+//			fHours.addMenuElement(i,String.valueOf(i));
+//		}
+//		fHours.keepStatusOnAction();
+		
+//		DropdownMenu fMinutes = new DropdownMenu("ftime_m");
+//		fMinutes.addMenuElement(0,"00");
+//		fMinutes.addMenuElement(30,"30");
+//		//fMinutes.addMenuElement(59,"59");
+//		fMinutes.keepStatusOnAction();
+//		
+//		myForm.add(fHours);
+//		myForm.add(":");
+//		myForm.add(fMinutes);
+		table.add(firstTimeDropdownMenu,1,row++);
+
+		
+		table.add(tKL,1,row++);
+//		DropdownMenu lHours = new DropdownMenu("ltime_h");
+//		for(int i = 0;i<24;i++) {
+//			lHours.addMenuElement(i,String.valueOf(i));
+//		}
+//		lHours.keepStatusOnAction();
+//		
+//		DropdownMenu lMinutes = new DropdownMenu("ltime_m");
+//		lMinutes.addMenuElement(0,"00");
+//		lMinutes.addMenuElement(30,"30");
+//		//lMinutes.addMenuElement(59,"59");
+//		lMinutes.keepStatusOnAction();
+		
+//		myForm.add(lHours);
+//		myForm.add(":");
+//		myForm.add(lMinutes);
+		table.add(lastTimeDropdownMenu,1,row++);
+
+		
+
+		
+		GenericButton bSearch = getSubmitButton();
+		bSearch.setName(localize("start.search","Search"));
+		table.add(bSearch,1,row++);
+		
+		insertHiddenInput("results", "1", myForm);
+
+		myForm.add(table);
+		
+		return myForm;
+	}
 
 
 	public Form getSearchForm(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException {
@@ -398,6 +504,81 @@ public class TeeTimeSearch extends GolfBlock {
 
 		return myTable;
 	}
+	
+	public void addWapResults(IWContext modinfo, Vector Groups, GolfField info, String date1, int resultCol) throws SQLException, IOException, FinderException {
+
+		Vector myVector = new Vector();
+		Vector boolVector = new Vector();
+
+		myVector = (Vector) Groups.elementAt(0);
+		boolVector = (Vector) Groups.elementAt(1);
+
+		int count = 0;
+
+		for (int i = 0; i < boolVector.size(); i++) {
+			if (((Boolean) boolVector.elementAt(i)).booleanValue()) count++;
+		}
+
+		Text fieldName = new Text(getFieldName(info.get_field_id()));
+		fieldName.setBold();
+		add(fieldName);
+		Text smallText = getSmallHeader("");
+
+		if ((count % 10 == 1 || (count % 100) % 10 == 1) && count % 100 != 11) {
+			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
+			add(smallText);
+		} else if (count != 0) {
+			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_times", "Available tee_times") + ")");
+			add(smallText);
+		} else {
+			smallText.setText(" (" +getResourceBundle().getLocalizedString("start.search.no_tee_times", "_")+")");
+			add(smallText);
+		}
+		
+
+		boolean first = true;
+
+		Link[] Times = new Link[count];
+		int links = 0;
+		int hour = 0;
+		int rows = 0;
+
+		if (count != 0) {
+
+			for (int i = 0; i < boolVector.size(); i++) {
+				if (((Boolean) boolVector.elementAt(i)).booleanValue()) {
+
+					hour = getHours(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info) + ":00");
+
+					Times[links] = getLink(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info));
+
+					if (hour < 13)
+						Times[links].addParameter("hvenaer", "0");
+					else if (hour < 17)
+						Times[links].addParameter("hvenaer", "1");
+					else
+						Times[links].addParameter("hvenaer", "2");
+
+					if(_teeTimeTablePage != null) {
+						Times[links].setPage(_teeTimeTablePage);
+					}
+					Times[links].addParameter("hvar", "" + info.get_field_id());
+					Times[links].addParameter("search", "1");
+					Times[links].addParameter("club", "" + getFieldUnion(info.get_field_id()));
+					Times[links].addParameter("day", date1);
+					Times[links].setClassToInstanciate(RegisterTime.class);
+					
+					add(Text.getBreak());
+					add(Times[links]);
+					links++;
+				}
+			}
+			
+			add(Text.getBreak());
+
+		}
+	}
+
 
 	public Vector search(IWTimestamp funcDate, IWContext modinfo, GolfField info, GolfField today, int fjoldi, String date, String firstTime, String lastTime, int firstHandicap, int LastHandicap) throws SQLException, IOException, Exception {
 
@@ -556,6 +737,22 @@ public class TeeTimeSearch extends GolfBlock {
 		theForm.addObject(myObject);
 
 		return myObject;
+	}
+	
+	public DropdownMenu getFieldDropdownMenu(IWContext modinfo) throws IOException, SQLException {
+		DropdownMenu myDropdownMenu = new DropdownMenu("fields");
+		Field[] field = service.getStartingEntryField();
+		for (int i = 0; i < field.length; i++) {
+			try {
+				Union union = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(field[i].getUnionID());
+				myDropdownMenu.addMenuElement(field[i].getID(), union.getAbbrevation() + " - " + field[i].getName());
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
+		}
+		myDropdownMenu.keepStatusOnAction();
+		return myDropdownMenu;
 	}
 
 	public SelectionBox insertSelectionBox(String SelectionBoxName, IWContext modinfo, int height) throws IOException, SQLException {
@@ -1002,5 +1199,17 @@ public class TeeTimeSearch extends GolfBlock {
 	 */
 	public void setWidth(int width) {
 		this.width = width;
+	}
+	/**
+	 * @return Returns the lockedAsWapLayout.
+	 */
+	public boolean isLockedAsWapLayout() {
+		return lockedAsWapLayout;
+	}
+	/**
+	 * @param lockedAsWapLayout The lockedAsWapLayout to set.
+	 */
+	public void setLockedAsWapLayout(boolean lockedAsWapLayout) {
+		this.lockedAsWapLayout = lockedAsWapLayout;
 	}
 }
