@@ -217,7 +217,6 @@ private String headerTextColor = "#FFFFFF";
                         else {
                           realHandicap = scoreCards[a-1].getHandicapAfter();
                         }
-                        System.out.println("RealHandicap: "+realHandicap);
 
                         Handicap realLeik = new Handicap((double)realHandicap);
                         int realPlayHandicap = realLeik.getLeikHandicap(slope, course_rating, field_par);
@@ -232,7 +231,6 @@ private String headerTextColor = "#FFFFFF";
                         if ( isOverHandicap ) {
                           realPoints = Handicap.getTotalPoints(scoreCards[a].getID(),realPlayHandicap);
                         }
-                        System.out.println("Heildarpunktar: "+realPoints);
 
                         String grunn2 = scale_decimals(String.valueOf(grunn),1);
                         String ny_grunn3 = scale_decimals(String.valueOf(ny_grunn),1);
