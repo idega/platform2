@@ -137,8 +137,8 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	 */
 	public void lineUp(IWContext iwc) {
 		
-		mainTable = new Table(2,7);
-		mainTable.setWidth(288);
+		mainTable = new Table();
+		mainTable.setWidth(Table.HUNDRED_PERCENT);
 		mainTable.setCellspacing(0);
 		mainTable.setCellpadding(5);
 		mainTable.setStyleClass(mainTableStyle);
@@ -154,13 +154,29 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		mainTable.add((PresentationObject)  groupNameField,2,4);
 		mainTable.add(dateText,1,5);
 		mainTable.add(fromDatePickerField,1,5);
-		mainTable.setAlignment(2,6,"right");
-		mainTable.add(saveButton,2,6);
-		mainTable.add(Text.NON_BREAKING_SPACE,2,6);
-		mainTable.add(closeButton,2,6);
-				
-		mainTable.add(getHelp(HELP_TEXT_KEY),1,7);
-		form.add(mainTable);
+		
+		Table buttonTable = new Table();
+		buttonTable.setWidth(Table.HUNDRED_PERCENT);
+		buttonTable.setCellspacing(0);
+		buttonTable.setCellpadding(5);
+		buttonTable.setStyleClass(mainTableStyle);
+		buttonTable.add(getHelp(HELP_TEXT_KEY),1,1);
+		buttonTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		buttonTable.add(saveButton,2,1);
+		buttonTable.add(Text.NON_BREAKING_SPACE,2,1);
+		buttonTable.add(closeButton,2,1);
+		
+		Table table = new Table();
+		table.setCellspacing(0);
+		table.setCellpadding(0);
+		table.setWidth(350);
+		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
+		table.setHeight(2, 5);
+		table.add(mainTable,1,1);
+		table.add(buttonTable,1,3);
+		
+		form.add(table);
 	}
 	/**
 	 * Saves the ledger which is created by the name of the group and the groupID 
