@@ -3139,7 +3139,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addExtraHeaderParameter(
 				"percentReportsDoneAll",
 				_iwrb.getLocalizedString(LOCALIZED_PERCENT_REPORTS_DONE, "Percent reports done"),
-				"label",
+				"percentReportsDoneAll",
 				format.format(change));
 		
 		//finished return the collection
@@ -3319,13 +3319,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addExtraHeaderParameter(
 				"annualMemberChangePercentOfTotalAll",
 				_iwrb.getLocalizedString(LOCALIZED_MEMBERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL, "Members Annual Change of Total"),
-				"label",
+				"annualMemberChangePercentOfTotalAll",
 				format.format(macptTotal));
 		
 		reportCollection.addExtraHeaderParameter(
 				"annualPlayerChangePercentOfTotalAll",
 				_iwrb.getLocalizedString(LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL, "Players Annual Change of Total"),
-				"label",
+				"annualPlayerChangePercentOfTotalAll",
 				format.format(pacptTotal));
 		
 		
