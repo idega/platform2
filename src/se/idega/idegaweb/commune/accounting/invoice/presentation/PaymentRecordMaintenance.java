@@ -47,11 +47,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/24 13:51:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 15:49:11 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -677,7 +677,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private void renderRecordDetailsOrForm
         (final IWContext context, final java.util.Map presentationObjects)
         throws RemoteException, FinderException  {
-        final PaymentRecord record = getPaymentRecord (context);
+        //final PaymentRecord record = getPaymentRecord (context);
         final PaymentHeader header = getPaymentHeader (context);
 
         // render form/details
