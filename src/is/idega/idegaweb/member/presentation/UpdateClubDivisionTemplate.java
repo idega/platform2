@@ -148,7 +148,7 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		init(iwc);
-		iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window");
+		setTitle(iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"));
 		addTitle(iwrb.getLocalizedString(WINDOW_NAME, "Update League Template Window"), TITLE_STYLECLASS);
 		if (group != null) {
 			if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)
@@ -167,12 +167,12 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 				}
 			}
 			else {
-				add(getResourceBundle(iwc).getLocalizedString(WRONG_GROUP_TYPE,
+				add(iwrb.getLocalizedString(WRONG_GROUP_TYPE,
 						"Please select either a league, or a division template under a league."));
 			}
 		}
 		else {
-			add(getResourceBundle(iwc).getLocalizedString(WRONG_GROUP_TYPE,
+			add(iwrb.getLocalizedString(WRONG_GROUP_TYPE,
 					"Please select either a league, or a division template under a league."));
 		}
 	}
