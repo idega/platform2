@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.7 2003/10/07 15:50:03 anders Exp $
+ * $Id: NoticeEditor.java,v 1.8 2003/10/07 16:07:31 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2003/10/07 15:50:03 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/07 16:07:31 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -290,8 +290,10 @@ public class NoticeEditor extends AccountingBlock {
 			
 			app.addHiddenInput(PARAMETER_BODY, getParameter(iwc, PARAMETER_BODY));
 			String[] selectedOperationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
-			for (int i = 0; i < selectedOperationalFields.length; i++) {
-				app.addHiddenInput(PARAMETER_OPERATIONAL_FIELD, selectedOperationalFields[i]);
+			if (selectedOperationalFields != null) {
+				for (int i = 0; i < selectedOperationalFields.length; i++) {
+					app.addHiddenInput(PARAMETER_OPERATIONAL_FIELD, selectedOperationalFields[i]);
+				}
 			}
 			return;
 		}
