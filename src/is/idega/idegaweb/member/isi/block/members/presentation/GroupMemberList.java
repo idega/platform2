@@ -71,6 +71,7 @@ public class GroupMemberList extends Block {
 		if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type)) {
 			showGroup = true;
 		}
+		System.out.println("showGroup=" + showGroup + ", groupType=" + type);
 		
 		Table table = new Table();
 		table.setCellspacing(0);
@@ -137,11 +138,15 @@ public class GroupMemberList extends Block {
 			Group group = (Group) parentIter.next();
 			boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
 			boolean isInDivision = divisionChildren.contains(group);
+			String name = group.getName();
 			if(isFlock && isInDivision) {
+				System.out.println("Adding flock " + name + " to list of groups for trainer " + trainer.getName());
 				if(buf.length()>0) {
 					buf.append(", ");
 				}
-				buf.append(group.getName());
+				buf.append(name);
+			} else {
+				System.out.println("Group " + name + " not added to list of groups for trainer " + trainer.getName());
 			}
 		}
 		return buf.toString();
