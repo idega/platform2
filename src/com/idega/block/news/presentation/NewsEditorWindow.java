@@ -66,6 +66,8 @@ private int iObjInsId = -1;
 private int defaultPublishDays = 50;
 private int SAVECATEGORY = 1,SAVENEWS = 2;
 
+private static String YEARS_AHEAD_PROPERTY = "publish_to_years";
+
 private static String prmHeadline = "nwep_headline";
 private static String prmTeaser = "nwep_teaser";
 private static String prmAuthor = "nwep_author";
@@ -509,16 +511,27 @@ private IWResourceBundle iwrb;
     IWTimestamp now = IWTimestamp.RightNow();
     TimestampInput publishFrom = new TimestampInput(prmPubFrom,true);
       publishFrom.setTimestamp(now.getTimestamp());
-    // add default publishing days:
-    //now.addDays(defaultPublishDays);
 
+		TimestampInput newsDate = new TimestampInput(prmNewsDate,true);
+			newsDate.setTimestamp(now.getTimestamp());
+			newsDate.setYearRange(now.getYear()-4,now.getYear()+2);
+
+		// add default publishing days:
+		int addYears = 0;
+		try {
+			addYears = Integer.parseInt(iwb.getProperty(YEARS_AHEAD_PROPERTY, "0"));
+		}
+		catch (NullPointerException ne) {
+			addYears = 0;
+		}
+		catch (NumberFormatException nfe) {
+			addYears = 0;
+		}
+		
+		now.addYears(addYears);
     TimestampInput publishTo = new TimestampInput(prmPubTo,true);
       publishTo.setTimestamp(now.getTimestamp());
       
-    TimestampInput newsDate = new TimestampInput(prmNewsDate,true);
-    	newsDate.setTimestamp(now.getTimestamp());
-    	newsDate.setYearRange(now.getYear()-4,now.getYear()+2);
-
     DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
