@@ -1,7 +1,9 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -76,6 +78,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_EARLIEST_DATE = "cc_earliest_date";
 	public static final String PARAMETER_CONTRACT_ID = "cc_contract_id";	
 	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";	
+	
+	public static final String FIELD_CURRENT_DATE = "currentdate";
 	
 
 	//private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
@@ -946,7 +950,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	private Table getContractSignerForm(IWContext iwc) throws Exception {
 		Table table = null;		
-		//store incoming field values first
 						
 		Contract contract = getContract(iwc);
 		if (contract.isSigned()) {
@@ -965,6 +968,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 		} else {
 		
+			//Storing all fields set in this request
 			Map fieldValues = new HashMap();
 			Enumeration parameters = iwc.getRequest().getParameterNames();
 			while(parameters.hasMoreElements()){
@@ -984,7 +988,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 		//create form for still unset fields
 			table = getContractFieldsForm(contract.getUnsetFields(), tags);
-			if (table != null){
+			if (table != null && table.getRows() > 1){
 				return table;			
 			} else {
 				//todo: (Roar) Fungerer ikke...
@@ -999,45 +1003,49 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private Table getContractFieldsForm(Set fields, Collection tags) {
 		Table table = null;			
 		if (fields.size() != 0){
-			table = new Table();
-			table.setCellpadding(5);
-			table.setWidth(Table.HUNDRED_PERCENT);
-			table.setHeight(Table.HUNDRED_PERCENT);	
-							
 			int row = 1;
-			table.add(getHeader(localize("ccconsign_formHeading", "Please, fill out the contract fields")), 1, row++);
-			table.mergeCells(1, 1, 2, 1);
 			Iterator i = fields.iterator();
 
-			//loops through request parameters
-			while (i.hasNext()){
+			//loops through contract fields and add them to the form
+			while (i.hasNext()) {
 				String field = (String) i.next();
-				Iterator itags = tags.iterator();
-				TextInput input = new TextInput(PARAMETER_TEXT_FIELD + field);
-				
-				//search for tag with same name and look up type information
-				while (itags.hasNext()){
-					ContractTag tag = (ContractTag) itags.next();
-					System.out.println("Tag: " + tag.getName());
-					if (tag.getName().equals(field)){
-						if (tag.getType().equals(java.lang.Integer.class)){
-							input.setAsIntegers(localize("ccconsign_integer", "Use numbers only for " + field + "."));
-						}
-						System.out.println("Match: " + tag.getName());
+				if (! field.equalsIgnoreCase(FIELD_CURRENT_DATE)) { ///the currentdate field is given value when signing
+					if (table == null){
+						table = new Table();
+						table.setCellpadding(5);
+						table.setWidth(Table.HUNDRED_PERCENT);
+						table.setHeight(Table.HUNDRED_PERCENT);							
+						table.add(getHeader(localize("ccconsign_formHeading", "Please, fill out the contract fields")), 1, row++);
+						table.mergeCells(1, 1, 2, 1);						
 					}
-				}
 				
-				table.add(getSmallHeader(field.substring(0, 1).toUpperCase() + field.substring(1).toLowerCase() + ":"), 1, row);
-				table.add(getStyledInterface(input), 2, row);
-				row ++;
+					Iterator itags = tags.iterator();
+					TextInput input = new TextInput(PARAMETER_TEXT_FIELD + field);
+				
+  					//search for tag with same name and look up type information
+					while (itags.hasNext()) {
+						ContractTag tag = (ContractTag) itags.next();
+						if (tag.getName().equals(field)) {
+							if (tag.getType() != null && tag.getType().equals(java.lang.Integer.class)){
+								input.setAsIntegers(localize("ccconsign_integer", "Use numbers only for " + field + "."));
+							}
+						}
+					}
+				
+					table.add(getSmallHeader(field.substring(0, 1).toUpperCase() + field.substring(1).toLowerCase() + ":"), 1, row);
+					table.add(getStyledInterface(input), 2, row);
+					row ++;
+				}
 			}
 		
-			SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT)));
-			table.add(submit, 1, row);
-			table.add(Text.getNonBrakingSpace(), 1, row);
-			table.add(close, 1, row);
-			table.setHeight(row, Table.HUNDRED_PERCENT);
-			table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+			if (table != null){
+				SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT)));
+				table.add(submit, 1, row);
+				table.add(Text.getNonBrakingSpace(), 1, row);
+				table.add(close, 1, row);
+				table.setHeight(row, Table.HUNDRED_PERCENT);
+				table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+			}
 		}
 
 		return table;
@@ -1045,6 +1053,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	private Table initSignContract(IWContext iwc){
 		Contract contract = getContract(iwc);	
+		
+		//Setting current date
+		Map fields = new HashMap();
+		final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, iwc.getCurrentLocale());
+		fields.put(FIELD_CURRENT_DATE, dateFormat.format(new Date()));
+		contract.setUnsetFields(fields);
+		contract.store();
 			
 		iwc.setSessionAttribute(NBSSigningBlock.NBS_SIGNED_ENTITY, 
 			new NBSSignedEntity() {
@@ -1060,7 +1075,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				}
 	
 				public void setSignedBy(int userId) {
-					//_contract.setUserId(userId); //This shall already be set 
+					_contract.setSignedBy(new Integer(userId));
 				}
 	
 				public void setSignedDate(java.sql.Date time) {
