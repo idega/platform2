@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="venue" id="com.idega.block.venue" metadata="nsuml-1.4" initialized="true" zoom="1.5" scrolledX="-8" scrolledY="-6" tag="10">
+  <children xsi:type="editmodel:PackageEditModel" name="com.idega.block.venue.data" location="0,1" size="412,302" id="com.idega.block.venue.data">
+    <children xsi:type="editmodel:InterfaceEditModel" name="Venue" location="-3,31" size="165,265" id="com.idega.block.venue.data/Venue" runTimeClassModel="setDeleted(Z),isDeleted()">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel">
+        <children xsi:type="editmodel:MethodEditModel" name="getAddress" id="com.idega.block.venue.data/Venue#getAddress()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getDescription" id="com.idega.block.venue.data/Venue#getDescription()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getName" id="com.idega.block.venue.data/Venue#getName()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getOwner" id="com.idega.block.venue.data/Venue#getOwner()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getVenueType" id="com.idega.block.venue.data/Venue#getVenueType()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="isDeleted" id="com.idega.block.venue.data/Venue#isDeleted()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setAddress" id="com.idega.block.venue.data/Venue#setAddress(Lcom.idega.core.location.data.Address;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setDeleted" id="com.idega.block.venue.data/Venue#setDeleted(Z)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setDescription" id="com.idega.block.venue.data/Venue#setDescription(Ljava.lang.String;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setName" id="com.idega.block.venue.data/Venue#setName(Ljava.lang.String;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setOwner" id="com.idega.block.venue.data/Venue#setOwner(Lcom.idega.user.data.Group;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setVenueType" id="com.idega.block.venue.data/Venue#setVenueType(Lcom.idega.block.venue.data.VenueType;)"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <sourceConnections xsi:type="editmodel:DependencyEditModel" id="com.idega.block.venue.data/Venue->com.idega.block.venue.data/VenueType" source="//@children.0/@children.0" target="//@children.0/@children.1" targetEnd="//@children.0/@children.0/@sourceConnections.0/@children.2" label="//@children.0/@children.0/@sourceConnections.0/@children.0" sourceEnd="//@children.0/@children.0/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan" anchorType="ChopBox">
+        <children xsi:type="editmodel:WireLabelEditModel" name="«use»" size="21,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+        <children xsi:type="editmodel:AssociationEndEditModel" location="161,20" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" attributeSorter="Natural" methodSorter="Name" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.0/@children.0/@sourceConnections.0" name="VenueType" location="240,36" size="148,121" id="com.idega.block.venue.data/VenueType" runTimeClassModel="">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel">
+        <children xsi:type="editmodel:MethodEditModel" name="getDescription" id="com.idega.block.venue.data/VenueType#getDescription()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getName" id="com.idega.block.venue.data/VenueType#getName()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setDescription" id="com.idega.block.venue.data/VenueType#setDescription(Ljava.lang.String;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setName" id="com.idega.block.venue.data/VenueType#setName(Ljava.lang.String;)"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" attributeSorter="Natural" methodSorter="Name" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <packagePreferences xsi:type="editmodel:UMLClassDiagramPackagePreference" showStereotype="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" autoName="false"/>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showInterfaceStereotype="true" showClassStereotype="true" showPackageStereotype="true"/>
+</editmodel:ClassDiagramEditModel>
