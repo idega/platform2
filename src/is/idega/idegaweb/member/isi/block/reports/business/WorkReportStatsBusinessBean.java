@@ -3474,7 +3474,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.6.3 of the ISI Specs
 	 */
-	public ReportableCollection sixDotThree () throws RemoteException {
+	public ReportableCollection sixDotThree (
+	Integer year,
+	Collection regionalUnionFilter) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -3520,7 +3522,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.6.4 of the ISI Specs
 	 */
-	public ReportableCollection sixDotFour () throws RemoteException {
+	public ReportableCollection sixDotFour (
+	Integer year,	
+	Collection leagueFilter) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -3566,7 +3570,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.7.1 of the ISI Specs
 	 */
-	public ReportableCollection sevenDotOne () throws RemoteException {
+	public ReportableCollection sevenDotOne (
+	Integer year,
+	Collection leagueFilter,
+	Collection regionalUnionFilter,
+	Collection clubFilter,
+	String gender,
+	Integer birthYear) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -3612,7 +3622,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.7.2 of the ISI Specs
 	 */
-	public ReportableCollection sevenDotTwo () throws RemoteException {
+	public ReportableCollection sevenDotTwo (
+	Integer year,
+	Collection leagueFilter,
+	Collection regionalUnionFilter,
+	Collection clubFilter,
+	String gender,
+	Integer birthYear) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
