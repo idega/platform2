@@ -827,7 +827,12 @@ public class ReportQueryBuilder extends Block {
 	  				}
 					}
 	  		}
-	  		
+	  		if (helper.hasPreviousQuery()) {
+	  			String id = helper.previousQuery().getId();
+	  			if (id != null) {
+	  				select.setSelectedElement(id);
+	  			}
+	  		}
 				table.add(select, 1, (row == 1) ? 1 : row - 1 );
 		}
 		if (hasTemplatePermission) {
