@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.6 2003/08/20 13:03:41 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.7 2003/08/21 15:25:27 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -11,9 +11,13 @@ package se.idega.idegaweb.commune.accounting.posting.business;
 
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
+import javax.ejb.CreateException;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
+
+import com.idega.data.IDOLookup;
+
 
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldHome;
@@ -32,6 +36,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	
 	public static final int JUSTIFY_LEFT = 0;
 	public static final int JUSTIFY_RIGHT = 1;
+
+	private final static String KEY_ERROR_POST_PARAM_ERROR1 = "posting_param_err.activity_id_missing";
+	private final static String KEY_ERROR_POST_PARAM_ERROR2 = "posting_param_err.reg_spec_id_missing";
+	private final static String KEY_ERROR_POST_PARAM_ERROR3 = "posting_param_err.company_id_missing";
+	private final static String KEY_ERROR_POST_PARAM_ERROR4 = "posting_param_err.com_bel_id_missing";
+	private final static String KEY_ERROR_POST_PARAM_ERROR5 = "posting_param_err.cant_create_post";
 
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
@@ -80,6 +90,88 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 		return ret.toString();
 	}
+
+	public void savePostingParameter(int ppID,
+				Date periodeFrom, 
+				Date periodeTo,
+				Date updatedDate,
+				String changedSign,
+				int activityID,
+				int regSpecTypeID,
+				int companyTypeID,
+				int communeBelongingID,
+				String ownAccount,
+				String ownLiability,
+				String ownResource,
+				String ownActivityCode,
+				String ownDoubleEntry,
+				String ownActivity,
+				String ownProject,
+				String ownObject,
+				String doubleAccount,
+				String doubleLiability,
+				String doubleResource,
+				String doubleActivityCode,
+				String doubleDoubleEntry,
+				String doubleActivity,
+				String doubleProject,
+				String doubleObject
+			) throws PostingParamException, RemoteException {
+
+			PostingParametersHome home = null;
+			PostingParameters pp = null;
+										
+			try {
+				home = (PostingParametersHome) IDOLookup.getHome(PostingParameters.class);
+
+				if (activityID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR1);
+				if (regSpecTypeID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR2);
+				if (companyTypeID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR3);
+				if (communeBelongingID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR4);
+
+				pp = home.findPostingParameter(ppID);
+
+			} catch (FinderException e) {
+				pp = null;
+			}
+			
+			try {
+				if (pp == null) {
+					pp = home.create();
+				}
+				pp.setPeriodeFrom(periodeFrom);
+				pp.setPeriodeTo(periodeTo);
+				pp.setUpdatedDate(updatedDate);
+				pp.setChangedSign(changedSign);
+				pp.setActivity(activityID);
+				pp.setRegSpecType(regSpecTypeID);
+				pp.setCompanyType(companyTypeID);
+				pp.setCommuneBelonging(communeBelongingID);
+				
+				pp.setPostingAccount(ownAccount);
+				pp.setPostingLiability(ownLiability);
+				pp.setPostingResource(ownResource);
+				pp.setPostingActivityCode(ownActivityCode);
+				pp.setPostingDoubleEntry(ownDoubleEntry);
+				pp.setPostingActivity(ownActivity);
+				pp.setPostingProject(ownProject);
+				pp.setPostingObject(ownObject);
+	
+				pp.setDoublePostingAccount(doubleAccount);
+				pp.setDoublePostingLiability(doubleLiability);
+				pp.setDoublePostingResource(doubleResource);
+				pp.setDoublePostingActivityCode(doubleActivityCode);
+				pp.setDoublePostingDoubleEntry(doubleDoubleEntry);
+				pp.setDoublePostingActivity(doubleActivity);
+				pp.setDoublePostingProject(doubleProject);
+				pp.setDoublePostingObject(doubleObject);
+									
+				pp.store();
+			} catch (CreateException ce) {
+				throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR4);			
+			}
+		}
+
 
 	/**
 	 * Gets posting parameters for a certain periode
