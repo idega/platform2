@@ -1042,7 +1042,7 @@ public class IFSFileCreationThread extends Thread {
 								bWriter.write(amount);
 								//Antal, pris,
 								bWriter.write("000000000000100");
-								bWriter.write(amount.substring(0, 12));
+								bWriter.write(amount.substring(3, 15));
 								//moms, filler
 								bWriter.write(empty.substring(0, 2));
 								//Avser period f.o.m
@@ -1081,7 +1081,10 @@ public class IFSFileCreationThread extends Thread {
 								bWriter.write(empty.substring(0, 33));
 
 								numberOf62Lines++;
-								sum62Lines += am;
+								if (!isNegative)
+									sum62Lines += am;
+								else
+									sum62Lines -= am;
 								bWriter.newLine();
 
 								if (insertLRow) {
@@ -1131,7 +1134,7 @@ public class IFSFileCreationThread extends Thread {
 								bWriter.write(amount);
 								//Kvantitet and Apris
 								bWriter.write("000000000000100");
-								bWriter.write(amount.substring(0, 12));
+								bWriter.write(amount.substring(3, 15));
 								//Ansvar
 								String tmp = pb.findFieldInStringByName(posting, "Ansvar");
 								if (tmp.length() < 10) {
@@ -1226,7 +1229,10 @@ public class IFSFileCreationThread extends Thread {
 								bWriter.write(empty.substring(0, 100));
 
 								numberOf63Lines++;
-								sum63Lines += am;
+								if (!isNegative)
+									sum63Lines += am;
+								else
+									sum63Lines -= am;
 								bWriter.newLine();
 							}
 						}
@@ -1312,9 +1318,9 @@ public class IFSFileCreationThread extends Thread {
 			//Antalet poster posttyp 63
 			bWriter.write(format2.format(numberOf63Lines));
 			//Summen av alla fakturabelopp
-			bWriter.write(format3.format(sum62Lines * 100));
+			bWriter.write(format3.format(sum62Lines));
 			//Summen av alla bokforings belopp
-			bWriter.write(format3.format(sum63Lines * 100));
+			bWriter.write(format3.format(sum63Lines));
 			//Filler
 			bWriter.write(empty.substring(0, 78));
 			bWriter.newLine();
