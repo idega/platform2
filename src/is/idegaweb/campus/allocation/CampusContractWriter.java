@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.7 2001/08/16 23:41:57 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.8 2001/08/17 12:44:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,28 +36,28 @@ import java.text.NumberFormat;
  */
 
 public class CampusContractWriter{
-  public final static String renter_name = "[renter_name]";
-  public final static String renter_address = "[renter_address]";
-  public final static String renter_id = "[renter_id]";
+  public final static String renter_name = "renter_name";
+  public final static String renter_address = "renter_address";
+  public final static String renter_id = "renter_id";
 
-  public final static String tenant_name = "[tenant_name]";
-  public final static String tenant_address = "[tenant_address]";
-  public final static String tenant_id = "[tenant_id]";
+  public final static String tenant_name = "tenant_name";
+  public final static String tenant_address = "tenant_address";
+  public final static String tenant_id = "tenant_id";
 
-  public final static String apartment_name = "[apartment_name]";
-  public final static String apartment_address = "[apartment_address]";
-  public final static String apartment_campus = "[apartment_campus]";
-  public final static String apartment_area = "[apartment_area]";
-  public final static String apartment_floor = "[apartment_floor]";
-  public final static String apartment_info = "[apartment_info]";
-  public final static String apartment_rent = "[apartment_rent]";
+  public final static String apartment_name = "apartment_name";
+  public final static String apartment_address = "apartment_address";
+  public final static String apartment_campus = "apartment_campus";
+  public final static String apartment_area = "apartment_area";
+  public final static String apartment_floor = "apartment_floor";
+  public final static String apartment_info = "apartment_info";
+  public final static String apartment_rent = "apartment_rent";
 
-  public final static String apartment_roomcount = "[apartment_roomcount]";
-  public final static String contract_starts = "[contract_starts]";
-  public final static String contract_ends = "[contract_ends]";
+  public final static String apartment_roomcount = "apartment_roomcount";
+  public final static String contract_starts = "contract_starts";
+  public final static String contract_ends = "contract_ends";
 
-  public final static String renting_index = "[renting_index]";
-  public final static String today = "[today]";
+  public final static String renting_index = "renting_index";
+  public final static String today = "today";
 
 
   public  static String[] TAGS = {renter_name,renter_address,renter_id,
@@ -94,6 +94,14 @@ public class CampusContractWriter{
         Font tagFont = new Font(Font.COURIER,9,Font.BOLD);
         Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
         Font filledFont = new Font(Font.HELVETICA,8,Font.BOLD);
+
+        HeaderFooter footer = new HeaderFooter(new Phrase("",textFont),true);
+        footer.setBorder(0);
+
+        footer.setAlignment(Element.ALIGN_CENTER);
+
+        document.setFooter(footer);
+
         filledFont.setStyle("underline");
         ContractText ct = getHeader();
         String title = "";
@@ -136,7 +144,7 @@ public class CampusContractWriter{
       ex.printStackTrace();
       returner = false;
     }
-    if(bEntity){
+    if(false){
       try {
         Contract C = new Contract(id);
         C.setStatusPrinted();
@@ -200,14 +208,14 @@ public class CampusContractWriter{
 
   private static Phrase detagParagraph(Hashtable H,String sParagraph){
     Phrase phrase = new Phrase();
-    StringTokenizer ST  = new StringTokenizer(sParagraph);
+    StringTokenizer ST  = new StringTokenizer(sParagraph,"[]");
     while(ST.hasMoreTokens()){
       String token = ST.nextToken();
       if(H.containsKey(token)){
         phrase.add(H.get(token));
       }
       else{
-        phrase.add(token);
+        phrase.add(new Chunk(token,new Font(Font.HELVETICA, 8, Font.NORMAL)));
       }
     }
     return phrase;
@@ -222,28 +230,29 @@ public class CampusContractWriter{
       Floor eFloor = new Floor(eApartment.getFloorId());
       Building eBuilding = new Building(eFloor.getBuildingId());
       Complex eComplex = new Complex(eBuilding.getComplexId());
-
+      Font tagFont = new Font(Font.HELVETICA,9,Font.BOLDITALIC);
+      Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
       Hashtable H = new Hashtable(TAGS.length);
       DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwrb.getLocale());
       NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb.getLocale());
-      H.put(renter_name,"Stúdentagarðar");
-      H.put(renter_address,"Hringbraut");
-      H.put(renter_id,"00000000");
-      H.put(today,dfLong.format(new java.util.Date()));
-      H.put(tenant_name,eApplicant.getFullName());
-      H.put(tenant_address,eApplicant.getLegalResidence());
-      H.put(tenant_id,eApplicant.getSSN());
-      H.put(apartment_name,eApartment.getName());
-      H.put(apartment_floor, eFloor.getName());
-      H.put(apartment_address,eBuilding.getStreet());
-      H.put(apartment_campus, eComplex.getName());
-      H.put(apartment_area,String.valueOf( eApartmentType.getArea()));
-      H.put(apartment_roomcount,String.valueOf(eApartmentType.getRoomCount()));
-      H.put(apartment_info,eApartmentType.getExtraInfo());
-      H.put(contract_starts,dfLong.format(eContract.getValidFrom()));
-      H.put(contract_ends,dfLong.format(eContract.getValidTo()));
-      H.put(apartment_rent,nf.format((long)eApartmentType.getRent()));
-      H.put(renting_index, String.valueOf( getTariffIndex()));
+      H.put(renter_name,new Chunk("Félagsstofnun Stúdenta",tagFont));
+      H.put(renter_address,new Chunk("v/Hringbraut",tagFont));
+      H.put(renter_id,new Chunk("540169-6249",tagFont));
+      H.put(today,new Chunk(dfLong.format(new java.util.Date()),tagFont));
+      H.put(tenant_name,new Chunk(eApplicant.getFullName(),tagFont));
+      H.put(tenant_address,new Chunk(eApplicant.getLegalResidence(),tagFont));
+      H.put(tenant_id,new Chunk(eApplicant.getSSN(),tagFont));
+      H.put(apartment_name,new Chunk(eApartment.getName(),tagFont));
+      H.put(apartment_floor, new Chunk(eFloor.getName(),tagFont));
+      H.put(apartment_address,new Chunk(eBuilding.getStreet(),tagFont));
+      H.put(apartment_campus, new Chunk(eComplex.getName(),tagFont));
+      H.put(apartment_area, new Chunk(String.valueOf(eApartmentType.getArea()),tagFont));
+      H.put(apartment_roomcount,new Chunk(String.valueOf(eApartmentType.getRoomCount()),tagFont));
+      H.put(apartment_info,new Chunk(eApartmentType.getExtraInfo()!= null?eApartmentType.getExtraInfo():"",textFont));
+      H.put(contract_starts,new Chunk(dfLong.format(eContract.getValidFrom()),tagFont));
+      H.put(contract_ends,new Chunk(dfLong.format(eContract.getValidTo()),tagFont));
+      H.put(apartment_rent,new Chunk(nf.format((long)eApartmentType.getRent()),tagFont));
+      H.put(renting_index,new Chunk( "214.9",tagFont));
       return H;
     }
     catch(SQLException ex){
