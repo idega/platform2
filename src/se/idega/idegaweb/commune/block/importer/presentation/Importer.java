@@ -116,7 +116,11 @@ public class Importer extends Block {
     else if( selectFolder ){
       Form form = new Form();
       form.add(new HiddenInput(this.ACTION_PARAMETER,this.SELECT_FILES));
-      form.add(new TextInput(NEW_FOLDER_PATH,getFolderPath()) );
+      String path = getFolderPath();
+      if( path == null ){
+       path = iwc.getApplication().getApplicationRealPath();
+      }
+      form.add(new TextInput(NEW_FOLDER_PATH,path) );
       form.add(new SubmitButton());
       add(form);
       add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) );
