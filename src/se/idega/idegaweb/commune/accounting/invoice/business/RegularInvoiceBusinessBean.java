@@ -8,7 +8,6 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.sql.Date;
 import java.util.Collection;
-import java.util.HashSet;
 
 import javax.ejb.FinderException;
 
