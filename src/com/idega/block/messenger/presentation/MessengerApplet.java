@@ -346,7 +346,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       dialog.addActionListener(this);
 
-      SingleLineItem item = new SingleLineItem(this);
+      /*SingleLineItem item = new SingleLineItem(this);
       item.setId(sendToId);
       item.setWindowToOpen(dialog);
       item.addActionListener(this);
@@ -360,7 +360,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       userPanel.add(item);
       userPanel.repaint();
       item.repaint();
-      repaint();
+      repaint();*/
 
   }
 
