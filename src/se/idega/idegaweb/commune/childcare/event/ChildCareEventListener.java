@@ -53,6 +53,10 @@ public class ChildCareEventListener implements IWPageEventListener {
 				session.setStatus(iwc.getParameter(session.getParameterStatus()));
 			}
 
+			if (iwc.isParameterSet(session.getParameterCaseCode())) {
+				session.setCaseCode(iwc.getParameter(session.getParameterCaseCode()));
+			}
+
 			if (session.getSortBy() == ChildCareAdmin.SORT_ALL) {
 				session.setSortBy(-1);
 				session.setFromTimestamp(null);

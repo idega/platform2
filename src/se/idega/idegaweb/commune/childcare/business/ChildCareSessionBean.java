@@ -29,6 +29,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected static final String PARAMETER_SORT_BY = "cc_sort_by";
 	protected static final String PARAMETER_SEASON = "cc_season";
 	protected static final String PARAMETER_STATUS = "cc_status";
+	protected static final String PARAMETER_CASE_CODE = "cc_case_code";
 
 	protected int _childcareID = -1;
 	protected School _provider;
@@ -45,6 +46,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected Boolean hasPrognosis;
 	protected boolean _outDatedPrognosis = false;
 	protected String _status;
+	protected String _caseCode;
 
 	public CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneUserBusiness.class);
@@ -182,6 +184,13 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public String getParameterApplicationID() {
 		return PARAMETER_APPLICATION_ID;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getParameterCaseCode() {
+		return PARAMETER_CASE_CODE;
 	}
 
 	/**
@@ -397,4 +406,17 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 		_seasonID = seasonID;
 	}
 
+	/**
+	 * @return Returns the _caseCode.
+	 */
+	public String getCaseCode() {
+		return _caseCode;
+	}
+	
+	/**
+	 * @param code The _caseCode to set.
+	 */
+	public void setCaseCode(String caseCode) {
+		_caseCode = caseCode;
+	}
 }

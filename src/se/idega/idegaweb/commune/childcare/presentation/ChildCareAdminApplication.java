@@ -205,7 +205,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		boolean isCurrentProvider = false;
 		Link archive;
 
-		Collection applications = getBusiness().getApplicationsForChild(child);
+		Collection applications = getBusiness().getApplicationsForChild(child, getSession().getCaseCode());
 		Iterator iter = applications.iterator();
 		while (iter.hasNext()) {
 			column = 1;

@@ -2140,13 +2140,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public Collection getApplicationsForChild(User child) {
-		return getApplicationsForChild(((Integer) child.getPrimaryKey()).intValue());
+		return getApplicationsForChild(child, null);
+	}
+	
+	public Collection getApplicationsForChild(User child, String caseCode) {
+		return getApplicationsForChild(((Integer) child.getPrimaryKey()).intValue(), caseCode);
 	}
 
 	public Collection getApplicationsForChild(int childId) {
+		return getApplicationsForChild(childId, null);
+	}
+	
+	public Collection getApplicationsForChild(int childId, String caseCode) {
 		try {
 			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusReady().getStatus()};
-			return getChildCareApplicationHome().findApplicationByChildAndNotInStatus(childId, caseStatus);
+			return getChildCareApplicationHome().findApplicationByChildAndNotInStatus(childId, caseStatus, caseCode);
 		}
 		catch (FinderException fe) {
 			return null;
