@@ -1,15 +1,16 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.presentation.IWContext;
 import com.idega.block.login.presentation.Login;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.*;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.presentation.LocalePresentationUtil;
-import com.idega.development.presentation.Localizer;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
