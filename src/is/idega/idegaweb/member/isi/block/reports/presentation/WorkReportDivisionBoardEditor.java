@@ -534,7 +534,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       String newWorkGroupName = value.toString();
       int year = getYear();
       try {
-        workReportBusiness.changeWorkReportGroupOfEntity(oldWorkGroupName, year, newWorkGroupName, year, board);
+        workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, board);
       }
       catch (RemoteException ex) {
         System.err.println(
