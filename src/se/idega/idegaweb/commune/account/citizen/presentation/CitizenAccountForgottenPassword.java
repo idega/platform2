@@ -403,7 +403,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	    }
 	    return digitOnlyInput.toString();
     }
-    else if (iwc.getApplicationSettings().getDefaultLocale().equals(LocaleUtil.getSwedishLocale())) {
+    else if (iwc.getApplicationSettings().getDefaultLocale().equals(LocaleUtil.getIcelandicLocale())) {
     		if (SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(digitOnlyInput.toString())) {
     			return digitOnlyInput.toString();
     		}
