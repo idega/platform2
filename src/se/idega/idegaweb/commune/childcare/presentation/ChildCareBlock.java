@@ -35,6 +35,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	public static final String ACCEPTED_COLOR = "#FFE0E0";
 	public static final String PARENTS_ACCEPTED_COLOR = "#E0FFE0";
 	public static final String CONTRACT_COLOR = "#E0E0FD";
+	public static final String PENDING_COLOR = "#FDFFDD";
 	
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
@@ -81,21 +82,35 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	}
 
 	protected Table getLegendTable() {
-		Table table = new Table(8,1);
+		return getLegendTable(false);
+	}
+	
+	protected Table getLegendTable(boolean showPending) {
+		Table table = new Table();
 		table.setHeight(1, 12);
 		table.setWidth(1, "12");
 		table.setWidth(3, "12");
 		table.setWidth(4, "12");
 		table.setWidth(6, "12");
 		table.setWidth(7, "12");
+		if (showPending) {
+			table.setWidth(9, "12");
+			table.setWidth(10, "12");
+		}
 		
 		table.add(getColorTable(ACCEPTED_COLOR), 1, 1);
 		table.add(getColorTable(PARENTS_ACCEPTED_COLOR), 4, 1);
 		table.add(getColorTable(CONTRACT_COLOR), 7, 1);
+		if (showPending) {
+			table.add(getColorTable(PENDING_COLOR), 10, 1);
+		}
 		
 		table.add(getSmallHeader(localize("child_care.application_status_accepted","Accepted")), 2, 1);
 		table.add(getSmallHeader(localize("child_care.application_status_parents_accepted","Parents accepted")), 5, 1);
 		table.add(getSmallHeader(localize("child_care.application_status_contract","Contract")), 8, 1);
+		if (showPending) {
+			table.add(getSmallHeader(localize("child_care.application_status_pending","Pending")), 11, 1);
+		}
 		
 		return table;
 	}
