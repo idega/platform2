@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/03 10:09:21 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/03 14:39:12 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -47,6 +47,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String AMOUNT_KEY = PREFIX + "amount";
     private static final String CREATION_DATE_DEFAULT = "Skapandedag";
     private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
+    private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
+    private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String FROM_PERIOD_KEY = PREFIX + "from_period";
@@ -66,12 +68,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String LAST_NAME_KEY = PREFIX + "last_name";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
+    private static final String NEW_DEFAULT = "Ny";
+    private static final String NEW_KEY = PREFIX + "new";
     private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
+    private static final String OWN_POSTING_DEFAULT = "Egen kontering";
+    private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
+    private static final String REMOVE_DEFAULT = "Ta bort";
+    private static final String REMOVE_KEY = PREFIX + "remove";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String SSN_DEFAULT = "Personnummer";
@@ -80,6 +88,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String STATUS_KEY = PREFIX + "status";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
     private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
+    private static final String TOTAL_AMOUNT_VAT_DEFAULT = "Totalbelopp moms";
+    private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT = "Totalbelopp, exklusive moms";
+    private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY = PREFIX + "total_amount_vat_exclusive";
+    private static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
     private static final String TO_PERIOD_KEY = PREFIX + "to_period";
     private static final String USERSEARCHER_ACTION_KEY = "mbe_act_search" + PREFIX;
     private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
@@ -89,7 +101,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
   private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
-            ACTION_SHOW_COMPILATION_LIST = 1;
+            ACTION_SHOW_COMPILATION_LIST = 1,
+            ACTION_NEW_INVOICE_RECORD = 2,
+            ACTION_REMOVE_INVOICE_RECORD = 3;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -108,7 +122,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				case ACTION_SHOW_COMPILATION:
 					showCompilation (context);
 					break;
-                    
+
                 default:
                     showCompilationList (context);
 					break;					
@@ -189,16 +203,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         JOURNAL_ENTRY_DATE_DEFAULT, ":");
         addSmallText(table, getFormattedDate (header.getDateJournalEntry ()),
                      col++, row++);
- 		final InvoiceRecord [] records
-		        = business.getInvoiceRecordsByInvoiceHeader (header);
+        table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);            
-        if (0 < records.length) {
-            table.add (getInvoiceRecordListTable (context, records), 1,
-                       row++);
-        } else {
-            table.add (new Text ("no records found for this header"), 1, row++);
-        }
-
+        table.add (getInvoiceRecordListTable (context, business, header), 1,
+                   row++);
+        table.setHeight (row++, 12);
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getSubmitButton (ACTION_NEW_INVOICE_RECORD + "", NEW_KEY,
+                                    NEW_DEFAULT), 1, row);
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
@@ -248,6 +260,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                      + " or child!"), 1, row++);
             }
         }
+
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
@@ -316,8 +329,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 
     private Table getInvoiceRecordListTable
-        (final IWContext context, final InvoiceRecord [] records)
-        throws RemoteException, FinderException {
+        (final IWContext context, final InvoiceBusiness business,
+         final InvoiceHeader header) throws RemoteException, FinderException {
+
+ 		final InvoiceRecord [] records
+		        = business.getInvoiceRecordsByInvoiceHeader (header);
 
         // set up header row
         final String [][] columnNames =
@@ -346,6 +362,23 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			showInvoiceRecordOnARow (table, row++, invoiceBusiness,
                                      records [i]);
         }
+        table.setHeight(row++, 12);
+        table.mergeCells (1, row, 4, row);
+        addSmallHeader (table, 1, row, TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY,
+                        TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT, ":");
+        table.add (getTotalAmount (records) + "", 5, row++);
+        table.mergeCells (1, row, 4, row);
+        addSmallHeader (table, 1, row, TOTAL_AMOUNT_VAT_KEY,
+                        TOTAL_AMOUNT_VAT_DEFAULT, ":");
+        table.add (getTotalAmountVat (records) + "", 5, row++);
+        addSmallHeader (table, 1, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
+                        ":");
+        table.mergeCells (2, row, table.getColumns (), row);
+        table.add (header.getOwnPosting (), 2, row++);
+        addSmallHeader (table, 1, row, DOUBLE_POSTING_KEY,
+                        DOUBLE_POSTING_DEFAULT, ":");
+        table.mergeCells (2, row, table.getColumns (), row);
+        table.add (header.getDoublePosting (), 2, row++);
         
        return table;
     }
@@ -365,7 +398,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
 		table.add (record.getInvoiceText (), col++, row);
 		table.add (record.getDays () + "", col++, row);
-		table.add (record.getAmount () + "", col++, row);
+		table.add (((long) record.getAmount ()) + "", col++, row);
 		table.add (record.getNotes (), col++, row);
 	}
 
@@ -483,6 +516,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
     }
 
+    private Table getButtonTable (final String [][] buttonInfo) {
+        final Table table = new Table ();
+        for (int i = 0; i < buttonInfo.length; i++) {
+            table.add (getSubmitButton (buttonInfo [i][0], buttonInfo [i][1],
+                                        buttonInfo [i][2]), i + 1, 1);
+            table.add (Text.getNonBrakingSpace (), i + 1, 1);
+        }
+        return table;
+    }
+
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
         return (SubmitButton) getButton (new SubmitButton
@@ -568,10 +611,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private long getTotalAmount (final InvoiceRecord [] records) {
 		long totalAmount = 0;
-		for (int j = 0; j < records.length; j++) {
-		    totalAmount += records[j].getAmount ();
+		for (int i = 0; i < records.length; i++) {
+		    totalAmount += records[i].getAmount ();
 		}
         return totalAmount;
+    }
+
+    private long getTotalAmountVat (final InvoiceRecord [] records) {
+		long totalAmountVat = 0;
+		for (int i = 0; i < records.length; i++) {
+		    totalAmountVat += records[i].getAmountVAT ();
+		}
+        return totalAmountVat;
     }
 
     private void displayRedText (final String key, final String defaultString) {

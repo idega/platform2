@@ -33,7 +33,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	private static final String COLUMN_DATE_TRANSACTION = "date_transaction";
 	private static final String COLUMN_CREATED_BY = "created_by";
 	private static final String COLUMN_CHANGED_BY = "changed_by";
-	private static final String COLUMN_OWN_POSTING = "own_postiong";
+	private static final String COLUMN_OWN_POSTING = "own_posting";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	
 	public String getEntityName() {
