@@ -45,6 +45,7 @@ import com.idega.user.data.User;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntryHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -56,6 +57,7 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
  * @author Roar
@@ -598,11 +600,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		table.add(searchPanel, 1, row++);
 
 		Regulation reg = searchPanel.getRegulation(); 
-		String[] posting = searchPanel.getPosting();
-		posting[1] = posting[1]; //TODO: present posting on page
 		
 		if (reg != null){
-			entry = getNotStoredEntry(iwc, reg);
+			entry = getNotStoredEntry(iwc, reg, searchPanel.getPosting());
 		}
 
 
@@ -641,8 +641,18 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
 		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
-		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
-		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
+		table.mergeCells(1, row, 10, row);
+		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
+		if (entry.getOwnPosting() == null && entry.getDoublePosting() == null){
+			try{
+				postingBlock.generateStrings(iwc);
+			}catch(PostingParametersException ex){
+				ex.printStackTrace();
+			}
+		}
+		table.add(postingBlock, 1, row++);
+//		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
+//		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
 		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getDescription", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
@@ -656,16 +666,17 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	}
 
 	private RegularInvoiceEntry getEmptyEntry() {
-		return getNotStoredEntry(null, null);		
+		return getNotStoredEntry(null, null, null);		
 	}
 	
 	private RegularInvoiceEntry getNotStoredEntry(IWContext iwc) {
-		return getNotStoredEntry(iwc, null);
+		return getNotStoredEntry(iwc, null, null);
 	}
 	
-	private RegularInvoiceEntry getNotStoredEntry(IWContext iwc, Regulation reg) {
+	private RegularInvoiceEntry getNotStoredEntry(IWContext iwc, Regulation reg, String[] posting) {
 		final IWContext _iwc = iwc;
 		final Regulation _reg = reg;
+		final String[] _posting = posting;
 		
 		return new RegularInvoiceEntry() {
 		
@@ -702,10 +713,16 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}
 		
 			public String getOwnPosting() {
+				if (_posting != null && _posting.length >= 1){
+					return _posting[0];
+				}
 				return getValue(PAR_OWN_POSTING);
 			}
 		
 			public String getDoublePosting() {
+				if (_posting != null && _posting.length >= 2){
+					return _posting[1];
+				}				
 				return getValue(PAR_DOUBLE_ENTRY_ACCOUNT);
 			}
 		
