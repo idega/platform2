@@ -127,7 +127,7 @@ public class CitizenEditor extends UserEditor {
 				if (parents != null && !parents.isEmpty()) {
 					for (Iterator iter = parents.iterator(); iter.hasNext();) {
 						User parent = (User) iter.next();
-						relationsTable.add(getRelatedUserLink(parent), 2, row);
+						relationsTable.add(getRelatedUserLink(parent), 2, parentStartRow);
 						String relationType = familyService.getParentRelationType();
 						relationsTable.add(
 							getDisConnectorLink(
@@ -140,8 +140,8 @@ public class CitizenEditor extends UserEditor {
 										"mbe.remove_parent_relation",
 										"Remove parent relationship"))),
 							3,
-							row);
-						row++;
+							parentStartRow);
+						parentStartRow++;
 					}
 				}
 			}
@@ -149,8 +149,8 @@ public class CitizenEditor extends UserEditor {
 			}
 			//row++;
 			// custodians handling
-			row = custodianStartRow;
-			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.custodians", "Custodians")), 5, row);
+			
+			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.custodians", "Custodians")), 5, custodianStartRow);
 			Collection custodians = null;
 			try {
 				//System.out.println("geting custodians  of "+user.getName());
@@ -159,7 +159,7 @@ public class CitizenEditor extends UserEditor {
 				if (custodians != null && !custodians.isEmpty()) {
 					for (Iterator iter = custodians.iterator(); iter.hasNext();) {
 						User custodian = (User) iter.next();
-						relationsTable.add(getRelatedUserLink(custodian), 6, row);
+						relationsTable.add(getRelatedUserLink(custodian), 6, custodianStartRow);
 						String relationType = familyService.getCustodianRelationType();
 						relationsTable.add(
 							getDisConnectorLink(
@@ -172,14 +172,14 @@ public class CitizenEditor extends UserEditor {
 										"mbe.remove_custodian_relation",
 										"Remove custodian relationship"))),
 							7,
-							row);
-						row++;
+							custodianStartRow);
+						custodianStartRow++;
 					}
 				}
 			}
 			catch (Exception e1) {
 			}
-			row=Math.max(row,parentStartRow)+1;
+			row=Math.max(custodianStartRow,parentStartRow)+1;
 			// biological children handling
 			
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.parential_children", "Parential children")),1,				row);
