@@ -42,7 +42,7 @@ public SubmitButton(Image defaultImage, String name){
 }
 
 public SubmitButton(Image defaultImage, String name, String value){
-	super(name,value);
+	this(name,value);
 	this.defaultImage = defaultImage;
 
         this.parameterName=parameterName;
@@ -142,30 +142,26 @@ public void setStyle(String style) {
 }
 
 
+public void main(ModuleInfo modinfo){
+
+  if (usingControlParameter){
+    this.getParentForm().setControlParameter(parameterName,"");
+    this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
+  }
+
+}
+
 
 private void printButton(ModuleInfo modinfo) throws IOException{
 
 
-        if (usingControlParameter){
-          //this.includedParameter.print(modinfo);
-          //System.out.println("includedParameter!=null");
-          //this.getParentForm().setControlParameter(parameterName,"");
-          this.getParentForm().add(new Parameter(parameterName,""));
-          this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
-        }
-
 	if (defaultImage == null){
 
 		println("<input type=\"submit\" name=\""+getName()+"\" "+getAttributeString()+" >");
-		//println("</input>");
         }
 	else{
 		setAttribute("border","0");
 		println("<input type=\"image\" src=\""+defaultImage.getURL()+"\" name=\""+getName()+"\" "+getAttributeString()+" >");
-		//println("</input>");
-                //else{
-                //  System.out.println("includedParameter==null");
-                //}
 	}
 }
 
