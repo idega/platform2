@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.1 2004/10/15 10:36:38 thomas Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.2 2004/10/15 10:41:51 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,15 +14,14 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import java.util.Collection;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsType;
 
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2004/10/15 10:36:38 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/15 10:41:51 $ by $Author: thomas $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderStatisticsTypeBMPBean.java,v 1.1 2003/09/17 16:28:13 anders Exp $
+ * $Id: ProviderStatisticsTypeBMPBean.java,v 1.1 2004/10/15 10:41:51 thomas Exp $
  *
  * Copyright (C) 2003 Idega. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.accounting.school.data;
+package se.idega.idegaweb.commune.care.data;
 
 import java.util.Collection;
 
@@ -20,7 +20,7 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for provider statistic types.
  * <p>
- * Last modified: $Date: 2003/09/17 16:28:13 $ by $Author: anders $
+ * Last modified: $Date: 2004/10/15 10:41:51 $ by $Author: thomas $
  *
  * @author Anders Lindman
  * @version $Revision: 1.1 $
