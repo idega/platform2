@@ -75,6 +75,8 @@ public class Checkout extends CashierSubWindowTemplate {
 
     private final static int STATUS_INSERT_PAYMENT_INFO = 2;
 
+    private final static int STATUS_ADD_TO_BASKET = 3;
+
     private final static int STATUS_REMOVE_ENTRIES = 10;
 
     private final static int STATUS_REMOVE_ALL = 20;
@@ -88,6 +90,23 @@ public class Checkout extends CashierSubWindowTemplate {
         super();
     }
 
+    private void addToBasket(IWContext iwc) {
+        String basketCases[] = iwc.getParameterValues(SelectPayments.LABEL_ADD_TO_BASKET);
+
+        try {
+            if (basketCases.length != 0) {
+                for (int i = 0; i < basketCases.length; i++) {
+                    FinanceEntry entry = getAccountingBusiness(iwc)
+                            .getFinanceEntryByPrimaryKey(
+                                    new Integer(basketCases[i]));
+                    getBasketBusiness(iwc).addItem(entry);
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private void removeFromBasket(IWContext iwc) {
         String basketCases[] = iwc.getParameterValues(LABEL_REMOVE_FROM_BASKET);
 
@@ -116,12 +135,12 @@ public class Checkout extends CashierSubWindowTemplate {
     private int getCurrentStatus(IWContext iwc) {
         if (iwc.isParameterSet(ACTION_REMOVE)) {
             return STATUS_REMOVE_ENTRIES;
-        } else if (iwc.isParameterSet(ACTION_REMOVE_ALL)) { 
-            return STATUS_REMOVE_ALL; 
-        } else if (iwc.isParameterSet(ACTION_PAY)) {
+        }  else if (iwc.isParameterSet(ACTION_PAY)) {
             return STATUS_SELECT_PAYMENT_TYPE;
         } else if (iwc.isParameterSet(ACTION_ENTER_PAYMENT)) {
             return STATUS_INSERT_PAYMENT_INFO;
+        } else if (iwc.isParameterSet(SelectPayments.ACTION_CHECKOUT)) {
+            return STATUS_ADD_TO_BASKET;
         }
 
         return STATUS_VIEW_BASKET;
@@ -164,6 +183,10 @@ public class Checkout extends CashierSubWindowTemplate {
             break;
         case STATUS_REMOVE_ALL:
             emptyBasket(iwc);
+            viewBasket(iwc);
+            break;
+        case STATUS_ADD_TO_BASKET:
+            addToBasket(iwc);
             viewBasket(iwc);
             break;
         default:

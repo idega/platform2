@@ -17,7 +17,6 @@ import java.util.Iterator;
 import javax.ejb.EJBException;
 
 import com.idega.block.basket.business.BasketBusiness;
-import com.idega.block.basket.data.BasketItem;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWConstants;
@@ -30,6 +29,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.presentation.UserChooserBrowser;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -40,11 +40,15 @@ public class SelectPayments extends CashierSubWindowTemplate {
 
     protected static final String ACTION_ADD_TO_BASKET = "sp_basket";
 
+    public static final String ACTION_CHECKOUT = "sp_checkout";
+
     private final static String LABEL_SELECTED_USER = "isi_acc_sp_selected_user";
 
-    private final static String LABEL_CLUB = "isi_acc_sp_club";
+    private final static String LABEL_DATE = "isi_acc_sp_date";
 
     private final static String LABEL_DIVISION = "isi_acc_sp_division";
+
+    private final static String LABEL_GROUP = "isi_acc_sp_group";
 
     private final static String LABEL_INFO = "isi_acc_sp_info";
 
@@ -52,7 +56,11 @@ public class SelectPayments extends CashierSubWindowTemplate {
 
     private final static String LABEL_AMOUNT_REMAINING = "isi_acc_sp_remaining";
 
-    private final static String LABEL_ADD_TO_BASKET = "isi_acc_sp_add_basket";
+    public final static String LABEL_ADD_TO_BASKET = "isi_acc_sp_add_basket";
+
+    private final static String LABEL_CHECKOUT = "isi_acc_sp_checkout";
+
+    private final static String LABEL_SUM = "isi_acc_sp_sum";
 
     /**
      *  
@@ -91,14 +99,16 @@ public class SelectPayments extends CashierSubWindowTemplate {
         inputTable.setCellpadding(5);
         paymentTable.setCellpadding(5);
 
-        Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
-        labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION,
-                "Division"));
-        labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER,
                 "Selected user"));
         labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelDate = new Text(iwrb.getLocalizedString(LABEL_DATE, "Date"));
+        labelDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION,
+                "Division"));
+        labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelGrp = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
+        labelGrp.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelInfo = new Text(iwrb.getLocalizedString(LABEL_INFO, "Info"));
         labelInfo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT,
@@ -107,6 +117,9 @@ public class SelectPayments extends CashierSubWindowTemplate {
         Text labelRemaining = new Text(iwrb.getLocalizedString(
                 LABEL_AMOUNT_REMAINING, "Remaining"));
         labelRemaining.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+
+        Text labelSum = new Text(iwrb.getLocalizedString(LABEL_SUM, "Sum"));
+        labelSum.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
         SubmitButton selectUser = new SubmitButton(iwrb.getLocalizedString(
                 ACTION_SELECT_USER, "Select user"), ACTION_SELECT_USER,
@@ -130,7 +143,7 @@ public class SelectPayments extends CashierSubWindowTemplate {
             try {
                 if (getClub() != null) {
                     entries = getAccountingBusiness(iwc)
-                            .findAllPaymentEntriesByUserGroupAndDivision(
+                            .findAllOpenAssessmentEntriesByUserGroupAndDivision(
                                     getClub(), getDivision(), getUser());
                 }
             } catch (RemoteException e) {
@@ -138,17 +151,24 @@ public class SelectPayments extends CashierSubWindowTemplate {
             }
 
             row = 1;
-            paymentTable.add(labelClub, 2, row);
+            CheckBox checkAll = new CheckBox("checkall");
+            checkAll.setToCheckOnClick(LABEL_ADD_TO_BASKET, "this.checked");
+            paymentTable.add(checkAll, 1, row);
+            paymentTable.add(labelDate, 2, row);
             paymentTable.add(labelDiv, 3, row);
-            paymentTable.add(labelInfo, 4, row);
-            paymentTable.add(labelAmount, 5, row);
-            paymentTable.add(labelRemaining, 6, row++);
+            paymentTable.add(labelGrp, 4, row);
+            paymentTable.add(labelInfo, 5, row);
+            paymentTable.add(labelAmount, 6, row);
+            paymentTable.add(labelRemaining, 7, row++);
 
             NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
             nf.setMaximumFractionDigits(0);
 
             if (entries != null && !entries.isEmpty()) {
                 Iterator it = entries.iterator();
+                double sumAmount = 0.0;
+                double sumRemaining = 0.0;
+
                 while (it.hasNext()) {
                     FinanceEntry entry = (FinanceEntry) it.next();
                     try {
@@ -163,30 +183,56 @@ public class SelectPayments extends CashierSubWindowTemplate {
                     } catch (EJBException e1) {
                         e1.printStackTrace();
                     }
-                    if (entry.getClub() != null) {
-                        paymentTable.add(entry.getClub().getName(), 2, row);
+                    if (entry.getDateOfEntry() != null) {
+                        IWTimestamp doe = new IWTimestamp(entry
+                                .getDateOfEntry());
+                        paymentTable.add(doe.getDateString("dd.MM.yyyy"), 2,
+                                row);
                     }
                     if (entry.getDivision() != null) {
                         paymentTable.add(entry.getDivision().getName(), 3, row);
                     }
-                    paymentTable.add(entry.getInfo(), 4, row);
-                    paymentTable.add(nf.format(entry.getAmount()), 5, row);
+                    if (entry.getGroup() != null) {
+                        paymentTable.add(entry.getGroup().getName(), 4, row);
+                    }
+                    paymentTable.add(entry.getInfo(), 5, row);
+                    paymentTable.add(nf.format(entry.getAmount()), 6, row);
                     paymentTable.add(nf.format(entry.getAmount()
-                            - entry.getAmountEqualized()), 6, row);
+                            - entry.getAmountEqualized()), 7, row);
 
-                    row++;
+                    sumAmount += entry.getAmount();
+                    sumRemaining += entry.getAmount()
+                            - entry.getAmountEqualized();
+
+                    paymentTable.setAlignment(6, row, "RIGHT");
+                    paymentTable.setAlignment(7, row++, "RIGHT");
                 }
+
+                paymentTable.mergeCells(6, row, 7, row);
+                paymentTable.add("<hr>", 6, row++);
+                paymentTable.add(labelSum, 5, row);
+                paymentTable.add(nf.format(sumAmount), 6, row);
+                paymentTable.add(nf.format(sumRemaining), 7, row);
+                paymentTable.setAlignment(6, row, "RIGHT");
+                paymentTable.setAlignment(7, row++, "RIGHT");
 
                 SubmitButton moveToBasket = new SubmitButton(iwrb
                         .getLocalizedString(ACTION_ADD_TO_BASKET,
                                 "Add to basket"), ACTION_ADD_TO_BASKET,
                         "add_to_basket");
                 moveToBasket.setToEnableWhenChecked(LABEL_ADD_TO_BASKET);
-                paymentTable.add(moveToBasket, 6, row);
-                paymentTable.setAlignment(6, row, "RIGHT");
+                SubmitButton checkout = new SubmitButton(iwrb
+                        .getLocalizedString(ACTION_CHECKOUT,
+                                "Checkout"), ACTION_CHECKOUT,
+                        "checkout");
+                checkout.setToEnableWhenChecked(LABEL_ADD_TO_BASKET);
+                	checkout.setValueOnClick(CashierWindow.ACTION, CashierWindow.ACTION_CHECKOUT);
+                paymentTable.add(moveToBasket, 7, row);
+                paymentTable.add(checkout, 7, row);
+                paymentTable.setAlignment(7, row, "RIGHT");
             }
         }
-        
+
         f.add(inputTable);
         f.add(paymentTable);
         f.maintainParameter(CashierWindow.ACTION);

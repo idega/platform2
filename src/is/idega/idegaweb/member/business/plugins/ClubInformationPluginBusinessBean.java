@@ -472,8 +472,6 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
                     if (conn.getAliasID() == parent_id) {
                         conn.setMetaDataAttributes(metadata);
                         conn.store();
-//                        setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,
-//                                conn);
                     }
                 }
             }

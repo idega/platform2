@@ -77,7 +77,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 
     private static final String ACTION_SELECT_PAYMENTS = "isi_acc_cw_act_sel_pay";
 
-    private static final String ACTION_CHECKOUT = "isi_acc_cw_act_pay";
+    public static final String ACTION_CHECKOUT = "isi_acc_cw_act_pay";
 
     private static final String ACTION_REPORTS = "isi_acc_cw_reports";
 
