@@ -970,7 +970,10 @@ public class CalendarView extends Block{
 		String styleSrc = iwc.getIWMainApplication().getBundle(getBundleIdentifier()).getResourcesURL();
 		String styleSheetName = "CalStyle.css"; 
 		styleSrc = styleSrc + "/" + styleSheetName;
-		parentPage.addStyleSheetURL(styleSrc);
+		if(parentPage != null) {
+			parentPage.addStyleSheetURL(styleSrc);
+		}
+		
 		
 		if (timeStamp == null) {
 			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
