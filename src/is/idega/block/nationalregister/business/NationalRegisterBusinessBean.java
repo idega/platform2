@@ -92,7 +92,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		Group citizenGroup) {
 
 		
-		
+		String oldFamilyID = null;
 		
 			
 		try {
@@ -100,6 +100,8 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			NationalRegister reg = getEntryBySSN(ssn);
 			if (reg == null) {
 				reg = getNationalRegisterHome().create();
+			} else {
+				oldFamilyID = reg.getFamilyId();
 			}
 			reg.setAddress(address);
 			reg.setBuilding(building);
@@ -186,7 +188,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			}
 
 			FamilyLogic familyLogic = getFamilyLogic();
-			familyLogic.setFamilyForUser(familyId, user);
+			familyLogic.updateFamilyForUser(familyId, user);
 
 //			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 //			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
