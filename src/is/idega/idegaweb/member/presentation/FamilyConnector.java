@@ -57,7 +57,7 @@ public class FamilyConnector extends Window {
 		setAllMargins(0);
 		setWidth(250);
 		setHeight(200);
-		setBackgroundColor("#d4d0c8");
+		setBackgroundColor("#cfd0d2");
 	}
 
 	public void main(IWContext iwc) throws Exception {
