@@ -205,6 +205,7 @@ public abstract class BookingForm extends TravelManager{
 	protected int row = 1;
 	protected Table currentSearchPart = null;
 	protected int currentSearchPartRow = 1;
+	protected int currentSearchPartColumn = 1;
 	public final static String STYLENAME_INQUIRY = "Inquiry";
 	public final static String STYLENAME_INTERFACE = "Interface";
 	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
@@ -1655,7 +1656,7 @@ public abstract class BookingForm extends TravelManager{
 //		}
 //	}
 	
-	protected Form getBookingForm(IWContext iwc, Product product) throws RemoteException {
+	protected Form getBookingForm(IWContext iwc, Product product, boolean vertical) throws RemoteException {
 		Table table = new Table();
 		Form form = new Form();
 		form.add(table);
@@ -1686,26 +1687,26 @@ public abstract class BookingForm extends TravelManager{
 			e2.printStackTrace();
 		}
 		
-		setSearchPart(table, row, false, false);
+		setSearchPart(table, row, false, false, vertical);
 		if (errorFields != null && !errorFields.isEmpty()) {
-			addErrorWarning(currentSearchPart, currentSearchPartRow, true, true);
+			addErrorWarning(currentSearchPart, currentSearchPartRow, true, true, vertical);
 			currentSearchPart.setCellpaddingBottom(1, currentSearchPartRow, 8);
 			++row;
 			++currentSearchPartRow;
 		}
 		
 		if (isProductValid) {
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, table, row);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, vertical, table, row);
 			//table.mergeCells(2, (row-1), 3, (row-1));
 			
 			TextInput postalC = new TextInput(PARAMETER_AREA_CODE);
 			postalC.setSize(6);
 			TextInput city = new TextInput(PARAMETER_CITY);
 			//city.setSize(18);
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.address","Address"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code")}, new PresentationObject[]{new TextInput(PARAMETER_ADDRESS), postalC}, false, false, table, row);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.address","Address"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code")}, new PresentationObject[]{new TextInput(PARAMETER_ADDRESS), postalC}, false, false, vertical, table, row);
 			
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City"), iwrb.getLocalizedString("travel.search.country","Country")}, new PresentationObject[]{city, new TextInput(PARAMETER_COUNTRY)}, false, false, table, row);
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.email","Email"), iwrb.getLocalizedString("travel.search.phone", "Telephone number")}, new PresentationObject[]{new TextInput(PARAMETER_EMAIL), new TextInput(PARAMETER_PHONE)}, false, false, table, row);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City"), iwrb.getLocalizedString("travel.search.country","Country")}, new PresentationObject[]{city, new TextInput(PARAMETER_COUNTRY)}, false, false, vertical, table, row);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.email","Email"), iwrb.getLocalizedString("travel.search.phone", "Telephone number")}, new PresentationObject[]{new TextInput(PARAMETER_EMAIL), new TextInput(PARAMETER_PHONE)}, false, false, vertical, table, row);
 			//			table.mergeCells(2, (row-1), 3, (row-1));
 			
 			setupSpecialFieldsForBookingForm(table, row, errorFields);
@@ -1730,11 +1731,11 @@ public abstract class BookingForm extends TravelManager{
 			TextArea comment = new TextArea(PARAMETER_COMMENT);
 			comment.setWidth("300");
 			comment.setHeight("50");
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment}, false, false, table, row);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment}, false, false, vertical, table, row);
 			currentSearchPart.mergeCells(1, currentSearchPartRow-1, 2, currentSearchPartRow-1);
 			
 			
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"), iwrb.getLocalizedString("travel.search.name_on_card", "Name as it appears on card")}, new PresentationObject[]{new TextInput(parameterCCNumber), new TextInput(PARAMETER_NAME_ON_CARD)}, false, false, table, row);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"), iwrb.getLocalizedString("travel.search.name_on_card", "Name as it appears on card")}, new PresentationObject[]{new TextInput(parameterCCNumber), new TextInput(PARAMETER_NAME_ON_CARD)}, false, false, vertical, table, row);
 			
 			++row;
 			Table ccTable = new Table();
@@ -1914,9 +1915,9 @@ public abstract class BookingForm extends TravelManager{
 		return form;
 	}
 	
-	public int addErrorWarning(Table table, int row, boolean createNew, boolean useColors) {
+	public int addErrorWarning(Table table, int row, boolean createNew, boolean useColors, boolean vertical) {
 		if (errorFields != null && !errorFields.isEmpty()) {
-			Table sTable = this.setSearchPart(table, -1, createNew, useColors);
+			Table sTable = this.setSearchPart(table, -1, createNew, useColors, vertical);
 			sTable.setCellpaddingLeft(1, 1, 10);
 			sTable.setCellpaddingTop(1, 1, 5);
 			sTable.setCellpaddingBottom(1, 1, 5);
@@ -2002,17 +2003,17 @@ public abstract class BookingForm extends TravelManager{
 		return betw;
 	}	
 	
-	public void addInputLine(String[] text, PresentationObject[] object) {
-		addInputLine(text, object, false, false, formTable, -1);
+	public void addInputLine(String[] text, PresentationObject[] object, boolean vertical) {
+		addInputLine(text, object, false, false, vertical, formTable, -1);
 	}	
-	public void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart) {
-		addInputLine(text, object, useHeaderText, newSearchPart, formTable, -1);
+	public void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, boolean vertical) {
+		addInputLine(text, object, useHeaderText, newSearchPart, vertical, formTable, -1);
 	}	
-	public void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, Table table, int row) {
-		addInputLine(text, object, useHeaderText, newSearchPart, true, table, row);
+	public void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, boolean vertical, Table table, int row) {
+		addInputLine(text, object, useHeaderText, newSearchPart, true, vertical, table, row);
 	}
-	public void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, boolean useColors, Table table, int row) {
-		setSearchPart(table, row, newSearchPart, useColors);
+	public void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, boolean useColors, boolean vertical, Table table, int row) {
+		setSearchPart(table, row, newSearchPart, useColors, vertical);
 		for (int i = 0; i < text.length; i++) {
 			if ( errorFields != null && errorFields.contains(object[i].getName())) {
 				currentSearchPart.add(getErrorText("* "), i+1, currentSearchPartRow);
@@ -2076,26 +2077,20 @@ public abstract class BookingForm extends TravelManager{
 				currentSearchPart.add(object[i], i+1, currentSearchPartRow);
 				currentSearchPart.setCellpaddingTop(i+1, currentSearchPartRow, 6);
 				currentSearchPart.setCellpaddingLeft(i+1, currentSearchPartRow, 10);
+				if (!vertical) {
+					currentSearchPart.setCellpaddingRight(i+1, currentSearchPartRow, 10);
+				}
 				currentSearchPart.setCellpaddingBottom(i+1, currentSearchPartRow, 9);
 			}
 		}
 		++currentSearchPartRow;
 	}
 	
-	public Table setSearchPart(Table table, int tableRow, boolean createNew, boolean useColors) {
+	public Table setSearchPart(Table table, int tableRow, boolean createNew, boolean useColors, boolean vertical) {
 		if (createNew || currentSearchPart == null) {
-			//table.setBorder(1);
 			
 			currentSearchPart = new Table();
 			if (useColors) {
-				/*
-				 if (searchPartTopBorderColor != null && searchPartTopBorderWidth != null) {
-				 currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartTopBorderWidth), searchPartTopBorderColor, "solid");
-				 }
-				 if (searchPartBottomBorderColor != null && searchPartBottomBorderWidth != null) {
-				 currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartBottomBorderWidth), searchPartBottomBorderColor, "solid");
-				 }
-				 */				
 				String darkBackground = this.getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR);
 				String lightBackground = this.getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR);
 				
@@ -2104,18 +2099,28 @@ public abstract class BookingForm extends TravelManager{
 				}
 			}
 			currentSearchPart.setBorder(0);
-			//currentSearchPart.setBorderColor("#F0C0FF");
 			currentSearchPart.setCellspacing(0);
 			currentSearchPart.setCellpadding(0);
 			currentSearchPart.setWidth("100%");
 			currentSearchPartRow = 1;
-			
-			if (tableRow > 0) {
-				table.add(currentSearchPart, 1, tableRow);
+//			currentSearchPart.setHeight("100%");
+//			currentSearchPartColumn = 1;
+			// TODO
+			if (vertical) {
+				if (tableRow > 0) {
+					table.add(currentSearchPart, 1, tableRow);
+				} else {
+					table.add(currentSearchPart, 1, row++);
+					table.setHeight(row++, 2);
+				}
 			} else {
-				table.add(currentSearchPart, 1, row++);
-				table.setHeight(row++, 2);
+				table.setVerticalAlignment(currentSearchPartColumn, row, Table.VERTICAL_ALIGN_TOP);
+				table.setStyleClass(currentSearchPartColumn, row, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
+				table.add(currentSearchPart, currentSearchPartColumn++, row);
+
+				table.setWidth(currentSearchPartColumn++, 2);
 			}
+
 		}
 		
 		return currentSearchPart;
@@ -2124,12 +2129,12 @@ public abstract class BookingForm extends TravelManager{
 	public void addHiddenInput(String name, String value) {
 		formTable.add(new HiddenInput(name, value));
 	}
-	public void addSupplierNameInput() {
+	public void addSupplierNameInput(boolean vertical) {
 		TextInput suppName = new TextInput(AbstractSearchForm.PARAMETER_SUPPLIER_NAME);
-		addInputLine(new String[] {iwrb.getLocalizedString("travel.search.supp_name","Supplier name")+Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.not_required", "Not required")+")"}, new PresentationObject[] {suppName});
+		addInputLine(new String[] {iwrb.getLocalizedString("travel.search.supp_name","Supplier name")+Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.not_required", "Not required")+")"}, new PresentationObject[] {suppName}, vertical);
 	}
 
-	public void addAreaCodeInput(Product product, Collection countries) {
+	public void addAreaCodeInput(Product product, Collection countries, boolean vertical) {
 		try {
 			boolean isIcelandOnly = false;
 			if (countries == null || countries.isEmpty()) {
@@ -2154,7 +2159,7 @@ public abstract class BookingForm extends TravelManager{
 			}
 			
 			
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.location","Location")}, new PresentationObject[]{menu}, false, true);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.location","Location")}, new PresentationObject[]{menu}, false, true, vertical);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		

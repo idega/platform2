@@ -60,15 +60,6 @@ public abstract class TourSearch extends AbstractSearchForm {
 		BookingForm bf = getBookingForm();
 		boolean defined = hasDefinedProduct();
 		
-		if (!defined) {
-			try {
-				bf.addAreaCodeInput(null, engine.getCountries());
-			}
-			catch (IDORelationshipException e1) {
-				e1.printStackTrace();
-			}
-			bf.addSupplierNameInput();
-		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		
@@ -79,11 +70,10 @@ public abstract class TourSearch extends AbstractSearchForm {
 		manySeats.setContent("1");
 		manySeats.setSize(3);
 		manySeats.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_seats", "Invalid number of seats"));
-		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.date","Date")}, new PresentationObject[]{fromDate}, false, true);
-		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_seats","Number of seats")}, new PresentationObject[]{manySeats}, false, true);
 		
 		SelectPanel tourTypes = new SelectPanel(PARAMETER_TOUR_TYPE_ID );
 		try {
+			tourTypes.setHeight("60");
 			Collection categories = getTourTypeHome().findByCategory(getTourCategory());
 			SelectorUtility su = new SelectorUtility();
 			tourTypes = (SelectPanel) su.getSelectorFromIDOEntities(tourTypes, categories, "getLocalizationKey", iwrb);
@@ -105,7 +95,20 @@ public abstract class TourSearch extends AbstractSearchForm {
 			e.printStackTrace(System.err);
 		}
 		tourTypes.setAsNotEmpty(iwrb.getLocalizedString("travel.search.tour_type_must_be_selected", "Tour type must be selected."));
-		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of","Type of ")+getTourCategory().toLowerCase()}, new PresentationObject[]{tourTypes});
+
+		if (!defined) {
+			try {
+				bf.addAreaCodeInput(null, engine.getCountries(), isVertical());
+			}
+			catch (IDORelationshipException e1) {
+				e1.printStackTrace();
+			}
+			bf.addSupplierNameInput(isVertical());
+		}
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.date","Date")}, new PresentationObject[]{fromDate}, false, isVertical(), isVertical());
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_seats","Number of seats")}, new PresentationObject[]{manySeats}, false, true, isVertical());
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of","Type of ")+getTourCategory().toLowerCase()}, new PresentationObject[]{tourTypes}, isVertical());
+	
 	}
 
 	private TourTypeHome getTourTypeHome() throws IDOLookupException {

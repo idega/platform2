@@ -61,12 +61,12 @@ public class CarRentalSearch extends AbstractSearchForm {
 		
 		if (!defined) {
 			try {
-				bf.addAreaCodeInput(null, engine.getCountries());
+				bf.addAreaCodeInput(null, engine.getCountries(), isVertical());
 			}
 			catch (IDORelationshipException e1) {
 				e1.printStackTrace();
 			}
-			bf.addSupplierNameInput();
+			bf.addSupplierNameInput(isVertical());
 		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
@@ -85,8 +85,8 @@ public class CarRentalSearch extends AbstractSearchForm {
 		manyDays.setSize(3);
 		manyDays.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_days", "Invalid number of days"));
 //		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup"), iwrb.getLocalizedString("travel.search.no_days","Number of days")}, new PresentationObject[]{fromDate, manyDays});
-		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup")}, new PresentationObject[]{fromDate}, false, true);
-		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.dropoff","Drop off")}, new PresentationObject[]{toDate}, false, false);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup")}, new PresentationObject[]{fromDate}, false, true, isVertical());
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.dropoff","Drop off")}, new PresentationObject[]{toDate}, false, false, isVertical());
 	}
 
 	protected Collection getResults() throws RemoteException, InvalidSearchException {
