@@ -300,9 +300,12 @@ public class Booking extends TravelManager {
       }
 
 
+      System.err.println("isDayVisible : "+isDayVisible);
+      boolean yearly = timeframe.getIfYearly();
       List depDays = null;
-      if (isDayVisible) {
 
+      if (!yearly) /** @todo implente fyrir annual */
+      if (isDayVisible) {
         CalendarHandler ch = new CalendarHandler(iwc);
           ch.setProduct(product);
         depDays = ch.getDepartureDays(iwc, false);
@@ -316,8 +319,8 @@ public class Booking extends TravelManager {
             break;
           }
         }
-
       }
+      System.err.println("isDayVisible 2 : "+isDayVisible);
 
 
       if (isDayVisible) {

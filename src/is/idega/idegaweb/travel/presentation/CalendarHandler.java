@@ -542,7 +542,7 @@ public class CalendarHandler extends TravelManager {
           depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
         }
       }else {
-          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, showPast);
+          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
       }
     return depDays;
   }

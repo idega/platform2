@@ -262,14 +262,38 @@ public class TravelStockroomBusiness extends StockroomBusiness {
               timeframeSQL.append(Ptable+"."+producter.getIDColumnName()+" = "+middleTable+"."+service.getIDColumnName());
               timeframeSQL.append(" AND ");
               timeframeSQL.append(Ptable+"."+supplier.getIDColumnName()+" = "+supplierId);
+/*                  timeframeSQL.append(" AND ");
+                  timeframeSQL.append(middleTable+"."+tService.getIDColumnName()+" in (");
+                  for (int i = 0; i < tempProducts.length; i++) {
+                    if (i == 0) {
+                      timeframeSQL.append(tempProducts[i].getID());
+                    }else {
+                      timeframeSQL.append(","+tempProducts[i].getID());
+                    }
+                  }
+                  timeframeSQL.append(")");
+*/
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(" ( ");
+              timeframeSQL.append(Ttable+"."+timeframe.getYearlyColumnName()+" = 'N'");
               timeframeSQL.append(" AND ");
               timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" <= '"+stamp.toSQLDateString()+"'");
               timeframeSQL.append(" AND ");
               timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" >= '"+stamp.toSQLDateString()+"'");
+              timeframeSQL.append(" ) ");
+              timeframeSQL.append(" OR ");
+              timeframeSQL.append(" ( ");
+              timeframeSQL.append(Ttable+"."+timeframe.getYearlyColumnName()+" = 'Y'");
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" containing '-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" containing '-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
+              timeframeSQL.append(" ) ");
               timeframeSQL.append(" AND ");
               timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
               timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName()+","+Ptable+"."+Product.getColumnNameProductName());
 
+            System.err.println(timeframeSQL.toString());
             products = (Product[]) (new Product()).findAll(timeframeSQL.toString());
 
           }
@@ -524,6 +548,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
   private static boolean isDayValid(Product product, Contract contract, idegaTimestamp stamp) {
     boolean returner = false;
+    int numberOfYearsToCheck = 5;
     try {
       boolean goOn = false;
       if (contract == null) {
@@ -544,23 +569,33 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           sb.append("st."+frame.getIDColumnName()+" = "+frame.getID());
           sb.append(" and ");
           sb.append("st."+frame.getIDColumnName()+" = t."+frame.getIDColumnName());
-//          if (isYearly) {
-//            sb.append(" and ");
-//            sb.append(frame.getTimeframeFromColumnName() +" <= '%-"+stamp.getMonth()+"-"+stamp.getDay()+"%'");
-//            sb.append(" and ");
-//            sb.append(frame.getTimeframeToColumnName() +" >= '%-"+stamp.getMonth()+"-"+stamp.getDay()+"%'");
-//          }else {
+          if (isYearly) {
+            int fromYear = (new idegaTimestamp(frame.getFrom())).getYear();
+            int toYear = (new idegaTimestamp(frame.getTo())).getYear();
+
+            sb.append(" and (");
+            sb.append(frame.getTimeframeFromColumnName() +" <= '"+fromYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
+            sb.append(" and ");
+            sb.append(frame.getTimeframeToColumnName() +" >= '"+fromYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
+            sb.append(") OR (");
+            sb.append(frame.getTimeframeFromColumnName() +" <= '"+toYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
+            sb.append(" and ");
+            sb.append(frame.getTimeframeToColumnName() +" >= '"+toYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
+            sb.append(")");
+          }else {
             sb.append(" and ");
             sb.append(frame.getTimeframeFromColumnName() +" <= '"+stamp.toSQLDateString()+"'");
             sb.append(" and ");
             sb.append(frame.getTimeframeToColumnName() +" >= '"+stamp.toSQLDateString()+"'");
-//          }
+          }
 
           String[] result = SimpleQuerier.executeStringQuery(sb.toString());
+          System.err.println(sb.toString());
 
           if (result != null) {
             if (result.length > 0)
             if (!result[0].equals("0")) {
+              System.err.println("Result.length = "+result.length);
               returner = true;
             }
           }

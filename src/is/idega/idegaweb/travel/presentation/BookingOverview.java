@@ -350,7 +350,6 @@ public class BookingOverview extends TravelManager {
 
           table.setRowColor(row, super.backgroundColor);
 
-
           Product[] products;
           int supplierId = 0;
           if (supplier != null)

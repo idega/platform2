@@ -15,6 +15,8 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.block.trade.data.Currency;
 import com.idega.idegaweb.*;
 
+import com.idega.block.trade.stockroom.data.*;
+import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
 /**
  * Title:        idegaWeb TravelBooking
@@ -140,14 +142,32 @@ public class Booker {
     int returner = 0;
     Connection conn = null;
     try {
+      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(new Product(serviceId));
+      Service service = (Service) Service.getStaticInstance(Service.class);
+      String middleTable = EntityControl.getManyToManyRelationShipTableName(Service.class, Timeframe.class);
+      String sTable = Service.getServiceTableName();
+      String tTable = Timeframe.getTimeframeTableName();
+
       conn = ConnectionBroker.getConnection();
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select "+GeneralBooking.getTotalCountColumnName()+" from "+GeneralBooking.getBookingTableName());
+            sql.append("Select "+GeneralBooking.getTotalCountColumnName()+" from "+GeneralBooking.getBookingTableName()+" b");
+            sql.append(","+sTable+" s,"+middleTable+" m,"+tTable+" t");
             sql.append(" where ");
+            sql.append("s."+service.getIDColumnName()+" = m."+service.getIDColumnName());
+            sql.append(" and ");
+            sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
+            sql.append(" and ");
             sql.append(GeneralBooking.getServiceIDColumnName()+"="+serviceId);
             sql.append(" and ");
             sql.append(GeneralBooking.getIsValidColumnName()+" = 'Y'");
+            if (bookingType != -1) {
+              sql.append(" and ");
+              sql.append(GeneralBooking.getBookingTypeIDColumnName()+" = "+bookingType);
+            }
+            sql.append(" and (");
+            sql.append(" (");
+            sql.append("t."+timeframe.getYearlyColumnName()+" = 'N'");
             if ( (fromStamp != null) && (toStamp == null) ) {
               sql.append(" and ");
               sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
@@ -157,11 +177,23 @@ public class Booker {
               sql.append(" and ");
               sql.append(GeneralBooking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
             }
-            if (bookingType != -1) {
-              sql.append(" and ");
-              sql.append(GeneralBooking.getBookingTypeIDColumnName()+" = "+bookingType);
-            }
 
+            sql.append(" )");
+            sql.append(" OR (");
+            sql.append("t."+timeframe.getYearlyColumnName()+" = 'Y'");
+            if ( (fromStamp != null) && (toStamp == null) ) {
+              sql.append(" and ");
+              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
+            }else if ( (fromStamp != null) && (toStamp != null)) {
+              sql.append(" and (");
+              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '-"+fromStamp.getMonth() +"-"+fromStamp.getYear()+"'");
+              sql.append(" and ");
+              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '-"+fromStamp.getMonth() +"-"+fromStamp.getYear()+"')");
+            }
+            sql.append(" )");
+            sql.append(" )");
+
+//        System.err.println(sql.toString());
         many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
 
