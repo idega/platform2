@@ -153,7 +153,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			HorizontalRule hr;
 			boolean hasOtherPlacing = false;
 			boolean hasMessage = false;
-			
+			String name = null;
 				
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -198,8 +198,10 @@ public class ChildCareAdmin extends ChildCareBlock {
 					else
 						applicationTable.setRowColor(row, getZebraColor2());
 				}
-					
-				link = getSmallLink(child.getNameLastFirst(true));
+				
+				//link = getSmallLink(child.getNameLastFirst(true));
+				name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
+				link = getSmallLink(name);
 				link.setEventListener(ChildCareEventListener.class);
 				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
 				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
