@@ -116,7 +116,6 @@ public void destroy(){
 public void getHeadlinestoDB() throws Exception,SQLException{
   FileGrabber myurlgrabber;
   Vector filterArray;// = new Vector(10);
-  int z=0;
   int n=0;
   int k=0;
   int errorFlag;
@@ -124,10 +123,13 @@ public void getHeadlinestoDB() throws Exception,SQLException{
   HeadlineGroup[] headlinegroups = (HeadlineGroup[]) (new HeadlineGroup()).findAll();
   if( (headlinegroups!=null) && (headlinegroups.length>0) ){
 
+    System.out.println("Getting headlines...");
+
     for (int i = 0; i < headlinegroups.length; i++) {
 
       int group_id = ((HeadlineGroup) headlinegroups[i]).getID();
       String myFiltersFile = ((HeadlineGroup)headlinegroups[i]).getFileName();
+      System.out.println("Filter: "+myFiltersFile);
 
       String filterpage = "";
       String page = "";
@@ -188,6 +190,7 @@ public void getHeadlinestoDB() throws Exception,SQLException{
                         if ( theHeadlineurl == null ) {
                                 theHeadlineurl = SiteURL;
                         }
+
                       }
                       else{
                         site= Site;
@@ -206,7 +209,7 @@ public void getHeadlinestoDB() throws Exception,SQLException{
                           before=true;
                       }
 
-                      idegaTimestamp stampurinn = new idegaTimestamp();
+                     idegaTimestamp stampurinn = new idegaTimestamp();
                       Headlines headlineSQL = new Headlines();
                       headlineSQL.setClip("Track");
                       headlineSQL.setHeadline(theHeadline);
@@ -220,27 +223,31 @@ public void getHeadlinestoDB() throws Exception,SQLException{
                       }
               }//end if (TextSoap.Findall....
 
+              enum2.nextElement();
               n++;
 
             }catch(Exception E){
-                    E.printStackTrace();
+                    E.printStackTrace(System.out);
             }
-            enum2.nextElement();
             }//end of while
-    pageArray.removeAllElements();
-    link.removeAllElements();
-    headline.removeAllElements();
-    n=0;
-    }//end of if
-    else System.err.println("Couldn't find/read the news url:"+NewsPage);
 
+            pageArray.removeAllElements();
+            link.removeAllElements();
+            headline.removeAllElements();
+            n=0;
+          }//end of if
+          else {
+            System.err.println("Couldn't find/read the news url:"+NewsPage);
+          }
 
-        enum.nextElement();
-        z++;
-    }//end of while
-    }//end of if filterespage
-    z=0;
-  }//end of for loop
+          enum.nextElement();
+          i++;
+
+        }//end of while
+      }//end of if filterespage
+
+    }//end of for loop
+    System.out.println("Done getting headlines...");
 
   }//end of if
   else System.err.println("Couldn't find/read filter file");
