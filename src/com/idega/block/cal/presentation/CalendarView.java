@@ -635,7 +635,6 @@ public class CalendarView extends Block{
 					}
 					headlineLink.setStyleClass(entryLink);
 					
-					//TODO: something - the headlineLink is entryLinkActive even though calentrycreator is empty
 					String e = iwc.getParameter(CalendarEntryCreator.entryIDParameterName);
 					CalendarEntry ent = null;
 					if(e == null || e.equals("")) {
@@ -954,6 +953,8 @@ public class CalendarView extends Block{
 		if(!isPrintable) {
 			Link printLink = new Link(iwrb.getLocalizedString("calendarwindow.printable_cal","Printerfriendly Calendar"));
 			printLink.setWindowToOpen(PrintableCalendarView.class);
+			printLink.addParameter("group_id", getViewGroupID());
+			printLink.addParameter("user_id", getViewUserID());
 			printLink.setStyleClass(styledLink);
 			table.add(printLink,1,3);
 		}
@@ -974,8 +975,6 @@ public class CalendarView extends Block{
 		l.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
 		l.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
 		l.addParameter(ACTION,action);
-		
-		
 	}
 	
 	/**

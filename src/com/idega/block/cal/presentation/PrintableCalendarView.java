@@ -23,8 +23,24 @@ public class PrintableCalendarView extends Window{
 		setWidth(550);
 	}
 	public void main(IWContext iwc) throws Exception{
+		String groupString = iwc.getParameter("group_id");
+		String userString = iwc.getParameter("user_id");
+		int groupID = 0;
+		int userID = 0;
+		if(groupString != null) {
+			groupID = Integer.parseInt(groupString);
+		}
+		if(userString != null) {
+			userID = Integer.parseInt(userString);
+		}
 		CalendarView cal = new CalendarView();
 		cal.setPrintableVersion(true);
+		if(groupID != 0) {
+			cal.setViewInGroupID(groupID);
+		}
+		if(userID != 0) {
+			cal.setViewInUserID(userID);
+		}
 		Table t = new Table();
 		PrintButton print = new PrintButton();
 		t.add(cal,1,1);
