@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.block.tpos.business.TPosException;
 import com.idega.block.tpos.data.TPosMerchant;
 import javax.ejb.FinderException;
 import java.rmi.RemoteException;
@@ -353,7 +354,7 @@ public class PublicBooking extends Block  {
           inquirySent = true;
           tm.commit();
         }else {
-           try {
+          try {
             System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
             TPosMerchant merchant = null;
             try {
@@ -372,6 +373,10 @@ public class PublicBooking extends Block  {
             heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
             //System.out.println("heimild = " + heimild);
             System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
+          
+          }catch (NullPointerException npe) {
+            display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
+            throw new TPosException("");
           }catch(com.idega.block.tpos.business.TPosException e) {
             System.out.println("TPOS errormessage = " + e.getErrorMessage());
             System.out.println("number = " + e.getErrorNumber());
@@ -437,7 +442,9 @@ public class PublicBooking extends Block  {
         }
 
       }catch(com.idega.block.tpos.business.TPosException e) {
-        display.addToText(" ( "+e.getMessage()+" )");
+      	if (!e.getMessage().equals("")) {
+	        display.addToText(" ( "+e.getMessage()+" )");
+      	}
         //e.printStackTrace(System.err);
         gBooking.setIsValid(false);
         gBooking.store();
