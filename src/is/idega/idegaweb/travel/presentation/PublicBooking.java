@@ -558,7 +558,7 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.departure_place","Departure place")),1,row);
-      table.add(getBoldTextWhite(new Address(Integer.parseInt(depAddressId)).getName()),2,row);
+      table.add(getBoldTextWhite(new TravelAddress(Integer.parseInt(depAddressId)).getName()),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -746,6 +746,7 @@ public class PublicBooking extends Block  {
         }else {
           display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
         }
+        display.addToText(" ( "+e.getErrorNumber()+" )");
       }
       catch (Exception e) {
         e.printStackTrace(System.err);
