@@ -429,7 +429,7 @@ public abstract class AccountingBlock extends CommuneBlock {
 		SelectorUtility util = new SelectorUtility();
 		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(name), entities, methodName, getResourceBundle(), defaultValue);
 		
-		return menu;
+		return (DropdownMenu) getStyledInterface(menu);
 	}
 	
 	/**
