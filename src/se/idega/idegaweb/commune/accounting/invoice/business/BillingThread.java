@@ -14,6 +14,8 @@ import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchDeadline;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchDeadlineHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
@@ -46,6 +48,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -503,6 +506,19 @@ public abstract class BillingThread extends Thread{
 		batchRunLogger.setTest(testRun);
 		batchRunLogger.setEnd(null);
 		batchRunLogger.store();
+		
+		// Added by aron@idega.is 01.11.2004
+		try {
+            BatchDeadline deadline = ((BatchDeadlineHome)(IDOLookup.getHome(BatchDeadline.class))).findCurrent();
+            deadline.addBatch(batchRunLogger);
+        } catch (IDOLookupException e) {
+            e.printStackTrace();
+        } catch (FinderException e) {
+           
+        } catch (IDOAddRelationshipException e) {
+            e.printStackTrace();
+        }
+		
 	}
 	
 	protected boolean hasPlacements() throws IDOException, RemoteException, EJBException {
