@@ -138,21 +138,23 @@ public class ClubInformationTab extends UserGroupTab {
 		// fieldValues.get(_typeFieldName));
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
 		String make = (String) fieldValues.get(_makeFieldName);
-		_connectionToSpecialField.setDisabled(true);
+		_connectionToSpecialField.setDisabled(false);
 		String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
 		_connectionToSpecialField.setSelectedElement(connection);
 		_makeField.removeElements();
-		if (connection != null && !connection.equals("")) {
+		if (connection != null && !connection.equals("") && make == IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB) {
 			_connectionToSpecialField.setDisabled(true);
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, iwrb.getLocalizedString(
 					"clubinformationtab.single_division_club", "Single division"));
 		} else {
+//			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB, iwrb.getLocalizedString(
+//					"clubinformationtab.empty", "Empty"));
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB, iwrb.getLocalizedString(
-					"clubinformationtab.multi_division_club", "Multi divisional"));//fj�lgreinaf�lag
+					"clubinformationtab.multi_division_club", "Multi divisional"));
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, iwrb.getLocalizedString(
-					"clubinformationtab.single_division_club", "Single division"));//s�rgreinaf�lag
+					"clubinformationtab.single_division_club", "Single division"));
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB, iwrb.getLocalizedString(
-					"clubinformationtab.club_with_no_players", "No players"));//f�lag �n i?kennda
+					"clubinformationtab.club_with_no_players", "No players"));
 			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName, IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB);
 		}
 		_makeField.setSelectedElement(make);
