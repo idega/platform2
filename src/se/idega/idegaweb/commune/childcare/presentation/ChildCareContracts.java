@@ -390,7 +390,7 @@ public class ChildCareContracts extends ChildCareBlock {
 				localized = localize("child_care.change_group", "Change group");
 			else
 				localized = localize("child_care.create_group", "Create group");
-			if (showCreateGroupBtn){
+			if (showCreateGroupBtn && getSession().getProvider() != null){
 				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
 				createGroup.setWindowToOpen(ChildCareWindow.class);
 				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
