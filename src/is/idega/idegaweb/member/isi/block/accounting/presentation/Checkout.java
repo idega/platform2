@@ -74,7 +74,7 @@ public class Checkout extends CashierSubWindowTemplate {
 
 	private final static String LABEL_REMOVE_FROM_BASKET = "isi_acc_co_remove_from_basket";
 
-	private final static String LABEL_TO_PAY = "isi_acc_co_to_pay";
+	private final static String LABEL_TO_PAY = CheckoutPlugin.LABEL_TO_PAY;
 
 	private final static int STATUS_VIEW_BASKET = 0;
 
@@ -225,7 +225,7 @@ public class Checkout extends CashierSubWindowTemplate {
 						pluginName).newInstance();
 				
 				boolean checkoutCompleted = plugin.checkOut(iwc, type, amount);
-				add(plugin.showPlugin(iwc));
+				add(plugin.showPlugin(iwc, type, amount));
 			} catch (InstantiationException e1) {
 				e1.printStackTrace();
 			} catch (IllegalAccessException e1) {

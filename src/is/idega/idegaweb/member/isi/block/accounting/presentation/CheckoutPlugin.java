@@ -20,6 +20,10 @@ public interface CheckoutPlugin {
     public static final String ACTION_PAY = "co_pay";
     
 	public static final String LABEL_PAYMENT_TYPE = "isi_acc_co_payment_type";
+		
+	public final static String LABEL_TO_PAY = "isi_acc_co_to_pay";
+
+
     
 	/**
 	 * The business part of the checkout plugins. Should implement the actual checkout.
@@ -36,8 +40,10 @@ public interface CheckoutPlugin {
      * The presentation part of the checkout plugins. Should return what is to be displayed for each step of a checkout.
      * 
      * @param iwc The idegaWeb context parameter.
+	 * @param type The payment type for this checkout.
+	 * @param amount The amount that is paid.
      * 
      * @return A PresentationObject that shows what is happening at each step of a checkout procedure.
      */
-    public PresentationObject showPlugin(IWContext iwc);
+    public PresentationObject showPlugin(IWContext iwc, String type, String amount);
 }

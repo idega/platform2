@@ -90,7 +90,9 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
         String runOnDate = iwc.getParameter(LABEL_RUN_ON_DATE);
 
         boolean includeChildren = false;
-        if (iwc.isParameterSet(LABEL_INCLUDE_CHILDREN)) includeChildren = true;
+        if (iwc.isParameterSet(LABEL_INCLUDE_CHILDREN)) {
+            includeChildren = true;
+        }
 
         if (group != null) {
             group = group.substring(group.indexOf("_") + 1);

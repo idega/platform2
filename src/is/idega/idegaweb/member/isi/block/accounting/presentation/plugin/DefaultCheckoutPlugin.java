@@ -114,7 +114,7 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 	 * 
 	 * @see is.idega.idegaweb.member.isi.block.accounting.presentation.CheckoutPlugin#showPlugin(com.idega.presentation.IWContext)
 	 */
-	public PresentationObject showPlugin(IWContext iwc) {
+	public PresentationObject showPlugin(IWContext iwc, String type, String amount) {
 		Table returnObject = new Table();
 		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
