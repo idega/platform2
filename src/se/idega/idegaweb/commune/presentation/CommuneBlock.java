@@ -125,6 +125,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private IWResourceBundle iwrb = null;
 	private IWBundle iwb = null;
 	private ICPage formResponsePage;
+	private ICPage formBackPage;
 
 	private String _width = "600";
 
@@ -322,10 +323,18 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		return (InterfaceObjectContainer) setStyle(obj, this.STYLENAME_INTERFACE);
 	}
 	
+	public ICPage getBackPage() {
+		return this.formBackPage;
+	}
+	
+	public void setBackPage(ICPage page) {
+		this.formBackPage = page;
+	}
+
 	public ICPage getResponsePage() {
 		return this.formResponsePage;
 	}
-
+	
 	public void setResponsePage(ICPage page) {
 		this.formResponsePage = page;
 	}
