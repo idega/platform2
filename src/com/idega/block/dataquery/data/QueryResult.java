@@ -9,6 +9,9 @@ import com.idega.util.datastructures.SortedHashMatrix;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 
+import dori.jasper.engine.JRDataSource;
+import dori.jasper.engine.JRException;
+import dori.jasper.engine.JRField;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -19,7 +22,7 @@ import com.idega.xml.XMLElement;
  * @version 1.0
  * Created on May 27, 2003
  */
-public class QueryResult {
+public class QueryResult implements JRDataSource {
   private static final String QUERY_RESULT = "queryResult";
   
   private static final String DEFINITION = "definition";
@@ -101,30 +104,30 @@ public class QueryResult {
   /** @see dori.jasper.engine.JRDataSource#next()
    * 
    */
-//  public boolean next() throws JRException  {
-//    if (cellIterator == null) {
-//      cellIterator = cells.firstKeySet().iterator();
-//    }
-//    if (cellIterator.hasNext()) {
-//      currentCellId = (String) cellIterator.next();
-//      return true;
-//    }
-//    return false;
-//  }
-//      
-//  public void resetDataSource() {
-//    cellIterator = null;
-//    currentCellId = null;
-//   }
-//
-//  /**
-//   *  @see dori.jasper.engine.JRDataSource#next()
-//   * 
-//   */
-//  public Object getFieldValue(JRField jrField) throws JRException {
-//    String fieldId = jrField.getName();
-//    return cells.get(currentCellId, fieldId);
-//  }
+  public boolean next() throws JRException  {
+    if (cellIterator == null) {
+      cellIterator = cells.firstKeySet().iterator();
+    }
+    if (cellIterator.hasNext()) {
+      currentCellId = (String) cellIterator.next();
+      return true;
+    }
+    return false;
+  }
+      
+  public void resetDataSource() {
+    cellIterator = null;
+    currentCellId = null;
+   }
+
+  /**
+   *  @see dori.jasper.engine.JRDataSource#next()
+   * 
+   */
+  public Object getFieldValue(JRField jrField) throws JRException {
+    String fieldId = jrField.getName();
+    return cells.get(currentCellId, fieldId);
+  }
 
   
 }
