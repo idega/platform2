@@ -168,7 +168,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return postalCodeIds;
 	}
 
-	public List getErrorFormFields(IWContext iwc) {
+	public List getErrorFormFields(IWContext iwc, String categoryKey) {
 		List list = new Vector();
 		String firstName = iwc.getParameter(AbstractSearchForm.PARAMETER_FIRST_NAME);
 		String lastName = iwc.getParameter(AbstractSearchForm.PARAMETER_LAST_NAME);
@@ -213,7 +213,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		}
 		String productId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
 		
-		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(Integer.parseInt(productId), -1, -1, true);
+		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(Integer.parseInt(productId), -1, -1, true, categoryKey);
 		int iMany = 0;
 		for (int i = 0; i < pPrices.length; i++) {
 		  try {
@@ -260,7 +260,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					tmp = new IWTimestamp(from);
 					productIsValid = true;
 					while ( tmp.isEarlierThan(to) && productIsValid) {
-						productIsValid = (bf.checkBooking(iwc, false, true, true) >= 0);
+						productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
 						//productIsValid = bus.getIfDay(iwc, product, tmp);
 						tmp.addDays(1);
 					}
