@@ -105,6 +105,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_EXTRA_BOARD);
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_STAND_IN);
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_CO_CHIEF);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_CEO);
 
     
     FIELD_LIST = new ArrayList();
