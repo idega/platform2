@@ -8,7 +8,6 @@ private StringBuffer params= new StringBuffer();
 private boolean usePlugin = false;
 
   public Applet(String appletClass){
-    super();
     setAppletClass(appletClass);
     setName(this.getID());
     setWidth(0);
