@@ -331,7 +331,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					String[] checkPost = getPostingBusiness().getPostingStrings(
 						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,calculationDate);
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
-					PaymentRecord vatPaymentRecord = createVATPaymentRecord(paymentRecord, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+					createVATPaymentRecord(paymentRecord, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
