@@ -44,11 +44,11 @@ public class DeleteIFSFiles extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_VIEW :
-					viewForm(iwc);
+					viewForm();
 					break;
 				case ACTION_DELETE :
 					deleteFiles(iwc);
-					viewForm(iwc);
+					viewForm();
 					break;
 			}
 		}
@@ -81,7 +81,7 @@ public class DeleteIFSFiles extends AccountingBlock {
 		}
 	}
 
-	private void viewForm(IWContext iwc) {
+	private void viewForm() {
 		ApplicationForm form = new ApplicationForm(this);
 
 		try {

@@ -48,12 +48,12 @@ public class JournalLogList extends AccountingBlock {
 		}
 
 		form.setLocalizedTitle(KEY_HEADER, "Journal log");
-		form.setSearchPanel(getTopPanel(iwc));
+		form.setSearchPanel(getTopPanel());
 		form.setMainPanel(getJournalLogTable(iwc));
 		add(form);
 	}
 
-	private Table getTopPanel(IWContext iwc) {
+	private Table getTopPanel() {
 		Table table = new Table();
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_LEFT);

@@ -51,11 +51,11 @@ public class CreateIFSFiles extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_VIEW :
-					viewForm(iwc);
+					viewForm();
 					break;
 				case ACTION_CREATE :
 					createFiles(iwc);
-					viewForm(iwc);
+					viewForm();
 					break;
 			}
 		}
@@ -91,7 +91,7 @@ public class CreateIFSFiles extends AccountingBlock {
 		}
 	}
 
-	private void viewForm(IWContext iwc) {
+	private void viewForm() {
 		ApplicationForm form = new ApplicationForm(this);
 
 		try {
