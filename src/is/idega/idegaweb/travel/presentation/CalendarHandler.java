@@ -109,6 +109,10 @@ public class CalendarHandler extends TravelManager {
         if (_toStamp.isLaterThan(new idegaTimestamp(_timeframe.getTo()))) {
           _toStamp = new idegaTimestamp(_timeframe.getTo());
         }
+        if (_fromStamp.isLaterThan(_toStamp)) {
+          _toStamp = new idegaTimestamp(_fromStamp);
+          _toStamp.addMonths(1);
+        }
 
       }catch (SQLException s) {
         s.printStackTrace(System.err);
@@ -325,11 +329,14 @@ public class CalendarHandler extends TravelManager {
         }
         else if (_supplier != null) {
           for (int i = 0; i < depDays.size(); i++) {
+            System.err.println("trying");
             temp = (idegaTimestamp) depDays.get(i);
             if (seats > 0 && seats <= Booker.getNumberOfBookings(_productId, temp) ) {
+            System.err.println("bookings...");
               sm.setDayColor(temp, colorForFullyBooked);
               sm.setDayFontColor(temp, colorForFullyBookedText);
             }else {
+            System.err.println("not..");
               sm.setDayColor(temp, colorForAvailableDay);
               sm.setDayFontColor(temp,colorForAvailableDayText);
             }

@@ -763,30 +763,60 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return getDepartureDays(iwc, product, from, to, true);
   }
 
-  public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp from, idegaTimestamp to, boolean showPast) {
+  public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp fromStamp, idegaTimestamp toStamp, boolean showPast) {
     List returner = new Vector();
     try {
       Service service = new Service(product.getID());
       Timeframe frame = service.getTimeframe();
       boolean yearly = frame.getIfYearly();
 
+      idegaTimestamp tFrom = new idegaTimestamp(frame.getFrom());
+      idegaTimestamp tTo = new idegaTimestamp(frame.getTo());
+
+
+      idegaTimestamp from = null;
+      if (fromStamp != null) from = new idegaTimestamp(fromStamp);
+      idegaTimestamp to = null;
+      if (toStamp != null) to = new idegaTimestamp(toStamp);
+
       if (from == null) {
-        from = new idegaTimestamp(frame.getFrom());
-      }else {
+        from = new idegaTimestamp(tFrom);
       }
       if (to == null) {
-        to   = new idegaTimestamp(frame.getTo());
-      }else {
+        to   = new idegaTimestamp(tTo);
       }
-        to.addDays(1);
-/** @todo fix
-        if (yearly) {
-          from.setYear(new idegaTimestamp(frame.getFrom()).getYear());
+
+      int toMonth = tTo.getMonth();
+      int toM = to.getMonth();
+      int fromM = from.getMonth();
+
+      to.addDays(1);
+
+      if (yearly) {
+        int fromYear = tFrom.getYear();
+        int toYear   = tTo.getYear();
+
+        int fromY = from.getYear();
+        int toY = to.getYear();
+
+        int daysBetween = idegaTimestamp.getDaysBetween(from, to);
+
+        if (fromYear == toYear) {
+          from.setYear(fromYear);
+        }else {
+            if (fromY >= toYear) {
+              if (fromM > toMonth) {
+                from.setYear(fromYear);
+              }else {
+                from.setYear(toYear);
+              }
+            }
         }
-        if (yearly) {
-          to.setYear(new idegaTimestamp(frame.getTo()).getYear());
-        }
-  */
+
+        to = new idegaTimestamp(from);
+          to.addDays(daysBetween);
+
+      }
 
       idegaTimestamp stamp = new idegaTimestamp(from);
       idegaTimestamp temp;
@@ -819,5 +849,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
     return returner;
   }
+
 
 }
