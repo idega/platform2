@@ -189,7 +189,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			// In case of a replicated session environment
 			serverGenerator.updateInstance(server);
 		}
-		String servletUri = (String) (iwc.getServletContext().getAttribute(SERVLET_URI));
+		String servletUri = (String) (iwc.getApplicationAttribute(SERVLET_URI));
 
 		server.setActionUrl(servletUri);
 
