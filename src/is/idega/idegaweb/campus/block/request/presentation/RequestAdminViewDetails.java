@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.9 2004/06/05 07:37:34 aron Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.10 2005/03/02 11:10:01 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -96,8 +96,6 @@ public class RequestAdminViewDetails extends CampusWindow {
           setParentToReload();
           close();
         }
-        else
-        ; //Do some error checking
       }
 
       addMainForm(iwc);

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.11 2004/06/11 17:26:50 aron Exp $
+ * $Id: RequestView.java,v 1.12 2005/03/02 11:10:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -89,8 +89,6 @@ public class RequestView extends CampusWindow {
           setParentToReload();
           close();
         }
-        else
-        ; //Do some error checking
       }
 
       addMainForm(iwc);
