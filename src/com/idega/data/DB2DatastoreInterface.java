@@ -114,11 +114,14 @@ public class DB2DatastoreInterface extends DatastoreInterface{
   }
 
 
-
+  /**
+   * Only creates the sequence, not the trigger
+   * @todo implement trigger creation
+   */
   public void createTrigger(GenericEntity entity)throws Exception{
 
                 createSequence(entity);
-
+    /*
 		Connection conn= null;
 		Statement Stmt= null;
 		try{
@@ -134,6 +137,7 @@ public class DB2DatastoreInterface extends DatastoreInterface{
 				entity.freeConnection(conn);
 			}
 		}
+    */
   }
 
 
