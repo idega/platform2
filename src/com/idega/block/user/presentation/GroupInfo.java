@@ -54,8 +54,8 @@ public class GroupInfo extends Block {
 	}
 	
 	private PresentationObject getGroupInfo(IWContext iwc, Group group) {
-		String phone = null;
-		String fax = null;
+		String phone = "";
+		String fax = "";
 		if(_showPhone || _showFax) {
 			Collection phones = group.getPhones();
 			if(phones!=null) {
