@@ -93,13 +93,14 @@ public class CommuneCategoryWindow extends CategoryWindow {
 		T.mergeCells(1, row, 3, row);
 		row++;
 		T.add(Text.getBreak(), 1, row);
+		row++;
 		T.add(formatText(iwrb.getLocalizedString("use", "Use")), 1, row);
 		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 2, row);
 		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 3, row);
 		if (allowOrdering) {
 			T.add(formatText("  " + iwrb.getLocalizedString("order", "Order")), 4, row);
 		}
-		T.add(formatText("  " + iwrb.getLocalizedString("add_child", "Add child") + "  "), 5, row);
+		//T.add(formatText("  " + iwrb.getLocalizedString("add_child", "Add child") + "  "), 5, row);
 		T.add(formatText("  " + iwrb.getLocalizedString("delete", "Delete") + "  "), 6, row);
 		T.add(formatText("  " + iwrb.getLocalizedString("moderator", "Moderator") + "  "), 7, row);
 		row++;
@@ -156,8 +157,8 @@ public class CommuneCategoryWindow extends CategoryWindow {
 
 		T.setColumnAlignment(4, T.HORIZONTAL_ALIGN_CENTER);
 		T.setAlignment(4, 1, T.HORIZONTAL_ALIGN_LEFT);
-		T.setColumnAlignment(5, T.HORIZONTAL_ALIGN_CENTER);
-		T.setAlignment(5, 1, T.HORIZONTAL_ALIGN_LEFT);
+		//T.setColumnAlignment(5, T.HORIZONTAL_ALIGN_CENTER);
+		//T.setAlignment(5, 1, T.HORIZONTAL_ALIGN_LEFT);
 		T.setColumnAlignment(6, T.HORIZONTAL_ALIGN_CENTER);
 		T.setAlignment(6, 1, T.HORIZONTAL_ALIGN_LEFT);
 		T.setColumnAlignment(7, T.HORIZONTAL_ALIGN_CENTER);
@@ -257,7 +258,7 @@ public class CommuneCategoryWindow extends CategoryWindow {
 					if (allowOrdering) {
 						T.add(formatText(Integer.toString(iOrder)), 4, row);
 					}
-					T.add(childLink, 5, row);
+					//T.add(childLink, 5, row);
 					T.add(deleteLink, 6, row);
 					User user = cfb.getModerator(cat);
 					if (user != null) {
