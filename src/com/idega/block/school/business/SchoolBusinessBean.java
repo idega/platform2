@@ -1913,7 +1913,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	
 	public Collection findAllSchoolsByCategory(String categoryString){
 		try {
-			SchoolCategory schoolCategory = getSchoolCategoryHome().findByLocalizedKey(categoryString);
+			SchoolCategory schoolCategory = getSchoolCategoryHome().findByPrimaryKey(categoryString);
 			return getSchoolHome().findAllByCategory(schoolCategory);
 		} catch (Exception e) {
 			return new ArrayList();
