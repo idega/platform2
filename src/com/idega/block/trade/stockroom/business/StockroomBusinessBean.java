@@ -265,8 +265,11 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     }
   }
 
-
-  public int createPriceCategory(int supplierId, String name, String description, String extraInfo )throws SQLException {
+  public int createPriceCategory(int supplierId, String name, String description, String extraInfo) throws SQLException {
+		return createPriceCategory(supplierId, name, description, extraInfo, null);
+  }
+	
+  public int createPriceCategory(int supplierId, String name, String description, String extraInfo, String key)throws SQLException {
     PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
     cat.setType(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
 
@@ -278,6 +281,10 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 
     if(extraInfo != null){
       cat.setExtraInfo(extraInfo);
+    }
+    
+    if (key != null) {
+    	cat.setKey(key);
     }
 
     cat.insert();
