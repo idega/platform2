@@ -6,6 +6,7 @@ package is.idega.idegaweb.golf.handicap.presentation;
  * @author @version 1.0
  */
 
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
@@ -300,12 +301,15 @@ public class HandicapScore extends GolfBlock {
 		GenericButton foreignRound = getButton(new GenericButton("foreign_round", iwrb.getLocalizedString("handicap.foreign_round", "Foreign round")));
 		foreignRound.setWindowToOpen(HandicapRegisterForeign.class);
 		foreignRound.addParameterToWindow("member_id", member_id);
-		myTable.add(foreignRound, 1, row);
-
-		if (teeID.length > 0) {
-			myTable.add(Text.getNonBrakingSpace(), 1, row);
-			myTable.add(Text.getNonBrakingSpace(), 1, row);
-			myTable.add(writeScore, 1, row);
+		
+		if (GolfLoginBusiness.isLoggedOn(modinfo)) {
+			myTable.add(foreignRound, 1, row);
+	
+			if (teeID.length > 0) {
+				myTable.add(Text.getNonBrakingSpace(), 1, row);
+				myTable.add(Text.getNonBrakingSpace(), 1, row);
+				myTable.add(writeScore, 1, row);
+			}
 		}
 	}
 

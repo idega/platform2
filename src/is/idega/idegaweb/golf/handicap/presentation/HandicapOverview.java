@@ -8,6 +8,7 @@ package is.idega.idegaweb.golf.handicap.presentation;
  * @version 1.3
  */
 
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
@@ -401,7 +402,7 @@ public class HandicapOverview extends GolfBlock {
 						if (isAdmin) {
 							table.add(update, 11, row);
 						}
-						else {
+						else if (GolfLoginBusiness.isLoggedOn(modinfo) || iMemberID.equalsIgnoreCase("1")) {
 							if (canWrite && tournamentName.length() == 0 && !noIcons) {
 								table.add(update, 11, row);
 							}
