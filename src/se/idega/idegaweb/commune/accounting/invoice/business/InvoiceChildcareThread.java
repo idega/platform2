@@ -1073,6 +1073,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		//Set the posting strings
 		invoiceRecord.setOwnPosting(ownPosting);
 		invoiceRecord.setDoublePosting(doublePosting);
+		invoiceRecord.setChildCareContract(contract);
 		invoiceRecord.store();
 	
 		return invoiceRecord;
