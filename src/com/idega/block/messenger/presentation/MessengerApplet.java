@@ -382,9 +382,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setSize(18,150);
 
       add(item);
-      item.repaint();
+//      item.repaint();
       repaint();
-      item.repaint();
+ //     item.repaint();
 
 
   }
