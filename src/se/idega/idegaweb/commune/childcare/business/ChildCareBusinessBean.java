@@ -1062,7 +1062,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setApplicationStatus(getStatusCancelled());
 			application.setRejectionDate(date.getDate());
 			caseBiz.changeCaseStatus(application, this.getCaseStatusCancelled().getStatus(), user);
-			terminateContract(application.getContractFileId(), date.getDate());
+			terminateContract(application.getContractFileId(), date.getDate(), true);
 			
 			removeFromProvider(application.getChildId(), application.getProviderId(), date.getTimestamp(), parentalLeave, message);
 			sendMessageToParents(application, subject, body);
@@ -1373,7 +1373,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (application.getContractFileId() != -1) {
 				IWTimestamp terminationDate = new IWTimestamp(validFrom);
 				terminationDate.addDays(-1);
-				terminateContract(application.getContractFileId(), terminationDate.getDate());
+				terminateContract(application.getContractFileId(), terminationDate.getDate(), false);
 			}
 			
 			ContractTagHome contractHome = (ContractTagHome) IDOLookup.getHome(ContractTag.class);
@@ -1417,16 +1417,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 				application.setContractId(contractID);
 				application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
-				
-				/*
-				PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
-				int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, validFrom, !changeStatus), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-				//TODO Change to a more appropriate method call
-				Contract contract = ContractBusiness.createContract(application.getChildId(), 2, validFrom, null, "C", (Map)null);
-				int contractID = ((Integer)contract.getPrimaryKey()).intValue();
-				application.setContractId(contractID);
-				application.setContractFileId(fileID);
-				*/
 				
 				String defaultContractCreatedBody = hasBankId 
 					? "Your child care contract for {0} has been created. " +
@@ -1991,7 +1981,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	private void terminateContract(int contractFileID, Date terminatedDate) {
+	private void terminateContract(int contractFileID, Date terminatedDate, boolean removePlacing) {
 		try {
 			ChildCareContract archive = getContractFile(contractFileID);
 			if (archive != null) {
@@ -2002,7 +1992,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.setFromDate(null);
 					application.store();
 					
-					deleteFromProvider(application.getChildId(), application.getProviderId());
+					if (removePlacing)
+						deleteFromProvider(application.getChildId(), application.getProviderId());
 					
 					Contract contract = archive.getContract();
 					if (contract != null) {
