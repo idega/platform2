@@ -689,12 +689,17 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		unPrintedLetterDocs.add(
 			Integer.toString(
 				getDocumentBusiness(iwc).getUnprintedMessagesCountByType(currentType)));
-
-		Link printLink = new Link(localize("printdoc.print", "Print"));
-		printLink.addParameter(PARAM_PRINT_UNPRINTED, "true");
-		printLink.addParameter(PARAM_LETTER_TYPE, currentType);
-		addDateParametersToLink(printLink);
-		unPrintedLetterDocs.add(printLink);
+		
+			Link printLink = new Link(localize("printdoc.print", "Print"));
+			printLink.addParameter(PARAM_PRINT_UNPRINTED, "true");
+			printLink.addParameter(PARAM_LETTER_TYPE, currentType);
+			addDateParametersToLink(printLink);
+			
+			//if there are no letters to print nothing should happen, no error should be shown
+			if (getDocumentBusiness(iwc).getUnprintedMessagesCountByType(currentType) == 0){
+				printLink.setToFormReset(pForm);
+			}
+			unPrintedLetterDocs.add(printLink);
 
 		Link viewUnprintedLink = new Link(localize("printdoc.name_list", "Namelist"));
 		viewUnprintedLink.addParameter(PARAM_VIEW_UNPRINTED, "true");
