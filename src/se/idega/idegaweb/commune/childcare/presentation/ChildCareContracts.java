@@ -34,7 +34,6 @@ public class ChildCareContracts extends ChildCareBlock {
 	private boolean allowAlter = true;
 	private boolean _requiresPrognosis;
 	private int allowedFutureContracts = 2;
-	private boolean showEmplDrop = true;
 	private boolean showCreateGroupBtn = true;
 	private boolean _alwaysShowDeleteContract = true;
 	
@@ -46,8 +45,6 @@ public class ChildCareContracts extends ChildCareBlock {
 	
 	private int sort = -1;
 	private boolean showNotYetActive = false;
-	private boolean showParentalRadio = true;
-	private boolean showPreSchool = true;
 	
 	
 	/**

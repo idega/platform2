@@ -38,8 +38,6 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 
 	private boolean showParentsAgree = false;
 	private boolean showRecreateContract = false;
-	private boolean showEmplDrop = true;
-	private boolean showPreSchool = true;
 
 	private static final String PARAMETER_COMMENTS = "cc_comments";
 	private static final String PARAMETER_CREATE_CONTRACT = "cc_create_contract";
