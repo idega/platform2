@@ -19,6 +19,9 @@ import com.idega.jmodule.object.interfaceobject.*;
 import java.io.*;
 import java.util.*;
 import com.idega.jmodule.template.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 
 
 /**
@@ -27,6 +30,7 @@ import com.idega.jmodule.template.*;
 */
 public abstract class TournamentAdmin extends JmoduleWindowModule{
 
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 	/*public final void __theService(HttpServletRequest request,HttpServletResponse response)throws ServletException,IOException{
 		//super._jspService();
@@ -153,6 +157,16 @@ public abstract class TournamentAdmin extends JmoduleWindowModule{
             return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
         }
 
+  public IWResourceBundle getResourceBundle(){
+     return getResourceBundle(getModuleInfo());
+  }
 
+  public IWBundle getBundle(){
+    return getBundle(getModuleInfo());
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
 }  // class

@@ -6,6 +6,8 @@ import java.sql.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 
 public class GolfTournamentAdminDialog extends ModuleObjectContainer{
@@ -17,6 +19,11 @@ private String headerColor;
 private String mainColor;
 
 private String width = "100%";
+
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
+
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 
       public GolfTournamentAdminDialog(){
@@ -52,44 +59,49 @@ private String width = "100%";
 
 
         public void main(ModuleInfo modinfo) throws Exception{
+
+            iwrb = getResourceBundle(modinfo);
+            iwb = getBundle(modinfo);
+
+
             if (com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo) || com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo)) {
                 String view = modinfo.getParameter("tournament_admin_view");
 
                 String URI = modinfo.getRequestURI();
 
-                Image mynd4 = new Image("/pics/jmodules/poll/leftcorner.gif");
-                Image iCreateTournament = new Image("/pics/flipar_takkar/stofnamot1.gif");
-                Image iScorecard = new Image("/pics/flipar_takkar/skraskorkort1.gif");
-                Image iFinishTournament = new Image("/pics/flipar_takkar/gerauppmot1.gif");
-                Image iSetupStartingtime = new Image("/pics/flipar_takkar/stillaupp1.gif");
-                Image iRegisterMember = new Image("/pics/flipar_takkar/skrakylfing1.gif");
-                Image iModifyTournament = new Image("/pics/flipar_takkar/breytamoti1.gif");
-                Image iPrintouts = new Image("/pics/flipar_takkar/utprentanir1.gif");
+                Image mynd4 = iwrb.getImage("leftcorner.gif");
+                Image iCreateTournament = iwrb.getImage("tabs/newtournament1.gif");
+                Image iScorecard = iwrb.getImage("tabs/registerscorecard1.gif");
+                Image iFinishTournament = iwrb.getImage("tabs/handicapupdate1.gif");
+                Image iSetupStartingtime = iwrb.getImage("tabs/lineupteetimes1.gif");
+                Image iRegisterMember = iwrb.getImage("tabs/registergolfer1.gif");
+                Image iModifyTournament = iwrb.getImage("tabs/edittournament1.gif");
+                Image iPrintouts = iwrb.getImage("tabs/printouts1.gif");
 
                 if (view == null) {
-    //                    iCreateTournamente.setSrc("/pics/flipar_takkar/ollmot.gif");
+    //                    iCreateTournamente.setSrc("tabs/ollmot.gif");
                       view = "";
                 }
                 else if ( view.equals("finishTournament") ) {
-                    iFinishTournament.setSrc("/pics/flipar_takkar/gerauppmot.gif");
+                    iFinishTournament = iwrb.getImage("tabs/handicapupdate.gif");
                 }
                 else if ( view.equals("createTournament") ) {
-                    iCreateTournament.setSrc("/pics/flipar_takkar/stofnamot.gif");
+                    iCreateTournament = iwrb.getImage("tabs/newtournament.gif");
                 }
                 else if ( view.equals("tournamentScore") ) {
-                    iScorecard.setSrc("/pics/flipar_takkar/skraskorkort.gif");
+                    iScorecard = iwrb.getImage("tabs/registerscorecard.gif");
                 }
-                else if ( view.equals("femaleTournaments") ) {
-                    iSetupStartingtime.setSrc("/pics/flipar_takkar/stillaupp.gif");
+                else if ( view.equals("setupStartingtime") ) {
+                    iSetupStartingtime = iwrb.getImage("tabs/lineupteetimes.gif");
                 }
                 else if ( view.equals("registerMembers") ) {
-                    iRegisterMember.setSrc("/pics/flipar_takkar/skrakylfing.gif");
+                    iRegisterMember = iwrb.getImage("tabs/registergolfer.gif");
                 }
                 else if ( view.equals("modifyTournament") ) {
-                    iModifyTournament.setSrc("/pics/flipar_takkar/breytamoti.gif");
+                    iModifyTournament = iwrb.getImage("tabs/edittournament.gif");
                 }
                 else if ( view.equals("outPrints") ) {
-                    iPrintouts.setSrc("/pics/flipar_takkar/utprentanir.gif");
+                    iPrintouts = iwrb.getImage("tabs/printouts.gif");
                 }
 
 
@@ -153,5 +165,10 @@ private String width = "100%";
         public void addMessage(String message){
           add(message);
         }
+
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
 }
