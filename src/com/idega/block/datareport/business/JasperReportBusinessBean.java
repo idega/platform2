@@ -153,16 +153,20 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     // the folder is never deleted by this class
     String folderPath = path.toString();
     File[] files = FileUtil.getAllFilesInDirectory(folderPath);
-    long currentTime = System.currentTimeMillis();
-    for (int i = 0; i < files.length; i++) {
-    	File file = files[i];
-    	long modifiedFile = file.lastModified();
-    	if (currentTime - modifiedFile > 300000)	{
-    		String pathToFile = file.getAbsolutePath();
-    		FileUtil.deleteAllFilesInDirectory(pathToFile);
-    		file.delete();
-    	}
- 		}
+    
+    if(files!=null){
+    	long currentTime = System.currentTimeMillis();
+	    for (int i = 0; i < files.length; i++) {
+	    	File file = files[i];
+	    	long modifiedFile = file.lastModified();
+	    	if (currentTime - modifiedFile > 300000)	{
+	    		String pathToFile = file.getAbsolutePath();
+	    		FileUtil.deleteAllFilesInDirectory(pathToFile);
+	    		file.delete();
+	    	}
+	 	}
+    }
+    
 		path.append(separator);
 		path.append(folderIdentifier);
 		folderPath = path.toString();
