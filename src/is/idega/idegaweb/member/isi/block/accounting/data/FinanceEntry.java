@@ -31,6 +31,7 @@ public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.b
  public int getTariffID();
  public is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType getTariffType();
  public int getTariffTypeID();
+ public java.lang.String getType();
  public java.lang.String getTypeLocalizationKey();
  public com.idega.user.data.User getUser();
  public int getUserID();
