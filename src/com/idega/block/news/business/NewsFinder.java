@@ -120,7 +120,7 @@ public class NewsFinder {
 
     public static List listOfPublishingNews(int newsCategoryId,int iLocaleId,boolean ignorePublishingDates){
       String middleTable = new Content().getLocalizedTextMiddleTableName(new LocalizedText(),new Content());
-      StringBuffer sql = new StringBuffer("SELECT N.* FROM ");
+      StringBuffer sql = new StringBuffer("SELECT N.*,C.* FROM ");
       sql.append(NwNews.getEntityTableName());
       sql.append(" N, ");
       sql.append(LocalizedText.getEntityTableName());
@@ -182,7 +182,7 @@ public class NewsFinder {
     sql.append(Content.getColumnNameCreated());
     sql.append(" desc ");
     //
-		//System.err.println(sql.toString());
+		System.err.println(sql.toString());
     try {
       return EntityFinder.findAll(new NwNews(),sql.toString());
     }
