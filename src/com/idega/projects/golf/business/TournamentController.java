@@ -526,6 +526,8 @@ public class TournamentController{
         Field field = tournament.getField();
         List members;
         com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
+        com.idega.jmodule.object.Image time;
+
         Link remove;
         Text tooMany = new Text("Ekki pláss");
             tooMany.setFontColor("RED");
@@ -553,7 +555,10 @@ public class TournamentController{
                 ++groupCounter;
                 startInGroup = 0;
 
-                table.add("<b>&nbsp;"+startHour.getHour() +":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
+                //time = new com.idega.jmodule.object.Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()) , extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()));
+                //table.add(time,1,row );
+
+                table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
                 table.mergeCells(1,row,1,row + (numberInGroup -1));
                 table.setVerticalAlignment(1,row,"top");
                 members = TournamentController.getMembersInStartingGroup(tournament,tournamentRound,groupCounter);
@@ -676,7 +681,7 @@ public class TournamentController{
 public static int registerMember(com.idega.projects.golf.entity.Member member, Tournament theTournament, String tournament_group_id) throws SQLException {
     int returner = 0;
             try {
-                member.addTo(theTournament,"TOURNAMENT_GROUP_ID",tournament_group_id);
+                member.addTo(theTournament,"TOURNAMENT_GROUP_ID",tournament_group_id,"UNION_ID",""+member.getMainUnionID() );
                 TournamentController.createScorecardForMember(member,theTournament,tournament_group_id);
                 returner = 0;
             }
