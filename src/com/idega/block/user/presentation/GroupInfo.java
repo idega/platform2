@@ -221,6 +221,7 @@ public class GroupInfo extends Block {
 			}
 		} catch(Exception e) {
 			System.out.println("Exception getting emails for group " + group.getName() + ", no emails shown");
+			e.printStackTrace();
 		}
 		return container;
 	}
