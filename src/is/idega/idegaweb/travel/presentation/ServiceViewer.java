@@ -246,7 +246,9 @@ public class ServiceViewer extends Window {
           content.add(duration,++x,y);
         //Price
           Text price = (Text) text.clone();
-          price.setText(getServicePrice(serv, timeframe.getID()));
+          //price.setText(getServicePrice(serv, timeframe.getID()));
+          price.setText(getServicePrice(serv,true));
+
           content.add(price,++x,y);
         //Info and buy buttons
           if( showMoreButton){
@@ -323,7 +325,8 @@ public class ServiceViewer extends Window {
         Timeframe timeframe = product.getTimeframe();
         Text price = (Text) boldText.clone();
         price.setText(iwrb.getLocalizedString("travel.serviceviewer.info.price","Price: "));
-        Text prices = new Text(getServicePrice(service, timeframe.getID()));
+//        Text prices = new Text(getServicePrice(service, timeframe.getID()));
+        Text prices = new Text(getServicePrice(service,false));
         content.add(price,1,++y);
         content.add(prices,2,y);
 
@@ -407,7 +410,7 @@ public class ServiceViewer extends Window {
   }
 
 
-  private String getServicePrice(Service service, int timeframeId){
+  private String getServicePrice(Service service, boolean cutOff){
     StringBuffer price = new StringBuffer();
     /**
      * @todo replace...
@@ -427,6 +430,10 @@ public class ServiceViewer extends Window {
         price.append(TextSoap.decimalFormat(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID(),prices[j].getCurrencyId(),idegaTimestamp.getTimestampRightNow()),2));
         price.append(Text.NON_BREAKING_SPACE);
         price.append(currency.getCurrencyAbbreviation());
+        if(cutOff){
+          price.append("...");
+           break;
+        }
 
       }catch (Exception e) {
         price.append("An error occurred please contact gimmi@idega.is .");
