@@ -190,7 +190,7 @@ public class QuerySQL {
       CriterionExpression criterion = new CriterionExpression(condition, identifier, this);
       if (criterion.isValid()) {
       	// mark used entities
-      	String fieldName = condition.getField();
+      	//String fieldName = condition.getField();
       	String path = condition.getPath();
       	entitiesUsedByCriterion.add(path);
         query.addWhereClause(criterion);
