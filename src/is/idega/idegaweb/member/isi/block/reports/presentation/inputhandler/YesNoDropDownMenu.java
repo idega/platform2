@@ -32,7 +32,7 @@ public class YesNoDropDownMenu extends DropdownMenu implements InputHandler {
 
 		addMenuElement(YES, rb.getLocalizedString(LOCALIZED_YES, "Yes"));
 		addMenuElement(NO, rb.getLocalizedString(LOCALIZED_NO, "No"));
-		setSelectedElement(NO);
+		//setSelectedElement(NO);
 	}
 	
 	/* (non-Javadoc)
