@@ -4,6 +4,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.FinderException;
 
@@ -69,7 +70,7 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	/**
 	 * @see com.idega.block.importer.business.ImportBusiness#importRecords(String, String, String, Integer)
 	 */
-	public boolean importRecords(String handlerClass,String fileClass,String filePath,Integer groupId, IWUserContext iwuc)throws RemoteException {
+	public boolean importRecords(String handlerClass,String fileClass,String filePath,Integer groupId, IWUserContext iwuc, List failedRecords)throws RemoteException {
 	    try{
 	      boolean status = false;
 	      	
@@ -82,7 +83,7 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	      handler.setRootGroup(getGroupBusiness().getGroupByGroupID(groupId.intValue()));
 	  	      
 	      status = handler.handleRecords();
-		
+		  failedRecords.addAll(handler.getFailedRecords());
 	      return status;
 	    }
 	    catch(NoRecordsException ex){

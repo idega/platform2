@@ -27,6 +27,7 @@ import com.idega.user.data.UserStatus;
 import com.idega.user.data.UserStatusHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.Timer;
+import com.idega.util.text.TextSoap;
 /**
  * <p>Title: PinLookupToGroupImportHandlerBean</p>
  * <p>Description: A simple import file handler that reads file with personalIds and names and if the PIN exists in the database it adds that user to the root group</p>
@@ -93,6 +94,14 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		}
 	}
 	private boolean processRecord(String record) throws RemoteException {
+	    record = TextSoap.findAndCut(record, "-");
+		try {
+		    record = TextSoap.removeWhiteSpace(record);
+		}
+		catch (Exception e) {
+		    System.out.println(e.getMessage());
+		}
+		record = (record.length() == 9) ? "0" + record : record;
 		
 		userProperties = file.getValuesFromRecordString(record);
 		User user = null;
@@ -131,7 +140,8 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 			user = userBiz.getUser(PIN);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage()+", failed personalID was = "+PIN);
+		    //e.printStackTrace();
 			return false;
 		}
 		

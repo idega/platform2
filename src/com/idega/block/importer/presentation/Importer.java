@@ -1,7 +1,9 @@
 package com.idega.block.importer.presentation;
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.FinderException;
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileRecord;
@@ -29,6 +31,7 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.FileInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.presentation.GroupPropertyWindow;
@@ -236,11 +239,12 @@ public class Importer extends StyledIWAdminWindow {
 	 */
 	private void importFiles(IWContext iwc) throws Exception {
 		Table table = getFrameTable();
+		int row = 1;
 		Text header = new Text(iwrb.getLocalizedString("importer.importing", "Importer : Importing"));
 		header.setBold();
-		table.add(header, 1, 1);
+		table.add(header, 1, row++);
 		Text done = new Text(iwrb.getLocalizedString("importer.done.importing", "Done importing:"));
-		table.add(done, 1, 2);
+		table.add(done, 1, row++);
 		String[] values = null;
 		if (usingLocalFileSystem){
 			values = iwc.getParameterValues(IMPORT_FILE_PATHS); //for local file importing
@@ -257,7 +261,7 @@ public class Importer extends StyledIWAdminWindow {
 		String handler = iwc.getParameter(this.PARAMETER_IMPORT_HANDLER);
 		String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
 		if (values != null) {
-			table.resize(7, values.length + 3);
+			table.resize(7, table.getRows() + 1);
 			table.mergeCells(1, 2, 7, 2);
 			// for each file to import
 			for (int i = 0; i < values.length; i++) {
@@ -271,14 +275,21 @@ public class Importer extends StyledIWAdminWindow {
 				}
 				//todo get failed records and associate with the import
 				//handler. add import methods that take in the file id!
+				List failedRecords = new ArrayList();
 				if (groupIDFromSession != null) {
-					success = getImportBusiness(iwc).importRecords(handler, fileClass, path, new Integer(groupIDFromSession), iwc);
+					success = getImportBusiness(iwc).importRecords(handler, fileClass, path, new Integer(groupIDFromSession), iwc, failedRecords);
 				}
 				else {
 					success = getImportBusiness(iwc).importRecords(handler, fileClass, path, iwc);
 				}
-				String status =
-					(success) ? iwrb.getLocalizedString("importer.success", "finished!") : iwrb.getLocalizedString("importer.failure", "failed!!");
+				String status = null;
+				if (!success) {
+				    iwrb.getLocalizedString("importer.failure", "Failed");
+				} else if (failedRecords.size() != 0) {
+				    iwrb.getLocalizedString("importer.not_all imported", "Not all records imported");
+				} else {
+				    iwrb.getLocalizedString("importer.success", "Success");
+				}
 				Text fileStatus = new Text(path.substring(path.lastIndexOf(com.idega.util.FileUtil.getFileSeparator()),path.length()) + " : " + status);
 				fileStatus.setBold();
 				if (success && !usingLocalFileSystem &&!isInApplication) {
@@ -292,17 +303,26 @@ public class Importer extends StyledIWAdminWindow {
 					//getImportBusiness(iwc).updateImportRecord(getImportBusiness(iwc));
 				}
 				table.addBreak(1, 2);
-				table.add(fileStatus, 1, 2);
+				table.add(fileStatus, 1, row++);
+				if (failedRecords.size() != 0) {
+				    table.resize(7, table.getRows() + failedRecords.size()+1);
+				    Text failed = new Text(iwrb.getLocalizedString("importer.number_of_failed_records", "Number of failed record was:")+" "+String.valueOf(failedRecords.size()));
+					table.add(failed, 1, row++);
+					for (int j=0;j<failedRecords.size();j++) {
+					    failed = new Text(String.valueOf(failedRecords.get(j)));
+						table.add(failed, 1, row++);
+					}
+				}
 			}
 			if(isInApplication){
-				table.add(new CloseButton(iwrb.getLocalizedString("importer.close", "close")), 7, 3); 
+				table.add(new StyledButton(new CloseButton(iwrb.getLocalizedString("importer.close", "close"))), 7, row++); 
 				setParentToReload();
 			}
-			else table.add(new BackButton(iwrb.getLocalizedString("importer.back", "back")), 7, 3);
+			else table.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 7, row++);
 		}
 		else {
-			table.add(new Text(iwrb.getLocalizedString("importer.no.file.selected", "No file selected!")), 1, 2);
-			table.add(new BackButton(iwrb.getLocalizedString("importer.back", "back")), 7, values.length + 3);
+			table.add(new Text(iwrb.getLocalizedString("importer.no.file.selected", "No file selected!")), 1, row++);
+			table.add(new StyledButton(new BackButton(iwrb.getLocalizedString("importer.back", "back"))), 7, values.length + row++);
 		}
 		add(table);
 	}
