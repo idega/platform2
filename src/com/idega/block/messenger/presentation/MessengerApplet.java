@@ -330,7 +330,7 @@ public class MessengerApplet extends Applet implements ActionListener{
   }
 
   private void addToUserList(String sendToId, String name){
-    /*System.out.println("MessengerApplet: Adding to userlist! id: "+sendToId+" name: "+name);
+    System.out.println("MessengerApplet: Adding to userlist! id: "+sendToId+" name: "+name);
       Message msg = new Message();
       msg.setSender(sendToId);
       msg.setSenderName(name);
@@ -358,7 +358,7 @@ public class MessengerApplet extends Applet implements ActionListener{
       item.setSize(16,100);
 
       add(item);
-      item.repaint();*/
+      item.repaint();
       repaint();
 
   }
