@@ -276,11 +276,13 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 		Contract contract = null;
 		if ((_reseller != null) && (product != null)){
 			try {
-					Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(_reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
+  				ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
+  				contract = cHome.findByProductAndReseller(product.getID(), _reseller.getID());
+				/*	Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(_reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
 					if (contracts.length > 0) {
 						contract = contracts[0];
-					}
-			}catch (SQLException sql) {
+					}*/
+			}catch (FinderException sql) {
 					sql.printStackTrace(System.err);
 			}
 
