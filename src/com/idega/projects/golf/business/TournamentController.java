@@ -306,23 +306,19 @@ public class TournamentController{
 
         boolean returner = false;
 
-//        if (!TournamentController.isMemberRegisteredInTournament(tournament,tourDay, howManyEachGroup, member)) {
-            Startingtime startingtime = new Startingtime();
-                startingtime.setFieldID(tournament.getFieldId());
-                startingtime.setMemberID(member.getID());
-                startingtime.setStartingtimeDate(new idegaTimestamp(tourRound.getRoundDate()).getSQLDate());
-                startingtime.setPlayerName(member.getName());
-                startingtime.setHandicap(member.getHandicap());
-                startingtime.setClubName(member.getMainUnion().getAbbrevation());
-                startingtime.setCardName("");
-                startingtime.setCardNum("");
-                startingtime.setGroupNum(startingGroup);
-            startingtime.insert();
-            startingtime.addTo(tournament);
-            returner = true;
-            //add( member.getName() +" skráður í holl ");
-            //add(startingGroup +"<br>");
-//        }
+        Startingtime startingtime = new Startingtime();
+            startingtime.setFieldID(tournament.getFieldId());
+            startingtime.setMemberID(member.getID());
+            startingtime.setStartingtimeDate(new idegaTimestamp(tourRound.getRoundDate()).getSQLDate());
+            startingtime.setPlayerName(member.getName());
+            startingtime.setHandicap(member.getHandicap());
+            startingtime.setClubName(member.getMainUnion().getAbbrevation());
+            startingtime.setCardName("");
+            startingtime.setCardNum("");
+            startingtime.setGroupNum(startingGroup);
+        startingtime.insert();
+        startingtime.addTo(tournament);
+        returner = true;
 
         return returner;
 
@@ -339,13 +335,24 @@ public class TournamentController{
 
     }
 
+    /**
+     * Þarf að bæta við TournamentRound_Startingtime...
+     *
+     */
+
     public static boolean isMemberRegisteredInTournament(Tournament tournament,TournamentRound tourRound,int howManyEachGroup, com.idega.projects.golf.entity.Member member) throws SQLException {
         boolean returner = false;
-        com.idega.util.idegaTimestamp stamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
-        Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+stamp.toSQLDateString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
+        com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
+//        com.idega.util.idegaTimestamp endStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundEndDate());
+//System.err.println("TournamentController : tournament_id = "+tournament.getID() );
+        Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT startingtime.* FROM STARTINGTIME, tournament_STARTINGTIME, tournament WHERE tournament.tournament_id = "+tournament.getID()+" AND tournament.tournament_id = tournament_startingtime.tournament_id AND tournament_startingtime.startingtime_id = startingtime.startingtime_id AND STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
+//System.err.println("TournamentController : startingtimes_length = "+startingtimes.length);
         if (startingtimes.length > 0 ) {
             returner = true;
         }
+
+
+
 
         return returner;
     }
