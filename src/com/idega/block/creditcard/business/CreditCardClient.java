@@ -48,4 +48,6 @@ public interface CreditCardClient {
 	 */
 	public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException;
 	
+	public String creditcardAuthorization(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException;
+	public void finishTransaction(String properties) throws CreditCardAuthorizationException;	
 }

@@ -18,7 +18,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntries;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntriesHome;
@@ -247,6 +246,25 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		}
 		return string;
 	}
+	
+	public String creditcardAuthorization(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException{
+		IWTimestamp stamp = IWTimestamp.RightNow();
+		strName = nameOnCard;
+		strCCNumber = cardnumber;
+		strCCExpire = yearExpires + monthExpires;
+		strCCVerify = ccVerifyNumber;
+		setCurrencyAndAmount(currency, amount);
+		strCurrentDate = getDateString(stamp);
+		strReferenceNumber = convertStringToNumbers(referenceNumber);
+		
+		Hashtable returnedProperties = getFirstResponse();
+		if(returnedProperties != null) {
+			return propertiesToString(returnedProperties);
+		}
+		else {
+			return null;
+		}
+	}
 
 	public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException {
 		try {
@@ -412,7 +430,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	 * KortathjonustanCreditCardClient client = new
 	 * KortathjonustanCreditCardClient(IWContext.getInstance(), host, port,
 	 * keystore, keystorePass, SITE, USER, PASSWORD, ACCEPTOR_TERM_ID,
-	 * ACCEPTOR_IDENTIFICATION); try { String tmp = client.doSale("Gr’mur Steri",
+	 * ACCEPTOR_IDENTIFICATION); try { String tmp = client.doSale("Grï¿½mur Steri",
 	 * strCCNumber, strCCExpire.substring(2, 4), strCCExpire.substring(0, 2),
 	 * strCCVerify, 1, "ISK", strReferenceNumber );
 	 * 
@@ -436,7 +454,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	 *  
 	 */
 	private Hashtable doRefund(int iAmountToRefund, Hashtable captureProperties, Object parentDataPK) throws CreditCardAuthorizationException {
-		// TODO tjekka ef amountToRefund er sama og upphaflega refundiÝ ...
+		// TODO tjekka ef amountToRefund er sama og upphaflega refundiï¿½ ...
 		//System.out.println(" ------ REFUND ------");
 		Hashtable refundProperties = new Hashtable();
 		try {
@@ -530,21 +548,43 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		return refundProperties;
 	}
 
+	private String propertiesToString(Hashtable properties) {
+		StringBuffer strPostData = new StringBuffer();
+		try {
+			addProperties(strPostData, properties);
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return strPostData.toString();
+	}
+	
+	private String getPostData(Hashtable properties) {
+		StringBuffer strPostData = new StringBuffer();
+		try {
+			appendProperty(strPostData, PROPERTY_PASSWORD, PASSWORD);
+			addProperties(strPostData, properties);
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return strPostData.toString();
+	}
+	
+	public void finishTransaction(String properties) throws KortathjonustanAuthorizationException {
+		finishTransaction(parseResponse(properties));
+	}
+
 	private Hashtable finishTransaction(Hashtable properties) throws KortathjonustanAuthorizationException {
 		//System.out.println(" ------ CAPTURE ------");
 		Hashtable captureProperties = new Hashtable();
 		try {
-
-			StringBuffer strPostData = new StringBuffer();
-			appendProperty(strPostData, PROPERTY_PASSWORD, PASSWORD);
-			addProperties(strPostData, properties);
-
+			SSLClient client = getSSLClient();
 			String strResponse = null;
 
-			SSLClient client = getSSLClient();
 			//System.out.println("strPostData [ "+strPostData.toString()+" ]");
 			try {
-				strResponse = client.sendRequest(REQUEST_TYPE_CAPTURE, strPostData.toString());
+				strResponse = client.sendRequest(REQUEST_TYPE_CAPTURE, getPostData(properties));
 			}
 			catch (Exception e) {
 				KortathjonustanAuthorizationException cce = new KortathjonustanAuthorizationException();
@@ -585,7 +625,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 			}
 
 		}
-		catch (UnsupportedEncodingException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -772,7 +812,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 		tmp.add(CreditCardBusiness.CARD_TYPE_ELECTRON);
 		tmp.add(CreditCardBusiness.CARD_TYPE_DINERS);
 		tmp.add(CreditCardBusiness.CARD_TYPE_JCB);
-		//tmp.add(CreditCardBusiness.CARD_TYPE_DANKORT); // Virkar v’st bara ’ .dk
+		//tmp.add(CreditCardBusiness.CARD_TYPE_DANKORT); // Virkar vï¿½st bara ï¿½ .dk
 		return tmp;
 	}
 
@@ -784,5 +824,5 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	public CreditCardMerchant getCreditCardMerchant() {
 		return ccMerchant;
 	}
-
+	
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.4 2004/05/27 09:15:25 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.5 2004/10/07 11:01:04 birna Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -203,6 +203,10 @@ public class TPosClient implements CreditCardClient{
 
     return (valid);
   }
+  public String creditcardAuthorization(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException{
+  		return null;
+  }
+  	
 
   /**
    * Description of the Method
@@ -239,6 +243,9 @@ public class TPosClient implements CreditCardClient{
   		System.out.println("Warning : TPosClient is NOT using CVC number");
   		return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3", parentDataPK);
   }
+  public void finishTransaction(String properties) throws TPosException{
+  	
+  }
   /**
    * Gets the bundleIdentifier attribute of the TPosClient object
    *
@@ -261,118 +268,123 @@ public class TPosClient implements CreditCardClient{
    * @exception TPosException  Description of the Exception
    */
   private String doAuth(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType, Object parentDataPK) throws TPosException {
-    _client.setProperty(TPOS3Client.PN_USERID, _userId);
-    _client.setProperty(TPOS3Client.PN_PASSWORD, _passwd);
-    _client.setProperty(TPOS3Client.PN_MERCHANTID, _merchantId);
-    _client.setProperty(TPOS3Client.PN_LOCATIONID, _locationId);
-    _client.setProperty(TPOS3Client.PN_POSID, _posId);
+  	if(_client != null) {
 
-    _client.setProperty(TPOS3Client.PN_PAN, cardnumber);
-    _client.setProperty(TPOS3Client.PN_EXPIRE, monthExpires + yearExpires);
-    //_client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires + monthExpires);
-    amount *= amountMultiplier;
-    String stringAmount = Integer.toString((int)amount);
-    _client.setProperty(TPOS3Client.PN_AMOUNT, stringAmount);
-    _client.setProperty(TPOS3Client.PN_CURRENCY, currency);
-    _client.setProperty(TPOS3Client.PN_TRANSACTIONTYPE, transactionType);
-    if (transactionType.equals("2")) {
-      _client.setProperty(TPOS3Client.PN_CARDHOLDERCODE, "2");
-    }
+      _client.setProperty(TPOS3Client.PN_USERID, _userId);
+      _client.setProperty(TPOS3Client.PN_PASSWORD, _passwd);
+      _client.setProperty(TPOS3Client.PN_MERCHANTID, _merchantId);
+      _client.setProperty(TPOS3Client.PN_LOCATIONID, _locationId);
+      _client.setProperty(TPOS3Client.PN_POSID, _posId);
 
-    boolean valid = _client.sendAuthorisationReq();
-    boolean inserted = false;
+      _client.setProperty(TPOS3Client.PN_PAN, cardnumber);
+      _client.setProperty(TPOS3Client.PN_EXPIRE, monthExpires + yearExpires);
+      //_client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires + monthExpires);
+      amount *= amountMultiplier;
+      String stringAmount = Integer.toString((int)amount);
+      _client.setProperty(TPOS3Client.PN_AMOUNT, stringAmount);
+      _client.setProperty(TPOS3Client.PN_CURRENCY, currency);
+      _client.setProperty(TPOS3Client.PN_TRANSACTIONTYPE, transactionType);
+      if (transactionType.equals("2")) {
+        _client.setProperty(TPOS3Client.PN_CARDHOLDERCODE, "2");
+      }
+
+      boolean valid = _client.sendAuthorisationReq();
+      boolean inserted = false;
+      
+      TPosAuthorisationEntriesBean entry;
+      try {
+  	    	entry = TPosAuthorisationEntriesHome.getInstance().getNewElement();
+  	//    entry.setAttachmentCount(_client.getProperty(TPOS3Client.pn));
+  	    entry.setAuthorisationAmount(_client.getProperty(TPOS3Client.PN_AUTHORAMOUNT));
+  	    entry.setAuthorisationCode(_client.getProperty(TPOS3Client.PN_AUTHORISATIONCODE));
+  	    entry.setAuthorisationCurrency(_client.getProperty(TPOS3Client.PN_AUTHORCURRENCY));
+  	    entry.setAuthorisationIdRsp(_client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP));
+  	    entry.setAuthorisationPathReasonCode(_client.getProperty(TPOS3Client.PN_AUTHPATHREASONCODE));
+  	    entry.setBatchNumber(_client.getProperty(TPOS3Client.PN_BATCHNUMBER));
+  	    entry.setBrandId(_client.getProperty(TPOS3Client.PN_CARDBRANDID));
+  	    entry.setBrandName(_client.getProperty(TPOS3Client.PN_CARDBRANDNAME));
+  	    entry.setCardCharacteristics(_client.getProperty(TPOS3Client.PN_CARDCHARACTER));
+  	    entry.setCardExpires(_client.getProperty(TPOS3Client.PN_EXPIRE));
+  	    entry.setCardName(_client.getProperty(TPOS3Client.PN_CARDTYPENAME));
+  	    entry.setCardType(_client.getProperty(TPOS3Client.PN_CARDTYPEID));
+  	    entry.setDetailExpected(_client.getProperty(TPOS3Client.PN_DETAILEXPECTED));
+  	    entry.setEntryDate(_client.getProperty(TPOS3Client.PN_DATE));
+  	    entry.setEntryTime(_client.getProperty(TPOS3Client.PN_TIME));
+  	    entry.setErrorNo(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+  	    entry.setErrorText(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
+  	    entry.setLocationNr(_client.getProperty(TPOS3Client.PN_LOCATIONNUMBER));
+  	    entry.setMerchantNrAuthorisation(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERAUTHOR));
+  	    entry.setMerchantNrOtherServices(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBEROTHERSERVICES));
+  	    entry.setMerchantNrSubmission(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERSUBMISSION));
+  	//    entry.setPan("***********");
+  	    entry.setPosNr(_client.getProperty(TPOS3Client.PN_POSNUMBER));
+  	    entry.setPosSerialNr(_client.getProperty(TPOS3Client.PN_POSSERIAL));
+  	//    entry.setPrintData(_client.getProperty(TPOS3Client.pn_p));
+  	    entry.setSubmissionAmount(_client.getProperty(TPOS3Client.PN_SUBMISSIONAMOUNT));
+  	    entry.setSubmissionCurrency(_client.getProperty(TPOS3Client.PN_SUBMISSIONCURRENCY));
+  	    entry.setTotalResponseCode(_client.getProperty(TPOS3Client.PN_TOTALRESPONSECODE));
+  	    entry.setTransactionNr(_client.getProperty(TPOS3Client.PN_TRANSACTIONNUMBER));
+  	    entry.setVoidedAuthorisationIdResponse(_client.getProperty(TPOS3Client.PN_VOIDEDAUTHIDRSP));
+  	    entry.setVoidedTransactionNr(_client.getProperty(TPOS3Client.PN_VOIDEDTRANSNUMBER));
+  	//    entry.setXMLAttachment(_client.getProperty(TPOS3Client.));
+  	    entry.setCardNumber(CreditCardBusinessBean.encodeCreditCardNumber(cardnumber));
+  	    if (parentDataPK != null) {
+  	    		try {
+  	    			entry.setParentID(((Integer) parentDataPK).intValue());
+  	    		} catch (Exception e) {
+  	    			System.out.println("TPosClient : could not set parentID : "+parentDataPK);
+  	    		}
+  	    }
+  	
+  	    inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
+  	    
+      } catch (Exception e) {
+      		e.printStackTrace();
+      }
+
+      if (!inserted) {
+        System.err.println("Unable to save entry to database");
+      }
+
+      if (!valid) {
+        TPosException e = new TPosException("Error in authorisation");
+        e.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+        e.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
+        e.setDisplayError("Error in authorisation (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
+
+        throw e;
+      }
+
+      TPosException tposEx = null;
+
+      switch (Integer.parseInt(_client.getProperty(TPOS3Client.PN_TOTALRESPONSECODE), 10)) {
+          case 0:
+            return (_client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP));
+          case 1:
+            tposEx = new TPosException("Authorisation denied");
+            tposEx.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+            tposEx.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
+            tposEx.setDisplayError("Authorisation denied (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
+            throw tposEx;
+          case 2:
+            tposEx = new TPosException("Authorisation denied, pick up card");
+            tposEx.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+            tposEx.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
+            tposEx.setDisplayError("Authorisation denied (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
+            throw tposEx;
+          case 3:
+            tposEx = new TPosException("Authorisation denied, call for manual authorisation");
+            tposEx.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+            tposEx.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
+            tposEx.setDisplayError("Authorisation denied (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
+            throw tposEx;
+      }
+
+      
     
-    TPosAuthorisationEntriesBean entry;
-    try {
-	    	entry = TPosAuthorisationEntriesHome.getInstance().getNewElement();
-	//    entry.setAttachmentCount(_client.getProperty(TPOS3Client.pn));
-	    entry.setAuthorisationAmount(_client.getProperty(TPOS3Client.PN_AUTHORAMOUNT));
-	    entry.setAuthorisationCode(_client.getProperty(TPOS3Client.PN_AUTHORISATIONCODE));
-	    entry.setAuthorisationCurrency(_client.getProperty(TPOS3Client.PN_AUTHORCURRENCY));
-	    entry.setAuthorisationIdRsp(_client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP));
-	    entry.setAuthorisationPathReasonCode(_client.getProperty(TPOS3Client.PN_AUTHPATHREASONCODE));
-	    entry.setBatchNumber(_client.getProperty(TPOS3Client.PN_BATCHNUMBER));
-	    entry.setBrandId(_client.getProperty(TPOS3Client.PN_CARDBRANDID));
-	    entry.setBrandName(_client.getProperty(TPOS3Client.PN_CARDBRANDNAME));
-	    entry.setCardCharacteristics(_client.getProperty(TPOS3Client.PN_CARDCHARACTER));
-	    entry.setCardExpires(_client.getProperty(TPOS3Client.PN_EXPIRE));
-	    entry.setCardName(_client.getProperty(TPOS3Client.PN_CARDTYPENAME));
-	    entry.setCardType(_client.getProperty(TPOS3Client.PN_CARDTYPEID));
-	    entry.setDetailExpected(_client.getProperty(TPOS3Client.PN_DETAILEXPECTED));
-	    entry.setEntryDate(_client.getProperty(TPOS3Client.PN_DATE));
-	    entry.setEntryTime(_client.getProperty(TPOS3Client.PN_TIME));
-	    entry.setErrorNo(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
-	    entry.setErrorText(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
-	    entry.setLocationNr(_client.getProperty(TPOS3Client.PN_LOCATIONNUMBER));
-	    entry.setMerchantNrAuthorisation(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERAUTHOR));
-	    entry.setMerchantNrOtherServices(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBEROTHERSERVICES));
-	    entry.setMerchantNrSubmission(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERSUBMISSION));
-	//    entry.setPan("***********");
-	    entry.setPosNr(_client.getProperty(TPOS3Client.PN_POSNUMBER));
-	    entry.setPosSerialNr(_client.getProperty(TPOS3Client.PN_POSSERIAL));
-	//    entry.setPrintData(_client.getProperty(TPOS3Client.pn_p));
-	    entry.setSubmissionAmount(_client.getProperty(TPOS3Client.PN_SUBMISSIONAMOUNT));
-	    entry.setSubmissionCurrency(_client.getProperty(TPOS3Client.PN_SUBMISSIONCURRENCY));
-	    entry.setTotalResponseCode(_client.getProperty(TPOS3Client.PN_TOTALRESPONSECODE));
-	    entry.setTransactionNr(_client.getProperty(TPOS3Client.PN_TRANSACTIONNUMBER));
-	    entry.setVoidedAuthorisationIdResponse(_client.getProperty(TPOS3Client.PN_VOIDEDAUTHIDRSP));
-	    entry.setVoidedTransactionNr(_client.getProperty(TPOS3Client.PN_VOIDEDTRANSNUMBER));
-	//    entry.setXMLAttachment(_client.getProperty(TPOS3Client.));
-	    entry.setCardNumber(CreditCardBusinessBean.encodeCreditCardNumber(cardnumber));
-	    if (parentDataPK != null) {
-	    		try {
-	    			entry.setParentID(((Integer) parentDataPK).intValue());
-	    		} catch (Exception e) {
-	    			System.out.println("TPosClient : could not set parentID : "+parentDataPK);
-	    		}
-	    }
-	
-	    inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
-	    
-    } catch (Exception e) {
-    		e.printStackTrace();
-    }
-
-    if (!inserted) {
-      System.err.println("Unable to save entry to database");
-    }
-
-    if (!valid) {
-      TPosException e = new TPosException("Error in authorisation");
-      e.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
-      e.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
-      e.setDisplayError("Error in authorisation (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
-
-      throw e;
-    }
-
-    TPosException tposEx = null;
-
-    switch (Integer.parseInt(_client.getProperty(TPOS3Client.PN_TOTALRESPONSECODE), 10)) {
-        case 0:
-          return (_client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP));
-        case 1:
-          tposEx = new TPosException("Authorisation denied");
-          tposEx.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
-          tposEx.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
-          tposEx.setDisplayError("Authorisation denied (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
-          throw tposEx;
-        case 2:
-          tposEx = new TPosException("Authorisation denied, pick up card");
-          tposEx.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
-          tposEx.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
-          tposEx.setDisplayError("Authorisation denied (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
-          throw tposEx;
-        case 3:
-          tposEx = new TPosException("Authorisation denied, call for manual authorisation");
-          tposEx.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
-          tposEx.setErrorMessage(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
-          tposEx.setDisplayError("Authorisation denied (" + _client.getProperty(TPOS3Client.PN_ERRORNUMBER) + ")");
-          throw tposEx;
-    }
-
-    return ("-1");
-  }
+  	}
+  	return ("-1");
+  	}
 
   /**
    * Gets the amount attribute of the TPosClient object
