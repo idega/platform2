@@ -843,18 +843,19 @@ public class PublicBooking extends Block  {
         TourBookingForm tbf = new TourBookingForm(iwc,product);
         debug("Repps 4");
         int bookingId = tbf.handleInsert(iwc);
+          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
         debug("bookingId = "+bookingId);
 
         if (bookingId == TourBookingForm.inquirySent) {
           inquirySent = true;
           tm.commit();
         }else {
-          try {
+           try {
             System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
             TPosMerchant merchant = null;
             try {
-              GeneralBooking gBookTemp = ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-              int productSupplierId = gBookTemp.getService().getProduct().getSupplierId();
+//              GeneralBooking gBookTemp = ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+              int productSupplierId = gBooking.getService().getProduct().getSupplierId();
               Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
               merchant = suppTemp.getTPosMerchant();
               System.out.println("TPosMerchant found");
@@ -926,7 +927,6 @@ public class PublicBooking extends Block  {
             throw e;
           }
 
-          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
           gBooking.setCreditcardAuthorizationNumber(heimild);
           gBooking.store();
 
