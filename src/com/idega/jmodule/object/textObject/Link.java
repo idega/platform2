@@ -222,6 +222,9 @@ public void main(ModuleInfo modinfo)throws Exception{
   /*if(link!=null){
     link.main(modinfo);
   }*/
+  if(obj!=null){
+    obj.main(modinfo);
+  }
 }
 
 
