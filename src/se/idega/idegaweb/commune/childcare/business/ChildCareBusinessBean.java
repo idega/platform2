@@ -3138,6 +3138,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 								addSchool = false;
 							}
 							else {
+								addSchool = true;
 								if (currentSchool != null) {
 									addSchool = !currentSchool.equals(provider);
 								}
