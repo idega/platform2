@@ -252,9 +252,9 @@ public class GolferFriendsSigningSheet extends Block {
 
     RadioButton yesButton = new RadioButton(yesOrNoButtonName, yesValue);
     RadioButton noButton = new RadioButton(yesOrNoButtonName, noValue);
-    noButton.setToDisableOnClick(appearNameInput);
+    noButton.setToDisableOnClick(appearNameInput,true);
     noButton.setSelected();
-    yesButton.setToEnableOnClick(appearNameInput);
+    yesButton.setToDisableOnClick(appearNameInput,false);
     yesButton.setOnClick("this.form."+appearNameInputName+".value = this.form."+nameInputName+".value");
 
     RadioButton amountRadioButton1 = new RadioButton( amountRadioButtonName, amountButtonValue1);
