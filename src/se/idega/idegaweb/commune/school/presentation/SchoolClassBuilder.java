@@ -52,7 +52,16 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 			
 		if (action == ACTION_SAVE) {
 			String name = iwc.getParameter(PARAMETER_CLASS_NAME);
-			getBusiness().getSchoolBusiness().storeSchoolClass(getSchoolClassID(), name, getSchoolID(), getSchoolSeasonID(), getSchoolYearID(), -1);
+			String sTeacherId = iwc.getParameter(PARAMETER_TEACHER_ID);
+			int iTeacherId = -1;
+			if (sTeacherId != null) {
+				try {
+					iTeacherId = Integer.parseInt(sTeacherId);	
+				}catch (NumberFormatException n) {
+					debug(n.getMessage());
+				}	
+			}
+			getBusiness().getSchoolBusiness().storeSchoolClass(getSchoolClassID(), name, getSchoolID(), getSchoolSeasonID(), getSchoolYearID(), iTeacherId);
 		}	
 		else if (action == ACTION_DELETE) {
 			getBusiness().getSchoolBusiness().invalidateSchoolClass(getSchoolClassID());
