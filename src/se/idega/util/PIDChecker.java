@@ -192,7 +192,7 @@ public class PIDChecker {
 	 */
 	public Date getDateFromPersonalID(String personalID) {
 		if (isValid(personalID, true)) {
-			personalID = trimSSN(personalID);
+			personalID = trim(personalID);
 			int year = 0;
 			int month = 0;
 			int day = 0;
