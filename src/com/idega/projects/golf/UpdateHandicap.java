@@ -152,4 +152,43 @@ public class UpdateHandicap {
             return nyForgjof;
     }
 
+    public static String reiknaHandicap(double grunn, int heildarpunktar) {
+
+        double nyForgjof = 0;
+
+        try {
+
+            double breyting;
+
+            if ( heildarpunktar >= 0 ) {
+
+                    breyting = heildarpunktar - 36;
+
+            }
+
+            else {
+
+                    breyting = 0.0;
+
+            }
+
+            Handicap forgjof = new Handicap(grunn);
+
+            nyForgjof = forgjof.getNewHandicap(breyting);
+
+            if ( nyForgjof > 36.0 ) {
+
+                    nyForgjof = 36.0;
+
+            }
+
+        }
+
+        catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+
+        return Double.toString(nyForgjof);
+    }
+
 }
