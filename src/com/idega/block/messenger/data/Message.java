@@ -7,6 +7,7 @@ public class Message extends Packet{
   private String theRecipient;
   private String theSenderName;
   private String theRecipientName;
+  private int hashId = 0;
 
   public Message (String message, String senderId, String recipientId, String senderName){
     this.theSender = senderId;
@@ -61,5 +62,13 @@ public class Message extends Packet{
 
   public String getRecipientName(){
    return this.theRecipientName;
+  }
+
+  public void setId(int hashId){
+   this.hashId = hashId;
+  }
+
+  public int getId(){
+    return hashId;
   }
 }

@@ -1,6 +1,8 @@
 package com.idega.block.messenger.business;
 
 import com.idega.block.messenger.presentation.MessengerApplet;
+import com.idega.block.messenger.presentation.MessageDialog;
+import java.util.Vector;
 
 /**
  * Title:        com.idega.block.messenger.business
@@ -14,8 +16,10 @@ import com.idega.block.messenger.presentation.MessengerApplet;
 public class MessageListener implements Runnable{
   private MessengerApplet client;
   private Thread t;
-  private long threadSleep = 5000;//5 sec
+  private long threadSleep = 500;//0.5 sec
   private boolean runThread = true;
+  private Vector dialogs = null;
+  private int length = 0;
 
   public MessageListener(MessengerApplet applet) {
     this.client = applet;
@@ -26,10 +30,20 @@ public class MessageListener implements Runnable{
     setIntervalForMsgChecking(interval);
   }
 
+  public void addMessageDialog(MessageDialog msg){
+    if( dialogs == null ) dialogs = new Vector();
+    dialogs.addElement(msg);
+    length++;
+  }
+
   public void run(){
     while(runThread){
       try {
-        client.getMessagesFromDialog();
+        if( dialogs != null ){
+          for (int i = 0; i < length; i++) {
+            client.getMessagesFromDialog((MessageDialog)dialogs.elementAt(i));
+          }
+        }
         t.sleep(threadSleep);
       }
       catch (Exception e) {

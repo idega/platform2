@@ -36,6 +36,7 @@ public class MessengerApplet extends Applet implements Runnable{
   private static String SERVLET_URL = "servlet_url";
   private static String SERVER_ROOT_URL = "server_root_url";
   private static String RESOURCE_URL = "resource_url";
+  private Hashtable dialogs = new Hashtable();
 
 
   private Thread t;
@@ -56,7 +57,6 @@ public class MessengerApplet extends Applet implements Runnable{
   private Packet packetToServlet;
   private Packet packetFromServlet;
 
-  private MessageDialog messageDialog;
   private MessageListener listener = new MessageListener(this);//should listen on a per window basis
 
 
@@ -84,7 +84,6 @@ public class MessengerApplet extends Applet implements Runnable{
       ImageLabel lb = null;
     try {
       lb = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
-      System.out.println("AAAAARRGG2:"+hostURL+resourceURL);
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
@@ -99,6 +98,8 @@ public class MessengerApplet extends Applet implements Runnable{
 
       MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+      dialogs.put(Integer.toString(dialog.hashCode()),dialog);
+      listener.addMessageDialog(dialog);
       test.setWindowToOpen(dialog);
       if( lb!= null ) test.add(lb);
       test.add(new Label("RAPPERS"));
@@ -144,7 +145,7 @@ public class MessengerApplet extends Applet implements Runnable{
    *
    * Iterate over the vector of Messages and display
    */
-  private void displayMessages(Vector MessageVector){
+  private void dispatchMessagesToDialogs(Vector MessageVector){
       Enumeration enum = MessageVector.elements();
 
       Message aMessage = null;
@@ -152,7 +153,10 @@ public class MessengerApplet extends Applet implements Runnable{
       while (enum.hasMoreElements()){
 
         aMessage = (Message) enum.nextElement();
-        if( messageDialog == null ) {//debug this should be one window per chat
+
+        MessageDialog messageDialog = (MessageDialog) dialogs.get(Integer.toString(aMessage.getId()));
+
+        if( messageDialog == null ) { //create a new dialog
           Image logo = null;
           try {
             logo = getImage(new URL(hostURL+resourceURL),"idegalogo.gif");
@@ -168,29 +172,32 @@ public class MessengerApplet extends Applet implements Runnable{
           messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
           messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
+          dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
+
           messageDialog.setVisible(true);
-
-          listener.start();
+          listener.addMessageDialog(messageDialog);
         }
-
-        messageDialog.setVisible(true);
-        messageDialog.addMessage(aMessage);
+        else {
+          messageDialog.setVisible(true);
+          messageDialog.addMessage(aMessage);
+        }
 
       }
   }
 
-  public void getMessagesFromDialog(){
+  public void getMessagesFromDialog(MessageDialog dialog){
     if( packetToServlet == null ){
       packetToServlet = new Packet();
       packetToServlet.setSender(sessionId);
     }
     System.out.println("In getMessagesFromDialog()");
 
-    Vector msg = messageDialog.getMessages();
+    Vector msg = dialog.getMessages();
+    /**@todo make this work for many dialogs..don't clear*/
     if( msg!=null ) {
       packetToServlet.clearMessages();
       packetToServlet.setMessages(msg);
-      messageDialog.clearMessageVector();
+      dialog.clearMessageVector();
       cycle();
     }
   }
@@ -308,9 +315,9 @@ public class MessengerApplet extends Applet implements Runnable{
     if( packetFromServlet!=null ){
       packetFromServlet.process(this);
       Vector messages = packetFromServlet.getMessages();
-      if( messages!= null) displayMessages(messages);
+      if( messages!= null) dispatchMessagesToDialogs(messages);
 
-      getMessagesFromDialog();//check dialog for new messages and send them
+     // getMessagesFromDialog();//check dialog for new messages and send them
 
     }else{
      System.err.println("MessengerApplet : packetFromServlet == null !!");
@@ -487,6 +494,7 @@ public class MessengerApplet extends Applet implements Runnable{
       t = new Thread(this);
       t.start();
       runThread = true;
+      listener.start();
     }
   }
   /**Stop the applet*/
@@ -496,13 +504,14 @@ public class MessengerApplet extends Applet implements Runnable{
      // t.yield();
       runThread = false;
     }
+    /*
     if ( messageDialog !=null ){
       messageDialog.setVisible(false);
       messageDialog.cancel();
       messageDialog.dispose();
       messageDialog = null;
     }
-
+*/
     if( listener!=null) listener.stop();
 
   }
@@ -517,14 +526,14 @@ public class MessengerApplet extends Applet implements Runnable{
     if ( t!=null ){
       t=null;
     }
-
+/*
     if ( messageDialog !=null ){
       messageDialog.setVisible(false);
       messageDialog.cancel();
       messageDialog.dispose();
       messageDialog = null;
     }
-
+*/
     listener = null;
 
   }

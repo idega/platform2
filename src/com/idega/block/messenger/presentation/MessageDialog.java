@@ -126,7 +126,15 @@ public class MessageDialog extends Dialog implements ActionListener{
 
   private void storeMessageString(){
     if( messageVector == null ) messageVector = new Vector();
-    messageVector.addElement(new Message(lastMessageString,message.getRecipient(),message.getSender()) );
+    Message msg = new Message(lastMessageString,message.getRecipient(),message.getSender());
+    if( (message!=null) && (message.getId()!=0) ){
+      msg.setId(message.getId());
+    }
+    else{
+      msg.setId(this.hashCode());
+    }
+
+    messageVector.addElement( msg );
     replyMessage.setText("");
     lastMessageString = "";
   }
