@@ -74,11 +74,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/18 14:36:41 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/20 09:05:13 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.101 $
+ * @version $Revision: 1.102 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -266,8 +266,9 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		if (null != paymentText) record.setPaymentText (paymentText);
 		if (null != note) record.setNotes (note);
 		record.setRuleSpecType (regulationSpecType);
-		record.setVATRuleRegulationId (vatRule.intValue ());
-		
+		if (null != vatRule && vatRule.intValue () > 0) {
+			record.setVATRuleRegulationId (vatRule.intValue ());
+		}
 		// store updated record
 		record.store ();
 	
@@ -317,6 +318,9 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final int vatRuleRegulationId = record.getVATRuleRegulationId();
 		if (0 < vatRuleRegulationId) {
 			vatRuleDropdown.setSelectedElement (vatRuleRegulationId + "");
+		} else {
+			vatRuleDropdown.addMenuElement ("-1", "");
+			vatRuleDropdown.setSelectedElement ("-1");
 		}
 		try {
 			final PaymentHeader header = getPaymentHeader (context);
