@@ -1,11 +1,10 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.idegaweb.*;
 import java.util.*;
 import com.idega.util.*;
 import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.presentation.Block;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
@@ -65,7 +64,7 @@ public class ServiceViewer extends Window {
   private idegaTimestamp dateFrom,dateTo;
   private String width,height,color1,color2;
   private int windowWidth = 600;
-  private int windowHeight = 480;
+  private int windowHeight = 600;
   private Link link;
   private Text text;
   private Text boldText;
@@ -80,24 +79,18 @@ public class ServiceViewer extends Window {
   public ServiceViewer(){
     super.setWidth(windowWidth);
     super.setHeight(windowHeight);
-    setAllMargins(0);
+    this.setAllMargins(4);
+    //setAllMargins(0);
   }
 
   private void init(IWContext iwc) {
     iwb = this.getBundle(iwc);
     iwrb = this.getResourceBundle(iwc);
 
+    this.setTitle(iwrb.getLocalizedString("book_service","Book service"));
+
     sService = iwc.getParameter(IW_TRAVEL_SERVICE_ID);
     sSupplier = iwc.getParameter(IW_TRAVEL_SUPPLIER_ID);
-
-    String languageString = iwc.getParameter(LocaleSwitcher.languageParameterString);
-    if(languageString!=null){
-      Locale locale = LocaleUtil.getLocale(languageString);
-      if(locale!=null){
-	iwc.setCurrentLocale(locale);
-        iLocaleID = ICLocaleBusiness.getLocaleId(locale);
-      }
-    }
 
     if( sService!=null ){
       if( iwc.getSessionAttribute(IW_TRAVEL_ADD_MORE_BUTTON+sService)!=null ) showMoreButton = true;
@@ -125,6 +118,17 @@ public class ServiceViewer extends Window {
   }
 
   public void main(IWContext iwc) throws Exception{
+    // Verður að vera hér, ekki færa...
+    String languageString = iwc.getParameter(LocaleSwitcher.languageParameterString);
+    if(languageString!=null){
+      Locale locale = LocaleUtil.getLocale(languageString);
+      if(locale!=null){
+	iwc.setCurrentLocale(locale);
+        iLocaleID = ICLocaleBusiness.getLocaleId(locale);
+      }
+    }
+    // ...hingað
+
     init(iwc);
     handleEvents(iwc);
   }
@@ -351,28 +355,49 @@ public class ServiceViewer extends Window {
       Product product = ProductBusiness.getProduct(service.getID());
       //number
       Text numberAndName = getBoldText(ProductBusiness.getProductNameWithNumber(product, true, iLocaleID));//.getNumber()+" - "+ProductBusiness.getProductName(product, iLocaleID));
+        numberAndName.setFontStyle("font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;font-weight:bold;color:#000099;");
       content.add(numberAndName,1,y);
       content.mergeCells(1,y,2,y);
+
+      HorizontalRule hr = new HorizontalRule("100%");
+        hr.setColor("#FF9900");
+        hr.setNoShade(true);
+        hr.setHeight(1);
+      content.add(hr, 1, ++y);
+      content.mergeCells(1, y, 2, y);
+
       //description
       TxText descriptionText = product.getText();
       if (descriptionText != null) {
-        content.add(new TextReader(product.getText().getID()),1,++y);//insert a textreader
+        TextReader textReader = new TextReader(product.getText().getID());
+          textReader.setHeadlineStyle("font-family:Arial,Helvetica,sans-serif;font-size:12pt;font-weight:bold;");
+          textReader.setTextStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;");
+        content.add(textReader,1,++y);//insert a textreader
         content.mergeCells(1,y,2,y);
       }
+
+      content.add(hr, 1, ++y);
+      content.mergeCells(1, y, 2, y);
 
       //active days
         Text day = (Text) boldText.clone();
         day.setText(iwrb.getLocalizedString("travel.serviceviewer.departures","Departures: "));
-        Text days = new Text(getServiceDepartures(service));
+        day.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#000099;");
+        day.addToText(Text.NON_BREAKING_SPACE);
+        Text days = getText(getServiceDepartures(service));
         content.add(day,1,++y);
         content.add(days,2,y);
+        content.setAlignment(1, y, Table.HORIZONTAL_ALIGN_RIGHT);
 
       //timeframe - trip length
         Text dur = (Text) boldText.clone();
         dur.setText(iwrb.getLocalizedString("travel.serviceviewer.duration","Duration: "));
-        Text duration = new Text(getServiceDurationString(service));
+        dur.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#000099;");
+        dur.addToText(Text.NON_BREAKING_SPACE);
+        Text duration = getText(getServiceDurationString(service));
         content.add(dur,1,++y);
         content.add(duration,2,y);
+        content.setAlignment(1, y, Table.HORIZONTAL_ALIGN_RIGHT);
       //Price
           /**
            * @todo Laga fyrir multi timeframes...
@@ -380,14 +405,19 @@ public class ServiceViewer extends Window {
         Timeframe timeframe = product.getTimeframe();
         Text price = (Text) boldText.clone();
         price.setText(iwrb.getLocalizedString("travel.serviceviewer.info.price","Price: "));
+        price.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#000099;");
+        price.addToText(Text.NON_BREAKING_SPACE);
 //        Text prices = new Text(getServicePrice(service, timeframe.getID()));
         Table prices = getServicePrice(iwc, service,false);
         content.add(price,1,++y);
-        content.setVerticalAlignment(1,y,"top");
-        content.setVerticalAlignment(2,y,"top");
+        content.setVerticalAlignment(1,y,Table.VERTICAL_ALIGN_TOP);
+        content.setVerticalAlignment(2,y,Table.VERTICAL_ALIGN_TOP);
+        content.setAlignment(1, y, Table.HORIZONTAL_ALIGN_RIGHT);
         content.add(prices,2,y);
 
 
+      content.add(hr, 1, ++y);
+      content.mergeCells(1,y,2,y);
 
       if( showBuyButton){
         Link buy = LinkGenerator.getLink(iwc,service.getID());
@@ -467,18 +497,20 @@ public class ServiceViewer extends Window {
 
   private Text getBoldText(String content) {
     Text texti = getText(content);
-      texti.setBold();
+      texti.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;font-weight:bold;");
     return texti;
   }
 
   private Text getText(String content) {
     Text texti = (Text) text.clone();
       texti.setText(content);
+      texti.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;");
     return texti;
   }
 
   private Table getServicePrice(IWContext iwc, Service service, boolean cutOff){
     Table pTable = new Table();
+      pTable.setWidth(Table.HUNDRED_PERCENT);
     int pRow = 1;
 
     try {
@@ -544,8 +576,9 @@ public class ServiceViewer extends Window {
               pTable.add(priceText,4,pRow);
               ++pRow;
             }
-
           }
+          pTable.setHeight(pRow, "6");
+          ++pRow;
         }
 
         pTable.setColumnAlignment(1,"left");
@@ -553,7 +586,7 @@ public class ServiceViewer extends Window {
         pTable.setColumnAlignment(3,"left");
         pTable.setColumnAlignment(4,"right");
         pTable.setColumnAlignment(5,"left");
-        pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
+//        pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
 
     }
 
