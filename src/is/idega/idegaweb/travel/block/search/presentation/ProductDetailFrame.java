@@ -487,7 +487,8 @@ public class ProductDetailFrame extends TravelBlock {
 		table.add(getText(iwrb.getLocalizedString("travel.price","Price")+":"+seperator),column, row);
 		table.add(getOrangeText(currencyFormat.format(price*count)+Text.NON_BREAKING_SPACE+currAbbr), column, row);
 		if (days > 1) {
-			table.add(getOrangeText(Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_night","per night")), column, row);
+			table.add(getOrangeText(Text.NON_BREAKING_SPACE+bookingForm.getPerDayString()), column, row);
+//			table.add(getOrangeText(Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_night","per night")), column, row);
 		}
 		
 		if (count > 1) {
