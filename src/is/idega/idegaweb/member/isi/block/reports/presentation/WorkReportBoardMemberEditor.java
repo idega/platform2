@@ -70,8 +70,11 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
   private static final String CHECK_BOX = "checkBox";
-  // 'protected' because the inner class uses this constant
-  protected static final String LEAGUE = "league";
+
+  // this varible is used by the inner class
+  private static final String LEAGUE = "league";
+  
+  private static final List STATUS_OPTIONS;
 
   private static final String STATUS = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.STATUS";
   private static final String NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.NAME";
@@ -84,20 +87,26 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private static final String EMAIL = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.EMAIL";
   
   // add these columns to this list that should be parsed
-  private List fieldList;
-  
-  { 
-    fieldList = new ArrayList();
-    fieldList.add(LEAGUE);
-    fieldList.add(STATUS);
-    fieldList.add(NAME);
-    fieldList.add(PERSONAL_ID);
-    fieldList.add(STREET_NAME);
-    fieldList.add(POSTAL_CODE_ID);
-    fieldList.add(HOME_PHONE);
-    fieldList.add(WORK_PHONE);
-    fieldList.add(FAX);
-    fieldList.add(EMAIL);
+  private static List FIELD_LIST;
+    
+  static { 
+    STATUS_OPTIONS = new ArrayList();
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_BOARD_STATUS_CHAIR_MAN);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_BOARD_MEMBER);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_CASHIER);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_SECRETARY);
+    
+    FIELD_LIST = new ArrayList();
+    FIELD_LIST.add(LEAGUE);
+    FIELD_LIST.add(STATUS);
+    FIELD_LIST.add(NAME);
+    FIELD_LIST.add(PERSONAL_ID);
+    FIELD_LIST.add(STREET_NAME);
+    FIELD_LIST.add(POSTAL_CODE_ID);
+    FIELD_LIST.add(HOME_PHONE);
+    FIELD_LIST.add(WORK_PHONE);
+    FIELD_LIST.add(FAX);
+    FIELD_LIST.add(EMAIL);
   }
     
   public WorkReportBoardMemberEditor() {
@@ -151,7 +160,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
       WorkReportBoardMember member = createWorkReportBoardMember();
-      Iterator iterator = fieldList.iterator();
+      Iterator iterator = FIELD_LIST.iterator();
       while (iterator.hasNext())  {
         String field = (String) iterator.next();
         EntityPathValueContainer entityPathValueContainerFromTextEditor = 
@@ -248,7 +257,18 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         if (NO_LEAGUE_VALUE.equals(secondLeague))  {
           return 1;
         }
-        return firstLeague.compareTo(secondLeague);
+        int result = firstLeague.compareTo(secondLeague);
+        // if the laegues are equal sort according to the status
+        if (result == 0)  {
+          String firstStatus = (String) ((WorkReportBoardMemberHelper) first).getColumnValue("STATUS");
+          String secondStatus = (String) ((WorkReportBoardMemberHelper) second).getColumnValue("STATUS");
+          firstStatus = (firstStatus == null) ? "" : firstStatus;
+          secondStatus = (secondStatus == null) ? "" : secondStatus;
+          int firstIndex = STATUS_OPTIONS.indexOf(firstStatus);
+          int secondIndex = STATUS_OPTIONS.indexOf(secondStatus);
+          return firstIndex - secondIndex;
+        }
+        return result;          
       }
     };
     Collections.sort(list, comparator);
@@ -348,14 +368,11 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
         if (optionMap == null)  {
           optionMap = new TreeMap();
-          String[] options = { 
-            IWMemberConstants.MEMBER_BOARD_MEMBER, 
-            IWMemberConstants.MEMBER_BOARD_STATUS_CHAIR_MAN,
-            IWMemberConstants.MEMBER_CASHIER,
-            IWMemberConstants.MEMBER_SECRETARY};
-          for (int i = 0; i < options.length; i++) {  
-            String display = resourceBundle.getLocalizedString(options[i], options[i]);
-            optionMap.put(options[i],display);
+          Iterator iterator = STATUS_OPTIONS.iterator();
+          while (iterator.hasNext())  {
+            String status = (String) iterator.next();
+            String display = resourceBundle.getLocalizedString(status, status);
+            optionMap.put(status,display);
           }
         }
         return optionMap;
@@ -575,7 +592,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       }
     }
   }
-}
+
 
   /** 
    * WorkReportBoardMemberHelper:
@@ -605,7 +622,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
     
     public Object getColumnValue(String columnName) {
-      if (WorkReportBoardMemberEditor.LEAGUE.equals(columnName))  {
+      if (LEAGUE.equals(columnName))  {
         return league;
       }
       return ((EntityRepresentation) member).getColumnValue(columnName);
@@ -616,7 +633,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
   }
 
-  
+} 
 
 
   

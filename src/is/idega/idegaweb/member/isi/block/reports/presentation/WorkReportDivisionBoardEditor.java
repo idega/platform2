@@ -63,8 +63,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
   private static final String CHECK_BOX = "checkBox";
-  // 'protected' because the inner class uses this constant
-  protected static final String LEAGUE = "league";
+
+  private static final String LEAGUE = "league";
 
   private static final String HOME_PAGE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.HOME_PAGE";
   private static final String PERSONAL_ID = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.PERSONAL_ID";
@@ -75,19 +75,20 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private static final String FAX = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.FAX";
   private static final String EMAIL = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.EMAIL";
   
-  private List fieldList;
+  private static List FIELD_LIST;
   
-  { 
-    fieldList = new ArrayList();
-    fieldList.add(LEAGUE);
-    fieldList.add(HOME_PAGE);
-    fieldList.add(PERSONAL_ID);
-    fieldList.add(STREET_NAME);
-    fieldList.add(POSTAL_CODE_ID);
-    fieldList.add(FIRST_PHONE);
-    fieldList.add(SECOND_PHONE);
-    fieldList.add(FAX);
-    fieldList.add(EMAIL);
+  static { 
+    FIELD_LIST = new ArrayList();
+    
+    FIELD_LIST.add(LEAGUE);
+    FIELD_LIST.add(HOME_PAGE);
+    FIELD_LIST.add(PERSONAL_ID);
+    FIELD_LIST.add(STREET_NAME);
+    FIELD_LIST.add(POSTAL_CODE_ID);
+    FIELD_LIST.add(FIRST_PHONE);
+    FIELD_LIST.add(SECOND_PHONE);
+    FIELD_LIST.add(FAX);
+    FIELD_LIST.add(EMAIL);
   }
     
   public WorkReportDivisionBoardEditor() {
@@ -142,7 +143,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
       WorkReportDivisionBoard board = createWorkReportDivisionBoard();
-      Iterator iterator = fieldList.iterator();
+      Iterator iterator = FIELD_LIST.iterator();
       while (iterator.hasNext())  {
         String field = (String) iterator.next();
         EntityPathValueContainer entityPathValueContainerFromTextEditor = 
@@ -226,7 +227,16 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         // sort according to the name of the league 
         String firstLeague = (String) ((WorkReportDivisionBoardHelper) first).getColumnValue(LEAGUE);
         String secondLeague = (String) ((WorkReportDivisionBoardHelper) second).getColumnValue(LEAGUE);
-        return firstLeague.compareTo(secondLeague);
+        int result = firstLeague.compareTo(secondLeague);
+        // if the leagues are equal sort according to the names
+        if (result == 0) {
+          String firstName = (String) ((WorkReportDivisionBoardHelper) first).getColumnValue("NAME");
+          String secondName = (String) ((WorkReportDivisionBoardHelper) second).getColumnValue("NAME");
+          firstName = (firstName == null) ? "" : firstName;
+          secondName = (secondName == null) ? "" : secondName;
+          return firstName.compareTo(secondName);
+        }
+        return result;
       }
     };
     Collections.sort(list, comparator);
@@ -504,7 +514,6 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       }
     }
   }
-}
 
   /** 
    * WorkReportDivisionBoardHelper:
@@ -534,7 +543,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     }
     
     public Object getColumnValue(String columnName) {
-      if (WorkReportDivisionBoardEditor.LEAGUE.equals(columnName))  {
+      if (LEAGUE.equals(columnName))  {
         return league;
       }
       return ((EntityRepresentation) board).getColumnValue(columnName);
@@ -544,3 +553,4 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       return ((EntityRepresentation) board).getPrimaryKey();
     }
   }
+}
