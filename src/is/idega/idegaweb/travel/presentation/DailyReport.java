@@ -87,7 +87,7 @@ public class DailyReport extends TravelManager {
           try {
               stamp = new idegaTimestamp(from_time);
           }
-          catch (Exception e) {
+          catch (RuntimeException e) {
               stamp = idegaTimestamp.RightNow();
           }
       }

@@ -129,7 +129,7 @@ public class Statistics extends TravelManager {
           try {
               stamp = new idegaTimestamp(from_time);
           }
-          catch (Exception e) {
+          catch (RuntimeException e) {
               stamp = idegaTimestamp.RightNow();
           }
       }
@@ -147,7 +147,7 @@ public class Statistics extends TravelManager {
           try {
               stamp = new idegaTimestamp(from_time);
           }
-          catch (Exception e) {
+          catch (RuntimeException e) {
               stamp = idegaTimestamp.RightNow();
               stamp.addDays(15);
           }
