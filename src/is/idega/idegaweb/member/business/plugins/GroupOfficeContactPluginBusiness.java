@@ -1,5 +1,5 @@
 /*
- * $Id: GroupOfficeContactPluginBusiness.java,v 1.4 2004/12/07 15:58:29 eiki Exp $
+ * $Id: GroupOfficeContactPluginBusiness.java,v 1.5 2004/12/07 18:04:46 eiki Exp $
  * Created on Dec 7, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/07 15:58:29 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 18:04:46 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface GroupOfficeContactPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -93,5 +93,5 @@ public interface GroupOfficeContactPluginBusiness extends IBOService, UserGroupP
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupOfficeContactPluginBusinessBean#canCreateSubGroup
 	 */
-	public String canCreateSubGroup(Group group) throws RemoteException;
+	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
 }

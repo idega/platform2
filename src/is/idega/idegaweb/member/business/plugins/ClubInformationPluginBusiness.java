@@ -105,5 +105,5 @@ public interface ClubInformationPluginBusiness extends IBOService, UserGroupPlug
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusinessBean#canCreateSubGroup
 	 */
-	public String canCreateSubGroup(Group group) throws RemoteException;
+	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
 }

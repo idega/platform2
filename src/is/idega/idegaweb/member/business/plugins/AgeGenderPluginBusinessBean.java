@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.business.plugins;
 
 import is.idega.idegaweb.member.presentation.GroupAgeGenderTab;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -398,10 +399,13 @@ public List getGroupToolbarElements(Group group) throws RemoteException {
 }
 
 /* (non-Javadoc)
- * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+ * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group,java.lang.String)
  */
-public String canCreateSubGroup(Group group) throws RemoteException {
-	// TODO Auto-generated method stub
+public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException {
+	if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType())){
+		return "Only leagues can add groups under this type";
+	}
+	
 	return null;
 } 
   

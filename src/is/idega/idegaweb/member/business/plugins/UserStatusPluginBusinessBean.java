@@ -128,9 +128,9 @@ public class UserStatusPluginBusinessBean extends IBOServiceBean implements User
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group,java.lang.String)
 	 */
-	public String canCreateSubGroup(Group group) throws RemoteException {
+	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -93,5 +93,5 @@ public interface GroupLogoPluginBusiness extends IBOService, UserGroupPlugInBusi
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.GroupLogoPluginBusinessBean#canCreateSubGroup
 	 */
-	public String canCreateSubGroup(Group group) throws RemoteException;
+	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
 }

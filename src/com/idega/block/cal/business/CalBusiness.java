@@ -1,5 +1,5 @@
 /*
- * $Id: CalBusiness.java,v 1.11 2004/12/07 16:05:58 eiki Exp $ Created on Dec 7, 2004
+ * $Id: CalBusiness.java,v 1.12 2004/12/07 18:04:03 eiki Exp $ Created on Dec 7, 2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  * 
@@ -31,10 +31,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- * Last modified: $Date: 2004/12/07 16:05:58 $ by $Author: eiki $
+ * Last modified: $Date: 2004/12/07 18:04:03 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public interface CalBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -300,5 +300,5 @@ public interface CalBusiness extends IBOService, UserGroupPlugInBusiness {
 	/**
 	 * @see com.idega.block.cal.business.CalBusinessBean#canCreateSubGroup
 	 */
-	public String canCreateSubGroup(Group group) throws RemoteException;
+	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
 }

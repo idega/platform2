@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.5 2004/12/07 15:58:30 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.6 2004/12/07 18:04:46 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.user.data.User;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 18:04:46 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
@@ -216,9 +216,9 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	}
 
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group,java.lang.String)
 	 */
-	public String canCreateSubGroup(Group group) throws RemoteException {
+	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

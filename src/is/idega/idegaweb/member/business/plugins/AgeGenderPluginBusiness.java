@@ -1,5 +1,5 @@
 /*
- * $Id: AgeGenderPluginBusiness.java,v 1.9 2004/12/07 15:58:29 eiki Exp $
+ * $Id: AgeGenderPluginBusiness.java,v 1.10 2004/12/07 18:04:46 eiki Exp $
  * Created on Dec 7, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/07 15:58:29 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 18:04:46 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface AgeGenderPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -181,5 +181,5 @@ public interface AgeGenderPluginBusiness extends IBOService, UserGroupPlugInBusi
 	/**
 	 * @see is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusinessBean#canCreateSubGroup
 	 */
-	public String canCreateSubGroup(Group group) throws RemoteException;
+	public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException;
 }
