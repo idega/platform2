@@ -8,6 +8,9 @@ package com.idega.jmodule.object.interfaceobject;
 import java.io.*;
 import java.util.*;
 import com.idega.jmodule.object.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -15,15 +18,25 @@ import com.idega.jmodule.object.*;
 */
 public class BooleanInput extends DropdownMenu{
 
+  private static final String NO_KEY = "booleaninput.no";
+  private static final String YES_KEY = "booleaninput.yes";
+
 public BooleanInput(){
 	this("booleaninput");
 }
 
 public BooleanInput(String name){
 	super(name);
-	addMenuElement("N","Nei");
-	addMenuElement("Y","Já");
 }
+
+public void main(ModuleInfo modinfo)throws Exception{
+  super.main(modinfo);
+  IWBundle iwb = this.getBundle(modinfo);
+  IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
+  addMenuElement("N",iwrb.getLocalizedString(NO_KEY));
+  addMenuElement("Y",iwrb.getLocalizedString(YES_KEY));
+}
+
 
 
 public void setSelected(boolean selected){
