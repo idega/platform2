@@ -15,10 +15,10 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.business.SchoolBusiness;

@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.check.data;
+package se.idega.idegaweb.commune.accounting.childcare.check.data;
 
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;

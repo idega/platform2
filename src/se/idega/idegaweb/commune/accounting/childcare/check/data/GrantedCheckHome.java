@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.check.data;
+package se.idega.idegaweb.commune.accounting.childcare.check.data;
 
 
 public interface GrantedCheckHome extends com.idega.data.IDOHome

@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.check.data;
+package se.idega.idegaweb.commune.accounting.childcare.check.data;
 
 
 public interface Check extends com.idega.data.IDOEntity,com.idega.block.process.data.Case

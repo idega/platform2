@@ -12,8 +12,8 @@ package se.idega.idegaweb.commune.childcare.data;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.accounting.childcare.check.data.Check;
+import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheck;
 
 import java.sql.Date;
 

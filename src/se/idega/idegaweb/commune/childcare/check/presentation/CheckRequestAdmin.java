@@ -8,8 +8,8 @@ import java.util.Iterator;
 
 import javax.ejb.CreateException;
 
+import se.idega.idegaweb.commune.accounting.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
-import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 

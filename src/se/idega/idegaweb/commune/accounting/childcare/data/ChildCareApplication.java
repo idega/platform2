@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplication.java,v 1.1 2004/10/07 14:08:09 thomas Exp $
+ * $Id: ChildCareApplication.java,v 1.2 2004/10/07 14:20:15 thomas Exp $
  * Created on 6.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,7 +12,7 @@ package se.idega.idegaweb.commune.accounting.childcare.data;
 import java.sql.Date;
 
 
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheck;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.Case;
@@ -23,10 +23,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/07 14:08:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/07 14:20:15 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ChildCareApplication extends IDOEntity, Case {
     /**
