@@ -135,6 +135,44 @@ public class BuildingFinder {
     return rt;
   }
 
+  public static String[] findDistinctApartmentTypesInComplex(int iComplexId) {
+    StringBuffer sql = new StringBuffer("select distinct ");
+     sql.append(ApartmentType.getApartmentCategoryIdColumnName());
+    sql.append(" from ");
+    sql.append(ApartmentType.getNameTableName());
+    sql.append(" p ,");
+    sql.append(Apartment.getNameTableName());
+    sql.append(" a ,");
+    sql.append(Floor.getNameTableName());
+    sql.append(" f ,");
+    sql.append(Building.getNameTableName());
+    sql.append(" b where p.");
+    sql.append(ApartmentType.getNameTableName());
+    sql.append("_id = a.");
+    sql.append(ApartmentType.getNameTableName());
+    sql.append("_id and a.");
+    sql.append(Apartment.getFloorIdColumnName());
+    sql.append(" = f.");
+    sql.append(Floor.getNameTableName());
+    sql.append("_id and f.");
+    sql.append(Floor.getBuildingIdColumnName());
+    sql.append(" = b.");
+    sql.append(Building.getNameTableName());
+    sql.append("_id and b.");
+    sql.append(Complex.getNameTableName());
+    sql.append("_id = ");
+    sql.append(iComplexId);
+    sql.append(" order by ");
+    sql.append(ApartmentType.getApartmentCategoryIdColumnName());
+
+    String[] L = null;
+    try{
+     L = com.idega.data.SimpleQuerier.executeStringQuery(sql.toString());
+    }
+    catch(Exception e){}
+    return L;
+  }
+
   public static ApartmentType[] findApartmentTypesInComplex(int iComplexId){
     ApartmentType[] rt = new ApartmentType[0];
     /*
