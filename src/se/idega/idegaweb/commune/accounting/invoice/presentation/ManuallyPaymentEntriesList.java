@@ -22,7 +22,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-import is.idega.idegaweb.member.presentation.UserSearcher;
+import com.idega.user.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -58,11 +58,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * Last modified: $Date: 2004/03/16 11:46:33 $ by $Author: roar $
+ * Last modified: $Date: 2004/10/07 17:10:21 $ by $Author: thomas $
  *
  * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 

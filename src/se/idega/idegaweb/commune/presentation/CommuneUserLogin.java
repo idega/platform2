@@ -5,7 +5,6 @@
  */
 package se.idega.idegaweb.commune.presentation;
 
-import is.idega.idegaweb.member.presentation.UserSearcher;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,6 +22,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserSearcher;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 import com.idega.util.text.TextSoap;

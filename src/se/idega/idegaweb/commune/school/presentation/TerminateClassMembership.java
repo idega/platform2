@@ -10,7 +10,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.*;
 import com.idega.user.data.User;
-import is.idega.idegaweb.member.presentation.UserSearcher;
+import com.idega.user.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -36,10 +36,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/10/07 15:25:10 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/07 17:10:21 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb

@@ -6,7 +6,6 @@
  */
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
-import is.idega.idegaweb.member.presentation.UserSearcher;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -67,6 +66,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserSearcher;
 import com.idega.util.IWTimestamp;
 
 /**

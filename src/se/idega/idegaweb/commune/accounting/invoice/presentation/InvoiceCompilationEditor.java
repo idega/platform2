@@ -24,6 +24,7 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserSearcher;
 import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
@@ -38,7 +39,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.awt.Color;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
@@ -90,10 +90,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/10/07 13:42:10 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/07 17:10:21 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.132 $
+ * @version $Revision: 1.133 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data

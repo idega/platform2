@@ -2,7 +2,7 @@
  * Created on Aug 1, 2003
  *
  */
-package is.idega.idegaweb.member.presentation;
+package com.idega.user.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;

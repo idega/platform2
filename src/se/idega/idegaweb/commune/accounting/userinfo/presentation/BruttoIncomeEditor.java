@@ -3,7 +3,6 @@
  *
  */
 package se.idega.idegaweb.commune.accounting.userinfo.presentation;
-import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -31,6 +30,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserSearcher;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.Name;
 /**

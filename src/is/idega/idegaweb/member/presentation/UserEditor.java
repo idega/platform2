@@ -68,6 +68,7 @@ import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
+import com.idega.user.presentation.UserSearcher;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
 
