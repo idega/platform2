@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.block.finance.business;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
+import is.idega.idegaweb.campus.business.CampusSettings;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntry;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryHome;
 import is.idega.idegaweb.campus.data.BatchContract;
@@ -43,6 +44,9 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class CampusFinanceHandler implements FinanceHandler {
+	
+	private int precisionCount = 2;
+	
 	int count = 0;
 	NumberFormat nf = NumberFormat.getPercentInstance();
 	Logger logger = null;
@@ -130,10 +134,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 					int totals = 0;
 					int totalAmount = 0;
 					double factor = 1;
+					int precision = getPrecision(iwac);
 					// All tenants accounts (Outer loop)
 					for (Iterator iter = listOfUsers.iterator(); iter.hasNext();) {
 						user = (ContractAccountApartment) iter.next();
-						factor = getFactor(user, start, end);
+						factor = getFactor(user, start, end,precision);
 						///Account eAccount =
 						// ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(user.getAccountId());
 						if (factor > 0) {
@@ -231,7 +236,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 	 * contract has a delivertime, that is the begin date, NOT if the contract
 	 * has a returntime , that is the end date.
 	 */
-	public double getFactor(ContractAccountApartment con, IWTimestamp start, IWTimestamp end) {
+	public double getFactor(ContractAccountApartment con, IWTimestamp start, IWTimestamp end,int precision) {
 		
 		start.setTime(0, 0, 0);
 		end.setTime(23, 59, 59);
@@ -240,15 +245,18 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 		long valfr = con.getValidFrom().getTime();
 		long valto = con.getValidTo().getTime();
-		double ret = getFactor(begin,endin,valfr,valto);
+		double ret = getFactor(begin,endin,valfr,valto,precision);
 		
 		//if(ret<1)System.out.println("factor for contract "+con.getContractId() +" start:"+(new java.util.Date(begin)).toString()+" end: "+(new java.util.Date(endin)).toString()+" from"+(new java.util.Date(valfr)).toString()+" to"+(new java.util.Date(valto)).toString()+" factor: "+ret);
 		
 		return ret;
 	}
 	
-	private double getFactor(long begin,long endin,long valfr,long valto){
+	private double getFactor(long begin,long endin,long valfr,long valto,int precision){
 		long del = endin - begin;
+		int periodDays = IWTimestamp.getDaysBetween(new IWTimestamp(begin),new IWTimestamp(endin))+1;
+		
+		
 		if (begin <= valto && valto <= endin) {
 			//System.out.println("ends within period");
 			endin = valto;
@@ -257,6 +265,10 @@ public class CampusFinanceHandler implements FinanceHandler {
 			//System.out.println("begins within period");
 			begin = valfr;
 		}
+		int validDays = IWTimestamp.getDaysBetween(new IWTimestamp(begin),new IWTimestamp(endin));
+		if(validDays>0 )//&& validDays< periodDays)
+			validDays++;
+		/*
 		IWTimestamp theBegin = new IWTimestamp(begin);
 		theBegin.setTime(0,0,0,0);
 		IWTimestamp theEnd = new IWTimestamp(endin);
@@ -265,28 +277,31 @@ public class CampusFinanceHandler implements FinanceHandler {
 		endin = theEnd.getDate().getTime();
 		BigDecimal ret = new BigDecimal(endin - begin);
 		if(IWTimestamp.getDaysBetween(theBegin,theEnd)>0){
-			ret = ret.divide(new BigDecimal(del),2,BigDecimal.ROUND_HALF_EVEN);
+			ret = ret.divide(new BigDecimal(del),4,BigDecimal.ROUND_UP);
 			//ret = (diff) / del;
 		}
 		else
 			ret=new BigDecimal(0);
+		*/
+		BigDecimal ret = new BigDecimal(validDays);
+		ret = ret.divide(new BigDecimal(periodDays),precision,BigDecimal.ROUND_UP);
 		return ret.doubleValue();
 	}
 	
 	public static void main(String[] args){
-		IWTimestamp begin = new IWTimestamp(1,7,2004);
-		IWTimestamp end = new IWTimestamp(31,7,2004);
+		IWTimestamp begin = new IWTimestamp(1,6,2004);
+		IWTimestamp end = new IWTimestamp(30,6,2004);
 		
-		IWTimestamp from = new IWTimestamp(1,7,2004);
-		IWTimestamp to = new IWTimestamp(1,7,2004);
-		for (int day = 1; day < 31; day++) {
-			to = new IWTimestamp(day,7,2004);
+		IWTimestamp from = new IWTimestamp(1,6,2004);
+		IWTimestamp to = new IWTimestamp(1,8,2004);
+		for (int day = 1; day <= 30; day++) {
+			to = new IWTimestamp(day,6,2004);
 			to.setTime(23,59,59);
 			CampusFinanceHandler handler = new CampusFinanceHandler();
-			double ret = handler.getFactor(begin.getDate().getTime(),end.getDate().getTime(),from.getDate().getTime(),to.getDate().getTime());
+			double ret = handler.getFactor(begin.getDate().getTime(),end.getDate().getTime(),from.getDate().getTime(),to.getDate().getTime(),4);
 			//System.out.print(" Begin: "+begin.toString()+" End "+end.toString());
 			//System.out.print(" From:"+from.toString()+" To: "+to.toString());
-			System.out.println("Dagar="+day+" StuÝull= "+ret);
+			System.out.println("Dagarmunur="+(day-1)+" Hlutfall= "+ret);
 		}
 		
 		
@@ -324,10 +339,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 			ContractAccountApartment user;
 			int iAttributeId = -1;
 			String sAttribute;
+			int precis = getPrecision(iwac);
 			// All tenants accounts (Outer loop)
 			for (Iterator iter1 = listOfUsers.iterator(); iter1.hasNext();) {
 				user = (ContractAccountApartment) iter1.next();
-				double factor = getFactor(user, end, start);
+				double factor = getFactor(user, end, start,precis);
 				// For each tariff (Inner loop)
 				if (factor > 0) {
 					for (Iterator iter = tariffs.iterator(); iter.hasNext();) {
@@ -557,5 +573,12 @@ public class CampusFinanceHandler implements FinanceHandler {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private int getPrecision(IWApplicationContext iwac){
+		String precision = iwac.getIWMainApplication().getBundle(CampusSettings.IW_BUNDLE_IDENTIFIER).getProperty("FINANCE_FACTOR_PRECISION",String.valueOf(2));
+		if(precision!=null)
+			return Integer.parseInt(precision);
+		return 2;
 	}
 }
