@@ -243,7 +243,10 @@ public class TextEditorWindow extends AbstractChooserWindow{
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
-    TextArea taBody = new TextArea(prmBody,65,18);
+    //TextArea taBody = new TextArea(prmBody,65,18);
+    TextEditor taBody = new TextEditor();
+    taBody.setInputName(prmBody);
+
     if ( hasLocalizedText ) {
       if ( locText.getHeadline() != null ) {
         tiHeadline.setContent(locText.getHeadline());
