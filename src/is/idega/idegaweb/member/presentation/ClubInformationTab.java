@@ -9,7 +9,11 @@ import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
+import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -29,6 +33,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.data.User;
 import com.idega.user.presentation.UserGroupTab;
 import com.idega.util.IWTimestamp;
 /**
@@ -191,13 +196,20 @@ public class ClubInformationTab extends UserGroupTab {
 		_statusField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATE_COMPETITION_BAN, iwrb.getLocalizedString(
 				"clubinformationtab.state_banned_from_comp", "Competition ban"));
 		_statusField.setSelectedElement(IWMemberConstants.META_DATA_CLUB_STATE_ACTIVE);
-		Collection special = null;
+		List special = null;
 		try {
-			special = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_LEAGUE);
+			special = (List) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_LEAGUE);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		if (special != null) {
+			final Collator collator = Collator.getInstance(iwc.getLocale());
+			Collections.sort(special,new Comparator() {
+				public int compare(Object arg0, Object arg1) {
+					return collator.compare(((Group) arg0).getName(), ((Group) arg1).getName());
+				}				
+			});
+		
 			Iterator it = special.iterator();
 			while (it.hasNext()) {
 				Group spec = (Group) it.next();
