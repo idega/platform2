@@ -296,9 +296,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	 *
 	 */
 	public void lineUp(IWContext iwc) {
-		
-		CalendarView c = new CalendarView();
-		
+				
 		IWTimestamp timeStamp = null;
 
 		String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
@@ -308,14 +306,14 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		if(month != null && !month.equals("") &&
 				day != null && !day.equals("") &&
 				year != null && !year.equals("")) {
-			timeStamp = c.getTimestamp(day,month,year);
+			timeStamp = getTimestamp(day,month,year);
 		}
 		else {
 			timeStamp = IWTimestamp.RightNow();
 		}
 		
-		Link right = c.getRightLink(iwc);
-		Link left = c.getLeftLink(iwc);
+		Link right = getRightLink(iwc);
+		Link left = getLeftLink(iwc);
 		addNextMonthPrm(right, timeStamp, iwc);
 		addLastMonthPrm(left, timeStamp, iwc);
 		
@@ -971,6 +969,47 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		return ledgerVariationsHandler;
 		
 	}
+	
+	private Link getRightLink(IWContext iwc) {
+		IWBundle iwb = getBundle(iwc);
+		Image rightArrow = iwb.getImage("right_arrow.gif");
+		Link right = new Link();
+		right.setImage(rightArrow);
+		return right;		
+	}
+	private Link getLeftLink(IWContext iwc) {
+		IWBundle iwb = getBundle(iwc);
+		Image leftArrow = iwb.getImage("left_arrow.gif");
+		Link left = new Link();
+		left.setImage(leftArrow);
+		return left;
+	}
+	public static IWTimestamp getTimestamp(String day, String month, String year) {
+		IWTimestamp stamp = new IWTimestamp();
+
+		if (day != null) {
+			stamp.setDay(Integer.parseInt(day));
+		}
+		// removed dubius behavior A
+		/*else {
+		 stamp.setDay(1);
+		 }
+		 */
+		if (month != null) {
+			stamp.setMonth(Integer.parseInt(month));
+		}
+		if (year != null) {
+			stamp.setYear(Integer.parseInt(year));
+		}
+
+		stamp.setHour(0);
+		stamp.setMinute(0);
+		stamp.setSecond(0);
+
+		return stamp;
+	}
+
+
 	
 
 	/**

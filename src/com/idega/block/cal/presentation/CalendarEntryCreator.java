@@ -334,6 +334,8 @@ public class CalendarEntryCreator extends Form{
 		attendeesField = new GroupChooser(attendeesFieldParameterName);
 
 		descriptionField = new TextArea(descriptionFieldParameterName);
+		descriptionField.setRows(5);
+		
 		
 		save = new StyledButton(new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue));
 //		save.setAsImageButton(true);
@@ -440,134 +442,138 @@ public class CalendarEntryCreator extends Form{
 	 */
 	private Table lineUpEdit(IWContext iwc, CalendarEntry entry) {
 		Table table = new Table();
-		table.setStyleClass(borderAllWhite);
+//		table.setStyleClass(borderAllWhite);
 		table.setCellspacing(0);
 		table.setCellpadding(0);
-		table.setWidth(400);
-		table.setStyleClass(1,1,menuTableStyle);
+		table.setWidth(Table.HUNDRED_PERCENT);
+//		table.setStyleClass(1,1,menuTableStyle);
 		table.setHeight(1,1,20);
-		
-		Table topTable = new Table();
-		topTable.setWidth("100%");
-		topTable.setCellspacing(0);
-		topTable.setCellpadding(0);
-		topTable.setAlignment(1,1,"center");
-		
+				
 		if(entry != null) {
-			topTable.add(changeEntryText,1,1);			
-			Table buttonTableTop = new Table();
-			buttonTableTop.setCellspacing(0);
-			buttonTableTop.setCellpadding(2);
-			buttonTableTop.setWidth("100%");
-			buttonTableTop.add(modifyOneRadioButton,1,1);
-			buttonTableTop.add(Text.NON_BREAKING_SPACE,1,1);
-			buttonTableTop.add(modifyOneText,1,1);
-			buttonTableTop.add(modifyManyRadioButton,1,2);
-			buttonTableTop.add(Text.NON_BREAKING_SPACE,1,2);
-			buttonTableTop.add(modifyManyText,1,2);
-						
-			buttonTableTop.add(newEntryLink,2,1);
+			Table radioButtonTable = new Table();
+			radioButtonTable.setWidth(Table.HUNDRED_PERCENT);
+			radioButtonTable.add(modifyOneRadioButton,1,1);
+			radioButtonTable.add(Text.NON_BREAKING_SPACE,1,1);
+			radioButtonTable.add(modifyOneText,1,1);
+			radioButtonTable.add(modifyManyRadioButton,1,2);
+			radioButtonTable.add(Text.NON_BREAKING_SPACE,1,2);
+			radioButtonTable.add(modifyManyText,1,2);
 			
-			buttonTableTop.add(deleteLink,3,1);
-			table.add(buttonTableTop,1,2);
+			table.add(radioButtonTable,1,1);
+			
+			Table buttonTableTop = new Table();
+			buttonTableTop.setWidth(Table.HUNDRED_PERCENT);
+			buttonTableTop.add(newEntryLink,1,1);
+			buttonTableTop.add(deleteLink,2,1);
+			
+			table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
+
+			table.add(buttonTableTop,2,1);
 		}
-		else {
-			topTable.add(createNewText,1,1);
-		}		
-		table.add(topTable,1,1);
 		
 		Table headlineTable = new Table();
 		headlineTable.setCellpadding(2);
 		headlineTable.setCellspacing(0);
-		headlineTable.setWidth("100%");
+		headlineTable.setWidth(Table.HUNDRED_PERCENT);
 		headlineTable.add(headlineText,1,1);
 		headlineTable.add(headlineField,1,2);
 		
-		table.add(headlineTable,1,3);
+		table.add(headlineTable,1,2);
 		
 		Table typeTable = new Table();
 		typeTable.setCellpadding(2);
 		typeTable.setCellspacing(0);
-		typeTable.setWidth("100%");
+		typeTable.setWidth(Table.HUNDRED_PERCENT);
 		typeTable.add(typeText,1,1);
 		typeTable.add(typeField,1,2);
 		
-		table.add(typeTable,1,4);
-		
-		Table repeatTable = new Table();
-		repeatTable.setCellpadding(2);
-		repeatTable.setCellspacing(0);
-		repeatTable.setWidth("100%");
-		repeatTable.add(repeatText,1,1);
-		repeatTable.add(repeatField,1,2);
-		
-		table.add(repeatTable,1,5);
-		
-		Table dayTable = new Table();
-		dayTable.setWidth("100%");
-		dayTable.add(dayFromText,1,1);
-		dayTable.add(dayFromField,1,2);
-		dayTable.add(dayToText,2,1);
-		dayTable.add(dayToField,2,2);
-		
-		table.add(dayTable,1,6);
-		
-		Table timeTable = new Table();
-		timeTable.setWidth("100%");
-		timeTable.add(timeFromText,1,1);
-		timeTable.add(timeFromField,1,2);
-		timeTable.add(timeToText,2,1);
-		timeTable.add(timeToField,2,2);
-		
-		table.add(timeTable,1,7);
+		table.add(typeTable,2,2);
 		
 		Table locationTable = new Table();
 		locationTable.setCellpadding(2);
 		locationTable.setCellspacing(0);	
-		locationTable.setWidth("100%");
+		locationTable.setWidth(Table.HUNDRED_PERCENT);
 		locationTable.add(locationText,1,1);
 		locationTable.add(locationField,1,2);
 		
-		table.add(locationTable,1,8);
+		table.add(locationTable,1,3);
+
+		
+		Table repeatTable = new Table();
+		repeatTable.setCellpadding(2);
+		repeatTable.setCellspacing(0);
+		repeatTable.setWidth(Table.HUNDRED_PERCENT);
+		repeatTable.add(repeatText,1,1);
+		repeatTable.add(repeatField,1,2);
+		
+		table.add(repeatTable,2,3);
+		
+		Table dayFromTable = new Table();
+		dayFromTable.setCellpadding(2);
+		dayFromTable.setCellspacing(0);
+		dayFromTable.setWidth(Table.HUNDRED_PERCENT);
+		dayFromTable.add(dayFromText,1,1);
+		dayFromTable.add(dayFromField,1,2);
+		
+		table.add(dayFromTable,1,4);
+		
+		Table dayToTable = new Table();
+		dayToTable.setCellpadding(2);
+		dayToTable.setCellspacing(0);
+		dayToTable.add(dayToText,1,1);
+		dayToTable.add(dayToField,1,2);
+		
+		table.add(dayToTable,2,4);
+		
+		Table timeFromTable = new Table();
+		timeFromTable.setWidth(Table.HUNDRED_PERCENT);
+		timeFromTable.add(timeFromText,1,1);
+		timeFromTable.add(timeFromField,1,2);
+		
+		table.add(timeFromTable,1,5);
+		
+		Table timeToTable = new Table();
+		timeToTable.setWidth(Table.HUNDRED_PERCENT);
+		timeToTable.add(timeToText,1,1);
+		timeToTable.add(timeToField,1,2);
+		
+		table.add(timeToTable,2,5);
+				
+		Table ledgerTable = new Table();
+		ledgerTable.setWidth(Table.HUNDRED_PERCENT);
+		ledgerTable.add(groupOrLedgerText,1,1);
+		ledgerTable.add(ledgerField,1,2);
+		
+		table.add(ledgerTable,1,6);
+		
+		Table groupTable = new Table();
+		groupTable.setWidth(Table.HUNDRED_PERCENT);
+		groupTable.add(attendeesText,1,1);
+		// AttentantChooser is a PresentationObject
+		groupTable.add((PresentationObject) attendeesField,1,2);
+		
+		table.add(groupTable,1,7);
 		
 		Table descTable = new Table();
 		descTable.setCellpadding(2);
 		descTable.setCellspacing(0);
-		descTable.setWidth("100%");
+		descTable.setWidth(Table.HUNDRED_PERCENT);
 		descTable.add(descriptionText,1,1);
 		descTable.add(descriptionField,1,2);
 		
-		table.add(descTable,1,9);
-		
-		Table glTextTable = new Table();
-		glTextTable.setCellpadding(2);
-		glTextTable.setCellspacing(0);
-		glTextTable.setWidth("100%");
-		glTextTable.add(groupOrLedgerText,1,1);
-		
-		table.add(glTextTable,1,10);
-		
-		Table glTable = new Table();
-		glTable.setWidth("100%");
-		glTable.add(ledgerText,1,1);
-		glTable.add(ledgerField,1,2);
-		glTable.add(attendeesText,2,1);
-		// AttentantChooser is a PresentationObject
-		glTable.add((PresentationObject) attendeesField,2,2);
-		
-		table.add(glTable,1,11);
-		
+		table.setVerticalAlignment(2,6,Table.VERTICAL_ALIGN_TOP);
+		table.mergeCells(2,6,2,7);
+		table.add(descTable,2,6);
+
 		Table buttonTable = new Table();
 		buttonTable.setCellpadding(2);
 		buttonTable.setCellspacing(0);
-		buttonTable.setWidth("100%");
 //		buttonTable.add(help);
-		buttonTable.setAlignment(2,1,"right");		
-		buttonTable.add(save,2,1);
-		buttonTable.add(Text.NON_BREAKING_SPACE,2,1);
+		buttonTable.add(save,1,1);
 		buttonTable.add(reset,2,1);
 		
-		table.add(buttonTable,1,12);
+		table.setAlignment(2,8,Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(buttonTable,2,8);
 
 		return table;
 	}
