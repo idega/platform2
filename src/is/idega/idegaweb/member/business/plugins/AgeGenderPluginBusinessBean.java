@@ -38,7 +38,7 @@ import com.idega.user.data.User;
  */
 public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeGenderPluginBusiness, UserGroupPlugInBusiness {
   
-  public static final String AGE_GENDER_PLUGIN_BUSINESS_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.business.plugins";
+  public static final String AGE_GENDER_PLUGIN_BUSINESS_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
   private static final String NULL = "null";
   
