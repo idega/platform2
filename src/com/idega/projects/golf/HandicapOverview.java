@@ -1,12 +1,12 @@
 package com.idega.projects.golf;
 
 /**
- * Title:
- * Description:
+ * Title: HandicapOverview
+ * Description: Displayes the handicap of a selected golfer, ordered by date
  * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
+ * Company: idega co.
+ * @author  Laddi
+ * @version 1.3
  */
 
 import javax.servlet.*;
@@ -274,7 +274,7 @@ private String headerColor = "#336660";
 
 			myTable.add(tengill,11,a+3);
 			myTable.addText("&nbsp;",11,a+3);
-			if ( canWrite && tournament_name == null) {
+			if ( canWrite && tournament_name.length() == 0 ) {
                           myTable.add(update,11,a+3);
 			}
 			if ( isAdmin || member_id.equalsIgnoreCase("1") ) {
