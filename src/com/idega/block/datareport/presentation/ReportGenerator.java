@@ -507,7 +507,7 @@ public class ReportGenerator extends Block {
 				if (_reportFilePathsMap == null) {
 					_reportFilePathsMap = new HashMap();
 				}
-				_reportFilePathsMap.put(SIMPLE_EXCEL_FORMAT, business.getSimpleExcelReport(((ReportableCollection) _dataSource), _reportName,_reportDescription));
+				_reportFilePathsMap.put(SIMPLE_EXCEL_FORMAT, business.getSimpleExcelReport(((ReportableCollection) _dataSource).getJRDataSource(), _reportName,_reportDescription));
 			}
 		}
 	}

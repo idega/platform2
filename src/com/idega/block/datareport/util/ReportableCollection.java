@@ -30,12 +30,13 @@ import com.idega.util.datastructures.QueueMap;
  */
 public class ReportableCollection extends Vector implements JRDataSource {
 	
-	private Iterator _reportIterator = null;
 	private IDOReportableEntity _currentJRDataSource = null;
 	private Object _defaultFieldValue = null;
 	
 	private QueueMap _extraHeaderParameters = new QueueMap();
 	private ReportDescription _description = null;
+	
+	private IWDataSource _source = null;
 	
 	
 	/**
@@ -66,48 +67,12 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	public ReportableCollection(Collection c) {
 		super(c);
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.jasperreports.engine.JRDataSource#next()
-	 */
-	public boolean next() throws JRException {
-		if(_reportIterator == null){
-			_reportIterator = this.iterator();
-		}
-		
-		try {
-			if(_reportIterator.hasNext()){
-				_currentJRDataSource = (IDOReportableEntity)_reportIterator.next();
-				return true;
-			} else {
-				_currentJRDataSource = null;
-				return false;
-			} 
-		} catch (ClassCastException e) {
-			_currentJRDataSource=null;
-			e.printStackTrace();
-			throw new JRException(e);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
-	 */
-	public Object getFieldValue(JRField field) throws JRException {
-		return getFieldValue(new ReportableField(field));
-	}
 	
-	public Object getFieldValue(ReportableField field) throws JRException {
-		if(_reportIterator == null){
-			next();
-		}
-		Object returner = _currentJRDataSource.getFieldValue(field);
-		if(returner == null){
-			return _defaultFieldValue;
-		} else {
-			return returner;
-		}
+	public JRDataSource getJRDataSource(){
+		return new IWDataSource(this);
 	}
+
+
 	
 	
 	public void addField(ReportableField field){
@@ -164,4 +129,93 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	public void setReportDescription(ReportDescription description) {
 		this._description = description;
 	}
+	
+	/* (non-Javadoc)
+	 * @see net.sf.jasperreports.engine.JRDataSource#next()
+	 */
+	public boolean next() throws JRException {
+		if(_source == null){
+			_source = (IWDataSource)getJRDataSource();
+		}
+		return _source.next();
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
+	 */
+	public Object getFieldValue(JRField jrField) throws JRException {
+		return getFieldValue(new ReportableField(jrField));
+	}
+	
+	public Object getFieldValue(ReportableField field) throws JRException {
+		if(_source == null){
+			next();
+		}
+		return _source.getFieldValue(field);
+	}
+	
+	
+	/**
+	 * 
+	 *  Last modified: $Date: 2004/10/08 10:15:36 $ by $Author: gummi $
+	 * 
+	 * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
+	 * @version $Revision: 1.11 $
+	 */
+	private class IWDataSource implements JRDataSource {
+
+		private ReportableCollection _coll = null;
+		private Iterator _reportIterator = null;
+		
+		/**
+		 * 
+		 */
+		public IWDataSource(ReportableCollection coll) {
+			super();
+			_coll = coll;
+		}
+
+		/* (non-Javadoc)
+		 * @see net.sf.jasperreports.engine.JRDataSource#next()
+		 */
+		public boolean next() throws JRException {
+			if(_reportIterator == null){
+				_reportIterator = _coll.iterator();
+			}
+			
+			try {
+				if(_reportIterator.hasNext()){
+					_coll._currentJRDataSource = (IDOReportableEntity)_reportIterator.next();
+					return true;
+				} else {
+					_coll._currentJRDataSource = null;
+					return false;
+				} 
+			} catch (ClassCastException e) {
+				_coll._currentJRDataSource=null;
+				e.printStackTrace();
+				throw new JRException(e);
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
+		 */
+		public Object getFieldValue(JRField field) throws JRException {
+			return getFieldValue(new ReportableField(field));
+		}
+		
+		public Object getFieldValue(ReportableField field) throws JRException {
+			if(_reportIterator == null){
+				next();
+			}
+			Object returner = _coll._currentJRDataSource.getFieldValue(field);
+			if(returner == null){
+				return _coll._defaultFieldValue;
+			} else {
+				return returner;
+			}
+		}
+	}
+	
 }
