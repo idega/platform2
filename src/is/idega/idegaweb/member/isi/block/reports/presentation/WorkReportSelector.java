@@ -63,8 +63,8 @@ public class WorkReportSelector extends ClubSelector {
 
 	public WorkReportSelector() {
 		super();
-		addToParamsToMaintainList(PARAM_WORK_REPORT_ID);
-		addToParamsToMaintainList(PARAM_WORK_YEAR);
+		addToParametersToMaintainList(PARAM_WORK_REPORT_ID);
+		addToParametersToMaintainList(PARAM_WORK_YEAR);
 	}
 	
 	
@@ -94,7 +94,7 @@ public class WorkReportSelector extends ClubSelector {
 
 		Form reportSelectorForm = new Form();
 		
-		reportSelectorForm.maintainParameters(getParamsToMaintain());
+		reportSelectorForm.maintainParameters(getParametersToMaintain());
 		
 		DateInput dateSelector = new DateInput(PARAM_WORK_YEAR);
 		IWTimestamp stamp = IWTimestamp.RightNow();

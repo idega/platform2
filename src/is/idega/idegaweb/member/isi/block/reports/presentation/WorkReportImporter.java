@@ -55,7 +55,7 @@ public class WorkReportImporter extends WorkReportSelector {
 	
 	protected void addUploadForm() {
 		Form uploadForm = new Form();
-		uploadForm.maintainParameters(getParamsToMaintain());
+		uploadForm.maintainParameters(getParametersToMaintain());
 		uploadForm.add(new SimpleFileChooser(uploadForm,PARAM_FILE_ID));
 		
 		add(uploadForm);

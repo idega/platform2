@@ -43,18 +43,18 @@ public class ClubSelector extends Block {
 	/**
 	 * @return
 	 */
-	public List getParamsToMaintain() {
+	public List getParametersToMaintain() {
 		return paramsToMaintain;
 	}
 
 	/**
 	 * @param paramsToMaintain
 	 */
-	public void setParamsToMaintain(List paramsToMaintain) {
+	public void setParametersToMaintain(List paramsToMaintain) {
 		this.paramsToMaintain = paramsToMaintain;
 	}
 	
-	public void addToParamsToMaintainList(String param){
+	public void addToParametersToMaintainList(String param){
 		if(paramsToMaintain==null) paramsToMaintain = new ArrayList();
 		
 		paramsToMaintain.add(param);
@@ -65,8 +65,8 @@ public class ClubSelector extends Block {
 
 		super();
 		this.setToDebugParameters(true);
-		addToParamsToMaintainList(PARAM_CLUB_ID);
-		addToParamsToMaintainList(WorkReportWindow.ACTION);
+		addToParametersToMaintainList(PARAM_CLUB_ID);
+		addToParametersToMaintainList(WorkReportWindow.ACTION);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class ClubSelector extends Block {
 		
 		Form clubSelectorForm = new Form();
 		
-		clubSelectorForm.maintainParameters(getParamsToMaintain());
+		clubSelectorForm.maintainParameters(getParametersToMaintain());
 		
 		Table table = new Table(2,4);
 		table.mergeCells(1,1,2,1);
