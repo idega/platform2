@@ -104,26 +104,19 @@ public class DailyReport extends TravelManager implements Report{
       String fiveWidth = "100";
 
 
-      Text nameHText = (Text) theSmallBoldText.clone();
-	  nameHText.setText(iwrb.getLocalizedString("travel.name","Name"));
+      Text nameHText = getHeaderText(iwrb.getLocalizedString("travel.name","Name"));
 
-      Text payTypeHText = (Text) theSmallBoldText.clone();
-	  payTypeHText.setText(iwrb.getLocalizedString("travel.payment_type","Payment type"));
+      Text payTypeHText = getHeaderText(iwrb.getLocalizedString("travel.payment_type","Payment type"));
 
-      Text bookedHText = (Text) theSmallBoldText.clone();
-	  bookedHText.setText(iwrb.getLocalizedString("travel.booked_lg","Booked"));
+      Text bookedHText = getHeaderText(iwrb.getLocalizedString("travel.booked_lg","Booked"));
 
-      Text attHText = (Text) theSmallBoldText.clone();
-	  attHText.setText(iwrb.getLocalizedString("travel.attendance","Attendance"));
+      Text attHText = getHeaderText(iwrb.getLocalizedString("travel.attendance","Attendance"));
 
-      Text amountHText = (Text) theSmallBoldText.clone();
-	  amountHText.setText(iwrb.getLocalizedString("travel.amount","Amount"));
+      Text amountHText = getHeaderText(iwrb.getLocalizedString("travel.amount","Amount"));
 
-      Text additionHText = (Text) theSmallBoldText.clone();
-	  additionHText.setText(iwrb.getLocalizedString("travel.addition","Addition"));
+      Text additionHText = getHeaderText(iwrb.getLocalizedString("travel.addition","Addition"));
 
-      Text correctionHText = (Text) theSmallBoldText.clone();
-	  correctionHText.setText(iwrb.getLocalizedString("travel.correction","Correction"));
+      Text correctionHText = getHeaderText(iwrb.getLocalizedString("travel.correction","Correction"));
 
       Text totalHText = (Text) theBoldText.clone();
 	  totalHText.setText(iwrb.getLocalizedString("travel.total","Total"));
@@ -163,13 +156,16 @@ public class DailyReport extends TravelManager implements Report{
 
       int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
       Timeframe tframe = ProductBusiness.getTimeframe(product, stamp);
+      List addresses = ProductBusiness.getDepartureAddresses(product, true);
+      TravelAddress address;
+      int addressesSize = addresses.size();
       ProductPrice[] prices = {};
-      TravelAddress[] addresses = {};
-      try {
-	addresses = ProductBusiness.getDepartureAddresses(product);
-      }catch (SQLException sql) {
-	sql.printStackTrace(System.err);
-      }
+//      TravelAddress[] addresses = {};
+//      try {
+//	addresses = ProductBusiness.getDepartureAddresses(product);
+//      }catch (SQLException sql) {
+//	sql.printStackTrace(System.err);
+//      }
 
 
 
@@ -183,119 +179,133 @@ public class DailyReport extends TravelManager implements Report{
 
       Map map = new Hashtable();
       for (int i = 0; i < prices.length; i++) {
-	for (int j = 0; j < addresses.length; j++) {
-	  map.put(prices[i].getPriceCategoryIDInteger()+"_"+addresses[j].getID(),new Integer(0));
+	for (int j = 0; j < addressesSize; j++) {
+          address = (TravelAddress) addresses.get(j);
+	  map.put(prices[i].getPriceCategoryIDInteger()+"_"+address.getID(),new Integer(0));
 	}
       }
 
 
-      Booking[] bookings = getBooker(iwc).getBookings(product.getID(),stamp,bookingTypeIds);
+
+      Booking[] bookings;
       TravelAddress[] bookingAddresses;
       String theColor = super.GRAY;
       DropdownMenu payType;
       BookingEntry[] entries;
       Collection coll;
+      Text travelAddressText;
       int iBookingId = 0;
       table.setRowColor(row,super.backgroundColor);
-      for (int i = 0; i < bookings.length; i++) {
-	  row++;
 
-	  attendance = 0;
-	  ibookings = 0;
-	  amount = 0;
+      for (int ta = 0; ta < addressesSize; ta++) {
+        address = (TravelAddress) addresses.get(ta);
+        bookings = getBooker(iwc).getBookings(new int[] {product.getID()},stamp,null, bookingTypeIds, address);
+        ++row;
+        table.setRowColor(row,super.backgroundColor);
+        table.mergeCells(1, row, 5, row);
+        travelAddressText = super.getText(address.getName());
+        travelAddressText.setFontColor(super.WHITE);
+        table.add(travelAddressText, 1, row);
+        for (int i = 0; i < bookings.length; i++) {
+            row++;
 
-	  ibookings = bookings[i].getTotalCount();
-	  attendance = bookings[i].getAttendance();
-	  amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+            attendance = 0;
+            ibookings = 0;
+            amount = 0;
 
-	  totalBookings += ibookings;
-	  if (attendance != -1000)
-	  totalAttendance += attendance;
-	  totalAmount += amount;
+            ibookings = bookings[i].getTotalCount();
+            attendance = bookings[i].getAttendance();
+            amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
 
-	  table.setRowColor(row,super.backgroundColor);
-	  nameText = (Text) smallText.clone();
-	    nameText.setText(bookings[i].getName());
+            totalBookings += ibookings;
+            if (attendance != -1000)
+            totalAttendance += attendance;
+            totalAmount += amount;
 
-	  payTypeText = (Text) smallText.clone();
-	  payType = (DropdownMenu) getBooker(iwc).getPaymentTypes(iwrb).clone();
-	    payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
-	  iBookingId = bookings[i].getPaymentTypeId();
+            table.setRowColor(row,super.backgroundColor);
+            nameText = (Text) smallText.clone();
+              nameText.setText(bookings[i].getName());
 
-	  bookedText = (Text) smallText.clone();
-	    bookedText.setText(Integer.toString(ibookings));
+            payTypeText = (Text) smallText.clone();
+            payType = (DropdownMenu) getBooker(iwc).getPaymentTypes(iwrb).clone();
+              payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
+            iBookingId = bookings[i].getPaymentTypeId();
 
-	  attTextBox = (TextInput) textBoxToClone.clone();
-	    attTextBox.setSize(3);
-	  if (attendance != -1000) {
-	    attTextBox.setContent(Integer.toString(attendance));
-	    }
-	  amountText = (Text) smallText.clone();
-	    amountText.setText(Integer.toString((int) amount));
+            bookedText = (Text) smallText.clone();
+              bookedText.setText(Integer.toString(ibookings));
 
-	  nameText.setFontColor(super.BLACK);
-	  payTypeText.setFontColor(super.BLACK);
-	  bookedText.setFontColor(super.BLACK);
-	  amountText.setFontColor(super.BLACK);
+            attTextBox = (TextInput) textBoxToClone.clone();
+              attTextBox.setSize(3);
+            if (attendance != -1000) {
+              attTextBox.setContent(Integer.toString(attendance));
+              }
+            amountText = (Text) smallText.clone();
+              amountText.setText(Integer.toString((int) amount));
 
-	  table.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,row);
-	  table.add(nameText,1,row);
-	  table.add(payType,2,row);
-	  table.add(bookedText,3,row);
-	  table.add(attTextBox,4,row);
-	  table.add(amountText,5,row);
-	  table.setAlignment(2,row, "center");
-	  table.setRowColor(row, theColor);
+            nameText.setFontColor(super.BLACK);
+            payTypeText.setFontColor(super.BLACK);
+            bookedText.setFontColor(super.BLACK);
+            amountText.setFontColor(super.BLACK);
 
-	  if (closerLook)
-	  try {
-	    coll = bookings[i].getTravelAddresses();
-	    bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
-	    entries = bookings[i].getBookingEntries();
-	    //bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
-	    if (bookingAddresses.length > 0) {
-	      addressText = (Text) smallText.clone();
-	      addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-	      addressText.setFontColor(super.BLACK);
-	      table.add(addressText, 1, row+1);
-	      table.setAlignment(1,row+1, "right");
-	    }
+            table.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,row);
+            table.add(nameText,1,row);
+            table.add(payType,2,row);
+            table.add(bookedText,3,row);
+            table.add(attTextBox,4,row);
+            table.add(amountText,5,row);
+            table.setAlignment(2,row, "center");
+            table.setRowColor(row, theColor);
 
-	    for (int j = 0; j < entries.length; j++) {
-	      ++row;
-	      table.setRowColor(row, theColor);
-	      price = entries[j].getProductPrice();
-	      iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
+            if (closerLook)
+            try {
+              coll = bookings[i].getTravelAddresses();
+              bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
+              entries = bookings[i].getBookingEntries();
+              //bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
+/*              if (bookingAddresses.length > 0) {
+                addressText = (Text) smallText.clone();
+                addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+                addressText.setFontColor(super.BLACK);
+                table.add(addressText, 1, row+1);
+                table.setAlignment(1,row+1, "right");
+              }
+*/
+              for (int j = 0; j < entries.length; j++) {
+                ++row;
+                table.setRowColor(row, theColor);
+                price = entries[j].getProductPrice();
+                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
 
-	      nameText = (Text) smallText.clone();
-		nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
-	      bookedText = (Text) smallText.clone();
-		bookedText.setText(Integer.toString(entries[j].getCount()));
-	      amountText = (Text) smallText.clone();
-		amountText.setText(Integer.toString(iEntryCount));
+                nameText = (Text) smallText.clone();
+                  nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
+                bookedText = (Text) smallText.clone();
+                  bookedText.setText(Integer.toString(entries[j].getCount()));
+                amountText = (Text) smallText.clone();
+                  amountText.setText(Integer.toString(iEntryCount));
 
-	      nameText.setFontColor(super.BLACK);
-	      bookedText.setFontColor(super.BLACK);
-	      amountText.setFontColor(super.BLACK);
-
-
-	      entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
-	      entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
-	      map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
-
-	      table.add(nameText,2,row);
-	      table.add(bookedText,3,row);
-	      table.add(amountText,4,row);
-	      table.setAlignment(2,row, "LEFT");
-	    }
+                nameText.setFontColor(super.BLACK);
+                bookedText.setFontColor(super.BLACK);
+                amountText.setFontColor(super.BLACK);
 
 
-	  }catch (FinderException fe) {
-	    fe.printStackTrace(System.err);
-	  }catch (IDORelationshipException re) {
-	    re.printStackTrace(System.err);
-	  }
+                entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
+                entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
+                map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
 
+                table.add(nameText,2,row);
+                table.add(bookedText,3,row);
+                table.add(amountText,4,row);
+                table.setAlignment(2,row, "LEFT");
+              }
+
+
+            }catch (FinderException fe) {
+              fe.printStackTrace(System.err);
+            }catch (IDORelationshipException re) {
+              re.printStackTrace(System.err);
+            }
+
+        }
       }
 
 //      table.setColumnAlignment(1,"left");
@@ -303,6 +313,7 @@ public class DailyReport extends TravelManager implements Report{
       table.setColumnAlignment(4,"center");
       table.setColumnAlignment(5,"center");
 
+      //---------------------ADDITION----------------------
 
       theColor = super.GRAY;
       Table addTable = new Table();
@@ -312,112 +323,123 @@ public class DailyReport extends TravelManager implements Report{
 	  addTable.setCellspacing(1);
 	  addTable.setColor(super.WHITE);
 	  addTable.setBorderColor(super.textColor);
-	  addTable.setWidth(2,twoWidth);
-	  addTable.setWidth(3,threeWidth);
-	  addTable.setWidth(4,fourWidth);
-	  addTable.setWidth(5,fiveWidth);
 
-      bookings = getBooker(iwc).getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
-      if (bookings.length == 0) {
-	addRow++;
-	addTable.setRowColor(addRow,theColor);
+//      bookings = getBooker(iwc).getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
+//      if (bookings.length == 0) {
+//	addRow++;
+//	addTable.setRowColor(addRow,theColor);
+//      }
+      for (int ta = 0; ta < addressesSize; ta++) {
+        address = (TravelAddress) addresses.get(ta);
+        bookings = getBooker(iwc).getBookings(new int[] {product.getID()},stamp,null, new int[]{Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING}, address);
+        ++addRow;
+        addTable.setRowColor(addRow,super.backgroundColor);
+        addTable.mergeCells(1, addRow, 5, addRow);
+        travelAddressText = super.getText(address.getName());
+        travelAddressText.setFontColor(super.WHITE);
+        addTable.add(travelAddressText, 1, addRow);
+
+        for (int i = 0; i < bookings.length; i++) {
+            ++addRow;
+            addTable.setRowColor(addRow,super.backgroundColor);
+            addTable.setAlignment(2,addRow,"center");
+            ibookings = bookings[i].getTotalCount();
+            attendance = bookings[i].getAttendance();
+            amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+
+            totalBookings += ibookings;
+            if (attendance != -1000)
+            totalAttendance += attendance;
+            totalAmount += amount;
+
+            nameText = (Text) smallText.clone();
+              nameText.setText(bookings[i].getName());
+
+            payType = (DropdownMenu) getBooker(iwc).getPaymentTypes(iwrb).clone();
+              payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
+
+  //          payTypeText = (Text) smallText.clone();
+  //            payTypeText.setText(iwrb.getLocalizedString("travel.paid_on_location","Paid on loaction"));
+
+
+            bookedText = (Text) smallText.clone();
+              bookedText.setText(Integer.toString(ibookings));
+
+            attTextBox = (TextInput) textBoxToClone.clone();
+              attTextBox.setSize(3);
+            if (attendance != -1000) {
+              attTextBox.setContent(Integer.toString(attendance));
+            }
+            amountText = (Text) smallText.clone();
+              amountText.setText(Integer.toString((int) amount));
+
+
+            nameText.setFontColor(super.BLACK);
+            payTypeText.setFontColor(super.BLACK);
+            bookedText.setFontColor(super.BLACK);
+            amountText.setFontColor(super.BLACK);
+
+            addTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,addRow);
+            addTable.add(nameText,1,addRow);
+            addTable.add(payType,2,addRow);
+            addTable.add(bookedText,3,addRow);
+            addTable.add(attTextBox,4,addRow);
+            addTable.add(amountText,5,addRow);
+            addTable.setRowColor(addRow, theColor);
+
+            if (closerLook)
+            try {
+              entries = bookings[i].getBookingEntries();
+              coll = bookings[i].getTravelAddresses();
+              bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
+  //            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
+              /*if (bookingAddresses.length > 0) {
+                addressText = (Text) smallText.clone();
+                addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+                addressText.setFontColor(super.BLACK);
+                addTable.add(addressText, 1, addRow+1);
+                addTable.setAlignment(1,addRow+1, "right");
+              }*/
+              for (int j = 0; j < entries.length; j++) {
+                ++addRow;
+                addTable.setRowColor(addRow, theColor);
+                price = entries[j].getProductPrice();
+                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
+
+                nameText = (Text) smallText.clone();
+                  nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
+                bookedText = (Text) smallText.clone();
+                  bookedText.setText(Integer.toString(entries[j].getCount()));
+                amountText = (Text) smallText.clone();
+                  amountText.setText(Integer.toString(iEntryCount));
+
+                nameText.setFontColor(super.BLACK);
+                bookedText.setFontColor(super.BLACK);
+                amountText.setFontColor(super.BLACK);
+
+                entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
+                entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
+                map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
+
+                addTable.add(nameText,2,addRow);
+                addTable.add(bookedText,3,addRow);
+                addTable.add(amountText,4,addRow);
+                addTable.setAlignment(2,addRow, "LEFT");
+              }
+
+
+            }catch (FinderException fe) {
+              fe.printStackTrace(System.err);
+            }catch (IDORelationshipException re) {
+              re.printStackTrace(System.err);
+            }
+
+        }
       }
-      for (int i = 0; i < bookings.length; i++) {
-	  ++addRow;
-	  addTable.setRowColor(addRow,super.backgroundColor);
-	  addTable.setAlignment(2,addRow,"center");
-	  ibookings = bookings[i].getTotalCount();
-	  attendance = bookings[i].getAttendance();
-	  amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
-
-	  totalBookings += ibookings;
-	  if (attendance != -1000)
-	  totalAttendance += attendance;
-	  totalAmount += amount;
-
-	  nameText = (Text) smallText.clone();
-	    nameText.setText(bookings[i].getName());
-
-	  payType = (DropdownMenu) getBooker(iwc).getPaymentTypes(iwrb).clone();
-	    payType.setSelectedElement(Integer.toString(bookings[i].getPaymentTypeId()));
-
-//          payTypeText = (Text) smallText.clone();
-//            payTypeText.setText(iwrb.getLocalizedString("travel.paid_on_location","Paid on loaction"));
-
-
-	  bookedText = (Text) smallText.clone();
-	    bookedText.setText(Integer.toString(ibookings));
-
-	  attTextBox = (TextInput) textBoxToClone.clone();
-	    attTextBox.setSize(3);
-	  if (attendance != -1000) {
-	    attTextBox.setContent(Integer.toString(attendance));
-	  }
-	  amountText = (Text) smallText.clone();
-	    amountText.setText(Integer.toString((int) amount));
-
-
-	  nameText.setFontColor(super.BLACK);
-	  payTypeText.setFontColor(super.BLACK);
-	  bookedText.setFontColor(super.BLACK);
-	  amountText.setFontColor(super.BLACK);
-
-	  addTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,addRow);
-	  addTable.add(nameText,1,addRow);
-	  addTable.add(payType,2,addRow);
-	  addTable.add(bookedText,3,addRow);
-	  addTable.add(attTextBox,4,addRow);
-	  addTable.add(amountText,5,addRow);
-	  addTable.setRowColor(addRow, theColor);
-
-	  if (closerLook)
-	  try {
-	    entries = bookings[i].getBookingEntries();
-	    coll = bookings[i].getTravelAddresses();
-	    bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
-//            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
-	    if (bookingAddresses.length > 0) {
-	      addressText = (Text) smallText.clone();
-	      addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-	      addressText.setFontColor(super.BLACK);
-	      addTable.add(addressText, 1, addRow+1);
-	      addTable.setAlignment(1,addRow+1, "right");
-	    }
-	    for (int j = 0; j < entries.length; j++) {
-	      ++addRow;
-	      addTable.setRowColor(addRow, theColor);
-	      price = entries[j].getProductPrice();
-	      iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
-
-	      nameText = (Text) smallText.clone();
-		nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
-	      bookedText = (Text) smallText.clone();
-		bookedText.setText(Integer.toString(entries[j].getCount()));
-	      amountText = (Text) smallText.clone();
-		amountText.setText(Integer.toString(iEntryCount));
-
-	      nameText.setFontColor(super.BLACK);
-	      bookedText.setFontColor(super.BLACK);
-	      amountText.setFontColor(super.BLACK);
-
-	      entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
-	      entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
-	      map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
-
-	      addTable.add(nameText,2,addRow);
-	      addTable.add(bookedText,3,addRow);
-	      addTable.add(amountText,4,addRow);
-	      addTable.setAlignment(2,addRow, "LEFT");
-	    }
-
-
-	  }catch (FinderException fe) {
-	    fe.printStackTrace(System.err);
-	  }catch (IDORelationshipException re) {
-	    re.printStackTrace(System.err);
-	  }
-
-      }
+      addTable.setWidth(2,twoWidth);
+      addTable.setWidth(3,threeWidth);
+      addTable.setWidth(4,fourWidth);
+      addTable.setWidth(5,fiveWidth);
       addTable.setColumnAlignment(3,"center");
       addTable.setColumnAlignment(4,"center");
       addTable.setColumnAlignment(5,"center");
@@ -433,105 +455,116 @@ public class DailyReport extends TravelManager implements Report{
 	  correctionTable.setCellspacing(1);
 	  correctionTable.setColor(super.WHITE);
 	  correctionTable.setBorderColor(super.textColor);
-	  correctionTable.setWidth(2,twoWidth);
-	  correctionTable.setWidth(3,threeWidth);
-	  correctionTable.setWidth(4,fourWidth);
-	  correctionTable.setWidth(5,fiveWidth);
 
-      bookings = getBooker(iwc).getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_CORRECTION);
-      if (bookings.length == 0) {
-	corrRow++;
-	correctionTable.setRowColor(corrRow,theColor);
+//      bookings = getBooker(iwc).getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_CORRECTION);
+//      if (bookings.length == 0) {
+//	corrRow++;
+//	correctionTable.setRowColor(corrRow,theColor);
+//      }
+      for (int ta = 0; ta < addressesSize; ta++) {
+        address = (TravelAddress) addresses.get(ta);
+        bookings = getBooker(iwc).getBookings(new int[] {product.getID()},stamp,null, new int[]{Booking.BOOKING_TYPE_ID_CORRECTION}, address);
+        ++corrRow;
+        correctionTable.setRowColor(corrRow,super.backgroundColor);
+        correctionTable.mergeCells(1, corrRow, 5, corrRow);
+        travelAddressText = super.getText(address.getName());
+        travelAddressText.setFontColor(super.WHITE);
+        correctionTable.add(travelAddressText, 1, corrRow);
+
+        for (int i = 0; i < bookings.length; i++) {
+            ++corrRow;
+            correctionTable.setRowColor(corrRow,super.backgroundColor);
+            correctionTable.setAlignment(2,corrRow,"center");
+            ibookings = bookings[i].getTotalCount();
+            attendance = bookings[i].getAttendance();
+            amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+
+            totalBookings += ibookings;
+            if (attendance != -1000)
+            totalAttendance += attendance;
+            totalAmount += amount;
+
+            nameText = (Text) smallText.clone();
+              nameText.setText(bookings[i].getName());
+
+            bookedText = (Text) smallText.clone();
+              bookedText.setText(Integer.toString(ibookings));
+
+            attTextBox = (TextInput) textBoxToClone.clone();
+              attTextBox.setSize(3);
+            if (attendance != -1000) {
+              attTextBox.setContent(Integer.toString(attendance));
+            }
+            amountText = (Text) smallText.clone();
+              amountText.setText(Integer.toString((int) amount));
+
+            nameText.setFontColor(super.BLACK);
+            bookedText.setFontColor(super.BLACK);
+            amountText.setFontColor(super.BLACK);
+
+            correctionTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,corrRow);
+            correctionTable.add(new HiddenInput("payment_type",Integer.toString(bookings[i].getPaymentTypeId())),1,corrRow);
+
+            correctionTable.add(nameText,1,corrRow);
+
+            correctionTable.add(bookedText,3,corrRow);
+            correctionTable.add(attTextBox,4,corrRow);
+            correctionTable.add(amountText,5,corrRow);
+            correctionTable.setRowColor(corrRow, theColor);
+
+            if (closerLook)
+            try {
+              entries = bookings[i].getBookingEntries();
+              coll = bookings[i].getTravelAddresses();
+              bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
+  //            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
+/*              if (bookingAddresses.length > 0) {
+                addressText = (Text) smallText.clone();
+                addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+                addressText.setFontColor(super.BLACK);
+                correctionTable.add(addressText, 1, corrRow+1);
+                correctionTable.setAlignment(1,corrRow+1, "right");
+              }*/
+              for (int j = 0; j < entries.length; j++) {
+                ++corrRow;
+                correctionTable.setRowColor(corrRow, theColor);
+                price = entries[j].getProductPrice();
+                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
+
+                nameText = (Text) smallText.clone();
+                  nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
+                bookedText = (Text) smallText.clone();
+                  bookedText.setText(Integer.toString(entries[j].getCount()));
+                amountText = (Text) smallText.clone();
+                  amountText.setText(Integer.toString(iEntryCount));
+
+                nameText.setFontColor(super.BLACK);
+                bookedText.setFontColor(super.BLACK);
+                amountText.setFontColor(super.BLACK);
+
+                entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
+                entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
+                map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
+
+                correctionTable.add(nameText,2,corrRow);
+                correctionTable.add(bookedText,3,corrRow);
+                correctionTable.add(amountText,4,corrRow);
+                correctionTable.setAlignment(2,corrRow, "LEFT");
+              }
+
+
+            }catch (FinderException fe) {
+              fe.printStackTrace(System.err);
+            }catch (IDORelationshipException re) {
+              re.printStackTrace(System.err);
+            }
+
+        }
       }
-      for (int i = 0; i < bookings.length; i++) {
-	  ++corrRow;
-	  correctionTable.setRowColor(corrRow,super.backgroundColor);
-	  correctionTable.setAlignment(2,corrRow,"center");
-	  ibookings = bookings[i].getTotalCount();
-	  attendance = bookings[i].getAttendance();
-	  amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
-
-	  totalBookings += ibookings;
-	  if (attendance != -1000)
-	  totalAttendance += attendance;
-	  totalAmount += amount;
-
-	  nameText = (Text) smallText.clone();
-	    nameText.setText(bookings[i].getName());
-
-	  bookedText = (Text) smallText.clone();
-	    bookedText.setText(Integer.toString(ibookings));
-
-	  attTextBox = (TextInput) textBoxToClone.clone();
-	    attTextBox.setSize(3);
-	  if (attendance != -1000) {
-	    attTextBox.setContent(Integer.toString(attendance));
-	  }
-	  amountText = (Text) smallText.clone();
-	    amountText.setText(Integer.toString((int) amount));
-
-	  nameText.setFontColor(super.BLACK);
-	  bookedText.setFontColor(super.BLACK);
-	  amountText.setFontColor(super.BLACK);
-
-	  correctionTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,corrRow);
-	  correctionTable.add(new HiddenInput("payment_type",Integer.toString(bookings[i].getPaymentTypeId())),1,corrRow);
-
-	  correctionTable.add(nameText,1,corrRow);
-
-	  correctionTable.add(bookedText,3,corrRow);
-	  correctionTable.add(attTextBox,4,corrRow);
-	  correctionTable.add(amountText,5,corrRow);
-	  correctionTable.setRowColor(corrRow, theColor);
-
-	  if (closerLook)
-	  try {
-	    entries = bookings[i].getBookingEntries();
-	    coll = bookings[i].getTravelAddresses();
-	    bookingAddresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
-//            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
-	    if (bookingAddresses.length > 0) {
-	      addressText = (Text) smallText.clone();
-	      addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-	      addressText.setFontColor(super.BLACK);
-	      correctionTable.add(addressText, 1, corrRow+1);
-	      correctionTable.setAlignment(1,corrRow+1, "right");
-	    }
-	    for (int j = 0; j < entries.length; j++) {
-	      ++corrRow;
-	      correctionTable.setRowColor(corrRow, theColor);
-	      price = entries[j].getProductPrice();
-	      iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
-
-	      nameText = (Text) smallText.clone();
-		nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
-	      bookedText = (Text) smallText.clone();
-		bookedText.setText(Integer.toString(entries[j].getCount()));
-	      amountText = (Text) smallText.clone();
-		amountText.setText(Integer.toString(iEntryCount));
-
-	      nameText.setFontColor(super.BLACK);
-	      bookedText.setFontColor(super.BLACK);
-	      amountText.setFontColor(super.BLACK);
-
-	      entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
-	      entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
-	      map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
-
-	      correctionTable.add(nameText,2,corrRow);
-	      correctionTable.add(bookedText,3,corrRow);
-	      correctionTable.add(amountText,4,corrRow);
-	      correctionTable.setAlignment(2,corrRow, "LEFT");
-	    }
-
-
-	  }catch (FinderException fe) {
-	    fe.printStackTrace(System.err);
-	  }catch (IDORelationshipException re) {
-	    re.printStackTrace(System.err);
-	  }
-
-      }
+      correctionTable.setWidth(2,twoWidth);
+      correctionTable.setWidth(3,threeWidth);
+      correctionTable.setWidth(4,fourWidth);
+      correctionTable.setWidth(5,fiveWidth);
       correctionTable.setColumnAlignment(3,"center");
       correctionTable.setColumnAlignment(4,"center");
       correctionTable.setColumnAlignment(5,"center");
@@ -582,10 +615,11 @@ public class DailyReport extends TravelManager implements Report{
 	  totalTable.setRowColor(tRow, theColor);
 
 	  if (closerLook)
-	  for (int k = 0; k < addresses.length; k++) {
-	      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), addresses[k].getID(), false);
+	  for (int k = 0; k < addressesSize; k++) {
+            address = (TravelAddress) addresses.get(k);
+	      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), address.getID(), false);
 	      addressText = (Text) smallText.clone();
-		addressText.setText(addresses[k].getName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
+		addressText.setText(address.getName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
 		addressText.setFontColor(super.BLACK);
 	      totalTable.add(addressText, 1, tRow+1);
 	      totalTable.setAlignment(1,tRow+1,"right");
@@ -594,13 +628,13 @@ public class DailyReport extends TravelManager implements Report{
 	      try {
 		++tRow;
 		totalTable.setRowColor(tRow, theColor);
-		many = ((Integer) map.get(prices[i].getPriceCategoryIDInteger()+"_"+addresses[k].getID())).intValue();
+		many = ((Integer) map.get(prices[i].getPriceCategoryIDInteger()+"_"+address.getID())).intValue();
 		nameText = (Text) smallText.clone();
 		  nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE+prices[i].getPriceCategory().getName());
 		bookedText = (Text) smallText.clone();
 		  bookedText.setText(Integer.toString(many));
 		amountText = (Text) smallText.clone();
-		  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(prices[i].getID(), product.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), addresses[k].getID()))));
+		  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(prices[i].getID(), product.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), address.getID()))));
 
 		nameText.setFontColor(super.BLACK);
 		bookedText.setFontColor(super.BLACK);

@@ -264,8 +264,8 @@ public class AdditionalBooking extends TravelWindow {
         /**
          * @todo Bæti við formið td. comment og annað
          */
-        int ownerId = -1;
-        int userId = -1;
+        int ownerId = super.userId;
+        int userId = super.userId;
 
         bookingId = getBooker(iwc).Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"",Booking.PAYMENT_TYPE_ID_CASH, userId, ownerId, Integer.parseInt(addressId), "");
 

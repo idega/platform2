@@ -708,17 +708,13 @@ public class ResellerManager {
   }
 
   public static Reseller getReseller(User user) throws SQLException{
-    System.err.println("Ressps 1");
     List groups = UserBusiness.getUserGroups(user);
-    System.err.println("Ressps 2");
     boolean isReseller = false;
     int number = 0;
 
     GenericGroup group;
     String type;
-    System.err.println("Ressps 3");
     for (int i = 0; i < groups.size(); i++) {
-    System.err.println("Ressps 4."+i);
       group = (GenericGroup) groups.get(i);
       type = group.getGroupType();
       if (type != null && type.equals(com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.GROUP_TYPE_VALUE)) {
@@ -727,17 +723,12 @@ public class ResellerManager {
         break;
       }
     }
-    System.err.println("Ressps 5");
 
     if (isReseller) {
-      System.err.println("Ressps 6");
       Reseller[] resellers = com.idega.block.trade.stockroom.data.ResellerBMPBean.getValidResellers();
-      System.err.println("Ressps 7");
       GenericGroup rGroup = (GenericGroup) groups.get(number);
       String name;
-      System.err.println("Ressps 8");
       for (int i = 0; i < resellers.length; i++) {
-      System.err.println("Ressps 9."+i);
         if ((resellers[i].getName()+"_"+resellers[i].getID()).indexOf(rGroup.getName()) != -1) {
           return resellers[i];
         }

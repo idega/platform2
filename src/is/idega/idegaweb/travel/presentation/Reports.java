@@ -59,15 +59,19 @@ public class Reports extends TravelManager {
 
     add(Text.BREAK);
 
-    if (_action == null) {
-      reportList(iwc);
+    if (super.isLoggedOn(iwc)) {
+      if (_action == null) {
+        reportList(iwc);
+      }else {
+        Form form = new Form();
+          form.maintainParameter(this.ACTION);
+        form.add(topTable(iwc));
+        form.add(report(iwc));
+        form.add(Text.BREAK);
+        add(form);
+      }
     }else {
-      Form form = new Form();
-        form.maintainParameter(this.ACTION);
-      form.add(topTable(iwc));
-      form.add(report(iwc));
-      form.add(Text.BREAK);
-      add(form);
+      add(super.getLoggedOffTable(iwc));
     }
   }
 

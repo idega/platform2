@@ -120,8 +120,9 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
   }
 
   public int getID() {
-    return ((Integer) getPrimaryKey()).intValue();
+    return new Integer(getPrimaryKey().toString()).intValue();
   }
+
   public void removeAllHotelPickupPlaces() throws IDORemoveRelationshipException{
     this.idoRemoveFrom(HotelPickupPlace.class);
   }
