@@ -48,9 +48,6 @@ public class MessageListener implements Runnable{
       t.setPriority(t.MIN_PRIORITY);
       t.start();
     }
-
-    run();
-
   }
 
   public void stop(){
