@@ -9,7 +9,6 @@ import javax.ejb.FinderException;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolDepartment;
 import com.idega.block.school.data.SchoolManagementType;
-
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
@@ -394,25 +393,18 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 			int phCounter = 1;
 			int phMobCounter = 1;
 			while (pIter.hasNext()) {
-				try {
-					uPhone = pHome.findByPrimaryKey(pIter.next());	
-					
-					if (uPhone.getPhoneTypeId() != mobilePhoneType){
-						++row;
-						if (phCounter == 1) {
-							table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
-						}
-						if (phCounter >= 2) {
-							table.add(getText(uPhone.getNumber()), 1, row);
-						}	
-						phCounter++;
-					}
-					
-					
-				} catch (FinderException e) {
-					e.printStackTrace(System.err);
-				}
+				uPhone = (Phone) pIter.next();	
 				
+				if (uPhone.getPhoneTypeId() != mobilePhoneType){
+					++row;
+					if (phCounter == 1) {
+						table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
+					}
+					if (phCounter >= 2) {
+						table.add(getText(uPhone.getNumber()), 1, row);
+					}	
+					phCounter++;
+				}
 			}
 			pIter = phones.iterator();	
 			while (pIter.hasNext()) {
