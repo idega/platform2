@@ -1,5 +1,5 @@
 /*
- * $Id: ExtendedDropdownDouble.java,v 1.4 2003/10/28 10:45:48 kjell Exp $
+ * $Id: ExtendedDropdownDouble.java,v 1.5 2003/10/29 10:18:38 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -231,7 +231,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
     	}
     }
 
-    public void addMenuElement(String value, String name, Map values, String dataMethodName)
+    public void addMenuElement(String value, String nameKey, Map values, String dataMethodName)
     {
         if(_primaryCollection == null)
             _primaryCollection = new Vector();
@@ -239,7 +239,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
             _secondaryMap = new HashMap();
 			_methodNameMap = new HashMap();
 		}
-        _primaryCollection.add(new SelectOption(name, value));
+        _primaryCollection.add(new SelectOption(localize(nameKey, nameKey), value));
         
         _secondaryMap.put(value, values);
 		_methodNameMap.put(value, dataMethodName);
