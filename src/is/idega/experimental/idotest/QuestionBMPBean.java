@@ -25,7 +25,7 @@ public class QuestionBMPBean extends GenericEntity implements Question{
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
-    this.addAttribute("text","The text",true,true,String.class);
+    this.addAttribute("my_text","The text",true,true,String.class);
     this.addManyToManyRelationShip(Response.class);
   }
 
@@ -35,17 +35,18 @@ public class QuestionBMPBean extends GenericEntity implements Question{
 
 
   public void setText(String text){
-    setColumn("text",text);
+    setColumn("my_text",text);
   }
 
   public String getText(){
-    return getStringColumnValue("text");
+    return getStringColumnValue("my_text");
   }
 
 
   public void insertStartData()throws SQLException{
     try{
-      QuestionHome home = (QuestionHome)IDOLookup.getHome(this.getClass());
+      //QuestionHome home = (QuestionHome)IDOLookup.getHome(this.getClass());
+      QuestionHome home = (QuestionHome)getEJBHome();
       Question quest = home.create();
       quest.setText("My First question");
       quest.store();
@@ -67,13 +68,18 @@ public class QuestionBMPBean extends GenericEntity implements Question{
     return null;
   }
 */
+
+	public boolean doInsertInCreate(){
+		return true;
+	}
+
   public Collection ejbFindAllQuestionsContaining(String string)throws FinderException{
-    String sql = "select * from "+this.getTableName()+" where text like '%"+string+"%'";
+    String sql = "select * from "+this.getTableName()+" where my_text like '%"+string+"%'";
     return super.idoFindIDsBySQL(sql);
   }
 
   public Collection ejbFindAllQuestionsNotContaining(String string)throws FinderException{
-    String sql = "select * from "+this.getTableName()+" where text not like '%"+string+"%'";
+    String sql = "select * from "+this.getTableName()+" where my_text not like '%"+string+"%'";
     return super.idoFindIDsBySQL(sql);
   }
 

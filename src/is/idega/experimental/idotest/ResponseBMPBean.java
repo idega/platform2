@@ -14,16 +14,10 @@ import java.sql.SQLException;
 
 public class ResponseBMPBean extends GenericEntity implements Response{
 
-  public ResponseBMPBean(){
-  }
-
-  public ResponseBMPBean(int id)throws SQLException{
-    super(id);
-  }
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
-    this.addAttribute("text","The text",true,true,String.class);
+    this.addAttribute("my_text","The text",true,true,String.class);
     this.addManyToManyRelationShip(Question.class);
   }
 
@@ -33,17 +27,18 @@ public class ResponseBMPBean extends GenericEntity implements Response{
 
 
   public void setResponse(String text){
-    setColumn("text",text);
+    setColumn("my_text",text);
   }
 
   public String getResponse(){
-    return getStringColumnValue("text");
+    return getStringColumnValue("my_text");
   }
 
 
   public void insertStartData()throws SQLException{
     try{
-      ResponseHome rhome = (ResponseHome)IDOLookup.getHome(this.getClass());
+      //ResponseHome rhome = (ResponseHome)IDOLookup.getHome(this.getClass());
+      ResponseHome rhome = (ResponseHome)getEJBHome();
       Response resp = rhome.create();
       resp.setResponse("My First response");
       resp.store();
@@ -53,5 +48,9 @@ public class ResponseBMPBean extends GenericEntity implements Response{
     }
   }
 
+
+	public boolean doInsertInCreate(){
+		return true;
+	}
 
 }
