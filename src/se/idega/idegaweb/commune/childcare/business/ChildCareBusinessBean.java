@@ -2265,14 +2265,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 			
-			createNewStudent = false;
 			boolean createNew = false;
 			if (oldCareTime != null && !oldCareTime.equals(childCareTime)) {
 				oldContractFileID = -1;
 			}
 			if (oldSchoolTypeID != -1 && schoolTypeId != -1 && oldSchoolTypeID != schoolTypeId) {
 				oldContractFileID = -1;
-				createNewStudent = true;
 			}
 			if (oldContractFileID == -1) {
 				createNew = true;
