@@ -190,6 +190,23 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 		return super.idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindAllBySchoolAndSchoolCategory(School school, SchoolCategory schoolCategory, boolean showSelectable) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(getEntityName()).append(" y, sch_school_sch_school_year sy");
+		sql.appendWhereEquals(SCHOOL_CATEGORY, schoolCategory);
+		if (showSelectable) {
+			sql.appendAnd().appendLeftParenthesis().append(IS_SELECTABLE).appendEqualSign().append(showSelectable);
+			sql.appendOr().append(IS_SELECTABLE).appendIsNull().appendRightParenthesis();
+		}
+		else {
+			sql.appendAndEquals(IS_SELECTABLE, showSelectable);
+		}
+		sql.appendAndEquals("y." + getIDColumnName(), "sy." + getIDColumnName());
+		sql.appendAndEquals("sy.sch_school_id", school);
+		sql.appendOrderBy(getIDColumnName());
+		return super.idoFindPKsByQuery(sql);
+	}
+
 	/**
 	 * @deprecated
 	 */
@@ -217,6 +234,10 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 
 	public Integer ejbFindByYearName(SchoolType schoolType, String name) throws javax.ejb.FinderException {
 		return (Integer) super.idoFindOnePKBySQL("select * from " + getEntityName() + " where " + NAME + " like '" + name + "' AND " + SCHOOL_TYPE + " = '" + schoolType.getPrimaryKey().toString() + "'");
+	}
+
+	public Integer ejbFindByYearName(SchoolCategory schoolCategory, String name) throws javax.ejb.FinderException {
+		return (Integer) super.idoFindOnePKBySQL("select * from " + getEntityName() + " where " + NAME + " like '" + name + "' AND " + SCHOOL_CATEGORY + " = '" + schoolCategory.getPrimaryKey().toString() + "'");
 	}
 
 	public Collection ejbFindBySchoolCategory(String schoolCategory) throws javax.ejb.FinderException {
