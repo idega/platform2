@@ -8,6 +8,7 @@ import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 
 /**
  * Title:        IW Trade
@@ -80,9 +81,14 @@ public class StockroomBusiness implements SupplyManager {
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      int suppId = getUserSupplierId(LoginBusiness.getUser(modinfo));
-      LoginBusiness.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), modinfo);
-      return suppId;
+      User us = LoginBusiness.getUser(modinfo);
+      if(us != null){
+        int suppId = getUserSupplierId(us);
+        LoginBusiness.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), modinfo);
+        return suppId;
+      } else{
+        throw new NotLoggedOnException();
+      }
     }
   }
 
