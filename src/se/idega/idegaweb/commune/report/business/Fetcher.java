@@ -8,10 +8,10 @@ import java.util.*;
  * Fetches data dynamically from the IdegaWeb database using a jdbc connection
  * retreived from IdegaWeb's {@link com.idega.util.database.ConnectionBroker}.
  * <p>
- * Last modified: $Date: 2003/03/24 10:57:35 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/19 08:52:35 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see java.sql
  * @see se.idega.idegaweb.commune.report.business.Fetcher.FetcherException
  */
@@ -120,10 +120,10 @@ public class Fetcher {
      * not to throw any {@link java.sql.SQLException} to clients, since they are
      * at wrong abstraction level.
      * <p>
-     * Last modified: $Date: 2003/03/24 10:57:35 $ by $Author: staffan $
+     * Last modified: $Date: 2003/05/19 08:52:35 $ by $Author: laddi $
      *
      * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
-     * @version $Revision: 1.3 $
+     * @version $Revision: 1.4 $
      */
     public static class FetchException extends Exception {
         public FetchException (final String message) {
@@ -136,7 +136,7 @@ public class Fetcher {
         final private String [] warnings;
         final private String [] columnLabels;
 
-        private FetchResult (final String [][] data, final String [] warnings,
+        FetchResult (final String [][] data, final String [] warnings,
                              final String [] columnLabels) {
             this.data = data;
             this.warnings = warnings;
