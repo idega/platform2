@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.27 2001/08/08 15:27:24 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.28 2001/08/09 12:05:19 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -489,12 +489,12 @@ public class GolfMainJSPModulePage extends MainPage {
 
           rightTable.setColumnAlignment(1, "center");
           //rightTable.add(getProGolfers(),1,1);
-          rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
-          rightTable.add(getPollVoter(),1,5);
+          //rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
+          rightTable.add(getPollVoter(),1,3);//1,5
 
-          rightTable.add(getGSIAssociates(),1,7);
-          rightTable.add(getGolfLinks(),1,9);
-          rightTable.add(getYellowLine(),1,11);
+          rightTable.add(getGSIAssociates(),1,5);//1,7
+          rightTable.add(getGolfLinks(),1,7);//1,9
+          rightTable.add(getYellowLine(),1,9);//1,11
 
 
           return rightTable;
