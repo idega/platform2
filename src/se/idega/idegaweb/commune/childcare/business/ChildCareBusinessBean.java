@@ -115,14 +115,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String AFTER_SCHOOL_CASE_CODE_KEY = "MBFRITV";
 
 	private final static String PROPERTY_CONTRACT_CATEGORY = "childcare_contract_category";
-	
+
 	private final static String STATUS_NOT_PROCESSED = String.valueOf(STATUS_SENT_IN);
-	private final static String[] STATUS_IN_QUEUE = {
-					String.valueOf(STATUS_SENT_IN), 
-					String.valueOf(STATUS_PRIORITY), 
-					String.valueOf(STATUS_ACCEPTED), 
-					String.valueOf(STATUS_PARENTS_ACCEPT), 
-					String.valueOf(STATUS_CONTRACT)};
+	private final static String[] STATUS_IN_QUEUE = { String.valueOf(STATUS_SENT_IN), String.valueOf(STATUS_PRIORITY), String.valueOf(STATUS_ACCEPTED), String.valueOf(STATUS_PARENTS_ACCEPT), String.valueOf(STATUS_CONTRACT)};
 
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
@@ -192,7 +187,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public ChildCareApplication getNonActiveApplication(int childID, int choiceNumber) {
 		try {
-			String[] caseStatus = {getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
+			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
 			return getChildCareApplicationHome().findApplicationByChildAndChoiceNumberInStatus(childID, choiceNumber, caseStatus);
 		}
 		catch (FinderException fe) {
@@ -221,8 +216,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean hasApplications(int childID) {
 		try {
 			int applications = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID);
-			if (applications > 0)
-				return true;
+			if (applications > 0) return true;
 			return false;
 		}
 		catch (IDOException e) {
@@ -233,8 +227,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis, int threeMonthsPriority, int oneYearPriority, int providerCapacity) {
 		try {
 			ChildCarePrognosis prognosis = getPrognosis(providerID);
-			if (prognosis == null)
-				prognosis = getChildCarePrognosisHome().create();
+			if (prognosis == null) prognosis = getChildCarePrognosisHome().create();
 
 			prognosis.setProviderID(providerID);
 			prognosis.setThreeMonthsPrognosis(threeMonthsPrognosis);
@@ -287,8 +280,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean getHasUnexportedChoices(int childID) {
 		try {
 			int choices = getChildCareQueueHome().getNumberOfNotExported(childID);
-			if (choices > 0)
-				return true;
+			if (choices > 0) return true;
 			return false;
 		}
 		catch (IDOException e) {
@@ -320,7 +312,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareApplication appl = null;
 			User child = getUserBusiness().getUser(childId);
 			IWTimestamp now;
-			String[] caseStatus = {getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
+			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
 
 			try {
 				IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
@@ -358,8 +350,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 								appl = getChildCareApplicationHome().create();
 							}
 						}
-						if (user != null)
-							appl.setOwner(user);
+						if (user != null) appl.setOwner(user);
 						appl.setProviderId(providerID);
 						appl.setFromDate(fromDate.getDate());
 						if (message != null)
@@ -383,12 +374,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if (hasPriority != null)
 							appl.setHasQueuePriority(hasPriority[i]);
 						else {
-							if (hasQueuePriority(child, providerID))
-								appl.setHasQueuePriority(true);
+							if (hasQueuePriority(child, providerID)) appl.setHasQueuePriority(true);
 						}
 
-						if (checkId != -1)
-							appl.setCheckId(checkId);
+						if (checkId != -1) appl.setCheckId(checkId);
 						if (freetimeApplication)
 							changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
 						else {
@@ -421,8 +410,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		SchoolClassMember member = null;
 		try {
 			member = getLatestPlacement(((Integer) child.getPrimaryKey()).intValue(), providerID);
-			if (member != null && member.getNeedsSpecialAttention())
-				return true;
+			if (member != null && member.getNeedsSpecialAttention()) return true;
 		}
 		catch (FinderException e) {
 			member = null;
@@ -448,13 +436,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							}
 
 							if (member != null) {
-								if (member.getNeedsSpecialAttention())
-									return true;
+								if (member.getNeedsSpecialAttention()) return true;
 
 								if (member.getRemovedDate() != null) {
 									IWTimestamp removed = new IWTimestamp(member.getRemovedDate());
-									if (removed.isLaterThan(stamp))
-										return true;
+									if (removed.isLaterThan(stamp)) return true;
 								}
 								else
 									return true;
@@ -472,18 +458,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		int oldProviderID = application.getProviderId();
 		IWTimestamp oldFromDate = new IWTimestamp();
 		IWTimestamp oldQueueDate = new IWTimestamp();
-		if (application.getFromDate() != null)
-			oldFromDate = new IWTimestamp(application.getFromDate());
-		if (application.getQueueDate() != null)
-			oldQueueDate = new IWTimestamp(application.getQueueDate());
+		if (application.getFromDate() != null) oldFromDate = new IWTimestamp(application.getFromDate());
+		if (application.getQueueDate() != null) oldQueueDate = new IWTimestamp(application.getQueueDate());
 
 		if (oldProviderID != newProviderID)
 			return true;
 		else {
-			if (!oldFromDate.equals(newFromDate))
-				return true;
-			if (!oldQueueDate.equals(newQueueDate))
-				return true;
+			if (!oldFromDate.equals(newFromDate)) return true;
+			if (!oldQueueDate.equals(newQueueDate)) return true;
 			return false;
 		}
 	}
@@ -554,8 +536,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			Collection users = getSchoolBusiness().getSchoolUsers(application.getProvider());
 			User child = application.getChild();
-			Object[] arguments = {child.getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID()};
-	
+			Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID()};
+
 			if (users != null) {
 				MessageBusiness messageBiz = getMessageBusiness();
 				Iterator it = users.iterator();
@@ -581,15 +563,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
 		sendMessageToParents(application, subject, body, false);
 	}
-	
+
 	private void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {
 		sendMessageToParents(application, subject, body, body, alwaysSendLetter);
 	}
-	
+
 	private void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter) {
 		try {
 			User child = application.getChild();
-			Object[] arguments = {child.getNameLastFirst(true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "" };
+			Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : ""};
 
 			User appParent = application.getOwner();
 			if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
@@ -636,8 +618,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				while (iter.hasNext()) {
 					order++;
 					ChildCareQueue element = (ChildCareQueue) iter.next();
-					if (((Integer) element.getPrimaryKey()).intValue() == ((Integer) queue.getPrimaryKey()).intValue())
-						return order;
+					if (((Integer) element.getPrimaryKey()).intValue() == ((Integer) queue.getPrimaryKey()).intValue()) return order;
 				}
 			}
 			return ++order;
@@ -654,7 +635,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getApplicationsByProviderAndApplicationStatus(int providerID, String applicationStatus) {
 		try {
-			String[] caseStatus = {applicationStatus};
+			String[] caseStatus = { applicationStatus};
 			return getChildCareApplicationHome().findApplicationsByProviderAndApplicationStatus(providerID, caseStatus);
 		}
 		catch (FinderException e) {
@@ -665,7 +646,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getInactiveApplicationsByProvider(int providerID) {
 		try {
-			String[] caseStatus = {String.valueOf(getStatusCancelled()), String.valueOf(getStatusDenied()), String.valueOf(getStatusNotAnswered()), String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut())};
+			String[] caseStatus = { String.valueOf(getStatusCancelled()), String.valueOf(getStatusDenied()), String.valueOf(getStatusNotAnswered()), String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut())};
 			return getChildCareApplicationHome().findApplicationsByProviderAndApplicationStatus(providerID, caseStatus);
 		}
 		catch (FinderException e) {
@@ -689,10 +670,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
-	
+
 	public int getNumberOfUnhandledApplicationsByProvider(int providerID) {
 		try {
-			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusPending().getStatus() };
+			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusPending().getStatus()};
 			return getChildCareApplicationHome().getNumberOfApplicationsByStatus(providerID, caseStatus);
 		}
 		catch (IDOException ie) {
@@ -702,7 +683,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getNumberOfApplicationsByProvider(int providerID) {
 		try {
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
 
 			return getChildCareApplicationHome().getNumberOfApplications(providerID, caseStatus);
 		}
@@ -713,7 +694,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getNumberOfApplicationsByProvider(int providerID, int sortBy, Date fromDate, Date toDate) {
 		try {
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
 
 			return getChildCareApplicationHome().getNumberOfApplications(providerID, caseStatus, sortBy, fromDate, toDate);
 		}
@@ -730,7 +711,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return 0;
 		}
 	}
-	
+
 	public int getNumberOfFirstHandChoicesByProvider(int providerID, Date from, Date to) {
 		try {
 			return getChildCareApplicationHome().getQueueByProviderAndChoiceNumber(providerID, 1, STATUS_NOT_PROCESSED, from, to);
@@ -739,7 +720,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return 0;
 		}
 	}
-	
+
 	public int getNumberOfFirstHandNettoChoicesByProvider(int providerID, Date from, Date to) {
 		try {
 			return getChildCareApplicationHome().getNettoQueueByProviderAndChoiceNumber(providerID, 1, STATUS_NOT_PROCESSED, from, to);
@@ -748,7 +729,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return 0;
 		}
 	}
-	
+
 	public int getNumberOfFirstHandBruttoChoicesByProvider(int providerID, Date from, Date to) {
 		try {
 			return getChildCareApplicationHome().getBruttoQueueByProviderAndChoiceNumber(providerID, 1, STATUS_NOT_PROCESSED, from, to);
@@ -757,70 +738,70 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return 0;
 		}
 	}
-	
+
 	private Collection getApplicationsInQueueBeforeDate(int providerID, Date beforeDate) throws FinderException {
-		String[] caseStatus = { getCaseStatusOpen().getStatus() };
+		String[] caseStatus = { getCaseStatusOpen().getStatus()};
 		return getChildCareApplicationHome().findApplicationsByProviderAndBeforeDate(providerID, beforeDate, caseStatus);
 	}
-	
+
 	public Collection getPendingApplications(int childID) {
 		return getPendingApplications(childID, null);
 	}
-	
+
 	public Collection getPendingApplications(int childID, String caseCode) {
 		try {
-			String[] caseStatus = { getCaseStatusPending().getStatus() };
+			String[] caseStatus = { getCaseStatusPending().getStatus()};
 			return getChildCareApplicationHome().findApplicationByChildAndInStatus(childID, caseStatus, caseCode);
 		}
 		catch (FinderException fe) {
 			return null;
 		}
 	}
-	
+
 	public boolean hasPendingApplications(int childID, String caseCode) {
 		try {
-			String[] caseStatus = { getCaseStatusPending().getStatus() };
+			String[] caseStatus = { getCaseStatusPending().getStatus()};
 			return getChildCareApplicationHome().getNumberOfApplicationsForChildInStatus(childID, caseStatus, caseCode) > 0;
 		}
 		catch (IDOException ie) {
 			return false;
 		}
 	}
-	
+
 	public boolean cleanQueue(int providerID, User performer, IWUserContext iwuc) throws FinderException {
 		iwuc.setSessionAttribute(CLEAN_QUEUE_RUNNING, "TRUE");
 		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(PROPERTIES_CHILD_CARE);
 		int monthsInQueue = Integer.parseInt(properties.getProperty(PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
 		int daysToReply = Integer.parseInt(properties.getProperty(PROPERTY_DAYS_TO_REPLY, "30"));
-		
+
 		IWTimestamp beforeDate = new IWTimestamp();
 		beforeDate.addMonths(-monthsInQueue);
-		
+
 		IWTimestamp stamp = new IWTimestamp();
 		Collection applications = getApplicationsInQueueBeforeDate(providerID, beforeDate.getDate());
-		
+
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
-			
+
 			IWTimestamp lastReplyDate = new IWTimestamp();
 			lastReplyDate.addDays(daysToReply);
-			
+
 			String subject = getLocalizedString("child_care.clean_queue_subject", "Old application in queue");
 			String body = getLocalizedString("child_care.clean_queue_body", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
 			String letterBody = getLocalizedString("child_care.clean_queue_body_letter", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
-			
+
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication) iter.next();
 				if (!hasOutstandingOffers(application.getChildId(), application.getCode()) && hasActiveApplications(application.getChildId(), application.getCaseCode().getCode(), stamp.getDate())) {
 					application.setLastReplyDate(lastReplyDate.getDate());
 					changeCaseStatus(application, getCaseStatusPending().getStatus(), performer);
-					
+
 					sendMessageToParents(application, subject, body, letterBody, true);
 				}
 			}
-			
+
 			transaction.commit();
 			iwuc.removeSessionAttribute(CLEAN_QUEUE_RUNNING);
 			return true;
@@ -834,13 +815,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				ex.printStackTrace();
 			}
 		}
-		
+
 		iwuc.removeSessionAttribute(CLEAN_QUEUE_RUNNING);
 		return false;
 	}
-	
+
 	public boolean hasActiveApplications(int childID, String caseCode, Date activeDate) {
-		String[] caseStatus = { getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
+		String[] caseStatus = { getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
 		try {
 			return getChildCareApplicationHome().getNumberOfApplicationsByStatusAndActiveDate(childID, caseStatus, caseCode, activeDate) > 0;
 		}
@@ -848,10 +829,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 	}
-	
+
 	public boolean removePendingFromQueue(User performer) {
 		IWTimestamp lastReplyDate = new IWTimestamp();
-		String[] caseStatus = { getCaseStatusPending().getStatus() };
+		String[] caseStatus = { getCaseStatusPending().getStatus()};
 
 		Collection applications;
 		try {
@@ -860,27 +841,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (FinderException fe) {
 			return false;
 		}
-		
+
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
-			
+
 			String subject = getLocalizedString("child_care.application_timed_out_subject", "Old application removed from queue");
 			String body = getLocalizedString("child_care.application_timed_out_body", "Your application for {0}, {2},Êto {1}Êhas been removed from out queue after you failed to renew it. \n\nBest regards,\n{1}");
-			
+
 			String providerBody = getLocalizedString("child_care.application_timed_out_provider_body", "An application for {0}, {3},Êhas been removed from your queue because the parents didn't renew the application.");
-			
+
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication) iter.next();
 				application.setRejectionDate(lastReplyDate.getDate());
 				application.setApplicationStatus(getStatusTimedOut());
 				changeCaseStatus(application, getCaseStatusInactive().getStatus(), performer);
-				
+
 				sendMessageToParents(application, subject, body, true);
 				sendMessageToProvider(application, subject, providerBody);
 			}
-			
+
 			transaction.commit();
 			return true;
 		}
@@ -893,10 +874,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				ex.printStackTrace();
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public void renewApplication(int applicationID, User performer) {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
@@ -915,7 +896,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getNumberInQueue(ChildCareApplication application) {
 		try {
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
 			int numberInQueue = 0;
 			numberInQueue += getChildCareApplicationHome().getPositionInQueue(application.getQueueDate(), application.getProviderId(), caseStatus);
 			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), application.getQueueDate(), application.getProviderId(), caseStatus);
@@ -941,7 +922,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
 
 			return home.findAllCasesByProviderAndNotInStatus(providerId, caseStatus, numberOfEntries, startingEntry);
 		}
@@ -958,7 +939,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry, int sortBy, Date fromDate, Date toDate) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus()};
 
 			return home.findAllCasesByProviderAndNotInStatus(providerId, sortBy, fromDate, toDate, caseStatus, numberOfEntries, startingEntry);
 		}
@@ -975,7 +956,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection getUnhandledApplicationsByChild(int childID, String caseCode) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusPreliminary().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusPreliminary().getStatus()};
 
 			return home.findApplicationByChildAndNotInStatus(childID, caseStatus, caseCode);
 		}
@@ -994,7 +975,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public ChildCareApplication getUnhandledApplicationsByChildAndProvider(int childID, int providerID) throws FinderException {
-		String[] statuses = {String.valueOf(getStatusSentIn()), String.valueOf(getStatusPriority()), String.valueOf(getStatusAccepted()), String.valueOf(getStatusParentsAccept())};
+		String[] statuses = { String.valueOf(getStatusSentIn()), String.valueOf(getStatusPriority()), String.valueOf(getStatusAccepted()), String.valueOf(getStatusParentsAccept())};
 		return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
 	}
 
@@ -1071,8 +1052,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean isAfterSchoolApplication(Case application) {
-		if (application.getCode().equals(AFTER_SCHOOL_CASE_CODE_KEY))
-			return true;
+		if (application.getCode().equals(AFTER_SCHOOL_CASE_CODE_KEY)) return true;
 		return false;
 	}
 
@@ -1312,7 +1292,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				placement.setRegisterDate((new IWTimestamp(application.getFromDate())).getTimestamp());
 				if (application.getRejectionDate() != null) {
 					placement.setRemovedDate((new IWTimestamp(application.getRejectionDate())).getTimestamp());
-				} else {
+				}
+				else {
 					placement.setRegisterDate(null);
 				}
 				placement.store();
@@ -1411,7 +1392,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			caseBiz.changeCaseStatus(application, getCaseStatusGranted().getStatus(), user);
 
 			sendMessageToParents(application, subject, message);
-			
+
 			if (hasPendingApplications(application.getChildId(), application.getCaseCode().getCode())) {
 				Collection pending = getPendingApplications(application.getChildId(), application.getCaseCode().getCode());
 				Iterator iter = pending.iterator();
@@ -1770,9 +1751,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private boolean removeFromQueue(ChildCareApplication application, User user, int[] providerIDs) {
 		if (providerIDs != null) {
 			for (int i = 0; i < providerIDs.length; i++) {
-				if (application.getProviderId() == providerIDs[i]) {
-					return false;
-				}
+				if (application.getProviderId() == providerIDs[i]) { return false; }
 			}
 		}
 
@@ -1813,7 +1792,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public ChildCareApplication getAcceptedApplicationsByChild(int childID) {
 		try {
-			String caseStatus[] = {getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
+			String caseStatus[] = { getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
 
 			return getChildCareApplicationHome().findActiveApplicationByChildAndStatus(childID, caseStatus);
 		}
@@ -1825,7 +1804,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection getApplicationsByProvider(int providerId) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String caseStatus[] = {getCaseStatusOpen().getStatus(), getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
+			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
 
 			return home.findAllCasesByProviderStatus(providerId, caseStatus);
 		}
@@ -1842,7 +1821,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection getOpenAndGrantedApplicationsByProvider(int providerId) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String caseStatus[] = {getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
+			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
 
 			return home.findAllCasesByProviderStatus(providerId, caseStatus);
 		}
@@ -1858,7 +1837,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getAcceptedApplicationsByProvider(int providerID) {
 		try {
-			String[] caseStatus = {getCaseStatusReady().getStatus(), getCaseStatusCancelled().getStatus()};
+			String[] caseStatus = { getCaseStatusReady().getStatus(), getCaseStatusCancelled().getStatus()};
 			return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, caseStatus);
 		}
 		catch (FinderException e) {
@@ -1893,7 +1872,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
-	
+
 	public Collection getRejectedApplicationsByProvider(Integer providerID, String fromDateOfBirth, String toDateOfBirth, String fromDate, String toDate) throws FinderException {
 		if (fromDateOfBirth.length() == 0) {
 			fromDateOfBirth = null;
@@ -1907,7 +1886,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (toDate.length() == 0) {
 			toDate = null;
 		}
-		String applicationStatus[] = { String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut()), String.valueOf(getStatusDenied()) };
+		String applicationStatus[] = { String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut()), String.valueOf(getStatusDenied())};
 		return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, applicationStatus, fromDateOfBirth != null ? new IWTimestamp(fromDateOfBirth).getDate() : null, toDateOfBirth != null ? new IWTimestamp(toDateOfBirth).getDate() : null, fromDate != null ? new IWTimestamp(fromDate).getDate() : null, toDate != null ? new IWTimestamp(toDate).getDate() : null);
 	}
 
@@ -1947,8 +1926,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 
-			if (validFrom == null)
-				validFrom = new IWTimestamp(application.getFromDate());
+			if (validFrom == null) validFrom = new IWTimestamp(application.getFromDate());
 
 			if (application.getContractFileId() != -1) {
 				IWTimestamp terminationDate = new IWTimestamp(validFrom);
@@ -2077,8 +2055,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
 				done = assignContractToApplication(Integer.parseInt(id), -1, null, -1, user, locale, false);
-				if (!done)
-					return done;
+				if (!done) return done;
 			}
 		}
 
@@ -2116,8 +2093,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
 				done = assignApplication(Integer.parseInt(id), user, subject, body);
-				if (!done)
-					return done;
+				if (!done) return done;
 			}
 		}
 
@@ -2169,7 +2145,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getApplicationsForChild(int childId) {
 		try {
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusReady().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusReady().getStatus()};
 			return getChildCareApplicationHome().findApplicationByChildAndNotInStatus(childId, caseStatus);
 		}
 		catch (FinderException fe) {
@@ -2205,7 +2181,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getNumberOfApplicationsForChildNotInactive(int childID, String caseCode) {
 		try {
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus()};
 			return getChildCareApplicationHome().getNumberOfApplicationsForChildNotInStatus(childID, caseStatus, caseCode);
 		}
 		catch (IDOException ie) {
@@ -2215,14 +2191,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean hasOutstandingOffers(int childID, String caseCode) {
 		int numberOfOffers = getNumberOfApplicationsForChildByStatus(childID, getCaseStatusGranted().getStatus(), caseCode);
-		if (numberOfOffers > 0)
-			return true;
+		if (numberOfOffers > 0) return true;
 		return false;
 	}
 
 	public ChildCareApplication getApplicationForChildAndProvider(int childID, int providerID) {
 		try {
-			String[] statuses = {String.valueOf(getStatusReady())};
+			String[] statuses = { String.valueOf(getStatusReady())};
 			return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
 		}
 		catch (FinderException fe) {
@@ -2256,8 +2231,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				ChildCareApplication application = (ChildCareApplication) it.next();
 				try {
 					Check check = application.getCheck().getCheck();
-					if (check.getStatus().equals(statusRedeem))
-						it.remove();
+					if (check.getStatus().equals(statusRedeem)) it.remove();
 				}
 				catch (Exception e) {
 				}
@@ -2300,8 +2274,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean redeemApplication(String applicationId, User performer) {
 		ChildCareApplication appl = getApplicationByPrimaryKey(applicationId);
-		if (appl == null)
-			return false;
+		if (appl == null) return false;
 
 		CaseBusiness caseBiz;
 		try {
@@ -2331,7 +2304,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a schoolchoice");
 	}
-	
+
 	public Collection getPreSchoolTypes() {
 		ArrayList l = new ArrayList();
 		try {
@@ -2339,10 +2312,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			l.add(home.findByTypeKey("sch_type.school_type_forskola"));
 			l.add(home.findByTypeKey("sch_type.school_type_allman_forskola"));
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+		}
 		return l;
 	}
-	
+
 	public Collection getFamilyDayCareTypes() {
 		ArrayList l = new ArrayList();
 		try {
@@ -2350,10 +2324,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			l.add(home.findByTypeKey("sch_type.school_type_familjedaghem"));
 			l.add(home.findByTypeKey("sch_type.school_type_familjedaghem_allman_forskola"));
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+		}
 		return l;
 	}
-	
+
 	public Collection getFamilyAfterSchoolTypes() {
 		ArrayList l = new ArrayList();
 		try {
@@ -2361,7 +2336,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			l.add(home.findByTypeKey("sch_type.school_type_fam_fritids6"));
 			l.add(home.findByTypeKey("sch_type.school_type_fam_fritids7-9"));
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+		}
 		return l;
 	}
 
@@ -2391,8 +2367,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator iter = parents.iterator();
 			while (iter.hasNext()) {
 				User parent = (User) iter.next();
-				if (((Integer) parent.getPrimaryKey()).intValue() != ((Integer) parent1.getPrimaryKey()).intValue())
-					parent2 = parent;
+				if (((Integer) parent.getPrimaryKey()).intValue() != ((Integer) parent1.getPrimaryKey()).intValue()) parent2 = parent;
 			}
 		}
 
@@ -2415,8 +2390,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		String phoneString = "-";
-		if (phone != null)
-			phoneString = phone.getNumber();
+		if (phone != null) phoneString = phone.getNumber();
 
 		IWTimestamp stamp = new IWTimestamp();
 		XmlPeer peer = new XmlPeer(ElementTags.CHUNK, "created");
@@ -2526,10 +2500,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean hasBeenPlacedWithOtherProvider(int childID, int providerID) {
 		try {
-			String caseStatus[] = {getCaseStatusReady().getStatus()};
+			String caseStatus[] = { getCaseStatusReady().getStatus()};
 			int applications = getChildCareApplicationHome().getNumberOfPlacedApplications(childID, providerID, caseStatus);
-			if (applications > 0)
-				return true;
+			if (applications > 0) return true;
 			return false;
 		}
 		catch (IDOException e) {
@@ -2547,16 +2520,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			archive.setChildID(application.getChildId());
 			archive.setContractFileID(application.getContractFileId());
-			if (contractID != -1)
-				archive.setContractID(contractID);
+			if (contractID != -1) archive.setContractID(contractID);
 			archive.setApplication(application);
 			archive.setCreatedDate(new IWTimestamp().getDate());
 			archive.setValidFromDate(validFrom);
-			if (application.getRejectionDate() != null)
-				archive.setTerminatedDate(application.getRejectionDate());
+			if (application.getRejectionDate() != null) archive.setTerminatedDate(application.getRejectionDate());
 			archive.setCareTime(application.getCareTime());
-			if (employmentTypeID != -1)
-				archive.setEmploymentType(employmentTypeID);
+			if (employmentTypeID != -1) archive.setEmploymentType(employmentTypeID);
 			if (application.getApplicationStatus() != getStatusContract()) {
 				try {
 					SchoolClassMember student = getLatestPlacement(application.getChildId(), application.getProviderId());
@@ -2636,8 +2606,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.setFromDate(null);
 					application.store();
 
-					if (removePlacing)
-						deleteFromProvider(application.getChildId(), application.getProviderId());
+					if (removePlacing) deleteFromProvider(application.getChildId(), application.getProviderId());
 
 					Contract contract = archive.getContract();
 					if (contract != null) {
@@ -2670,7 +2639,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public String getLocalizedCaseDescription(Case theCase, Locale locale) {
 		ChildCareApplication choice = getChildCareApplicationInstance(theCase);
-		Object[] arguments = {choice.getChild().getFirstName(), String.valueOf(choice.getChoiceNumber()), choice.getProvider().getName()};
+		Object[] arguments = { choice.getChild().getFirstName(), String.valueOf(choice.getChoiceNumber()), choice.getProvider().getName()};
 
 		String desc = super.getLocalizedCaseDescription(theCase, locale);
 		return MessageFormat.format(desc, arguments);
@@ -2830,7 +2799,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getQueueTotalByProvider(int providerID) {
 		try {
-			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
+			String[] caseStatus = { getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
 			return getChildCareApplicationHome().getQueueSizeNotInStatus(providerID, caseStatus);
 		}
 		catch (IDOException e) {
@@ -2940,7 +2909,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public int getQueueTotalByArea(int areaID) {
 		try {
 
-			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
+			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
 
 			return getChildCareApplicationHome().getQueueSizeByAreaNotInStatus(areaID, caseStatus);
 		}
@@ -3054,8 +3023,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean hasActiveApplication(int childID, String caseCode) {
 		try {
 			int numberOfApplications = getChildCareApplicationHome().getNumberOfActiveApplications(childID, caseCode);
-			if (numberOfApplications > 0)
-				return true;
+			if (numberOfApplications > 0) return true;
 			return false;
 		}
 		catch (IDOException fe) {
@@ -3203,8 +3171,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				System.out.println("Handling entry " + ++a + " of " + size);
 				ChildCareApplication app = (ChildCareApplication) it.next();
 				User child = app.getChild();
-				if (!getCheckBusiness().hasGrantedCheck(child))
-					getCheckBusiness().createGrantedCheck(child);
+				if (!getCheckBusiness().hasGrantedCheck(child)) getCheckBusiness().createGrantedCheck(child);
 			}
 		}
 		catch (Exception e) {
@@ -3275,21 +3242,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						ChildCareQueue queue = (ChildCareQueue) iter.next();
 						if (a == 0) {
 							switch (queue.getQueueType()) {
-								case DBV_WITH_PLACE :
+								case DBV_WITH_PLACE:
 									length = 4;
 									break;
-								case DBV_WITHOUT_PLACE :
+								case DBV_WITHOUT_PLACE:
 									length = 5;
 									break;
-								case FS_WITH_PLACE :
+								case FS_WITH_PLACE:
 									length = 4;
 									break;
-								case FS_WITHOUT_PLACE :
+								case FS_WITHOUT_PLACE:
 									length = 5;
 									break;
 							}
-							if (choices.size() < length)
-								length = choices.size();
+							if (choices.size() < length) length = choices.size();
 
 							provider = new int[length];
 							dates = new String[length];
@@ -3309,8 +3275,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					}
 
 					boolean success = insertApplications(performer, provider, dates, null, childID, queueDates, hasPriority);
-					if (success)
-						exportQueue(choices);
+					if (success) exportQueue(choices);
 				}
 			}
 			else {
@@ -3328,8 +3293,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean canCancelContract(int applicationID) {
 		int numberOfContracts = getNumberOfContractsForApplication(applicationID);
 		if (numberOfContracts > 1) {
-			if (hasFutureContracts(applicationID))
-				return false;
+			if (hasFutureContracts(applicationID)) return false;
 		}
 		return true;
 	}
@@ -3345,8 +3309,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean hasFutureContracts(int applicationID) {
 		int numberOfContracts = getNumberOfFutureContracts(applicationID);
-		if (numberOfContracts > 0)
-			return true;
+		if (numberOfContracts > 0) return true;
 		return false;
 	}
 
@@ -3354,8 +3317,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			IWTimestamp stampNow = new IWTimestamp();
 			int numberOfContracts = getChildCareContractArchiveHome().getNumberOfActiveForApplication(applicationID, stampNow.getDate());
-			if (numberOfContracts > 0)
-				return true;
+			if (numberOfContracts > 0) return true;
 			return false;
 		}
 		catch (IDOException e) {
@@ -3376,8 +3338,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean hasUnansweredOffers(int childID, String caseCode) {
 		try {
 			int numberOfOffers = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, getCaseStatusGranted().getStatus(), caseCode);
-			if (numberOfOffers > 0)
-				return true;
+			if (numberOfOffers > 0) return true;
 			return false;
 		}
 		catch (IDOException e) {
@@ -3392,9 +3353,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator i = applications.iterator();
 			while (i.hasNext()) {
 				ChildCareApplication app = (ChildCareApplication) i.next();
-				if (app.isActive()) {
-					return app;
-				}
+				if (app.isActive()) { return app; }
 			}
 			return null;
 		}
@@ -3406,8 +3365,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean hasActivePlacementNotWithProvider(int childID, int providerID) {
 		try {
 			int numberOfPlacings = getChildCareContractArchiveHome().getNumberOfActiveNotWithProvider(childID, providerID);
-			if (numberOfPlacings > 0)
-				return true;
+			if (numberOfPlacings > 0) return true;
 			return false;
 		}
 		catch (IDOException e) {
@@ -3419,13 +3377,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			IWTimestamp stamp = new IWTimestamp();
 			int numberOfPlacings = getChildCareContractArchiveHome().getNumberOfTerminatedLaterNotWithProvider(childID, providerID, stamp.getDate());
-			if (numberOfPlacings > 0)
-				return true;
+			if (numberOfPlacings > 0) return true;
 			return false;
 		}
 		catch (IDOException e) {
 			return false;
 		}
+	}
+	
+	public boolean hasTerminationInFuture(int childID) {
+		return hasTerminationInFutureNotWithProvider(childID, -1);
+	}
+	
+	public Date getEarliestPossiblePlacementDate(int childID) {
+		ChildCareContract contract = getLatestTerminatedContract(childID);
+		if (contract != null) {
+			IWTimestamp stamp = new IWTimestamp(contract.getTerminatedDate());
+			stamp.addDays(1);
+			
+			return stamp.getDate();
+		}
+		return null;
 	}
 
 	public ChildCareContract getLatestTerminatedContract(int childID) {
@@ -3447,7 +3419,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate){
+	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
 			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
 		}
@@ -3487,11 +3459,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		if (!canCreateMultiple) {
 			try {
-				String[] status = {String.valueOf(getStatusCancelled()), String.valueOf(getStatusReady())};
+				String[] status = { String.valueOf(getStatusCancelled()), String.valueOf(getStatusReady())};
 				ChildCareApplication application = getChildCareApplicationHome().findApplicationByChildAndApplicationStatus(childID, status);
-				if (application != null) {
-					throw new AlreadyCreatedException();
-				}
+				if (application != null) { throw new AlreadyCreatedException(); }
 			}
 			catch (FinderException fe) {
 			}
@@ -3507,14 +3477,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				try {
 					application = getUnhandledApplicationsByChildAndProvider(childID, providerID);
 				}
-				catch (FinderException fe) { 
+				catch (FinderException fe) {
 					application = getChildCareApplicationHome().create();
 				}
 			}
 			else {
 				isUpdate = true;
-				if (application.getApplicationStatus() == getStatusContract())
-					finalize = true;
+				if (application.getApplicationStatus() == getStatusContract()) finalize = true;
 			}
 
 			User child = getUserBusiness().getUser(childID);
@@ -3522,10 +3491,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setChildId(childID);
 			application.setProviderId(providerID);
 			application.setFromDate(fromDate.getDate());
-			if (toDate != null)
-				application.setRejectionDate(toDate.getDate());
-			if (careTime != -1)
-				application.setCareTime(careTime);
+			if (toDate != null) application.setRejectionDate(toDate.getDate());
+			if (careTime != -1) application.setCareTime(careTime);
 			application.setOwner(parent);
 			application.setChoiceNumber(1);
 			application.setMessage(comment);
@@ -3535,29 +3502,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				check = getCheckBusiness().getGrantedCheck(checkID);
 			}
 			application.setCheck(check);
-			if (preSchool != null)
-				application.setPreSchool(preSchool);
-			if (lastReplyDate != null)
-				application.setOfferValidUntil(lastReplyDate.getDate());
+			if (preSchool != null) application.setPreSchool(preSchool);
+			if (lastReplyDate != null) application.setOfferValidUntil(lastReplyDate.getDate());
 			application.setHasExtraContract(extraContract);
-			if (extraContractMessage != null)
-				application.setExtraContractMessage(extraContractMessage);
+			if (extraContractMessage != null) application.setExtraContractMessage(extraContractMessage);
 			application.setHasExtraContractOther(extraContractOther);
-			if (extraContractOtherMessage != null)
-				application.setExtraContractMessageOther(extraContractOtherMessage);
+			if (extraContractOtherMessage != null) application.setExtraContractMessageOther(extraContractOtherMessage);
 
 			if (!isUpdate || finalize) {
 				Timestamp removedDate = null;
-				if (toDate != null)
-					removedDate = toDate.getTimestamp();
+				if (toDate != null) removedDate = toDate.getTimestamp();
 
 				if (groupID == -1) {
 					groupID = createDefaultGroup(providerID);
-					if (groupID == -1)
-						return false;
+					if (groupID == -1) return false;
 				}
-				if (schoolTypeID == -1)
-					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
+				if (schoolTypeID == -1) schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
 				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
 			}
 
@@ -3632,9 +3592,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}
 
-		if (group != null) {
-			return ((Integer) group.getPrimaryKey()).intValue();
-		}
+		if (group != null) { return ((Integer) group.getPrimaryKey()).intValue(); }
 		return -1;
 	}
 
@@ -3662,8 +3620,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				ChildCareApplication application = (ChildCareApplication) iter.next();
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 				Timestamp endDate = null;
-				if (application.getRejectionDate() != null)
-					endDate = new IWTimestamp(application.getRejectionDate()).getTimestamp();
+				if (application.getRejectionDate() != null) endDate = new IWTimestamp(application.getRejectionDate()).getTimestamp();
 
 				try {
 					Collection contracts = getChildCareContractArchiveHome().findByApplication(((Integer) application.getPrimaryKey()).intValue());
@@ -3694,7 +3651,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection findUnhandledApplicationsNotInCommune() {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			String caseStatus[] = {getCaseStatusOpen().getStatus(), getCaseStatusContract().getStatus()};
+			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusContract().getStatus()};
 			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 			int areaID = Integer.parseInt(iwb.getProperty(PROP_OUTSIDE_SCHOOL_AREA, "-1"));
 
@@ -3709,67 +3666,68 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
-	
+
 	public Collection findSentInAndRejectedApplicationsByArea(Object area, int monthsInQueue, int weeksToPlacementDate, boolean firstHandOnly, String caseCode) throws FinderException {
 		IWTimestamp months = new IWTimestamp();
 		months.addMonths(-monthsInQueue);
-		
+
 		IWTimestamp weeks = new IWTimestamp();
 		weeks.addWeeks(weeksToPlacementDate);
-		
-		String applicationStatus[] = {String.valueOf(getStatusSentIn())/*, String.valueOf(getStatusRejected())*/};
+
+		String applicationStatus[] = { String.valueOf(getStatusSentIn())/*
+																																		 * ,
+																																		 * String.valueOf(getStatusRejected())
+																																		 */};
 		return getChildCareApplicationHome().findAllByAreaAndApplicationStatus(area, applicationStatus, caseCode, months.getDate(), weeks.getDate(), firstHandOnly);
 	}
-	
+
 	public Collection findRejectedApplicationsByChild(int childID) throws FinderException {
-		String applicationStatus[] = {String.valueOf(getStatusRejected())};
+		String applicationStatus[] = { String.valueOf(getStatusRejected())};
 		return getChildCareApplicationHome().findApplicationsByChildAndApplicationStatus(childID, applicationStatus);
 	}
 
 	public String getStatusString(char status) {
 		if (status == getStatusCancelled()) {
-			return getLocalizedString("child_care.status_cancelled","Cancelled");
+			return getLocalizedString("child_care.status_cancelled", "Cancelled");
 		}
 		else if (status == getStatusContract()) {
-			return getLocalizedString("child_care.status_contract","Contract");
+			return getLocalizedString("child_care.status_contract", "Contract");
 		}
 		else if (status == getStatusRejected()) {
-			return getLocalizedString("child_care.status_rejected","Rejected");
+			return getLocalizedString("child_care.status_rejected", "Rejected");
 		}
 		else if (status == getStatusAccepted()) {
-			return getLocalizedString("child_care.status_accepted","Accepted");
+			return getLocalizedString("child_care.status_accepted", "Accepted");
 		}
 		else if (status == getStatusMoved()) {
-			return getLocalizedString("child_care.status_moved","Moved");
+			return getLocalizedString("child_care.status_moved", "Moved");
 		}
 		else if (status == getStatusSentIn()) {
-			return getLocalizedString("child_care.status_open","Open");
+			return getLocalizedString("child_care.status_open", "Open");
 		}
 		else if (status == getStatusParentsAccept()) {
-			return getLocalizedString("child_care.status_parents_accept","Parents accept");
+			return getLocalizedString("child_care.status_parents_accept", "Parents accept");
 		}
 		else if (status == getStatusReady()) {
-			return getLocalizedString("child_care.status_ready","Ready");
+			return getLocalizedString("child_care.status_ready", "Ready");
 		}
 		else if (status == getStatusNotAnswered()) {
-			return getLocalizedString("child_care.status_not_answered","Not answered");
+			return getLocalizedString("child_care.status_not_answered", "Not answered");
 		}
 		else if (status == getStatusPriority()) {
-			return getLocalizedString("child_care.status_priority","Priority");
+			return getLocalizedString("child_care.status_priority", "Priority");
 		}
 		else if (status == getStatusNewChoice()) {
-			return getLocalizedString("child_care.status_new_choice","New Choice");
+			return getLocalizedString("child_care.status_new_choice", "New Choice");
 		}
 		else if (status == STATUS_DELETED) {
 			return getLocalizedString("child_care.status_deleted", "Deleted");
 		}
-		else if (status == STATUS_TIMED_OUT) {
-			return getLocalizedString("child_care.status_timed_out", "Timed out");
-		}
-		
+		else if (status == STATUS_TIMED_OUT) { return getLocalizedString("child_care.status_timed_out", "Timed out"); }
+
 		return "";
 	}
-	
+
 	public boolean wasRejectedByParent(ChildCareApplication application) {
 		return hasStatusChange(application, getCaseStatusGranted().getStatus(), getCaseStatusInactive().getStatus());
 	}

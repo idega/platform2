@@ -122,6 +122,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public int getQueueTotalByProvider(int p0, java.sql.Date p1, java.sql.Date p2, boolean p3) throws java.rmi.RemoteException;
  public int getNettoQueueTotalByProvider(int p0, java.sql.Date p1, java.sql.Date p2, boolean p3) throws java.rmi.RemoteException;
  public int getBruttoQueueTotalByProvider(int p0, java.sql.Date p1, java.sql.Date p2, boolean p3) throws java.rmi.RemoteException;
+ public java.sql.Date getEarliestPossiblePlacementDate(int childID) throws java.rmi.RemoteException;
  public int getQueueTotalByProviderWithinMonths(int p0,int p1, boolean p2) throws java.rmi.RemoteException;
  public int getNettoQueueTotalByProviderWithinMonths(int p0,int p1, boolean p2) throws java.rmi.RemoteException;
  public int getBruttoQueueTotalByProviderWithinMonths(int p0,int p1, boolean p2) throws java.rmi.RemoteException;
@@ -170,6 +171,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean hasFutureContracts(int p0) throws java.rmi.RemoteException;
  public boolean hasOutstandingOffers(int p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasPendingApplications(int childID, String caseCode) throws java.rmi.RemoteException;
+ public boolean hasTerminationInFuture(int p0) throws java.rmi.RemoteException;
  public boolean hasTerminationInFutureNotWithProvider(int p0,int p1) throws java.rmi.RemoteException;
  public boolean hasUnansweredOffers(int p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean importChildToProvider(int p0,int p1,int p2,int p3,int p4,int p5,int p6,java.lang.String p7,com.idega.util.IWTimestamp p8,com.idega.util.IWTimestamp p9,java.util.Locale p10,com.idega.user.data.User p11,com.idega.user.data.User p12)throws se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException, java.rmi.RemoteException;
