@@ -4531,10 +4531,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							while (itor.hasNext()) {
 								WorkReportMember element = (WorkReportMember) itor.next();
 								if(userSet.contains(element.getPrimaryKey())) {
+									System.out.println("member " + element.getPrimaryKey() + " already listed, skipping");
 									continue;
-								} else {
-									userSet.add(element.getPrimaryKey());
 								}
+								System.out.println("listing member " + element.getPrimaryKey() + " - " + element.getName());
+								userSet.add(element.getPrimaryKey());
+								
 								if (birthYear != null && birthYear.intValue() > 0) {
 									if (birthYear.intValue() != element.getAge()) {
 										continue;
