@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.data;
 
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.data.IDORelationshipException;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import javax.ejb.*;
 
@@ -55,5 +57,6 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public void setTelephoneNumber(java.lang.String p0) throws java.rmi.RemoteException;
  public void setTotalCount(int p0) throws java.rmi.RemoteException;
  public void setUserId(int p0) throws java.rmi.RemoteException;
+ public Reseller getReseller() throws java.rmi.RemoteException, IDORelationshipException, FinderException;
  public void store() throws java.rmi.RemoteException;
 }

@@ -677,7 +677,7 @@ public class TourBookingForm extends TravelManager {
       }
 
       ProductPrice[] pPrices = {};
-      Timeframe tFrame = ProductBusiness.getTimeframe(_product, stamp);
+      Timeframe tFrame = ProductBusiness.getTimeframe(_product, stamp, addressId);
       if (tFrame != null) {
         pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, true);
       }
@@ -1310,7 +1310,7 @@ public class TourBookingForm extends TravelManager {
     int iAddressId = Integer.parseInt(sAddressId);
     Collection addressIds = getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(ProductBusiness.getProduct(_service.getID()), iAddressId);
 //    getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(ProductBusiness.getProduct(_service.getID(), ta));
-    Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
+    Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, iAddressId);
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     int iBookingId = -1;
 
@@ -1596,7 +1596,7 @@ public class TourBookingForm extends TravelManager {
       }
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
-      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
+      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, iAddressId);
       if (tFrame != null) {
         pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
       }

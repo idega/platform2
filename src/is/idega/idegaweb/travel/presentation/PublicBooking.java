@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.block.tpos.data.TPosMerchant;
 import javax.ejb.FinderException;
 import java.rmi.RemoteException;
 import com.idega.business.IBOLookup;
@@ -544,7 +545,7 @@ public class PublicBooking extends Block  {
 
 //    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
     ProductPrice[] pPrices = {};
-    Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
+    Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddressId));
     if (tFrame != null && depAddressId != null) {
       pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
     }
@@ -815,7 +816,7 @@ public class PublicBooking extends Block  {
         int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
 
         ProductPrice[] pPrices = {};
-        Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
+        Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddr));
         if (tFrame != null) {
           pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
         }
@@ -846,7 +847,22 @@ public class PublicBooking extends Block  {
         }else {
           try {
             System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
-            t = new com.idega.block.tpos.business.TPosClient(iwc);
+            TPosMerchant merchant = null;
+            try {
+              GeneralBooking gBookTemp = ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+              int productSupplierId = gBookTemp.getService().getProduct().getSupplierId();
+              Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
+              merchant = suppTemp.getTPosMerchant();
+              System.out.println("TPosMerchant found");
+            }catch (Exception e) {
+              System.out.println("TPosMerchant NOT found");
+              e.printStackTrace(System.err);
+            }
+            if (merchant == null) {
+              t = new com.idega.block.tpos.business.TPosClient(iwc);
+            }else {
+              t = new com.idega.block.tpos.business.TPosClient(iwc, merchant);
+            }
             heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
             //System.out.println("heimild = " + heimild);
             System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());
@@ -903,7 +919,7 @@ public class PublicBooking extends Block  {
                 break;
             }
 
-            throw new Exception(e.getErrorMessage());
+            throw e;
           }
 
           gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
@@ -915,6 +931,11 @@ public class PublicBooking extends Block  {
         }
 
 
+      }catch(com.idega.block.tpos.business.TPosException e) {
+        display.addToText(" ( "+e.getMessage()+" )");
+        e.printStackTrace(System.err);
+        gBooking.setIsValid(false);
+        gBooking.store();
       }catch (Exception e) {
         display.addToText(" ( "+e.getMessage()+" )");
         e.printStackTrace(System.err);

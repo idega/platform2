@@ -10,7 +10,7 @@ import com.idega.data.GenericEntity;
  * @version 1.0
  */
 
-public class TPosMerchantBMPBean extends GenericEntity{
+public class TPosMerchantBMPBean extends GenericEntity implements TPosMerchant{
 
   private static final String _EntityName = "TPOS_MERCHANT";
   private static final String _ColumnNameName = "MERCHANT_NAME";

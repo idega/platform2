@@ -626,5 +626,16 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   public void addToReseller(Reseller reseller) throws IDOAddRelationshipException {
     super.idoAddTo(reseller);
   }
+
+  public Reseller getReseller() throws RemoteException, IDORelationshipException, FinderException{
+    Collection coll = super.idoGetRelatedEntities(Reseller.class);
+    if (coll != null && coll.size() > 0) {
+      Iterator iter = coll.iterator();
+      return ((ResellerHome) IDOLookup.getHome(Reseller.class)).findByPrimaryKey(iter.next());
+    }else {
+      throw new FinderException("Booking not connected to any reseller");
+    }
+  }
+
 }
 
