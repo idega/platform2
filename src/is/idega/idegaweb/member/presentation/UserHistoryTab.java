@@ -116,14 +116,16 @@ public class UserHistoryTab extends UserTab {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		User user = getUser();
+		User viewedUser = getUser();
+		User viewingUser = iwc.getCurrentUser();
 		boolean isAdmin = iwc.isSuperAdmin();
-		boolean isSameUser = iwc.getUser().getPrimaryKey().equals(user.getPrimaryKey());
+		boolean isSameUser = viewedUser.getPrimaryKey().equals(viewingUser);
 		boolean checkNeeded = !(isAdmin || isSameUser);
+		System.out.println("User " + viewingUser.getName() + " is viewing user " + viewedUser.getName() + ", checkNeede=" + checkNeeded);
 		
 		Collection groupRelations = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(getUserId(),"GROUP_PARENT");
 		if(checkNeeded) {
-			groupRelations = getFilteredGroupRelations(iwc, Collections.unmodifiableCollection(groupRelations), user);
+			groupRelations = getFilteredGroupRelations(iwc, Collections.unmodifiableCollection(groupRelations), viewingUser);
 		}
 		if (groupRelations != null) {
 			iwc.setSessionAttribute(
@@ -137,7 +139,7 @@ public class UserHistoryTab extends UserTab {
 		
 		Collection statuses = ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(getUserId());
 		if(checkNeeded) {
-			statuses = getFilteredStatuses(iwc, Collections.unmodifiableCollection(statuses), user);
+			statuses = getFilteredStatuses(iwc, Collections.unmodifiableCollection(statuses), viewingUser);
 		}
 		if (statuses != null) {
 			iwc.setSessionAttribute(
