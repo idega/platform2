@@ -134,7 +134,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return idoFindPKsByQuery(findBySchoolCategoryAndSchoolAndPeriodAndStatusSQL(school, schoolCategory, period, status));
 	}	
 	
-	private IDOQuery findBySchoolCategoryAndSchoolAndPeriodAndStatusSQL(School school, SchoolCategory schoolCategory, TimePeriod period, String status) throws FinderException {
+	private IDOQuery findBySchoolCategoryAndSchoolAndPeriodAndStatusSQL(School school, SchoolCategory schoolCategory, TimePeriod period, String status) {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom (this);
 		sql.appendWhereEquals (COLUMN_SCHOOL_ID, school);
