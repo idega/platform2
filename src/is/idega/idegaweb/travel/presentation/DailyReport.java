@@ -148,15 +148,24 @@ public class DailyReport extends TravelManager {
       Table topTable = getTopTable(iwc);
         form.add(topTable);
 
+
       if (this.viewAllProducts) {
         if (products != null) {
-          Table table = getFullReport(iwc);
+/*          UserBookingReporter ubr = new UserBookingReporter();
+            form.add("TEMP<br>");
+            form.add(ubr.getReport(iwc, this.supplier, this.stamp));
+            form.add("<br>/TEMP<br><br>");
+*/          Table table = getFullReport(iwc);
           form.add(Text.BREAK);
           form.add(table);
         }
       }else {
         if (product != null) {
-            form.add(getContentHeader(iwc));
+/*            UserBookingReporter ubr = new UserBookingReporter();
+              form.add("TEMP<br>");
+              form.add(ubr.getReport(iwc, product, this.stamp));
+              form.add("<br>/TEMP<br><br>");
+*/            form.add(getContentHeader(iwc));
           Table table = getContentTable(iwc);
             form.add(table);
 
@@ -247,7 +256,6 @@ public class DailyReport extends TravelManager {
       }else {
         bookingReport.setSelected();
       }
-
 
 
       topTable.setAlignment(1,1, "right");
@@ -1011,6 +1019,12 @@ public class DailyReport extends TravelManager {
         pTimeTxt = (Text) super.theText.clone();
         pCountTxt = (Text) super.theText.clone();
         pPriceTxt = (Text) super.theText.clone();
+
+        pNumberTxt.setFontColor(super.BLACK);
+        pNameTxt.setFontColor(super.BLACK);
+        pTimeTxt.setFontColor(super.BLACK);
+        pCountTxt.setFontColor(super.BLACK);
+        pPriceTxt.setFontColor(super.BLACK);
 
         pNumberTxt.setText(prod.getNumber());
         pNameTxt.setText(ProductBusiness.getProductName(prod, super._localeId));

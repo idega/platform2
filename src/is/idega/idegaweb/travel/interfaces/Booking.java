@@ -26,6 +26,7 @@ public interface Booking {
   public static final int PAYMENT_TYPE_ID_CREDIT_CARD = 1;
   public static final int PAYMENT_TYPE_ID_CASH = 2;
   public static final int PAYMENT_TYPE_ID_VOUCHER = 3;
+  public static final int PAYMENT_TYPE_ID_ACCOUNT = 4;
 
   public String getName();
   public void setName(String name);

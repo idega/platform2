@@ -338,6 +338,9 @@ public class Booker {
   }
 
   public static Booking[] getBookings(List products, idegaTimestamp stamp) {
+    return getBookings(products, stamp, null);
+  }
+  public static Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
     if (products != null) {
       int[] ids = new int[products.size()];
       Product prod;
@@ -345,7 +348,7 @@ public class Booker {
         prod = (Product) products.get(i);
         ids[i] = prod.getID();
       }
-      return getBookings(ids, stamp, new int[]{});
+      return getBookings(ids, fromStamp, toStamp,new int[]{});
     }
     return new Booking[]{};
   }
@@ -362,8 +365,11 @@ public class Booker {
     return getBookings(new int[]{serviceId}, stamp, bookingTypeIds);
   }
 
-
   public static Booking[] getBookings(int[] serviceIds, idegaTimestamp stamp, int[] bookingTypeIds) {
+    return getBookings(serviceIds, stamp, null, bookingTypeIds);
+  }
+
+  public static Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds) {
     Booking[] returner = {};
     StringBuffer sql = new StringBuffer();
     try {
@@ -376,8 +382,15 @@ public class Booker {
         }
         sql.append(") and ");
         sql.append(GeneralBooking.getIsValidColumnName()+" = 'Y'");
-        sql.append(" and ");
-        sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+stamp.toSQLDateString()+"'");
+        if (fromStamp != null && toStamp == null) {
+          sql.append(" and ");
+          sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
+        }else if (fromStamp != null && toStamp != null) {
+          sql.append(" and ");
+          sql.append(GeneralBooking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+          sql.append(" and ");
+          sql.append(GeneralBooking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"'");
+        }
         if (bookingTypeIds != null) {
           if (bookingTypeIds.length > 0 ) {
             sql.append(" and (");
@@ -390,6 +403,7 @@ public class Booker {
             sql.append(") ");
           }
         }
+        sql.append(" order by "+GeneralBooking.getBookingDateColumnName());
 
         returner = (GeneralBooking[]) (new GeneralBooking()).findAll(sql.toString());
     }catch (Exception e) {
@@ -422,12 +436,22 @@ public class Booker {
       return total;
   }
 
+  public static float getBookingPrice(IWContext iwc, List bookings) {
+    float price = 0;
+    Booking gBook;
+    if (bookings != null) {
+      for (int i = 0; i < bookings.size(); i++) {
+        gBook = (Booking) bookings.get(i);
+        price += getBookingPrice(iwc, gBook);
+      }
+    }
+    return price;
+  }
+
   public static float getBookingPrice(IWContext iwc, GeneralBooking[] bookings) {
     float price = 0;
-    System.err.println("bookings.length = "+bookings.length);
     for (int i = 0; i < bookings.length; i++) {
       price += getBookingPrice(iwc, (Booking) bookings[i]);
-      System.err.println("price now = "+price);
     }
     return price;
   }
@@ -517,12 +541,18 @@ public class Booker {
   }
 
   public static DropdownMenu getPaymentTypes(IWResourceBundle iwrb) {
-    DropdownMenu menu = new DropdownMenu("payment_type");
+    DropdownMenu menu = getPaymentTypeDropdown(iwrb, "payment_type");
+      menu.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+    return menu;
+  }
+
+  public static DropdownMenu getPaymentTypeDropdown(IWResourceBundle iwrb, String name) {
+    DropdownMenu menu = new DropdownMenu(name);
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_NO_PAYMENT, iwrb.getLocalizedString("travel.unpaid","Unpaid"));
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CASH, iwrb.getLocalizedString("travel.cash","Cash"));
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CREDIT_CARD ,iwrb.getLocalizedString("travel.credit_card","Credit card"));
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_VOUCHER ,iwrb.getLocalizedString("travel.voucher","Voucher"));
-      menu.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_ACCOUNT, iwrb.getLocalizedString("travel.account","Account"));
     return menu;
   }
 

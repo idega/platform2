@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.core.user.data.User;
 import com.idega.util.IsCollator;
 import com.idega.util.idegaTimestamp;
 import java.util.*;
@@ -25,6 +26,9 @@ public class BookingComparator implements Comparator {
   public static final int HOTELPICKUP = 102;
   public static final int HOTELPICKUP_NAME = 103;
   public static final int TOTALCOUNT = 104;
+  public static final int USER = 105;
+  public static final int OWNER = 106;
+  public static final int DATE = 107;
 
 
   private int sortBy;
@@ -54,6 +58,12 @@ public class BookingComparator implements Comparator {
         case HOTELPICKUP_NAME   : result = hppNameSort(o1, o2);
         break;
         case TOTALCOUNT   : result = totalCountSort(o1, o2);
+        break;
+        case USER   : result = userSort(o1, o2);
+        break;
+        case OWNER   : result = ownerSort(o1, o2);
+        break;
+        case DATE   : result = dateSort(o1, o2);
         break;
       }
 
@@ -129,6 +139,57 @@ public class BookingComparator implements Comparator {
       return -1;
     }
 
+  }
+
+  private int userSort(Object o1, Object o2) {
+    Booking p1 = (Booking) o1;
+    Booking p2 = (Booking) o2;
+    try {
+      User user1 = new User(p1.getUserId());
+      User user2 = new User(p2.getUserId());
+
+      String one = user1.getName()!=null?user1.getName():"";
+      String two = user2.getName()!=null?user2.getName():"";
+
+      return IsCollator.getIsCollator().compare(one, two);
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return 0;
+    }
+  }
+
+  private int ownerSort(Object o1, Object o2) {
+    Booking p1 = (Booking) o1;
+    Booking p2 = (Booking) o2;
+
+    try {
+      User user1 = new User(p1.getOwnerId());
+      User user2 = new User(p2.getOwnerId());
+
+      String one = user1.getName()!=null?user1.getName():"";
+      String two = user2.getName()!=null?user2.getName():"";
+
+      return IsCollator.getIsCollator().compare(one, two);
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return 0;
+    }
+  }
+
+  private int dateSort(Object o1, Object o2) {
+    Booking p1 = (Booking) o1;
+    Booking p2 = (Booking) o2;
+
+    idegaTimestamp t1 = new idegaTimestamp(p1.getBookingDate());
+    idegaTimestamp t2 = new idegaTimestamp(p2.getBookingDate());
+
+    if (t1.isLaterThan(t2)) {
+      return 1;
+    }else if (t2.isLaterThan(t1)) {
+      return -1;
+    }else {
+      return 0;
+    }
   }
 
   public boolean equals(Object obj) {

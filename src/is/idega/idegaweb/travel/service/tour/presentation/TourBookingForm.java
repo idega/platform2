@@ -139,23 +139,15 @@ public class TourBookingForm extends TravelManager {
           int textInputSizeMd = 18;
           int textInputSizeSm = 5;
 
-          // TEMP BYRJAR :::
             DateInput fromDate = new DateInput(parameterFromDate);
               fromDate.setDay(_stamp.getDay());
               fromDate.setMonth(_stamp.getMonth());
               fromDate.setYear(_stamp.getYear());
               fromDate.setDisabled(true);
 
-            //idegaTimestamp tempStamp = new idegaTimestamp(_stamp);
-              //tempStamp.addDays(1);
             TextInput manyDays = new TextInput(parameterManyDays);
               manyDays.setSize(5);
               manyDays.setContent("1");
-              //toDate.setDay(tempStamp.getDay());
-              //toDate.setMonth(tempStamp.getMonth());
-              //toDate.setYear(tempStamp.getYear());
-
-          // TEMP ENDAR :::
 
           Text surnameText = (Text) theText.clone();
               surnameText.setText(iwrb.getLocalizedString("travel.surname","surname"));
@@ -185,10 +177,6 @@ public class TourBookingForm extends TravelManager {
             depAddr.setSelectedElement(Integer.toString(addressId));
           DropdownMenu pickupMenu = null;
           TextInput roomNumber = null;
-//          Text tReferenceNumber = (Text) theText.clone();
-//            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
-//          TextInput tiReferenceNumber = new TextInput("reference_number");
-//            tiReferenceNumber.setSize(10);
 
           TextInput surname = new TextInput("surname");
               surname.setSize(textInputSizeLg);
@@ -216,6 +204,7 @@ public class TourBookingForm extends TravelManager {
               country.keepStatusOnAction();
 
           DropdownMenu usersDrop = null;
+          DropdownMenu payType = Booker.getPaymentTypeDropdown(iwrb, "payment_type");
 
           ++row;
           table.mergeCells(2,row,4,row);
@@ -417,13 +406,6 @@ public class TourBookingForm extends TravelManager {
                     pTable.add(pPriceText, 3,1);
                   table.add(pTable, 2, row);
 
-                  //table.add(txtPerPerson,4,row);
-
-//                  pTable.add(pPriceCatNameText, 1, pRow);
-//                  pTable.add(pPriceMany, 2, pRow);
-//                  pTable.add(txtPrice, 3, pRow);
-//                  pTable.add(pPriceText, 4, pRow);
-
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
               }
@@ -451,25 +433,16 @@ public class TourBookingForm extends TravelManager {
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
           ++row;
-//          if (_reseller != null) {
-//            table.setAlignment(2,row,"right");
-//            table.add(tReferenceNumber,2,row);
-//            table.add(tiReferenceNumber,3,row);
-//          }
 
           if (super.user != null) {
             ++row;
             List users = null;
-//            if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
-//            if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
             if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
             if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
             if (users == null) users = com.idega.util.ListUtil.getEmptyList();
             usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
             usersDrop.setSelectedElement(Integer.toString(super.userId));
             usersDrop.keepStatusOnAction();
-            //usersDrop = new DropdownMenu(users, "ic_user");
-            //usersDrop.setSelectedElement(Integer.toString(super.userId));
 
             Text tUser = (Text) theText.clone();
               tUser.setFontColor(WHITE);
@@ -478,8 +451,11 @@ public class TourBookingForm extends TravelManager {
             table.add(usersDrop, 2 ,row);
           }
 
-          //else if ( (_reseller == null) && (supplier == null) ) {
-
+          ++row;
+          Text payText = (Text) theText.clone();
+            payText.setText(iwrb.getLocalizedString("travel.payment_type","Payment type"));
+          table.add(payText, 1, row);
+          table.add(payType, 2, row);
           // Virkar, vantar HTTPS
 
           /*  TextInput ccNumber = new TextInput(this.parameterCCNumber);
@@ -518,7 +494,6 @@ public class TourBookingForm extends TravelManager {
             table.add(ccYear,2,row);
           */
 
-          //}
 
           if (_booking != null) {
             form.addParameter(this.parameterBookingId,_booking.getID());
@@ -542,6 +517,7 @@ public class TourBookingForm extends TravelManager {
             if (usersDrop != null) {
               usersDrop.setSelectedElement(Integer.toString(_booking.getUserId()));
             }
+            payType.setSelectedElement(Integer.toString(_booking.getPaymentTypeId()));
 
           }
 
@@ -685,10 +661,6 @@ public class TourBookingForm extends TravelManager {
 
           DropdownMenu pickupMenu = null;
           TextInput roomNumber = null;
-//          Text tReferenceNumber = (Text) theText.clone();
-//            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
-//          TextInput tiReferenceNumber = new TextInput("reference_number");
-//            tiReferenceNumber.setSize(10);
 
           TextInput surname = new TextInput("surname");
               surname.setSize(textInputSizeLg);
@@ -707,23 +679,15 @@ public class TourBookingForm extends TravelManager {
           TextInput country = new TextInput("country");
               country.setSize(textInputSizeMd);
 
-          // TEMP BYRJAR :::
-            DateInput fromDate = new DateInput(parameterFromDate);
-              fromDate.setDay(_stamp.getDay());
-              fromDate.setMonth(_stamp.getMonth());
-              fromDate.setYear(_stamp.getYear());
-              fromDate.setDisabled(true);
+          DateInput fromDate = new DateInput(parameterFromDate);
+            fromDate.setDay(_stamp.getDay());
+            fromDate.setMonth(_stamp.getMonth());
+            fromDate.setYear(_stamp.getYear());
+            fromDate.setDisabled(true);
 
-            //idegaTimestamp tempStamp = new idegaTimestamp(_stamp);
-              //tempStamp.addDays(1);
-            TextInput manyDays = new TextInput(parameterManyDays);
-              manyDays.setContent("1");
-              manyDays.setSize(5);
-              //toDate.setDay(tempStamp.getDay());
-              //toDate.setMonth(tempStamp.getMonth());
-              //toDate.setYear(tempStamp.getYear());
-
-          // TEMP ENDAR :::
+          TextInput manyDays = new TextInput(parameterManyDays);
+            manyDays.setContent("1");
+            manyDays.setSize(5);
 
           ++row;
           table.mergeCells(1,row,6,row);
@@ -774,23 +738,9 @@ public class TourBookingForm extends TravelManager {
             TotalPassTextInput.setSize(5);
           ResultOutput TotalTextInput = new ResultOutput("total","0");
             TotalTextInput.setSize(8);
-/*
-          ++row;
-          table.mergeCells(1,row,6,row);
-          table.add(hr,1,row);
-          ++row;
-          table.mergeCells(1,row,6,row);
-          subHeader = (Text) theBoldText.clone();
-            subHeader.setFontColor(WHITE);
-            subHeader.setText(iwrb.getLocalizedString("travel.booking_passenger_info","Passenger infomation"));
-            subHeader.addToText(star);
-          table.add(subHeader,1,row);
-          table.setAlignment(1,row,"left");
-*/
+
           ++row;
 
-//          ++row;
-//          table.add(Text.NON_BREAKING_SPACE,1,row);
           Text count = (Text) super.theSmallBoldText.clone();
             count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
           Text unitPrice = (Text) super.theSmallBoldText.clone();
@@ -813,11 +763,6 @@ public class TourBookingForm extends TravelManager {
           table.add(space, 1, row);
           table.add(priceTable, 2, row);
           table.mergeCells(2, row, 2, row + pPrices.length +1);
-
-
-//            table.add(count,2,row);
-//            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
-//            table.add(amount,2,row);
 
 
           BookingEntry[] entries = null;
@@ -1010,18 +955,12 @@ public class TourBookingForm extends TravelManager {
             TextInput ccNumber = new TextInput(this.parameterCCNumber);
               ccNumber.setMaxlength(19);
               ccNumber.setLength(20);
-              //ccNumber.setAsNotEmpty("T - vantar cc númer");
-              //ccNumber.setAsIntegers("T - cc númer rangt");
             TextInput ccMonth = new TextInput(this.parameterCCMonth);
               ccMonth.setMaxlength(2);
               ccMonth.setLength(3);
-              //ccMonth.setAsNotEmpty("T - vantar cc manuð");
-              //ccMonth.setAsIntegers("T - cc manuður rangur");
             TextInput ccYear = new TextInput(this.parameterCCYear);
               ccYear.setMaxlength(2);
               ccYear.setLength(3);
-              //ccYear.setAsNotEmpty("T - vantar cc ár");
-              //ccYear.setAsIntegers("T - cc ár rangt");
 
             Text ccText = (Text) theText.clone();
               ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
@@ -1372,7 +1311,7 @@ public class TourBookingForm extends TravelManager {
       String country = iwc.getParameter("country");
       String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
       String roomNumber = iwc.getParameter("room_number");
-//      String referenceNumber = iwc.getParameter("reference_number");
+      String sPaymentType = iwc.getParameter("payment_type");
 
       String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
       int iAddressId = Integer.parseInt(sAddressId);
@@ -1444,8 +1383,12 @@ public class TourBookingForm extends TravelManager {
         }
 
         int paymentType = Booking.PAYMENT_TYPE_ID_NO_PAYMENT;
+        try {
+          paymentType = Integer.parseInt(sPaymentType);
+        }catch (NumberFormatException nfe) {}
         int bookingType = Booking.BOOKING_TYPE_ID_ONLINE_BOOKING;
 
+        /*
         if (ccNumber != null) {
           paymentType = Booking.PAYMENT_TYPE_ID_CREDIT_CARD;
         }else {
@@ -1454,7 +1397,7 @@ public class TourBookingForm extends TravelManager {
           }else if (_reseller != null) {
             paymentType = Booking.PAYMENT_TYPE_ID_VOUCHER;
           }
-        }
+        }*/
 
         if (supplier != null) {
           bookingType = Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING;
@@ -1561,11 +1504,6 @@ public class TourBookingForm extends TravelManager {
         sql.printStackTrace(System.err);
       }
 
-//      if (displayForm)
-//      if (displayFormInternal)
-//      displayForm(iwc);
-
-
       return returner;
   }
 
@@ -1650,16 +1588,7 @@ public class TourBookingForm extends TravelManager {
       e.printStackTrace(System.err);
     }
   }
-/*
-  public void setTour(Tour tour) {
-    this._tour = tour;
-    try {
-      setProduct(new Product(tour.getID() ));
-    }catch (SQLException s) {
-      s.printStackTrace(System.err);
-    }
-  }
-*/
+
   public void setReseller(Reseller reseller) {
     _reseller = reseller;
     _resellerId = reseller.getID();
@@ -1672,6 +1601,5 @@ public class TourBookingForm extends TravelManager {
   public void setTimestamp(idegaTimestamp stamp) {
     this._stamp = new idegaTimestamp(stamp);
   }
-
 
 }

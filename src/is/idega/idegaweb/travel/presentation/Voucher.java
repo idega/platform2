@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.core.user.data.User;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -43,6 +44,8 @@ public class Voucher extends TravelManager {
   private Supplier _supplier;
   private Timeframe _timeframe;
   private TravelAddress _address;
+  private User _user;
+  private Reseller _reseller;
   private int _localeId = -1;
 
   private DecimalFormat df = new DecimalFormat("0.00");
@@ -65,6 +68,8 @@ public class Voucher extends TravelManager {
       _product = _service.getProduct();
       _entries = _booking.getBookingEntries();
       _supplier = new Supplier(_product.getSupplierId());
+      _user = new User(_booking.getUserId());
+      _reseller = ResellerManager.getReseller(_user);
       _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
       TravelAddress[] addresses = (TravelAddress[]) gBooking.findRelated(TravelAddress.getStaticInstance(TravelAddress.class));
       _address = addresses[addresses.length - 1];
@@ -160,19 +165,37 @@ public class Voucher extends TravelManager {
 
         table.add(Text.BREAK,1,2);
 
+        Address address = null;
+        List hPhone = null;
+        List fPhone = null;
+        List emails = null;
+        String name = "";
+
+        if (_reseller != null) {
+          name = _reseller.getName();
+          address = _reseller.getAddress();
+          hPhone = _reseller.getHomePhone();
+          fPhone = _reseller.getFaxPhone();
+          emails = _reseller.getEmails();
+        }else {
+          name = _supplier.getName();
+          address = _supplier.getAddress();
+          hPhone = _supplier.getHomePhone();
+          fPhone = _supplier.getFaxPhone();
+          emails = _supplier.getEmails();
+        }
+
         table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO")+" : "),1,2);
-        table.add(getText(_supplier.getName()),1,2);
+        table.add(getText(name),1,2);
         table.add(Text.BREAK,1,2);
 
         table.add(getText(_iwrb.getLocalizedString("travel.address_lg","ADDRESS")+" : "),1,2);
-        Address address = _supplier.getAddress();
         table.add(getText(address.getStreetName()),1,2);
         table.add(Text.BREAK,1,2);
 
         Phone phone;
 
         table.add(getText(_iwrb.getLocalizedString("travel.telephone_number_lg","PHONE")+" : "), 1, 2);
-        List hPhone = _supplier.getHomePhone();
         if (hPhone != null)
         for (int i = 0; i < hPhone.size(); i++) {
           if (i != 0) table.add(getText(", "), 1, 2);
@@ -182,7 +205,6 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
 
         table.add(getText(_iwrb.getLocalizedString("travel.fax_lg","FAX")+" : "), 1, 2);
-        List fPhone = _supplier.getFaxPhone();
         if (fPhone != null)
         for (int i = 0; i < fPhone.size(); i++) {
           if (i != 0) table.add(getText(", "), 1, 2);
@@ -192,7 +214,6 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
 
         table.add(getText(_iwrb.getLocalizedString("travel.email_lg","E-MAIL")+" : "), 1, 2);
-        List emails = _supplier.getEmails();
         Email email;
         if (emails != null)
         for (int i = 0; i < emails.size(); i++) {
@@ -201,6 +222,7 @@ public class Voucher extends TravelManager {
           table.add(getText(email.getEmailAddress()), 1,2);
         }
         table.add(Text.BREAK,1,2);
+
 
         table.add(Text.BREAK,1,2);
 
@@ -254,7 +276,7 @@ public class Voucher extends TravelManager {
         table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
         table.add(getText(" : "),1,2);
 //        table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
-        table.add(getText(df.format(Booker.getBookingPrice(iwc, (GeneralBooking[]) _bookings.toArray(new GeneralBooking[]{})))),1,2);
+        table.add(getText(df.format(Booker.getBookingPrice(iwc, _bookings))),1,2);
         table.add(getText(" "),1,2);
         Currency currency = Booker.getCurrency(_booking);
         if (currency != null)
