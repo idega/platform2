@@ -225,7 +225,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
           }
           SQLQuery.append(" ORDER BY "+pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceType()+","+cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameName());
 
-//        System.err.println(SQLQuery.toString());
+//            System.err.println(SQLQuery.toString());
         prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(SQLQuery.toString());
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);

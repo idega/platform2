@@ -256,6 +256,11 @@ public class PriceCategoryDesigner extends TravelManager {
               pCat.setSupplierId(supplier.getID());
               pCat.setExtraInfo("");
               pCat.isNetbookingCategory(bOnline);
+              if (this.miscellaneousServices) {
+                pCat.setCountAsPerson(false);
+              }else {
+                pCat.setCountAsPerson(true);
+              }
             pCat.update();
           }
         }
