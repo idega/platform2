@@ -706,7 +706,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	public void updateEntry(int entryID, String headline, User user, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location, String oneOrMany) {
 		CalendarEntry entry = getEntry(entryID);
 		
-		Timestamp startTime = Timestamp.valueOf(startDate);		
+		IWTimestamp startD = new IWTimestamp(startDate);
+		Timestamp startTime = startD.getTimestamp();//Timestamp.valueOf(startDate);		
 		//modifications of the time properties of the start timestamp
 		if(startHour != null || !startHour.equals("")) {
 			Integer sH =new Integer(startHour);		
@@ -718,8 +719,9 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		startTime.setSeconds(0);
 //		startTime.setNanos(0);
-
-		Timestamp endTime = Timestamp.valueOf(endDate);
+		
+		IWTimestamp endD = new IWTimestamp(endDate);
+		Timestamp endTime = endD.getTimestamp();//Timestamp.valueOf(endDate);
 		//modifications of the time properties of the end timestamp
 		if(endHour != null || !endHour.equals("")) {
 			Integer eH =new Integer(endHour);
