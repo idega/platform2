@@ -14,6 +14,8 @@ import com.idega.block.news.data.*;
 import com.idega.block.text.data.*;
 import com.idega.block.text.business.*;
 import com.idega.core.user.data.User;
+import com.idega.block.category.business.*;
+import com.idega.core.data.ICCategory;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 //import com.idega.jmodule.image.presentation.ImageInserter;
@@ -79,6 +81,7 @@ private static String prmPubTo = "nwep_publishto";
 private static String prmMoveToCat = "nwep_movtocat";
 public static final  String imageAttributeKey = "newsimage";
 private String sNewsId = null;
+private int iCategoryId = -1;
 
 
 
@@ -113,26 +116,22 @@ private IWResourceBundle iwrb;
 
   private void control(IWContext iwc)throws Exception{
     init();
+    debugParameters(iwc);
     boolean doView = true;
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
-		//  debug:
-		java.util.Enumeration E = iwc.getParameterNames();
-		while(E.hasMoreElements()){
-			String key = (String) E.nextElement();
-		  System.err.println(key+" "+iwc.getParameter(key));
-		}
-		if(iwc.isParameterSet(actClose) || iwc.isParameterSet(actClose+".x")){
-		  setParentToReload();
-			close();
-		}
-		else{
+
+    if(iwc.isParameterSet(actClose) || iwc.isParameterSet(actClose+".x")){
+      setParentToReload();
+      close();
+    }
+    else{
 
     String sLocaleId = iwc.getParameter(prmLocale);
     String sCategoryId = iwc.getParameter(prmCategory);
-    int iCategoryId = sCategoryId !=null?Integer.parseInt(sCategoryId):-1;
+    iCategoryId = sCategoryId !=null?Integer.parseInt(sCategoryId):-1;
     String sAtt = null;
-		int saveInfo = getSaveInfo(iwc);
+    int saveInfo = getSaveInfo(iwc);
 
     // LocaleHandling
     int iLocaleId = -1;
@@ -165,14 +164,14 @@ private IWResourceBundle iwrb;
         doView = false;
       }
       // Object Instance Request :
-      else if(iwc.getParameter(prmObjInstId)!= null){
+      else if(iwc.isParameterSet(prmObjInstId)){
         iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
         doView = false;
         if(iObjInsId > 0 && saveInfo != SAVECATEGORY)
-          iCategoryId = NewsFinder.getObjectInstanceCategoryId(iObjInsId );
+          iCategoryId = CategoryFinder.getObjectInstanceCategoryId(iObjInsId );
       }
-			//add("category id "+iCategoryId);
-			//add(" instance id "+iObjInsId);
+      //add("category id "+iCategoryId);
+      //add(" instance id "+iObjInsId);
       // end of News initialization
 
       // Form processing
@@ -181,8 +180,8 @@ private IWResourceBundle iwrb;
       else if(saveInfo == SAVECATEGORY)
         processCategoryForm(iwc,sCategoryId,iObjInsId);
 
-      if(iObjInsId > 0){
-        addCategoryFields(NewsFinder.getNewsCategory(iCategoryId),iObjInsId  );
+      if(iwc.isParameterSet(prmObjInstId)){
+        addCategoryFields(CategoryFinder.getCategory(iCategoryId),iObjInsId  );
       }
       //doView = false;
 
@@ -267,15 +266,11 @@ private IWResourceBundle iwrb;
         if(iMoveCat > 0){
           NewsBusiness.moveNewsBetweenCategories(iCatId,iMoveCat);
         }
-        else{
-          setParentToReload();
-          close();
-        }
       }
     }
     else if(iwc.getParameter(actDelete)!=null || iwc.getParameter(actDelete+".x")!=null ){
-            //System.err.println("deleteing CATId = "+iCatId +" ObjInstId = "+iObjInsId);
-            NewsBusiness.deleteNewsCategory(iCatId);
+      //System.err.println("deleteing CATId = "+iCatId +" ObjInstId = "+iObjInsId);
+      NewsBusiness.deleteNewsCategory(iCatId);
     }
   }
 
@@ -355,7 +350,7 @@ private IWResourceBundle iwrb;
   public String getColumnString(NewsCategoryAttribute[] attribs){
     String values = "";
     for (int i = 0 ; i < attribs.length ; i++) {
-      values += NewsCategory.getNameColumnName()+"_id = '"+attribs[i].getNewsCategoryId()+"'" ;
+      values += NewsCategory.getColumnName()+"_id = '"+attribs[i].getNewsCategoryId()+"'" ;
       if( i!= (attribs.length-1) ) values += " OR ";
     }
     return values;
@@ -369,88 +364,86 @@ private IWResourceBundle iwrb;
     return textTemplate;
   }
 
-  private void addCategoryFields(NewsCategory newsCategory,int iObjInst){
+  private void addCategoryFields(ICCategory newsCategory,int iObjInst){
 
-	  String sCategory= iwrb.getLocalizedString("category","Category");
+    String sCategory= iwrb.getLocalizedString("category","Category");
     String sName = iwrb.getLocalizedString("name","Name");
     String sDesc = iwrb.getLocalizedString("description","Description");
-		String sMoveCat = iwrb.getLocalizedString("movenews","Move news to");
+    String sMoveCat = iwrb.getLocalizedString("movenews","Move news to");
 
-		List L = NewsFinder.listOfValidNewsCategories();
-		DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
-		catDrop.addMenuElementFirst("-1",sCategory);
-		catDrop.setToSubmit();
-		DropdownMenu MoveCatDrop = new DropdownMenu(L,prmMoveToCat);
-		MoveCatDrop.addMenuElementFirst("-1",sCategory);
+    List L = NewsFinder.listOfValidNewsCategories();
+    DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
+    catDrop.addMenuElementFirst("-1",sCategory);
+    catDrop.setToSubmit();
+    DropdownMenu MoveCatDrop = new DropdownMenu(L,prmMoveToCat);
+    MoveCatDrop.addMenuElementFirst("-1",sCategory);
 
-		Link newLink = new Link(iwb.getImage("/shared/create.gif"));
-		newLink.addParameter(prmCategory,-1);
-		newLink.addParameter(prmObjInstId,iObjInst);
-		newLink.addParameter(prmFormProcess,"C");
+    Link newLink = new Link(iwb.getImage("/shared/create.gif"));
+    newLink.addParameter(prmCategory,-1);
+    newLink.addParameter(prmObjInstId,iObjInst);
+    newLink.addParameter(prmFormProcess,"C");
 
-
-
-		boolean hasCategory = newsCategory !=null ? true:false;
+    boolean hasCategory = newsCategory !=null ? true:false;
     TextInput tiName = new TextInput(prmCatName);
     tiName.setLength(40);
     tiName.setMaxlength(255);
 
 
-		Table catTable = new Table(5,1);
-		catTable.setCellpadding(0);
-		catTable.setCellspacing(0);
-		setStyle(catDrop);
-		catTable.add(catDrop,1,1);
-		catTable.add(newLink,3,1);
-		catTable.setWidth(2,1,"20");
-		catTable.setWidth(4,1,"20");
+    Table catTable = new Table(5,1);
+    catTable.setCellpadding(0);
+    catTable.setCellspacing(0);
+    setStyle(catDrop);
+    catTable.add(catDrop,1,1);
+    catTable.add(newLink,3,1);
+    catTable.setWidth(2,1,"20");
+    catTable.setWidth(4,1,"20");
 
     TextArea taDesc = new TextArea(prmCatDesc,65,5);
     if(hasCategory){
-			int id = newsCategory.getID();
-			catDrop.setSelectedElement(String.valueOf(newsCategory.getID()));
+      int id = newsCategory.getID();
+      catDrop.setSelectedElement(String.valueOf(newsCategory.getID()));
       if(newsCategory.getName()!=null)
         tiName.setContent(newsCategory.getName());
       if(newsCategory.getDescription()!=null)
         taDesc.setContent(newsCategory.getDescription());
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(id)));
 
-			int iNewsCount = NewsFinder.countNewsInCategory(id);
-			int iUnPublishedCount = NewsFinder.countNewsInCategory(id,NewsFinder.UNPUBLISHED);
-			int iPublishingCount = NewsFinder.countNewsInCategory(id,NewsFinder.PUBLISHISING);
-			int iPublishedCount = NewsFinder.countNewsInCategory(id,NewsFinder.PUBLISHED);
+      int iNewsCount = NewsFinder.countNewsInCategory(id);
+      int iUnPublishedCount = NewsFinder.countNewsInCategory(id,NewsFinder.UNPUBLISHED);
+      int iPublishingCount = NewsFinder.countNewsInCategory(id,NewsFinder.PUBLISHISING);
+      int iPublishedCount = NewsFinder.countNewsInCategory(id,NewsFinder.PUBLISHED);
 
-			String sNewsCount = iwrb.getLocalizedString("newscount","News count");
-			String sUnPublishedCount = iwrb.getLocalizedString("unpublished","Unpublished");
-			String sPublishingCount = iwrb.getLocalizedString("publishing","In publish");
-			String sPublishedCount = iwrb.getLocalizedString("published","Published");
+      String sNewsCount = iwrb.getLocalizedString("newscount","News count");
+      String sUnPublishedCount = iwrb.getLocalizedString("unpublished","Unpublished");
+      String sPublishingCount = iwrb.getLocalizedString("publishing","In publish");
+      String sPublishedCount = iwrb.getLocalizedString("published","Published");
 
-			Table table = new Table(3,4);
-			table.setCellpadding(2);
-			table.setCellspacing(1);
-			table.setWidth(2,"10");
-			String colon = " : ";
-			table.add(formatText(sNewsCount+colon),1,1);
-			table.add(String.valueOf(iNewsCount),3,1);
-			table.add(formatText(sUnPublishedCount+colon),1,2);
-			table.add(String.valueOf(iUnPublishedCount),3,2);
-			table.add(formatText(sPublishingCount+colon),1,3);
-			table.add(String.valueOf(iPublishingCount),3,3);
-			table.add(formatText(sPublishedCount+colon),1,4);
-			table.add(String.valueOf(iPublishedCount),3,4);
+      Table table = new Table(3,4);
+      table.setCellpadding(2);
+      table.setCellspacing(1);
+      table.setWidth(2,"10");
+      String colon = " : ";
+      table.add(formatText(sNewsCount+colon),1,1);
+      table.add(String.valueOf(iNewsCount),3,1);
+      table.add(formatText(sUnPublishedCount+colon),1,2);
+      table.add(String.valueOf(iUnPublishedCount),3,2);
+      table.add(formatText(sPublishingCount+colon),1,3);
+      table.add(String.valueOf(iPublishingCount),3,3);
+      table.add(formatText(sPublishedCount+colon),1,4);
+      table.add(String.valueOf(iPublishedCount),3,4);
 
-			String sInfo = iwrb.getLocalizedString("info","Info");
-			addRight(sInfo,table,false,false);
+      String sInfo = iwrb.getLocalizedString("info","Info");
+      addRight(sInfo,table,false,false);
 
-			if(iNewsCount == 0){
-			Link deleteLink = new Link(iwb.getImage("/shared/delete.gif"));
-			deleteLink.addParameter(actDelete,"true");
-			deleteLink.addParameter(prmCategory,newsCategory.getID());
-			deleteLink.addParameter(prmObjInstId,iObjInst);
-			deleteLink.addParameter(prmFormProcess,"C");
+      if(iNewsCount == 0){
+      Link deleteLink = new Link(iwb.getImage("/shared/delete.gif"));
+      deleteLink.addParameter(actDelete,"true");
+      deleteLink.addParameter(prmCategory,newsCategory.getID());
+      deleteLink.addParameter(prmObjInstId,iObjInst);
+      deleteLink.addParameter(prmFormProcess,"C");
 
-			catTable.add(deleteLink,5,1);
-			}
+      catTable.add(deleteLink,5,1);
+      }
 
     }
 
@@ -565,61 +558,61 @@ private IWResourceBundle iwrb;
     }
 
 
-		SubmitButton addButton = new SubmitButton(core.getImage("/shared/create.gif","Add to news"),prmSaveFile);
-		//SubmitButton leftButton = new SubmitButton(core.getImage("/shared/frew.gif","Insert image"),prmSaveFile);
-		ImageInserter imageInsert = new ImageInserter();
-    imageInsert.setImSessionImageName(prmImageId);
-    imageInsert.setUseBoxParameterName(prmUseImage);
-    imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
-		imageInsert.setMaxImageWidth(130);
-		imageInsert.setHasUseBox(false);
-    imageInsert.setSelected(false);
-		Table imageTable = new Table();
-			int row = 1;
-		//imageTable.mergeCells(1,row,3,row);
-		//imageTable.add(formatText(iwrb.getLocalizedString("image","Chosen image :")),1,row++);
-		imageTable.mergeCells(1,row,3,row);
-		imageTable.add(imageInsert,1,row++);
-		imageTable.mergeCells(1,row,3,row);
-		//imageTable.add(leftButton,1,row);
-		imageTable.add(addButton,1,row++);
+      SubmitButton addButton = new SubmitButton(core.getImage("/shared/create.gif","Add to news"),prmSaveFile);
+      //SubmitButton leftButton = new SubmitButton(core.getImage("/shared/frew.gif","Insert image"),prmSaveFile);
+      ImageInserter imageInsert = new ImageInserter();
+      imageInsert.setImSessionImageName(prmImageId);
+      imageInsert.setUseBoxParameterName(prmUseImage);
+      imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
+      imageInsert.setMaxImageWidth(130);
+      imageInsert.setHasUseBox(false);
+      imageInsert.setSelected(false);
+      Table imageTable = new Table();
+      int row = 1;
+      //imageTable.mergeCells(1,row,3,row);
+      //imageTable.add(formatText(iwrb.getLocalizedString("image","Chosen image :")),1,row++);
+      imageTable.mergeCells(1,row,3,row);
+      imageTable.add(imageInsert,1,row++);
+      imageTable.mergeCells(1,row,3,row);
+      //imageTable.add(leftButton,1,row);
+      imageTable.add(addButton,1,row++);
 
 
-		Link propslink = null;
+      Link propslink = null;
 
     if ( hasContent ) {
       List files = contentHelper.getFiles();
       if(files != null){
-				imageTable.mergeCells(1,row,3,row);
-				imageTable.add( formatText(iwrb.getLocalizedString("newsimages","News images :")),1,row++);
-        ICFile file1 = (ICFile) files.get(0);
-        imageInsert.setImageId(file1.getID());
+      imageTable.mergeCells(1,row,3,row);
+      imageTable.add( formatText(iwrb.getLocalizedString("newsimages","News images :")),1,row++);
+      ICFile file1 = (ICFile) files.get(0);
+      imageInsert.setImageId(file1.getID());
 
-        Iterator I = files.iterator();
-				while(I.hasNext()){
-					try {
+      Iterator I = files.iterator();
+      while(I.hasNext()){
+        try {
 
-					ICFile f = (ICFile) I.next();
-					Image immi = new Image(f.getID());
-					immi.setMaxImageWidth(50);
+          ICFile f = (ICFile) I.next();
+          Image immi = new Image(f.getID());
+          immi.setMaxImageWidth(50);
 
-					imageTable.add(immi,1,row);
-					//Link edit = new Link(iwb.getImage("/shared/edit.gif"));
-					Link edit = com.idega.block.media.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
-					Link delete = new Link(core.getImage("/shared/delete.gif"));
-					delete.addParameter(prmDeleteFile,f.getID());
-					delete.addParameter(prmNwNewsId,nwNews.getID());
-					delete.addParameter(getParameterSaveNews());
-					imageTable.add(edit,2,row);
-					imageTable.add(delete,3,row);
-				  row++;
-					}
-					catch (Exception ex) {
+          imageTable.add(immi,1,row);
+          //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
+          Link edit = com.idega.block.media.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
+          Link delete = new Link(core.getImage("/shared/delete.gif"));
+          delete.addParameter(prmDeleteFile,f.getID());
+          delete.addParameter(prmNwNewsId,nwNews.getID());
+          delete.addParameter(getParameterSaveNews());
+          imageTable.add(edit,2,row);
+          imageTable.add(delete,3,row);
+          row++;
+        }
+        catch (Exception ex) {
 
-					}
-				}
+        }
+        }
       }
-		}
+    }
 
     addLeft(sHeadline,tiHeadline,true);
     addLeft(sLocale, LocaleDrop,true);
@@ -630,28 +623,28 @@ private IWResourceBundle iwrb;
     addRight(sAuthor,tiAuthor,true);
     addRight(sSource,tiSource,true);
     //addRight(iwrb.getLocalizedString("image","Image"),imageInsert,true);
-		//if(addButton!=null){
-			//addRight("",addButton,true,false);
-		//}
-		addRight(iwrb.getLocalizedString("images","Images"),imageTable,true,false);
+    //if(addButton!=null){
+    //addRight("",addButton,true,false);
+    //}
+    addRight(iwrb.getLocalizedString("images","Images"),imageTable,true,false);
 
-		/*
+    /*
     addRight(sImage,imageInsert,true);
     if(propslink != null)
-      addRight("props",propslink,true);
-		*/
+    addRight("props",propslink,true);
+    */
 
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
-		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),actClose);
+    SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
+    SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),actClose);
     addSubmitButton(save);
-		addSubmitButton(close);
+    addSubmitButton(close);
 
     addHiddenInput( new HiddenInput (prmFormProcess,"Y"));
   }
 
-	private void deleteCat(int iCatId){
+  private void deleteCat(int iCatId){
 
-	}
+  }
 
   private void confirmDelete(String sNewsId,int iObjInsId ) throws IOException,SQLException {
     int iNewsId = Integer.parseInt(sNewsId);

@@ -1,5 +1,6 @@
 package com.idega.block.news.business;
 
+import com.idega.block.category.business.*;
 import com.idega.data.EntityFinder;
 import com.idega.block.text.business.*;
 import com.idega.block.text.data.*;
@@ -27,41 +28,33 @@ import com.idega.core.data.ICFile;
 
 public class NewsFinder {
 
-	public static final int PUBLISHISING = 1,UNPUBLISHED = 2, PUBLISHED = 3;
+  public static final int PUBLISHISING = 1,UNPUBLISHED = 2, PUBLISHED = 3;
 
   public NewsFinder() {
 
   }
 
   public static NewsCategory getNewsCategory(int iCategoryId){
-    if( iCategoryId > 0){
-		  try {
-        return new NewsCategory(iCategoryId );
-      }
-      catch (SQLException ex) {
-
-      }
-		}
-		return null;
+    return (NewsCategory) CategoryFinder.getCategory(iCategoryId);
   }
 
-	public static List listOfAllNwNewsInCategory(int newsCategoryId,Locale locale){
-		int iLocaleId = getLocaleId(locale);
+  public static List listOfAllNwNewsInCategory(int newsCategoryId,Locale locale){
+    int iLocaleId = getLocaleId(locale);
     return listOfPublishingNews(newsCategoryId,iLocaleId ,true);
   }
 
   public static List listOfNwNewsInCategory(int newsCategoryId,Locale locale){
-		int iLocaleId = getLocaleId(locale);
+    int iLocaleId = getLocaleId(locale);
     return listOfPublishingNews(newsCategoryId,iLocaleId,false);
-	}
+  }
 
-	public static List listOfAllNwNewsInCategory(int newsCategoryId,int iLocaleId){
+  public static List listOfAllNwNewsInCategory(int newsCategoryId,int iLocaleId){
     return listOfPublishingNews(newsCategoryId,iLocaleId ,true);
   }
 
   public static List listOfNwNewsInCategory(int newsCategoryId,int iLocaleId){
     return listOfPublishingNews(newsCategoryId,iLocaleId,false);
-	}
+  }
 
   public static List listOfAllNwNewsInCategory(int newsCategoryId){
     return listOfPublishingNews(newsCategoryId,true);
@@ -69,16 +62,6 @@ public class NewsFinder {
 
   public static List listOfNwNewsInCategory(int newsCategoryId){
     return listOfPublishingNews(newsCategoryId,false);
-    /*
-    try {
-      return  EntityFinder.findAllByColumn( new NwNews(),NwNews.getColumnNameNewsCategoryId(),String.valueOf(newsCategoryId));
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-    }
-
-    return null;
-    */
   }
 
   public static List listOfPublishingNews(int newsCategoryId,boolean ignorePublishingDates){
@@ -231,7 +214,7 @@ public class NewsFinder {
 
   public static List listOfAllNewsHelpersInCategory(int newsCategoryId,int maxNumberOfNews,Locale locale){
     int iLocaleId = getLocaleId(locale);
-		List L = listOfAllNwNewsInCategory(newsCategoryId ,iLocaleId);
+    List L = listOfAllNwNewsInCategory(newsCategoryId ,iLocaleId);
     return listOfNewsHelpersInCategory(L,newsCategoryId ,maxNumberOfNews , iLocaleId);
   }
 
@@ -433,108 +416,38 @@ public class NewsFinder {
   }
 
   public static List listOfNewsCategories(){
-    try {
-      return EntityFinder.findAll(new NewsCategory());
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+    return CategoryFinder.listOfCategories(new NewsCategory().getCategoryType());
   }
 
-	public static List listOfValidNewsCategories(){
-    try {
-      return EntityFinder.findAllByColumn(new NewsCategory(),NewsCategory.getValidColumnName(),"Y");
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+  public static List listOfValidNewsCategories(){
+    return CategoryFinder.listOfValidCategories(new NewsCategory().getCategoryType());
   }
 
-	public static List listOfInValidNewsCategories(){
-    try {
-      return EntityFinder.findAllByColumn(new NewsCategory(),NewsCategory.getValidColumnName(),"N");
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+  public static List listOfInValidNewsCategories(){
+    return CategoryFinder.listOfInValidCategories(new NewsCategory().getCategoryType());
   }
-
-
 
   public static int getObjectInstanceIdFromNewsCategoryId(int iCategoryId){
-    try {
-      NewsCategory nw = new NewsCategory(iCategoryId);
-      List L = EntityFinder.findRelated( nw,new ICObjectInstance());
-      if(L!= null){
-        return ((ICObjectInstance) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -2;
-    }
+    return CategoryFinder.getObjectInstanceIdFromCategoryId(iCategoryId);
   }
 
   public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
-    int id = -1;
-    try {
-      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
-      id = getObjectInstanceCategoryId(obj);
-      if(id <= 0 && CreateNew ){
-        id = NewsBusiness.createNewsCategory(iObjectInstanceId );
-      }
-    }
-    catch (Exception ex) {
-
-    }
-    return id;
+    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,new NewsCategory().getCategoryType());
   }
 
   public static int getObjectInstanceCategoryId(int iObjectInstanceId){
-    try {
-      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
-      return getObjectInstanceCategoryId(obj);
-    }
-    catch (Exception ex) {
-
-    }
-    return -1;
+    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId);
   }
 
   public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
-    try {
-      List L = EntityFinder.findRelated(eObjectInstance ,new NewsCategory());
-      if(L!= null){
-        return ((NewsCategory) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -2;
-    }
+    return CategoryFinder.getObjectInstanceCategoryId(eObjectInstance);
   }
 
   public static List listOfNewsCategoryForObjectInstanceId(int instanceid){
-    try {
-      ICObjectInstance obj = new ICObjectInstance(instanceid );
-      return listOfNewsCategoryForObjectInstanceId(obj);
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+    return CategoryFinder.listOfCategoryForObjectInstanceId(instanceid);
   }
 
   public static List listOfNewsCategoryForObjectInstanceId( ICObjectInstance obj){
-    try {
-      List L = EntityFinder.findRelated(obj,new NewsCategory());
-      return L;
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+    return CategoryFinder.listOfCategoryForObjectInstanceId(obj);
   }
 }

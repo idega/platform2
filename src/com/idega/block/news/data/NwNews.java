@@ -5,6 +5,7 @@ import java.sql.*;
 //import com.idega.data.*;
 import com.idega.data.*;
 import com.idega.block.text.data.Content;
+import com.idega.core.data.ICCategory;
 
 /**
  * Title:
@@ -26,7 +27,7 @@ public class NwNews extends GenericEntity{
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameContentId(), "Content", true, true, Integer.class,"many-to-one",Content.class);
-    addAttribute(getColumnNameNewsCategoryId(), "Category", true, true, Integer.class, "many-to-one",NewsCategory.class);
+    addAttribute(getColumnNameNewsCategoryId(), "Category", true, true, Integer.class, "many-to-one",ICCategory.class);
     addAttribute(getColumnNameAuthor(), "Author", true, true, String.class);
     addAttribute(getColumnNameSource(), "Source", true, true, String.class);
 
@@ -36,7 +37,7 @@ public class NwNews extends GenericEntity{
   }
   public static String getEntityTableName(){return "NW_NEWS";}
 
-  public static String getColumnNameNewsCategoryId(){return "NW_NEWS_CAT_ID";}
+  public static String getColumnNameNewsCategoryId(){return "IC_CATEGORY_ID";}
   public static String getColumnNameContentId(){ return "CONTENT_ID";}
   public static String getColumnNameAuthor(){return "AUTHOR";}
   public static String getColumnNameSource(){return "SOURCE";}

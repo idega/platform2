@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.65 2002/01/11 13:00:21 aron Exp $
+ * $Id: NewsReader.java,v 1.66 2002/01/19 00:37:36 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,8 @@ import com.idega.block.text.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.block.news.business.*;
 import com.idega.core.user.data.User;
+import com.idega.core.data.ICCategory;
+import com.idega.block.category.business.*;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -198,7 +200,7 @@ public class NewsReader extends Block implements IWBlock {
     String sNewsId = null;
     if(viewNews)
       sNewsId = iwc.getParameter(prmMore+getInstanceIDString(iwc));
-    NewsCategory newsCategory = null;
+    ICCategory newsCategory = null;
     String prm = prmListCategory+getInstanceIDString(iwc);
     boolean info = false;
     if(iwc.isParameterSet(prm)){
@@ -227,7 +229,7 @@ public class NewsReader extends Block implements IWBlock {
       T.add(getAdminPart(iCategoryId,false,newobjinst,info,iwc),1,1);
     }
     if(iCategoryId >0){
-      newsCategory = NewsFinder.getNewsCategory(iCategoryId);
+      newsCategory = CategoryFinder.getCategory(iCategoryId);
       if(newsCategory != null){
         if(sNewsId != null){
           int id = Integer.parseInt(sNewsId);
@@ -298,7 +300,7 @@ public class NewsReader extends Block implements IWBlock {
 
 
 
-  private PresentationObject getCategoryList(NewsCategory newsCategory,Locale locale,IWContext iwc){
+  private PresentationObject getCategoryList(ICCategory newsCategory,Locale locale,IWContext iwc){
     List L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),50,locale);
     Table T = new Table();
     int row = 1;
@@ -317,7 +319,7 @@ public class NewsReader extends Block implements IWBlock {
     return T;
   }
 
-  private PresentationObject getNewsOverViewTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,IWContext iwc){
+  private PresentationObject getNewsOverViewTable(NewsHelper newsHelper,ICCategory newsCategory, Locale locale,IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -431,7 +433,7 @@ public class NewsReader extends Block implements IWBlock {
     return T;
   }
 
-  private PresentationObject publishNews(IWContext iwc ,NewsCategory newsCategory,Locale locale,boolean collection){
+  private PresentationObject publishNews(IWContext iwc ,ICCategory newsCategory,Locale locale,boolean collection){
     List L = null;
     if(iLayout == COLLECTION_LAYOUT || collection){
       L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),numberOfCollectionNews,locale);
@@ -522,7 +524,7 @@ public class NewsReader extends Block implements IWBlock {
   }
 
   // Make a table around each news
-  private PresentationObject getNewsTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,boolean showAll,boolean collection,IWContext iwc){
+  private PresentationObject getNewsTable(NewsHelper newsHelper,ICCategory newsCategory, Locale locale,boolean showAll,boolean collection,IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);

@@ -5,6 +5,8 @@ import com.idega.presentation.IWContext;
 import com.idega.block.news.data.*;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.business.*;
+import com.idega.block.category.business.*;
+import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.data.ICFile;
@@ -287,6 +289,10 @@ public class NewsBusiness{
 
   }
 */
+  public static ICCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
+    return CategoryBusiness.saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,new NewsCategory().getCategoryType());
+  }
+/*
   public static NewsCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try{
@@ -335,7 +341,7 @@ public class NewsBusiness{
     }
     return null;
   }
-
+*/
   public static int createNewsCategory(int iObjectInstanceId){
     return saveNewsCategory(-1,"News","News",iObjectInstanceId ).getID();
   }

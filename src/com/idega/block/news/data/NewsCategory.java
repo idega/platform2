@@ -1,81 +1,21 @@
-//idega 2000 - ægir og eiki
-
 package com.idega.block.news.data;
 
-//import java.util.*;
 import java.sql.*;
-//import com.idega.data.*;
 import com.idega.data.*;
-// Changed by Aron
-
 import com.idega.util.idegaTimestamp;
+import com.idega.core.data.ICCategory;
 
-
-public class NewsCategory extends GenericEntity{
+public class NewsCategory extends ICCategory{
 
   public NewsCategory(){
-          super();
+    super();
   }
   public NewsCategory(int id)throws SQLException{
-          super(id);
-  }
-  public void initializeAttributes(){
-    addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(), "Name", true, true, String.class);
-    addAttribute(getDescriptionColumnName(), "Description", true, true, String.class);
-    addAttribute(getNewsDateColumnName(), "News date", true, true, java.sql.Date.class);
-    addAttribute(getValidColumnName(), "Valid", true, true, Boolean.class);
-    addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class,"NW_NEWS_CAT_IC_OBJECT_INSTANCE");
+    super(id);
   }
 
-  public void insertStartData()throws Exception{
-    NewsCategory cat = new NewsCategory();
-    cat.setName("Default");
-    cat.setValid(true);
-    cat.setDescription("Default Category for idegaWeb");
-    cat.insert();
-
+  public String getCategoryType(){
+    return "news";
   }
 
-  public static String getNewsCategoryTableName(){return "NW_NEWS_CAT";}
-  public static String getNameColumnName(){return "NAME";}
-  public static String getDescriptionColumnName(){return "DESCRIPTION";}
-  public static String getValidColumnName(){return "VALID";}
-  public static String getNewsDateColumnName(){return "NEWS_DATE";}
-
-  public String getEntityName(){
-    return getNewsCategoryTableName();
-  }
-  public String getName(){
-    return getNewsCategoryName();
-  }
-  public String getNewsCategoryName(){
-    return getStringColumnValue(getNameColumnName());
-  }
-
-  public void setName(String name){
-    setNewsCategoryName(name);
-  }
-
-  public void setNewsCategoryName(String news_category_name){
-    setColumn(getNameColumnName(), news_category_name);
-  }
-  public String getDescription(){
-    return getStringColumnValue(getDescriptionColumnName());
-  }
-  public void setDescription(String description){
-    setColumn(getDescriptionColumnName(), description);
-  }
-  public boolean getValid(){
-    return getBooleanColumnValue(getValidColumnName());
-  }
-  public void setValid(boolean valid){
-    setColumn(getValidColumnName(), valid);
-  }
-  public java.sql.Date getDate(){
-    return (java.sql.Date) getColumnValue(getNewsDateColumnName());
-  }
-  public void setDate(java.sql.Date NEWS_CATEGORY_DATE){
-    setColumn(getNewsDateColumnName(), NEWS_CATEGORY_DATE);
-  }
 }

@@ -35,7 +35,7 @@ public class CategoryFinder {
         return new ICCategory(iCategoryId );
       }
       catch (SQLException ex) {
-
+        ex.printStackTrace();
       }
     }
     return null;
