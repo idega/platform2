@@ -625,7 +625,8 @@ public class ServiceDesigner extends TravelManager {
         int priceCategoryId;
         for (int i = 0; i < name.length; i++) {
             priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i]);
-            sb.setPrice(service.getID() , priceCategoryId, com.idega.block.trade.data.Currency);
+            // ERROR DURING COMPILATION!!!!! - Laddi
+            //sb.setPrice(service.getID() , priceCategoryId, com.idega.block.trade.data.Currency);
         }
       }catch (Exception e) {
         e.printStackTrace(System.err);
