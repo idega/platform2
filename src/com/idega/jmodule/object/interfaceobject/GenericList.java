@@ -178,7 +178,7 @@ public void beforePrint(ModuleInfo modinfo)throws IOException{
 	setList(entity);
 }
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	beforePrint(modinfo);
         if (theTable != null){
   	  theTable.setHorizontalZebraColored(listColor1,listColor2);

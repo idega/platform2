@@ -35,7 +35,7 @@ public class AnchorLink extends Link {
 	setAttribute("href","#"+url);
   }
 
-  public void print(ModuleInfo modinfo)throws IOException{
+  public void print(ModuleInfo modinfo)throws Exception{
     initVariables(modinfo);
     obj = super.getObject();
     if (getLanguage().equals("HTML")){

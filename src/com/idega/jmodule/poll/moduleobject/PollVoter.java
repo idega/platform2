@@ -217,7 +217,7 @@ String pollWidth;
 
 
 
-	public void print(ModuleInfo modinfo)throws IOException{
+	public void print(ModuleInfo modinfo)throws Exception{
 		//try{
 			super.print(modinfo);
 		//}

@@ -842,7 +842,7 @@ private String color_2 = null;
 
 
 
-	public void print(ModuleInfo modinfo)throws IOException{
+	public void print(ModuleInfo modinfo)throws Exception{
 		//try{
 			super.print(modinfo);
 		//}
