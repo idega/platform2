@@ -208,7 +208,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	
 	public NBSServerFactory getServerGenerator(IWContext iwc) throws NBSException{
 		System.out.println("getServerGenerator()");
-		iwc.getApplicationContext().removeApplicationAttribute(SERVER_FACTORY); //TODO Roar - Temporary
+//		iwc.getApplicationContext().removeApplicationAttribute(SERVER_FACTORY); //TODO Roar - Temporary
 		
 		NBSServerFactory serverGenerator = (NBSServerFactory) iwc.getApplicationContext().getApplicationAttribute(SERVER_FACTORY);
 		if (serverGenerator == null){
