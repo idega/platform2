@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.8 2003/08/25 21:40:54 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.9 2003/08/27 07:36:33 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingString;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingStringHome;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParametersHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 
 /**
  * @author Joakim
@@ -37,11 +38,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	public static final int JUSTIFY_LEFT = 0;
 	public static final int JUSTIFY_RIGHT = 1;
 
-	private final static String KEY_ERROR_POST_PARAM_ERROR1 = "posting_param_err.activity_id_missing";
-	private final static String KEY_ERROR_POST_PARAM_ERROR2 = "posting_param_err.reg_spec_id_missing";
-	private final static String KEY_ERROR_POST_PARAM_ERROR3 = "posting_param_err.company_id_missing";
-	private final static String KEY_ERROR_POST_PARAM_ERROR4 = "posting_param_err.com_bel_id_missing";
-	private final static String KEY_ERROR_POST_PARAM_ERROR5 = "posting_param_err.cant_create_post";
+	private final static String KEY_ERROR_POST_PARAM_CREATE = "posting_param_err.create";
 
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
@@ -115,21 +112,29 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				String doubleActivity,
 				String doubleProject,
 				String doubleObject
-			) throws PostingParamException, RemoteException {
+			) throws PostingParametersException, RemoteException {
 
 			PostingParametersHome home = null;
 			PostingParameters pp = null;
-										
+			int parm1 = 0;
+			int parm2 = 0;
+			int parm3 = 0;
+			int parm4 = 0;
+		
 			try {
 				home = (PostingParametersHome) IDOLookup.getHome(PostingParameters.class);
 	
-				if (activityID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR1);
-				if (regSpecTypeID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR2);
-				if (companyTypeID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR3);
-				if (communeBelongingID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR4);
-//				if (sppID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR5);
+				if(activityID == null) activityID = "1"; 
+				if(regSpecTypeID == null) regSpecTypeID = "1"; 
+				if(companyTypeID == null) companyTypeID = "1"; 
+				if(communeBelongingID == null) communeBelongingID = "1"; 
 
+				parm1 = Integer.parseInt(activityID);
+				parm2 = Integer.parseInt(regSpecTypeID);
+				parm3 = Integer.parseInt(companyTypeID);
+				parm4 = Integer.parseInt(communeBelongingID);
 				
+
 				int ppID = 0;
 				if(sppID != null) {
 					ppID = Integer.parseInt(sppID);
@@ -153,34 +158,50 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				pp.setChangedSign(changedSign);
 				pp.setChangedDate(IWTimestamp.getTimestampRightNow());
 
-				pp.setActivity(activityID != null ? Integer.parseInt(activityID) : 0);
-				pp.setRegSpecType(regSpecTypeID != null ? Integer.parseInt(regSpecTypeID) : 0);
-				pp.setCompanyType(companyTypeID != null ? Integer.parseInt(companyTypeID) : 0);
-				pp.setCommuneBelonging(communeBelongingID != null ? Integer.parseInt(communeBelongingID) : 0);
+				pp.setActivity(parm1);
+				pp.setRegSpecType(parm2);
+				pp.setCompanyType(parm3);
+				pp.setCommuneBelonging(parm4);
 				
-				pp.setPostingAccount(ownAccount);
-				pp.setPostingLiability(ownLiability);
-				pp.setPostingResource(ownResource);
-				pp.setPostingActivityCode(ownActivityCode);
-				pp.setPostingDoubleEntry(ownDoubleEntry);
-				pp.setPostingActivity(ownActivity);
-				pp.setPostingProject(ownProject);
-				pp.setPostingObject(ownObject);
+				pp.setPostingAccount(ownAccount +  " ");
+				pp.setPostingLiability(ownLiability +  " ");
+				pp.setPostingResource(ownResource +  " ");
+				pp.setPostingActivityCode(ownActivityCode +  " ");
+				pp.setPostingDoubleEntry(ownDoubleEntry +  " ");
+				pp.setPostingActivity(ownActivity +  " ");
+				pp.setPostingProject(ownProject +  " ");
+				pp.setPostingObject(ownObject +  " ");
 	
-				pp.setDoublePostingAccount(doubleAccount);
-				pp.setDoublePostingLiability(doubleLiability);
-				pp.setDoublePostingResource(doubleResource);
-				pp.setDoublePostingActivityCode(doubleActivityCode);
-				pp.setDoublePostingDoubleEntry(doubleDoubleEntry);
-				pp.setDoublePostingActivity(doubleActivity);
-				pp.setDoublePostingProject(doubleProject);
-				pp.setDoublePostingObject(doubleObject);
+				pp.setDoublePostingAccount(doubleAccount +  " ");
+				pp.setDoublePostingLiability(doubleLiability +  " ");
+				pp.setDoublePostingResource(doubleResource +  " ");
+				pp.setDoublePostingActivityCode(doubleActivityCode +  " ");
+				pp.setDoublePostingDoubleEntry(doubleDoubleEntry +  " ");
+				pp.setDoublePostingActivity(doubleActivity +  " ");
+				pp.setDoublePostingProject(doubleProject +  " ");
+				pp.setDoublePostingObject(doubleObject +  " ");
 									
 				pp.store();
 			} catch (CreateException ce) {
-				throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR4);			
+				throw new PostingParametersException(KEY_ERROR_POST_PARAM_CREATE, "Kan ej skapa parameter");			
 			}
 		}
+
+	/**
+	 * Deletes a posting parameter
+	 * @param id PostingParameter ID
+	 * @author Kjell
+	 * 
+	 */
+	public void deletePostingParameter(int ppID) throws java.rmi.RemoteException {
+		try {
+			PostingParameters pp = (PostingParameters) findPostingParameter(ppID);
+			pp.remove();
+			pp.store();	
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+	}
 
 
 	/**
