@@ -19,6 +19,7 @@ import javax.ejb.FinderException;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
+import com.idega.block.datareport.util.FieldsComparator;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.data.IDOException;
