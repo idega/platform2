@@ -4,8 +4,9 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.business.IBOServiceBean;
 
-import com.idega.user.business.UserBusiness;
+import com.idega.user.business.*;
 import com.idega.user.data.*;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.core.accesscontrol.data.LoginTable;
 
@@ -30,6 +31,11 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
   protected UserBusiness getUserBusiness()throws RemoteException{
     return (UserBusiness)this.getServiceInstance(UserBusiness.class);
   }
+  
+   protected GroupBusiness getGroupBusiness()throws RemoteException{
+    return (GroupBusiness)this.getServiceInstance(GroupBusiness.class);
+  }
+
 
   /**
    * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
@@ -90,9 +96,15 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
   /**
    * Creates a new Administrator whith a with a firstname,middlename, lastname and school where middlename  can be null
    */
-  public User createSchoolAdministrator(String firstname, String middlename, String lastname,School school) throws CreateException,RemoteException{
+  public User createSchoolAdministrator(String firstname, String middlename, String lastname,School school) throws javax.ejb.FinderException,CreateException,RemoteException{
       User newUser;
+      SchoolBusiness schlBuiz = (SchoolBusiness)getServiceInstance(SchoolBusiness.class);
+      Group rootSchoolAdminGroup = getRootSchoolAdministratorGroup();
+      Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
       newUser = this.getUserBusiness().createUser(firstname,middlename,lastname);
+      rootSchoolAdminGroup.addGroup(newUser);
+      schoolGroup.addGroup(newUser);
+      
       return newUser;
   }
 
