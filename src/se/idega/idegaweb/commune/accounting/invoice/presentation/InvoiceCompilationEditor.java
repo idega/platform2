@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/30 10:58:54 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/30 11:29:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.97 $
+ * @version $Revision: 1.98 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -915,7 +915,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.mergeCells (1, row, table.getColumns (), row);
 		table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM, NEW_KEY,
 																NEW_DEFAULT), 1, row);
-		addCancelButton (table, 1, row);
+		addCancelButton (table, 1, row, ACTION_SHOW_COMPILATION_LIST);
 		createForm (context, table, INVOICE_COMPILATION_KEY,
 								INVOICE_COMPILATION_DEFAULT);
 	}
@@ -1223,7 +1223,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 								 (searcher.getUsersFound (),
 									ACTION_SHOW_NEW_COMPILATION_FORM), 1, row);
 		}
-		addCancelButton (table, 1, row);
+		addCancelButton (table, 1, row, ACTION_SHOW_COMPILATION_LIST);
 		createForm (context, table, CREATE_INVOICE_COMPILATION_KEY,
 								CREATE_INVOICE_COMPILATION_DEFAULT);
 	}
@@ -1388,16 +1388,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.setHeight (row++, 12);
 		table.mergeCells (col, row, table.getColumns (), row);
 		addPresentation (table, presentationObjects, ACTION_KEY, 1, row);
-		addCancelButton (table, 1, row);
+		addCancelButton (table, 1, row, ACTION_SHOW_COMPILATION);
 		createForm (context, table,
 								presentationObjects.get (HEADER_KEY).toString ());
 	}
 	
 	private void addCancelButton (final Table table, final int col,
-																final int row) {
+																final int row, final int actionId) {
 		table.add (Text.getNonBrakingSpace(), col, row);
-		table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST,
-																CANCEL_KEY, CANCEL_DEFAULT), col, row);
+		table.add (getSubmitButton (actionId,	CANCEL_KEY, CANCEL_DEFAULT), col,
+							 row);
 	}
 	
 	private PdfPTable getOwnPostingPdfTable
@@ -1963,14 +1963,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				firstName = user.getFirstName ();
 				lastName = user.getLastName ();
 			} else {
-				ssn = context.isParameterSet (USERSEARCHER_PERSONALID_KEY)
-						? context.getParameter (USERSEARCHER_PERSONALID_KEY) : "";
-				firstName = context.isParameterSet (USERSEARCHER_FIRSTNAME_KEY)
-						? context.getParameter (USERSEARCHER_FIRSTNAME_KEY) : "";
-				lastName = context.isParameterSet (USERSEARCHER_LASTNAME_KEY)
-						? context.getParameter (USERSEARCHER_LASTNAME_KEY) : "";
+				ssn = getParameterFromFormOrSession (context,
+																						 USERSEARCHER_PERSONALID_KEY);
+				firstName = getParameterFromFormOrSession (context,
+																									 USERSEARCHER_FIRSTNAME_KEY);
+				lastName = getParameterFromFormOrSession (context,
+																									USERSEARCHER_LASTNAME_KEY);
 			}
 		}
+		context.setSessionAttribute (USERSEARCHER_PERSONALID_KEY, ssn);
+		context.setSessionAttribute (USERSEARCHER_FIRSTNAME_KEY, firstName);
+		context.setSessionAttribute (USERSEARCHER_LASTNAME_KEY, lastName);
 		addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
 		table.add (getStyledInput (USERSEARCHER_PERSONALID_KEY, ssn), col++,
 							 row);
@@ -1984,6 +1987,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 							 col++, row);
 	}
 	
+	private String getParameterFromFormOrSession (final IWContext context,
+																								final String key) {
+		String result = "";
+		if (null != key) {
+			final String sessionAttribute
+					= (String) context.getSessionAttribute (key);
+			if (context.isParameterSet (key)) result = context.getParameter (key);
+			else if (null != sessionAttribute) result = sessionAttribute;
+		}
+		return result;
+	}
+
 	private void addPeriodForm (final Table table, final int row,
 															final IWContext context) {
 		int col = 1;
