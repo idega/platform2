@@ -39,7 +39,7 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
   private boolean useCancelButton=true;
   private boolean useApplyButton=true;
 
-  public TabbedPropertyPanel(String key, ModuleInfo modinfo) {
+  private TabbedPropertyPanel(String key, ModuleInfo modinfo) {
     frameTable = new Table();
 //    this.setMethod("get");
 //    frameTable.setBorder(1);  // temp
@@ -51,6 +51,9 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
     initializeLayout();
     collector = new GenericFormCollector();
     initializeButtons();
+    lineUpButtons();
+    ok.addIWSubmitListener(this, this,modinfo);
+    apply.addIWSubmitListener(this, this,modinfo);
 
   }
 
@@ -185,7 +188,7 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
     frameTable.setAlignment(1,2,"right");
 
   }
-
+/*
   public void main(ModuleInfo modinfo) {
     if(this.justConstructed()){
       lineUpButtons();
@@ -193,6 +196,6 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
       apply.addIWSubmitListener(this, this,modinfo);
     }
   }
-
+*/
 
 }
