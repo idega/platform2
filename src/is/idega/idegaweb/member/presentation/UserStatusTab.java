@@ -118,7 +118,9 @@ public class UserStatusTab extends UserTab {
 			}
 		}
 		else {
-			_groupField.setText("No group selected");
+			IWContext iwc = IWContext.getInstance();
+			IWResourceBundle iwrb = getResourceBundle(iwc);
+			_groupField.setText(iwrb.getLocalizedString("user_status_bar.no_group_selected","No group selected"));
 		}
 		_statusField.setSelectedOption((String) fieldValues.get(_statusFieldName));
 //		_parent1StatusField.setChecked(((Boolean) fieldValues.get(_parent1StatusFieldName)).booleanValue());
