@@ -413,7 +413,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids, Object communePK) throws RemoteException {
-		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, type_ids, year_ids, null, null, null, null, communePK, -1, null);
+		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, type_ids, year_ids, null, null, null, null, communePK, -1, null, null);
 	}
 
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids,
@@ -423,7 +423,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				java.sql.Date terminationDate,
 				Object communePK,
 				int countryId,
-				Boolean centralizedAdministration) throws RemoteException {
+				Boolean centralizedAdministration,
+				Boolean invisibleForCitizen) throws RemoteException {
 						
 		SchoolHome shome = getSchoolHome();
 		School newSchool;
@@ -480,6 +481,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			newSchool.setCountryId(countryId);
 		if (centralizedAdministration != null)
 			newSchool.setCentralizedAdministration(centralizedAdministration.booleanValue());
+		if (invisibleForCitizen != null)
+			newSchool.setInvisibleForCitizen(invisibleForCitizen.booleanValue());
 
 		newSchool.store();
 		if (type_ids != null)
