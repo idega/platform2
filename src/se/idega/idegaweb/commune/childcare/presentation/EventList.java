@@ -54,7 +54,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.1 2003/03/21 16:43:38 roar Exp $
+ * @version $Id: EventList.java,v 1.2 2003/03/21 18:39:53 roar Exp $
  * @since 17.3.2003 
  */
 
@@ -544,7 +544,7 @@ RS*/
   	
 	int urow = 1;
 	int childCareId = getChildCareSession(iwc).getChildCareID();
-	uForm.add(new Text(childCareId));
+	uForm.add(new Text("ChildcareId:" + childCareId));
 	//Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,uFrom,uTo);
 	Collection unprintedLetters = getChildCareApplication(iwc).findAllChildCasesByProvider(childCareId);
 	
