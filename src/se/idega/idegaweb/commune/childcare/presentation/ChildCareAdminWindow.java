@@ -101,11 +101,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	public static final String PARAMETER_SHOW_PARENTAL= "cc_show_parental";
 	public static final String PARAMETER_SHOW_EMPLOYMENT_DROP= "cc_show_employment_drop";
+	public static final String PARAMETER_SHOW_PRE_SCHOOL = "cc_show_preschool";
 	//private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
 	public static final String FIELD_CURRENT_DATE = "currentdate";
 	
-
+	
+	
 	//private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
 	//private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
 
@@ -160,6 +162,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private boolean _showVacancies= false;
 	private boolean _showParental= true;
 	private boolean _showEmploymentDrop= true;
+	private boolean _showPreSchool= true;
 	
 	//private IWTimestamp earliestDate;
 
@@ -254,6 +257,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_SHOW_VACANCIES);		
 		form.maintainParameter(PARAMETER_SHOW_PARENTAL);
 		form.maintainParameter(PARAMETER_SHOW_EMPLOYMENT_DROP);
+		form.maintainParameter(PARAMETER_SHOW_PRE_SCHOOL);
 		form.setStyleAttribute("height:100%");
 
 		Table table = new Table(3, 5);
@@ -698,7 +702,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		
 		//Pre-school
-		if (!getBusiness().isAfterSchoolApplication(helper.getApplication())) {
+		if (!getBusiness().isAfterSchoolApplication(helper.getApplication()) && _showPreSchool) {
 			table.add(getSmallHeader(localize("child_care.pre_school", "Specify pre-school:")), 1, row++);
 			TextInput preSchool = (TextInput) getStyledInterface(new TextInput(PARAMETER_PRE_SCHOOL));
 			preSchool.setLength(40);
@@ -1793,7 +1797,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			_showParental = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PARENTAL)).booleanValue();
 		if (iwc.isParameterSet(PARAMETER_SHOW_EMPLOYMENT_DROP))
 			_showEmploymentDrop = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_EMPLOYMENT_DROP)).booleanValue();
-			//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
+		if (iwc.isParameterSet(PARAMETER_SHOW_PRE_SCHOOL))
+			_showPreSchool = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PRE_SCHOOL)).booleanValue();
+		
+		//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
 			//earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 
 		/*String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "false");

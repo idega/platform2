@@ -44,6 +44,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	private int sort = -1;
 	private boolean showNotYetActive = false;
 	private boolean showParentalRadio = true;
+	private boolean showPreSchool = true;
 	
 	
 	/**
@@ -221,6 +222,8 @@ public class ChildCareContracts extends ChildCareBlock {
 						if (isNotYetActive) {
 							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_placement_date_for_child","Alter the placement date for this child.")));
 							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_VALID_FROM_DATE);
+							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PRE_SCHOOL, String.valueOf(showPreSchool));
+							
 						}
 						else {
 							//alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
@@ -762,5 +765,9 @@ public class ChildCareContracts extends ChildCareBlock {
 	
 	public void setShowParentRadioButton(boolean show){
 		showParentalRadio = show;
+	}
+	
+	public void setShowPreSchool(boolean show){
+		showPreSchool= show;
 	}
 }
