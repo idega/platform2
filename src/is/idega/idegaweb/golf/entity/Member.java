@@ -18,7 +18,6 @@ public interface Member extends com.idega.data.IDOLegacyEntity
  public int getImageId();
  public java.lang.String getJob();
  public java.lang.String getLastName();
- public is.idega.idegaweb.golf.block.login.data.LoginType[] getLoginType();
  public is.idega.idegaweb.golf.entity.Union getMainUnion()throws javax.ejb.FinderException,java.sql.SQLException;
  public int getMainUnionID()throws java.sql.SQLException;
  public is.idega.idegaweb.golf.entity.MemberInfo getMemberInfo();

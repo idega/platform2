@@ -5,16 +5,12 @@ package is.idega.idegaweb.golf.entity;
 //import java.util.*;
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 import is.idega.idegaweb.golf.block.login.data.LoginTable;
-import is.idega.idegaweb.golf.block.login.data.LoginType;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.User;
@@ -538,18 +534,6 @@ public class MemberBMPBean extends GenericEntity implements Member {
 
     public void insertStartData(){
       //Administrator member created in LoginTable
-
-    }
-
-    public LoginType[] getLoginType() {
-      LoginType[] log_type = null;
-
-      try {
-        log_type = (LoginType[])this.findRelated((LoginType) IDOLookup.instanciateEntity(LoginType.class));
-      }
-      catch (SQLException s) {
-      }
-      return log_type;
 
     }
 
