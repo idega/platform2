@@ -2655,7 +2655,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 	}
 
-	public void deleteOffer(int applicationID, User performer) {
+	public void deleteOffer(int applicationID) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
