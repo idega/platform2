@@ -376,6 +376,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		if (clubs != null && !clubs.isEmpty()) {
 			sql.appendAnd().append(COLUMN_NAME_GROUP_ID).appendInCollection(clubs);
 		}
+		
+		sql.appendAnd().appendEqualsQuoted(COLUMN_NAME_GROUP_TYPE, IWMemberConstants.GROUP_TYPE_CLUB);
 
 		sql.appendOrderBy(ordering);
 
