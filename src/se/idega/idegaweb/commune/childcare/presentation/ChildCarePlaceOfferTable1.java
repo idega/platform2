@@ -6,6 +6,7 @@ import java.util.SortedSet;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
+import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -26,6 +27,8 @@ class ChildCarePlaceOfferTable1 extends Table{
 	private static String GRANTED;
 
 	private static boolean _initializeStatics = false;
+	
+	private String _onSubmitHandler = "";
 	
 
 	private static ChildCareCustomerApplicationTable _page;
@@ -62,6 +65,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 		Iterator i = applications.iterator();
 		int row = 2;
 		boolean disable = false;
+		String validateDateScript = "";
 		while (i.hasNext()) {
 			ChildCareApplication app = ((ComparableApp) i.next()).getApplication();
 			app.getChoiceNumber();
@@ -78,9 +82,13 @@ class ChildCarePlaceOfferTable1 extends Table{
 					
 			String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
 	
-			addToTable(row, id, app.getChoiceNumber() + ": " + name 
+			validateDateScript += addToTable(row, id, app.getChoiceNumber() + ": " + name 
 				//+ " (nodeId:" + app.getNodeID() + ")"
 				, offerText, prognosis, offer, disable);
+				
+			if (i.hasNext()){
+				validateDateScript += " || ";
+			}
 	
 			if (offer){
 				disable = true;
@@ -89,6 +97,20 @@ class ChildCarePlaceOfferTable1 extends Table{
 			row++;
 			
 		}
+		
+		validateDateScript = "function validateDates() { if(" + validateDateScript + ") { alert('Please select a valid date'); return false; } else {return true;}}";
+		
+		Script script = new Script("javascript");
+		script.setFunction("validateDates", validateDateScript);
+		_onSubmitHandler = "return validateDates()";
+		
+		page.add(script);
+
+		
+	}
+	
+	public String getOnSubmitHandler(){
+		return _onSubmitHandler;
 	}
 	
 	/**
@@ -99,7 +121,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 	 * @param status
 	 * @param prognosis
 	 */
-	private void addToTable(int row, String id, String name, String status, String prognosis, boolean offer, boolean disable) {
+	private String addToTable(int row, String id, String name, String status, String prognosis, boolean offer, boolean disable) {
 		int index = row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id)); 
 		String textColor = disable ? "gray":"black";
@@ -139,8 +161,11 @@ class ChildCarePlaceOfferTable1 extends Table{
 		DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
 		date.setStyleAttribute("style", _page.getSmallTextFontStyle());
 		
-
+		System.out.println("DATE ID" + date.getIDForDay());
 		
+//		System.out.println("DATE ID" + date.getID());		
+			
+
 		//TextInput ti = new TextInput(CCConstants.NEW_DATE + index);
 		//ti.setLength(8);
 		
@@ -153,20 +178,29 @@ class ChildCarePlaceOfferTable1 extends Table{
 		add(reqBtn, 4, row);
 //        }
 
-			
+		String validateDateScript = "false";
+					
 		if (offer){
 			
 			add(rb1, 5, row);
 			add(rb2, 6, row);
 			add(date, 6, row);
 			add(rb3, 7, row);
+			validateDateScript = "(document.getElementById('" + rb2.getID() + "').checked && " +
+				"(document.getElementById('" + date.getIDForDay() + "').value == '00' || " +
+				"document.getElementById('" + date.getIDForMonth() + "').value == '00' || " +
+				"document.getElementById('" + date.getIDForYear() + "').value == 'YY'))";
+			
 		}
 
 
-		if (row % 2 == 0)
+		if (row % 2 == 0) {
 			setRowColor(row++, _page.getZebraColor1());
-		else
+		} else {
 			setRowColor(row++, _page.getZebraColor2());
+		}
+			
+		return validateDateScript;
 					
 	}
 	
