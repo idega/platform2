@@ -3,8 +3,10 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -21,7 +23,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
-import com.idega.user.data.User;
 
 
 /**
@@ -46,10 +47,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 		}
 	}
 	
+	
 	private void printForm(IWContext iwc) {
 		try {
-			Collection members = getWorkReportBusiness(iwc).getWorkReportClubMemberHome().findAllClubMembersByWorkReportIdOrderedByMemberName(getWorkReportId());
-			Collection leagues = getWorkReportBusiness(iwc).getAllLeagueGroups();
+			WorkReportBusiness wBiz = getWorkReportBusiness(iwc);
+			Collection members = wBiz.getWorkReportClubMemberHome().findAllClubMembersByWorkReportIdOrderedByMemberName(getWorkReportId());
+			Collection leagues = wBiz.getAllWorkReportGroupsForYearAndType( wBiz.getWorkReportById(getWorkReportId()).getYearOfReport().intValue(),IWMemberConstants.GROUP_TYPE_LEAGUE);
 			
 			Form form = new Form();
 			form.maintainParameters(getParametersToMaintain());
@@ -127,7 +130,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			column = 1;
 			table.add(new SubmitButton("Submit", PARAMETER_SAVE, "true"), column, row);
 
-			add(table);
+			add(form);
 		}
 		catch (FinderException fe) {
 		}
