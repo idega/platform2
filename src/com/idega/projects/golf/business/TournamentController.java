@@ -207,6 +207,23 @@ public class TournamentController{
 
     }
 
+    public static List getTournamentRoundMembersList(int tournament_round_id) throws SQLException {
+        List members = null;
+        try {
+            members = EntityFinder.findAll(new com.idega.projects.golf.entity.TournamentParticipants(),"SELECT * from tournament_round_participants where tournament_round_id = "+tournament_round_id+" ORDER by grup_num");
+        }
+        catch (Exception ex) {
+            ex.printStackTrace(System.err);
+        }
+        return members;
+
+    }
+
+    public static com.idega.projects.golf.entity.TournamentRoundParticipants[] getTournamentRoundMembers(int tournament_round_id) throws SQLException {
+        com.idega.projects.golf.entity.TournamentRoundParticipants[] members =  (com.idega.projects.golf.entity.TournamentRoundParticipants[]) (new com.idega.projects.golf.entity.TournamentRoundParticipants()).findAll("SELECT * from tournament_round_participants where tournament_round_id = "+tournament_round_id+" ORDER by grup_num");
+        return members;
+    }
+
     public static List getTournamentGroups(com.idega.projects.golf.entity.Member member) throws SQLException {
         List groups  = com.idega.data.EntityFinder.findAll(new TournamentGroup());
         Vector returner = new Vector();
