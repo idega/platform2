@@ -180,7 +180,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
           if(result != null && result.size() > 0){
             return ((ProductPrice)result.get(0)).getPrice();
           }else{
-            System.err.println(buffer.toString());
+            //System.err.println(buffer.toString());
             throw new ProductPriceException("No Price Was Found");
           }
         }else if(cat.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)){
