@@ -341,6 +341,6 @@ public class ProviderAccountBusinessBean
 
 	public String getRejectMessageSubject()
 	{
-		return this.getLocalizedString("acc.app.provider.prov.rej.subj", "Your provider account application has been rejected");
+		return this.getLocalizedString("acc.app.provider.rej.subj", "Your provider account application has been rejected");
 	}
 }

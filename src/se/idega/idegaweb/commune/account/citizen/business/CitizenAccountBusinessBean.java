@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.10 2002/09/30 12:09:36 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.11 2002/09/30 12:10:41 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -223,6 +223,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 	public String getRejectMessageSubject()
 	{
-		return this.getLocalizedString("acc.app.citizen.prov.rej.subj", "Your citizen account application has been rejected");
+		return this.getLocalizedString("acc.app.citizen.rej.subj", "Your citizen account application has been rejected");
 	}
 }
