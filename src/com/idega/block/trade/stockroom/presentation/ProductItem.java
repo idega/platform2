@@ -4,6 +4,7 @@ import javax.ejb.FinderException;
 import com.idega.data.IDOLookup;
 import java.rmi.RemoteException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.business.IBOLookup;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.image.presentation.ImageViewer;
@@ -32,6 +33,7 @@ public class ProductItem extends Block {
   protected Locale _locale;
   protected int _localeId = -1;
   protected Image _defaultImage;
+  protected IWResourceBundle _iwrb;
 
   private String _fontStyle;
 
@@ -68,6 +70,7 @@ public class ProductItem extends Block {
     }
     this._locale = iwc.getCurrentLocale();
     this._localeId = ICLocaleBusiness.getLocaleId(_locale);
+    this._iwrb = iwc.getApplication().getBundle(getBundleIdentifier()).getResourceBundle(iwc);
 
     String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.image";
     _defaultImage = iwc.getApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", _locale);
