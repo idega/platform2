@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.8 2001/07/13 16:49:05 aron Exp $
+ * $Id: Tabber.java,v 1.9 2001/07/16 22:07:31 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -145,6 +145,7 @@ public class Tabber extends JModuleObject {
       LinkTable.setAlignment("right");
 
       String lang = "IS";
+
 
       Link Link1 = new Link(new Image(iAct == ACT20?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/finance/index.jsp");
       Link Link2 = new Link(new Image(iAct == ACT21?"/pics/tabs/"+lang+"/residents.gif":"/pics/tabs/"+lang+"/residents1.gif"),"/main/manager.jsp");

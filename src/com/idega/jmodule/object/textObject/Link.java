@@ -693,7 +693,7 @@ public void print(ModuleInfo modinfo)throws Exception{
   }
 
   public void setEventListener(String eventListenerClassName){
-    this.addParameter(new Parameter(IWMainApplication.IdegaEventListenerClassParameter,IWMainApplication.getEncryptedClassName(eventListenerClassName)));
+    this.addParameter(IWMainApplication.IdegaEventListenerClassParameter,IWMainApplication.getEncryptedClassName(eventListenerClassName));
   }
 
   public void sendToControllerFrame(){
