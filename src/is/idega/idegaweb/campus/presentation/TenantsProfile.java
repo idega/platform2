@@ -331,28 +331,28 @@ private Image image;
         count++;
       }
     }
-    if ( ssn != null && ssn.length() > 0 ) {
+    if ( ssn != null ) {
       applicant.setSSN(ssn);
     }
-    if ( email != null && email.length() > 0 ) {
+    if ( email != null ) {
       campusApplication.setEmail(email);
     }
-    if ( mobile != null && mobile.length() > 0 ) {
+    if ( mobile != null ) {
       applicant.setMobilePhone(mobile);
     }
-    if ( faculty != null && faculty.length() > 0 ) {
+    if ( faculty != null ) {
       campusApplication.setFaculty(faculty);
     }
-    if ( studyTrack != null && studyTrack.length() > 0 ) {
+    if ( studyTrack != null ) {
       campusApplication.setStudyTrack(studyTrack);
     }
-    if ( spouseName != null && spouseName.length() > 0 ) {
+    if ( spouseName != null ) {
       campusApplication.setSpouseName(spouseName);
     }
-    if ( spouseSSN != null && spouseSSN.length() > 0 ) {
+    if ( spouseSSN != null ) {
       campusApplication.setSpouseSSN(spouseSSN);
     }
-    if ( children != null && children.length() > 0 ) {
+    if ( children != null ) {
       campusApplication.setChildren(children);
     }
     if ( studyBegin != null && studyBegin.length() > 0 ) {
