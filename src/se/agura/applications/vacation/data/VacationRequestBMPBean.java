@@ -47,7 +47,7 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 
 	public static final String COLUMN_DECISION_BY = "decision_by";
 
-	public static final String COLUMN_COMMENT = "comment";
+	public static final String COLUMN_COMMENT = "notes";
 
 	public String getEntityName() {
 		return ENTITY_NAME;
