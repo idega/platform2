@@ -108,6 +108,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 		return applications;
 	}
 	
+	
+	
 	private Table getApplicationTable(IWContext iwc) throws RemoteException {
 		Table applicationTable = new Table();
 		applicationTable.setWidth(Table.HUNDRED_PERCENT);
@@ -131,6 +133,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 		applicationTable.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row++);
 				
 		Collection applications = getApplicationCollection();
+		
+		int numberInqueueNoOffer = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID()).size();
+		
 		if (applications != null && !applications.isEmpty()) {
 			ChildCareApplication application;
 			User child;
@@ -226,7 +231,13 @@ public class ChildCareAdmin extends ChildCareBlock {
 			applicationTable.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		}
-			
+		
+		applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+		applicationTable.add("<br>", 1, row);
+		applicationTable.add(getSmallHeader(localize("child_care.number_in_queue_no_offer","Number in queue without offer") + ": "), 1, row);
+		applicationTable.add(getSmallText(String.valueOf(numberInqueueNoOffer)), 1, row++);
+		
+				
 		if (showComment || showPriority || showMessage) {
 			applicationTable.setHeight(row++, 2);
 			if (showMessage) {
@@ -245,6 +256,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 				applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row++);
 			}
 		}
+		
+		
 		
 		if (_showQueueCleaning) {
 			Form form = new Form();
