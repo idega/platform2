@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.19 2002/11/20 13:59:58 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.20 2002/12/01 15:12:09 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -197,17 +197,17 @@ public class CampusApplicationForm extends ApplicationForm {
 		Edit.setStyle(t);
 
 		String text1 = _iwrb.getLocalizedString("firstChoice", "Fyrsta val");
-		String text2 = _iwrb.getLocalizedString("secondChoice", "Annað val");
-		String text3 = _iwrb.getLocalizedString("thirdChoice", "Þriðja val");
+		String text2 = _iwrb.getLocalizedString("secondChoice", "Anna? val");
+		String text3 = _iwrb.getLocalizedString("thirdChoice", "?ri?ja val");
 
 		Image back = _iwrb.getImage("back.gif");
 		back.setAttribute("onClick", "history.go(-1)");
-//		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "áfram")), APP_STATUS, Integer.toString(_statusAppliedFor));
-		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "áfram")));//, APP_STATUS, Integer.toString(_statusAppliedFor));
+//		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")), APP_STATUS, Integer.toString(_statusAppliedFor));
+		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));//, APP_STATUS, Integer.toString(_statusAppliedFor));
 
 		form.add(t);
 
-		t.addTitle(_iwrb.getLocalizedString("applied", "Húsnæði sem sótt er um"));
+		t.addTitle(_iwrb.getLocalizedString("applied", "H?sn??i sem s?tt er um"));
 		Text label = Edit.formatText(text1);
 		if (wrongParameters.contains("aprtType"))
 			label.setFontColor("#ff0000");
@@ -320,8 +320,8 @@ public class CampusApplicationForm extends ApplicationForm {
 		DataTable t = new DataTable();
 		Edit.setStyle(t);
 
-		String text1 = _iwrb.getLocalizedString("applicationSubject", "Umsókn um");
-		String text2 = _iwrb.getLocalizedString("apartmentType", "Tegund íbúðar");
+		String text1 = _iwrb.getLocalizedString("applicationSubject", "Ums?kn um");
+		String text2 = _iwrb.getLocalizedString("apartmentType", "Tegund ?b??ar");
 
 		DropdownMenu subject = new DropdownMenu(subjects, "subject");
 		Edit.setStyle(subject);
@@ -329,11 +329,11 @@ public class CampusApplicationForm extends ApplicationForm {
 		Edit.setStyle(aprtCat);
 		Image back = _iwrb.getImage("back.gif");
 		back.setAttribute("onClick", "history.go(-1)");
-		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "áfram")));
+		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));
 
 		form.add(t);
 
-		t.addTitle(_iwrb.getLocalizedString("applicationSubjectTitle", "Veldu tegund umsóknar"));
+		t.addTitle(_iwrb.getLocalizedString("applicationSubjectTitle", "Veldu tegund ums?knar"));
 		t.add(Edit.formatText(text1, true), 1, 1);
 		t.add(Edit.formatText(_required, true), 1, 1);
 		t.add(subject, 2, 1);
@@ -366,23 +366,23 @@ public class CampusApplicationForm extends ApplicationForm {
 
 		int currentYear = IWTimestamp.RightNow().getYear();
 
-		String labelStudyBegin = _iwrb.getLocalizedString("studyBegin", "Nám hafið við HÍ (mán./ár)");
-		String labelStudyEnd = _iwrb.getLocalizedString("studyEnd", "Áætluð námslok (mán./ár)");
+		String labelStudyBegin = _iwrb.getLocalizedString("studyBegin", "N?m hafi? vi? H? (m?n./?r)");
+		String labelStudyEnd = _iwrb.getLocalizedString("studyEnd", "??tlu? n?mslok (m?n./?r)");
 		String labelFaculty = _iwrb.getLocalizedString("faculty", "Deild");
-		String labelStudyTrack = _iwrb.getLocalizedString("studyTrack", "Námsbraut");
-		String labelCurrentRes = _iwrb.getLocalizedString("currentRes", "Núverandi húsnæði");
-		String labelSpouseName = _iwrb.getLocalizedString("spouseName", "Nafn umsækjanda/maka");
+		String labelStudyTrack = _iwrb.getLocalizedString("studyTrack", "N?msbraut");
+		String labelCurrentRes = _iwrb.getLocalizedString("currentRes", "N?verandi h?sn??i");
+		String labelSpouseName = _iwrb.getLocalizedString("spouseName", "Nafn ums?kjanda/maka");
 		String labelSpouseSSN = _iwrb.getLocalizedString("spouseSSN", "Kennitala");
-		String labelSpouseSchool = _iwrb.getLocalizedString("spouseSchool", "Skóli");
-		String labelSpouseTrack = _iwrb.getLocalizedString("spouseStudyTrack", "Námsbraut");
-		String labelSpouseBegin = _iwrb.getLocalizedString("spouseStudyBegin", "Nám hafið (mán./ár)");
-		String labelSpouseEnd = _iwrb.getLocalizedString("spouseStudyEnd", "Áætluð námslok (mán./ár)");
+		String labelSpouseSchool = _iwrb.getLocalizedString("spouseSchool", "Sk?li");
+		String labelSpouseTrack = _iwrb.getLocalizedString("spouseStudyTrack", "N?msbraut");
+		String labelSpouseBegin = _iwrb.getLocalizedString("spouseStudyBegin", "N?m hafi? (m?n./?r)");
+		String labelSpouseEnd = _iwrb.getLocalizedString("spouseStudyEnd", "??tlu? n?mslok (m?n./?r)");
 		String labelSpouseOcc = _iwrb.getLocalizedString("spouseOccupation", "Maki er");
-		String labelChildren = _iwrb.getLocalizedString("children", "Nöfn og fæðingardagur barna sem búa hjá umsækjanda");
-		String labelHousingFrom = _iwrb.getLocalizedString("wantHousingFrom", "Húsnæði óskast frá og með");
-		String labelContact = _iwrb.getLocalizedString("contact", "Ef ekki næst í mig í síma á dvalarstað má ná í mig eða skilja eftir skilaboð í sima");
-		String labelEmail = _iwrb.getLocalizedString("email", "Tölvupóstur");
-		String labelInfo = _iwrb.getLocalizedString("info", "Aðrar upplýsingar");
+		String labelChildren = _iwrb.getLocalizedString("children", "N?fn og f??ingardagur barna sem b?a hj? ums?kjanda");
+		String labelHousingFrom = _iwrb.getLocalizedString("wantHousingFrom", "H?sn??i ?skast fr? og me?");
+		String labelContact = _iwrb.getLocalizedString("contact", "Ef ekki n?st ? mig ? s?ma ? dvalarsta? m? n? ? mig e?a skilja eftir skilabo? ? sima");
+		String labelEmail = _iwrb.getLocalizedString("email", "T?lvup?stur");
+		String labelInfo = _iwrb.getLocalizedString("info", "A?rar uppl?singar");
 
 		TextInput textInputTemplate = new TextInput();
 		Edit.setStyle(textInputTemplate);
@@ -432,6 +432,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			inputContact.setContent(iwc.getParameter("contact"));
 
 		TextInput inputEmail = (TextInput) textInputTemplate.clone();
+		inputEmail.setAsEmail(_iwrb.getLocalizedString("enter_correct_email","Please enter a valid email"));
 		inputEmail.setName("email");
 		if (iwc.isParameterSet("email"))
 			inputEmail.setContent(iwc.getParameter("email"));
@@ -472,7 +473,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		Edit.setStyle(t2);
 		form.add(t2);
 
-		t2.addTitle(_iwrb.getLocalizedString("otherInfo", "Aðrar upplýsingar um umsækjanda"));
+		t2.addTitle(_iwrb.getLocalizedString("otherInfo", "A?rar uppl?singar um ums?kjanda"));
 		int row = 1;
 		Text label = Edit.formatText(labelStudyBegin, true);
 		if (wrongParameters.contains("studyBegin"))
@@ -616,7 +617,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
 	public void main(IWContext iwc) {
 		_iwrb = getResourceBundle(iwc);
-		_info = Edit.formatText(_iwrb.getLocalizedString("mustFillOut", "* Stjörnumerkt svæði verður að fylla út"));
+		_info = Edit.formatText(_iwrb.getLocalizedString("mustFillOut", "* Stj?rnumerkt sv??i ver?ur a? fylla ?t"));
 
 		control(iwc);
 	}
@@ -629,7 +630,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		Form form = new Form();
 		DataTable t = new DataTable();
 		BackButton back = new BackButton(_iwrb.getImage("back.gif"));
-		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("okk", "áfram")));
+		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("okk", "?fram")));
 		ok.setName("ok");
 
 		String heading = _iwrb.getLocalizedString(APP_GENINFO, "General information about applicant");
@@ -763,7 +764,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		row++;
 		CheckBox acceptance = new CheckBox("acceptor");
 
-		Text disclaimer = Edit.formatText(_iwrb.getLocalizedString("disclaimer", "Umsækjandi heimilar Stúdentagörðum að sækja upplýsingar um skráningu eða námsframvindu til Háskóla Íslands, eignarstöðu fasteigna til Fasteignarmats ríkisins og fjölskyldustærð eða barnafjölda til Hagstofu Íslands."));
+		Text disclaimer = Edit.formatText(_iwrb.getLocalizedString("disclaimer", "Ums?kjandi heimilar St?dentag?r?um a? s?kja uppl?singar um skr?ningu e?a n?msframvindu til H?sk?la ?slands, eignarst??u fasteigna til Fasteignarmats r?kisins og fj?lskyldust?r? e?a barnafj?lda til Hagstofu ?slands."));
 		t.add(acceptance, 1, row);
 		Text accReq = (Text) _required.clone();
 		if (wrongParameters.contains("acceptor")) {
