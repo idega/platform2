@@ -1,6 +1,6 @@
 /*
- * $Id: FavoritesBusinessHome.java,v 1.2 2004/11/05 13:26:10 laddi Exp $
- * Created on 3.11.2004
+ * $Id: FavoritesSessionHome.java,v 1.1 2004/11/05 13:26:10 laddi Exp $
+ * Created on 4.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -10,18 +10,17 @@
 package com.idega.block.favorites.business;
 
 
-
 import com.idega.business.IBOHome;
 
 
 /**
- * Last modified: 3.11.2004 10:34:54 by laddi
+ * Last modified: 4.11.2004 15:55:33 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
-public interface FavoritesBusinessHome extends IBOHome {
+public interface FavoritesSessionHome extends IBOHome {
 
-	public FavoritesBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
+	public FavoritesSession create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
 }

@@ -48,7 +48,7 @@ public class FavoriteBMPBean extends GenericEntity implements Favorite {
 		addAttribute(COLUMN_URL, "URL", String.class);
 		addAttribute(COLUMN_IS_QUICKLINK, "Is quicklink", Boolean.class);
 		addAttribute(COLUMN_IS_DELETED, "Is deleted", Boolean.class);
-		addAttribute(COLUMN_FAVORITE_TYPE,"Favorite type", String.class);
+		addAttribute(COLUMN_FAVORITE_TYPE,"Favorite type", String.class, 1);
 		
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		
@@ -127,33 +127,60 @@ public class FavoriteBMPBean extends GenericEntity implements Favorite {
 ///////////////////////////////////////////////////
 
 	public Integer ejbFindByUserAndURL(User user, String URL) throws FinderException {
+		return ejbFindByUserAndURL(user, URL, null);
+	}
+	
+	public Integer ejbFindByUserAndURL(User user, String URL, String favoriteType) throws FinderException {
 		Table favorites = new Table(this);
 		
 		SelectQuery query = new SelectQuery(favorites);
 		query.addColumn(favorites, COLUMN_FAVORITE_ID);
 		query.addCriteria(new MatchCriteria(favorites, COLUMN_USER_ID, MatchCriteria.EQUALS, user));
 		query.addCriteria(new MatchCriteria(favorites, COLUMN_URL, MatchCriteria.EQUALS, URL));
+		if (favoriteType != null) {
+			query.addCriteria(new MatchCriteria(favorites, COLUMN_FAVORITE_TYPE, MatchCriteria.EQUALS, favoriteType));
+		}
+		MatchCriteria isNotDeleted = new MatchCriteria(favorites, COLUMN_IS_DELETED, MatchCriteria.EQUALS, false);
+		MatchCriteria isNull = new MatchCriteria(new Column(favorites, COLUMN_IS_DELETED), false);
+		query.addCriteria(new OR(isNotDeleted, isNull));
 		
 		return (Integer) idoFindOnePKBySQL(query.toString());
 	}
 	
 	public Integer ejbFindByUserAndName(User user, String name) throws FinderException {
+		return ejbFindByUserAndName(user, name, null);
+	}
+	
+	public Integer ejbFindByUserAndName(User user, String name, String favoriteType) throws FinderException {
 		Table favorites = new Table(this);
 		
 		SelectQuery query = new SelectQuery(favorites);
 		query.addColumn(favorites, COLUMN_FAVORITE_ID);
 		query.addCriteria(new MatchCriteria(favorites, COLUMN_USER_ID, MatchCriteria.EQUALS, user));
 		query.addCriteria(new MatchCriteria(favorites, COLUMN_NAME, MatchCriteria.EQUALS, name));
+		if (favoriteType != null) {
+			query.addCriteria(new MatchCriteria(favorites, COLUMN_FAVORITE_TYPE, MatchCriteria.EQUALS, favoriteType));
+		}
+		MatchCriteria isNotDeleted = new MatchCriteria(favorites, COLUMN_IS_DELETED, MatchCriteria.EQUALS, false);
+		MatchCriteria isNull = new MatchCriteria(new Column(favorites, COLUMN_IS_DELETED), false);
+		query.addCriteria(new OR(isNotDeleted, isNull));
 		
 		return (Integer) idoFindOnePKBySQL(query.toString());
 	}
 	
 	public Collection ejbFindAllByUser(User user) throws FinderException {
+		return ejbFindAllByUser(user, null);
+	}
+	
+	public Collection ejbFindAllByUser(User user, String favoriteType) throws FinderException {
 		Table favorites = new Table(this);
 		
 		SelectQuery query = new SelectQuery(favorites);
 		query.addColumn(favorites, COLUMN_FAVORITE_ID);
 		query.addCriteria(new MatchCriteria(favorites, COLUMN_USER_ID, MatchCriteria.EQUALS, user));
+		if (favoriteType != null) {
+			query.addCriteria(new MatchCriteria(favorites, COLUMN_FAVORITE_TYPE, MatchCriteria.EQUALS, favoriteType));
+		}
 		MatchCriteria isNotDeleted = new MatchCriteria(favorites, COLUMN_IS_DELETED, MatchCriteria.EQUALS, false);
 		MatchCriteria isNull = new MatchCriteria(new Column(favorites, COLUMN_IS_DELETED), false);
 		query.addCriteria(new OR(isNotDeleted, isNull));
