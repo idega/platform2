@@ -94,6 +94,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 
 			if (groups != null) {
 				Iterator iter = groups.iterator();
+				int size = groups.size();
 				while (iter.hasNext()) {
 					Group group = (Group) iter.next();
 					String name = null;
@@ -104,7 +105,13 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 						showGroup = checkMetaData(group, metaDataMap);
 					}
 					if(showGroup) {
-						addMenuElement(group.getPrimaryKey().toString(), name);
+						String id = group.getPrimaryKey().toString();
+						addMenuElement(id, name);
+						if(size==1){//might this cause problems? add as an option to the interface if it does.
+							setSelectedElement(id);
+							setDisabled(true);//cannot change it
+						}
+						
 					}
 				}
 			}
