@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.65 2004/06/16 09:09:23 malin Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.66 2004/06/21 08:51:44 malin Exp $
  * @since 12.2.2003 
  */
 
@@ -150,7 +150,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 						+ application.getChild().getPersonalID()
 						+ " "
 						+ localize(REQUEST_MESSAGE2)
-						+ " " + application.getProvider(),
+						+ " " + application.getProvider()
+						+ ".",
 					application.getOwner());
 				
 				iwc.setSessionAttribute(REQ_BUTTON + application.getNodeID(), new Boolean(true));
