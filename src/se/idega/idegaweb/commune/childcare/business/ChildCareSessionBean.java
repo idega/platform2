@@ -52,22 +52,26 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	
 	public boolean hasPrognosis() throws RemoteException {
 		if (hasPrognosis == null) {
-			ChildCarePrognosis prognosis = getChildCareBusiness().getPrognosis(getChildCareID());
-			if (prognosis != null) {
-				IWTimestamp stamp = new IWTimestamp();
-				IWTimestamp lastUpdated = new IWTimestamp(prognosis.getUpdatedDate());
-				if (IWTimestamp.getDaysBetween(lastUpdated, stamp) > 90) {
-					hasPrognosis = new Boolean(false);
-					_outDatedPrognosis = true;
-				}
-				else
-					hasPrognosis = new Boolean(true);
-			}
-			else {
-				hasPrognosis = new Boolean(false);
-			}
+			setHasPrognosis();
 		}
 		return hasPrognosis.booleanValue();
+	}
+	
+	private void setHasPrognosis() throws RemoteException {
+		ChildCarePrognosis prognosis = getChildCareBusiness().getPrognosis(getChildCareID());
+		if (prognosis != null) {
+			IWTimestamp stamp = new IWTimestamp();
+			IWTimestamp lastUpdated = new IWTimestamp(prognosis.getUpdatedDate());
+			if (IWTimestamp.getDaysBetween(lastUpdated, stamp) > 90) {
+				hasPrognosis = new Boolean(false);
+				_outDatedPrognosis = true;
+			}
+			else
+				hasPrognosis = new Boolean(true);
+		}
+		else {
+			hasPrognosis = new Boolean(false);
+		}
 	}
 	
 	public void setHasPrognosis(boolean hasPrognosis) {
@@ -96,10 +100,12 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 					return _childcareID;
 				}
 				else {
+					setHasPrognosis();
 					return getChildCareIDFromUser(user);
 				}
 			}
 			else {
+				setHasPrognosis();
 				_userID = userID;
 				return getChildCareIDFromUser(user);
 			}
