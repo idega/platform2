@@ -1,6 +1,7 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.sql.Timestamp;
+import java.sql.SQLException;
 
 /**
  * Title:        IW Trade
@@ -13,14 +14,16 @@ import java.sql.Timestamp;
 
 public interface SupplyManager {
 
-  public void addSupplies(int product_id, double amount);
-  public void depleteSupplies(int product_id, double amount);
-  public double getSupplyStatus(int product_id);
-  public double getSupplyStatus(int product_id, Timestamp time);
+  public void addSupplies(int product_id, float amount);
+  public void depleteSupplies(int product_id, float amount);
+  public void setSupplyStatus(int product_id, float status);
+  public float getSupplyStatus(int product_id) throws SQLException ;
+  public float getSupplyStatus(int product_id, Timestamp time);
   public void setPrice(int product_id, Timestamp time);
-  public double getPrice(int product_id, Timestamp time);
+  public float getPrice(int product_id, Timestamp time);
   public void createPriceCategory(  );
 
+  public int createProduct(int supplierId, Integer fileId, String productName, String ProductDescription, boolean isValid) throws Exception;
 
 
 } // interface SupplyManager

@@ -16,6 +16,9 @@ import com.idega.block.trade.data.Currency;
 
 public class ProductPrice extends GenericEntity{
 
+  public static final int PRICETYPE_PRICE = 0;
+  public static final int PRICETYPE_DISCOUNT = 1;
+
   public ProductPrice(){
           super();
   }
@@ -25,51 +28,81 @@ public class ProductPrice extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getProductIdColumnName(), "Vara" ,true, true, Integer.class, "many_to_one", Product.class);
-    addAttribute(getPriceCategoryIdColumnName(), "Verðflokkur" ,true, true, Integer.class, "many_to_one", ProductCategory.class);
+    addAttribute(getColumnNameProductId(), "Vara" ,true, true, Integer.class, "many_to_one", Product.class);
+    addAttribute(getColumnNamePriceCategoryId(), "Verðflokkur" ,true, true, Integer.class, "many_to_one", ProductCategory.class);
     addAttribute(getColumnNameCurrencyId(),"Gjaldmiðill",true,true,Integer.class,"many_to_one", Currency.class);
-    addAttribute(getPriceColumnName(), "Verð", true, true, Double.class);
-    addAttribute(getPriceDateColumnName(), "Dagsetning verðs", true, true, java.sql.Date.class);
-    addAttribute(getColumnNamePriceType(),"Gerð",true,true,String.class,255);
+    addAttribute(getColumnNamePrice(), "Verð", true, true, Double.class);
+    addAttribute(getColumnNamePriceDate(), "Dagsetning verðs", true, true, java.sql.Date.class);
+    addAttribute(getColumnNamePriceType(),"Gerð",true,true,Integer.class);
   }
 
   public String getEntityName(){
     return getProductPriceTableName();
   }
 
+
+  public int getProductId() {
+    return getIntColumnValue(getColumnNameProductId());
+  }
+
+  public void setProductId(int id){
+    setColumn(getColumnNameProductId(),id);
+  }
+
+
   public PriceCategory getPriceCategory() {
-    return (PriceCategory) getColumnValue(getPriceCategoryIdColumnName());
+    return (PriceCategory) getColumnValue(getColumnNamePriceCategoryId());
   }
 
   public int getPriceCategoryID() {
-    return getIntColumnValue(getPriceCategoryIdColumnName());
+    return getIntColumnValue(getColumnNamePriceCategoryId());
   }
 
   public void setPriceCategoryID(int id) {
-    setColumn(getPriceCategoryIdColumnName(), id);
+    setColumn(getColumnNamePriceCategoryId(), id);
   }
 
-  public int getPrice() {
-    return getIntColumnValue(getPriceColumnName());
+  public int getCurrencyId(){
+    return getIntColumnValue(getColumnNameCurrencyId());
   }
 
-  public void setPrice(int price) {
-    setColumn(getPriceColumnName(), price);
+  public void setCurrencyId(int id){
+    setColumn(getColumnNameCurrencyId(), id);
+  }
+
+  public void setCurrencyId(Integer id){
+    setColumn(getColumnNameCurrencyId(), id);
+  }
+
+  public float getPrice() {
+    return getFloatColumnValue(getColumnNamePrice());
+  }
+
+  public void setPrice(float price) {
+    setColumn(getColumnNamePrice(), price);
   }
 
   public Timestamp getPriceDate() {
-    return (Timestamp) getColumnValue(getPriceDateColumnName());
+    return (Timestamp) getColumnValue(getColumnNamePriceDate());
   }
 
   public void setPriceDate(Timestamp timestamp) {
-    setColumn(getPriceDateColumnName(), timestamp);
+    setColumn(getColumnNamePriceDate(), timestamp);
+  }
+
+  public int getPriceType(){
+    return getIntColumnValue(getColumnNamePriceType());
+  }
+
+  public void setPriceType(int type){
+    setColumn(getColumnNamePriceType(), type);
   }
 
   public static String getProductPriceTableName(){return "SR_PRODUCT_PRICE";}
-  public static String getProductIdColumnName(){return "SR_PRODUCT_ID";}
-  public static String getPriceCategoryIdColumnName() {return "SR_PRICE_CATEGORY_ID";}
-  public static String getPriceColumnName() {return "PRICE";}
-  public static String getPriceDateColumnName() {return "PRICE_DATE"; }
+  public static String getColumnNameProductId(){return "SR_PRODUCT_ID";}
+  public static String getColumnNamePriceCategoryId() {return "SR_PRICE_CATEGORY_ID";}
+  public static String getColumnNamePrice() {return "PRICE";}
+  public static String getColumnNamePriceDate() {return "PRICE_DATE"; }
   public static String getColumnNameCurrencyId() {return "TR_CURRENCY_ID"; }
   public static String getColumnNamePriceType() {return "PRICE_TYPE"; }
 

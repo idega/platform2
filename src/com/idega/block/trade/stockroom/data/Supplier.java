@@ -26,9 +26,10 @@ public class Supplier extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(), "Name", true, true, String.class);
-    //addAttribute(getAddressIDColumnName(), "Heimilisfang", true, true, Integer.class ,"many_to_one",Address.class);
-    addAttribute(getGroupIDColumnName(),"Hópur", true, true, Integer.class, "many_to_one", EmployeeGroup.class);
+    addAttribute(getColumnNameName(), "Name", true, true, String.class);
+    addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class,500);
+    addAttribute(getColumnNameGroupID(),"Hópur", true, true, Integer.class, "many_to_one", EmployeeGroup.class);
+
     this.addManyToManyRelationShip(Address.class,"SR_SUPPLIER_IC_ADDRESS");
     this.addManyToManyRelationShip(Phone.class,"SR_SUPPLIER_IC_PHONE");
     this.addManyToManyRelationShip(PriceCategory.class, "SR_SUPPLIER_PRICE_CATEGORY");
@@ -39,19 +40,37 @@ public class Supplier extends GenericEntity{
   }
 
   public static String getSupplierTableName(){return "SR_SUPPLIER";}
-  public static String getNameColumnName() {return "NAME";}
-  public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
-  public static String getGroupIDColumnName() {return "IC_GROUP_ID";}
+  public static String getColumnNameName() {return "NAME";}
+  public static String getColumnNameDescription() {return "NAME";}
+  public static String getColumnNameGroupID() {return "IC_GROUP_ID";}
 
   public String getEntityName(){
     return getSupplierTableName();
   }
+
+
   public String getName(){
-    return getNameColumnName();
+    return getStringColumnValue(getColumnNameName());
   }
 
   public void setName(String name){
-    setColumn(getNameColumnName(),name);
+    setColumn(getColumnNameName(),name);
+  }
+
+  public String getDescription(){
+    return getStringColumnValue(getColumnNameDescription());
+  }
+
+  public void setDescription(String description){
+    setColumn(getColumnNameDescription(),description);
+  }
+
+  public void setGroupId(int id){
+    setColumn(getColumnNameGroupID(), id);
+  }
+
+  public int getGroupId(){
+    return getIntColumnValue(getColumnNameGroupID());
   }
 
 /*

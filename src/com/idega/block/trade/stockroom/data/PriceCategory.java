@@ -23,60 +23,58 @@ public class PriceCategory extends GenericEntity{
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(), "Name", true, true, String.class, 255);
-    addAttribute(getDescriptionColumnName(), "Lýsing", true, true, java.sql.Date.class);
-    addAttribute(getExtraInfoColumnName(), "Aðrar upplysingar", true, true, java.sql.Date.class);
-    addAttribute(getPriceIdColumnName(),"Verð (optional)",true,true,Integer.class,"many_to_one",ProductPrice.class);
-    addAttribute(getDiscountColumnName(), "Afsláttur (optional)", true, true, Double.class);
+    addAttribute(getColumnNameName(), "Name", true, true, String.class, 255);
+    addAttribute(getColumnNameDescription(), "Lýsing", true, true, String.class, 255);
+    addAttribute(getColumnNameType(),"Type",true,true,String.class,255);
+    addAttribute(getColumnNameExtraInfo(), "Aðrar upplysingar", true, true, String.class, 255);
     this.addTreeRelationShip();
   }
 
 
   public void setDefaultValue() {
-    setName("");
+    //setName("");
   }
 
   public String getEntityName(){
-    return getPriceCategoryTableName();
+    return "SR_PRICE_CATEGORY";
   }
   public String getName(){
-    return getNameColumnName();
+    return getStringColumnValue(getColumnNameName());
   }
 
   public void setName(String name){
-    setColumn(getNameColumnName(),name);
+    setColumn(getColumnNameName(),name);
   }
 
   public String getDescription() {
-    return getStringColumnValue(getDescriptionColumnName());
+    return getStringColumnValue(getColumnNameDescription());
   }
 
   public void setDescription(String description) {
-    setColumn(getDescriptionColumnName(),description);
+    setColumn(getColumnNameDescription(),description);
   }
 
-  public String getExtraInfo() {
-    return getStringColumnValue(getExtraInfoColumnName());
+  public String getExtraInfo(){
+    return getStringColumnValue(getColumnNameExtraInfo());
   }
 
-  public void setExtraInfo(String extraInfo) {
-    setColumn(getExtraInfoColumnName(), extraInfo);
+  public void setExtraInfo(String extraInfo){
+    setColumn(getColumnNameExtraInfo(),extraInfo);
   }
 
-  public float getDiscount() {
-    return getFloatColumnValue(getDiscountColumnName());
+
+  public String getType(){
+    return getStringColumnValue(getColumnNameType());
   }
 
-  public void setDiscount(float discount) {
-    setColumn(getDiscountColumnName(),discount);
+  public void setType(String type){
+    setColumn(getColumnNameType(),type);
   }
 
-  public static String getPriceCategoryTableName(){return "SR_PRICE_CATEGORY";}
-  public static String getNameColumnName() {return "CATEGORY_NAME";}
-  public static String getDescriptionColumnName() {return "DESCRIPTION";}
-  public static String getExtraInfoColumnName() {return "EXTRA_INFO";}
-  public static String getPriceIdColumnName(){return "SR_PRODUCT_PRICE";}
-  public static String getDiscountColumnName() {return "DISCOUNT";}
+  public static String getColumnNameName() {return "CATEGORY_NAME";}
+  public static String getColumnNameDescription() {return "DESCRIPTION";}
+  public static String getColumnNameType(){return "CATEGORY_TYPE";}
+  public static String getColumnNameExtraInfo() {return "EXTRA_INFO";}
 
 
 

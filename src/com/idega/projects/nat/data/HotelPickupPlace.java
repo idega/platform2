@@ -5,6 +5,7 @@ package com.idega.projects.nat.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
+import com.idega.block.trade.stockroom.data.Supplier;
 
 public class HotelPickupPlace extends GenericEntity{
 
@@ -19,7 +20,7 @@ public class HotelPickupPlace extends GenericEntity{
     addAttribute(getNameColumnName(), "Name", true, true, String.class);
     addAttribute(getAddressIDColumnName(), "Heimilisfang", true, true, Integer.class ,"many_to_one",Address.class);
 
-    this.addManyToManyRelationShip(Supplier.class,"TB_HOTEL_PICKUP_PLACE_SUPPLIER");
+    this.addManyToManyRelationShip(Supplier.class,"TB_HOTEL_PICKUP_PL_SR_SUPPLIER");
   }
 
   public void insertStartData()throws Exception{
