@@ -74,41 +74,41 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
     return this.getStringColumnValue(getClassColumnName());
   }
   
-
-
-  /*public Gender ejbHomeGetMaleGender() throws FinderException,RemoteException{
-   return ((GenderHome)this.getEJBHome()).findByGenderName(NAME_MALE);
-  }
-
-  
-  public Integer ejbFindByGenderName(String name) throws FinderException,RemoteException{
-   Collection genders = super.idoFindAllIDsByColumnBySQL(getNameColumnName(),name);
-   Iterator iter = genders.iterator();
-   Integer gender = null;
-    if( iter.hasNext() ) {
-       gender = (Integer) iter.next();
-    }
-    else{
-     throw new FinderException("Gender named : "+name+" not found");
-    }
-
-    return gender;
-  }
-
-*/
-
-
   public void insertStartData() throws SQLException {
-/*
-    try{
-      Gender male = ((GenderHome)IDOLookup.getHome(Gender.class)).create();
-      male.setName(NAME_MALE);
-      male.store();
+	//temporary remove also these should be the interfaces
+	try{
+		ImportHandler nacka = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
+		nacka.setName("Nacka citizen importer");
+		nacka.setDescription("Imports the KIR data for Nacka.");
+		nacka.setClassName("se.idega.idegaweb.commune.block.importer.business.NackaImportFileHandlerBean");
+      	nacka.store();
     }
     catch (Exception ex) {
       ex.printStackTrace();
     }
-*/
+    
+	try{
+		ImportHandler nacka2 = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
+		nacka2.setName("Nacka student importer");
+		nacka2.setDescription("Imports the students in Nacka");
+		nacka2.setClassName("se.idega.idegaweb.commune.block.importer.business.NackaStudentImportFileHandlerBean");
+      	nacka2.store();
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    
+	try{
+		ImportHandler KR = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
+		KR.setName("KR data importer");
+		KR.setDescription("Les inn gogn kn.d. KR.");
+		KR.setClassName("is.idega.idegaweb.member.business.KRImportFileHandlerBean");
+      	KR.store();
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+	
   }
 
   public Collection ejbFindAllImportHandlers()throws FinderException{
