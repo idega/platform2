@@ -388,7 +388,9 @@ public void print(ModuleInfo modinfo)throws Exception{
     return obj;
   }
 
-
+protected Parameter getControlParameter(){
+  return controlParameter;
+}
 
 protected void setControlParameter(String parameterName,String parameterValue){
   if (controlParameter==null){
@@ -419,7 +421,8 @@ public void setEventListener(String eventListenerClassName){
   public void setWindowToOpen(Class windowClass){
     this.windowClass=windowClass;
     setAction(IWMainApplication.windowOpenerURL);
-    add(new Parameter(Page.IW_FRAME_CLASS_PARAMETER,windowClass.getName()));
+    addParameter(Page.IW_FRAME_CLASS_PARAMETER,windowClass.getName());
+    setWindow(Window.getStaticInstance(windowClass));
   }
 
 } // Class ends

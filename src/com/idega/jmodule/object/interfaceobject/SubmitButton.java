@@ -30,7 +30,7 @@ private String headerText;
 private static final String emptyString = "";
 
 public SubmitButton(){
-	this("","Submit");
+	this(emptyString,"Submit");
 	setName(getDefaultName());
 }
 
@@ -73,7 +73,7 @@ public SubmitButton(String displayText,String parameterName,String parameterValu
  * Constructor that generates a parametername and the value is the displayText
  */
 public SubmitButton(String displayText){
-	this("",displayText);
+	this(emptyString,displayText);
 	setName(getDefaultName());
 }
 
@@ -90,7 +90,7 @@ public String getDefaultName(){
 *Only works if no form is around the button and it is used to open a new Window.
 */
 public SubmitButton(Window window){
-	this("","Submit");
+	this(emptyString,"Submit");
 	setName(getDefaultName());
 	this.window=window;
 }
@@ -99,7 +99,7 @@ public SubmitButton(Window window){
 *Only works if no form is around the button and it is used to open a new Window.
 */
 public SubmitButton(Window window,String displayString){
-	this("",displayString);
+	this(emptyString,displayString);
 	setName(getDefaultName());
 	this.window=window;
 }
@@ -110,7 +110,7 @@ public SubmitButton(Window window,String name,String value){
 }
 
 private String generateScriptCode(Window myWindow){
-	return "";
+	return emptyString;
 }
 
 public void setOnSubmit(String script){
@@ -147,11 +147,23 @@ public void setStyle(String style) {
 
 
 public void main(ModuleInfo modinfo){
-
   if (usingControlParameter){
     if(!parameterName.equals(emptyString)){
-      this.getParentForm().setControlParameter(parameterName,"");
-      this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
+      if(this.defaultImage==null){
+        this.getParentForm().setControlParameter(parameterName,"");
+        this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
+      }
+      else{
+        Form form = getParentForm();
+        form.setControlParameter(parameterName,"");
+        Parameter par = form.getControlParameter();
+        if(par!=null){
+          this.setOnClick("this.form."+par.getID()+".value='"+parameterValue+"'");
+        }
+        else{
+          throw new RuntimeException("ControlParameter is null in parent form");
+        }
+      }
     }
   }
 

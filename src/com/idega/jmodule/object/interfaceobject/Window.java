@@ -265,14 +265,29 @@ public static String getCallingScriptString(Class windowClass){
   return getCallingScriptString(windowClass,true);
 }
 
+public static Window getStaticInstance(Class windowClass){
+  Window windowInstance = (Window)allOpenedWindowClasses.get(windowClass);
+  if(windowInstance==null){
+    try{
+      windowInstance = (Window)windowClass.newInstance();
+      allOpenedWindowClasses.put(windowClass,windowInstance);
+    }
+    catch(Exception e){
+
+    }
+  }
+  return windowInstance;
+}
+
 public static String getCallingScriptString(Class windowClass,boolean includeURL){
   String url = getWindowURL(windowClass);
   return getCallingScriptString(windowClass,url,includeURL);
 }
 
+
 public static String getCallingScriptString(Class windowClass,String url,boolean includeURL){
       String theURL=null;
-      Window windowInstance = (Window)allOpenedWindowClasses.get(windowClass);
+      Window windowInstance = getStaticInstance(windowClass);
       if(includeURL){
         theURL=url;
       }
@@ -280,13 +295,7 @@ public static String getCallingScriptString(Class windowClass,String url,boolean
         theURL="";
       }
       if(windowInstance==null){
-        try{
-          windowInstance = (Window)windowClass.newInstance();
-          allOpenedWindowClasses.put(windowClass,windowInstance);
-        }
-        catch(Exception e){
           return "window.open('"+theURL+"','tempwindow','resizable=yes,toolbar=yes,location=no,directories=no,status=yes,scrollbars=yes,menubar=yes,titlebar=yes,width=500,height=500')";
-        }
       }
       return "window.open('"+theURL+"','"+windowInstance.getTarget()+"','resizable="+windowInstance.returnCheck(windowInstance.resizable)+",toolbar="+windowInstance.returnCheck(windowInstance.toolbar)+",location="+windowInstance.returnCheck(windowInstance.location)+",directories="+windowInstance.returnCheck(windowInstance.directories)+",status="+windowInstance.returnCheck(windowInstance.status)+",scrollbars="+windowInstance.returnCheck(windowInstance.scrollbar)+",menubar="+windowInstance.returnCheck(windowInstance.menubar)+",titlebar="+windowInstance.returnCheck(windowInstance.titlebar)+",width="+windowInstance.getWidth()+",height="+windowInstance.getHeight()+"')";
 }
