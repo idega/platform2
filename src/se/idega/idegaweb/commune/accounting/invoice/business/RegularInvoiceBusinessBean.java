@@ -7,6 +7,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.sql.Date;
 
 import javax.ejb.FinderException;
@@ -25,14 +26,13 @@ import com.idega.data.IDOLookupException;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class RegularInvoiceBusinessBean extends IBOServiceBean implements RegularInvoiceBusiness {
-	public Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId) throws IDOLookupException, FinderException{
+	public Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId, String schoolCategoryId) throws IDOLookupException, FinderException{
 
 		RegularInvoiceEntryHome home =(RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
-		return home.findRegularInvoicesForPeriodeAndUser(from, to, userId);
+		return home.findRegularInvoicesForPeriodeAndUser(from, to, userId, schoolCategoryId);
 
 	}
 	public Collection findRegularInvoicesForPeriode(Date from, Date to){
-		
-		return null;
+		return new HashSet();
 	}
 }
