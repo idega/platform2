@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.2 2001/07/10 17:03:29 palli Exp $
+ * $Id: ApplicationForm.java,v 1.3 2001/07/30 11:46:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,6 +36,8 @@ public class ApplicationForm extends Editor {
   private final int statusSubject_ = 1;
   private final int statusGeneralInfo_ = 2;
 
+  private static final String IW_RESOURCE_BUNDLE = "com.idega.block.application";
+
   private String styleAttribute = "font-size: 8pt";
 
   private Text textTemplate = new Text();
@@ -70,6 +72,10 @@ public class ApplicationForm extends Editor {
     }
   }
 
+  public String getBundleIdentifier() {
+    return(IW_RESOURCE_BUNDLE);
+  }
+
   protected void doSelectSubject(ModuleInfo modinfo) {
     IWResourceBundle iwrb = getResourceBundle(modinfo);
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
@@ -82,7 +88,7 @@ public class ApplicationForm extends Editor {
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("applicationSubject","Veldu tegund umsóknar"));
+    heading.setText(iwrb.getLocalizedString("applicationSubjectTitle","Veldu tegund umsóknar"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
     text1.setText(iwrb.getLocalizedString("applicationSubject","Umsókn um"));

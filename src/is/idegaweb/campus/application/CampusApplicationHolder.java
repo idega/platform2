@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationHolder.java,v 1.1 2001/07/09 13:45:12 aron Exp $
+ * $Id: CampusApplicationHolder.java,v 1.2 2001/07/30 11:48:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,10 @@
  */
 package is.idegaweb.campus.application;
 
-import com.idega.block.application.data.*;
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
 import is.idegaweb.campus.entity.Applied;
+import is.idegaweb.campus.entity.CampusApplication;
 import java.util.Vector;
 
 /**
@@ -21,11 +23,11 @@ import java.util.Vector;
 public class CampusApplicationHolder {
   private Application eApplication = null;
   private Applicant eApplicant = null;
-  private is.idegaweb.campus.entity.Application eCampusApplication = null;
+  private CampusApplication eCampusApplication = null;
   private Vector vApplied = null;
 
   public CampusApplicationHolder(Application application,Applicant applicant,
-        is.idegaweb.campus.entity.Application campusApplication,Vector vapplied){
+        CampusApplication campusApplication,Vector vapplied){
     this.eApplicant = applicant;
     this.eApplication = application;
     this.eCampusApplication = campusApplication;
@@ -37,7 +39,7 @@ public class CampusApplicationHolder {
   public void setApplicant(Applicant applicant){
     this.eApplicant = applicant;
   }
-  public void setCampusApplication(is.idegaweb.campus.entity.Application application){
+  public void setCampusApplication(CampusApplication application){
     this.eCampusApplication = application;
   }
   public void setApplied(Vector applied){
@@ -46,7 +48,7 @@ public class CampusApplicationHolder {
   public Application getApplication(){
     return this.eApplication;
   }
-  public is.idegaweb.campus.entity.Application getCampusApplication(){
+  public CampusApplication getCampusApplication(){
     return eCampusApplication;
   }
   public Applicant getApplicant(){

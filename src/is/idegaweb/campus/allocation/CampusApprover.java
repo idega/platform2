@@ -204,8 +204,8 @@ public class CampusApprover extends KeyEditor{
       }
 
       if( eApplication !=null && eApplicant != null){
-        Application A = new Application();
-        Application eCampusApplication = ((Application[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
+        CampusApplication A = new CampusApplication();
+        CampusApplication eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
         List L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
 
         int border = 0;
@@ -259,7 +259,7 @@ public class CampusApprover extends KeyEditor{
     return OuterFrame;
   }
 
-  public ModuleObject getApplicantTable(Applicant eApplicant,Application eCampusApplication,IWResourceBundle iwrb){
+  public ModuleObject getApplicantTable(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -311,7 +311,7 @@ public class CampusApprover extends KeyEditor{
       return T;
   }
 
-  public ModuleObject getSpouseTable(Application eCampusApplication,IWResourceBundle iwrb){
+  public ModuleObject getSpouseTable(CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -352,7 +352,7 @@ public class CampusApprover extends KeyEditor{
       return T;
   }
 
-  public ModuleObject getChildrenTable(Application eCampusApplication,IWResourceBundle iwrb){
+  public ModuleObject getChildrenTable(CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -375,7 +375,7 @@ public class CampusApprover extends KeyEditor{
       T.setWidth("100%");
       return T;
   }
-  public ModuleObject getApartmentTable(Application eCampusApplication,List lApplied,ModuleInfo modinfo,IWResourceBundle iwrb){
+  public ModuleObject getApartmentTable(CampusApplication eCampusApplication,List lApplied,ModuleInfo modinfo,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;

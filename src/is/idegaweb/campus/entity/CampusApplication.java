@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.6 2001/07/09 17:49:28 aron Exp $
+ * $Id: CampusApplication.java,v 1.1 2001/07/30 11:48:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,7 +20,7 @@ import java.sql.Date;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class Application extends GenericEntity {
+public class CampusApplication extends GenericEntity {
   private static final String name_ = "cam_application";
   private static final String applicationId_ = "app_application_id";
   private static final String currentResidenceId_ = "cam_curr_res_id";
@@ -49,17 +49,17 @@ public class Application extends GenericEntity {
   private static final String otherInfo_ = "other_info";
   private static final String email_ = "email";
 
-  public Application() {
+  public CampusApplication() {
     super();
   }
 
-  public Application(int id) throws SQLException {
+  public CampusApplication(int id) throws SQLException {
     super(id);
   }
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(applicationId_,"Application",true,true,"java.lang.Integer","one-to-one","com.idega.block.application.data.Application");
+    addAttribute(applicationId_,"Campus application id",true,true,"java.lang.Integer","one-to-one","com.idega.block.application.data.Application");
     addAttribute(currentResidenceId_,"Current residency",true,true,"java.lang.Integer","one-to-many","is.idegaweb.campus.entity.CurrentResidency");
     addAttribute(spouseOccupationId_,"Spouse occupation",true,true,"java.lang.Integer","one-to-many","is.idegaweb.campus.entity.SpouseOccupation");
     addAttribute(studyBeginMonth_,"Study begins (month)",true,true,"java.lang.Integer");

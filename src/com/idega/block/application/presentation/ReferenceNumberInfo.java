@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.1 2001/07/24 16:06:53 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.2 2001/07/30 11:46:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,8 @@
 package com.idega.block.application.presentation;
 
 import com.idega.block.application.business.ReferenceNumberHandler;
+import is.idegaweb.campus.application.CampusApplicationFinder;
+import is.idegaweb.campus.application.CampusApplicationHolder;
 import com.idega.util.CypherText;
 import com.idega.jmodule.object.Editor;
 import com.idega.jmodule.object.ModuleInfo;
@@ -38,6 +40,8 @@ public class ReferenceNumberInfo extends Editor {
 
   protected void control(ModuleInfo modinfo) {
     String ref = ReferenceNumberHandler.getReferenceNumber(modinfo);
+
+    CampusApplicationHolder holder = CampusApplicationFinder.getApplicantInfo(1);
 
     add(new Text("This is a test"));
     add(Text.getBreak());

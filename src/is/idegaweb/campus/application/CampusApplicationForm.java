@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.5 2001/07/24 16:07:07 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.6 2001/07/30 11:48:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.SendMail;
 import com.idega.util.CypherText;
 import is.idegaweb.campus.application.CampusApplicationFinder;
-import is.idegaweb.campus.entity.Application;
+import is.idegaweb.campus.entity.CampusApplication;
 import is.idegaweb.campus.entity.Applied;
 import java.util.List;
 import java.sql.SQLException;
@@ -560,7 +560,7 @@ public class CampusApplicationForm extends ApplicationForm {
     String email = modinfo.getParameter("email");
     String info = modinfo.getParameter("info");
 
-    Application application = new Application();
+    CampusApplication application = new CampusApplication();
 
     try {
       currentResidence = Integer.parseInt(modinfo.getParameter("currentResidence"));
@@ -708,7 +708,7 @@ public class CampusApplicationForm extends ApplicationForm {
   protected boolean saveDataToDB(ModuleInfo modinfo) {
     Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
     com.idega.block.application.data.Application application = (com.idega.block.application.data.Application)modinfo.getSessionAttribute("application");
-    Application campusApplication = (Application)modinfo.getSessionAttribute("campusapplication");
+    CampusApplication campusApplication = (CampusApplication)modinfo.getSessionAttribute("campusapplication");
     Applied applied1 = (Applied)modinfo.getSessionAttribute("applied1");
     Applied applied2 = (Applied)modinfo.getSessionAttribute("applied2");
     Applied applied3 = (Applied)modinfo.getSessionAttribute("applied3");
@@ -748,9 +748,11 @@ public class CampusApplicationForm extends ApplicationForm {
 
       String cypher = ct.doCyper(id,key);
 
+
+
       String body = new String("Umsókn þín hefur verið skráð. Tilvísunarnúmer þitt er : " + cypher);
 
-      SendMail.send("jolasveinn@idega.is","aron@idega.is","","palli@idega.is","mail.idega.is","Umsókn skráð",body);
+      SendMail.send("","aron@idega.is","","palli@idega.is","mail.idega.is","Umsókn skráð",body);
 
       t.commit();
       modinfo.removeSessionAttribute("applicant");

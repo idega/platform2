@@ -1,5 +1,5 @@
 /*
- * $Id: Applied.java,v 1.5 2001/07/23 10:00:00 aron Exp $
+ * $Id: Applied.java,v 1.6 2001/07/30 11:48:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ public class Applied extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute(complexId_,"Complex",true,true,java.lang.Integer.class.getClass(),"one-to-many",com.idega.block.building.data.Complex.class.getClass());
     addAttribute(apartmentTypeId_,"Apartment type",true,true,java.lang.Integer.class.getClass(),"one-to-many",com.idega.block.building.data.ApartmentType.class.getClass());
-    addAttribute(applicationId_,"Application",true,true,java.lang.Integer.class.getClass(),"one-to-many",is.idegaweb.campus.entity.Application.class.getClass());
+    addAttribute(applicationId_,"Application",true,true,java.lang.Integer.class.getClass(),"one-to-many",is.idegaweb.campus.entity.CampusApplication.class.getClass());
     addAttribute(order_,"Order",true,true,java.lang.Integer.class.getClass());
   }
 
