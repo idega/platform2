@@ -9,14 +9,28 @@ package is.idega.idegaweb.member.presentation;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.EJBLocalHome;
+import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
+import com.idega.builder.data.IBPage;
+import com.idega.core.ICTreeNode;
+import com.idega.core.data.Address;
+import com.idega.core.data.Email;
+import com.idega.core.data.Phone;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntityDefinition;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -29,8 +43,12 @@ import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.data.GroupRelationType;
+import com.idega.user.data.User;
 import com.idega.user.presentation.UserGroupTab;
 import com.idega.util.IWTimestamp;
+
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 /**
  * @author palli
@@ -166,14 +184,14 @@ public class ClubInformationTab extends UserGroupTab {
 		_typeField.setSelectedElement((String) fieldValues.get(_typeFieldName));
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
 		String make = (String) fieldValues.get(_makeFieldName);
+		_connectionToSpecialField.setDisabled(true);
+		_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName,"2");
 		_makeField.setSelectedElement(make);
 		
-		_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName,"2");
-		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"0");
-		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"1");
-		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"3");
-		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"4");
-//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"5");
+//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"1");
+//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"4");
+//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"3");
+		
 		_connectionToSpecialField.setSelectedElement((String) fieldValues.get(_connectionToSpecialFieldName));
 		_regionalUnionField.setText((String) fieldValues.get(_regionalUnionFieldName));
 		_statusField.setSelectedElement((String) fieldValues.get(_statusFieldName));
@@ -199,7 +217,6 @@ public class ClubInformationTab extends UserGroupTab {
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
-//		_premierLeagueField = new CheckBox(_premierLeagueFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
 		_usingMemberSystemField = new CheckBox(_usingMemberSystemFieldName);
 		
@@ -209,13 +226,10 @@ public class ClubInformationTab extends UserGroupTab {
 		_typeField.addMenuElement("1","Innlent félag");
 		_typeField.addMenuElement("2","Sérsamband");
 		_typeField.addMenuElement("3","Héraðssamband/Íþróttabandalag");
-//		_typeField.addMenuElement("4","Erlent félag");
 		
-		_makeField.addMenuElement("0","");
 		_makeField.addMenuElement("1","Fjölgreinafélag");
 		_makeField.addMenuElement("2","Sérgreinafélag");
 		_makeField.addMenuElement("3","Félag án iðkenda");
-//		_makeField.addMenuElement("4","Ungmennafélag");
 		_makeField.addMenuElement("4","Óvirkt");
 		
 		_statusField.addMenuElement("0","");
@@ -386,12 +400,9 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
 	 */
 	public boolean store(IWContext iwc) {
-		System.out.println("Entering store");
 		Group group;
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
-			// get corressponding service bean
-			ClubInformationPluginBusiness ageGenderPluginBusiness = getClubInformationPluginBusiness(iwc);
 
 			String number = (String) fieldValues.get(_numberFieldName);
 			String ssn = (String) fieldValues.get(_ssnFieldName);
@@ -403,9 +414,7 @@ public class ClubInformationTab extends UserGroupTab {
 			Boolean memberUMFI = (Boolean) fieldValues.get(_memberUMFIFieldName);
 			String make = (String) fieldValues.get(_makeFieldName);
 			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
-//			String regional = (String) fieldValues.get(_regionalUnionFieldName);
 			String status = (String) fieldValues.get(_statusFieldName);
-//			Boolean premier = (Boolean) fieldValues.get(_premierLeagueFieldName);
 			Boolean inOperation = (Boolean) fieldValues.get(_inOperationFieldName);
 			Boolean usingSystem = (Boolean) fieldValues.get(_usingMemberSystemFieldName);
 
@@ -419,16 +428,20 @@ public class ClubInformationTab extends UserGroupTab {
 			if (memberUMFI != null)
 				group.setMetaData("CLUBINFO_MEMBER", memberUMFI.toString());
 			group.setMetaData("CLUBINFO_MAKE", make);
-			if (make.equals("2"))
+			if (make.equals("2")) {
+				String oldConnection = group.getMetaData("CLUBINFO_CONN");
+				if (oldConnection == null && connection != null) 
+					createSpecialConnection(connection);
+					
+				if (oldConnection != null && connection != null) {
+					if (!oldConnection.equals(connection))
+						createSpecialConnection(connection);				
+				}
 				group.setMetaData("CLUBINFO_CONN", connection);
+			}
 			else
 				group.setMetaData("CLUBINFO_CONN", "");
-//			group.setMetaData("CLUBINFO_REGIONAL", regional);
 			group.setMetaData("CLUBINFO_STATUS", status);
-//			if (premier != null)
-//				group.setMetaData("CLUBINFO_PREMIER", premier.toString());
-//			else
-//				group.setMetaData("CLUBINFO_PREMIER", Boolean.FALSE.toString());
 			if (inOperation != null)
 				group.setMetaData("CLUBINFO_OPERATION", inOperation.toString());
 			else
@@ -449,6 +462,41 @@ public class ClubInformationTab extends UserGroupTab {
 			return false;
 		}
 		return true;
+	}
+	
+	private void createSpecialConnection(String connection) {
+		if (connection == null || connection.equals(""))
+			return;
+			
+		try {
+			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			Group specialGroup = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(connection)));
+			
+			Group child = null;
+			boolean foundIt = false;
+			List children = specialGroup.getChildGroups();
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				child = (Group)it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+					foundIt = true;
+					break;
+				}
+			}
+			
+			if (foundIt && child != null) {
+				List playerGroups = child.getChildGroups();
+				Iterator it2 = playerGroups.iterator();
+				while (it2.hasNext()) {
+					Group playerGroup = (Group)it2.next();
+					Group newGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
+//					newGroup.
+				}
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -472,8 +520,6 @@ public class ClubInformationTab extends UserGroupTab {
 				}
 			}
 		
-//			group.getParentGroups()
-
 			String number = group.getMetaData("CLUBINFO_NUMBER");
 			String ssn = group.getMetaData("CLUBINFO_SSN");
 			String abrv = group.getMetaData("CLUBINFO_ABRV");
@@ -484,9 +530,7 @@ public class ClubInformationTab extends UserGroupTab {
 			String member = group.getMetaData("CLUBINFO_MEMBER");
 			String make = group.getMetaData("CLUBINFO_MAKE");
 			String connection = group.getMetaData("CLUBINFO_CONN");
-//			String regional = group.getMetaData("CLUBINFO_REGIONAL");
 			String status = group.getMetaData("CLUBINFO_STATUS");
-//			String premier = group.getMetaData("CLUBINFO_PREMIER");
 			String inOperation = group.getMetaData("CLUBINFO_OPERATION");
 			String using = group.getMetaData("CLUBINFO_SYSTEM");
 
@@ -513,7 +557,6 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_regionalUnionFieldName, regional);
 			if (status != null)
 				fieldValues.put(_statusFieldName, status);
-//			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
 			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
 			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
 
@@ -527,16 +570,16 @@ public class ClubInformationTab extends UserGroupTab {
 		}
 	}
 
-	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc) {
-		ClubInformationPluginBusiness business = null;
-		if (business == null) {
-			try {
-				business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ClubInformationPluginBusiness.class);
-			}
-			catch (java.rmi.RemoteException rme) {
-				throw new RuntimeException(rme.getMessage());
-			}
-		}
-		return business;
-	}
+//	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc) {
+//		ClubInformationPluginBusiness business = null;
+//		if (business == null) {
+//			try {
+//				business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ClubInformationPluginBusiness.class);
+//			}
+//			catch (java.rmi.RemoteException rme) {
+//				throw new RuntimeException(rme.getMessage());
+//			}
+//		}
+//		return business;
+//	}
 }
