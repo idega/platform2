@@ -46,6 +46,7 @@ public class ContractReSignWindow extends Window{
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private boolean isAdmin;
+  private boolean isLoggedOn;
   private String login = null;
   private String passwd = null;
   private boolean print = false;
@@ -71,7 +72,7 @@ public class ContractReSignWindow extends Window{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    if(isAdmin){
+    if(isAdmin || isLoggedOn){
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
       SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
@@ -202,6 +203,7 @@ public class ContractReSignWindow extends Window{
     eUser = iwc.getUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = iwc.hasEditPermission(this);
+    isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     control(iwc);
   }
 }

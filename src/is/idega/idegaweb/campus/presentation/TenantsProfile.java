@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.presentation;
 
 import java.sql.SQLException;
 import java.util.StringTokenizer;
+import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -23,8 +24,14 @@ import com.idega.block.building.data.*;
 import com.idega.block.building.business.BuildingCacher;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.presentation.ContractReSignWindow;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.request.business.RequestFinder;
+import is.idega.idegaweb.campus.block.request.business.RequestHolder;
+import is.idega.idegaweb.campus.block.request.data.Request;
+import is.idega.idegaweb.campus.block.request.data.RequestType;
+import is.idega.idegaweb.campus.block.request.presentation.RequestView;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.block.finance.business.FinanceFinder;
@@ -224,6 +231,14 @@ private Image image;
 
     table.add(image,1,row);
     table.setColor(1,row,"#932A2D");
+    row++;
+
+    Link resignLink = new Link(iwrb.getImage("resign.gif"));
+      resignLink.addParameter("contract_id",contract.getID());
+      resignLink.setWindowToOpen(ContractReSignWindow.class);
+    table.mergeCells(1,row,3,row);
+    table.setAlignment(1,row,"right");
+    table.add(resignLink,1,row);
 
     return table;
   }
@@ -283,11 +298,21 @@ private Image image;
 
     int row = 3;
 
-    for ( int a = 1; a < 3; a++ ) {
-      table.add(formatText("Request"+a),1,row);
-      table.add(formatText(new idegaTimestamp(a,3,2001).getISLDate(".",true)),2,row);
-      table.add(formatText("In progress..."),3,row);
-      row++;
+    List requests = RequestFinder.getRequests(_userID);
+    Request request = null;
+    RequestType requestType = null;
+    RequestHolder holder = null;
+
+    if ( requests != null ) {
+      for ( int a = 1; a < requests.size(); a++ ) {
+        holder = (RequestHolder) requests.get(a);
+        request = holder.getRequest();
+        requestType = holder.getRequestType();
+        table.add(formatText(requestType.getName()),1,row);
+        table.add(formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+        table.add(formatText(request.getStatus()),3,row);
+        row++;
+      }
     }
 
     table.setHorizontalZebraColored("#FFFFFF","#ECEEF0");
@@ -297,6 +322,14 @@ private Image image;
 
     table.add(image,1,row);
     table.setColor(1,row,"#932A2D");
+    row++;
+
+    Link requestLink = new Link(iwrb.getImage("request.gif"));
+      requestLink.addParameter("user_id",_userID);
+      //requestLink.setWindowToOpen(RequestView.class);
+    table.mergeCells(1,row,3,row);
+    table.setAlignment(1,row,"right");
+    table.add(requestLink,1,row);
 
     return table;
   }
