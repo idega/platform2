@@ -31,6 +31,7 @@ import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
@@ -306,7 +307,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				contentTable.add(getUpdatePrognosisForm());
 				break;
 			case METHOD_ALTER_CARE_TIME :
-				headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
+				//headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
+				headerTable.add(getHeader(localize("child_care.alter_contract_or_schooltype_for_child","Alter the contract/schooltype for this child.")));
 				contentTable.add(getAlterCareTimeForm(iwc));
 				break;
 			case METHOD_CANCEL_CONTRACT :
@@ -750,6 +752,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		/* New requirements: Add Schooltype and Group dropdowns */
 		
 		// Schooltype change :
+//		 Group change, (school class)
+		
 		//DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPES);
 		Collection types = null;
 		try {
@@ -760,15 +764,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		} catch (EJBException e) {
 			e.printStackTrace();
 		}
-		/*
-		int presentSchoolTypeId = archive.getSchoolClassMember().getSchoolTypeId();
-		if (presentSchoolTypeId != -1)
-			schoolTypes.setSelectedElement(presentSchoolTypeId);
-		
-		schoolTypes = (DropdownMenu) getStyledInterface(schoolTypes);	
-		*/
-
-		// Group change, (school class)
 		
 		SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
 		schoolClasses.setLayoutVertical(true);
@@ -792,6 +787,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				}
 			}
 		}
+		
+		SchoolClassMember currentClassMember = archive.getSchoolClassMember();
+		if (currentClassMember !=null)
+			schoolClasses.setSelectedValues(String.valueOf(currentClassMember.getSchoolTypeId()),String.valueOf(currentClassMember.getSchoolClassId()));
 		
 		table.add(schoolClasses, 1, row++);
 		
@@ -1480,10 +1479,16 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
-		//int schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
-		//int schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+		int schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
+		int schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
 		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
-
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		ChildCareContract archive = getBusiness().getContractFile(application.getContractFileId());
+		SchoolClassMember classMember = archive.getSchoolClassMember();
+		if(schoolTypeId != classMember.getSchoolTypeId() || schoolClassId!= classMember.getSchoolClassId()){
+			// end old placement with the chosen date -1 and create new placement
+			// TODO take care of this
+		}
 		close();
 	}
 
