@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.94 2002/04/23 13:55:39 laddi Exp $
+ * $Id: NewsReader.java,v 1.95 2002/04/29 19:00:57 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -442,7 +442,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
     }
     row++;
     int ownerId = newsHelper.getContentHelper().getContent().getUserId();
-    if(hasEdit || (hasAdd && ownerId == iwc.getUserId())){
+    if(hasEdit || (hasAdd || ownerId == iwc.getUserId())){
       T.add(getNewsAdminPart(news,iwc),1,row);
     }
     return T;
@@ -730,7 +730,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
       //////////// ADMIN PART /////////////////////
       int ownerId = newsHelper.getContentHelper().getContent().getUserId();
-      if(hasEdit || (hasAdd && ownerId == iwc.getUserId())){
+      if(hasEdit || (hasAdd || ownerId == iwc.getUserId())){
 	T.add(getNewsAdminPart(news,iwc),1,row);
       }
       row++;
@@ -781,7 +781,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 	  T.add(headLine, headlineCol, 1);
       }
       int ownerId = newsHelper.getContentHelper().getContent().getUserId();
-      if(hasEdit || (hasAdd && ownerId == iwc.getUserId())){
+      if(hasEdit || (hasAdd || ownerId == iwc.getUserId())){
 	T.add(getNewsAdminPart(news,iwc),4,1);
       }
     }
