@@ -556,7 +556,7 @@ public class TeeTimeSearch extends GolfBlock {
 		}
 		
 		TeetimeSearchResult result = (TeetimeSearchResult)IBOLookup.getSessionInstance(modinfo,TeetimeSearchResult.class);		
-		result.setSublistSize(10);
+		result.setSublistSize(100);
 		if(Groups != null){
 			Vector myVector = new Vector();
 			Vector boolVector = new Vector();
