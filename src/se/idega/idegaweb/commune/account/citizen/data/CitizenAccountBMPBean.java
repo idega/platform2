@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.16 2003/01/08 09:15:12 tryggvil Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.17 2003/01/11 08:19:05 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @version 1.0
  */
 public class CitizenAccountBMPBean extends AbstractCaseBMPBean
@@ -164,8 +165,14 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
         setColumn (STREET, street);
     }
     
-    public void setZipCode (final String zipCode) throws RemoteException {
-        setColumn (ZIP_CODE, zipCode);
+    public void setZipCode (final String rawZipCode) throws RemoteException {
+		final StringBuffer digitOnlyZipCode = new StringBuffer();
+		for (int i = 0; i < rawZipCode.length (); i++) {
+			if (Character.isDigit (rawZipCode.charAt (i))) {
+				digitOnlyZipCode.append (rawZipCode.charAt (i));
+			}
+		}
+        setColumn (ZIP_CODE, digitOnlyZipCode.toString ());
     }
     
     public void setCity (final String city) throws RemoteException {
