@@ -78,6 +78,8 @@ public class MemberOverview extends Block {
 			row = insertRegistrationInfoIntoTable(table, row, false);
 		}
 		
+		row += 3;
+		
 		// show registration history section
 		Link historyLink = new Link(showHistory?"-":"+");
 		historyLink.setBold();
@@ -92,7 +94,9 @@ public class MemberOverview extends Block {
 		if(showHistory) {
 			row = insertRegistrationInfoIntoTable(table, row, true);
 		}
-		row += 2;
+		
+		row += 3;
+		
 		row = insertPrintButtonIntoTable(table, row);
 		add(table);
 	}
