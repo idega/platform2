@@ -13,8 +13,6 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareGroupWriter;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.block.school.data.SchoolClassMember;
-import com.idega.core.contact.data.Phone;
-import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.DownloadLink;
@@ -111,21 +109,21 @@ public class ChildCareContracts extends ChildCareBlock {
 			boolean showNotActiveComment = false;
 			boolean showRemovedComment = false;
 
-			IWTimestamp stampNow = new IWTimestamp();
-			Collection contracts = null;
+			//IWTimestamp stampNow = new IWTimestamp();
+			//Collection contracts = null;
 			
 			SchoolClassMember student;
 			User child;
-			Address address;
-			Phone phone;
-			Link move;
+			//Address address;
+			//Phone phone;
+			//Link move;
 			Link delete;
-			Link childInfo;
-			IWTimestamp registered;
+			//Link childInfo;
+			//IWTimestamp registered;
 			
-			boolean showNotStartedComment = false;
+			//boolean showNotStartedComment = false;
 		
-			boolean hasComments = false;
+			//boolean hasComments = false;
 			String name = null;
 			
 			
@@ -159,7 +157,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					child = student.getStudent();
 					//address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 					//phone = getBusiness().getUserBusiness().getChildHomePhone(child);
-					registered = new IWTimestamp(student.getRegisterDate());
+					//registered = new IWTimestamp(student.getRegisterDate());
 					
 					
 					contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
@@ -187,7 +185,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					if (contract != null) {
 						student = contract.getSchoolClassMember();
 						application = contract.getApplication();
-						hasComments = true;
+						//hasComments = true;
 						
 						created = new IWTimestamp(contract.getCreatedDate());
 						student = contract.getSchoolClassMember();
@@ -762,7 +760,7 @@ public class ChildCareContracts extends ChildCareBlock {
 		}
 	}
 	
-	private void setShowParentRadioButton(boolean show){
+	/*private void setShowParentRadioButton(boolean show){
 		showParentalRadio = show;
-	}
+	}*/
 }
