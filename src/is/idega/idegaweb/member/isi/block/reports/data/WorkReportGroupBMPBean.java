@@ -107,7 +107,8 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 	}
 	
 	public String getShortName() {
-		return getStringColumnValue(COLUMN_NAME_GROUP_SHORT_NAME);
+		String shortName = getStringColumnValue(COLUMN_NAME_GROUP_SHORT_NAME);
+		return (shortName == null) ? getName() : shortName;
 	}
 	
 	public String getPersonalId() {
