@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/12/03 15:41:54 $ by $Author: staffan $
- * @version $Revision: 1.78 $
+ * Last modified: $Date: 2003/12/09 14:28:34 $ by $Author: goranb $
+ * @version $Revision: 1.79 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -380,7 +380,17 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public Integer ejbFindLatestByUserAndSchool(int userID, int schoolID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
-		sql.appendOrderBy(REGISTER_DATE + " desc");
+		
+		sql.appendAnd()
+		.appendLeftParenthesis()
+		.append("mb." + REMOVED_DATE + " is null")
+		.appendOr()
+		.append("mb." + REMOVED_DATE)
+		.appendGreaterThanOrEqualsSign()
+		.append("mb." + REGISTER_DATE)
+		.appendRightParenthesis()
+		
+		.appendOrderBy(REGISTER_DATE + " desc");
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
 	
@@ -397,8 +407,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendAnd()
 		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
 		.appendEqualSign()
-		.appendWithinSingleQuotes("Y")
-		
+		.appendWithinSingleQuotes("Y")		
 		.appendOr()
 		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
 		.append(" is null)")
@@ -406,7 +415,16 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendAnd()
 		.append(" mb." + SCHOOLCLASS)
 		.appendEqualSign()
-		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+			
+		.appendAnd()
+		.appendLeftParenthesis()
+		.append("mb." + REMOVED_DATE + " is null")
+		.appendOr()
+		.append("mb." + REMOVED_DATE)
+		.appendGreaterThanOrEqualsSign()
+		.append("mb." + REGISTER_DATE)
+		.appendRightParenthesis();		
 		
 		sql.appendOrderBy(REGISTER_DATE + " desc");
 		
@@ -428,7 +446,16 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendAnd()
 		.append(SCHOOL_TYPE)
 		.appendEqualSign()
-		.append(type.getPrimaryKey());		
+		.append(type.getPrimaryKey())
+			
+		.appendAnd()
+		.appendLeftParenthesis()
+		.append("mb." + REMOVED_DATE + " is null")
+		.appendOr()
+		.append("mb." + REMOVED_DATE)
+		.appendGreaterThanOrEqualsSign()
+		.append("mb." + REGISTER_DATE)
+		.appendRightParenthesis();
 		
 		sql.appendOrderBy(REGISTER_DATE + " desc");
 		
@@ -471,6 +498,15 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
 		.appendEqualSign()
 		.append("'" + cat.getPrimaryKey() + "'")
+		
+		.appendAnd()
+		.appendLeftParenthesis()
+		.append("mb." + REMOVED_DATE + " is null")
+		.appendOr()
+		.append("mb." + REMOVED_DATE)
+		.appendGreaterThanOrEqualsSign()
+		.append("mb." + REGISTER_DATE)
+		.appendRightParenthesis()
 					
 		.appendOrderBy(REGISTER_DATE + " desc");
 		
@@ -549,9 +585,13 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append(" is null)")
 		
 		.appendAnd()
+		.appendLeftParenthesis()
+		.append("mb." + REMOVED_DATE + " is null")
+		.appendOr()
 		.append("mb." + REMOVED_DATE)
 		.appendGreaterThanOrEqualsSign()
 		.append("mb." + REGISTER_DATE)
+		.appendRightParenthesis()
 		
 		.appendAnd()
 		.append(" mb." + SCHOOLCLASS)
@@ -574,13 +614,13 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			
 		.appendOrderBy(REGISTER_DATE + " desc");
 		
-		System.out.println("*** SQL ***: " + sql.toString());
+		//System.out.println("*** SQL ***: " + sql.toString());
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
 
 	
-	public Integer ejbFindLatestByUserSchCatNoRemovedDate(User user, SchoolCategory cat) 
+	/*public Integer ejbFindLatestByUserSchCatNoRemovedDate(User user, SchoolCategory cat) 
 																					throws FinderException {
 		IDOQuery sql = idoQuery();
 		
@@ -627,8 +667,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
-
-	public Integer ejbFindLatestFromElemAndHighSchoolByUserNoRemovedDate(User user) 
+*/
+	
+	/*public Integer ejbFindLatestFromElemAndHighSchoolByUserNoRemovedDate(User user) 
 																					throws FinderException {
 		IDOQuery sql = idoQuery();
 		
@@ -679,7 +720,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
-
+*/
+	
 	public Collection ejbFindByStudentAndSchool(int userID, int schoolID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
