@@ -14,6 +14,7 @@ import com.idega.block.school.data.SchoolUserBMPBean;
 import com.idega.block.school.data.SchoolUserHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.presentation.IWContext;
@@ -77,11 +78,11 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/23 13:00:02 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/24 08:14:10 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.105 $
+ * @version $Revision: 1.106 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1373,7 +1374,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			final User verifiedCentralAdmin
 					= (User) context.getSessionAttribute (sessionKey);
 			final User user = context.getCurrentUser ();
-			if (null != verifiedCentralAdmin && user.equals (verifiedCentralAdmin)) {
+			if (null != verifiedCentralAdmin && user.equals ((IDOEntity)verifiedCentralAdmin)) {
 				// certificate were cached
 				return true;
 			}
