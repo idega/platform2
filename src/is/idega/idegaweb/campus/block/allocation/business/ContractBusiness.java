@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.18 2002/08/22 15:08:40 aron Exp $
+ * $Id: ContractBusiness.java,v 1.19 2002/08/22 15:38:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Iterator;
 import com.idega.core.user.data.User;
-import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
@@ -155,10 +155,10 @@ public  class ContractBusiness {
     //LoginDBHandler.createLogin(iUserId,login,passwd,new Boolean(true),today,validDays,new Boolean(false),new Boolean(true),new Boolean(false),"");
   }
 
-  public static void changeApplicationStatus(Contract eContract)throws SQLException{
+  public static void changeApplicationStatus(Contract eContract)throws Exception{
     String status = com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED;
     List L = null;
-    L = EntityFinder.findAllByColumn(((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy(),com.idega.block.application.data.ApplicationBMPBean.getApplicantIdColumnName(),eContract.getApplicantId().intValue());
+    L = EntityFinder.getInstance().findAllByColumn(Application.class,ApplicationBMPBean.getApplicantIdColumnName(),eContract.getApplicantId().intValue());
     if(L!=null){
 			Iterator I = L.iterator();
       while(I.hasNext()){

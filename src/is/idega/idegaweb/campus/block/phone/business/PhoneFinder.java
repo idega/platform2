@@ -29,9 +29,9 @@ public abstract class PhoneFinder {
 
   public static List listOfPhones(){
     try {
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(CampusPhone.class)).createLegacy()));
+      return EntityFinder.getInstance().findAll(CampusPhone.class);
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
@@ -59,18 +59,18 @@ public abstract class PhoneFinder {
     sql.append(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned);
     sql.append("'");
     try{
-      return  EntityFinder.findAll(((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(CampusPhone.class)).createLegacy(),sql.toString());
+      return  EntityFinder.getInstance().findAll(CampusPhone.class,sql.toString());
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       return null;
     }
   }
 
   public static List listOfAccountPhones(){
     try {
-      return EntityFinder.findAll(((is.idega.idegaweb.campus.data.AccountPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhone.class)).createLegacy());
+      return EntityFinder.getInstance().findAll(AccountPhone.class);
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
       return null;
     }
@@ -89,9 +89,9 @@ public abstract class PhoneFinder {
     }
     System.err.println(sql.toString());
     try {
-      return EntityFinder.findAll(((is.idega.idegaweb.campus.data.AccountPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhone.class)).createLegacy(),sql.toString());
+      return EntityFinder.getInstance().findAll(AccountPhone.class,sql.toString());
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
       return null;
     }
@@ -107,7 +107,6 @@ public abstract class PhoneFinder {
     try {
       //AccountHome ahome = com.idega.data.IDOLookup.getHome(Account.class)
       return new Vector(((AccountHome) com.idega.data.IDOLookup.getHome(Account.class)).findBySQL(sql.toString()));
-      //return EntityFinder.findAll(((AccountHome)com.idega.data.IDOLookup.getHome(Account.class)).createLegacy(),sql.toString());
     }
     catch (Exception ex) {
       ex.printStackTrace();
@@ -131,7 +130,6 @@ public abstract class PhoneFinder {
     //System.err.println (sql.toString());
     try {
       return new Vector(((AccountHome) com.idega.data.IDOLookup.getHome(Account.class)).findBySQL(sql.toString()));
-//      return EntityFinder.findAll(((AccountHome)com.idega.data.IDOLookup.getHome(Account.class)).create(),sql.toString());
     }
     catch (Exception ex) {
       ex.printStackTrace();
@@ -378,9 +376,9 @@ public abstract class PhoneFinder {
     String sSQL = sql.toString();
     //System.err.println(sSQL);
     try{
-      return  EntityFinder.findAll(((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(CampusPhone.class)).createLegacy(),sql.toString());
+      return  EntityFinder.getInstance().findAll(CampusPhone.class,sql.toString());
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       return null;
     }
   }

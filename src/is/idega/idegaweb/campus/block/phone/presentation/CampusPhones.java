@@ -172,9 +172,9 @@ public class CampusPhones extends Block implements IWEventListener{
   private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName) {
     List L = null;
     try{
-      L = EntityFinder.findAll(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy());
+      L = EntityFinder.getInstance().findAll(Floor.class);
     }
-    catch(SQLException e){}
+    catch(Exception e){}
     DropdownMenu drp = new DropdownMenu(name);
     if(!"".equals(display))
       drp.addDisabledMenuElement("-1",display);

@@ -137,9 +137,9 @@ public class PhoneFinanceHandler implements FinanceHandler{
 
   public static List listOfContractAccounts(){
    try {
-     return com.idega.data.EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountsHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccounts.class)).createLegacy());
+     return com.idega.data.EntityFinder.getInstance().findAll(ContractAccounts.class);
    }
-   catch (SQLException ex) {
+   catch (Exception ex) {
     ex.printStackTrace();
     return null;
    }
