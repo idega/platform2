@@ -48,7 +48,7 @@ public class ClientManager implements PacketManager{
   }
 
   public void clientCheckOut(String sessionId){
-    System.out.println("ClientManager:logging off user "+this.getClientName(sessionId)+" sessionid "+sessionId);
+    System.out.println("ClientManager:LOGGIN OFF USER : "+this.getClientName(sessionId)+" sessionid "+sessionId);
     clients.remove(sessionId);
     version++;
   }
@@ -62,7 +62,7 @@ public class ClientManager implements PacketManager{
   }
 
   public synchronized void processPacket(Packet packet){
-  System.out.println("ClientManager : process packet");
+ // System.out.println("ClientManager : process packet");
   String sessionId = null;
   String userId = null;
   String packetUserListVersion = null;
@@ -138,15 +138,20 @@ public class ClientManager implements PacketManager{
     return connClients;
   }
 
-  private boolean removeDoubleRegistry(String toId, String userId){
+  private boolean removeDoubleRegistry(String sessionId, String userId){
+    System.out.println("ClientManager: removeDoubleRegistry new sessionId : "+sessionId);
+
     boolean existed = false;
     String fromId = (String) reverseClients.get(userId);
     if( fromId!=null){
-      MessageManager.moveMessages(fromId,toId);
+      System.out.println("ClientManager: removeDoubleRegistry old sessionId : "+fromId);
+      MessageManager.moveMessages(fromId,sessionId);
+
+      clients.remove(fromId);
+      reverseClients.remove(userId);//old reference
+
       existed = true;
     }
-    clients.remove(fromId);
-    reverseClients.remove(userId);//old reference
 
     return existed;
   }
