@@ -3617,9 +3617,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			age2 =age1;
 		}
 		
-		System.out.println("showClubs=" + showClubs + ", showPlayers=" + showPlayers + ", showMembers=" + showMembers + ", gender=" + gender + ", age1=" + age1 + ", age2=" + age2);
-		
 		boolean filterByAge = (age1==0 && age2==123);
+		
+		System.out.println("showClubs=" + showClubs + ", showPlayers=" + showPlayers + ", showMembers=" + showMembers + ", gender=" + gender + ", age1=" + age1 + ", age2=" + age2 + ", filterByAge=" + filterByAge);
 		
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -3828,7 +3828,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		count.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COUNT, "Count"), currentLocale);
 		reportCollection.addField(count);
 
-		
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), null);
 		Map leagueStatsMap = new TreeMap();
 		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
@@ -3913,9 +3912,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.6.3 of the ISI Specs
 	 */
-	public ReportableCollection sixDotThree (
+	public ReportableCollection getDivisionTypeStatsByYearAndRegionalUnionsFilter (
 	Integer year,
-	Collection regionalUnionFilter) throws RemoteException {
+	Collection regionalUnionsFilter) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -3953,6 +3952,45 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		multiDivisionPlayers.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_MULTI_DIVISION, "Multi Division Players"), currentLocale);
 		reportCollection.addField(multiDivisionPlayers);
 		
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		Map regionalUnionsStatsMap = new TreeMap();
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+			
+			//String cName = report.getGroupName();
+			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
+			
+			ReportableData regData = (ReportableData) regionalUnionsStatsMap.get(regionalUnionIdentifier);
+			if(regData==null) {
+				regData = new ReportableData();
+				regionalUnionsStatsMap.put(regionalUnionIdentifier, regData);
+				regData.addData(regionalUnionName, regionalUnionIdentifier);
+				regData.addData(singleDivisionMembers, new Integer(0));
+				regData.addData(multiDivisionMembers, new Integer(0));
+				regData.addData(singleDivisionPlayers, new Integer(0));
+				regData.addData(multiDivisionPlayers, new Integer(0));
+			}
+			
+			String cType = report.getType();
+			
+			int members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+			int players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+			
+			if(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB.equals(cType)) {
+				regData = addToIntegerCount(multiDivisionMembers, regData, members);
+				regData = addToIntegerCount(multiDivisionPlayers, regData, players);
+			} else if(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB.equals(cType)) {
+				regData = addToIntegerCount(singleDivisionMembers, regData, members);
+				regData = addToIntegerCount(singleDivisionPlayers, regData, players);
+			}
+		}
+		
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionName};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
 		
 		//finished return the collection
 		return reportCollection;
@@ -3961,9 +3999,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.6.4 of the ISI Specs
 	 */
-	public ReportableCollection sixDotFour (
+	public ReportableCollection getDivisionTypeStatsByYearAndLeaguesFilter (
 	Integer year,	
-	Collection leagueFilter) throws RemoteException {
+	Collection leaguesFilter) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -4001,6 +4039,67 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		multiDivisionPlayers.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_MULTI_DIVISION, "Multi Division Players"), currentLocale);
 		reportCollection.addField(multiDivisionPlayers);
 		
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), null);
+		Map leagueStatsMap = new TreeMap();
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+			String cName = report.getGroupName();
+			
+			Collection leagues;
+			try {
+				leagues = report.getLeagues();
+			} catch (IDOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Exception getting leagues for club " + cName);
+				e.printStackTrace();
+				continue;
+			}
+			Iterator iterator = leagues.iterator();
+			while (iterator.hasNext()) {
+				WorkReportGroup league = (WorkReportGroup) iterator.next();
+				Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
+				
+				if (!leagueGroupIdList.contains(league.getGroupId())) {
+					continue; //don't process this one, go to next
+				}
+				
+				String leagueIdentifier = getLeagueIdentifier(league);
+				//fetch the stats or initialize
+				ReportableData leagueStatsData = (ReportableData) leagueStatsMap.get(leagueKey);
+			
+				ReportableData regData = (ReportableData) leagueStatsMap.get(leagueIdentifier);
+				if(regData==null) {
+					regData = new ReportableData();
+					leagueStatsMap.put(leagueIdentifier, regData);
+					regData.addData(leagueString, leagueIdentifier);
+					regData.addData(singleDivisionMembers, new Integer(0));
+					regData.addData(multiDivisionMembers, new Integer(0));
+					regData.addData(singleDivisionPlayers, new Integer(0));
+					regData.addData(multiDivisionPlayers, new Integer(0));
+				}
+				
+				String cType = report.getType();
+				
+				int members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+				int players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+				
+				if(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB.equals(cType)) {
+					regData = addToIntegerCount(multiDivisionMembers, regData, members);
+					regData = addToIntegerCount(multiDivisionPlayers, regData, players);
+				} else if(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB.equals(cType)) {
+					regData = addToIntegerCount(singleDivisionMembers, regData, members);
+					regData = addToIntegerCount(singleDivisionPlayers, regData, players);
+				}
+			}
+		}
+		
+		ReportableField[] sortFields = new ReportableField[] {leagueString};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
 		
 		//finished return the collection
 		return reportCollection;
