@@ -6,6 +6,11 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.idegaweb.*;
 import com.idega.core.data.*;
+import com.idega.data.IDOLookup;
+import com.idega.block.tpos.business.TPosAuthorisationEntriesHome;
+import com.idega.block.tpos.data.TPosAuthorisationEntries;
+import com.idega.block.tpos.data.TPosAuthorisationEntriesBean;
+import com.idega.block.tpos.data.TPosAuthorisationEntriesBeanHome;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.data.*;
@@ -39,7 +44,7 @@ public abstract class Voucher extends TravelManager {
   private IWResourceBundle _iwrb;
   private IWBundle _bundle;
 
-  protected Booking _booking;
+  protected GeneralBooking _booking;
   private List _bookings;
   private BookingEntry[] _entries;
   private Service _service;
@@ -50,6 +55,7 @@ public abstract class Voucher extends TravelManager {
   private User _user;
   private Reseller _reseller;
   private int _localeId = -1;
+  private Table _table;
 
   private DecimalFormat df = new DecimalFormat("0.00");
   private List sectOne;
@@ -65,8 +71,12 @@ public abstract class Voucher extends TravelManager {
     this(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId)));
   }
 
+	public Voucher(GeneralBooking booking) throws Exception {
+		_booking = booking;
+	}
+
   public Voucher(Booking booking) throws Exception{
-    _booking = booking;
+    _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(booking.getID()));
   }
 
 
@@ -99,7 +109,7 @@ public abstract class Voucher extends TravelManager {
       if (addresses != null && addresses.length > 0 ) {
         _address = addresses[addresses.length - 1];
       }
-      add(getVoucher(iwc));
+      add(getVoucher());
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
@@ -134,7 +144,7 @@ public abstract class Voucher extends TravelManager {
     return bookingId + voucherNumberChanger;
   }
 
-  private Table getVoucher(IWContext iwc) throws RemoteException{
+  private Table getVoucher() throws RemoteException{
     Table bigTable = new Table();
       bigTable.setColor(BLACK);
       bigTable.setCellspacing(0);
@@ -143,21 +153,21 @@ public abstract class Voucher extends TravelManager {
       bigTable.setBorder(1);
       bigTable.setBorderColor(BLACK);
 
-    Table table = new Table(3,2);
-      bigTable.add(table);
-      table.setColor(WHITE);
-      table.setWidth("100%");
-      table.setWidth(1,"33%");
-      table.setWidth(2,"34%");
-      table.setWidth(3,"33%");
-      table.setBorder(0);
-      table.setCellspacing(10);
-      table.mergeCells(1,2,3,2);
+    _table = new Table(3,2);
+      bigTable.add(_table);
+      _table.setColor(WHITE);
+      _table.setWidth("100%");
+      _table.setWidth(1,"33%");
+      _table.setWidth(2,"34%");
+      _table.setWidth(3,"33%");
+      _table.setBorder(0);
+      _table.setCellspacing(10);
+      _table.mergeCells(1,2,3,2);
 
     boolean error = false;
 
     if (_booking == null) {
-      table.add(_iwrb.getLocalizedString("travel.no_booking_specified","No booking specified"),2,1);
+      _table.add(_iwrb.getLocalizedString("travel.no_booking_specified","No booking specified"),2,1);
     }else {
       try {
         Table leftHeader = new Table();
@@ -166,8 +176,8 @@ public abstract class Voucher extends TravelManager {
           leftHeader.add(getSmallText(Integer.toString(getVoucherNumber())),1,1);
           leftHeader.add(getSmallText(_iwrb.getLocalizedString("travel.reference_number_show","Reference nr. ")),1,2);
           leftHeader.add(getSmallText(_booking.getReferenceNumber()),1,2);
-        table.add(leftHeader,1,1);
-        table.setAlignment(1,1,"left");
+        _table.add(leftHeader,1,1);
+        _table.setAlignment(1,1,"left");
 
         Table centerHeader = new Table();
           centerHeader.add(getBigText(_iwrb.getLocalizedString("travel.voucher","Voucher")),1,1);
@@ -178,18 +188,17 @@ public abstract class Voucher extends TravelManager {
           }
           centerHeader.setAlignment(1,1,"center");
           centerHeader.setAlignment(1,2,"center");
-        table.add(centerHeader,2,1);
-        table.setAlignment(2,1,"center");
+        _table.add(centerHeader,2,1);
+        _table.setAlignment(2,1,"center");
 
         Table rightHeader = new Table();
           rightHeader.add(getSmallText(_iwrb.getLocalizedString("travel.date_of_issue","Date of issue")),1,1);
           rightHeader.add(getSmallText(":"),1,1);
-//          rightHeader.add(getSmallText(IWTimestamp.RightNow().getLocaleDate(_iwc)),1,2);
           rightHeader.add(getSmallText(new IWTimestamp(_booking.getDateOfBooking()).getLocaleDate(_iwc)),1,2);
           rightHeader.setAlignment(1,1,"right");
           rightHeader.setAlignment(1,2,"right");
-        table.add(rightHeader,3,1);
-        table.setAlignment(3,1,"right");
+        _table.add(rightHeader,3,1);
+        _table.setAlignment(3,1,"right");
 
 
         String strng;
@@ -199,13 +208,13 @@ public abstract class Voucher extends TravelManager {
           size = sectOne.size();
           for (int i = 0 ; i < size ; i++) {
             strng = (String) sectOne.get(i);
-            table.add(strng, 1, 2);
-            table.add(Text.BREAK,1,2);
+            _table.add(strng, 1, 2);
+            _table.add(Text.BREAK,1,2);
           }
         }
         // SECTION ONE ENDS
 
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
         Address address = null;
         List hPhone = null;
@@ -219,143 +228,168 @@ public abstract class Voucher extends TravelManager {
         fPhone = _supplier.getFaxPhone();
         emails = _supplier.getEmails();
 
-        table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO")+" : "),1,2);
-        table.add(getText(name),1,2);
-        table.add(Text.BREAK,1,2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO")+" : "),1,2);
+        _table.add(getText(name),1,2);
+        _table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.address_lg","ADDRESS")+" : "),1,2);
-        table.add(getText(address.getStreetName()),1,2);
-        table.add(Text.BREAK,1,2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.address_lg","ADDRESS")+" : "),1,2);
+        _table.add(getText(address.getStreetName()),1,2);
+        _table.add(Text.BREAK,1,2);
 
         Phone phone;
 
-        table.add(getText(_iwrb.getLocalizedString("travel.telephone_number_lg","PHONE")+" : "), 1, 2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.telephone_number_lg","PHONE")+" : "), 1, 2);
         if (hPhone != null)
         for (int i = 0; i < hPhone.size(); i++) {
-          if (i != 0) table.add(getText(", "), 1, 2);
+          if (i != 0) _table.add(getText(", "), 1, 2);
           phone = (Phone) hPhone.get(i);
-          table.add(getText(phone.getNumber()), 1,2);
+          _table.add(getText(phone.getNumber()), 1,2);
         }
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.fax_lg","FAX")+" : "), 1, 2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.fax_lg","FAX")+" : "), 1, 2);
         if (fPhone != null)
         for (int i = 0; i < fPhone.size(); i++) {
-          if (i != 0) table.add(getText(", "), 1, 2);
+          if (i != 0) _table.add(getText(", "), 1, 2);
           phone = (Phone) fPhone.get(i);
-          table.add(getText(phone.getNumber()), 1,2);
+          _table.add(getText(phone.getNumber()), 1,2);
         }
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.email_lg","E-MAIL")+" : "), 1, 2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.email_lg","E-MAIL")+" : "), 1, 2);
         Email email;
         if (emails != null)
         for (int i = 0; i < emails.size(); i++) {
-          if (i != 0) table.add(getText(", "), 1, 2);
+          if (i != 0) _table.add(getText(", "), 1, 2);
           email = (Email) emails.get(i);
-          table.add(getText(email.getEmailAddress()), 1,2);
+          _table.add(getText(email.getEmailAddress()), 1,2);
         }
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
         // SECTION TWO BEGINS
         if (sectTwo != null) {
           size = sectTwo.size();
           for (int i = 0 ; i < size ; i++) {
             strng = (String) sectTwo.get(i);
-            table.add(strng, 1, 2);
-            table.add(Text.BREAK,1,2);
+            _table.add(strng, 1, 2);
+            _table.add(Text.BREAK,1,2);
           }
         }
         // SECTION TWO ENDS
 
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.this_order_to_be_accepted","This order to be accepted at amount shown as part or full payment for the following services")),1,2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.this_order_to_be_accepted","This order to be accepted at amount shown as part or full payment for the following services")),1,2);
         // SECTION THREE BEGINS
         if (sectThree != null) {
           size = sectThree.size();
           for (int i = 0 ; i < size ; i++) {
             strng = (String) sectThree.get(i);
-            table.add(strng, 1, 2);
-            table.add(Text.BREAK,1,2);
+            _table.add(strng, 1, 2);
+            _table.add(Text.BREAK,1,2);
           }
         }
         // SECTION THREE ENDS
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
-        table.add(Text.BREAK,1,2);
-        table.add(getText(getProductBusiness(iwc).getProductNameWithNumber(_product, true, _localeId)),1,2);
-        table.add(Text.BREAK,1,2);
-        if (_bookings.size() > 0) {
-          IWTimestamp fromStamp = new IWTimestamp(((Booking)_bookings.get(0)).getBookingDate());
-          if (_bookings.size() < 2) {
-            table.add(getText(fromStamp.getLocaleDate(_iwc)),1,2);
-          }else {
-            IWTimestamp toStamp = new IWTimestamp(((Booking)_bookings.get(_bookings.size()-1)).getBookingDate());
-            table.add(getText(fromStamp.getLocaleDate(_iwc)+" - "+toStamp.getLocaleDate(iwc)),1,2);
-          }
-        }
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
+        _table.add(getText(getProductBusiness(_iwc).getProductNameWithNumber(_product, true, _localeId)),1,2);
+        _table.add(Text.BREAK,1,2);
+				addBookingDates(_table, _bookings, _iwc);
+        _table.add(Text.BREAK,1,2);
         if (_address != null) {
-          table.add(_iwrb.getLocalizedString("travel.departure_place","Departure place"), 1,2);
-          table.add(getText(" : "),1,2);
-          table.add(getText(_address.getName()),1,2);
+          _table.add(_iwrb.getLocalizedString("travel.departure_place","Departure place"), 1,2);
+          _table.add(getText(" : "),1,2);
+          _table.add(getText(_address.getName()),1,2);
+				  _table.add(Text.BREAK,1,2);
         }
         // SECTION FOUR BEGINS
         if (sectFour != null) {
           size = sectFour.size();
           for (int i = 0 ; i < size ; i++) {
             strng = (String) sectFour.get(i);
-            table.add(strng, 1, 2);
-            table.add(Text.BREAK,1,2);
+            _table.add(strng, 1, 2);
+            _table.add(Text.BREAK,1,2);
           }
         }
         // SECTION FOUR ENDS
 
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
-        table.add(Text.BREAK,1,2);
-        table.add(Text.BREAK,1,2);
-
-        table.add(getText(_iwrb.getLocalizedString("travel.client_name_lg","CLIENT NAME")),1,2);
-        table.add(getText(" : "),1,2);
-        table.add(getText(_booking.getName()),1,2);
-        table.add(Text.BREAK,1,2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.client_name_lg","CLIENT NAME")),1,2);
+        _table.add(getText(" : "),1,2);
+        _table.add(getText(_booking.getName()),1,2);
+        _table.add(Text.BREAK,1,2);
         // SECTION CLIENT_INFO BEGINS
         if (clientInfo != null) {
           size = clientInfo.size();
           for (int i = 0 ; i < size ; i++) {
             strng = (String) clientInfo.get(i);
-            table.add(strng, 1, 2);
-            table.add(Text.BREAK,1,2);
+            _table.add(strng, 1, 2);
+            _table.add(Text.BREAK,1,2);
           }
         }
         // SECTION CLIENT_INFO ENDS
 
-        table.add(Text.BREAK,1,2);
-        table.add(getText(_iwrb.getLocalizedString("travel.party_of_lg","PARTY OF")),1,2);
-        table.add(getText(" : "),1,2);
-        table.add(getText(Integer.toString(_booking.getTotalCount())),1,2);
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.party_of_lg","PARTY OF")),1,2);
+        _table.add(getText(" : "),1,2);
+        _table.add(getText(Integer.toString(_booking.getTotalCount())),1,2);
+        _table.add(Text.BREAK,1,2);
         for (int i = 0; i < _entries.length; i++) {
-          table.add(getText(Text.NON_BREAKING_SPACE+ Text.NON_BREAKING_SPACE),1,2);
-          table.add(getText(_entries[i].getProductPrice().getPriceCategory().getName()),1,2);
-          table.add(getText(" : "),1,2);
-          table.add(getText(Integer.toString(_entries[i].getCount())),1,2);
-          table.add(Text.BREAK,1,2);
+          _table.add(getText(Text.NON_BREAKING_SPACE+ Text.NON_BREAKING_SPACE),1,2);
+          _table.add(getText(_entries[i].getProductPrice().getPriceCategory().getName()),1,2);
+          _table.add(getText(" : "),1,2);
+          _table.add(getText(Integer.toString(_entries[i].getCount())),1,2);
+          _table.add(Text.BREAK,1,2);
         }
 
 
-        table.add(Text.BREAK,1,2);
-        table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
-        table.add(getText(" : "),1,2);
-//        table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
-        table.add(getText(df.format(getBooker(iwc).getBookingPrice(_bookings))),1,2);
-        table.add(getText(" "),1,2);
-        com.idega.block.trade.data.Currency currency = getBooker(iwc).getCurrency(_booking);
-        if (currency != null)
-        table.add(getText(currency.getCurrencyAbbreviation()),1,2);
-        table.add(Text.BREAK,1,2);
+
+        _table.add(Text.BREAK,1,2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.amount_lg","AMOUNT")),1,2);
+        _table.add(getText(" : "),1,2);
+//        _table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
+        _table.add(getText(df.format(getBooker(_iwc).getBookingPrice(_bookings))),1,2);
+        _table.add(getText(" "),1,2);
+        com.idega.block.trade.data.Currency currency = getBooker(_iwc).getCurrency(_booking);
+        if (currency != null) {
+					_table.add(getText(currency.getCurrencyAbbreviation()),1,2);
+        }
+        _table.add(Text.BREAK,1,2);
+
+				String ccAuthNumber =  _booking.getCreditcardAuthorizationNumber();
+				if (ccAuthNumber != null) {
+					try {
+						TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
+						Collection authEnts = authEntHome.findByAuthorisationIdRsp(ccAuthNumber);
+						if (authEnts != null && !authEnts.isEmpty()) {
+							Iterator iter = authEnts.iterator();
+							TPosAuthorisationEntriesBean authEnt = (TPosAuthorisationEntriesBean) authEntHome.findByPrimaryKey( iter.next() );
+							_table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
+							_table.add(getText(" : "),1,2);
+							String amount = authEnt.getAuthorisationAmount();
+							double fAmount = Float.parseFloat(amount) / 100.0;
+							_table.add(getText(fAmount+" "+authEnt.getAuthorisationCurrency()), 1, 2);
+							_table.add(Text.BREAK,1,2);
+						}
+					}catch (FinderException fe) {
+						fe.printStackTrace(System.err);
+					}
+				}
+				_table.add(getText(_iwrb.getLocalizedString("travel.payment_type_lg","PAYMENT TYPE")),1,2);
+				_table.add(getText(" : "),1,2);
+				_table.add(getText(getBooker(_iwc).getPaymentType(_iwrb, _booking.getPaymentTypeId())), 1, 2);
+				_table.add(Text.BREAK, 1, 2);
+				
+		_table.add(Text.BREAK, 1, 2);
+
+
+				_table.add(getText(_iwrb.getLocalizedString("travel.comment_lg","COMMENT")),1,2);
+				_table.add(getText(" : "),1,2);
+				_table.add(getText(_booking.getComment()), 1, 2);
+				_table.add(getText(Text.BREAK), 1, 2);
 
 
         // SECTION FIVE BEGINS
@@ -363,14 +397,14 @@ public abstract class Voucher extends TravelManager {
           size = sectFive.size();
           for (int i = 0 ; i < size ; i++) {
             strng = (String) sectFive.get(i);
-            table.add(strng, 1, 2);
-            table.add(Text.BREAK,1,2);
+            _table.add(strng, 1, 2);
+            _table.add(Text.BREAK,1,2);
           }
         }
         // SECTION FIVE ENDS
 
 
-        table.add(Text.BREAK,1,2);
+        _table.add(Text.BREAK,1,2);
 
       }catch (FinderException fe) {
         error = true;
@@ -384,16 +418,28 @@ public abstract class Voucher extends TravelManager {
       }
 
       if (error) {
-        table.add(getText(_iwrb.getLocalizedString("travel.voucher_error","Voucher could not be created, please write down your reference number")),1,2);
-        table.add(Text.BREAK,1,2);
-        table.add(getSmallText(_iwrb.getLocalizedString("travel.reference_number_show","Reference nr. ")),1,2);
-        table.add(getSmallText(_booking.getReferenceNumber()),1,2);
+        _table.add(getText(_iwrb.getLocalizedString("travel.voucher_error","Voucher could not be created, please write down your reference number")),1,2);
+        _table.add(Text.BREAK,1,2);
+        _table.add(getSmallText(_iwrb.getLocalizedString("travel.reference_number_show","Reference nr. ")),1,2);
+        _table.add(getSmallText(_booking.getReferenceNumber()),1,2);
       }
     }
 
 
     return bigTable;
   }
+
+  protected void addBookingDates(Table table, List bookings, IWContext iwc) throws RemoteException {
+		if (bookings.size() > 0) {
+		  IWTimestamp fromStamp = new IWTimestamp(((Booking)bookings.get(0)).getBookingDate());
+		  if (bookings.size() < 2) {
+		    table.add(getText(fromStamp.getLocaleDate(iwc)),1,2);
+		  }else {
+		    IWTimestamp toStamp = new IWTimestamp(((Booking)bookings.get(bookings.size()-1)).getBookingDate());
+		    table.add(getText(fromStamp.getLocaleDate(iwc)+" - "+toStamp.getLocaleDate(iwc)),1,2);
+		  }
+		}
+	}
 
   protected void addToSectionOne(String lineToAdd) {
     if (sectOne == null) {
