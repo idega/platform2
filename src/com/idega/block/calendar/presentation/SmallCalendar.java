@@ -165,11 +165,6 @@ public SmallCalendar(idegaTimestamp timestamp) {
     int newYPos = -1;
 
     while ( n <= daycount ) {
-      if ( newYPos != ypos ) {
-        T.setRowColor(ypos,inactiveCellColor);
-        newYPos = ypos;
-      }
-
       t = new Text(String.valueOf(n));
       dayColor = textColor;
       if ( getDayFontColor(getDateString(year,month,n)) != null ) {
@@ -200,6 +195,13 @@ public SmallCalendar(idegaTimestamp timestamp) {
 
       if (T.getColor(xpos,ypos) == null) {
         setDayColor(year,month,n,bodyColor);
+      }
+
+      if ( xpos == 7 ) {
+        for ( int a = 1; a < 8; a++ ) {
+          if ( T.getColor(a,ypos) == null )
+            T.setColor(a,ypos,inactiveCellColor);
+        }
       }
 
       xpos = xpos % 7 + 1;
