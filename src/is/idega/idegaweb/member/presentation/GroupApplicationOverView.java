@@ -26,6 +26,8 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.data.UserGroupPlugIn;
+import com.idega.user.presentation.UserGroupPlugInPresentable;
 import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.util.IWColor;
 import com.idega.util.ListUtil;
@@ -35,7 +37,7 @@ import com.idega.util.ListUtil;
  * @version 1.0
  */
 
-public class GroupApplicationOverView extends Page implements IWBrowserView, StatefullPresentation {
+public class GroupApplicationOverView extends Page implements IWBrowserView, StatefullPresentation, UserGroupPlugInPresentable {
 
 
   private String _controlTarget = null;
@@ -75,7 +77,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	    returnTable.setHeight(Table.HUNDRED_PERCENT);
 	    returnTable.setHeight(1,22);
 
-    
+    //the event model is not being used in this class when used as a plugin!
     GroupApplicationOverViewPS ps = (GroupApplicationOverViewPS)this.getPresentationState(iwc);
     Group selectedGroup = applicationGroup;
     if( selectedGroup == null ){
@@ -311,6 +313,20 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
     public GroupApplicationBusiness getGroupApplicationBusiness(IWApplicationContext iwc) throws RemoteException{
     	return (GroupApplicationBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,GroupApplicationBusiness.class);
     }
+
+	/**
+	 * @see com.idega.user.presentation.UserGroupPlugInPresentable#getPlugIn()
+	 */
+	public UserGroupPlugIn getPlugIn() {
+		return null;
+	}
+
+	/**
+	 * @see com.idega.user.presentation.UserGroupPlugInPresentable#initialize(Group)
+	 */
+	public void initialize(Group group) {
+		this.setApplicationGroup(group);
+	}
 
 } //Class end
 

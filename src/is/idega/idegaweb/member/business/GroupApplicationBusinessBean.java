@@ -2,6 +2,8 @@ package is.idega.idegaweb.member.business;
 
 import is.idega.idegaweb.member.data.GroupApplication;
 import is.idega.idegaweb.member.data.GroupApplicationHome;
+import is.idega.idegaweb.member.presentation.GroupApplicationOverView;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,6 +11,7 @@ import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.core.business.AddressBusiness;
@@ -22,12 +25,14 @@ import com.idega.core.data.PhoneHome;
 import com.idega.core.data.PhoneType;
 import com.idega.core.data.PhoneTypeHome;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 
@@ -36,7 +41,7 @@ import com.idega.util.ListUtil;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  *
  */
-public class GroupApplicationBusinessBean extends IBOServiceBean implements GroupApplicationBusiness{
+public class GroupApplicationBusinessBean extends IBOServiceBean implements GroupApplicationBusiness, UserGroupPlugInBusiness{
 	
 	
 	private static final String GENDER_MALE = "m"; 
@@ -253,4 +258,74 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	    IWTimestamp dob = new IWTimestamp(dd,mm,yyyy);
 	    return dob;
 	  }
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(Group)
+	 */
+	public void afterGroupCreate(Group group)
+		throws CreateException, RemoteException {
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(User)
+	 */
+	public void afterUserCreate(User user)
+		throws CreateException, RemoteException {
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(Group)
+	 */
+	public void beforeGroupRemove(Group group)
+		throws RemoveException, RemoteException {
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(User)
+	 */
+	public void beforeUserRemove(User user)
+		throws RemoveException, RemoteException {
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(Collection, Collection, Collection)
+	 */
+	public Collection findGroupsByFields(
+		Collection listViewerFields,
+		Collection finderOperators,
+		Collection listViewerFieldValues)
+		throws RemoteException {
+		return null;
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
+	 */
+	public Collection getListViewerFields() throws RemoteException {
+		return null;
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
+	 */
+	public Class getPresentationObjectClass() throws RemoteException {
+		return null;
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(Group)
+	 */
+	public PresentationObject instanciateEditor(Group group)
+		throws RemoteException {
+		return null;
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateViewer(Group)
+	 */
+	public PresentationObject instanciateViewer(Group group)throws RemoteException {
+		GroupApplicationOverView viewer =  new GroupApplicationOverView();
+		viewer.initialize(group);
+		return viewer;
+	}
+
 }
