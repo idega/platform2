@@ -136,7 +136,11 @@ public class ClubInformationTab extends UserGroupTab {
 	 */
 	public void updateFieldsDisplayStatus() {
 		lineUpFields();
-		_numberField.setContent((String) fieldValues.get(_numberFieldName));
+		String number = (String) fieldValues.get(_numberFieldName);
+		_numberField.setContent(number);
+		if(number != null && !number.equals("")) {
+			_numberField.setDisabled(true);
+		}
 		_ssnField.setContent((String) fieldValues.get(_ssnFieldName));
 		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
 		//		_typeField.setSelectedElement((String)

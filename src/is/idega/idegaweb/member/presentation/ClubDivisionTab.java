@@ -131,7 +131,11 @@ public class ClubDivisionTab extends UserGroupTab{
      * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
      */
     public void updateFieldsDisplayStatus() {
-        numberField.setContent((String) fieldValues.get(numberFieldName));
+    			String number = (String) fieldValues.get(numberFieldName);
+        numberField.setContent(number);
+        if(number != null && !number.equals("")) {
+        		numberField.setDisabled(true);
+        }
         ssnField.setContent((String) fieldValues.get(ssnFieldName));
         foundedField.setContent((String) fieldValues.get(foundedFieldName));
         String connection = (String) fieldValues
