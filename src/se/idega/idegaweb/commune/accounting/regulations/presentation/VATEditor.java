@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.26 2003/10/14 09:32:45 anders Exp $
+ * $Id: VATEditor.java,v 1.27 2003/10/15 11:42:17 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/10/14 09:32:45 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/15 11:42:17 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -466,7 +466,7 @@ public class VATEditor extends AccountingBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		int row = 1;
-		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverskamhet"), 1, row);
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, row);
 		String operationalField = null;
 		try {
 			operationalField = getSession().getOperationalField();
