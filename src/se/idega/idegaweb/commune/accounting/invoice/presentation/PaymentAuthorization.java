@@ -1,6 +1,6 @@
 
 /*
- * $Id: PaymentAuthorization.java,v 1.1 2003/11/04 01:47:25 kjell Exp $
+ * $Id: PaymentAuthorization.java,v 1.2 2004/03/23 12:09:38 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,27 +13,28 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import java.rmi.RemoteException;
 import java.sql.Date;
 
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.Table;
-import com.idega.user.data.User;
-
+import se.idega.idegaweb.commune.accounting.invoice.business.PaymentAuthorizationBusiness;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
-import se.idega.idegaweb.commune.accounting.invoice.business.PaymentAuthorizationBusiness;
+
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.user.data.User;
 
 /**
  * PaymentAuthorization is an idegaWeb block that handles Authorization of
  * payment to providers
  * <p>
- * $Id: PaymentAuthorization.java,v 1.1 2003/11/04 01:47:25 kjell Exp $
+ * $Id: PaymentAuthorization.java,v 1.2 2004/03/23 12:09:38 roar Exp $
  *
  * @author <a href="http://www.lindman.se">Kelly</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PaymentAuthorization extends AccountingBlock {
 
+	
 	private final static int ACTION_DEFAULT = 0;
 	private final static int ACTION_SAVE = 1;
 	
@@ -47,11 +48,15 @@ public class PaymentAuthorization extends AccountingBlock {
 	private final static String KEY_AUTHORIZED = KEY_PREFIX + "authorized";
 	private final static String KEY_SAVE = KEY_PREFIX + "save";
 	private final static String KEY_ABORT = KEY_PREFIX + "abort";
+	private final static String KEY_BACK = KEY_PREFIX + "back";
 	private final static String KEY_NOT_LOGGED_IN = KEY_PREFIX + "not_logged_in";
 	private final static String KEY_NOT_AUTHORIZED = KEY_PREFIX + "not_authorized";
+	private final static String KEY_NO_AUTHORIZING = KEY_PREFIX + "no_authorizing";
 	
 	private final static String PARAM_SAVE = "param_save";
 	private final static String PARAM_ABORT = "param_abort";
+	private final static String PARAM_BACK = "param_back";
+
 	private User _user;
 	private String _providerName = "";
 	private String _userName = "";
@@ -67,7 +72,7 @@ public class PaymentAuthorization extends AccountingBlock {
 				int action = parseAction(iwc);
 				switch (action) {
 					case ACTION_DEFAULT :
-						viewDefaultForm();
+						viewDefaultForm(iwc);
 						break;
 					case ACTION_SAVE :
 						updatePayments(iwc);
@@ -98,11 +103,23 @@ public class PaymentAuthorization extends AccountingBlock {
 	/*
 	 * Adds the default form to the block.
 	 */	
-	private void viewDefaultForm() {
+	private void viewDefaultForm(IWContext iwc) {
+		boolean hasPayments = false;
+		try{
+			hasPayments = getPaymentAuthorizationBusiness(iwc).hasAuthorizablePayments(_user);		
+		}catch(RemoteException ex){
+			ex.printStackTrace();
+		}
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Payment authorization");
-		app.setMainPanel(getAuthorizationPanel());
-		app.setButtonPanel(getButtonPanel());
+		if (hasPayments){
+			app.setMainPanel(getAuthorizationPanel());
+			app.setButtonPanel(getButtonPanel(true, true));	//Save, Abort		
+		} else {
+			app.setMainPanel(getLocalizedText(KEY_NO_AUTHORIZING, "No payments to be authorized"));
+			app.setButtonPanel(getButtonPanel(false, false));	//No Save, Back	
+		}
+
 		add(app);
 	}
 
@@ -113,6 +130,7 @@ public class PaymentAuthorization extends AccountingBlock {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Payment authorization");
 		app.setMainPanel(getLocalizedText(KEY_AUTHORIZED, "Payments authorized"));
+		app.setButtonPanel(getButtonPanel(false, false));	//No save, Back	
 		add(app);
 	}
 
@@ -127,6 +145,7 @@ public class PaymentAuthorization extends AccountingBlock {
 		} else {
 			app.setMainPanel(getLocalizedText(KEY_NOT_AUTHORIZED, "Not authorized"));
 		}
+		app.setButtonPanel(getButtonPanel(false, false));	//No save, Back			
 		add(app);
 	}
 
@@ -177,10 +196,16 @@ public class PaymentAuthorization extends AccountingBlock {
 	/*
 	 * Returns the button panel for this block
 	 */
-	private ButtonPanel getButtonPanel() {
+	private ButtonPanel getButtonPanel(boolean includeSave, boolean useAbort) {
 		ButtonPanel bp = new ButtonPanel(this);
-		bp.addButton(getLocalizedButton(PARAM_SAVE, KEY_SAVE, "Save"));
-		bp.addButton(getLocalizedButton(PARAM_ABORT, KEY_ABORT, "Abort"));
+		if (includeSave){
+			bp.addLocalizedButton(PARAM_SAVE, KEY_SAVE, "Save");
+		}
+		if (useAbort){
+			bp.addLocalizedButton(PARAM_ABORT, KEY_ABORT, "Abort", getResponsePage());
+		} else {
+			bp.addLocalizedButton(PARAM_BACK, KEY_BACK, "Back", getResponsePage());
+		}
 		return bp;
 	}
 
@@ -197,5 +222,8 @@ public class PaymentAuthorization extends AccountingBlock {
 	private PaymentAuthorizationBusiness getPaymentAuthorizationBusiness(IWContext iwc) throws RemoteException {
 		return (PaymentAuthorizationBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PaymentAuthorizationBusiness.class);
 	}	
+
+	
+
 
 }
