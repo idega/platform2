@@ -1,5 +1,5 @@
 /*
- * $Id: BatchDeadlineSetter.java,v 1.3 2004/11/26 13:41:44 aron Exp $
+ * $Id: BatchDeadlineSetter.java,v 1.4 2005/02/17 11:55:35 anders Exp $
  * Created on 1.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 13:41:44 $ by $Author: aron $
+ *  Last modified: $Date: 2005/02/17 11:55:35 $ by $Author: anders $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class BatchDeadlineSetter extends AccountingBlock {
 
@@ -39,17 +39,19 @@ public class BatchDeadlineSetter extends AccountingBlock {
     public void init(IWContext iwc) throws Exception {
         
         Form form = new Form();
-        int deadlineDay = -1;
+        int deadlineDay = getDeadlineService(iwc).getCurrentDeadlineDay();
+
         IWTimestamp stamp = IWTimestamp.RightNow();
         int currentDay = stamp.getDay();
         IWCalendar cal = new IWCalendar();
         int daysInMonth = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
         
         if(iwc.isParameterSet("deadline_day")){
-            deadlineDay = Integer.parseInt(iwc.getParameter("deadline_day"));
-            getDeadlineService(iwc).storeDeadline(deadlineDay);
+        		try {
+	            deadlineDay = Integer.parseInt(iwc.getParameter("deadline_day"));
+	            getDeadlineService(iwc).storeDeadline(deadlineDay);
+        		} catch (Exception e) {}
         }
-      
         
         // still valid this month
         stamp.setDay(deadlineDay);
