@@ -288,19 +288,19 @@ public final class Crawler {
             mydoc.add(Field.Text("url", currentURL.toString()));
             mydoc.add(Field.Text("contentType", contentType));
             mydoc.add(Field.Keyword("lastModified",DateField.timeToString(lastModified)));
-            //mydoc.add(Field. UnStored("contents", handler.getContents()));
             String contents = handler.getContents();
-            
+            mydoc.add(Field.UnStored("full_contents", contents));
+                       
             
             if( contents!=null ){
             	//clean more!
             	contents = TextSoap.findAndCut(contents,">");
             	contents = TextSoap.findAndCut(contents,"<");
             	contents = TextSoap.findAndCut(contents,"•?");
-            	
-            	
+
             	 mydoc.add(Field.Text("contents", contents.substring(0,Math.min(contents.length(),140)) ));
             }
+            
             if (handler.getTitle() != null) {
                 mydoc.add(Field.Text("title", handler.getTitle()));
             }

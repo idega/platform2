@@ -162,7 +162,7 @@ public final class HTMLHandler extends ParserCallback implements ContentHandler{
         if (state == SCRIPT && tag.equals(HTML.Tag.SCRIPT)) {
             state = NONE;
             return;
-        }
+        } 
     }
     /**
      *		Handle META tags
