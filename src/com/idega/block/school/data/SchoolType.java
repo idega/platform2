@@ -4,6 +4,7 @@ package com.idega.block.school.data;
 public interface SchoolType extends com.idega.data.IDOEntity
 {
  public com.idega.block.school.data.SchoolCategory getCategory();
+ public boolean getIsFreetimeType();
  public java.lang.String getLocalizationKey();
  public int getMaxSchoolAge();
  public java.lang.String getName();
@@ -12,6 +13,7 @@ public interface SchoolType extends com.idega.data.IDOEntity
  public java.lang.String getSchoolTypeName();
  public void initializeAttributes();
  public void setCategory(com.idega.block.school.data.SchoolCategory p0);
+ public void setIsFreetimeType(boolean p0);
  public void setLocalizationKey(java.lang.String p0);
  public void setMaxSchoolAge(java.lang.String p0);
  public void setSchoolCategory(java.lang.String p0);

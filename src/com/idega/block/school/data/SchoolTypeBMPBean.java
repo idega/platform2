@@ -2,6 +2,8 @@ package com.idega.block.school.data;
 
 import java.util.Collection;
 
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 
@@ -22,6 +24,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   public static final String SCHOOLCATEGORY = "school_category";
   public static final String SCHOOLTYPE = "sch_school_type";
   public static final String MAXSCHOOLAGE = "max_school_age";
+	public static final String IS_FREETIME_TYPE = "is_freetime_type";
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
@@ -29,6 +32,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     this.addAttribute(INFO,"Info",true,true,String.class);
     this.addAttribute(MAXSCHOOLAGE,"Max school age",true,true,Integer.class);
     this.addAttribute(LOC_KEY,"Localization key",String.class);
+		this.addAttribute(IS_FREETIME_TYPE,"Is freetime type",Boolean.class);
     
     addManyToOneRelationship(SCHOOLCATEGORY, SchoolCategory.class);
   }
@@ -88,6 +92,14 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   public void setMaxSchoolAge(String key){
     setColumn(MAXSCHOOLAGE,key);
   }
+  
+  public boolean getIsFreetimeType() {
+  	return getBooleanColumnValue(IS_FREETIME_TYPE, false);
+  }
+  
+  public void setIsFreetimeType(boolean isFreetimeType) {
+  	setColumn(IS_FREETIME_TYPE, isFreetimeType);
+  }
 
   public Collection ejbFindAllSchoolTypes() throws javax.ejb.FinderException{
 	IDOQuery sql = idoQuery();
@@ -110,5 +122,10 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   	query.appendWhereEqualsQuoted(LOC_KEY,typeKey);
   	return (Integer)super.idoFindOnePKByQuery(query);
   }
-
+  
+  public Collection ejbFindAllFreetimeTypes() throws FinderException {
+  	IDOQuery query = this.idoQueryGetSelect();
+  	query.appendWhereEquals(IS_FREETIME_TYPE, true).appendOrderBy(NAME);
+  	return idoFindPKsByQuery(query);
+  }
 }

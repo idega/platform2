@@ -20,6 +20,13 @@ public java.util.Collection findAllByCategory(java.lang.String p0)throws javax.e
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllFreetimeTypes()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllFreetimeTypes();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllSchoolTypes()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolTypeBMPBean)entity).ejbFindAllSchoolTypes();
