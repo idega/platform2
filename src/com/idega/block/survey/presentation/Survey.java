@@ -749,6 +749,7 @@ public class Survey extends FolderBlock {
 		Image createImage = _iwb.getImage("shared/create.gif");
 		Link createLink = new Link(createImage);
 		createLink.addParameter(PRM_SWITCHTO_MODE,MODE_EDIT);
+		createLink.addParameter(SurveyEditor.PRM_SURVEY_SELECTED, "false");
 		
 		table.add(createLink);
 		

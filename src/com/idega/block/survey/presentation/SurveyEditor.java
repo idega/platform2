@@ -8,6 +8,7 @@ package com.idega.block.survey.presentation;
 
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import com.idega.block.survey.data.SurveyAnswer;
 import com.idega.block.survey.data.SurveyEntity;
 import com.idega.block.survey.data.SurveyQuestion;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
@@ -51,6 +53,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.TimestampInput;
 import com.idega.util.IWTimestamp;
 
 
@@ -84,6 +87,12 @@ public class SurveyEditor extends FolderBlock {
 	public static final Object SURVEY_NOT_STORED = null;
 	private Object _surveyID = SURVEY_NOT_STORED;
 
+	private final static String PRM_SURVEY_NAME = "sur_N";
+	private final static String PRM_SURVEY_DESCRIPTION = "sur_D";
+	private final static String PRM_SURVEY_START_TIME = "sur_Sd";
+	private final static String PRM_SURVEY_END_DATE = "sur_Ed";
+	private final static String PARAMETER_DELETE = "surpdl";
+	
 	public static final String PRM_ANSWERTYPE = "su_ans_type";
 	public final static String PRM_MAINTAIN_SUFFIX = "_mt";
 	public final static char ANSWERTYPE_SINGLE_CHOICE = SurveyBusinessBean.ANSWERTYPE_SINGLE_CHOICE;
@@ -112,6 +121,8 @@ public class SurveyEditor extends FolderBlock {
 	public static final int ACTION_FORWARD = 6;
 	private int _action = ACTION_NO_ACTION;
 	private int _lastAction = ACTION_NO_ACTION;
+	
+	public static final String PRM_SURVEY_SELECTED = "su_sursel";
 	
 	public static final String PRM_NUMBER_OF_ANSWERS_TO_ADD = "su_noata";
 	public static final String PRM_NUMBER_OF_ANSWERS = "su_noa";
@@ -196,7 +207,6 @@ public class SurveyEditor extends FolderBlock {
 		
 		Form myForm = new Form();
 		
-		
 		//save to DB
 		if(_action==ACTION_SAVE){
 			
@@ -217,24 +227,28 @@ public class SurveyEditor extends FolderBlock {
 			add(Text.BREAK);
 		}
 		
-		
+		if (!iwc.isParameterSet(PRM_SURVEY_SELECTED) || _action==ACTION_SAVE) {
+			handleDelete(iwc);
+			myForm.add(getSurveyList(iwc));
+		} else {
 		//Edit		
 //		if(this.hasEditPermission()){
+			myForm.maintainParameter(PRM_SURVEY_SELECTED);
 			switch (_state) {
 				case STATE_ONE :
 					add(getHelp("su_help_question_step"));
-					myForm.add(getStateOne());
+					myForm.add(getStateOne(iwc));
 					break;
 				case STATE_TWO :
 					add(getHelp("su_help_answer_step"));
-					myForm.add(getStateTwo());
+					myForm.add(getStateTwo(iwc));
 					break;
 			}			
 //		} else {
 //			//store information temporary while logging in
 //		}
 
-		
+		}
 
 		
 		this.add(myForm);
@@ -245,30 +259,102 @@ public class SurveyEditor extends FolderBlock {
 		}
 
 	}
+	
+	private void handleDelete(IWContext iwc) throws RemoteException {
+		String toDelete = iwc.getParameter(PARAMETER_DELETE);
+		if (toDelete != null) {
+			SurveyBusiness business = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
+			try {
+				SurveyEntity entity = business.getSurveyHome().findByPrimaryKey(new Integer(toDelete));
+				entity.setRemoved(iwc.getCurrentUser());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
+	private FieldSet getSurveyList(IWContext iwc) throws RemoteException {
+		FieldSet fs = new FieldSet(_iwrb.getLocalizedString("survey_editor", "Survey editor"));
+		Table table = new Table();
+		int row = 1;
+		
+		try {
+			SurveyBusiness business = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
+			Collection surveys = business.getSurveyHome().findAllSurveys(this.getWorkingFolder().getEntity());
+			
+			table.add(getMessageTextObject(_iwrb.getLocalizedString("name", "Name"), true), 1, row);
+			table.add(getMessageTextObject(_iwrb.getLocalizedString("description", "Description"), true), 2, row);
+			table.add(getMessageTextObject(_iwrb.getLocalizedString("begins", "Begins"), true), 3, row);
+			table.add(getMessageTextObject(_iwrb.getLocalizedString("ends", "Ends"), true), 4, row);
+			if (surveys != null && !surveys.isEmpty()) {
+				SurveyEntity survey;
+				Link link;
+				Link del;
+				Image delIm = this._iwb.getImage("/shared/delete.gif");
+				IWTimestamp from;
+				IWTimestamp to;
+				
+				Iterator iter = surveys.iterator();
+				while (iter.hasNext()) {
+					++row;
+					survey = (SurveyEntity) iter.next();
+					link = new Link(getMessageTextObject(survey.getName(), false));
+					link.addParameter(PRM_SURVEY_SELECTED, "true");
+					link.addParameter(PRM_SURVEY_ID, survey.getPrimaryKey().toString());
+					link.addParameter(Survey.PRM_SWITCHTO_MODE,Survey.MODE_EDIT);
+					
+					try {
+						from = new IWTimestamp(survey.getStartTime());
+					} catch (Exception e ) {
+						from = null;
+					}
+					try {
+						to = new IWTimestamp(survey.getEndTime());
+					} catch (Exception e ) {
+						to = null;
+					}
+					
+					table.add(link, 1, row);
+					table.add(getMessageTextObject(survey.getDescription(), false), 2, row);
+					if (from != null) {
+						table.add(from.getLocaleDateAndTime(this._iLocale), 3, row);
+					}
+					if (to != null) {
+						table.add(to.getLocaleDateAndTime(this._iLocale), 4, row);
+					}
+					
+					del = new Link(delIm);
+					//del.addParameter(PRM_SURVEY_SELECTED, "true");
+					del.addParameter(Survey.PRM_SWITCHTO_MODE,Survey.MODE_EDIT);
+					del.addParameter(PARAMETER_DELETE, survey.getPrimaryKey().toString());
+					table.add(del, 5, row);
+					
+					//addAttribute(getColumnNameName(), "Name", true, true, String.class);
+					//addAttribute(getColumnNameDescription(), "Description", true, true, String.class);
+					//addAttribute(getColumnNameStartTime(), "Begins", true, true, Timestamp.class);
+					//addAttribute(getColumnNameEndTime(), "Ends", true, true, Timestamp.class);
+					
+				}
 
-//	ICLocale locale = ICLocaleBusiness.getICLocale(_iLocaleID);
-//	try {
-//		Collection questions = _currentSurvey.getSurveyQuestions();
-//		int questionNumber = 1; 
-//		for (Iterator iter = questions.iterator(); iter.hasNext(); questionNumber++) {
-//			SurveyQuestion question = (SurveyQuestion)iter.next();
-//			surveyTable.add(new HiddenInput(PRM_QUESTIONS,question.getPrimaryKey().toString()),1,getQuestionRowIndex(questionNumber));
-//			surveyTable.add(getQuestionLabel(questionNumber),1,getQuestionRowIndex(questionNumber));
-//			try {
-//				surveyTable.add(getQuestionTextObject(question.getQuestion(locale)),2,getQuestionRowIndex(questionNumber));
-//			} catch (IDOLookupException e1) {
-//				e1.printStackTrace();
-//			} catch (FinderException e1) {
-//				e1.printStackTrace();
-//			}
-//		
-//		
-//			surveyTable.add(getAnswerTable(question, locale),2,(surveyTable.getRows()+1));
-//
-//	Collection answers = _sBusiness.getAnswerHome().findQuestionsAnswer(question);
-
-
+			}
+			//business.getSurveyHome().findActiveSurveys(this.get)
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		//TODO crappis
+		
+		
+		
+		fs.add(table);
+		return fs;
+	}
+	
+	
 	/**
 	 * @param iwc
 	 * @return
@@ -277,13 +363,48 @@ public class SurveyEditor extends FolderBlock {
 		SurveyBusiness business = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
 		ICLocale locale = ICLocaleBusiness.getICLocale(_iLocale);
 		
+		String sName = iwc.getParameter(PRM_SURVEY_NAME);
+		String sDesc = iwc.getParameter(PRM_SURVEY_DESCRIPTION);
+		String sFrom = iwc.getParameter(PRM_SURVEY_START_TIME);
+		String sTo = iwc.getParameter(PRM_SURVEY_END_DATE);
+		IWTimestamp fromStamp = IWTimestamp.RightNow();
+		IWTimestamp toStamp = null;
+		try {
+			fromStamp = new IWTimestamp(sFrom);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			toStamp = new IWTimestamp(sTo);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		
+		if (sName == null || sName.equals("")) {
+			sName = "Survey";
+		}
+		if (sDesc == null) {
+			sDesc = "";
+		}
 		SurveyEntity survey = null;
 		
 		if(_surveyID != null){
 			survey = business.getSurveyHome().findByPrimaryKey(_surveyID);
+			survey.setName(sName);
+			survey.setDescription(sDesc);
+			if (fromStamp != null) {
+				survey.setStartTime(fromStamp.getTimestamp());
+			} else {
+				survey.setStartTime(null);
+			}
+			if (toStamp != null) {
+				survey.setEndTime(toStamp.getTimestamp());
+			} else {
+				survey.setEndTime(null);
+			}
+			survey.store();
 		} else {
-			survey = business.createSurvey(this.getWorkingFolder(),"Survey",null,IWTimestamp.RightNow(),null);
+			survey = business.createSurvey(this.getWorkingFolder(),sName,sDesc,fromStamp, toStamp);
 		}
 		
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);
@@ -362,7 +483,31 @@ public class SurveyEditor extends FolderBlock {
 		SurveyBusiness business = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
 		ICLocale locale = ICLocaleBusiness.getICLocale(_iLocale);
 		
-		SurveyEntity survey = business.createSurvey(this.getWorkingFolder(),"Survey",null,IWTimestamp.RightNow(),null);
+		String sName = iwc.getParameter(PRM_SURVEY_NAME);
+		String sDesc = iwc.getParameter(PRM_SURVEY_DESCRIPTION);
+		String sFrom = iwc.getParameter(PRM_SURVEY_START_TIME);
+		String sTo = iwc.getParameter(PRM_SURVEY_END_DATE);
+		IWTimestamp fromStamp = IWTimestamp.RightNow();
+		IWTimestamp toStamp = null;
+		try {
+			fromStamp = new IWTimestamp(sFrom);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			toStamp = new IWTimestamp(sTo);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		if (sName == null || sName.equals("")) {
+			sName = "Survey";
+		}
+		if (sDesc == null) {
+			sDesc = "";
+		}
+		SurveyEntity survey = business.createSurvey(this.getWorkingFolder(),sName,sDesc,fromStamp,toStamp);
 		
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);
 		String[] answerType = (String[])_prmValues.get(PRM_ANSWERTYPE);
@@ -531,6 +676,11 @@ public class SurveyEditor extends FolderBlock {
 				loadSurveyIDs(iwc);
 			}
 			
+			//survey
+			processParameterValues(iwc,PRM_SURVEY_NAME, true);
+			processParameterValues(iwc,PRM_SURVEY_DESCRIPTION, true);
+			processParameterValues(iwc,PRM_SURVEY_START_TIME, true);
+			processParameterValues(iwc,PRM_SURVEY_END_DATE, true);
 			//questions
 			processParameterValues(iwc,PRM_QUESTION,true);
 			processParameterValues(iwc,PRM_QUESTION_IDS,true);
@@ -778,10 +928,12 @@ public class SurveyEditor extends FolderBlock {
 		prmVector.add(new Parameter(PRM_CURRENT_STATE,String.valueOf(_state)));
 	}
 
-	private PresentationObject getStateOne(){
+	private PresentationObject getStateOne(IWContext iwc){
 		Table stateOne = new Table();
 		int rowIndex = 0;
 		
+		
+		stateOne.add(getSurveyInfoFieldset(iwc), 1, ++rowIndex);
 		
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);
 		String[] selectedAnsTypes = (String[])_prmValues.get(PRM_ANSWERTYPE);
@@ -822,9 +974,116 @@ public class SurveyEditor extends FolderBlock {
 		return stateOne;
 	}
 	
-	private PresentationObject getStateTwo(){
+	/**
+	 * @param iwc
+	 * @param stateOne
+	 * @param rowIndex
+	 * @return
+	 */
+	private FieldSet getSurveyInfoFieldset(IWContext iwc) {
+		try {
+			SurveyBusiness business = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
+			
+			
+			//survey
+			String[] pName = (String[]) _prmValues.get(PRM_SURVEY_NAME);
+			String[] pDesc = (String[]) _prmValues.get(PRM_SURVEY_DESCRIPTION);
+			String[] pStart = (String[]) _prmValues.get(PRM_SURVEY_START_TIME);
+			String[] pEnd = (String[]) _prmValues.get(PRM_SURVEY_END_DATE);
+			
+			SurveyEntity survey = null;
+			String sName = "";
+			String sDesc = "";
+			IWTimestamp start = IWTimestamp.RightNow();
+			IWTimestamp end = null;
+			if(_surveyID != null){
+				survey = business.getSurveyHome().findByPrimaryKey(_surveyID);
+			}
+
+			if (pName == null || pName.length == 0 || pName[0].equals("") ) {
+				if (survey != null) {
+					sName = survey.getName();
+				}
+			} else {
+				sName = pName[0];
+			}
+			if (pDesc == null || pDesc.length == 0 || pDesc[0].equals("") ) {
+				if (survey != null) {
+					sDesc = survey.getDescription();
+				}
+			} else {
+				sDesc = pDesc[0];
+			}
+			
+			if (pStart == null || pStart.length == 0 || pStart[0].equals("") ) {
+				if (survey != null) {
+					Timestamp tStamp = survey.getStartTime();
+					if (tStamp != null) {
+						start = new IWTimestamp(tStamp);
+					}
+				}
+			}  else {
+				start = new IWTimestamp(pStart[0]);
+			}
+			
+			if (pEnd == null || pEnd.length == 0 || pEnd[0].equals("") ) {
+				if (survey != null) {
+					Timestamp tStamp = survey.getEndTime();
+					if (tStamp != null) {
+						end = new IWTimestamp(tStamp);
+					}
+				}
+			}	 else {
+				end = new IWTimestamp(pEnd[0]);
+			}
+
+			FieldSet fs = new FieldSet(_iwrb.getLocalizedString("general_info", "General information"));
+			Table table = new Table();
+			fs.add(table);
+			int row = 1;
+			
+			table.add(getLabel(_iwrb.getLocalizedString("name", "Name")), 1, row);
+			table.add(getAnswerTextInput(PRM_SURVEY_NAME, sName), 2, row++);
+
+			table.add(getLabel(_iwrb.getLocalizedString("description", "Description")), 1, row);
+			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+			table.add(getAnswerTextArea(PRM_SURVEY_DESCRIPTION, sDesc, false), 2, row++);
+			
+			TimestampInput from = new TimestampInput(PRM_SURVEY_START_TIME, false);
+			if (start != null) {
+				from.setYearRange(start.getYear(), IWTimestamp.RightNow().getYear()+2);
+				from.setDate(start.getDate());
+				from.setHour(start.getHour());
+				from.setMinute(start.getMinute());
+			}
+			setStyle(from);
+			table.add(getLabel(_iwrb.getLocalizedString("starts", "Starts")), 1, row);
+			table.add(from, 2, row++);
+			
+			TimestampInput to = new TimestampInput(PRM_SURVEY_END_DATE, false);
+			if (end != null) {
+				to.setYearRange(end.getYear(), IWTimestamp.RightNow().getYear()+2);
+				to.setDate(end.getDate());
+				to.setHour(end.getHour());
+				to.setMinute(end.getMinute());
+			}
+			setStyle(to);
+			table.add(getLabel(_iwrb.getLocalizedString("ends", "Ends")), 1, row);
+			table.add(to, 2, row++);
+			
+			return fs;
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return new FieldSet();
+	}
+
+	private PresentationObject getStateTwo(IWContext iwc){
 		Table stateTwo = new Table();
 		int rowIndex = 0;
+		
+
+		stateTwo.add(getSurveyInfoFieldset(iwc), 1, ++rowIndex);
 		
 		
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);

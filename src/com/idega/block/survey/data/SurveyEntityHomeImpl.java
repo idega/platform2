@@ -20,6 +20,13 @@ public java.util.Collection findActiveSurveys(com.idega.core.category.data.ICInf
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllSurveys(com.idega.core.category.data.ICInformationFolder p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SurveyEntityBMPBean)entity).ejbFindAllSurveys(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public SurveyEntity findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (SurveyEntity) super.findByPrimaryKeyIDO(pk);
  }

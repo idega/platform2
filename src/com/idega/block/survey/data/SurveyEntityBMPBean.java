@@ -167,6 +167,20 @@ public class SurveyEntityBMPBean extends com.idega.data.GenericEntity implements
 		setColumn(getColumnNameCatID(),categoryID);
 	}
 
+	public Collection ejbFindAllSurveys(ICInformationFolder folder) throws FinderException {
+		IDOQuery query = idoQueryGetSelect();
+		
+		query.appendWhereEquals(getColumnNameFolderID(),folder)
+		.appendAnd();
+		IDOQuery querypart2 = idoQuery();
+			querypart2.append(DELETED_COLUMN).append(" is null")
+			.appendOr()
+			.append(DELETED_COLUMN).append(" = 'N'");
+		query.appendWithinParentheses(querypart2)
+		.appendOrderByDescending(getColumnNameStartTime());
+		
+		return idoFindPKsByQuery(query);
+	}
 
 	public Collection ejbFindActiveSurveys(ICInformationFolder folder, Timestamp time) throws FinderException{
 		IDOQuery query = idoQueryGetSelect();
@@ -184,11 +198,18 @@ public class SurveyEntityBMPBean extends com.idega.data.GenericEntity implements
 			querypart2.append(getColumnNameEndTime());
 			querypart2.appendGreaterThanOrEqualsSign();
 			querypart2.append(time);
-			/*querypart2.appendOr();
+			querypart2.appendOr();
 			querypart2.append(getColumnNameEndTime());
 			querypart2.appendLessThanOrEqualsSign();
-			querypart2.append("0000-00-00");*/				//MySQL Fix ??	
+			querypart2.append("0000-00-00");				//MySQL Fix ??	
 			query.appendWithinParentheses(querypart2);
+		query.appendAnd();
+			IDOQuery querypart3 = idoQuery();
+			querypart3.append(DELETED_COLUMN).append(" is null")
+			.appendOr()
+			.append(DELETED_COLUMN).append(" = 'N'");
+		query.appendWithinParentheses(querypart3);
+		
 		query.appendOrderBy(getColumnNameStartTime());
 		
 		//System.out.println(query.toString());
