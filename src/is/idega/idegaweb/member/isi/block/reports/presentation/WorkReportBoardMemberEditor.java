@@ -490,7 +490,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         while (collIterator.hasNext())  {
           WorkReportGroup league = (WorkReportGroup) collIterator.next();
           String name = league.getName(); 
-          names.add(names);
+          names.add(name);
         }
         Iterator nameIterator = names.iterator();
         while (nameIterator.hasNext())  {
