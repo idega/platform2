@@ -35,7 +35,6 @@ private boolean isAdmin=false;
 
 private String sLocaleId;
 private String sAttribute = null;
-private String adminURL = "/text/textadmin.jsp";
 
 private int iTextId = -1;
 private int textSize = 1;
@@ -53,7 +52,7 @@ private String textAlignment = "left";
 private String headlineStyle = "";
 private String spaceBetweenHeadlineAndBody = null;
 private boolean displayHeadline=true;
-private boolean enableDelete=true;
+private boolean enableDelete=false;
 private boolean reverse = false;
 private boolean crazy = false;
 private boolean viewall = false;
@@ -63,6 +62,7 @@ private boolean newWithAttribute = false;
 public static String prmTextId = "txtr.textid";
 
 private IWBundle iwb;
+private IWBundle iwcb;
 private IWResourceBundle iwrb;
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
@@ -83,6 +83,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
   public void main(IWContext iwc) throws Exception {
     isAdmin = iwc.hasEditPermission(this);
     iwb = getBundle(iwc);
+    iwcb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     Locale locale = iwc.getCurrentLocale();
 
@@ -123,7 +124,6 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       ch = ContentFinder.getContentHelper(txText.getContentId(),iLocaleId);
       if(ch!=null)
       locText = ch.getLocalizedText();
-      //locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
       hasId = true;
     }
 
@@ -169,90 +169,95 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     textBody = TextFormatter.formatText(textBody,tableTextSize,"100%");
 
+    Paragraph bodyParagraph = new Paragraph();
+      bodyParagraph.setAlign(textAlignment);
+
     Text body = new Text(textBody);
-    body.setFontSize(textSize);
-    body.setFontColor(textColor);
-    body.setAttribute("class","bodytext");
-    body.setFontStyle(textStyle);
+      body.setFontSize(textSize);
+      body.setFontColor(textColor);
+      body.setAttribute("class","bodytext");
+      body.setFontStyle(textStyle);
 
     if(spaceBetweenHeadlineAndBody !=null){
-      T.setHeight(spaceBetweenHeadlineAndBody);
+      T.setHeight(2,spaceBetweenHeadlineAndBody);
       bodyRow = 3;
     }
 
     Image bodyImage;
 
     ///////////////// Image /////////////////////
-
     List files = contentHelper.getFiles();
     if(files!=null){
-      try{
-      ICFile imagefile = (ICFile)files.get(0);
-      int imid = imagefile.getID();
-      String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
+    //Iterator iter = files.iterator();
+      //while (iter.hasNext()) {
+        try{
+          //ICFile imagefile = (ICFile)iter.next();
+          ICFile imagefile = (ICFile)files.get(0);
+          int imid = imagefile.getID();
+          String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
 
-			//System.err.println("image metadata : "+att+" "+TextEditorWindow.imageAttributeKey);
-      Image textImage = new Image(imid);
-      if(att != null)
-	textImage.setAttributes(getAttributeMap(att));
-      T.add(textImage,1,bodyRow);
-      }
-      catch(SQLException ex){
-	ex.printStackTrace();
-      }
+          Image textImage = new Image(imid);
+          if(att != null)
+            textImage.setAttributes(getAttributeMap(att));
+          bodyParagraph.add(textImage);
+        }
+        catch(SQLException ex){
+          ex.printStackTrace();
+        }
+      //}
     }
-    ////////////////////////////////////////////
+    bodyParagraph.add(body);
+
+    ///////////////// Adding to tables /////////////////////
     if ( displayHeadline ) {
       if ( headline.getText() != null ) {
-	/*Anchor headlineAnchor = new Anchor(headline,headline.getText());
-	headlineAnchor.setFontColor(headlineColor);*/
 	T.add(headline ,1,headerRow);
-	T.add(body,1,bodyRow);
+	T.add(bodyParagraph,1,bodyRow);
       }
     }
     else {
       bodyRow = 1;
-      T.add(body,1,bodyRow);
+      T.add(bodyParagraph,1,bodyRow);
     }
 
     if( headlineBgColor != null )
       T.setRowColor(headerRow,headlineBgColor);
     if( textBgColor != null )
       T.setRowColor(bodyRow,textBgColor);
-    T.setAlignment(1,bodyRow,textAlignment);
 
     return T;
   }
 
   public PresentationObject getAdminPart(int iTextId,boolean enableDelete,boolean newObjInst,boolean newWithAttribute,boolean hasId){
     Table T = new Table();
-    T.setCellpadding(2);
-    //T.setCellspacing(2);
+    T.setCellpadding(0);
+    T.setCellspacing(0);
     T.setBorder(0);
+    int column = 1;
 
     if(iTextId > 0){
-    Link breyta = new Link(iwb.getImage("/shared/edit.gif"));
-      breyta.setWindowToOpen(TextEditorWindow.class);
-      breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
-      breyta.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
-    T.add(breyta,1,1);
+      Link breyta = new Link(iwcb.getImage("/shared/edit.gif"));
+        breyta.setWindowToOpen(TextEditorWindow.class);
+        breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
+        breyta.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
+      T.add(breyta,column++,1);
 
       if ( enableDelete ) {
-	Link delete = new Link(iwb.getImage("/shared/delete.gif"));
+	Link delete = new Link(iwcb.getImage("/shared/delete.gif"));
 	delete.setWindowToOpen(TextEditorWindow.class);
 	delete.addParameter(TextEditorWindow.prmDelete,iTextId);
-	T.add(delete,2,1);
+	T.add(delete,column++,1);
       }
     }
     if(newObjInst && !hasId){
-      Link newLink = new Link(iwb.getImage("/shared/create.gif"));
+      Link newLink = new Link(iwcb.getImage("/shared/create.gif"));
       newLink.setWindowToOpen(TextEditorWindow.class);
       if(newObjInst)
 	newLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
       else if(newWithAttribute)
 	newLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
 
-      T.add(newLink,3,1);
+      T.add(newLink,column++,1);
     }
     //T.setAlignment(1,1,"left");
     //T.setAlignment(2,1,"right");
@@ -325,18 +330,27 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     this.enableDelete=enableDelete;
   }
 
+  public void setAlignment(String alignment) {
+    setHorizontalAlignment(alignment);
+  }
+
   /**
    * Sets alignment for the table around the text - added by gimmi@idega.is
    */
-  public void setAlignment(String alignment) {
-    this.tableAlignment = (alignment);
+  public void setHorizontalAlignment(String alignment) {
+    this.tableAlignment = alignment;
   }
 
   public void setWidth(String textWidth) {
     this.textWidth=textWidth;
   }
 
+
   public void setSpaceAfterHeadlin(String space){
+    setSpaceAfterHeadline(space);
+  }
+
+  public void setSpaceAfterHeadline(String space){
     spaceBetweenHeadlineAndBody = space;
   }
 
@@ -356,14 +370,13 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
   return IW_BUNDLE_IDENTIFIER;
   }
 
-public synchronized Object clone() {
+  public synchronized Object clone() {
     TextReader obj = null;
     try {
       obj = (TextReader)super.clone();
 
       obj.sLocaleId = this.sLocaleId;
       obj.sAttribute = this.sAttribute;
-      obj.adminURL = this.adminURL;
 
       obj.iTextId = this.iTextId;
       obj.textSize = this.textSize;
