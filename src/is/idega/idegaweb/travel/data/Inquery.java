@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.data;
 
 
+
 public interface Inquery extends com.idega.data.IDOEntity
 {
  public void setAnswered(boolean p0) throws java.rmi.RemoteException;
@@ -30,4 +31,8 @@ public interface Inquery extends com.idega.data.IDOEntity
  public void setInqueryPostDate(java.sql.Timestamp p0) throws java.rmi.RemoteException;
  public void setInquery(java.lang.String p0) throws java.rmi.RemoteException;
  public void setInqueryDate(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public void setAuthorizationString(java.lang.String p0) throws java.rmi.RemoteException;
+ public java.lang.String getAuthorizationString() throws java.rmi.RemoteException;
+ public void setInqueryType(java.lang.String p0) throws java.rmi.RemoteException;
+ public java.lang.String getInqueryType() throws java.rmi.RemoteException;
 }

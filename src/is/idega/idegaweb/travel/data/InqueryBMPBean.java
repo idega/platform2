@@ -1,18 +1,18 @@
 package is.idega.idegaweb.travel.data;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.data.EntityControl;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.IWTimestamp;
@@ -23,7 +23,7 @@ import com.idega.util.ListUtil;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author 2000 - idega team - <br><a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a><br><a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
+ * @author 2000 - idega team - <br><a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a><br><a href="mailto:gimmi@idega.is">Grï¿½mur Jï¿½nsson</a>
  * @version 1.0
  */
 
@@ -39,15 +39,17 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
     addAttribute(getNameColumnName(), "Name", true, true, String.class, 255);
-    addAttribute(getEmailColumnName(), "Tölvupóstur", true, true, String.class, 255);
+    addAttribute(getEmailColumnName(), "Tï¿½lvupï¿½stur", true, true, String.class, 255);
     addAttribute(getInqueryColumnName(), "Fyrirspurn",true ,true, String.class, 510);
     addAttribute(getInqueryDateColumnName(), "Dagur sem spurt er um", true ,true, java.sql.Timestamp.class);
-    addAttribute(getInqueryPostDateColumnName(), "Dagur þegar spurt var", true ,true, java.sql.Timestamp.class);
-    addAttribute(getAnsweredColumnName(), "Svarað", true,true, Boolean.class);
-    addAttribute(getAnswerDateColumnName(), "Hvenær var svarað", true, true, java.sql.Timestamp.class);
+    addAttribute(getInqueryPostDateColumnName(), "Dagur ï¿½egar spurt var", true ,true, java.sql.Timestamp.class);
+    addAttribute(getAnsweredColumnName(), "Svaraï¿½", true,true, Boolean.class);
+    addAttribute(getAnswerDateColumnName(), "Hvenï¿½r var svaraï¿½", true, true, java.sql.Timestamp.class);
     addAttribute(getServiceIDColumnName(), "Vara", true, true, Integer.class, "many-to-one", Service.class);
-    addAttribute(getNumberOfSeatsColumnName(), "sæti", true, true, Integer.class);
-    addAttribute(getBookingIdColumnName(), "bókun", true, true, Integer.class);
+    addAttribute(getNumberOfSeatsColumnName(), "sï¿½ti", true, true, Integer.class);
+    addAttribute(getBookingIdColumnName(), "bï¿½kun", true, true, Integer.class);
+    addAttribute(getInqueryTypeColumnName(), "type", true, true, String.class);
+    addAttribute(getAuthorizationStringColumnName(), "authorization string",true,true,String.class);
 
     this.addManyToManyRelationShip(Reseller.class);
     
@@ -154,6 +156,22 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
   public GeneralBooking getBooking() throws FinderException, RemoteException {
    return ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(getBookingId()));
   }
+  
+  public void setAuthorizationString(String authorizationString) {
+  		setColumn(getAuthorizationStringColumnName(),authorizationString);
+  }
+  
+  public String getAuthorizationString() {
+  		return getStringColumnValue(getAuthorizationStringColumnName());
+  }
+  
+  public void setInqueryType(String queryType) {
+  		setColumn(getInqueryTypeColumnName(),queryType);
+  }
+  
+  public String getInqueryType() {
+  		return getStringColumnValue(getInqueryTypeColumnName());
+  }
 
   public static String getInqueryTableName(){return "TB_INQUERY";}
   public static String getNameColumnName() {return "NAME";}
@@ -166,6 +184,8 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
   public static String getServiceIDColumnName() {return "TB_SERVICE_ID";}
   public static String getNumberOfSeatsColumnName() {return "NUMBER_OF_SEATS";}
   public static String getBookingIdColumnName() {return "TB_BOOKING_ID";}
+  public static String getAuthorizationStringColumnName() {return "AUTHORIZATION_STRING";}
+  public static String getInqueryTypeColumnName() {return "INQUERY_TYPE";}
 
   public int ejbHomeGetInqueredSeats(int serviceId, IWTimestamp stamp, int resellerId, boolean unansweredOnly) throws FinderException{
     int returner = 0;
@@ -272,8 +292,8 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
 
   public List getMultibleInquiries(Inquery inquiry) throws RemoteException, FinderException{
     List list = new Vector();
-
-      StringBuffer buff = new StringBuffer();
+    
+       IDOQuery buff = idoQuery();
         buff.append("SELECT * FROM "+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryTableName());
         buff.append(" WHERE ");
         if (inquiry.getAnswerDate() != null) {
@@ -291,8 +311,9 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
         buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getEmailColumnName()+" = '"+inquiry.getEmail()+"'");
         buff.append(" AND ");
         buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryColumnName()+" = '"+inquiry.getInquery()+"'");
-        buff.append(" AND ");
-        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
+//        buff.append(" AND ");
+//        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
+        buff.appendAndEqualsQuoted(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName(),(new IWTimestamp(inquiry.getInqueryPostDate())).toSQLString());
         buff.append(" AND ");
         buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName()+" = '"+inquiry.getName()+"'");
         buff.append(" AND ");
@@ -301,7 +322,7 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
         buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getServiceIDColumnName()+" = "+inquiry.getServiceID());
         buff.append(" ORDER BY "+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName());
 
-        //System.err.println(buff.toString());
+//        System.out.println("buff.toString(): " + buff.toString());
         Collection coll = this.idoFindPKsBySQL(buff.toString());
         list = ListUtil.convertCollectionToList(coll);
 //      list = EntityFinder.findAll(inquiry, buff.toString());
