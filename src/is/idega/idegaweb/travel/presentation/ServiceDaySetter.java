@@ -98,14 +98,16 @@ public class ServiceDaySetter extends TravelWindow {
 				_product = productHome.findByPrimaryKey(new Integer(serviceId));
 				
 				try {
-					String sPoolID = iwc.getParameter(PARAMETER_SUPPLY_POOL_ID);
-					SupplyPoolHome poolHome = (SupplyPoolHome) IDOLookup.getHome(SupplyPool.class);
-					if (sPoolID == null) {
-						pool = poolHome.findByProduct(_product);
-					} else if ("-1".equals(sPoolID)) {
-						pool = null;
-					} else {
-						pool = poolHome.findByPrimaryKey(new Integer(sPoolID));
+					if (getServiceHandler(iwc).getServiceBusiness(_product).supportsSupplyPool()) {
+						String sPoolID = iwc.getParameter(PARAMETER_SUPPLY_POOL_ID);
+						SupplyPoolHome poolHome = (SupplyPoolHome) IDOLookup.getHome(SupplyPool.class);
+						if (sPoolID == null) {
+							pool = poolHome.findByProduct(_product);
+						} else if ("-1".equals(sPoolID)) {
+							pool = null;
+						} else {
+							pool = poolHome.findByPrimaryKey(new Integer(sPoolID));
+						}
 					}
 				} catch (FinderException e) {
 					pool = null;
@@ -129,7 +131,8 @@ public class ServiceDaySetter extends TravelWindow {
 		int iEst;
 		
 		String sPoolID = iwc.getParameter(PARAMETER_SUPPLY_POOL_ID);
-		if (sPoolID == null || !"-1".equals(sPoolID)) {
+		System.out.println(sPoolID); 
+		if (sPoolID != null && !"-1".equals(sPoolID)) {
 			try {
 				_product.removeAllFrom(SupplyPool.class);
 			}
@@ -213,25 +216,26 @@ public class ServiceDaySetter extends TravelWindow {
 		form.add(headerTable);
 		form.add(table);
 		form.maintainParameter(PARAMETER_SERVICE_ID);
-		
-		DropdownMenu pools = new DropdownMenu(PARAMETER_SUPPLY_POOL_ID);
-		pools.addMenuElement("-1", iwrb.getLocalizedString("do_not_use_supply_pool", "Do no use supply pool"));
-		pools.setToSubmit();
-		try {
-			SupplyPoolHome poolHome = (SupplyPoolHome) IDOLookup.getHome(SupplyPool.class);
-			Collection poolColl = poolHome.findBySupplier(super.getTravelSessionManager(iwc).getSupplier());
-			pools.addMenuElements(poolColl);
-			if (poolColl != null && !poolColl.isEmpty()) {
-				headerTable.add(pools);
+		if (getBusiness(iwc, _product).supportsSupplyPool()) {
+			DropdownMenu pools = new DropdownMenu(PARAMETER_SUPPLY_POOL_ID);
+			pools.addMenuElement("-1", iwrb.getLocalizedString("do_not_use_supply_pool", "Do no use supply pool"));
+			pools.setToSubmit();
+			try {
+				SupplyPoolHome poolHome = (SupplyPoolHome) IDOLookup.getHome(SupplyPool.class);
+				Collection poolColl = poolHome.findBySupplier(super.getTravelSessionManager(iwc).getSupplier());
+				pools.addMenuElements(poolColl);
+				if (poolColl != null && !poolColl.isEmpty()) {
+					headerTable.add(pools);
+				}
+				if (pool != null) {
+					pools.setSelectedElement(pool.getPrimaryKey().toString());
+				} else {
+					pools.setSelectedElement("-1");
+				}
 			}
-			if (pool != null) {
-				pools.setSelectedElement(pool.getPrimaryKey().toString());
-			} else {
-				pools.setSelectedElement("-1");
-			}
+			catch (FinderException e) {
+				e.printStackTrace();
 		}
-		catch (FinderException e) {
-			e.printStackTrace();
 		}
 		
 		
