@@ -448,6 +448,8 @@ public class NewsReader extends Block implements IWBlock{
 				sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
 			}
 
+			sNewsBody = NewsFormatter.formatNews(sNewsBody,String.valueOf(textSize));
+
 			Text newsBody = new Text(sNewsBody);
 
 			if( showAll ) {
