@@ -34,7 +34,7 @@ public class Messenger extends Block implements InvisibleInBuilder {
 
   public void main(IWContext iwc){
 
-    if( com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc) ){
+    if(iwc.isLoggedOn() ){
 
       Applet messenger = new Applet();
       iwb = getBundle(iwc);
@@ -47,8 +47,8 @@ public class Messenger extends Block implements InvisibleInBuilder {
 
       //user specific
       messenger.setParam(SESSION_ID,iwc.getSession().getId());
-      messenger.setParam(USER_ID,Integer.toString(com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc).getID()));
-      messenger.setParam(USER_NAME,com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc).getName());
+      messenger.setParam(USER_ID,Integer.toString(iwc.getCurrentUserId()));
+      messenger.setParam(USER_NAME,iwc.getCurrentUser().getName());
       messenger.setWidth(width);
       messenger.setHeight(height);
 

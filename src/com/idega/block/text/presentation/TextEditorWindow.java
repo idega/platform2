@@ -432,7 +432,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
   public void displaySelection(IWContext iwc) {
 //    super.main(iwc);
     isAdmin = iwc.hasEditPermission(new TextReader());
-    User u= com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc);
+    User u= iwc.getCurrentUser();
     iUserId = u != null?u.getID():-1;
     isAdmin = true;
     iwb = getBundle(iwc);
