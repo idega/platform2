@@ -66,11 +66,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/08 13:16:34 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/08 14:36:50 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -79,8 +79,8 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
 public class PaymentRecordMaintenance extends AccountingBlock {
     public static final String PREFIX = "cacc_payrec_";
     
-    private static final String NEW_KEY = PREFIX + "new";
-    private static final String REMOVE_KEY = PREFIX + "remove";
+    //private static final String NEW_KEY = PREFIX + "new";
+    //private static final String REMOVE_KEY = PREFIX + "remove";
     private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
     private static final String ADJUSTMENT_DATE_DEFAULT = "Just.datum";
     private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
@@ -121,7 +121,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String MANAGEMENT_TYPE_KEY = PREFIX + "management_type";
     private static final String NAME_DEFAULT = "Namn";
     private static final String NAME_KEY = PREFIX + "name";
-    private static final String NEW_DEFAULT = "Ny";
+    //private static final String NEW_DEFAULT = "Ny";
     private static final String NO_PAYMENT_RECORDS_FOUND_DEFAULT = "Inga utbetalningsrader hittades";
     private static final String NO_PAYMENT_RECORDS_FOUND_KEY = PREFIX + "no_payment_records_found";
     private static final String NUMBER_OF_PLACEMENTS_DEFAULT = "Placeringar";
@@ -144,13 +144,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String POSTGIRO_KEY = PREFIX + "postgiro";
     private static final String PRINT_DATE_DEFAULT = "Utskriftsdatum";
     private static final String PRINT_DATE_KEY = PREFIX + "print_date";
-    private static final String PROVIDER_CONFIRM_DEFAULT = "Anordnarattest";
-    private static final String PROVIDER_CONFIRM_KEY = PREFIX + "provider_confirm";
+    //private static final String PROVIDER_CONFIRM_DEFAULT = "Anordnarattest";
+    //private static final String PROVIDER_CONFIRM_KEY = PREFIX + "provider_confirm";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
-    private static final String REMOVE_DEFAULT = "Ta bort";
+    //private static final String REMOVE_DEFAULT = "Ta bort";
     private static final String SAVE_EDITS_DEFAULT = "Spara ändringar";
     private static final String SAVE_EDITS_KEY = PREFIX + "save_edits";
     private static final String SCHOOL_CLASS_DEFAULT = "Grupp";
