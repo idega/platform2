@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderTypeBMPBean.java,v 1.4 2003/08/20 09:01:47 anders Exp $
+ * $Id: ProviderTypeBMPBean.java,v 1.5 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the provider type (childcare, school, e t c).
  * <p>
- * Last modified: $Date: 2003/08/20 09:01:47 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType {
 
@@ -56,7 +56,7 @@ public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType 
         
 		System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
 
-		ProviderTypeHome home = (ProviderTypeHome) IDOLookup.getHome(ActivityType.class);
+		ProviderTypeHome home = (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
 		final String [] data = {
 				KEY_PREFIX + "preschool", 
 				KEY_PREFIX + "school"
@@ -91,22 +91,10 @@ public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType 
 	 * @return collection of all provider types found
 	 * @throws FinderException
 	 */
-	public Collection ejbFindAllPaymentFlowTypes() throws FinderException {
+	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.append(getEntityName());
 		return idoFindPKsBySQL(sql.toString());
-	}
-
-	/**
-	 * Returns the provider type for the specified id or null if not found.
-	 * @param id the unique id for the provider type
-	 * @return the provider type found
-	 * @throws FinderException
-	 */
-	public Object ejbFindRegulationSpecType(int id) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
-		return idoFindOnePKByQuery(sql);
 	}
 }

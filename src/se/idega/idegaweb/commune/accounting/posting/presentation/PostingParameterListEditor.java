@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.5 2003/08/20 15:04:59 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.6 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -38,10 +38,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.5 2003/08/20 15:04:59 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.6 2003/08/21 15:58:22 anders Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -154,10 +154,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Table postingForm = getPostingForm(iwc, pp);
 					
 		ButtonPanel buttonPanel = new ButtonPanel();
-		buttonPanel.addButton(PARAM_SAVE, localize(KEY_SAVE, "Spara"));
-		buttonPanel.addButton(PARAM_CANCEL, localize(KEY_CANCEL, "Avbryt"));
+		buttonPanel.addButton(PARAM_SAVE, KEY_SAVE, "Spara");
+		buttonPanel.addButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
 		
-		app.setTitle(localize(KEY_HEADER, "Skapa/Ändra konteringlista"));
+		app.setTitle(KEY_HEADER, "Skapa/Ändra konteringlista");
 		app.setSearchPanel(topPanel);
 		app.setMainPanel(postingForm);
 		app.setButtonPanel(buttonPanel);
@@ -234,23 +234,23 @@ public class PostingParameterListEditor extends AccountingBlock {
 		ListTable list1 = new ListTable(8);
 		ListTable list2 = new ListTable(8);
 
-		list1.setHeader(localize(KEY_POST_ACCOUNT, "Konto"), 1);
-		list1.setHeader(localize(KEY_POST_LIABILITY, "Ansvar"), 2);
-		list1.setHeader(localize(KEY_POST_RESOURCE, "Resurs"), 3);
-		list1.setHeader(localize(KEY_POST_ACTIVITY_CODE, "Verksamhet"), 4);
-		list1.setHeader(localize(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart"), 5);
-		list1.setHeader(localize(KEY_POST_ACTIVITY_FIELD, "Aktivitet"), 6);
-		list1.setHeader(localize(KEY_POST_PROJECT, "Projekt"), 7);
-		list1.setHeader(localize(KEY_POST_OBJECT, "Objekt"), 8);
+		list1.setHeader(KEY_POST_ACCOUNT, "Konto", 1);
+		list1.setHeader(KEY_POST_LIABILITY, "Ansvar", 2);
+		list1.setHeader(KEY_POST_RESOURCE, "Resurs", 3);
+		list1.setHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
+		list1.setHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
+		list1.setHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
+		list1.setHeader(KEY_POST_PROJECT, "Projekt", 7);
+		list1.setHeader(KEY_POST_OBJECT, "Objekt", 8);
 
-		list2.setHeader(localize(KEY_POST_ACCOUNT, "Konto"), 1);
-		list2.setHeader(localize(KEY_POST_LIABILITY, "Ansvar"), 2);
-		list2.setHeader(localize(KEY_POST_RESOURCE, "Resurs"), 3);
-		list2.setHeader(localize(KEY_POST_ACTIVITY_CODE, "Verksamhet"), 4);
-		list2.setHeader(localize(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart"), 5);
-		list2.setHeader(localize(KEY_POST_ACTIVITY_FIELD, "Aktivitet"), 6);
-		list2.setHeader(localize(KEY_POST_PROJECT, "Projekt"), 7);
-		list2.setHeader(localize(KEY_POST_OBJECT, "Objekt"), 8);
+		list2.setHeader(KEY_POST_ACCOUNT, "Konto", 1);
+		list2.setHeader(KEY_POST_LIABILITY, "Ansvar", 2);
+		list2.setHeader(KEY_POST_RESOURCE, "Resurs", 3);
+		list2.setHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
+		list2.setHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
+		list2.setHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
+		list2.setHeader(KEY_POST_PROJECT, "Projekt", 7);
+		list2.setHeader(KEY_POST_OBJECT, "Objekt", 8);
 		
 		list1.add(getFormTextInput(PARAM_ACCOUNT, pp != null ? pp.getPostingAccount() : "", 60, 6));
 		list1.add(getFormTextInput(PARAM_LIABILITY, pp != null ? pp.getPostingLiability() : "", 60, 10));

@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentFlowTypeBMPBean.java,v 1.4 2003/08/20 09:02:30 anders Exp $
+ * $Id: PaymentFlowTypeBMPBean.java,v 1.5 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the payment flow type (in, out, e t c).
  * <p>
- * Last modified: $Date: 2003/08/20 09:02:30 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlowType {
 
@@ -56,7 +56,7 @@ public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlo
         
 		System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
 
-		PaymentFlowTypeHome home = (PaymentFlowTypeHome) IDOLookup.getHome(ActivityType.class);
+		PaymentFlowTypeHome home = (PaymentFlowTypeHome) IDOLookup.getHome(PaymentFlowType.class);
 		final String [] data = {
 				KEY_PREFIX + "in", 
 				KEY_PREFIX + "out"
@@ -91,22 +91,10 @@ public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlo
 	 * @return collection of all payment flow types found
 	 * @throws FinderException
 	 */
-	public Collection ejbFindAllPaymentFlowTypes() throws FinderException {
+	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.append(getEntityName());
 		return idoFindPKsBySQL(sql.toString());
-	}
-
-	/**
-	 * Returns the payment flow type for the specified id or null if not found.
-	 * @param id the unique id for the payment flow type
-	 * @return the payment flow type found
-	 * @throws FinderException
-	 */
-	public Object ejbFindRegulationSpecType(int id) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
-		return idoFindOnePKByQuery(sql);
 	}
 }

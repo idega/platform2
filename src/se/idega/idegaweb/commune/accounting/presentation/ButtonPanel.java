@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.5 2003/08/20 09:34:04 anders Exp $
+ * $Id: ButtonPanel.java,v 1.6 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,17 +10,18 @@
 package se.idega.idegaweb.commune.accounting.presentation;
 
 import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.builder.data.IBPage;
 
 /**
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/20 09:34:04 $
+ * Last modified: $Date: 2003/08/21 15:58:22 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -41,40 +42,42 @@ public class ButtonPanel extends AccountingBlock {
 	}
 
 	/**
-	 * Adds a button to the panel.
+	 * Adds a localized and formatted submit button to the panel.
 	 * The buttoms are added from left to right.
 	 * @param parameter the form parameter name for the button
-	 * @param label the text label for the button
+	 * @param textKey the text to localize
+	 * @param defaultText the default localized text
 	 */
-	public void addButton(String parameter, String label) {
-		GenericButton button = new GenericButton(parameter, label);
+	public void addButton(String parameter, String textKey, String defaultText) {
+		SubmitButton button = new SubmitButton(parameter, localize(textKey, defaultText));
 		addButton(button);
 	}
 
 	/**
-	 * Adds a button to the panel with a window to open.
+	 * Adds a localized and formatted button to the panel with a window to open.
 	 * The buttoms are added from left to right.
 	 * @param parameter the form parameter name for the button
-	 * @param label the text label for the button
+	 * @param textKey the text to localize
+	 * @param defaultText the default localized text
 	 * @param windowClass the class of the window to open when clicked
-	 * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
  	 */
-	public void addButton(String parameter, String label, Class windowClass) {
-		GenericButton button = new GenericButton(parameter, label);
+	public void addButton(String parameter, String textKey, String defaultText, Class windowClass) {
+		GenericButton button = new GenericButton(parameter, localize(textKey, defaultText));
 		button.setWindowToOpen(windowClass);
 		addButton (button);
 	}
 
 	/**
-	 * Adds a button to the panel with a page to open.
+	 * Adds a localized and formatted button to the panel with a page to open.
 	 * The buttoms are added from left to right.
 	 * @param parameter the form parameter name for the button
-	 * @param label the text label for the button
+	 * @param textKey the text to localize
+	 * @param defaultText the default localized text
 	 * @param page an IBPage to be opened when clicked
 	 * @author <a href="http://www.lindman.se">Kjell Lindman</a>
 	 */
-	public void addButton(String parameter, String label, IBPage page) {
-		GenericButton button = new GenericButton(parameter, label);
+	public void addButton(String parameter, String textKey, String defaultText, IBPage page) {
+		GenericButton button = new GenericButton(parameter, localize(textKey, defaultText));
 		button.setPageToOpen(page);
 		addButton(button);
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.3 2003/08/20 08:58:00 anders Exp $
+ * $Id: ListTable.java,v 1.4 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.presentation.text.Text;
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/20 08:58:00 $
+ * Last modified: $Date: 2003/08/21 15:58:22 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ListTable extends AccountingBlock {
 
@@ -42,13 +42,14 @@ public class ListTable extends AccountingBlock {
 	}
 
 	/**
-	 * Sets a header text label at the specified column.
-	 * @param headerText the header text label to set
+	 * Sets a localized header text label at the specified column.
+	 * @param textKey the text key for the title
+	 * @param defaultText the default text for the title
 	 * @param col the header column for the label 
 	 */
-	public void setHeader(String headerText, int col) {
+	public void setHeader(String textKey, String defaultText, int col) {
 		// Check boundaries, null?
-		Text t = getSmallHeader(headerText);
+		Text t = getSmallHeader(localize(textKey, defaultText));
 		table.add(t, col, 1);
 		table.setRowColor(1, getHeaderColor());
 	}
@@ -75,13 +76,14 @@ public class ListTable extends AccountingBlock {
 	}
 
 	/**
-	 * Adds a text object at the current row and column with default font style.
+	 * Adds a localized text object at the current row and column with default font style.
 	 * The column position is automatically increased and rows
 	 * are automatically wrapped when the current column is full.
-	 * @param text the string for the text object to add
+	 * @param textKey the text key for the text object to add
+	 * @param defaultKey the default localized text for the text object to add
 	 */
-	public void add(String text){
-		Text t = getSmallText(text);
+	public void add(String textKey, String defaultText) {
+		Text t = getSmallText(localize(textKey, defaultText));
 		add(t);
 	}
 

@@ -13,18 +13,11 @@ public class ProviderTypeHomeImpl extends com.idega.data.IDOFactory implements P
  }
 
 
-public java.util.Collection findAllPaymentFlowTypes()throws javax.ejb.FinderException{
+public java.util.Collection findAll()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ProviderTypeBMPBean)entity).ejbFindAllPaymentFlowTypes();
+	java.util.Collection ids = ((ProviderTypeBMPBean)entity).ejbFindAll();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public ProviderType findRegulationSpecType(int p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ProviderTypeBMPBean)entity).ejbFindRegulationSpecType(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
 }
 
  public ProviderType findByPrimaryKey(Object pk) throws javax.ejb.FinderException{

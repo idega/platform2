@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.3 2003/08/20 09:03:08 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.4 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/08/20 09:03:08 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -114,21 +114,39 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	public void setPaymentFlowTypeId(int id) { 
 		setColumn(COLUMN_PAYMENT_FLOW_TYPE_ID, id); 
 	}
+
+	/**
+	 * Finds all VAT regulations.
+	 * @return collection of all VAT regulation objects
+	 * @throws FinderException
+	 */
+	public Collection ejbFindAll() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.append(getEntityName());
+		return idoFindPKsBySQL(sql.toString());
+	}
 	
 	/**
 	 * Finds all VAT regulations for the specified time period.
-	 * @param from the start of the period (YYMM)
-	 * @param to the end of the period (YYMM)
-	 * @return
+	 * @param from the start of the period
+	 * @param to the end of the period
+	 * @return collection of all VAT regulation for the specified period
 	 * @throws FinderException
 	 */
-	public Collection ejbFindByPeriod(String from, String to) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-//		sql.appendWhereEquals(COLUMN_CP_KONTERING_STRING_ID, PostingStringId);
-//		sql.appendOrderBy(COLUMN_ORDER_NR);
-
-		return idoFindPKsByQuery(sql);
-	}		
-	
+	public Collection ejbFindByPeriod(Date from, Date to) throws FinderException {
+//		IDOQuery sql = idoQuery();
+//		sql.appendSelectAllFrom(this);
+//		sql.appendWhere(COLUMN_PERIOD_FROM);
+//		sql.appendGreaterThanOrEqualsSign();
+//		sql.append("'" + from + "'");
+//		sql.appendAnd();
+//		sql.appendLessThanOrEqualsSign();		
+//		sql.append("'" + to + "'");
+//		sql.appendOrderBy();
+//		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
+//		sql.appendCommaDelimited(s);
+//		return idoFindPKsByQuery(sql);
+		return idoFindPKsBySQL("select * from " + ENTITY_NAME);
+	}		  
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.6 2003/08/20 08:53:50 anders Exp $
+ * $Id: VATRegulations.java,v 1.7 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,12 +19,13 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 
 /**
  * VATRegulations is an idegaWeb block that handles VAT values and
- * VAT regulations for providers.
+ * VAT regulations for providers. 
+ * This class is replaced by VATEditor.
  * <p>
- * Last modified: $Date: 2003/08/20 08:53:50 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class VATRegulations extends AccountingBlock {
 
@@ -72,7 +73,7 @@ public class VATRegulations extends AccountingBlock {
 	 */	
 	private void viewDefaultForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
-		app.setTitle(localize(KEY_TITLE, "Momssats"));
+		app.setTitle(KEY_TITLE, "Momssats");
 		app.setMainPanel(getVATList());
 		app.setButtonPanel(getButtonPanel());
 		add(app);
@@ -83,11 +84,11 @@ public class VATRegulations extends AccountingBlock {
 	 */
 	private ListTable getVATList() {
 		ListTable list = new ListTable(5);
-		list.setHeader(localize(KEY_PERIOD, "Period"), 1);
-		list.setHeader(localize(KEY_DESCRIPTION, "Benämning"), 2);
-		list.setHeader(localize(KEY_VAT_PERCENT, "Procentsats"), 3);
-		list.setHeader(localize(KEY_DIRECTION, "Ström"), 4);
-		list.setHeader(localize(KEY_PROVIDER_TYPE, "Anordnartyp"), 5);
+		list.setHeader(KEY_PERIOD, "Period", 1);
+		list.setHeader(KEY_DESCRIPTION, "Benämning", 2);
+		list.setHeader(KEY_VAT_PERCENT, "Procentsats", 3);
+		list.setHeader(KEY_DIRECTION, "Ström", 4);
+		list.setHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
 		
 		list.add("0301-");
 		list.add("Grundmoms");
@@ -113,8 +114,6 @@ public class VATRegulations extends AccountingBlock {
 	 */
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel();
-		bp.addButton("save", "Spara");
-		bp.addButton("delete", "Radera");
 		return bp;
 	}
 }

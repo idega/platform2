@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.4 2003/08/20 15:04:41 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.5 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.4 2003/08/20 15:04:41 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.5 2003/08/21 15:58:22 anders Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -141,7 +141,7 @@ public class PostingParameterList extends AccountingBlock {
 		}
 			 		
 		
-		app.setTitle(localize(KEY_HEADER, "Konteringlista"));
+		app.setTitle(KEY_HEADER, "Konteringlista");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getPostingTable(iwc));
 		app.setButtonPanel(getButtonPanel());
@@ -150,10 +150,10 @@ public class PostingParameterList extends AccountingBlock {
 
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel();
-		buttonPanel.addButton(PARAM_COPY, localize(KEY_COPY, "Kopiera"));
-		buttonPanel.addButton(PARAM_NEW, localize(KEY_NEW, "Ny"), editPage);
-		buttonPanel.addButton(PARAM_REMOVE, localize(KEY_REMOVE, "Ta bort"));
-		buttonPanel.addButton(PARAM_CANCEL, localize(KEY_CANCEL, "Avbryt"));
+		buttonPanel.addButton(PARAM_COPY, KEY_COPY, "Kopiera");
+		buttonPanel.addButton(PARAM_NEW, KEY_NEW, "Ny", editPage);
+		buttonPanel.addButton(PARAM_REMOVE, KEY_REMOVE, "Ta bort");
+		buttonPanel.addButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
 		return buttonPanel;
 	}
 	
@@ -165,13 +165,13 @@ public class PostingParameterList extends AccountingBlock {
 		PostingBusiness pBiz;
 		ListTable list = new ListTable(7);
 
-		list.setHeader(localize(KEY_PERIOD, "Period"), 1);
-		list.setHeader(localize(KEY_ACTIVITY, "Verksamhet"), 2);
-		list.setHeader(localize(KEY_REG_SPEC, "Regelspec. typ"), 3);
-		list.setHeader(localize(KEY_COMPANY_TYPE, "Bolagstyp"), 4);
-		list.setHeader(localize(KEY_COMMUNE_BELONGING, "Kommuntillhörighet"), 5);
-		list.setHeader(localize(KEY_OWN_ENTRY, "Egen kontering"), 6);
-		list.setHeader(localize(KEY_DOUBLE_ENTRY, "Motkontering"), 7);
+		list.setHeader(KEY_PERIOD, "Period", 1);
+		list.setHeader(KEY_ACTIVITY, "Verksamhet", 2);
+		list.setHeader(KEY_REG_SPEC, "Regelspec. typ", 3);
+		list.setHeader(KEY_COMPANY_TYPE, "Bolagstyp", 4);
+		list.setHeader(KEY_COMMUNE_BELONGING, "Kommuntillhörighet", 5);
+		list.setHeader(KEY_OWN_ENTRY, "Egen kontering", 6);
+		list.setHeader(KEY_DOUBLE_ENTRY, "Motkontering", 7);
 		
 		
 		try {

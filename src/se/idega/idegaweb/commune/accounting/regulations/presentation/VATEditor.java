@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.3 2003/08/20 15:07:08 anders Exp $
+ * $Id: VATEditor.java,v 1.4 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,7 +9,9 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
 
+import java.util.Collection;
 import java.sql.Date;
+import java.rmi.RemoteException;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -19,26 +21,29 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 
 /** 
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/20 15:07:08 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VATEditor extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
 	private final static int ACTION_SEARCH = 1;
+	private final static int ACTION_NEW = 2;
 	
 	private final static String PARAMETER_PREFIX = "cacc_vat_"; 
 
 	private final static String PARAMETER_PERIOD_FROM = PARAMETER_PREFIX + "period_from";
 	private final static String PARAMETER_PERIOD_TO = PARAMETER_PREFIX + "period_to";
 	private final static String PARAMETER_SEARCH = PARAMETER_PREFIX + "search";
+	private final static String PARAMETER_NEW = PARAMETER_PREFIX + "new";
 	
 	private final static String KEY_PREFIX = "vat_editor."; 
 	
@@ -51,6 +56,7 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_MAIN_ACTIVITY = KEY_PREFIX + "main_activity";
 	private final static String KEY_SCHOOL = KEY_PREFIX + "school";
 	private final static String KEY_SEARCH = KEY_PREFIX + "search";
+	private final static String KEY_NEW = KEY_PREFIX + "new";
 	private final static String KEY_ERROR_DATE_FORMAT = KEY_PREFIX + "error_date_format";
 
 	/**
@@ -68,10 +74,13 @@ public class VATEditor extends AccountingBlock {
 				case ACTION_SEARCH :
 					viewSearchResult(iwc);
 					break;
+				case ACTION_NEW :
+					viewAddVATForm(iwc);
+					break;
 			}
 		}
 		catch (Exception e) {
-			super.add(new ExceptionWrapper(e, this));
+			add(new ExceptionWrapper(e, this));
 		}
 	}
 
@@ -84,6 +93,8 @@ public class VATEditor extends AccountingBlock {
 		
 		if (iwc.isParameterSet(PARAMETER_SEARCH)) {
 			action = ACTION_SEARCH;
+		} else if (iwc.isParameterSet(PARAMETER_SEARCH)) {
+			action = ACTION_NEW;
 		}
 
 		return action;
@@ -94,7 +105,7 @@ public class VATEditor extends AccountingBlock {
 	 */	
 	private void viewDefaultForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
-		app.setTitle(localize(KEY_TITLE, "Momssats"));
+		app.setTitle(KEY_TITLE, "Momssats");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getVATList(null));
 		app.setButtonPanel(getButtonPanel());
@@ -109,15 +120,38 @@ public class VATEditor extends AccountingBlock {
 		String periodFrom = iwc.getParameter(PARAMETER_PERIOD_FROM);
 		Date from = parseDate(periodFrom);
 		if (from == null) {
-			errorMessage = KEY_ERROR_DATE_FORMAT;
+			errorMessage = localize(KEY_ERROR_DATE_FORMAT,
+					"Datum måste anges på formen ÅÅMM, ÅÅMMDD eller ÅÅÅÅMMDD.");
 		} else {
-			errorMessage = formatDate(from, 4) + " " + formatDate(from, 6) + " " + formatDate(from, 8);
+			RegulationsBusiness rb = null;
+			try {
+				rb = getRegulationsBusiness(iwc);
+				Collection c = rb.findVATRegulations(from, from);
+			} catch (RemoteException e) {
+				add(new ExceptionWrapper(e, this));
+				return;
+			}
 		}
 		
 		ApplicationForm app = new ApplicationForm();
-		app.setTitle(localize(KEY_TITLE, "Momssats"));
+		app.setTitle(KEY_TITLE, "Momssats");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getVATList(errorMessage));
+		app.setButtonPanel(getButtonPanel());
+		add(app);
+	}
+
+	/*
+	 * Views the search result.
+	 */	
+	private void viewAddVATForm(IWContext iwc) {
+		ApplicationForm app = new ApplicationForm();
+		app.setTitle(KEY_TITLE, "Momssats");
+		Table addPanel = new Table();
+		addPanel.setCellpadding(getCellpadding());
+		addPanel.setCellspacing(getCellspacing());
+		app.setMainPanel(addPanel);
+		ButtonPanel bp = new ButtonPanel();
 		app.setButtonPanel(getButtonPanel());
 		add(app);
 	}
@@ -127,11 +161,11 @@ public class VATEditor extends AccountingBlock {
 	 */
 	private Table getVATList(String errorMessage) {		
 		ListTable list = new ListTable(5);
-		list.setHeader(localize(KEY_PERIOD, "Period"), 1);
-		list.setHeader(localize(KEY_DESCRIPTION, "Benämning"), 2);
-		list.setHeader(localize(KEY_VAT_PERCENT, "Procentsats"), 3);
-		list.setHeader(localize(KEY_DIRECTION, "Ström"), 4);
-		list.setHeader(localize(KEY_PROVIDER_TYPE, "Anordnartyp"), 5);
+		list.setHeader(KEY_PERIOD, "Period", 1);
+		list.setHeader(KEY_DESCRIPTION, "Benämning", 2);
+		list.setHeader(KEY_VAT_PERCENT, "Procentsats", 3);
+		list.setHeader(KEY_DIRECTION, "Ström", 4);
+		list.setHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
 		
 		list.add("0301-");
 		list.add("Grundmoms");
@@ -154,7 +188,11 @@ public class VATEditor extends AccountingBlock {
 		table.setCellspacing(0);
 	
 		if (errorMessage != null) {
-			table.add(getErrorText(errorMessage), 1, 1);
+			Table t = new Table();
+			t.setCellpadding(getCellpadding());
+			t.setCellspacing(getCellspacing());
+			t.add(getErrorText(errorMessage), 1, 1);
+			table.add(t, 1, 1);
 			table.add(list, 1, 2);	
 		} else {
 			table.add(list, 1, 1);
@@ -167,8 +205,7 @@ public class VATEditor extends AccountingBlock {
 	 */
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel();
-		bp.addButton("save", "Spara");
-		bp.addButton("delete", "Radera");
+		bp.addButton(PARAMETER_NEW, KEY_NEW, "Ny");
 		return bp;
 	}
 
@@ -185,4 +222,11 @@ public class VATEditor extends AccountingBlock {
 		table.add(getFormButton(PARAMETER_SEARCH, KEY_SEARCH, "Sök"), 5, 2);
 		return table;
 	}	
+
+	/*
+	 * Returns a regulations business object
+	 */
+	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
+		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
+	}
 }

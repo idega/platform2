@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.3 2003/08/20 08:55:54 anders Exp $
+ * $Id: ApplicationForm.java,v 1.4 2003/08/21 15:58:22 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.presentation.ui.Form;
  * A generic form for Check & Peng presentation blocks.
  * 
  * <p>
- * Last modified: $Date: 2003/08/20 08:55:54 $
+ * Last modified: $Date: 2003/08/21 15:58:22 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ApplicationForm extends AccountingBlock {
 
@@ -49,12 +49,13 @@ public class ApplicationForm extends AccountingBlock {
 	}
 	
 	/**
-	 * Sets the title of this application form.
+	 * Sets a localized title for this application form.
 	 * The title will appear at the top of the application form.
-	 * @param titleText the title text string to set
+	 * @param textkey the text key for the title
+	 * @param defaultText the default localized text for the title
 	 */
-	public void setTitle(String titleText) {
-		table.add(getHeader(titleText), 1, 1);
+	public void setTitle(String textKey, String defaultText) {
+		table.add(getHeader(localize(textKey, defaultText)), 1, 1);
 		table.setRowColor(1, getHeaderColor());
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
 	}
@@ -96,3 +97,4 @@ public class ApplicationForm extends AccountingBlock {
 		table.add(buttonPanel, 1, 4);
 	}
 }
+ 
