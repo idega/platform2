@@ -258,7 +258,8 @@ public class CategoryWindow extends IWAdminWindow {
         id = cat.getID();
         if(id == chosenId){
           name.setContent(cat.getName());
-          info.setContent(cat.getDescription());
+          if(cat.getDescription()!=null)
+            info.setContent(cat.getDescription());
           T.add(name,2,row);
           T.add(info,3,row);
           T.add(new HiddenInput(prmCategoryId,String.valueOf(id)));

@@ -22,6 +22,7 @@ public abstract class CategoryBlock extends Block{
 
   private ICCategory icCategory;
   private int icCategoryId = -1;
+  private int defaultCategoryId = -1;
   private int[] icCategoryIds  = new int[0];
   public final static String prmCategoryId = "catbl_catid";
   private boolean autocreate = true;
@@ -108,7 +109,8 @@ public abstract class CategoryBlock extends Block{
   }
 
   /**
-   *  Returns a Link to CategoryWindow
+   *  Returns a Link to CategoryWindow with specified type
+   *  for this intance
    */
   public Link getCategoryLink(String type){
     Link L = new Link();
@@ -119,6 +121,13 @@ public abstract class CategoryBlock extends Block{
       L.addParameter(CategoryWindow.prmMulti,"true");
     L.setWindowToOpen(CategoryWindow.class);
     return L;
+  }
+
+  /**
+   *  returns a Link to the CategoryWindow for this instance
+   */
+  public Link getCategoryLink(){
+    return getCategoryLink(getCategoryType());
   }
 
 
