@@ -1,23 +1,48 @@
 package is.idega.idegaweb.travel.presentation;
 
-import javax.ejb.*;
-import java.rmi.RemoteException;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.idegaweb.*;
+import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-import java.util.*;
-import com.idega.core.data.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
+import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.ResellerDay;
+import is.idega.idegaweb.travel.data.ResellerDayHome;
+import is.idega.idegaweb.travel.data.ResellerDayPK;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceDay;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
+
+import java.rmi.RemoteException;
 import java.sql.SQLException;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.business.*;
-import com.idega.util.IWTimestamp;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
 import com.idega.block.trade.data.Currency;
-import com.idega.data.*;
+import com.idega.block.trade.stockroom.business.ResellerManager;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DatePicker;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -474,10 +499,11 @@ public class Contracts extends TravelManager {
         ResellerDay resDay;
         int[] activeDays = new int[counter];
         System.arraycopy(tempDays,0,activeDays,0,counter);
+        ResellerDayPK resPK;
         for (int i = 0; i < activeDays.length; i++) {
-          resDay = ((is.idega.idegaweb.travel.data.ResellerDayHome)com.idega.data.IDOLookup.getHome(ResellerDay.class)).create();
-            resDay.setDayOfWeek(resellerId, productId, activeDays[i]);
-          resDay.store();
+        	resPK = new ResellerDayPK(new Integer(resellerId), new Integer(productId), new Integer(activeDays[i]));
+          resDay = resDayHome.create(resPK);
+          //resDay.store();
         }
 
         tm.commit();
@@ -656,10 +682,11 @@ public class Contracts extends TravelManager {
 
     Contract contract = null;
     if (product != null) {
-      Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(resellerId), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(productId));
-      if (contracts.length > 0) {
-        contract = contracts[0];
-      }
+    	contract = super.getContractBusiness(iwc).getContract(tReseller, product);
+      //Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(resellerId), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(productId));
+      //if (contracts.length > 0) {
+      //  contract = contracts[0];
+     // }
     }
     Text tNumberOfSeatsPerTour = (Text) theText.clone();
       tNumberOfSeatsPerTour.setText(iwrb.getLocalizedString("travel.number_of_seats_per_tour","Number of seats per tour"));
@@ -681,8 +708,10 @@ public class Contracts extends TravelManager {
 
     Text pName = null;
     TextInput pAlot;
-    DateInput pFrom = new DateInput("from");
-    DateInput pTo = new DateInput("to");
+    DatePicker pFrom = new DatePicker("from");
+    DatePicker pTo = new DatePicker("to");
+    //DateInput pFrom = new DateInput("from");
+    //DateInput pTo = new DateInput("to");
     TextInput pDays;
     TextInput pDiscount;
 
@@ -780,11 +809,12 @@ public class Contracts extends TravelManager {
     if (getServiceDayHome().getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY))
     weekdayFixTable.add(sundays,9,2);
 
-    pFrom = new DateInput("from");
-    pTo = new DateInput("to");
-    IWTimestamp now = IWTimestamp.RightNow();
-    pFrom.setYearRange(2001, now.getYear() +5);
-		pTo.setYearRange(2001, now.getYear() +5);
+    
+    //pFrom = new DateInput("from");
+    //pTo = new DateInput("to");
+    //IWTimestamp now = IWTimestamp.RightNow();
+    //pFrom.setYearRange(2001, now.getYear() +5);
+		//pTo.setYearRange(2001, now.getYear() +5);
 
     Table infoTable = new Table();
       infoTable.setBorder(0);
@@ -801,11 +831,7 @@ public class Contracts extends TravelManager {
       pDays.setContent(Integer.toString(contract.getExpireDays()) );
       pDiscount.setContent(contract.getDiscount());
       int[] days = {};
-      try {
-        days = getResellerDayHome().create().getDaysOfWeek(resellerId, productId);
-      }catch (CreateException ce) {
-        throw new FinderException(ce.getMessage());
-      }
+	    days = getResellerDayHome().getDaysOfWeekInt(resellerId, productId);
       for (int j = 0; j < days.length; j++) {
         if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.MONDAY) mondays.setChecked(true);
         if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.TUESDAY) tuesdays.setChecked(true);

@@ -171,15 +171,13 @@ public class Booking extends TravelManager {
       catch (FinderException fe) {fe.printStackTrace(System.err);}
 
       if ((reseller != null) && (product != null)){
-        try {
-            Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
+        	contract = getContractBusiness(iwc).getContract(reseller, product);
+        	contractId = ((Integer) contract.getPrimaryKey()).intValue();
+            /*Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstanceIDO(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
             if (contracts.length > 0) {
               contract = contracts[0];
               contractId = ((Integer) contract.getPrimaryKey()).intValue();
-            }
-        }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
-        }
+            }*/
 
       }
       
@@ -317,15 +315,10 @@ public class Booking extends TravelManager {
       try {
         if (reseller != null) {
           isExpired = bf.getIfExpired(iwc);
-          //isExpired = tsb.getIfExpired(contract, stamp);
+
 
           if (!isExpired) {
             isDayVisible = bf.getIsDayVisible(iwc);
-//            if (this.tour != null) {
-//              isDayVisible = getTourBusiness(iwc).getIfDay(iwc, contract, tour, stamp);
-//            }else {
-//              isDayVisible = tsb.getIfDay(iwc, contract, product, stamp);
-//            }
           }
         }
         else {
@@ -462,7 +455,6 @@ public class Booking extends TravelManager {
             }
           }
           
-          System.out.println("booking ... Adding line");
           table.add(iwrb.getLocalizedString("travel.trip_is_not_scheduled_this_day","Trip is not scheduled this day")+" : "+stamp.getLocaleDate(iwc));
         }
           table.mergeCells(1,row,5,row);

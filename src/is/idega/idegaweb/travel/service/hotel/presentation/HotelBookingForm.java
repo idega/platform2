@@ -73,7 +73,11 @@ public class HotelBookingForm extends BookingForm {
 		return getIsDayVisible(iwc, _stamp);
   }
   public boolean getIsDayVisible(IWContext iwc, IWTimestamp stamp) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
-    return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), stamp, false, true);
+  	if (this._contract != null) {
+  		return super.getIsDayVisible(iwc, stamp);
+  	} else {
+  		return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), stamp, false, true);
+  	}
   }
 
 
