@@ -247,10 +247,7 @@ public class TournamentResults extends JModuleObject {
               int roundIncNumber = collector.getRound(b);
               int position = roundScoreColumn + roundIncNumber - 1;
 
-                System.out.println("getRound"+b+": "+roundIncNumber);
-
               if ( roundIncNumber != -1 ) {
-                  System.out.println("getRoundNumber"+b+": "+collector.getRoundNumber(b));
                 roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
               }
 
