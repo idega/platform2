@@ -84,7 +84,7 @@ public class SupplierManager {
       return supp;
 
     }else {
-      Supplier supp = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).createLegacy();
+      Supplier supp = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHome(Supplier.class)).create();
       supp.setName(name);
       supp.setDescription(description);
       supp.setIsValid(true);

@@ -34,7 +34,7 @@ import com.idega.data.IDORemoveRelationshipException;
  * @version 1.0
  */
 
-public class SupplierBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.Supplier {
+public class SupplierBMPBean extends com.idega.data.GenericEntity implements Supplier{
 
 	private String newName;
 
@@ -301,6 +301,10 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
 		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(getColumnNameIsValid(), "Y").appendAnd().append("(").append(getColumnNameTPosMerchantID()).append(" is not null").appendOr().appendEquals(getColumnNameTPosMerchantID(), -1).append(")").appendOrderBy(getColumnNameName());
 
 		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllByGroupID(int groupID) throws FinderException {
+		return this.idoFindAllIDsByColumnBySQL(getColumnNameGroupID(), Integer.toString(groupID));
 	}
 }
 
