@@ -157,6 +157,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected ServiceSearchEngine engine = null;
 	protected int resultsPerPage = 5;
 	private int currentPageNumber = 1;
+	protected Image searchImage = null;
+	protected Image resetImage = null;
 	
 	protected Image headerImage;
 	protected Image headerImageTiler;
@@ -173,6 +175,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected DecimalFormat currencyFormat;
 	protected int localeID = -1;
 	private BookingForm bf;
+	protected boolean horizontal = false;
 	
 	protected HashMap frames = new HashMap();
 	
@@ -240,12 +243,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		form = (Form) addParameters(form, productId, this.isAlwaysSearchForm);
 
 		setupPresentation(form);
-//		form.add(getBookingForm().formTable);
-		form.add(getButtons(form));
+		if (isVertical()) {
+			form.add(getButtons(form));
+		} else {
+			bf.addInputLine(new String[]{}, new PresentationObject[]{getButtons(form)}, false, false, isVertical());
+		}
 		outTable.add(form);
-/*		outTable.add(Text.BREAK);
-		outTable.add(addTermsAndConditionsAndVerisign());
-		*/
+
 		if (definedProduct != null && !this.isAlwaysSearchForm && (isInPermissionGroup(iwc) || isAdministrator(iwc))) {
 			Link link = getDirectBookingLink();
 			outTable.add(link);
@@ -324,19 +328,26 @@ public abstract class AbstractSearchForm extends TravelBlock{
 					form.addParameter(ACTION, ACTION_SEARCH);
 					form.addParameter(PARAMETER_NEW_SEARCH,"true");
 				}
+				
+				if (searchImage != null) {
+					searchLink.setImage(searchImage);
+				}
 				searchLink.setToFormSubmit(form);
-				table.add(resetLink, 1, 1);
-				table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-				table.add(searchLink, 2, 1);
-				//SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"), ACTION, ACTION_SEARCH);
-//				table.add(search, 2, 1);
-/*			} else {
-				table.add(new HiddenInput(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString()));
-				SubmitButton book = new SubmitButton(iwrb.getLocalizedImageButton("book","Book"), ACTION, ACTION_BOOKING_FORM);
-				table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-				table.add(book);
-			}
-*/		
+				
+				if (resetImage != null) {
+					resetLink.setImage(resetImage);
+				}
+				
+				if (isVertical()) {
+					table.add(resetLink, 1, 1);
+					table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+					table.add(searchLink, 2, 1);
+				} else {
+					table.add(searchLink, 1, 1);
+					table.add(resetLink, 1, 2);
+					table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+					table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
+				}
 		}
 		
 		return table;	
@@ -512,14 +523,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 					if (isAlwaysSearchForm) {
 						errorFields = i.getErrorFields();
 						getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
-						getBookingForm().addErrorWarning(getBookingForm().formTable, row, true, false);
+						getBookingForm().addErrorWarning(getBookingForm().formTable, row, true, false, isVertical());
 						setupSearchForm();
 					} else {
 						unsearched();
 					}
 				} catch (FinderException f) {
 					getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
-					getBookingForm().addErrorWarning(getBookingForm().formTable, row, true, false);
+					getBookingForm().addErrorWarning(getBookingForm().formTable, row, true, false, isVertical());
 					setupSearchForm();
 				}
 				break;
@@ -710,26 +721,26 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			e2.printStackTrace();
 		}
 
-		getBookingForm().setSearchPart(table, row, false, false);
+		getBookingForm().setSearchPart(table, row, false, false, isVertical());
 		if (errorFields != null && !errorFields.isEmpty()) {
-			getBookingForm().addErrorWarning(getBookingForm().getCurrentBookingPart(), getBookingForm().getCurrentBookingPartRow(), true, false);
+			getBookingForm().addErrorWarning(getBookingForm().getCurrentBookingPart(), getBookingForm().getCurrentBookingPartRow(), true, false, isVertical());
 			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(1, getBookingForm().getCurrentBookingPartRow(), 8);
 			++row;
 			getBookingForm().setCurrentBookingPartRow(getBookingForm().getCurrentBookingPartRow()+1);
 		}
 
 		if (isProductValid) {
-			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, isVertical(), table, row);
 			//table.mergeCells(2, (row-1), 3, (row-1));
 	
 			TextInput postalC = new TextInput(PARAMETER_POSTAL_CODE);
 			postalC.setSize(6);
 			TextInput city = new TextInput(PARAMETER_CITY);
 			//city.setSize(18);
-			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.address","Address"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.address","Address"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC}, false, false, isVertical(), table, row);
 	
-			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City"), iwrb.getLocalizedString("travel.search.country","Country")}, new PresentationObject[]{city, new TextInput(PARAMETER_COUNTRY)}, false, false, table, row);
-			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.email","Email"), iwrb.getLocalizedString("travel.search.phone", "Telephone number")}, new PresentationObject[]{new TextInput(PARAMETER_EMAIL), new TextInput(PARAMETER_PHONE_NUMBER)}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City"), iwrb.getLocalizedString("travel.search.country","Country")}, new PresentationObject[]{city, new TextInput(PARAMETER_COUNTRY)}, false, false, isVertical(), table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.email","Email"), iwrb.getLocalizedString("travel.search.phone", "Telephone number")}, new PresentationObject[]{new TextInput(PARAMETER_EMAIL), new TextInput(PARAMETER_PHONE_NUMBER)}, false, false, isVertical(), table, row);
 //			table.mergeCells(2, (row-1), 3, (row-1));
 	
 			setupSpecialFieldsForBookingForm(table, row, errorFields);
@@ -754,11 +765,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			TextArea comment = new TextArea(PARAMETER_COMMENT);
 			comment.setWidth("300");
 			comment.setHeight("50");
-			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment}, false, false, isVertical(), table, row);
 			getBookingForm().getCurrentBookingPart().mergeCells(1, getBookingForm().getCurrentBookingPartRow()-1, 2, getBookingForm().getCurrentBookingPartRow()-1);
 
 
-			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"), iwrb.getLocalizedString("travel.search.name_on_card", "Name as it appears on card")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER), new TextInput(PARAMETER_NAME_ON_CARD)}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"), iwrb.getLocalizedString("travel.search.name_on_card", "Name as it appears on card")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER), new TextInput(PARAMETER_NAME_ON_CARD)}, false, false, isVertical(), table, row);
 
 			++row;
 			Table ccTable = new Table();
@@ -1436,67 +1447,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	private ProductPrice[] getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException {
 		return ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 	}
-	/* TODO trespps 
-	void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator) throws SQLException, RemoteException {
-		ProductPrice[] prices = getProductPrices(product, addressId, timeframeId);
-		for (int i = 0; i < prices.length; i++) {
-			tmpPriceID = prices[i].getID();
-			addPrices(table, column, row, bus, product.getID(), timeframeId, addressId, prices[i], days, seperator);
-		}
-	}
-*/
-	/*
-	
-	private void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, int productId, int timeframeId, int travelAddressId, ProductPrice pPrice, int days, String seperator) throws SQLException, RemoteException {
-		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
-		float total = -1;
-		String returner = "";
 
-		int count = getCount();
-		Currency currency;
-		String currAbbr = "";
-		try {
-			currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHome(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId());
-			currAbbr = currency.getCurrencyAbbreviation();
-		}catch (Exception e) {
-			currency = null;
-		}
-		TravelAddress tAddress = null;
-		try {
-			if (travelAddressId > 0) {
-				tAddress = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).findByPrimaryKey(travelAddressId);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-
-		if (days == 0) {
-			days = 1;
-		}
-		if (count == 0) {
-			count = 1;
-		}
-		
-		total = price * days * count;
-		if (tAddress != null) {
-			table.add(getText(tAddress.getName()+Text.BREAK), column, row);
-		}
-		table.add(getText(iwrb.getLocalizedString("travel.price","Price")+":"+seperator),column, row);
-		table.add(getSmallText(currencyFormat.format(price*count)+Text.NON_BREAKING_SPACE+currAbbr), column, row);
-		if (days > 1) {
-			table.add(getSmallText(Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_night","per night")), column, row);
-		}
-		if (count > 1) {
-			table.add(getSmallText(" ("+currencyFormat.format(price)+Text.NON_BREAKING_SPACE+currAbbr+" per "+getUnitName()+")"), column, row);
-		}
-		table.addBreak(column, row);
-		table.add(getText(iwrb.getLocalizedString("travel.search.total","Total")+":"+seperator), column, row);
-		table.add(getSmallText(currencyFormat.format(total)+Text.NON_BREAKING_SPACE+currAbbr+seperator), column, row);
-		table.addBreak(column, row);
-	
-	}
-	*/
 	private String oldGetPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice, int days) throws SQLException, RemoteException {
 		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
 /*
@@ -2072,4 +2023,24 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return bf;
 	}
 	
+	public void setSearchImage(Image image) {
+		this.searchImage = image;
+	}
+	
+	public void setResetImage(Image image) {
+		this.resetImage = image;
+	}
+	
+	public void setHorizontal(boolean horizontal) {
+		this.horizontal = horizontal;
+	}
+	
+	protected boolean isHorizontal() {
+		return horizontal;
+	}
+	
+	protected boolean isVertical() {
+		return !isHorizontal();
+	}
+
 }

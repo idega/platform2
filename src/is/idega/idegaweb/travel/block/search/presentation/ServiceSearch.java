@@ -48,7 +48,9 @@ public class ServiceSearch extends TravelBlock {
 	protected String searchPartBottomBorderWidth = null;
 	protected String searchPartColor = null;
 	protected String interfaceObjectStyle = null;
-
+	protected Image searchImage = null;
+	protected Image resetImage = null;
+	
 	protected String width;
 	protected String formInputStyle;
 	protected int engineID = -1;
@@ -62,6 +64,7 @@ public class ServiceSearch extends TravelBlock {
 	private List searchForms2 = null; 
 	private AbstractSearchForm currentSearchForm = null;
 	private ICPage targetPage = null;
+	private boolean horizontal = false;
 
 	public ServiceSearch() {
 		super();
@@ -149,9 +152,12 @@ public class ServiceSearch extends TravelBlock {
 			ss.setSearchPartTopBorderColor(searchPartTopBorderColor);
 			ss.setSearchPartTopBorderWidth(searchPartTopBorderWidth);
 			ss.setTargetPage(targetPage);
+			ss.setSearchImage(searchImage);
+			ss.setResetImage(resetImage);
 			if (resultsPerPage > 0) {
 				ss.setResultsPerPage(resultsPerPage);
 			}
+			ss.setHorizontal(horizontal);
 			ss.setServiceSearchEngine(((ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class)).findByPrimaryKey(new Integer(engineID)));
 			return ss;
 		}catch (Exception e) {
@@ -244,6 +250,18 @@ public class ServiceSearch extends TravelBlock {
 		this.resultsPerPage = resultsPerPage;
 	}
 	
+	public void setSearchImage(Image image) {
+		this.searchImage = image;
+	}
+	
+	public void setResetImage(Image image) {
+		this.resetImage = image;
+	}
+	
+	public void setHorizontal(boolean horizontal) {
+		this.horizontal = horizontal;
+	}
+
 	/**
 	 * Set the valid search engines for the Search Engine
 	 * 
