@@ -2,18 +2,23 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.*;
 
 /**
  * @author Joakim
  */
-public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader {
+public class InvoiceHeaderBMPBean extends GenericEntity 
+//implements InvoiceHeader 
+{
 	private static final String ENTITY_NAME = "cacc_invoice_header";
 
-	private static final String COLUMN_MAIN_ACTIVITY = "main_activity";	
-	//TODO (JJ) This should probably be a reference to huvudverksamhet...
+	private static final String COLUMN_SCHOOL_CATEGORY_ID = "main_school_category_id";
 	private static final String COLUMN_PERIOD = "period";
 	private static final String COLUMN_CUSTODIAN_ID = "custodian_id";		//Invoice receiver
 	private static final String COLUMN_REFERENCE = "reference";
@@ -26,8 +31,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	private static final String COLUMN_CHANGED_BY = "changed_by";
 	private static final String COLUMN_OWN_POSTING = "own_postiong";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
-	private static final String COLUMN_TOTAL_AMOUNT_WITHOUT_VAT = "total_amount_without_vat";
-	private static final String COLUMN_TOTAL_VAT_AMOUNT = "total_vat_amount";
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
@@ -39,7 +42,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_MAIN_ACTIVITY, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CUSTODIAN_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_REFERENCE, "", true, true, java.lang.Integer.class);
@@ -51,16 +54,15 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		addAttribute(COLUMN_CHANGED_BY, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
-		addAttribute(COLUMN_TOTAL_AMOUNT_WITHOUT_VAT, "", true, true, java.lang.Float.class);
-		addAttribute(COLUMN_TOTAL_VAT_AMOUNT, "", true, true, java.lang.Float.class);
 
+		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 		addManyToOneRelationship(COLUMN_CUSTODIAN_ID, User.class);
 //		addManyToOneRelationship(COLUMN_REFERENCE, .class);
 //TODO (JJ) find the clas for the BUN reference
 //TODO (JJ) need to get the reference to main activity/huvudverksamhet
 	}
-	public int getMainActivity() {
-		return getIntColumnValue(COLUMN_MAIN_ACTIVITY);
+	public int getSchoolCategoryID() {
+		return getIntColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
 	public Date getPeriod() {
 		return getDateColumnValue(COLUMN_PERIOD);
@@ -95,16 +97,13 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public String getDoublePosting() {
 		return getStringColumnValue(COLUMN_DOUBLE_POSTING);
 	}
-	public float getTotalAmountWithoutVAT() {
-		return getFloatColumnValue(COLUMN_TOTAL_AMOUNT_WITHOUT_VAT);
-	}
-	public float getTotalVATAmount() {
-		return getFloatColumnValue(COLUMN_TOTAL_VAT_AMOUNT);
-	}
 
 
-	public void setMainActivity(int i) {
-		setColumn(COLUMN_MAIN_ACTIVITY, i);
+	public void setSchoolCagtegoryID(int i) {
+		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
+	}
+	public void setSchoolCagtegoryID(SchoolCategory sc) {
+		setColumn(COLUMN_SCHOOL_CATEGORY_ID, sc);
 	}
 	public void setPeriod(Date d) {
 		setColumn(COLUMN_PERIOD, d);
@@ -146,11 +145,11 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public void setDoublePosting(String s) {
 		setColumn(COLUMN_DOUBLE_POSTING, s);
 	}
-	public void setTotalAmountWithoutVAT(float f) {
-		setColumn(COLUMN_TOTAL_AMOUNT_WITHOUT_VAT, f);
-	}
-	public void setTotalVATAmount(float f) {
-		setColumn(COLUMN_TOTAL_VAT_AMOUNT, f);
+	
+	public Integer ejbFindByCustodian(User custodian) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CUSTODIAN_ID, custodian.getPrimaryKey());
+		return (Integer)idoFindOnePKByQuery(sql);
 	}
 }
 

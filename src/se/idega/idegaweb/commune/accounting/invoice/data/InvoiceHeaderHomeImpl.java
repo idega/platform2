@@ -13,6 +13,13 @@ public class InvoiceHeaderHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
+public InvoiceHeader findByCustodian(com.idega.user.data.User p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((InvoiceHeaderBMPBean)entity).ejbFindByCustodian(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public InvoiceHeader findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (InvoiceHeader) super.findByPrimaryKeyIDO(pk);
  }
