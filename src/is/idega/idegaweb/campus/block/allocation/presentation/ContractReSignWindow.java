@@ -145,11 +145,6 @@ public class ContractReSignWindow extends Window{
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("moving_date","Moving date")),1,row);
           
-          /**
-           * @todo Hvað er að gerast hérna??? Hvers vegna er þetta input? Og á
-           * það að vera þannig? Tala við Baldvin á eftir....
-           */
-          System.out.println("Entering moving date");
 //          IWTimestamp movdate = eContract.getMovingDate()!=null?new IWTimestamp(eContract.getMovingDate()):null;
           DateInput movDate = new DateInput("mov_date",true);
           IWTimestamp moving = IWTimestamp.RightNow();
@@ -157,8 +152,10 @@ public class ContractReSignWindow extends Window{
 					int termofnoticeMonths = 1;
           if(SysProps !=null)
             termofnoticeMonths = (int)SysProps.getTermOfNoticeMonths();
-          moving.addDays(termofnoticeMonths); 
-
+            
+           moving = this.addMonthsPlusCurrentMonth(moving,termofnoticeMonths);
+//          moving.addDays(termofnoticeMonths);
+					
           if(moving.isLaterThan(new IWTimestamp(eContract.getValidTo())))
             movDate.setDate(eContract.getValidTo());
           else
@@ -213,6 +210,23 @@ public class ContractReSignWindow extends Window{
     Form F = new Form();
     F.add(T);
     return F;
+  }
+  
+  private IWTimestamp addMonthsPlusCurrentMonth(IWTimestamp timestamp, int monthsToAdd) {
+  	int month = timestamp.getMonth();
+  	timestamp.setDay(1);
+  	if (month == 12) {
+  		timestamp.setMonth(1);
+  		int year = timestamp.getYear();
+  		timestamp.setYear(year++);
+  	}
+  	else {
+  		timestamp.setMonth(month++);
+  	}
+  	
+  	timestamp.addMonths(monthsToAdd);
+  	  	
+  	return timestamp;	
   }
 
   private void doReSignContract(IWContext iwc){

@@ -119,6 +119,9 @@ public class NewProductApplicationForm extends Block {
 		add("Villa við sendingu umsóknar");
 	}
 
+	/*
+	 * 
+	 */
 	private void showForm(IWContext iwc) {
 		int typeId = parseType(_type);
 
