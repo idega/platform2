@@ -276,7 +276,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		Text uploadReport = formatText(iwrb.getLocalizedString("workreportwindow.excel_imports", "Excel imports"), true);
 
 		//B.7
-		if (!WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(type)) {
+		if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 			LinkContainer importMemberList = new LinkContainer();
 			importMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members", "Import member list")));
 			importMemberList.addParameter(ACTION, ACTION_IMPORT_MEMBERS);
