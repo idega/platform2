@@ -80,6 +80,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			int column = 1;
 			int queueOrder = -1;
 			int netOrder = -1;
+			boolean showComment = false;
 			
 			applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 			applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
@@ -94,6 +95,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				IWCalendar queueDate;
 				IWCalendar placementDate;
 				Link link;
+				boolean hasOtherPlacing = false;
 				
 				Iterator iter = applications.iterator();
 				while (iter.hasNext()) {
@@ -107,6 +109,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 						netOrder = getBusiness().getNumberInQueueByStatus(application);
 					else
 						netOrder = -1;
+					hasOtherPlacing = getBusiness().hasBeenPlacedWithOtherProvider(application.getChildId(), getSession().getChildCareID());
 						
 					if (netOrder == 1 && row != 2) {
 						applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
@@ -138,6 +141,11 @@ public class ChildCareAdmin extends ChildCareBlock {
 					if (getResponsePage() != null)
 						link.setPage(getResponsePage());
 	
+					if (hasOtherPlacing) {
+						showComment = true;
+						applicationTable.add(getSmallErrorText("* "), column, row);
+					}
+					
 					applicationTable.add(link, column++, row);
 					applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 					applicationTable.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
@@ -156,6 +164,13 @@ public class ChildCareAdmin extends ChildCareBlock {
 				applicationTable.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 				applicationTable.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 				applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+			}
+			
+			if (showComment) {
+				applicationTable.setHeight(2, row++);
+				applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+				applicationTable.add(getSmallErrorText("* "), 1, row);
+				applicationTable.add(getSmallText(localize("child_care.placed_at_other_provider","Placed at other provider")), 1, row);
 			}
 			
 			table.add(getLegendTable(), 1, 7);

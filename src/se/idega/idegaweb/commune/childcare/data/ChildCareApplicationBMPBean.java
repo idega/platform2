@@ -476,6 +476,18 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 	
+	public int ejbHomeGetNumberOfPlacedApplications(int childID, int providerID, String[] caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAnd().append("c."+PROVIDER_ID).appendNOTEqual().append(providerID);
+		sql.appendAndEquals(CHILD_ID, childID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+
+		return idoGetNumberOfRecords(sql);
+	}
+	
 	public int ejbHomeGetNumberOfApplications(int providerID, String[] caseStatus, int sortBy, Date fromDate, Date toDate) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
@@ -523,6 +535,50 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
 		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
+		return idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetQueueSizeNotInStatus(int providerID, String caseStatus[]) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		return idoGetNumberOfRecords(sql);
+		
+	}
+
+	public int ejbHomeGetQueueSizeInStatus(int providerID, String caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetQueueSizeByAreaNotInStatus(int areaID, String caseStatus[]) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p, sch_school s");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("s.sch_school_id","c."+PROVIDER_ID);
+		sql.appendAndEquals("s.sch_school_area_id",areaID);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		return idoGetNumberOfRecords(sql);
+		
+	}
+
+	public int ejbHomeGetQueueSizeByAreaInStatus(int areaID, String caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p, sch_school s");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("s.sch_school_id","c."+PROVIDER_ID);
+		sql.appendAndEquals("s.sch_school_area_id",areaID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		return idoGetNumberOfRecords(sql);
 	}
 }

@@ -1116,6 +1116,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		application.store();
 		getMessageBusiness().sendMessageToCommuneAdministrators(application, message, body);
 	}
+	
+	public boolean hasBeenPlacedWithOtherProvider(int childID, int providerID) throws RemoteException {
+		try {
+			String caseStatus[] = {	getCaseStatusReady().getStatus() };
+			int applications = getChildCareApplicationHome().getNumberOfPlacedApplications(childID, providerID, caseStatus);
+			if (applications > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
+	}
 
 	public String getLocalizedCaseDescription(Case theCase, Locale locale) throws RemoteException {
 		ChildCareApplication choice = getChildCareApplicationInstance(theCase);
@@ -1169,6 +1182,44 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 */
 	public char getStatusSentIn() {
 		return STATUS_SENT_IN;
+	}
+	
+	public int getQueueTotalByProvider(int providerID) throws RemoteException {
+		try {
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
+			return getChildCareApplicationHome().getQueueSizeNotInStatus(providerID, caseStatus);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getQueueByProvider(int providerID) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, getCaseStatusOpen().getStatus());
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getQueueTotalByArea(int areaID) throws RemoteException {
+		try {
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
+			return getChildCareApplicationHome().getQueueSizeByAreaNotInStatus(areaID, caseStatus);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getQueueByArea(int areaID) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().getQueueSizeByAreaInStatus(areaID, getCaseStatusOpen().getStatus());
+		}
+		catch (IDOException e) {
+			return 0;
+		}
 	}
 
 }
