@@ -171,6 +171,16 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   private void initialize(IWContext iwc) {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      // create data from the database
+      workReportBusiness.createWorkReportData(getWorkReportId());
+    } catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.");
+    } 
     // collect all work report account records
     WorkReportClubAccountRecordHome workReportClubAccountRecordHome = null;
     Collection workReportClubAccountRecords = null;
@@ -361,7 +371,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private void addPrimaryKeys(List primaryKeys, List entities)  {
     Iterator iterator = entities.iterator();
     while (iterator.hasNext())  {
-      Integer primaryKey = (Integer) iterator.next();
+      EntityRepresentation entity = (EntityRepresentation) iterator.next();
+      Integer primaryKey = (Integer) entity.getPrimaryKey();
       primaryKeys.add(primaryKey);
     }
   }
