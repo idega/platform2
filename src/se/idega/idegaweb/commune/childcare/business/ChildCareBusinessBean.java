@@ -339,8 +339,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					
 					if (canChangeApplication(appl, providerID, fromDate, queueDate)) {
 						if (appl.getProviderId() != providerID && appl.getProviderId() != -1) {
-							removeFromQueue(appl, user, provider);
-							appl = getChildCareApplicationHome().create();
+							if (removeFromQueue(appl, user, provider)) {
+								appl = getChildCareApplicationHome().create();
+							}
 						}
 						if (user != null)
 							appl.setOwner(user);
