@@ -20,13 +20,15 @@ public class ApartmentContracts {
 	private Apartment apartment;
 	private Collection contracts;
 	private IWTimestamp nextDate;
+	private String[] statuses;
 	
 	public ApartmentContracts(){
-		this(null);
+		this(null,null);
 	}
-	public ApartmentContracts(Apartment apartment) {
+	public ApartmentContracts(Apartment apartment,String[] statuses) {
 		this.apartment = apartment;
 		nextDate = IWTimestamp.RightNow();
+		this.statuses = statuses;
 		lookupContracts();
 	}
 	public void setApartment(Apartment apartment) {
@@ -70,8 +72,14 @@ public class ApartmentContracts {
 		if(apartment!=null){
 			try {
 				ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
-				Collection cons = cHome.findByApartmentID((Integer) apartment.getPrimaryKey());
-				setContracts(cons);
+				if(statuses!=null){
+					Collection cons = cHome.findByApartmentAndStatus((Integer) apartment.getPrimaryKey(),statuses);
+					setContracts(cons);
+				}
+				else{
+					Collection cons = cHome.findByApartmentID((Integer) apartment.getPrimaryKey());
+					setContracts(cons);
+				}
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace();
