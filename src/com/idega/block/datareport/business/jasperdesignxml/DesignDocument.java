@@ -148,6 +148,12 @@ public class DesignDocument extends XMLDocument {
 		//this.getRootElement().addContent(field);
 	}
 	
+	public void addField(String name, String className) {
+		Field field = new Field(name);
+		field.setClassType(className);
+		addField(field);
+	}
+	
 	public void addField(String name, Class classType){
 		Field field = new Field(name);
 		field.setClassType(classType);
