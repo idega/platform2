@@ -2,6 +2,7 @@ package com.idega.block.email.presentation;
 
 import com.idega.block.email.business.*;
 import com.idega.block.presentation.CategoryBlock;
+import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -60,6 +61,8 @@ public class NewsLetter extends CategoryBlock {
   private int _inputLength = 18;
   private boolean _submitBelow = false;
   private String _spaceBetween = "2";
+  private int archivePage = -1;
+  private String archiveTarget = Link.TARGET_TOP_WINDOW;
 
   /**  Constructor for the NewsLetter object */
   public NewsLetter() {
@@ -173,6 +176,10 @@ public class NewsLetter extends CategoryBlock {
 				EmailTopic tpc = (EmailTopic) iter.next();
 				T.add(new HiddenInput("nl_list",String.valueOf( tpc.getListId())));
       }
+      if(archivePage>0){
+      	
+      	T.add(getArchiveLink(),1,2);
+      }
       return T;
     }
     else
@@ -213,7 +220,7 @@ public class NewsLetter extends CategoryBlock {
 				T.add(send, 3, 1);
 				T.add(cancel, 3, 1);
 			}
-
+			
 			return T;
 	}
 
@@ -241,7 +248,10 @@ public class NewsLetter extends CategoryBlock {
 				EmailTopic tpc = (EmailTopic) iter.next();
 				T.add(new HiddenInput("nl_list",String.valueOf( tpc.getListId())));
       }
-      
+      if(archivePage>0){
+      	T.mergeCells(1,row,2,row);
+      	T.add(getArchiveLink(),1,row);
+      }
       return T;
     }
     else
@@ -267,6 +277,14 @@ public class NewsLetter extends CategoryBlock {
       T.add(getCategoryLink(core.getImage("/shared/detach.gif")), 1, 1);
 
     return T;
+  }
+  
+  private Link getArchiveLink(){
+  	Link L = new Link(iwrb.getLocalizedString("archive","Archive"));
+  	L.setPage(archivePage);
+  	L.setTarget(archiveTarget);
+  	
+  	return L;
   }
 
  
@@ -388,5 +406,13 @@ public class NewsLetter extends CategoryBlock {
    */
   public void setSpaceBetween(String spaceBetween) {
     _spaceBetween = spaceBetween;
+  }
+  
+  public void setArchivePage(IBPage page){
+  		this.archivePage = page.getID();
+  }
+  
+  public void setArchiveTarget(String target){
+  	this.archiveTarget = target;
   }
 }
