@@ -81,6 +81,7 @@ public class NewsReader extends Block implements IWBlock{
 	private String firstTableColor = null;
 	private String secondTableColor = null;
 	private String dateAlign = "left";
+	private Image headlineImage = null;
 
   private Hashtable objectsBetween = null;
 	private Text textProxy = new Text();
@@ -520,8 +521,11 @@ public class NewsReader extends Block implements IWBlock{
 				T.add(moreLink, 1, 4);
 			}
 
-			if ( alignWithHeadline && headlineImageURL!=null){
-				T.add(iwb.getImage(headlineImageURL), 1, 2);
+			if ( alignWithHeadline ){
+				if(headlineImage !=null)
+					T.add(headlineImage, 1, 2);
+				if(headlineImageURL!=null)
+					T.add(iwb.getImage(headlineImageURL), 1, 2);
       }
 
 
@@ -790,8 +794,13 @@ public class NewsReader extends Block implements IWBlock{
     this.showHeadlineImage=true;
     this.showMoreButton=false;
   }
+	public void setHeadlineImage(Image image) {
+    this.headlineImage=image;
+		this.alignWithHeadline=true;
+  }
   public void setHeadlineImageURL(String headlineImageURL) {
     this.headlineImageURL=headlineImageURL;
+		this.alignWithHeadline=true;
   }
   public void setShowOnlyDates(boolean showOnlyDates) {
     this.showOnlyDates=showOnlyDates;
@@ -872,6 +881,8 @@ public class NewsReader extends Block implements IWBlock{
 			obj.sObjectAlign = sObjectAlign;
 			obj.headlineImageURL = headlineImageURL;
 			obj.dateAlign = dateAlign;
+
+			obj.headlineImage = headlineImage;
 
 			// Nullable :
 			if(firstTableColor !=null)
