@@ -204,6 +204,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					report = getWorkReportHome().create();
 					report.setGroupId(groupId);
 					report.setYearOfReport(year);
+					
 					//THIS IS CRAP IT SHOULD JUST USE .getName() !! palli bitch
 					report.setGroupName((club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) != null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName());
 					report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
@@ -227,6 +228,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
 
 						report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
+						report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+						report.setRegionalUnionAbbreviation(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_ABRV));
+						
 					}
 					catch (NoRegionalUnionFoundException e3) {
 						//no regional union, must be a league or a regional union itself

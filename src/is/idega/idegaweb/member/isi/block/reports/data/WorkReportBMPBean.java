@@ -44,6 +44,9 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	protected final static String COLUMN_NAME_NUMBER_OF_MEMBERS= "TOTAL_MEMBERS";
 	protected final static String COLUMN_NAME_NUMBER_OF_PLAYERS= "TOTAL_PLAYERS";
 	protected final static String COLUMN_NAME_NUMBER_OF_COMPETITORS= "TOTAL_COMPETITORS";
+	protected final static String COLUMN_NAME_REGIONAL_UNION_NR= "REG_UNI_NR";
+	protected final static String COLUMN_NAME_REGIONAL_UNION_ABBR= "REG_UNI_ABBR";
+	protected final static String COLUMN_NAME_CONTINUANCE_TILL= "CONTINUANCE_TILL";
 	
 	public WorkReportBMPBean() {
 		super();
@@ -77,10 +80,13 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		addAttribute(COLUMN_NAME_SENT, "Has the workreport been sent, finalized", true, true, Boolean.class);
 		addAttribute(COLUMN_NAME_SENT_REPORT, "Results from report check",true,true,String.class,3500);
 		
+
+		addAttribute(COLUMN_NAME_REGIONAL_UNION_NR , "Regional union nr",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_REGIONAL_UNION_ABBR, "Regional union abbreviation",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_CONTINUANCE_TILL, "Continuance till text field",true,true,String.class,30);
 		
 		addManyToManyRelationShip(WorkReportGroup.class);//so we can get the clubs related to leagues/divisions
 		
-		//TODO add stats
 	}
 
 	public String getEntityName() {
@@ -157,6 +163,14 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return getStringColumnValue(COLUMN_NAME_STATUS);
 	}
 
+	public void setContinuanceTill(String continuanceString){
+		setColumn(COLUMN_NAME_CONTINUANCE_TILL,continuanceString);
+	}
+	
+	public String getContinuanceTill(){
+		return getStringColumnValue(COLUMN_NAME_CONTINUANCE_TILL);
+	}
+	
 	public void setGroupName(String name){
 		setColumn(COLUMN_NAME_GROUP_NAME,name);
 	}
@@ -168,6 +182,23 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 
 	public void setGroupNumber(String number){
 		setColumn(COLUMN_NAME_GROUP_NUMBER,number);
+	}
+	
+
+	public String getRegionalUnionNumber(){
+		return getStringColumnValue(COLUMN_NAME_REGIONAL_UNION_NR);
+	}
+	
+	public void setRegionalUnionNumber(String number){
+		setColumn(COLUMN_NAME_REGIONAL_UNION_NR,number);
+	}
+	
+	public String getRegionalUnionAbbreviation(){
+		return getStringColumnValue(COLUMN_NAME_REGIONAL_UNION_ABBR);
+	}
+	
+	public void setRegionalUnionAbbreviation(String abbr){
+		setColumn(COLUMN_NAME_REGIONAL_UNION_ABBR,abbr);
 	}
 	
 	public Integer getYearOfReport(){

@@ -6,6 +6,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void addLeague(is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p0)throws com.idega.data.IDORelationshipException;
  public java.lang.Integer getAccountFileId();
  public java.lang.Integer getBoardFileId();
+ public java.lang.String getContinuanceTill();
  public java.lang.Integer getGroupId();
  public java.lang.String getGroupName();
  public java.lang.String getGroupNumber();
@@ -16,7 +17,9 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public int getNumberOfCompetitors();
  public int getNumberOfMembers();
  public int getNumberOfPlayers();
+ public java.lang.String getRegionalUnionAbbreviation();
  public java.lang.Integer getRegionalUnionGroupId();
+ public java.lang.String getRegionalUnionNumber();
  public java.lang.String getSentReportText();
  public java.lang.String getStatus();
  public java.lang.Integer getYearOfReport();
@@ -34,6 +37,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setAsSent(boolean p0);
  public void setBoardFileId(int p0);
  public void setBoardPartDone(boolean p0);
+ public void setContinuanceTill(java.lang.String p0);
  public void setCreationFromDatabaseDone(boolean p0);
  public void setGroupId(int p0);
  public void setGroupId(java.lang.Integer p0);
@@ -46,8 +50,10 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setNumberOfCompetitors(int p0);
  public void setNumberOfMembers(int p0);
  public void setNumberOfPlayers(int p0);
+ public void setRegionalUnionAbbreviation(java.lang.String p0);
  public void setRegionalUnionGroupId(int p0);
  public void setRegionalUnionGroupId(java.lang.Integer p0);
+ public void setRegionalUnionNumber(java.lang.String p0);
  public void setSentReportText(java.lang.String p0);
  public void setStatus(java.lang.String p0);
  public void setYearOfReport(int p0);

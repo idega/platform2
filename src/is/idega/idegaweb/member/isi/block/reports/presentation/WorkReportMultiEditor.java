@@ -63,18 +63,22 @@ public class WorkReportMultiEditor extends Block {
 
 
   private static final String GROUP_NUMBER = WorkReport.class.getName()+".GROUP_NUMBER";
+	private static final String GROUP_NAME = WorkReport.class.getName()+".GROUP_NAME";
   private static final String GROUP_TYPE = WorkReport.class.getName()+".GROUP_TYPE";
 	private static final String INACTIVE = WorkReport.class.getName()+".INACTIVE";
-  private static final String REGIONAL_UNION_NUMBER = IWMemberConstants.META_DATA_CLUB_NUMBER;
-  private static final String REGIONAL_UNION_ABBR = IWMemberConstants.META_DATA_CLUB_ABRV;
+  private static final String REGIONAL_UNION_NUMBER = WorkReport.class.getName()+".REG_UNI_NR";
+  private static final String REGIONAL_UNION_ABBR = WorkReport.class.getName()+".REG_UNI_ABBR";
 	private static final String REPORT_STATUS = "STATUS";
 	private static final String MEMBER_COUNT = WorkReport.class.getName()+".TOTAL_MEMBERS";
 	private static final String PLAYER_COUNT = WorkReport.class.getName()+".TOTAL_PLAYERS";
 
+	private static final String  WHATS_LEFT = "workreportmultieditor.WHATSLEFT";
+	private static final String  CONTINUANCE_TILL = WorkReport.class.getName()+".CONTINUANCE_TILL";
   
   private boolean editable = true;
    
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+
 
 	public String getBundleIdentifier(){
 		return this.IW_BUNDLE_IDENTIFIER;
@@ -132,6 +136,12 @@ public class WorkReportMultiEditor extends Block {
 			else{
 				report.setAsActive();
 			}
+			
+			EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(primaryKey, CONTINUANCE_TILL, iwc);
+			
+			if( entityPathValueContainerFromTextEditor.isValid()) {
+				report.setContinuanceTill((String)entityPathValueContainerFromTextEditor.getValue());
+			}
         
 
       report.store();
@@ -157,7 +167,7 @@ public class WorkReportMultiEditor extends Block {
  
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
  
-    TextEditorConverter textEditorConverter = new TextEditorConverter(form);
+		TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     //textEditorConverter.maintainParameters(this.getParametersToMaintain());
     DropDownMenuConverter reportStatusDropDownMenuConverter = getConverterForReportStatus(resourceBundle, form);
     List params = new ArrayList();
@@ -176,18 +186,24 @@ public class WorkReportMultiEditor extends Block {
 		EditOkayButtonConverter okCancelButton = new EditOkayButtonConverter();
 		
 		okCancelButton.maintainParameters(params);
+		textEditorConverter.maintainParameters(params);
+		
+		
 		
     // define path short keys and map corresponding converters
     Object[] columns = {
       "okay", okCancelButton,
 			GROUP_NUMBER, new LinkConverter(form),
+			GROUP_NAME,new LinkConverter(form),
 			GROUP_TYPE, new TextToLocalizedTextConverter(),
-			REGIONAL_UNION_NUMBER, metaConverter,
-			REGIONAL_UNION_ABBR, metaConverter,
-			INACTIVE, inActiveConverter,
+			REGIONAL_UNION_NUMBER, new LinkConverter(form),
+			REGIONAL_UNION_ABBR, new LinkConverter(form),
 			REPORT_STATUS, reportStatusDropDownMenuConverter,
-			MEMBER_COUNT,null,
-			PLAYER_COUNT,null
+			MEMBER_COUNT,new LinkConverter(form),
+			PLAYER_COUNT,new LinkConverter(form),
+			INACTIVE, inActiveConverter,
+			WHATS_LEFT,new WhatIsMissingConverter(),
+			CONTINUANCE_TILL,textEditorConverter,
 		};
       
       
@@ -213,28 +229,30 @@ public class WorkReportMultiEditor extends Block {
   }
   
   
-  /**
-   * Converter for report status column 
-   */
-  private DropDownMenuConverter getConverterForReportStatus(final IWResourceBundle resourceBundle, Form form) {
-    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
-      protected Object getValue(
-        Object entity,
-        EntityPath path,
-        EntityBrowser browser,
-        IWContext iwc)  {
-          return ((EntityRepresentation) entity).getColumnValue(REPORT_STATUS);
-        }
-      };        
+	/**
+	 * Converter for report status column 
+	 */
+	private DropDownMenuConverter getConverterForReportStatus(final IWResourceBundle resourceBundle, Form form) {
+		DropDownMenuConverter converter = new DropDownMenuConverter(form) {
+			protected Object getValue(
+				Object entity,
+				EntityPath path,
+				EntityBrowser browser,
+				IWContext iwc)  {
+					String statusCode = (String) ((EntityRepresentation) entity).getColumnValue(REPORT_STATUS);
+					
+					return resourceBundle.getLocalizedString(statusCode,statusCode);
+				}
+			};        
 
         
-    OptionProvider optionProvider = new OptionProvider() {
+		OptionProvider optionProvider = new OptionProvider() {
       
-    Map optionMap = null;
+		Map optionMap = null;
       
-    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-      if (optionMap == null)  {
-        optionMap = new TreeMap();
+		public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+			if (optionMap == null)  {
+				optionMap = new TreeMap();
  			
 				optionMap.put(WorkReportConstants.WR_STATUS_NOT_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_NOT_DONE, WorkReportConstants.WR_STATUS_NOT_DONE));
 				optionMap.put(WorkReportConstants.WR_STATUS_SOME_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_SOME_DONE, WorkReportConstants.WR_STATUS_SOME_DONE));
@@ -246,14 +264,17 @@ public class WorkReportMultiEditor extends Block {
 				optionMap.put(WorkReportConstants.WR_STATUS_NO_REPORT, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_NO_REPORT, WorkReportConstants.WR_STATUS_NO_REPORT));	 
 				optionMap.put(WorkReportConstants.WR_STATUS_DONE, resourceBundle.getLocalizedString(WorkReportConstants.WR_STATUS_DONE, WorkReportConstants.WR_STATUS_DONE));
 				
-      }
-        return optionMap;
-      }
-    };     
-    converter.setOptionProvider(optionProvider); 
-    //converter.maintainParameters(getParametersToMaintain());
-    return converter;
-  }  
+			}
+				return optionMap;
+			}
+		};     
+		converter.setOptionProvider(optionProvider); 
+		//converter.maintainParameters(getParametersToMaintain());
+		return converter;
+	}  
+	
+	
+	
   
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
@@ -297,6 +318,42 @@ public class WorkReportMultiEditor extends Block {
 		}
 		
 	}
+	
+	class WhatIsMissingConverter implements EntityToPresentationObjectConverter {
+		
+		public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc)	{
+			return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+		}
+		
+		public PresentationObject getPresentationObject(Object value, EntityPath path, EntityBrowser browser, IWContext iwc){
+			
+			WorkReport report = (WorkReport)value;
+			if(report!=null){
+				boolean memberPart = report.isMembersPartDone();
+				boolean accountPart = report.isAccountPartDone();
+				boolean boardPart = report.isBoardPartDone();
+
+				String memberDone = (memberPart)? "member_done_" : "no_member_";
+				String accountDone = (accountPart)? "account_done_" : "no_account_";
+				String boardDone = (boardPart)? "board_done" : "no_board";
+				
+				String localizedkey  = memberDone + accountDone + boardDone;
+				
+				Text text = (Text) browser.getDefaultTextProxy().clone();
+				
+				text.setText(iwc.getApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("workreportmultieditor.whatisleftkey_"+localizedkey , localizedkey));               
+				return text;
+			}
+			else{
+				return new Text("");
+			}
+			
+		}
+		
+	}
+	
+	
+	
 	
 	class LinkConverter extends TextEditorConverter {
 		

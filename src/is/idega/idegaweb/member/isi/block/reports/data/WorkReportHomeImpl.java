@@ -32,9 +32,9 @@ public WorkReport findWorkReportByGroupIdAndYearOfReport(int p0,int p1)throws ja
  }
 
 
-public int getCountOfWorkReportsByStatusAndYear(java.lang.String p0, int year){
+public int getCountOfWorkReportsByStatusAndYear(java.lang.String p0,int p1){
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((WorkReportBMPBean)entity).ejbHomeGetCountOfWorkReportsByStatusAndYear(p0,year);
+	int theReturn = ((WorkReportBMPBean)entity).ejbHomeGetCountOfWorkReportsByStatusAndYear(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
