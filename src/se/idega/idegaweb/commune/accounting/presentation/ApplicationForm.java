@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.10 2003/08/28 10:31:08 aron Exp $
+ * $Id: ApplicationForm.java,v 1.11 2003/08/28 11:30:25 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
-import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -20,10 +19,10 @@ import com.idega.presentation.ui.HiddenInput;
  * A generic form for Check & Peng presentation blocks.
  * 
  * <p>
- * Last modified: $Date: 2003/08/28 10:31:08 $
+ * Last modified: $Date: 2003/08/28 11:30:25 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ApplicationForm extends AccountingBlock {
 
@@ -89,18 +88,9 @@ public class ApplicationForm extends AccountingBlock {
 	/**
 	 * Sets the main panel for this application form.
 	 * The main panel will appear below the search panel in the application form.
-	 * @param mainPanel the table containing the main panel
+	 * @param mainPanel the presentation object containing the main panel
 	 */
-	public void setMainPanel(Table mainPanel) {
-		table.add(mainPanel, 1, 3);
-	}
-
-	/**
-	 * Sets the main panel (a list table) for this application form.
-	 * The main panel will appear below the search panel in the application form.
-	 * @param mainPanel the list table to set
-	 */
-	public void setMainPanel(ListTable mainPanel) {
+	public void setMainPanel(PresentationObject mainPanel) {
 		table.add(mainPanel, 1, 3);
 	}
 
@@ -110,7 +100,7 @@ public class ApplicationForm extends AccountingBlock {
 	 * @param buttonPanel the button panel to set
 	 * @see ButtonPanel
 	 */
-	public void setButtonPanel(ButtonPanel buttonPanel) {
+	public void setButtonPanel(PresentationObject buttonPanel) {
 		table.add(buttonPanel, 1, 4);
 	}
 	
