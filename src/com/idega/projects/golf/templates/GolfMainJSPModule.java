@@ -695,7 +695,7 @@ public class GolfMainJSPModule extends MainSideJSPModule{
 			Link six = new Link(new Image("/pics/templates/samvinn.gif","Samvinnuferðir"),"http://www.samvinn.is");
 			Link five = new Link(new Image("/pics/templates/ecco.gif","ecco"),"http://www.ecco.com");
 			Link three = new Link(new Image("/pics/templates/opinkerfi.gif","Opin Kerfi"),"http://www.opinkerfi.is");
-			Link seven = new Link(new Image("/pics/templates/euro.gif","Eurocard"),"http://www.eurocard.is");
+			Link seven = new Link(new Image("/pics/templates/euro.gif","Eurocard"),"http://www.europay.is");
 
 			one.setTarget("_blank");
 			two.setTarget("_blank");
