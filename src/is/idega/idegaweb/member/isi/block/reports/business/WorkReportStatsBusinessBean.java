@@ -3390,17 +3390,26 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		return reportCollection;
 	}
 	
-	
 	/*
 	 * Report B12.6.1 of the ISI Specs
 	 */
-	public ReportableCollection sixDotOne (
-	Integer year,
-	String gender,
-	Collection regionalUnionFilter,
-	String ageFrom,
-	String ageTo) throws RemoteException {
+	public ReportableCollection getAgeStatisticsMemberTypeGenderRegionalUnionsFilterAndAge (
+			Integer year,
+			String strShowPlayers,
+			String strShowMembers,
+			String gender,
+			Collection regionalUnionsFilter,
+			Integer ageFrom,
+			Integer ageTo, 
+			String strShowClubs) throws RemoteException {
 
+		boolean showClubs = strShowClubs!=null && strShowClubs.equalsIgnoreCase("true");
+		boolean showPlayers = strShowPlayers!=null && strShowPlayers.equalsIgnoreCase("true");
+		boolean showMembers = strShowMembers!=null && strShowMembers.equalsIgnoreCase("true");
+		if(!showPlayers && !showMembers) {
+			showPlayers = showMembers = true;
+		}
+		
 		//initialize stuff
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
@@ -3416,7 +3425,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				IWTimestamp.getTimestampRightNow().toGMTString());
 
 		//PARAMETERS that are also FIELDS
-		
+
 		ReportableField regionalUnionName = new ReportableField(FIELD_NAME_REGIONAL_UNION_NAME, String.class);
 		regionalUnionName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionName);
@@ -3425,10 +3434,82 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 		
+		ReportableField countType = new ReportableField("Count type", String.class);
+		countType.setLocalizedName(_iwrb.getLocalizedString("Count type", "Count type"), currentLocale);
+		reportCollection.addField(countType);
+
 		ReportableField count = new ReportableField(FIELD_NAME_COUNT, String.class);
 		count.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COUNT, "Count"), currentLocale);
 		reportCollection.addField(count);
-				
+
+		
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		Map regionalUnionsStatsMap = new TreeMap();
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+			
+			//String cName = report.getGroupName();
+			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
+			String cName = report.getGroupName();
+
+			//fetch the stats or initialize for this regional union (i.e. the one associated with regionalUnionIdentifier)
+			//Map clubMap = (Map) regionalUnionsClubMap.get(regionalUnionIdentifier);
+			ReportableData ruPlayers = (ReportableData) regionalUnionsStatsMap.get("a - players" + regionalUnionIdentifier);
+			ReportableData ruMembers = (ReportableData) regionalUnionsStatsMap.get("a - members" + regionalUnionIdentifier);
+			if(ruPlayers == null) {
+				if (showPlayers) {
+					ruPlayers = new ReportableData();
+					regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - players", ruPlayers);
+					ruPlayers.addData(regionalUnionName, regionalUnionIdentifier);
+					ruPlayers.addData(clubName, "");
+					ruPlayers.addData(countType, "a - players");
+					ruPlayers.addData(count, new Integer(0));
+					reportCollection.add(ruPlayers);
+				}
+				if(showMembers) {
+					ruMembers = new ReportableData();
+					regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - members", ruMembers);
+					ruMembers.addData(regionalUnionName, regionalUnionIdentifier);
+					ruMembers.addData(clubName, "");
+					ruMembers.addData(countType, "a - members");
+					ruMembers.addData(count, new Integer(0));
+					reportCollection.add(ruMembers);
+				}
+			}
+			
+			if(showMembers) {
+				int members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+				ruMembers = addToIntegerCount(count, ruMembers, members);
+				if(showClubs) {
+					ReportableData rdClubMembers = new ReportableData();
+					rdClubMembers.addData(regionalUnionName, regionalUnionIdentifier);
+					rdClubMembers.addData(clubName, cName);
+					rdClubMembers.addData(countType, "b - members");
+					rdClubMembers.addData(count, new Integer(members));
+					reportCollection.add(rdClubMembers);
+				}
+			}
+			if(showPlayers) {
+				int players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+				ruPlayers = addToIntegerCount(count, ruPlayers, players);
+				if(showClubs) {
+					ReportableData rdClubPlayers = new ReportableData();
+					rdClubPlayers.addData(regionalUnionName, regionalUnionIdentifier);
+					rdClubPlayers.addData(clubName, cName);
+					rdClubPlayers.addData(countType, "b - players");
+					rdClubPlayers.addData(count, new Integer(players));
+					reportCollection.add(rdClubPlayers);
+				}
+			}
+		}
+
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionName, clubName, countType};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
 		//finished return the collection
 		return reportCollection;
 	}

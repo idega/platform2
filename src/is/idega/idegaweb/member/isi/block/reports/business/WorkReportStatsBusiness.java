@@ -1,10 +1,11 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 
 
-public interface WorkReportStatsBusiness extends com.idega.business.IBOService
+public interface WorkReportStatsBusiness extends com.idega.business.IBOSession
 {
- public com.idega.block.datareport.util.ReportableCollection getAnnualChangeStatisticsForClubsByYearAndRegionalUnionsFilter(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.datareport.util.ReportableCollection getAgeStatisticsMemberTypeGenderRegionalUnionsFilterAndAge(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.util.Collection p4,java.lang.Integer p5,java.lang.Integer p6,java.lang.String p7)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection getAnnualChangeStatisticsForClubsByYearAndRegionalUnionsFilter(java.lang.Integer p0,java.util.Collection p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.datareport.util.ReportableCollection getAnnualChangeStatisticsForClubsByYearAndRegionalUnionsFilter(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection getCostPerPlayerStatisticsForLeaguesByYearAgeGenderAndLeaguesFiltering(java.lang.Integer p0,java.lang.Integer p1,java.lang.String p2,java.util.Collection p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection getGenderStatisticsForRegionalUnionsByYearAndRegionalUnionsFilter(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection getMemberStatisticsForClubsByYearAndRegionalUnionsFilter(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -23,10 +24,9 @@ public interface WorkReportStatsBusiness extends com.idega.business.IBOService
  public com.idega.block.datareport.util.ReportableCollection getStatisticsForRegionalUnionsByYearAndRegionalUnionsFilter(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection getWorkReportStatusForClubsByYearRegionalUnionsAndClubs(java.lang.Integer p0,java.util.Collection p1,java.util.Collection p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection getWorkReportStatusForClubsByYearRegionalUnionsClubTypeAndStatus(java.lang.Integer p0,java.util.Collection p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.datareport.util.ReportableCollection sevenDotOne(java.lang.Integer p0,java.util.Collection p1,java.util.Collection p2,java.util.Collection p3,java.lang.String p4,java.lang.String p5,java.lang.Integer p6, java.util.Collection p7, java.lang.String p8)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.datareport.util.ReportableCollection sevenDotTwo(java.lang.Integer p0,java.util.Collection p1,java.util.Collection p2,java.util.Collection p3,java.lang.String p4,java.lang.String p5,java.lang.Integer p6, java.util.Collection p7, java.lang.String p8)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.datareport.util.ReportableCollection sevenDotOne(java.lang.Integer p0,java.util.Collection p1,java.util.Collection p2,java.util.Collection p3,java.lang.String p4,java.lang.String p5,java.lang.Integer p6,java.util.Collection p7,java.lang.String p8)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.datareport.util.ReportableCollection sevenDotTwo(java.lang.Integer p0,java.util.Collection p1,java.util.Collection p2,java.util.Collection p3,java.lang.String p4,java.lang.String p5,java.lang.Integer p6,java.util.Collection p7,java.lang.String p8)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection sixDotFour(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.datareport.util.ReportableCollection sixDotOne(java.lang.Integer p0,java.lang.String p1,java.util.Collection p2,java.lang.String p3,java.lang.String p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection sixDotThree(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.datareport.util.ReportableCollection sixDotTwo(java.lang.Integer p0,java.lang.String p1,java.util.Collection p2,java.lang.String p3,java.lang.String p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
 }
