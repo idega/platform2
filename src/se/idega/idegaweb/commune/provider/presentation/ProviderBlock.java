@@ -93,6 +93,15 @@ public abstract class ProviderBlock extends CommuneBlock {
 		return this._schoolBusiness;
 	}
 
+/**
+ * Returns the selected providerId. This method is overridden in SchoolGroupEditorAdmin.
+ * @return
+ * @throws RemoteException
+ */
+	protected int getProviderID() throws RemoteException{
+		return getSession().getProviderID();
+	}	
+	
 	protected Form getNavigationForm() throws RemoteException {
 		Form form = new Form();
 		form.setEventListener(ProviderEventListener.class);
@@ -115,7 +124,7 @@ public abstract class ProviderBlock extends CommuneBlock {
 		table.add(seasons, 2, row);
 		
 		table.add(getSmallHeader(localize("school.year","Year")+":"+Text.NON_BREAKING_SPACE),4,row);
-		DropdownMenu years = (DropdownMenu) getStyledInterface(selector.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterYearID()), getSchoolBusiness().findAllSchoolYearsInSchool(getSession().getProviderID()), "getSchoolYearName"));
+		DropdownMenu years = (DropdownMenu) getStyledInterface(selector.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterYearID()), getSchoolBusiness().findAllSchoolYearsInSchool(getProviderID()), "getSchoolYearName"));
 		years.addMenuElementFirst("-1","");
 		years.setToSubmit();
 		if (getSession().getYearID() != -1)
