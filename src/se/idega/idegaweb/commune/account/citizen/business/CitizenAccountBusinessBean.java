@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.64 2004/03/05 16:16:54 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.65 2004/04/07 07:35:16 staffan Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -69,11 +69,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2004/03/05 16:16:54 $ by $Author: laddi $
+ * Last modified: $Date: 2004/04/07 07:35:16 $ by $Author: staffan $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.64 $
+ * @version $Revision: 1.65 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -171,7 +171,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (Integer) (application == null ? null : application.getPrimaryKey());
 	}
 
-	public Integer insertApplication(IWContext iwc, final String name, final String ssn, final String email, final String phoneHome, final String phoneWork, final String street, final String zipCode, final String city, final String civilStatus, final boolean hasCohabitant, final int childrenCount, final String applicationReason) {
+	public Integer insertApplication(IWContext iwc, final String name, final String ssn, final String email, final String phoneHome, final String phoneWork, final String careOf
+, final String street, final String zipCode, final String city, final String civilStatus, final boolean hasCohabitant, final int childrenCount, final String applicationReason) {
 		CitizenAccount application = null;
 		try {
 			final CitizenAccountHome citizenAccountHome = (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
@@ -181,7 +182,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			application.setEmail(email != null ? email : "");
 			application.setPhoneHome(phoneHome != null ? phoneHome : "");
 			application.setPhoneWork(phoneWork != null ? phoneWork : "");
-			application.setStreet(street != null ? street : "");
+			application.setCareOf (careOf == null ? "" : careOf);
+			application.setStreet (street != null ? street : "");
 			application.setZipCode(zipCode != null ? zipCode : "");
 			application.setCity(city != null ? city : "");
 			application.setCivilStatus(civilStatus != null ? civilStatus : "");
@@ -447,10 +449,11 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				isSweden = false;
 			}
 			final String streetName = applicant.getStreet();
+			final String careOf = applicant.getCareOf();
 			final String postalCode = applicant.getZipCode();
 			final String postalName = applicant.getCity();
 			Address address = null;
-			if (streetName != null && postalCode != null && postalName != null) {
+			if ((streetName != null || careOf != null) && postalCode != null && postalName != null) {
 				final Country sweden = ((CountryHome) getIDOHome(Country.class)).findByIsoAbbreviation("SE");
 				final AddressBusiness addressBusiness = (AddressBusiness) getServiceInstance(AddressBusiness.class);
 				final PostalCode code = addressBusiness.getPostalCodeAndCreateIfDoesNotExist(postalCode, postalName, sweden);
@@ -464,7 +467,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				address.setPostalCode(code);
 				address.setProvince(postalName);
 				address.setCity(postalName);
-				address.setStreetName(streetName);
+				address.setStreetName((careOf != null ? "c/o " + careOf + ' ' : "") + (streetName != null ? streetName : ""));
 				if (null != communeId)
 					address.setCommuneID(communeId.intValue());
 				address.store();

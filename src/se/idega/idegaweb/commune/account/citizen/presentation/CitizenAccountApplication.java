@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/04/06 13:32:31 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/07 07:35:16 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -113,6 +113,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String PUT_CHILDREN_IN_NACKA_CHILDCARE_DEFAULT = "Jag vill ha plats för mitt barn i barnomsorgen i Nacka kommun";
 	final static String SSN_DEFAULT = "Personnummer";
 	final static String SSN_KEY = "caa_ssn";
+	private final static String CAREOF_DEFAULT = "c/o";
+	private final static String CAREOF_KEY = "caa_careof";
 	private final static String STREET_DEFAULT = "Gatuadress";
 	private final static String STREET_KEY = "caa_street";
 	final static String TENANCY_AGREEMENT_DEFAULT = "Hyreskontrakt";
@@ -280,6 +282,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 		
 		table.add(getHeader(LAST_NAME_KEY, LAST_NAME_DEFAULT), 1, row);
 		table.add(getSingleInput(iwc, LAST_NAME_KEY, 40, true), 3, row++);
+		
+		table.add(getHeader(CAREOF_KEY, CAREOF_DEFAULT), 1, row);
+		table.add(getSingleInput(iwc, CAREOF_KEY, 40, false), 3, row++);
 		
 		table.add(getHeader(STREET_KEY, STREET_DEFAULT), 1, row);
 		table.add(getSingleInput(iwc, STREET_KEY, 40, true), 3, row++);
@@ -469,6 +474,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		form.maintainParameter(PHONE_HOME_KEY);
 		form.maintainParameter(FIRST_NAME_KEY);
 		form.maintainParameter(LAST_NAME_KEY);
+		form.maintainParameter(CAREOF_KEY);
 		form.maintainParameter(STREET_KEY);
 		form.maintainParameter(ZIP_CODE_KEY);
 		form.maintainParameter(CITY_KEY);
@@ -583,11 +589,12 @@ public class CitizenAccountApplication extends CommuneBlock {
 		final String phoneHome = parameters.get(PHONE_HOME_KEY).toString();
 		final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
 		final String name = parameters.get(FIRST_NAME_KEY) + " " + parameters.get(LAST_NAME_KEY);
+		final String careOf = (String) parameters.get(CAREOF_KEY);
 		final String street = parameters.get(STREET_KEY).toString();
 		final String zipCode = parameters.get(ZIP_CODE_KEY).toString();
 		final String city = parameters.get(CITY_KEY).toString();
 		final String civilStatus = parameters.get(CIVIL_STATUS_KEY).toString();
-		applicationId = business.insertApplication(iwc,name, ssn, email, phoneHome, phoneWork, street, zipCode, city, civilStatus, hasCohabitant, childrenCount, applicationReason);
+		applicationId = business.insertApplication(iwc,name, ssn, email, phoneHome, phoneWork, careOf, street, zipCode, city, civilStatus, hasCohabitant, childrenCount, applicationReason);
 		return applicationId;
 	}
 
@@ -625,7 +632,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 	private void setValidationStructureForUnknownCitizenForm2(final Collection mandatoryParameterNames, final Collection stringParameterNames, final Collection ssnParameterNames, final Collection integerParameters, final boolean hasCohabitant, final int childrenCount, final String applicationReason) {
 		mandatoryParameterNames.addAll(Arrays.asList(new String[] { SSN_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, CIVIL_STATUS_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CHILDREN_COUNT_KEY }));
-		stringParameterNames.addAll(Arrays.asList(new String[] { EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY, HAS_COHABITANT_KEY, APPLICATION_REASON_KEY }));
+		stringParameterNames.addAll(Arrays.asList(new String[] { EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, CAREOF_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY, HAS_COHABITANT_KEY, APPLICATION_REASON_KEY }));
 		ssnParameterNames.add(SSN_KEY);
 		integerParameters.addAll(Arrays.asList(new String[] { CHILDREN_COUNT_KEY }));
 		if (hasCohabitant) {

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.21 2003/10/05 20:03:03 laddi Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.22 2004/04/07 07:35:16 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	private final static String EMAIL = "email";
 	private final static String PHONE_HOME = "phone_home";
 	private final static String PHONE_WORK = "phone_work";
+    private final static String CAREOF = "careof";
     private final static String STREET = "street";
     private final static String ZIP_CODE = "zip_code";
     private final static String CITY = "city";
@@ -54,6 +55,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		addAttribute (EMAIL, "E-mail", true, true, String.class, 255);
 		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
 		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
+        addAttribute (CAREOF, "careof", true, true, String.class, 40);
         addAttribute (STREET, "street", true, true, String.class, 40);
         addAttribute (ZIP_CODE, "zipCode", true, true, String.class, 40);
         addAttribute (CITY, "city", true, true, String.class, 40);
@@ -101,6 +103,10 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	public String getPhoneWork () {
 		return getStringColumnValue (PHONE_WORK);
 	}
+
+    public String getCareOf () {
+        return getStringColumnValue (CAREOF);
+    }
 
     public String getStreet () {
         return getStringColumnValue (STREET);
@@ -165,6 +171,10 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	public void setPhoneWork (final String phone) {
 		setColumn (PHONE_WORK, phone);
 	}
+
+    public void setCareOf (final String careOf) {
+        setColumn (CAREOF, careOf);
+    }
 
     public void setStreet (final String street) {
         setColumn (STREET, street);

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.24 2004/02/20 16:36:50 tryggvil Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.25 2004/04/07 07:35:16 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -43,11 +43,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/02/20 16:36:50 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/04/07 07:35:16 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -213,7 +213,8 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			table.add(getSmallHeader(localize(CitizenAccountApplication.PHONE_WORK_KEY, CitizenAccountApplication.PHONE_WORK_DEFAULT)), 1, row);
 			table.add(getSmallText(applicant.getPhoneWork()), 3, row++);
 			
-			final String address = applicant.getStreet() + "; " + applicant.getZipCode() + " " + applicant.getCity();
+			final String careOf = applicant.getCareOf ();
+			final String address = (careOf != null ? "c/o " + careOf + ' ' : "") + applicant.getStreet() + "; " + applicant.getZipCode() + " " + applicant.getCity();
 			if (applicant.getStreet() != null && applicant.getZipCode() != null && applicant.getCity() != null) {
 				table.add(getSmallHeader(localize(ADDRESS_KEY, ADDRESS_DEFAULT)), 1, row);
 				table.add(getSmallText(address), 3, row++);

@@ -18,6 +18,7 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     String getEmail ();
     String getPhoneHome ();
     String getPhoneWork ();
+    String getCareOf ();
     String getStreet ();
     String getZipCode ();
     String getCity ();
@@ -31,6 +32,7 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     void setEmail (String email);
     void setPhoneHome (String phoneHome);
     void setPhoneWork (String phoneWork);
+    void setCareOf (String careOf);
     void setStreet (String street);
     void setZipCode (String zipCode);
     void setCity (String city);
