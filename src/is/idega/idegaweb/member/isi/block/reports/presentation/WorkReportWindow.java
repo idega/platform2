@@ -53,7 +53,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	protected static final String ACTION_CLOSE_REPORT ="iwme_wr_act_b11";
 	protected static final String ACTION_STATISTICS ="iwme_wr_act_b12";
 	protected static final String ACTION_CREATE_REPORTS ="iwme_wr_act_b13";
-	
+	protected static final String ACTION_GET_REPORTS ="iwme_wr_act_b13_2";	
 	
 	private IWResourceBundle iwrb;
 
@@ -128,15 +128,16 @@ public class WorkReportWindow extends IWAdminWindow {
 			else if (action.equals(ACTION_CREATE_REPORTS)) {
 				table.add(new WorkReportExporter(),2,1);	
 			}
-		
+			else if (action.equals(ACTION_CREATE_REPORTS)) {
+				table.add(new WorkReportZipper(),2,1);	
+			}	
 		}
-
 	}
 	
 		
 	private Table getMenuTable(IWContext iwc) {
 	
-		Table menu = new Table(1,11);
+		Table menu = new Table(1,12);
 		menu.setWidth(Table.HUNDRED_PERCENT);
 		
 		Text operations = formatHeadline(iwrb.getLocalizedString("workreportwindow.operations","Operations"));
@@ -205,22 +206,26 @@ public class WorkReportWindow extends IWAdminWindow {
 		LinkContainer createReports = new LinkContainer();
 		createReports.add(formatText(iwrb.getLocalizedString("workreportwindow.create_reports","Create reports"),true));
 		createReports.addParameter(ACTION,ACTION_CREATE_REPORTS);
+		Lists reportslist = new Lists();
+		LinkContainer getReports = new LinkContainer();
+		getReports.add(formatText(iwrb.getLocalizedString("workreportwindow.get_reports","Get created reports")));
+		getReports.addParameter(ACTION,ACTION_GET_REPORTS);
+		reportslist.add(importBoard);
 		
 		//add to window
 		menu.add(operations,1,1);
 		menu.add(createReports,1,2);
-		menu.add(uploadReport,1,3);
-		menu.add(uploadList,1,4);
-		menu.add(workOnReport,1,5);
-		menu.add(editList,1,6);
-		menu.add(reportsOverview,1,7);
-		menu.add(closeReport,1,8);
-		menu.add(statistics,1,10);
-		menu.add(statsList,1,11);
+		menu.add(reportslist,1,2);
+		menu.add(uploadReport,1,4);
+		menu.add(uploadList,1,5);
+		menu.add(workOnReport,1,6);
+		menu.add(editList,1,7);
+		menu.add(reportsOverview,1,9);
+		menu.add(closeReport,1,10);
+		menu.add(statistics,1,11);
+		menu.add(statsList,1,12);
 		
-		
-		return menu;
-			
+		return menu;	
 	}
 	
 	public MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
