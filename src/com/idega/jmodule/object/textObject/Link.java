@@ -141,6 +141,17 @@ public Link(int file_id, Window myWindow){
 
 
 
+public Link(ModuleObject mo,Class classToInstanciate){
+       this(mo,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+}
+
+
+
+public Link(ModuleObject mo,String classToInstanciate,String template){
+       this(mo,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
+}
+
+
 public Link(String displayText,Class classToInstanciate){
        this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
 }
