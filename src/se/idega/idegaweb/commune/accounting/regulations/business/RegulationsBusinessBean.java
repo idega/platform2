@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.105 2003/12/30 16:57:08 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.106 2004/01/03 12:19:29 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1656,7 +1656,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					ret = new PostingDetail();
 					if (placementTimes != null && placementTimes.getMonths() != 0.0f)
 					  total_sum /= placementTimes.getMonths();
-					ret.setAmount(Math.round(d.getAmount() - total_sum));
+					ret.setAmount(d.getAmount() - total_sum);
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
 					ret.setOrderID(reg.getConditionOrder().intValue());
@@ -1667,7 +1667,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			else if (type.equals(RegSpecialCalculationConstant.SIBLING)) {
 				float amount = reg.getDiscount() * total_sum / 100;
 				ret = new PostingDetail();
-				ret.setAmount(Math.round(amount));
+				ret.setAmount(amount);
 				ret.setRuleSpecType(reg.getLocalizationKey());
 				ret.setTerm(reg.getName());
 				ret.setOrderID(reg.getConditionOrder().intValue());
@@ -1722,7 +1722,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								total_sum /= placementTimes.getMonths();
 							if (amount < total_sum) {
 								ret = new PostingDetail();
-								ret.setAmount(Math.round(amount - total_sum));
+								ret.setAmount(amount - total_sum);
 								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 								ret.setTerm(reg.getName());
 								ret.setOrderID(reg.getConditionOrder().intValue());
@@ -1762,7 +1762,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									total_sum /= placementTimes.getMonths();
 								if (entry.getAmount() < total_sum) {
 									ret = new PostingDetail();
-									ret.setAmount(Math.round(entry.getAmount() - total_sum));
+									ret.setAmount(entry.getAmount() - total_sum);
 									ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 									ret.setTerm(reg.getName());
 									ret.setOrderID(reg.getConditionOrder().intValue());
@@ -1796,7 +1796,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 		else {
 			ret = new PostingDetail();
-			ret.setAmount(Math.round(reg.getAmount().floatValue()));
+			ret.setAmount(reg.getAmount().floatValue());
 			ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 			ret.setTerm(reg.getName());
 			ret.setOrderID(reg.getConditionOrder().intValue());
