@@ -33,7 +33,7 @@ public final class WebSearchManager {
         
         WebSearchIndex index = (WebSearchIndex)indexes.get(key);
         if (index == null) {
-            //System.out.println("no index: " + key);
+            System.out.println("no index: " + key);
         }
         return index;
         

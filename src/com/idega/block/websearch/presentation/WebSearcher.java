@@ -160,7 +160,7 @@ public class WebSearcher extends Block {
 		searchForm.add(table);
 
 		if (canEdit) {
-			Link crawl = new Link(iwrb.getLocalizedString("index.this.site", "Index this site"));
+			Link crawl = new Link(iwrb.getLocalizedString("index.this.site", "Index this site (done every 24h)"));
 			crawl.addParameter(CRAWL_PARAM, "true");
 			crawl.addParameter(CRAWL_REPORT_PARAM, INDEX_NORMAL_REPORT);
 			table.add(crawl, 3, 1);

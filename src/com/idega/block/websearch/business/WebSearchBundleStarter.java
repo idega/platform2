@@ -9,11 +9,22 @@ package com.idega.block.websearch.business;
 * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
  */
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.block.websearch.data.WebSearchIndex;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
+import com.idega.util.EventTimer;
 import com.idega.util.FileUtil;
 
-public class WebSearchBundleStarter implements IWBundleStartable {
+public class WebSearchBundleStarter implements IWBundleStartable,ActionListener{
+
+  private static final String IW_WEB_SEARCHER = "IW_WEB_SEARCHER";
+  private EventTimer timer;
+
     
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.websearch";
   
@@ -26,38 +37,43 @@ public class WebSearchBundleStarter implements IWBundleStartable {
   public void start(IWBundle bundle){
   	String xmlFile = bundle.getResourcesRealPath()+FileUtil.getFileSeparator()+"websearch.xml";
   	
-  	/*try{
-  	File file = new File(xmlFile);
-  	
-  	if(!file.exists()){
-  		FileUtil.createFile(xmlFile);
-  		
-  		StringBuffer xml = new StringBuffer();
-  		xml.append(xml1);
-  		String serverUrl = bundle.getApplication().getLogWriter()
-  		FileUtil.streamToFile( (new File(xmlFile)). )
-  		
-  	}*/
-  	
-  	
-  	
-  	
   	System.out.println("WebSearch: Starting up...");
   	System.out.println("WebSearch: loading configuration from : "+xmlFile);
 	System.out.println("WebSearch: REMEMBER to edit the configuration file before indexing for the first time!");
-  	WebSearchManager.parseConfigXML(xmlFile);
-
-  
+  	
+	WebSearchManager.parseConfigXML(xmlFile);
+  	
+  	timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS,IW_WEB_SEARCHER);
+  	timer.addActionListener(this);
+  	//Starts the thread while waiting for 10 mins. before the idegaWebApp starts up.
+  	timer.start(10*60*1000); 
   }
     
   public String getBundleIdentifier(){
 	  return IW_BUNDLE_IDENTIFIER;
   }
 
-	/**
-	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
-	 */
-	public void stop(IWBundle starterBundle) {
-		//does nothing...
-	}
+
+  public void actionPerformed(ActionEvent event) {
+//THIS ASSUMES THERE IS ONLY ONE INDEX AND SCOPE
+  		if (event.getActionCommand().equalsIgnoreCase(IW_WEB_SEARCHER)) {
+  			WebSearchIndex index = WebSearchManager.getIndex("main");
+  			if(index!=null){
+  				if(!index.getScope()[0].startsWith("http://localhost")){//if true it needs to be indexed manually
+  					Crawler crawler = new Crawler(index, 2);
+  					crawler.crawl();
+  				}
+  			}				
+  		}
+  }
+
+  /**
+   * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
+   */
+  public void stop(IWBundle starterBundle) {
+  	if (timer != null) {
+  		timer.stop();
+  		timer = null;
+  	}
+  }
 }
