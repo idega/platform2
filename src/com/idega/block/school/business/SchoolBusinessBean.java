@@ -36,6 +36,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -449,8 +450,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public void addHeadmaster(School school, User user) throws RemoteException {
-		getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);
+	/**
+	 *	Used for user who have admin rights, not only headmasters... 
+	 */
+	public void addHeadmaster(School school, User user) throws RemoteException, FinderException{
+		GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), Group.class);
+		Group schoolGroup = gBus.getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
+		schoolGroup.addGroup(user);
+		//getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);
 	}
 
 	public Collection findAllSchoolsByType(Collection types) {
