@@ -59,7 +59,6 @@ private List usersInNoGroup;
 
   public StaffViewer(){
     initialize();
-    add(myTable);
   }
 
   public void main(ModuleInfo modinfo) throws Exception {
@@ -85,6 +84,8 @@ private List usersInNoGroup;
 
     if ( isAdmin )
       drawUsersTables();
+
+    add(myTable);
   }
 
   private void drawGroupsTables() {
