@@ -269,13 +269,9 @@ public class Inquery extends GenericEntity{
   }
 
 
-/*
-  public Booking getBooking() throws SQLException {
-
-    return new Booking(getBookingId());
-
+  public GeneralBooking getBooking() throws SQLException {
+    return new GeneralBooking(getBookingId());
   }
-*/
 
 
   public static String getInqueryTableName(){return "TB_INQUERY";}

@@ -52,7 +52,7 @@ public class Booking extends TravelManager {
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
   public static String BookingAction = "booking_action";
-  private String BookingParameter = "booking";
+  public static String BookingParameter = "booking";
   public static String parameterBookingId = "bookingBookingId";
 
   private Service service;
@@ -80,7 +80,6 @@ public class Booking extends TravelManager {
       initialize(iwc);
 
 
-      //if (super.isLoggedOn(iwc)) {
         if (reseller != null && contract == null) {
           product = null;
         }
@@ -90,23 +89,16 @@ public class Booking extends TravelManager {
 
         if (action.equals("")) {
           displayForm(iwc);
-        }else if (action.equals(this.BookingParameter)) {
-          handleInsert(iwc, true);
-        }else if (action.equals(this.parameterRespondInquery)) {
+        }else if (action.equals(parameterRespondInquery)) {
           inqueryResponse(iwc);
-          displayForm(iwc);
-        }else if (action.equals(this.parameterUpdateBooking)) {
-          updateBooking(iwc);
-          //add("REIMPLEMENTA");
+        }else{
+          handleInsert(iwc, true);
         }
 
         super.addBreak();
-      //}else {
-      //  add(super.getLoggedOffTable(iwc));
-      //}
   }
 
-  public void initialize(IWContext iwc) {
+  private void initialize(IWContext iwc) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
@@ -153,14 +145,17 @@ public class Booking extends TravelManager {
 
   }
 
-  public void displayForm(IWContext iwc) throws Exception{
+  private void displayForm(IWContext iwc) throws Exception {
+    displayForm(iwc , null);
+  }
 
-      Form form = new Form();
-      Table topTable = getTopTable(iwc);
+  private void displayForm(IWContext iwc, PresentationObject contentTableForm) throws Exception{
+
+      Form topTable = getTopTable(iwc);
 
       if ((supplier != null) || (reseller != null) || ((supplier == null) && (reseller == null) && (product == null)) ) {
-        form.add(topTable);
-        form.add(Text.BREAK);
+          add(topTable);
+          add(Text.BREAK);
       }
 
         if (product != null) {
@@ -169,27 +164,32 @@ public class Booking extends TravelManager {
               contentTable.add(getContentHeader(iwc));
               contentTable.add(Text.BREAK);
               contentTable.add(getTotalTable(iwc));
-              contentTable.add(getContentTable(iwc));
+              if (contentTableForm == null) {
+                contentTable.add(getContentTable(iwc));
+              }else {
+                contentTable.add(contentTableForm);
+              }
               contentTable.setWidth("90%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
               contentTable.setBorderColor(super.textColor);
-          form.add(contentTable);
+            add(contentTable);
         }
         else {
-          form.add(iwrb.getLocalizedString("travel.select_a_product","Select a product"));
+          add(iwrb.getLocalizedString("travel.select_a_product","Select a product"));
         }
 
 
 
       int row = 0;
       add(Text.getBreak());
-      add(form);
   }
 
 
-  public Table getTopTable(IWContext iwc) {
+  private Form getTopTable(IWContext iwc) {
+    Form form = new Form();
       Table topTable = new Table(5,1);
+        form.add(topTable);
         topTable.setBorder(0);
         topTable.setWidth("90%");
 
@@ -241,29 +241,33 @@ public class Booking extends TravelManager {
       topTable.add(year,4,1);
 
       topTable.setAlignment(5,1,"right");
-      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif"),this.BookingAction, ""),5,1);
+      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif"),"", ""),5,1);
 
       topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
       topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
       topTable.add(new HiddenInput("year",Integer.toString(stamp.getYear())));
 
-      return topTable;
+      return form;
   }
 
-  public Table getContentHeader(IWContext iwc) throws Exception{
+  private Table getContentHeader(IWContext iwc) throws Exception{
     ServiceOverview so = new ServiceOverview(iwc);
     Table table = so.getProductInfoTable(iwc, iwrb, this.product);
 
     return table;
   }
 
-  public Table getContentTable(IWContext iwc) throws Exception{
+  private Table getContentTable(IWContext iwc) throws Exception{
       Table table = new Table();
         table.setWidth("100%");
         table.setBorder(0);
         table.setCellspacing(0);
         table.setCellpadding(2);
         table.setWidth(6,"200");
+
+        /**
+         * @todo minnka endurtekningar
+         */
 
       int row = 1;
       boolean isDayVisible = false;
@@ -296,6 +300,12 @@ public class Booking extends TravelManager {
 
 
       if (isDayVisible) {
+          table.setColor(6,row,super.backgroundColor);
+          table.setVerticalAlignment(6,row,"top");
+          table.add(Text.BREAK ,6,row);
+          table.add(Text.BREAK ,6,row);
+          table.add(getCalendar(iwc),6,row);
+
           table.mergeCells(1,row,5,row);
           if (supplier != null) {
             Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
@@ -303,6 +313,7 @@ public class Booking extends TravelManager {
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
               table.setColor(1,row,super.YELLOW);
+          ++row;
             }else {
               table.setColor(1,row,super.backgroundColor);
             }
@@ -313,18 +324,13 @@ public class Booking extends TravelManager {
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
               table.setColor(1,row,super.YELLOW);
+          ++row;
             }else {
               table.setColor(1,row,super.backgroundColor);
             }
           }
 
-          table.setColor(6,row,super.backgroundColor);
-          table.setVerticalAlignment(6,row,"top");
-          table.add(Text.BREAK ,6,row);
-          table.add(Text.BREAK ,6,row);
-          table.add(getCalendar(iwc),6,row);
 
-          ++row;
           table.mergeCells(1,row,5,row);
           table.setColor(1,row,super.backgroundColor );
           table.mergeCells(6,1,6,row);
@@ -334,8 +340,52 @@ public class Booking extends TravelManager {
 
       }else {
         if (isExpired) {
-          table.add(iwrb.getLocalizedString("travel.time_for_booking_has_passed","Time for booking has passed"));
+          if (supplier != null) {
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
+
+            if (inqueries.length > 0) {
+              table.add(getInqueries(iwc, inqueries),1,row);
+              table.setColor(1,row,super.YELLOW);
+          ++row;
+            }else {
+              table.setColor(1,row,super.backgroundColor);
+            }
+          }
+          else if (reseller != null) {
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, Inquery.getInqueryPostDateColumnName());
+
+            if (inqueries.length > 0) {
+              table.add(getInqueries(iwc, inqueries),1,row);
+              table.setColor(1,row,super.YELLOW);
+          ++row;
+            }else {
+              table.setColor(1,row,super.backgroundColor);
+            }
+          }
+          table.add(iwrb.getLocalizedString("travel.time_for_booking_has_passed","Time for booking has passed"),1,row+2);
         }else {
+          if (supplier != null) {
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
+
+            if (inqueries.length > 0) {
+              table.add(getInqueries(iwc, inqueries),1,row);
+              table.setColor(1,row,super.YELLOW);
+          ++row;
+            }else {
+              table.setColor(1,row,super.backgroundColor);
+            }
+          }
+          else if (reseller != null) {
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, Inquery.getInqueryPostDateColumnName());
+
+            if (inqueries.length > 0) {
+              table.add(getInqueries(iwc, inqueries),1,row);
+              table.setColor(1,row,super.YELLOW);
+          ++row;
+            }else {
+              table.setColor(1,row,super.backgroundColor);
+            }
+          }
           table.add(iwrb.getLocalizedString("travel.trip_is_not_scheduled_this_day","Trip is not scheduled this day")+" : "+stamp.getLocaleDate(iwc));
         }
           table.mergeCells(1,row,5,row);
@@ -355,7 +405,7 @@ public class Booking extends TravelManager {
 
   }
 
-  public Table getCalendar(IWContext iwc) {
+  private Table getCalendar(IWContext iwc) {
     try {
     CalendarHandler ch = new CalendarHandler(iwc);
       if (contract != null) ch.setContract(contract);
@@ -371,7 +421,7 @@ public class Booking extends TravelManager {
   }
 
 
-  public Table getInqueries(IWContext iwc,Inquery[] inqueries) {
+  private Table getInqueries(IWContext iwc,Inquery[] inqueries) {
       Table table = new Table();
           table.setWidth("100%");
           table.setBorder(0);
@@ -395,12 +445,16 @@ public class Booking extends TravelManager {
           theStamp = new idegaTimestamp(inqueries[i].getInqueryDate());
 
           dateText = (Text) theSmallBoldText.clone();
+              dateText.setFontColor(BLACK);
               dateText.setText(theStamp.getLocaleDate(iwc));
           nameText = (Text) theSmallBoldText.clone();
+              nameText.setFontColor(BLACK);
               nameText.setText(inqueries[i].getName());
           countText = (Text) theSmallBoldText.clone();
+              countText.setFontColor(BLACK);
               countText.setText(Integer.toString(inqueries[i].getNumberOfSeats()));
           contentText = (Text) theSmallBoldText.clone();
+              contentText.setFontColor(BLACK);
               contentText.setText(inqueries[i].getInquery());
 
 
@@ -457,7 +511,7 @@ public class Booking extends TravelManager {
   }
 
 
-  public Form getTotalTable(IWContext iwc) {
+  private Form getTotalTable(IWContext iwc) {
     Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -623,24 +677,21 @@ public class Booking extends TravelManager {
       return form;
   }
 
-  public Form getBookingForm(IWContext iwc) throws Exception{
+  private Form getBookingForm(IWContext iwc) throws Exception{
     TourBookingForm tbf = new TourBookingForm(iwc,product);
     try {
-//      if (product != null)  tbf.setProduct(product);
       if (reseller != null) tbf.setReseller(reseller);
-//      if (tour != null)     tbf.setTour(tour);
       tbf.setTimestamp(stamp);
       if (booking != null)  tbf.setBooking(booking);
       return tbf.getBookingForm();
     }catch (Exception e) {
       return new Form();
     }
-    //return null;
   }
 
 
   // BUSINESS
-  public idegaTimestamp getIdegaTimestamp(IWContext iwc) {
+  private idegaTimestamp getIdegaTimestamp(IWContext iwc) {
       idegaTimestamp stamp = null;
 
       String year = iwc.getParameter("year");
@@ -693,13 +744,14 @@ public class Booking extends TravelManager {
 
     TourBookingForm tbf = new TourBookingForm(iwc, product);
     try {
-      System.err.println("IN HANDLE INSTERT");
       if (reseller != null) tbf.setReseller(reseller);
       tbf.setTimestamp(stamp);
 
       int returner = tbf.handleInsert(iwc);
 
-      if (displayForm && returner != -1) {
+      if (returner < 1) {
+          displayForm(iwc, tbf.getErrorForm(iwc, returner));
+      }else if (displayForm) {
         displayForm(iwc);
       }
 
@@ -712,80 +764,31 @@ public class Booking extends TravelManager {
   }
 
 
-  private void inqueryResponse(IWContext iwc) {
-/*    String yesNo = iwc.getParameter(this.parameterRespondInquery);
+  private void inqueryResponse(IWContext iwc) throws Exception{
+    String yesNo = iwc.getParameter(this.parameterRespondInquery);
     String sInqueryId = iwc.getParameter(this.parameterInqueryId);
     Boolean book = null;
 
-    String mailHost = "mail.idega.is";
-
-    String mailSubject = "NAT "+iwrb.getLocalizedString("travel.idega.inquiry","Inquiry");
-    StringBuffer responseString = new StringBuffer();
 
     if (yesNo != null) {
       if (yesNo.equals(this.parameterRespondYes)) book = new Boolean(true);
       if (yesNo.equals(this.parameterRespondNo)) book = new Boolean(false);
     }
 
-    javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
-    if (book != null) {
-      try {
-        tm.begin();
-        com.idega.util.SendMail sm = new com.idega.util.SendMail();
+    if (book != null && sInqueryId != null) {
         int inqueryId = Integer.parseInt(sInqueryId);
-        Inquery inquery = new Inquery(inqueryId);
-        is.idega.idegaweb.travel.data.Booking booking = inquery.getBooking();
-        Service tempService = booking.getService();
+        int errorMessage = Inquirer.inquiryResponse(iwc, iwrb, inqueryId, book.booleanValue(), this.supplier);
 
-
-        responseString.append("T - Svar við fyrirspurn þinni varðandi "+inquery.getNumberOfSeats()+" sæti í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
-
-        if (book.booleanValue() == false) {
-            responseString.append("Beiðninni er hafnað");
-        }else if (book.booleanValue() == true) {
-            responseString.append("Beiðnin er samþykkt, búið er að bóka");
-              booking.setIsValid(true);
-            booking.update();
+        switch (errorMessage) {
+          case 0 : displayForm(iwc);
+            break;
+          case 1 : displayForm(iwc, Inquirer.getInquiryResponseError(iwrb));
+            break;
         }
-
-        inquery.setAnswered(true);
-        inquery.setAnswerDate(idegaTimestamp.getTimestampRightNow());
-        inquery.update();
-
-        Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
-        try {
-          sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
-          if (reseller != null) {  // if this is not a reseller deleting his own inquiry
-            if (resellers != null) { // if there was a reseller who send the inquiry
-              responseString = new StringBuffer();
-              responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
-              for (int i = 0; i < resellers.length; i++) {
-                if (resellers[i].getEmail() != null)
-                sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
-
-              }
-            }
-          }
-          tm.commit();
-        }catch (javax.mail.internet.AddressException ae) {
-          throw ae;
-        }
-
-      }catch (Exception e) {
-        e.printStackTrace(System.err);
-        try {
-          tm.rollback();
-        }catch (javax.transaction.SystemException sy) {
-          sy.printStackTrace(System.err);
-        }
-      }
     }
 
-
-*/
-  add("REIMPLEMENTA");
-
   }
+
 
   private void updateBooking(IWContext iwc) throws Exception{
     String sBookingId = iwc.getParameter(this.parameterBookingId);
@@ -796,5 +799,6 @@ public class Booking extends TravelManager {
         displayForm(iwc);
     }
   }
+
 
 }

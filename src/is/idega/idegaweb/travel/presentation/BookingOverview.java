@@ -714,24 +714,30 @@ public class BookingOverview extends TravelManager {
           Link link;
           Booking[] bookings = TourBooker.getBookings(this.service.getID(), currentStamp);
           TourBooking tBooking;
+          Object serviceType;
           for (int i = 0; i < bookings.length; i++) {
               ++row;
-              tBooking = new TourBooking(bookings[i].getID());
-              if (tour.getHotelPickup()) {
-                  try {
-                      HotelPickupPlace place = new HotelPickupPlace(tBooking.getHotelPickupPlaceID());
-                      Thotel = (Text) super.theSmallBoldText.clone();
-                        Thotel.setFontColor(super.BLACK);
-                      Thotel.setText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-                      Thotel.addToText(place.getName());
-                      Thotel.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-                      if (tBooking.getRoomNumber() != null)
-                      Thotel.addToText(tBooking.getRoomNumber());
-                  }catch (Exception e){Thotel.setText("");}
-              }else {
+              serviceType = Booker.getServiceType(this.service.getID());
+              if (serviceType instanceof Tour ) {
+                try {
+                  tBooking = new TourBooking(bookings[i].getID());
+                  if (tour.getHotelPickup()) {
+                          HotelPickupPlace place = new HotelPickupPlace(tBooking.getHotelPickupPlaceID());
+                          Thotel = (Text) super.theSmallBoldText.clone();
+                            Thotel.setFontColor(super.BLACK);
+                          Thotel.setText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+                          Thotel.addToText(place.getName());
+                          Thotel.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+                          if (tBooking.getRoomNumber() != null)
+                          Thotel.addToText(tBooking.getRoomNumber());
+                  }else {
+                      Thotel.setText("");
+                  }
+                }catch (Exception e){
+                  e.printStackTrace(System.err);
                   Thotel.setText("");
+                }
               }
-
               Tname = (Text) super.theSmallBoldText.clone();
                 Tname.setText("&nbsp;&nbsp;"+bookings[i].getName());
               Temail = (Text) super.theSmallBoldText.clone();

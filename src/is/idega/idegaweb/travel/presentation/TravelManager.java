@@ -61,6 +61,8 @@ public class TravelManager extends Block {
     protected static String parameterUpdatePassword = "lUpdatePassword";
     protected static String parameterHome = "lHome";
 
+    public static String theTextStyle = "font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";";
+
     private int tableWidth = 849;
     private boolean showLogo = true;
 

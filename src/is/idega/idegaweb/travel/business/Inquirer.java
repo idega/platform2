@@ -4,8 +4,17 @@ import java.sql.SQLException;
 import com.idega.data.EntityControl;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.SimpleQuerier;
-import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.Inquery;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+
+import is.idega.idegaweb.travel.presentation.TravelManager;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.interfaces.Booking;
 
 
 /**
@@ -34,14 +43,19 @@ public class Inquirer {
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Inquery.class, Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT sum(i."+inq.getNumberOfSeatsColumnName()+") FROM "+Inquery.getInqueryTableName()+" i , "+Reseller.getResellerTableName()+" r, "+middleTable+" mi");
+        buffer.append("SELECT sum(i."+inq.getNumberOfSeatsColumnName()+") FROM "+Inquery.getInqueryTableName()+" i");
+        if (resellerId != -1) {
+          buffer.append(", "+Reseller.getResellerTableName()+" r, "+middleTable+" mi");
+        }
         buffer.append(" WHERE ");
-        buffer.append("i."+inq.getIDColumnName()+" = mi."+inq.getIDColumnName());
-        buffer.append(" AND ");
-        buffer.append("r."+res.getIDColumnName()+" = mi."+res.getIDColumnName());
+        if (resellerId != -1) {
+          buffer.append("i."+inq.getIDColumnName()+" = mi."+inq.getIDColumnName());
+          buffer.append(" AND ");
+          buffer.append("r."+res.getIDColumnName()+" = mi."+res.getIDColumnName());
+          buffer.append(" AND ");
+        }
 
         if (unansweredOnly) {
-        buffer.append(" AND ");
         buffer.append("i."+inq.getAnsweredColumnName() +" = 'N'");
         }
 
@@ -86,14 +100,19 @@ public class Inquirer {
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Inquery.class, Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT i.* FROM "+Inquery.getInqueryTableName()+" i , "+Reseller.getResellerTableName()+" r, "+middleTable+" mi");
+        buffer.append("SELECT i.* FROM "+Inquery.getInqueryTableName()+" i");
+        if (resellerId != -1) {
+          buffer.append(" , "+Reseller.getResellerTableName()+" r, "+middleTable+" mi");
+        }
         buffer.append(" WHERE ");
-        buffer.append("i."+inq.getIDColumnName()+" = mi."+inq.getIDColumnName());
-        buffer.append(" AND ");
-        buffer.append("r."+res.getIDColumnName()+" = mi."+res.getIDColumnName());
+        if (resellerId != -1) {
+          buffer.append("i."+inq.getIDColumnName()+" = mi."+inq.getIDColumnName());
+          buffer.append(" AND ");
+          buffer.append("r."+res.getIDColumnName()+" = mi."+res.getIDColumnName());
+          buffer.append(" AND ");
+        }
 
         if (unansweredOnly) {
-        buffer.append(" AND ");
         buffer.append("i."+inq.getAnsweredColumnName() +" = 'N'");
         }
 
@@ -118,8 +137,8 @@ public class Inquirer {
     return inqueries;
   }
 
-  public static int sendInquery(String name,String email, idegaTimestamp inqueryDate, int productId, int numberOfSeats, int bookingId, Reseller reseller  ) throws SQLException {
-    String sInquery = "TEMP - IS available here ???";
+  public static int sendInquery(String name,String email, idegaTimestamp inqueryDate, int productId, int numberOfSeats, int bookingId, Reseller reseller) throws SQLException {
+    String sInquery = "Are the available seats this day";
 
 
     int returner = -1;
@@ -141,4 +160,110 @@ public class Inquirer {
       returner = inq.getID();
     return returner;
   }
+
+  public static int inquiryResponse(IWContext iwc, IWResourceBundle iwrb, int inquiryId, boolean book, Supplier supplier) {
+    return inquiryResponse(iwc, iwrb, inquiryId, book, supplier, null);
+  }
+
+  public static int inquiryResponse(IWContext iwc, IWResourceBundle iwrb, int inquiryId, boolean book, Supplier supplier, Reseller reseller) {
+    String mailHost = "mail.idega.is";
+
+    String mailSubject = "NAT "+iwrb.getLocalizedString("travel.idega.inquiry","Inquiry");
+    StringBuffer responseString = new StringBuffer();
+
+    javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+    try {
+        tm.begin();
+        com.idega.util.SendMail sm = new com.idega.util.SendMail();
+        Inquery inquery = new Inquery(inquiryId);
+        Booking booking = inquery.getBooking();
+        Service tempService = booking.getService();
+
+        responseString.append(iwrb.getLocalizedString("travel.dear","Dear"));
+        responseString.append(" "+inquery.getName()+",\n\n");
+        responseString.append(iwrb.getLocalizedString("travel.regarding_you_inquiry_about","Regarding your inquiry about"));
+        responseString.append(" "+inquery.getNumberOfSeats()+" ");
+        responseString.append(iwrb.getLocalizedString("travel.seats_for_the_tour","seats for the tour"));
+        responseString.append(" \""+tempService.getName()+"\" ");
+        responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
+        responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
+        responseString.append("\n\n");
+
+
+        //responseString.append("T - Svar við fyrirspurn þinni varðandi "+inquery.getNumberOfSeats()+" sæti í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
+
+        if (book == false) {
+            responseString.append(iwrb.getLocalizedString("travel.request_is_denied","Request is denied."));
+        }else if (book == true) {
+            responseString.append(iwrb.getLocalizedString("travel.request_is_granted_booking_confirmed","Request is granted. Booking has been confimed"));
+              booking.setIsValid(true);
+            booking.update();
+        }
+
+        inquery.setAnswered(true);
+        inquery.setAnswerDate(idegaTimestamp.getTimestampRightNow());
+        inquery.update();
+
+        Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
+        try {
+          if (supplier != null) {
+            sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+            if (reseller == null) {  // if this is not a reseller deleting his own inquiry
+              if (resellers != null) { // if there was a reseller who send the inquiry
+                responseString = new StringBuffer();
+                responseString.append(iwrb.getLocalizedString("travel.regarding_you_inquiry_about","Regarding your inquiry about"));
+                responseString.append(" "+inquery.getNumberOfSeats()+" ");
+                responseString.append(iwrb.getLocalizedString("travel.seats_for_the_tour","seats for the tour"));
+                responseString.append(" \""+tempService.getName()+"\" ");
+                responseString.append(iwrb.getLocalizedString("travel.for","for"));
+                responseString.append(" "+inquery.getName()+",\n\n");
+                responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
+                responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
+                responseString.append("\n\n");
+                if (book == false) {
+                    responseString.append(iwrb.getLocalizedString("travel.request_is_denied","Request is denied."));
+                }else if (book == true) {
+                    responseString.append(iwrb.getLocalizedString("travel.request_is_granted_booking_confirmed","Request is granted. Booking has been confimed"));
+                }
+
+                //responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
+                for (int i = 0; i < resellers.length; i++) {
+                  if (resellers[i].getEmail() != null)
+                  sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
+
+                }
+              }
+            }
+          }
+          tm.commit();
+        }catch (javax.mail.internet.AddressException ae) {
+          throw ae;
+        }
+        return 0;
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+        try {
+          tm.rollback();
+        }catch (javax.transaction.SystemException sy) {
+          sy.printStackTrace(System.err);
+        }
+        return 1;
+        //displayForm(iwc, getInquiryResponseError());
+      }
+
+  }
+
+  public static Table getInquiryResponseError(IWResourceBundle iwrb) {
+    Table table = new Table();
+      Text text = new Text();
+        text.setFontStyle(TravelManager.theTextStyle);
+        text.setFontColor(TravelManager.WHITE);
+        text.setText(iwrb.getLocalizedString("travel.error_in_inquiry_response","Operation not completed. The e-mail addresses are probably wrong."));
+      table.add(text,1,1);
+      table.add(new BackButton(iwrb.getImage("buttons/back.gif")),1,2);
+      table.add(Text.NON_BREAKING_SPACE,1,3);
+
+    return table;
+  }
+
 }

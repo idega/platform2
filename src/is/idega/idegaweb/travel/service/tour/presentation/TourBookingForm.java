@@ -46,9 +46,9 @@ public class TourBookingForm extends TravelManager {
   int available = is.idega.idegaweb.travel.presentation.Booking.available;
   int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
 
-  public static String BookingAction = "booking_action";
-  private String BookingParameter = "booking";
-  public static String parameterBookingId = "bookingBookingId";
+  public static String BookingAction = is.idega.idegaweb.travel.presentation.Booking.BookingAction;
+  private String BookingParameter = is.idega.idegaweb.travel.presentation.Booking.BookingParameter;
+  public static String parameterBookingId = is.idega.idegaweb.travel.presentation.Booking.parameterBookingId;
   public static String parameterUpdateBooking = "bookingUpdateBooking";
   private static String parameterBookAnyway = "bookingBookAnyway";
   private static String parameterSendInquery = "bookingSendInquery";
@@ -58,6 +58,7 @@ public class TourBookingForm extends TravelManager {
   public static String parameterCCMonth  = "CCMonth";
   public static String parameterCCYear   = "CCYear";
 
+  public static final int errorTooMany = -1;
 
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
@@ -300,8 +301,12 @@ public class TourBookingForm extends TravelManager {
             table.setAlignment(2,row,"right");
             table.add(tReferenceNumber,2,row);
             table.add(tiReferenceNumber,3,row);
-          }else if ( (_reseller == null) && (supplier == null) ) {
-            TextInput ccNumber = new TextInput(this.parameterCCNumber);
+          }
+          //else if ( (_reseller == null) && (supplier == null) ) {
+
+          // Virkar, vantar HTTPS
+
+          /*  TextInput ccNumber = new TextInput(this.parameterCCNumber);
               ccNumber.setMaxlength(16);
               ccNumber.setLength(20);
               ccNumber.setAsNotEmpty("T - vantar cc númer");
@@ -335,9 +340,9 @@ public class TourBookingForm extends TravelManager {
             table.add(ccMonth,2,row);
             table.add(ccSlash,2,row);
             table.add(ccYear,2,row);
+          */
 
-
-          }
+          //}
 
           if (_booking != null) {
             form.addParameter(this.parameterBookingId,_booking.getID());
@@ -763,7 +768,11 @@ public class TourBookingForm extends TravelManager {
         }
     return form;
   }
+
  public Form getFormMaintainingAllParameters() {
+    return getFormMaintainingAllParameters(true);
+ }
+ public Form getFormMaintainingAllParameters(boolean withBookingAction) {
     Form form = new Form();
       form.maintainParameter("surname");
       form.maintainParameter("lastname");
@@ -784,6 +793,7 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(this.parameterCCNumber);
       form.maintainParameter(this.parameterCCMonth);
       form.maintainParameter(this.parameterCCYear);
+      if (withBookingAction)
       form.maintainParameter(this.BookingAction);
       ProductPrice[] pPrices = ProductPrice.getProductPrices(this._productId, false);
       for (int i = 0; i < pPrices.length; i++) {
@@ -795,28 +805,23 @@ public class TourBookingForm extends TravelManager {
 
 
   private int checkBooking(IWContext iwc) throws Exception {
-    Form form = getFormMaintainingAllParameters();
 
     boolean tooMany = false;
     String sAvailable = iwc.getParameter("available");
 
     int iAvailable = available;
 
-    System.err.println("CHECKING BOOKING");
 
     if (sAvailable != null)
       iAvailable = Integer.parseInt(sAvailable);
 
-    System.err.println("...sAvailable = "+sAvailable +" vs "+available);
     if (iAvailable != this.availableIfNoLimit) {
-      System.err.println("...i ef....");
       String many;
       int iMany = 0;
       ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
             many = iwc.getParameter("priceCategory"+i);
-            System.err.println("..."+pPrices[i].getName()+": "+many);
             if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
                 manys[i] = Integer.parseInt(many);
                 iMany += Integer.parseInt(many);
@@ -831,33 +836,52 @@ public class TourBookingForm extends TravelManager {
       }
     }
 
-    System.err.println("...TooMany = "+tooMany);
 
     if (tooMany) {
-      Table table = new Table();
-        form.add(table);
-
-      if (supplier != null) {
-        table.add(iwrb.getLocalizedString("travel.too_many_book_anyway","Too many, book anyway ?"));
-        table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterBookAnyway));
-        table.add(new BackButton(iwrb.getImage("buttons/no.gif")));
-      }else if (_reseller != null) {
-        table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many, send inquiry ?"));
-        table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterSendInquery));
-        table.add(new BackButton(iwrb.getImage("buttons/no.gif")));
-      }
-
-      add(form);
-      return -1;
+      return this.errorTooMany;
     }else {
       return saveBooking(iwc);
     }
 
   }
 
+  public Form getErrorForm(IWContext iwc, int error) {
+    switch (error) {
+      case TourBookingForm.errorTooMany :
+        return getTooManyForm(iwc);
+      default:
+        return null;
+    }
+
+  }
+
+
+
+  private Form getTooManyForm(IWContext iwc) {
+    Form form = getFormMaintainingAllParameters(false);
+      Table table = new Table();
+        form.add(table);
+
+      if (supplier != null) {
+        table.add(iwrb.getLocalizedString("travel.too_many_book_anyway","Too many. Do you wish to book anyway ?"));
+        table.add(new BackButton("Back"));
+        table.add(Text.NON_BREAKING_SPACE);
+        table.add(new SubmitButton("Book anyway",this.BookingAction, this.parameterBookAnyway));
+        table.add(Text.NON_BREAKING_SPACE);
+        table.add(new SubmitButton("Send inquiry",this.BookingAction, this.parameterSendInquery));
+      }else if (_reseller != null) {
+        table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many. Do you wish to send an inquiry ?"));
+        table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterSendInquery));
+        table.add(new BackButton(iwrb.getImage("buttons/no.gif")));
+      }
+
+    return form;
+  }
+
   public int handleInsert(IWContext iwc) throws Exception{
     String action = iwc.getParameter(this.BookingAction);
     if (action != null) {
+      System.err.println("Action = "+action);
       if (action.equals(this.BookingParameter)) {
         return checkBooking(iwc);
       }else if (action.equals(this.parameterBookAnyway)) {
@@ -1068,7 +1092,6 @@ public class TourBookingForm extends TravelManager {
     String city = iwc.getParameter("city");
     String country = iwc.getParameter("country");
     String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
-    String numberOfSeats = iwc.getParameter("numberOfSeats");
 
     String referenceNumber = iwc.getParameter("reference_number");
 
@@ -1078,8 +1101,10 @@ public class TourBookingForm extends TravelManager {
           booking.setIsValid(false);
           booking.update();
 
+        int numberOfSeats = booking.getTotalCount();
 
-        Inquirer.sendInquery(surname+" "+lastname, email, _stamp, _product.getID() , Integer.parseInt(numberOfSeats), bookingId, _reseller);
+
+        Inquirer.sendInquery(surname+" "+lastname, email, _stamp, _product.getID() , numberOfSeats, bookingId, _reseller);
         return bookingId;
     }catch (SQLException sql) {
       sql.printStackTrace();

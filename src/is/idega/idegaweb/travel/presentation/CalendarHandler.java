@@ -90,7 +90,9 @@ public class CalendarHandler extends TravelManager {
       sm.setBodyColor("#8484D6");
       sm.setInActiveCellColor("#666666");
       sm.setColorToday(colorForToday);
-      sm.setSelectedHighlighted(false);
+      sm.useColorToday(true);
+//      sm.setSelectedHighlighted(true);
+//      sm.setSelectedHighlightColor(colorForToday);
 
       sm.setDayFontColor(idegaTimestamp.RightNow(),this.backgroundColor);
   }
@@ -315,6 +317,18 @@ public class CalendarHandler extends TravelManager {
               }
             }
           }
+          int resellerId = _contract.getResellerId();
+          if (this._viewInquiries) {
+            temp = new idegaTimestamp(1, month , year);
+            for (int i = 1; i <= lengthOfMonth; i++) {
+              if (Inquirer.getInqueredSeats(_productId, temp,resellerId, true) > 0) {
+                sm.setDayColor(temp, colorForInquery);
+                sm.setDayFontColor(temp,colorForAvailableDayText);
+              }
+              temp.addDays(1);
+            }
+          }
+
         }
         else if (_supplier != null) {
           for (int i = 0; i < depDays.size(); i++) {
@@ -327,13 +341,15 @@ public class CalendarHandler extends TravelManager {
               sm.setDayFontColor(temp,colorForAvailableDayText);
             }
           }
-          if (this._viewInquiries)
-          for (int i = 1; i <= lengthOfMonth; i++) {
-            if (Inquirer.getInqueredSeats(_productId, temp, true) > 0) {
-              sm.setDayColor(temp, colorForInquery);
-              sm.setDayFontColor(temp,colorForAvailableDayText);
+          if (this._viewInquiries) {
+            temp = new idegaTimestamp(1, month , year);
+            for (int i = 1; i <= lengthOfMonth; i++) {
+              if (Inquirer.getInqueredSeats(_productId, temp, true) > 0) {
+                sm.setDayColor(temp, colorForInquery);
+                sm.setDayFontColor(temp,colorForAvailableDayText);
+              }
+              temp.addDays(1);
             }
-            temp.addDays(1);
           }
         }
         else if (_reseller != null) {
@@ -348,13 +364,16 @@ public class CalendarHandler extends TravelManager {
               sm.setDayFontColor(temp,colorForAvailableDayText);
             }
           }
-          if (this._viewInquiries)
-          for (int i = 1; i <= lengthOfMonth; i++) {
-            if (Inquirer.getInqueredSeats(_productId, temp,_resellerId, true) > 0) {
-              sm.setDayColor(temp, colorForInquery);
-              sm.setDayFontColor(temp,colorForAvailableDayText);
+          if (this._viewInquiries) {
+            temp = new idegaTimestamp(1, month , year);
+            for (int i = 1; i <= lengthOfMonth; i++) {
+//              System.err.println("Reseller != null : "+Inquirer.getInqueredSeats(_productId, temp,_resellerId, true));
+              if (Inquirer.getInqueredSeats(_productId, temp,_resellerId, true) > 0) {
+                sm.setDayColor(temp, colorForInquery);
+                sm.setDayFontColor(temp,colorForAvailableDayText);
+              }
+              temp.addDays(1);
             }
-            temp.addDays(1);
           }
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {

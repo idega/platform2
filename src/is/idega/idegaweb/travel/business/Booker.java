@@ -293,7 +293,7 @@ public class Booker {
   /**
    * @todo finna betri stað
    */
-  private static Object getServiceType(int serviceId) {
+  public static Object getServiceType(int serviceId) {
     Object object;
     try {
       object = new Tour(serviceId);
