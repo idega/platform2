@@ -38,7 +38,9 @@ public class ServiceOverview extends TravelManager {
   private String deleteParameter = "service_to_delete_id";
   private String parameterStartNumber = "parameterStartNumber";
   private Supplier supplier;
+  private Reseller reseller;
 
+  private List products = new Vector();
 
   public ServiceOverview() {
   }
@@ -50,7 +52,6 @@ public class ServiceOverview extends TravelManager {
 
   public void main(IWContext iwc) throws Exception{
       super.main(iwc);
-      supplier = super.getSupplier();
       init(iwc);
 
       if (super.isLoggedOn(iwc) ) {
@@ -76,6 +77,24 @@ public class ServiceOverview extends TravelManager {
   private void init(IWContext iwc) throws RemoteException {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
+      supplier = super.getSupplier();
+      reseller = super.getReseller();
+      
+      if ( supplier != null) {
+      	products = getProductBusiness(iwc).getProducts(supplier.getID());
+      } else if ( super.getReseller() != null ) {
+      	try {
+					Product[] list = super.getContractBusiness(iwc).getProductsForReseller(iwc, ((Integer) reseller.getPrimaryKey()).intValue());
+					if (list != null) {
+						for (int i = 0; i < list.length; i++) {
+							products.add((Product) list[i]);
+						}
+					}
+				} catch (SQLException e) {
+					logWarning("ServiceOverview : no products found for reseller");
+				}
+      }
+      
   }
 
   public void deleteServices(IWContext iwc) throws RemoteException, FinderException, SQLException{
@@ -131,10 +150,6 @@ public class ServiceOverview extends TravelManager {
       Link edit;
 
 
-      if (supplier != null) {
-        List products = getProductBusiness(iwc).getProducts(supplier.getID());
-        if (products == null) { products = com.idega.util.ListUtil.getEmptyList(); }
-
         int productsSize = products.size();
 
         if (productsSize > iStartNumber + manyPerPage) {
@@ -175,11 +190,13 @@ public class ServiceOverview extends TravelManager {
         ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
         Iterator pCatIds;
         try {
-          coll = this.supplier.getProductCategories();
-          pCatIds = coll.iterator();
-          while (pCatIds.hasNext()) {
-            pCat = (ProductCategory) pCatIds.next();
-          }
+        	if(supplier != null) {
+	          coll = this.supplier.getProductCategories();
+	          pCatIds = coll.iterator();
+	          while (pCatIds.hasNext()) {
+	            pCat = (ProductCategory) pCatIds.next();
+	          }
+        	}
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }
@@ -215,7 +232,7 @@ public class ServiceOverview extends TravelManager {
             edit = (Link) editClone.clone();
               edit.addParameter(ServiceDesigner.parameterUpdateServiceId, product.getID());
 
-            if (super.isInPermissionGroup) {
+            if (super.isInPermissionGroup && supplier != null) {
               table.add(edit,1,row);
               table.add("&nbsp;&nbsp;",1,row);
             }
@@ -225,7 +242,7 @@ public class ServiceOverview extends TravelManager {
               table.add(getLink,1,row);
               table.add("&nbsp;&nbsp;",1,row);
             }
-            if (super.isInPermissionGroup) {
+            if (super.isInPermissionGroup && supplier != null) {
               table.add(delete,1,row);
             }
 
@@ -248,13 +265,12 @@ public class ServiceOverview extends TravelManager {
           }catch (FinderException fe) {
             fe.printStackTrace(System.err);
           }
-        }
 
+      }
         if (productsSize < 1) ++row;
         table.add(pagesTable,1, row);
         table.setAlignment(1,row,"center");
-      }
-
+        
       add(form);
   }
 
