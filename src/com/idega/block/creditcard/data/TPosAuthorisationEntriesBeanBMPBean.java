@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.3 2004/08/19 10:56:03 gimmi Exp $
+ *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.4 2004/10/30 08:09:56 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,9 +13,7 @@ package com.idega.block.creditcard.data;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -94,40 +92,40 @@ public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implement
    */
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getAuthorisationAmountColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getAuthorisationCurrencyColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getAuthorisationCodeColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getAuthorisationIdRspColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getAuthorisationPathReasonCodeColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getBatchNumberColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getBrandIdColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getBrandNameColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getCardCharacteristicsColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getCardTypeColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getCardNameColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getEntryDateColumnName(), "", true, true, java.lang.String.class);
+    addAttribute(getAuthorisationAmountColumnName(), "", true, true, java.lang.String.class, 20);
+    addAttribute(getAuthorisationCurrencyColumnName(), "", true, true, java.lang.String.class, 6);
+    addAttribute(getAuthorisationCodeColumnName(), "", true, true, java.lang.String.class, 3);
+    addAttribute(getAuthorisationIdRspColumnName(), "", true, true, java.lang.String.class, 10);
+    addAttribute(getAuthorisationPathReasonCodeColumnName(), "", true, true, java.lang.String.class, 5);
+    addAttribute(getBatchNumberColumnName(), "", true, true, java.lang.String.class, 5);
+    addAttribute(getBrandIdColumnName(), "", true, true, java.lang.String.class, 20);
+    addAttribute(getBrandNameColumnName(), "", true, true, java.lang.String.class, 20);
+    addAttribute(getCardCharacteristicsColumnName(), "", true, true, java.lang.String.class, 5);
+    addAttribute(getCardTypeColumnName(), "", true, true, java.lang.String.class, 10);
+    addAttribute(getCardNameColumnName(), "", true, true, java.lang.String.class, 20);
+    addAttribute(getEntryDateColumnName(), "", true, true, java.lang.String.class, 6);
     addAttribute(getDetailExpectedColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getErrorNoColumnName(), "", true, true, java.lang.String.class);
+    addAttribute(getErrorNoColumnName(), "", true, true, java.lang.String.class, 10);
     addAttribute(getErrorTextColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getCardExpiresColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getLocationNrColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getMerchantNrAuthorisationColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getMerchantNrOtherServicesColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getMerchantNrSubmissionColumnName(), "", true, true, java.lang.String.class);
+    addAttribute(getCardExpiresColumnName(), "", true, true, java.lang.String.class, 4);
+    addAttribute(getLocationNrColumnName(), "", true, true, java.lang.String.class, 10);
+    addAttribute(getMerchantNrAuthorisationColumnName(), "", true, true, java.lang.String.class, 10);
+    addAttribute(getMerchantNrOtherServicesColumnName(), "", true, true, java.lang.String.class, 10);
+    addAttribute(getMerchantNrSubmissionColumnName(), "", true, true, java.lang.String.class, 20);
     addAttribute(getAttachmentCountColumnName(), "", true, true, java.lang.String.class);
     addAttribute(getPanColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getPosNrColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getPosSerialNrColumnName(), "", true, true, java.lang.String.class);
+    addAttribute(getPosNrColumnName(), "", true, true, java.lang.String.class, 20);
+    addAttribute(getPosSerialNrColumnName(), "", true, true, java.lang.String.class, 20);
     addAttribute(getPrintDataColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getSubmissionAmountColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getSubmissionCurrencyColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getEntryTimeColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getTotalResponseCodeColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(getTransactionNrColumnName(), "", true, true, java.lang.String.class);
+    addAttribute(getSubmissionAmountColumnName(), "", true, true, java.lang.String.class, 10);
+    addAttribute(getSubmissionCurrencyColumnName(), "", true, true, java.lang.String.class, 5);
+    addAttribute(getEntryTimeColumnName(), "", true, true, java.lang.String.class, 6);
+    addAttribute(getTotalResponseCodeColumnName(), "", true, true, java.lang.String.class, 6);
+    addAttribute(getTransactionNrColumnName(), "", true, true, java.lang.String.class, 6);
     addAttribute(getVoidedAuthorisationIdResponseColumnName(), "", true, true, java.lang.String.class);
     addAttribute(getVoidedTransactionNrColumnName(), "", true, true, java.lang.String.class);
     addAttribute(getXMLAttachmentColumnName(), "", true, true, java.lang.String.class);
-    addAttribute(CARD_NUMBER, "card_number", true, true, String.class);
+    addAttribute(CARD_NUMBER, "card_number", true, true, String.class, 50);
     
     this.addOneToOneRelationship(PARENT_ID, TPosAuthorisationEntriesBean.class);
   }
