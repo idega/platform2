@@ -11,8 +11,8 @@ import java.util.Iterator;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -172,7 +172,7 @@ public class CommuneUserLogin extends CommuneBlock {
 	}
 
 	private void logIn(IWContext iwc) {
-		LoginBusiness business = new LoginBusiness();
+		LoginBusinessBean business = new LoginBusinessBean();
 		try {
 			boolean canLogIn = business.logInByPersonalID(iwc, personalID);
 			

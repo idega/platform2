@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.poll.business.PollBusiness;
 import com.idega.block.text.business.TextFinder;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
@@ -375,7 +375,7 @@ public PollQuestionEditor(){
 
     try {
 
-      _userID = LoginBusiness.getUser(iwc).getID();
+      _userID = LoginBusinessBean.getUser(iwc).getID();
 
     }
 

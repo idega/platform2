@@ -160,7 +160,7 @@ public class WaitingListOrganizerWindow extends Window {
 	public void main(IWContext iwc) {
 		eUser = iwc.getUser();
 		isAdmin = iwc.isParameterSet(prmAdmin);
-		isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
+		isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc);
 		control(iwc);
 	}
 }

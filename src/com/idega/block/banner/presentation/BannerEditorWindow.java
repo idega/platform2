@@ -9,8 +9,8 @@ import com.idega.block.banner.business.BannerBusiness;
 import com.idega.block.banner.business.BannerFinder;
 import com.idega.block.banner.data.AdEntity;
 import com.idega.block.banner.data.BannerEntity;
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.media.presentation.ImageInserter;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -67,7 +67,7 @@ public BannerEditorWindow(){
     addTitle(_iwrb.getLocalizedString("banner_admin","Banner Admin"));
 
     try {
-      _userID = LoginBusiness.getUser(iwc).getID();
+      _userID = LoginBusinessBean.getUser(iwc).getID();
     }
     catch (Exception e) {
       _userID = -1;

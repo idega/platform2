@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusTabber.java,v 1.4 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: CampusTabber.java,v 1.5 2003/05/03 02:19:48 tryggvil Exp $
 
  *
 
@@ -21,6 +21,7 @@ package is.idega.idegaweb.campus.presentation;
 
 
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 
 import com.idega.core.user.data.User;
 
@@ -34,7 +35,6 @@ import com.idega.presentation.IWContext;
 
 import com.idega.presentation.ui.Parameter;
 
-import com.idega.block.login.business.LoginBusiness;
 
 import java.util.Hashtable;
 
@@ -46,7 +46,6 @@ import com.idega.idegaweb.IWBundle;
 
 import com.idega.idegaweb.IWResourceBundle;
 
-import is.idega.idegaweb.campus.presentation.CampusAllocation;
 
 import is.idega.idegaweb.campus.templates.*;
 
@@ -144,7 +143,7 @@ public class CampusTabber extends Block implements Campus {
 
     try{
 
-      eUser = LoginBusiness.getUser(iwc);
+      eUser = LoginBusinessBean.getUser(iwc);
 
 
 
@@ -498,7 +497,7 @@ public class CampusTabber extends Block implements Campus {
 
   private boolean getUserAccessGroups(IWContext iwc)throws SQLException{
 
-    List group = com.idega.block.login.business.LoginBusiness.getPermissionGroups(iwc);
+    List group = com.idega.core.accesscontrol.business.LoginBusinessBean.getPermissionGroups(iwc);
 
     PermissionHash = new Hashtable();
 

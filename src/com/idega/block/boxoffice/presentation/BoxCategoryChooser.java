@@ -15,9 +15,9 @@ import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxCategory;
 import com.idega.block.boxoffice.data.BoxEntity;
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -92,7 +92,7 @@ public BoxCategoryChooser(){
 
     try {
 
-      _userID = LoginBusiness.getUser(iwc).getID();
+      _userID = LoginBusinessBean.getUser(iwc).getID();
 
     }
 

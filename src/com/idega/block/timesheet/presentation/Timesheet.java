@@ -6,11 +6,11 @@ import java.sql.Timestamp;
 import java.util.Vector;
 
 import com.idega.block.calendar.data.CalendarEntry;
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.timesheet.business.TimesheetService;
 import com.idega.block.timesheet.data.Resource;
 import com.idega.block.timesheet.data.TimesheetEntry;
 import com.idega.block.timesheet.data.TimesheetProject;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -373,7 +373,7 @@ public class Timesheet extends Block{
 
   private void initialize(IWContext iwc) throws Exception {
     this.isAdmin = iwc.hasEditPermission(this);
-    user = LoginBusiness.getUser(iwc);
+    user = LoginBusinessBean.getUser(iwc);
 
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);

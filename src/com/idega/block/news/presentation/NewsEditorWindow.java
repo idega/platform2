@@ -751,7 +751,7 @@ private IWResourceBundle iwrb;
     super.main(iwc);
 
     isAdmin = true;
-    eUser = com.idega.block.login.business.LoginBusiness.getUser(iwc);
+    eUser = com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc);
     iUserId = eUser != null?eUser.getID():-1;
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);

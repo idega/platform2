@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.idega.block.login.business.LoginBusiness;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.presentation.IWContext;
 
 import se.nexus.nbs.sdk.HttpMessage;
@@ -445,7 +445,7 @@ public class PKIServlet extends HttpServlet
 				info += "<br>oid: '"+oid+"'";
 			}*/
 
-			LoginBusiness lb = new LoginBusiness();
+			LoginBusinessBean lb = new LoginBusinessBean();
 			//TODO Change this implementation to a more graceful usage of IWContext or equivalent
 			IWContext iwc = new IWContext(req, res);
 			iwc.setServletContext(this.getServletContext());

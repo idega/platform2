@@ -7,6 +7,7 @@ import java.rmi.*;
 import com.idega.block.login.business.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.business.*;
+import com.idega.core.accesscontrol.business.*;
 import com.idega.core.user.data.*;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
@@ -69,7 +70,7 @@ public class TravelWindow extends Window {
   }
 
   protected void initialize(IWContext iwc) throws RemoteException{
-    user = LoginBusiness.getUser(iwc);
+    user = LoginBusinessBean.getUser(iwc);
     iwb = getBundle(iwc);
     iwrb = iwb.getResourceBundle(iwc);
     if (user != null) {

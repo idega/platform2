@@ -8,10 +8,10 @@ import java.util.Locale;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.documents.business.DocFinder;
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.media.presentation.SimpleFileChooser;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.presentation.IBPageChooser;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.business.InformationCategory;
 import com.idega.core.business.InformationFolder;
 import com.idega.core.data.ICLocale;
@@ -252,7 +252,7 @@ public class DocEditorWindow extends IWAdminWindow {
 
         try {
 
-            _userID = LoginBusiness.getUser(iwc).getID();
+            _userID = LoginBusinessBean.getUser(iwc).getID();
 
         } catch (Exception e) {
 

@@ -33,7 +33,7 @@ public class Messenger extends Block {
 
   public void main(IWContext iwc){
 
-    if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
+    if( com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc) ){
 
       Applet messenger = new Applet();
       iwb = getBundle(iwc);
@@ -46,8 +46,8 @@ public class Messenger extends Block {
 
       //user specific
       messenger.setParam(SESSION_ID,iwc.getSession().getId());
-      messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(iwc).getID()));
-      messenger.setParam(USER_NAME,com.idega.block.login.business.LoginBusiness.getUser(iwc).getName());
+      messenger.setParam(USER_ID,Integer.toString(com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc).getID()));
+      messenger.setParam(USER_NAME,com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc).getName());
       messenger.setWidth(width);
       messenger.setHeight(height);
 

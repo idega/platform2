@@ -7,7 +7,7 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.login.business.LoginBusiness;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.development.presentation.Localizer;
 /**
  * Title:        idegaWeb TravelBooking
@@ -206,7 +206,7 @@ public class LoginPage extends TravelManager {
           middleTextTable.add(middleHeader,1,1);
           middleTextTable.add(middleContent,1,2);
 
-        if (!LoginBusiness.isLoggedOn(iwc))
+        if (!LoginBusinessBean.isLoggedOn(iwc))
         innerTable.add(middleTextTable,2,2);
         innerTable.add(getLoginObject(iwc, iwrb),2,2);
         innerTable.setWidth(2,2,"177");

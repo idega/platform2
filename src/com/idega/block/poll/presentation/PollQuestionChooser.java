@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.poll.business.PollBusiness;
 import com.idega.block.text.business.TextFinder;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
@@ -49,7 +49,7 @@ public PollQuestionChooser(){
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
     try {
-      userID = LoginBusiness.getUser(iwc).getID();
+      userID = LoginBusinessBean.getUser(iwc).getID();
     }
     catch (Exception e) {
       userID = -1;

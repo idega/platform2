@@ -20,6 +20,7 @@ import com.idega.core.user.data.User;
 
 import com.idega.core.accesscontrol.data.LoginTable;
 
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 
 import com.idega.core.user.business.UserBusiness;
@@ -28,7 +29,6 @@ import com.idega.core.accesscontrol.business.AccessControl;
 
 import com.idega.block.login.presentation.LoginEditorWindow;
 
-import com.idega.block.login.business.LoginBusiness;
 
 import com.idega.block.login.presentation.LoginEditor;
 
@@ -104,7 +104,7 @@ public class TenantViewer extends PresentationObjectContainer {
 
     if(eUser == null)
 
-      eUser = LoginBusiness.getUser(iwc);
+      eUser = LoginBusinessBean.getUser(iwc);
 
     eApplicant = ContractFinder.findApplicant(eUser);
 

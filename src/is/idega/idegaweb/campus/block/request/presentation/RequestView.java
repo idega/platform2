@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.7 2002/08/12 13:00:40 palli Exp $
+ * $Id: RequestView.java,v 1.8 2003/05/03 02:19:48 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.campus.block.request.presentation;
 
-import com.idega.block.login.business.LoginBusiness;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -238,7 +238,7 @@ public class RequestView extends Window {
   public void main(IWContext iwc) throws Exception {
     _eUser = iwc.getUser();
     _isAdmin = iwc.hasEditPermission(this);
-    _isLoggedOn = LoginBusiness.isLoggedOn(iwc);
+    _isLoggedOn = LoginBusinessBean.isLoggedOn(iwc);
     control(iwc);
   }
 }

@@ -7,8 +7,8 @@ import java.util.Locale;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.calendar.business.CalendarFinder;
 import com.idega.block.calendar.data.CalendarEntry;
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.text.business.TextFinder;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
@@ -61,12 +61,12 @@ public class CalendarEditor extends IWAdminWindow {
 		Locale currentLocale = iwc.getCurrentLocale(), chosenLocale;
 
 		try {
-			_userID = LoginBusiness.getUser(iwc).getID();
+			_userID = LoginBusinessBean.getUser(iwc).getID();
 		} catch (Exception e) {
 			_userID = -1;
 		}
 		try {
-			_groupID = LoginBusiness.getUser(iwc).getPrimaryGroupID();
+			_groupID = LoginBusinessBean.getUser(iwc).getPrimaryGroupID();
 		} catch (Exception e) {
 			_groupID = -1;
 		}

@@ -241,7 +241,7 @@ public class ContractRenewWindow extends Window{
     eUser = iwc.getUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     //isAdmin = iwc.hasEditPermission(this);
-    isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
+    isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc);
     control(iwc);
   }
 

@@ -328,15 +328,15 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   public  int getUserSupplierId(IWContext iwc) throws RuntimeException, SQLException {
     String supplierLoginAttributeString = "sr_supplier_id";
 
-    Object obj = LoginBusiness.getLoginAttribute(supplierLoginAttributeString,iwc);
+    Object obj = LoginBusinessBean.getLoginAttribute(supplierLoginAttributeString,iwc);
 
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      User us = LoginBusiness.getUser(iwc);
+      User us = LoginBusinessBean.getUser(iwc);
       if(us != null){
         int suppId = getUserSupplierId(us);
-        LoginBusiness.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), iwc);
+        LoginBusinessBean.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), iwc);
         return suppId;
       } else{
         throw new NotLoggedOnException();
@@ -347,15 +347,15 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   public  int getUserResellerId(IWContext iwc) throws RuntimeException, SQLException {
     String resellerLoginAttributeString = "sr_reseller_id";
 
-    Object obj = LoginBusiness.getLoginAttribute(resellerLoginAttributeString,iwc);
+    Object obj = LoginBusinessBean.getLoginAttribute(resellerLoginAttributeString,iwc);
 
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      User us = LoginBusiness.getUser(iwc);
+      User us = LoginBusinessBean.getUser(iwc);
       if(us != null){
         int resellerId = getUserResellerId(us);
-        LoginBusiness.setLoginAttribute(resellerLoginAttributeString,new Integer(resellerId), iwc);
+        LoginBusinessBean.setLoginAttribute(resellerLoginAttributeString,new Integer(resellerId), iwc);
         return resellerId;
       } else{
         throw new NotLoggedOnException();

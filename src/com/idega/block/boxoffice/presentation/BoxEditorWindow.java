@@ -9,10 +9,10 @@ import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxLink;
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.text.business.TextFinder;
 import com.idega.builder.presentation.IBFileChooser;
 import com.idega.builder.presentation.IBPageChooser;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
@@ -74,7 +74,7 @@ public BoxEditorWindow(){
     iwc.removeSessionAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
 
     try {
-      _userID = LoginBusiness.getUser(iwc).getID();
+      _userID = LoginBusinessBean.getUser(iwc).getID();
     }
     catch (Exception e) {
       _userID = -1;
