@@ -51,18 +51,17 @@ public class GolfLogin extends GolfBlock {
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();
 	
-			Table myTable = new Table(5,1);
+			Table myTable = new Table(6,1);
 			myTable.setCellpadding(0);
 			myTable.setCellspacing(0);
-			myTable.setWidth(Table.HUNDRED_PERCENT);
-			myTable.setRowStyleClass(1, getLoginRowClass());
-			myTable.setWidth(5, Table.HUNDRED_PERCENT);
-			myTable.setAlignment(5, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-			myTable.setCellpaddingLeft(1, 1, _indent);
-			myTable.setCellpaddingRight(5, 1, _indent);
+			myTable.setCellpaddingRight(1, 1, 3);
+			myTable.setCellpaddingRight(2, 1, 5);
+			myTable.setCellpaddingRight(3, 1, 3);
+			myTable.setCellpaddingRight(4, 1, 5);
+			myTable.setCellpaddingRight(5, 1, 5);
 	
-			Text loginTexti = getStyleText(userText, STYLENAME_TEMPLATE_SMALL_HEADER);
-			Text passwordTexti = getStyleText(passwordText, STYLENAME_TEMPLATE_SMALL_HEADER);
+			Text loginTexti = getStyleText(userText, STYLENAME_TEMPLATE_HEADER2);
+			Text passwordTexti = getStyleText(passwordText, STYLENAME_TEMPLATE_HEADER2);
 	
 			myTable.add(loginTexti, 1, 1);
 	
@@ -82,32 +81,14 @@ public class GolfLogin extends GolfBlock {
 			}
 			myTable.add(passw, 4, 1);
 	
-			/*GenericButton loginButton = getSubmitButton("tengja");
-			loginButton.setContent(localize("login.login","Login"));
-			myTable.add(loginButton, 5, 1);*/
+			Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
+			myTable.add(spacer, 5, 1);
 			
-			/*Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
-			myTable.add(spacer, 5, 1);*/
-			
-			Link loginLink = getStyleLink(localize("login.login","Login"), this.STYLENAME_TEMPLATE_LINK3);
+			Link loginLink = getStyleLink(localize("login.login","Login"), this.STYLENAME_TEMPLATE_HEADER_LINK2);
 			loginLink.setToFormSubmit(myForm);
-			myTable.add(loginLink, 5, 1);
+			myTable.add(loginLink, 6, 1);
 			
-	//		if (showNewUserImage) {
-	//			GenericButton button = getSubmitButton();
-	//			button.setName(GolfLoginBusiness.newLoginStateParameter);
-	//			button.setContent(localize("login.register","Register"));
-	//			myTable.add(button, 6, 1);
-	//		} else if (forgotPasswordUrl != null) {
-	//			Link l = getSmallLink(localize("login.forgot","Forgot"));
-	//			l.setURL(forgotPasswordUrl);
-	//			myTable.add(l, 6, 1);
-	//		}
-	
 			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "login"));
-	
-	
-	
 			myForm.add(myTable);
 			add(myForm);
 		}
@@ -223,17 +204,15 @@ public class GolfLogin extends GolfBlock {
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();
 	
-			Text loginTexti = getSmallHeader(userText);
-			Text passwordTexti =getSmallHeader(passwordText);
-	
-			Table myTable = new Table(2, 1);
+			Table myTable = new Table(3, 1);
 			myTable.setWidth(Table.HUNDRED_PERCENT);
 			myTable.setCellspacing(0);
 			myTable.setCellpadding(0);
-			myTable.setRowStyleClass(1, getLoginRowClass());
-			myTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+			myTable.setCellpaddingRight(1, 1, 5);
+			myTable.setCellpaddingRight(2, 1, 5);
+			myTable.setCellpaddingRight(3, 1, 5);
 			
-			Text failed = getSmallText(getResourceBundle().getLocalizedString("loginfailed", "Login failed"));
+			Text failed = getStyleText(getResourceBundle().getLocalizedString("loginfailed", "Login failed"), this.STYLENAME_TEMPLATE_HEADER2);
 			//failed.setFontSize(1);
 			if (what.equals("empty")) {
 				failed.setText(getResourceBundle().getLocalizedString("id_needed", "Identification needed"));
@@ -243,12 +222,12 @@ public class GolfLogin extends GolfBlock {
 			myTable.add(failed,1,1);
 			myTable.setAlignment(1, 1, "center");
 			
-			/*Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
-			myTable.add(spacer, 2, 1);*/
+			Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
+			myTable.add(spacer, 2, 1);
 			
 			Link tryAgain = getStyleLink(localize("login.try_again","Try again"), this.STYLENAME_TEMPLATE_LINK3);
 			tryAgain.setToFormSubmit(myForm);
-			myTable.add(tryAgain, 2, 1);
+			myTable.add(tryAgain, 3, 1);
 	
 			/*GenericButton tryAgain = getSaveButton();
 			tryAgain.setContent(localize("login.try_again","Try again"));
