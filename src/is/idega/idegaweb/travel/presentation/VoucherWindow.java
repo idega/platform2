@@ -141,12 +141,16 @@ public class VoucherWindow extends Window {
 
     return form;
   }
+  
+  public static Link getVoucherLink(int bookingID) throws RemoteException {
+		Link link = new Link("Voucher");
+			link.setWindowToOpen(VoucherWindow.class);
+			link.addParameter(parameterBookingId, bookingID);
+		return link;
+  }
 
   public static Link getVoucherLink(Booking booking) throws RemoteException{
-    Link link = new Link("Voucher");
-      link.setWindowToOpen(VoucherWindow.class);
-      link.addParameter(parameterBookingId, booking.getID());
-    return link;
+		return getVoucherLink(booking.getID());
   }
 
 }
