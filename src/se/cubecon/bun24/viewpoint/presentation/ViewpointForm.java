@@ -27,10 +27,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/08 09:25:54 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/09 08:00:20 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -50,14 +50,23 @@ public class ViewpointForm extends CommuneBlock {
     public final static String PARAM_SSN = "vp_ssn";
 	public final static String PARAM_VIEWPOINT_ID = "vp_viewpoint_id";
 
-    private final static int UNKNOWN_ACTION = -1;
-	public final static int SHOWTOPCATEGORIESFORM_ACTION = 0;
-	public final static int SHOWSUBCATEGORIESFORM_ACTION = 1;
-	public final static int REGISTERVIEWPOINT_ACTION = 2;
-	public final static int SHOWVIEWPOINT_ACTION = 3;
-	public final static int ACCEPTTOHANDLEVIEWPOINT_ACTION = 4;
-	public final static int ANSWERVIEWPOINT_ACTION = 5;
-    public final static int SHOWAUTHENTICATIONFORM_ACTION = 6;
+	private final static String SHOWTOPCATEGORIESFORM_ACTION
+        = "vp_showtopcategoriesform_action";
+	private final static String SHOWSUBCATEGORIESFORM_ACTION
+        = "vp_showsubcategoriesform_action";
+	private final static String REGISTERVIEWPOINT_ACTION
+        = "vp_registerviewpoint_action";
+	public final static String SHOWVIEWPOINT_ACTION
+        = "vp_showviewpoint_action";
+	private final static String ACCEPTTOHANDLEVIEWPOINT_ACTION
+        = "vp_accepttohandleviewpoint_action";
+	private final static String ANSWERVIEWPOINT_ACTION
+        = "vp_answerviewpoint_action";
+	private final static String FORWARDVIEWPOINT_ACTION
+        = "vp_forwardviewpoint_action";
+	private final static String SHOWFORWARDFORM_ACTION
+        = "vp_showforwardform_action";
+    private final static String CANCEL_ACTION = "vp_cancel_action";
 
 	private final static String ANSWER_KEY = "viewpoint.answer";
 	private final static String ANSWER_DEFAULT = "Svar till medborgare";
@@ -115,8 +124,6 @@ public class ViewpointForm extends CommuneBlock {
         + " en synpunkt måste du antingen ha matat in den själv, vara"
         + " synpunktens handläggare eller ha rättigheter att bli synpunktens"
         + " handläggare.";
-	//private final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
-	//private final static String NOTLOGGEDON_DEFAULT = "Du måste vara inloggad för att använda den här funktionen.";
 	private final static String SSN_KEY = "viewpoint.ssn";
 	private final static String SSN_DEFAULT = "Personnummer";
 	private final static String SENDANSWERTOCITIZEN_KEY
@@ -140,85 +147,40 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String UNKNOWN_PAGE = "Unknown Page";
 
 	/**
-	 * main is the event handler of ViewpointForm. It can handle the following
-	 * events set in {@link #PARAM_ACTION}:<br>
-	 * - {@link #SHOWTOPCATEGORIESFORM_ACTION}<br>
-	 * - {@link #SHOWSUBCATEGORIESFORM_ACTION}<br>
-	 * - {@link #REGISTERVIEWPOINT_ACTION}<br>
-	 * - {@link #SHOWVIEWPOINT_ACTION}<br>
-	 * - {@link #ACCEPTTOHANDLEVIEWPOINT_ACTION}<br>
-	 * - {@link #ANSWERVIEWPOINT_ACTION}<br>
+	 * main is the event handler of ViewpointForm.
 	 *
-	 * @param iwc session data like user info etc.
+	 * @param context session data like user info etc.
 	 */
-	public void main(final IWContext iwc) {
-		setResourceBundle (getResourceBundle(iwc));
+	public void main(final IWContext context) {
+		setResourceBundle (getResourceBundle(context));
 
-		try {            
-			switch (getActionId (iwc)) {
-                case SHOWAUTHENTICATIONFORM_ACTION:
-                    showAuthenticationForm ();
-                    break;
-
-				case SHOWTOPCATEGORIESFORM_ACTION :
-					showTopCategoriesForm (iwc);
-					break;
-
-				case SHOWSUBCATEGORIESFORM_ACTION :
-					showSubCategoriesForm (iwc);
-					break;
-
-				case REGISTERVIEWPOINT_ACTION :
-					registerViewpoint (iwc);
-					break;
-
-				case SHOWVIEWPOINT_ACTION :
-                    showViewpoint (iwc);
-					break;
-
-				case ACCEPTTOHANDLEVIEWPOINT_ACTION :
-					acceptToHandleViewpoint(iwc);
-					break;
-
-				case ANSWERVIEWPOINT_ACTION :
-					answerViewpoint(iwc);
-					break;
-
-				default :
-                    add (UNKNOWN_PAGE);
-                    throw new IllegalArgumentException
-                            ("Tried to apply unknown action "
-                             + getActionId (iwc) + " to class "
-                             + getClass ().getName ());
-			}
-		}
-		catch (final Exception exception) {
-			add(new ExceptionWrapper(exception, this));
-		}
-	}
-
-	private int getActionId (final IWContext iwc) {
-		int result = UNKNOWN_ACTION;
-
-        if (iwc.isParameterSet(PARAM_ACTION)) {
-            try {
-                result = Integer.parseInt (iwc.getParameter (PARAM_ACTION));
-            } catch (final NumberFormatException e) {
-                e.printStackTrace ();
-                result = UNKNOWN_ACTION;
-            }
+		try {
+            if (!isAuthenticated (context)) {
+                showAuthenticationForm ();
+            } else if (context.isParameterSet (SHOWSUBCATEGORIESFORM_ACTION)) {
+                showSubCategoriesForm (context);
+            } else if (context.isParameterSet (REGISTERVIEWPOINT_ACTION)) {
+                registerViewpoint (context);
+            } else if (context.isParameterSet
+                       (ACCEPTTOHANDLEVIEWPOINT_ACTION)) {
+                acceptToHandleViewpoint (context);
+            } else if (context.isParameterSet (ANSWERVIEWPOINT_ACTION)) {
+                answerViewpoint (context);
+            } else if (context.isParameterSet (SHOWFORWARDFORM_ACTION)) {
+                showForwardViewpointForm ();
+            } else if (context.isParameterSet (FORWARDVIEWPOINT_ACTION)) {
+                forwardViewpoint ();
+            } else if (context.isParameterSet (CANCEL_ACTION)) {
+                showHomepage (context);
+            } else if (context.isParameterSet (PARAM_VIEWPOINT_ID)) {
+                showViewpoint (context);
+            } else if (isAuthenticated (context)) {
+                showTopCategoriesForm (context);
+            }                    
         }
-        
-        if (result == UNKNOWN_ACTION) {
-            if (iwc.isParameterSet (PARAM_VIEWPOINT_ID)) {
-                result = SHOWVIEWPOINT_ACTION;
-            } else if (!isAuthenticated (iwc)) {
-                result = SHOWAUTHENTICATIONFORM_ACTION;
-            } else 
-                result = SHOWTOPCATEGORIESFORM_ACTION;
-        }
-        
-		return result;
+        catch (final Exception exception) {
+            add(new ExceptionWrapper(exception, this));
+		}
 	}
 
 	private void showAuthenticationForm () {
@@ -233,8 +195,8 @@ public class ViewpointForm extends CommuneBlock {
 		final TextInput ssnInput = (TextInput) getStyledInterface
                 (new TextInput (PARAM_SSN));
 		ssnInput.setLength (10);
-		final SubmitButton submit = getSubmitButton (CONTINUE_KEY,
-                                                     CONTINUE_DEFAULT);
+		final SubmitButton submit = getSubmitButton
+                (SHOWTOPCATEGORIESFORM_ACTION, CONTINUE_KEY, CONTINUE_DEFAULT);
 
 		final Table table = new Table ();
 		table.setWidth (getWidth ());
@@ -255,25 +217,24 @@ public class ViewpointForm extends CommuneBlock {
 		add (form);
 	}
 
-	private void showTopCategoriesForm (final IWContext iwc)
+	private void showTopCategoriesForm (final IWContext context)
         throws RemoteException, FinderException {
 		final Form form = new Form();
-        addHiddenActionParameterToForm (form, SHOWSUBCATEGORIESFORM_ACTION);
 		final Text text1 = new Text (getLocalizedString (DESCRIPTION1_KEY,
                                                          DESCRIPTION1_DEFAULT));
 		final Text text2 = new Text (getLocalizedString (DESCRIPTION2_KEY,
                                                          DESCRIPTION2_DEFAULT));
 		final RadioGroup radioGroup = new RadioGroup (PARAM_CATEGORY);
 		final TopCategory [] categories
-                = getViewpointBusiness (iwc).findAllTopCategories ();
+                = getViewpointBusiness (context).findAllTopCategories ();
 		for (int i = 0; i < categories.length; i++) {
 			final String id = categories[i].getPrimaryKey().toString();
 			radioGroup.addRadioButton (id, getSmallText
                                        (categories[i].getName ()));
 			radioGroup.setSelected (id);
 		}
-		final SubmitButton submit = getSubmitButton (CONTINUE_KEY,
-                                                     CONTINUE_DEFAULT);
+		final SubmitButton submit = getSubmitButton
+                (SHOWSUBCATEGORIESFORM_ACTION, CONTINUE_KEY, CONTINUE_DEFAULT);
 		final Table table = new Table ();
 		table.setWidth (getWidth ());
 		table.setCellpadding (0);
@@ -293,20 +254,19 @@ public class ViewpointForm extends CommuneBlock {
 		add (form);
 	}
 
-	private void showSubCategoriesForm (final IWContext iwc)
+	private void showSubCategoriesForm (final IWContext context)
         throws RemoteException, FinderException {
-		if (!iwc.isParameterSet (PARAM_CATEGORY)) {
-			showTopCategoriesForm (iwc);
+		if (!context.isParameterSet (PARAM_CATEGORY)) {
+			showTopCategoriesForm (context);
 			return;
 		}
 		final Form form = new Form();
-        addHiddenActionParameterToForm (form, REGISTERVIEWPOINT_ACTION);
 		final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
                 (new DropdownMenu (PARAM_CATEGORY));
 		final int topCategoryId
-                = Integer.parseInt (iwc.getParameter (PARAM_CATEGORY));
-		final SubCategory [] categories
-                = getViewpointBusiness (iwc).findSubCategories (topCategoryId);
+                = Integer.parseInt (context.getParameter (PARAM_CATEGORY));
+		final SubCategory [] categories = getViewpointBusiness
+                (context).findSubCategories (topCategoryId);
 		for (int i = 0; i < categories.length; i++) {
 			final String id = categories [i].getPrimaryKey ().toString();
 			dropdown.addMenuElement (id, categories [i].getName ());
@@ -318,8 +278,9 @@ public class ViewpointForm extends CommuneBlock {
                 = (TextArea) getStyledInterface (new TextArea (PARAM_MESSAGE));
 		textArea.setColumns (40);
 		textArea.setRows (10);
-		final SubmitButton submit = getSubmitButton (SUBMITVIEWPOINT_KEY,
-                                                     SUBMITVIEWPOINT_DEFAULT);
+		final SubmitButton submit = getSubmitButton
+                (REGISTERVIEWPOINT_ACTION, SUBMITVIEWPOINT_KEY,
+                 SUBMITVIEWPOINT_DEFAULT);
 		final Table table = new Table ();
 		table.setWidth (getWidth ());
 		table.setCellspacing (0);
@@ -342,24 +303,25 @@ public class ViewpointForm extends CommuneBlock {
 		add (form);
 	}
 
-    private void showViewpoint (final IWContext iwc) throws RemoteException,
+    private void showViewpoint (final IWContext context) throws RemoteException,
                                                             FinderException {
-        if (!iwc.isParameterSet (PARAM_VIEWPOINT_ID)) {
+        if (!context.isParameterSet (PARAM_VIEWPOINT_ID)) {
             add (UNKNOWN_PAGE);
             return;
         }
 
-        final User currentUser = iwc.getCurrentUser ();
+        final User currentUser = context.getCurrentUser ();
         final int currentUserId
                 = ((Integer) currentUser.getPrimaryKey ()).intValue ();
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
+		final ViewpointBusiness viewpointBusiness
+                = getViewpointBusiness(context);
 		final int viewpointId
-                = Integer.parseInt (iwc.getParameter (PARAM_VIEWPOINT_ID));
+                = Integer.parseInt (context.getParameter (PARAM_VIEWPOINT_ID));
 		final Viewpoint viewpoint
                 = viewpointBusiness.findViewpoint (viewpointId);
         final User handler = viewpoint.getOwner ();
         final UserBusiness userBusiness = (UserBusiness) IBOLookup
-                .getServiceInstance (iwc, UserBusiness.class);
+                .getServiceInstance (context, UserBusiness.class);
         final Collection currentUsersGroups
                 = userBusiness.getUserGroups (currentUserId);
         final Group handlerGroup = viewpoint.getHandlerGroup ();
@@ -370,11 +332,11 @@ public class ViewpointForm extends CommuneBlock {
         final boolean isCurrentUserPotentialHandler
                 = handler == null && currentUsersGroups.contains (handlerGroup);
         if (isCurrentUserPotentialHandler) {
-            showAcceptForm (iwc);
+            showAcceptForm (context);
         } else if (isCurrentUserHandler && !viewpoint.isAnswered ()) {
-            showAnswerForm (iwc);
+            showAnswerForm (context);
         } else if (isCurrentUserOriginator || isCurrentUserHandler) {
-            final Table table = createViewpointTable (viewpoint, iwc);
+            final Table table = createViewpointTable (viewpoint, context);
             int row = 5;
             if (viewpoint.isAnswered ()) {
                 table.add (getLocalizedSmallHeader (ANSWER_KEY, ANSWER_DEFAULT),
@@ -382,7 +344,7 @@ public class ViewpointForm extends CommuneBlock {
                 table.add (new Break (), 1, row);
                 table.add (new Text (viewpoint.getAnswer ()), 1, row++);
             }              
-            table.add(getUserHomePageLink(iwc), 1, row++);
+            table.add(getUserHomepageLink (context), 1, row++);
             add (table);
         } else {
             add (getLocalizedHeader (NOTAUTHORIZEDTOSHOWVIEWPOINT_KEY,
@@ -390,36 +352,44 @@ public class ViewpointForm extends CommuneBlock {
         }
     }
 
-	private void showAcceptForm(final IWContext iwc) throws RemoteException,
+	private void showAcceptForm(final IWContext context) throws RemoteException,
                                                             FinderException {
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
+		final ViewpointBusiness viewpointBusiness
+                = getViewpointBusiness (context);
 		final int viewpointId
-                = Integer.parseInt (iwc.getParameter (PARAM_VIEWPOINT_ID));
+                = Integer.parseInt (context.getParameter (PARAM_VIEWPOINT_ID));
 		final Viewpoint viewpoint
                 = viewpointBusiness.findViewpoint (viewpointId);
 		final Form form = new Form();
-        addHiddenActionParameterToForm (form, ACCEPTTOHANDLEVIEWPOINT_ACTION);
 		form.add(new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
-        final Table table = createViewpointTable (viewpoint, iwc);
+        final Table table = createViewpointTable (viewpoint, context);
 		final SubmitButton submit
-                = getSubmitButton (IACCEPTTOHANDLETHISVIEWPOINT_KEY,
+                = getSubmitButton (ACCEPTTOHANDLEVIEWPOINT_ACTION,
+                                   IACCEPTTOHANDLETHISVIEWPOINT_KEY,
                                    IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT);
 		table.add (submit, 1, 5);
-		table.add (getCancelLink (iwc), 1, 6);
+		table.add (getSubmitButton (CANCEL_ACTION, CANCEL_KEY, CANCEL_DEFAULT),
+                   1, 6);
 		form.add(table);
 		add(form);
 	}
 
-	private void acceptToHandleViewpoint(final IWContext iwc) throws RemoteException, FinderException {
+	private void acceptToHandleViewpoint(final IWContext context)
+        throws RemoteException, FinderException {
 		// 1. parse input
-		final int viewpointId = Integer.parseInt(iwc.getParameter(PARAM_VIEWPOINT_ID));
+		final int viewpointId
+                = Integer.parseInt(context.getParameter(PARAM_VIEWPOINT_ID));
 
 		// 2. registerhandler
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
-		viewpointBusiness.registerHandler(viewpointId, iwc.getCurrentUser ());
+		final ViewpointBusiness viewpointBusiness
+                = getViewpointBusiness(context);
+		viewpointBusiness.registerHandler(viewpointId,
+                                          context.getCurrentUser ());
 
 		// 3. print feedback
-		final Text text = new Text(getLocalizedString(CONFIRMSETHANDLER_KEY, CONFIRMSETHANDLER_DEFAULT));
+		final Text text
+                = new Text(getLocalizedString(CONFIRMSETHANDLER_KEY,
+                                              CONFIRMSETHANDLER_DEFAULT));
 		text.setWidth(Table.HUNDRED_PERCENT);
 		final Table table = new Table(1, 2);
 		int row = 1;
@@ -428,48 +398,55 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellpadding(14);
 		table.setColor(getBackgroundColor());
 		table.add(text, 1, row++);
-		table.add(getUserHomePageLink(iwc), 1, row++);
+		table.add(getUserHomepageLink (context), 1, row++);
 		add(table);
 	}
 
-	private void showAnswerForm(final IWContext iwc) throws RemoteException,
+	private void showAnswerForm(final IWContext context) throws RemoteException,
                                                             FinderException {
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
+		final ViewpointBusiness viewpointBusiness
+                = getViewpointBusiness (context);
 		final int viewpointId
-                = Integer.parseInt (iwc.getParameter (PARAM_VIEWPOINT_ID));
+                = Integer.parseInt (context.getParameter (PARAM_VIEWPOINT_ID));
 		final Viewpoint viewpoint
                 = viewpointBusiness.findViewpoint (viewpointId);
 		final Form form = new Form();
-        addHiddenActionParameterToForm (form, ANSWERVIEWPOINT_ACTION);
 		form.add(new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
 		final TextArea textArea = new TextArea (PARAM_ANSWER);
 		textArea.setColumns (40);
 		textArea.setRows (10);
         final SubmitButton submit
-                = getSubmitButton (SENDANSWERTOCITIZEN_KEY,
+                = getSubmitButton (ANSWERVIEWPOINT_ACTION,
+                                   SENDANSWERTOCITIZEN_KEY,
                                    SENDANSWERTOCITIZEN_DEFAULT);
-        final Table table = createViewpointTable (viewpoint, iwc);
+        final Table table = createViewpointTable (viewpoint, context);
         int row = 5;
 		table.add(getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
 		table.add(textArea, 1, row++);
 		table.add(submit, 1, row++);
-		table.add (getCancelLink (iwc), 1, row++);
+		table.add (getSubmitButton (CANCEL_ACTION, CANCEL_KEY, CANCEL_DEFAULT),
+                   1, row++);
 		form.add(table);
 		add(form);
 	}
 
-	private void answerViewpoint(final IWContext iwc) throws RemoteException, CreateException, FinderException, RemoveException {
+	private void answerViewpoint(final IWContext context) throws
+        RemoteException, CreateException, FinderException, RemoveException {
 		// 1. parse input 
-		final int viewpointId = Integer.parseInt(iwc.getParameter(PARAM_VIEWPOINT_ID));
-		final String answer = iwc.getParameter(PARAM_ANSWER);
+		final int viewpointId
+                = Integer.parseInt(context.getParameter(PARAM_VIEWPOINT_ID));
+		final String answer = context.getParameter(PARAM_ANSWER);
 
 		// 2. register answer
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
+		final ViewpointBusiness viewpointBusiness
+                = getViewpointBusiness(context);
 		viewpointBusiness.answerAndDeregisterViewpoint(viewpointId, answer);
 
 		// 3. print feedback
-		final Text text = new Text(getLocalizedString(CONFIRMANSWERSENT_KEY, CONFIRMANSWERSENT_DEFAULT));
+		final Text text
+                = new Text(getLocalizedString(CONFIRMANSWERSENT_KEY,
+                                              CONFIRMANSWERSENT_DEFAULT));
 		text.setWidth(Table.HUNDRED_PERCENT);
 		final Table table = new Table(1, 2);
 		int row = 1;
@@ -478,15 +455,16 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellpadding(14);
 		table.setColor(getBackgroundColor());
 		table.add(text, 1, row++);
-		table.add(getUserHomePageLink(iwc), 1, row++);
+		table.add(getUserHomepageLink (context), 1, row++);
 		add(table);
 	}
 
-	private void registerViewpoint(final IWContext iwc)
+	private void registerViewpoint(final IWContext context)
         throws RemoteException, CreateException, FinderException {
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
-		final int subCategoryId
-                = new Integer (iwc.getParameter (PARAM_CATEGORY)).intValue();
+		final ViewpointBusiness viewpointBusiness
+                = getViewpointBusiness (context);
+		final int subCategoryId = new Integer
+                (context.getParameter (PARAM_CATEGORY)).intValue();
 		final SubCategory subCategory
                 = viewpointBusiness.findSubCategory (subCategoryId);
         final TopCategory topCategory = subCategory.getTopCategory ();
@@ -494,8 +472,8 @@ public class ViewpointForm extends CommuneBlock {
 		final int handlerGroupId
                 = ((Integer) handlerGroup.getPrimaryKey()).intValue();
 		viewpointBusiness.createViewpoint
-                (getCurrentUser (iwc), iwc.getParameter (PARAM_SUBJECT),
-                 iwc.getParameter (PARAM_MESSAGE), topCategory.getName ()
+                (getCurrentUser (context), context.getParameter (PARAM_SUBJECT),
+                 context.getParameter (PARAM_MESSAGE), topCategory.getName ()
                  + "/" + subCategory.getName (), handlerGroupId);
 		final Text text1
                 = new Text (getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
@@ -508,25 +486,48 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellpadding (0);
 		table.add (text1, 1, row++);
 		table.setHeight (row++, 12);
-		table.add (getUserHomePageLink (iwc), 1, row++);
+		table.add (getUserHomepageLink (context), 1, row++);
 		add (table);
 	}
 
-    private static void addHiddenActionParameterToForm (final Form form,
-                                                        final int action) {
-        final HiddenInput hidden = new HiddenInput (PARAM_ACTION, action + "");
-		form.add (hidden);
+	private void forwardViewpoint () {
+        add ("forwardViewpoint");
+        throw new UnsupportedOperationException ();
+	}
+
+	private void showForwardViewpointForm () {
+        add ("showForwardViewpointForm");
+        throw new UnsupportedOperationException ();
+	}
+
+	private void showHomepage (final IWContext context) throws RemoteException {
+		final Table table = new Table ();
+		table.add (getUserHomepageLink (context), 1, 1);
+		add (table);
+	}
+
+    private Link getUserHomepageLink (final IWContext context)
+        throws RemoteException {
+		final Text userHomePageText
+                = new Text (getLocalizedString (GOBACKTOMYPAGE_KEY,
+                                                GOBACKTOMYPAGE_DEFAULT));
+ 		final UserBusiness userBusiness = (UserBusiness)
+                IBOLookup.getServiceInstance (context, UserBusiness.class);
+        final User user = getCurrentUser (context);
+		final Link link = new Link (userHomePageText);
+        link.setPage (userBusiness.getHomePageIDForUser (user));
+        return link;
     }
 
-    private SubmitButton getSubmitButton (final String key,
+    private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
-        final String name
-                = getResourceBundle().getLocalizedString (key, defaultName);
-		return (SubmitButton) getButton (new SubmitButton (name));
+        return (SubmitButton) getButton (new SubmitButton
+                                         (action, getLocalizedString
+                                          (key, defaultName)));
     }
 
     private Table createViewpointTable
-        (final Viewpoint viewpoint, final IWContext iwc) throws RemoteException{
+        (final Viewpoint viewpoint, final IWContext context) throws RemoteException{
 		final Table table = new Table();
 		table.setWidth (getWidth ());
 		table.setCellspacing (0);
@@ -540,7 +541,7 @@ public class ViewpointForm extends CommuneBlock {
                                             FROMCITIZEN_DEFAULT), 1, row);
 		table.add (new Break (), 1, row);
 		final UserBusiness userBusiness = (UserBusiness) IBOLookup
-                .getServiceInstance (iwc, UserBusiness.class);
+                .getServiceInstance (context, UserBusiness.class);
 		final User user = userBusiness.getUser (viewpoint.getUserId ());
 		table.add (new Text (user.getName  ()), 1, row++);
 		table.add (getLocalizedSmallHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1,
@@ -552,16 +553,6 @@ public class ViewpointForm extends CommuneBlock {
 		table.add (new Break (), 1, row);
 		table.add (new Text (viewpoint.getMessage ()), 1, row++);
         return table;
-    }
-
-    private Link getCancelLink (final IWContext iwc) throws RemoteException {
- 		final UserBusiness userBusiness = (UserBusiness)
-                IBOLookup.getServiceInstance (iwc, UserBusiness.class);
-        final User user = getCurrentUser (iwc);
-		final Link cancel
-                = new Link (getLocalizedString (CANCEL_KEY, CANCEL_DEFAULT));
-        cancel.setPage (userBusiness.getHomePageIDForUser (user));
-        return cancel;
     }
 
 	private boolean isAuthenticated (final IWContext context) {
@@ -596,12 +587,7 @@ public class ViewpointForm extends CommuneBlock {
         
         if (isAuthenticated (context)) {
             if (context.isLoggedOn ()) {
-                //try {
-                    //  final UserBusiness userBusiness = (UserBusiness) IBOLookup.getServiceInstance (context, UserBusiness.class);
-                    result = context.getCurrentUser ();
-                /*} catch (RemoteException e) {
-                    result = null;
-                }*/
+                result = context.getCurrentUser ();
             } else {
                 final HttpSession session = context.getSession ();
                 result = (User) session.getAttribute (USER_KEY);
@@ -610,8 +596,8 @@ public class ViewpointForm extends CommuneBlock {
         return result;
     }
 
-    private static String getSsn(final IWContext iwc, final String key) {
-        final String rawInput = iwc.getParameter(key);
+    private static String getSsn(final IWContext context, final String key) {
+        final String rawInput = context.getParameter(key);
         if (rawInput == null) {
             return null;
         }
@@ -630,38 +616,28 @@ public class ViewpointForm extends CommuneBlock {
             digitOnlyInput.insert(0, century);
         }
         final PIDChecker pidChecker = PIDChecker.getInstance();
-        if (digitOnlyInput.length() != 12 || !pidChecker.isValid(digitOnlyInput.toString())) {
+        if (digitOnlyInput.length() != 12
+            || !pidChecker.isValid(digitOnlyInput.toString())) {
             return null;
         }
         final int year = new Integer(digitOnlyInput.substring(0, 4)).intValue();
-        final int month = new Integer(digitOnlyInput.substring(4, 6)).intValue();
+        final int month
+                = new Integer(digitOnlyInput.substring(4, 6)).intValue();
         final int day = new Integer(digitOnlyInput.substring(6, 8)).intValue();
-        if (year < 1880 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
+        if (year < 1880 || year > currentYear || month < 1 || month > 12
+            || day < 1 || day > 31) {
             return null;
         }
         return digitOnlyInput.toString();
     }
 
-	private Link getUserHomePageLink (final IWContext iwc)
-        throws RemoteException {
-		final Text userHomePageText
-                = new Text (getLocalizedString (GOBACKTOMYPAGE_KEY,
-                                                GOBACKTOMYPAGE_DEFAULT));
- 		final UserBusiness userBusiness = (UserBusiness)
-                IBOLookup.getServiceInstance (iwc, UserBusiness.class);
-        final User user = getCurrentUser (iwc);
-		final Link link = new Link (userHomePageText);
-        link.setPage (userBusiness.getHomePageIDForUser (user));
-		return link;
-	}
-
 	private String getLocalizedString(final String key, final String value) {
 		return getResourceBundle().getLocalizedString(key, value);
 	}
 
-	private ViewpointBusiness getViewpointBusiness (final IWContext iwc)
+	private ViewpointBusiness getViewpointBusiness (final IWContext context)
         throws RemoteException {
 		return (ViewpointBusiness) IBOLookup.getServiceInstance
-                (iwc, ViewpointBusiness.class);
+                (context, ViewpointBusiness.class);
 	}
 }
