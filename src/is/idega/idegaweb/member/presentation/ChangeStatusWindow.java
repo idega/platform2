@@ -33,29 +33,14 @@ import com.idega.user.business.UserBusiness;
     
  	public static final String CHANGE_STATUS_PARAM = "iw_me_c_st";
  	public static final String GROUP_APPLICATION_ID_PARAM = "iw_me_c_gap";
- 	 	
- 	 	/*
-    public static final String APPROVE_STATUS_VALUE = "approve";
-    public static final String DENY_STATUS_VALUE = "deny";
-    public static final String PENDING_STATUS_VALUE = "pending";
-        */
 
     public Vector parameters;
 
     public ChangeStatusWindow(){
       super("Change application status",300,130);
-      super.setBackgroundColor("#d4d0c8");
+      //super.setBackgroundColor("#d4d0c8");
       super.setScrollbar(false);
       super.setAllMargins(0);
-
-      question = Text.getBreak();
-      myForm = new Form();
-      parameters = new Vector();
-      confirm = new SubmitButton(ConfirmWindow.PARAMETER_CONFIRM,"   Yes   ");
-      close = new CloseButton("   No    ");
-      // close.setOnFocus();
-      initialize();
-
     }
  
 
@@ -65,7 +50,6 @@ import com.idega.user.business.UserBusiness;
       myTable.setHeight("100%");
       myTable.setCellpadding(5);
       myTable.setCellspacing(5);
-      //myTable.setBorder(1);
 
 
       myTable.mergeCells(1,1,2,1);
@@ -73,7 +57,6 @@ import com.idega.user.business.UserBusiness;
       myTable.add(confirm,1,2);
       myTable.add(close,2,2);
       myTable.setAlignment(1,1,"center");
-//      myTable.setAlignment(2,1,"center");
       myTable.setAlignment(1,2,"right");
       myTable.setAlignment(2,2,"left");
 
@@ -92,22 +75,16 @@ import com.idega.user.business.UserBusiness;
     }
 
 
-    /*abstract*/
     public void initialize(){
       setQuestion(new Text("Change status of application?"));
-      maintainParameter(CHANGE_STATUS_PARAM);
-      maintainParameter(GROUP_APPLICATION_ID_PARAM);
+      myForm.maintainParameter(CHANGE_STATUS_PARAM);
+      myForm.maintainParameter(GROUP_APPLICATION_ID_PARAM);
     }
 
 
-    public void maintainParameter(String parameter){
-      parameters.add(parameter);
-    }
-
-    /*abstract*/
     public void actionPerformed(IWContext iwc)throws Exception{
       String status = iwc.getParameter(CHANGE_STATUS_PARAM);
-      
+        
       if(status != null){
       	int appId = Integer.parseInt(iwc.getParameter(GROUP_APPLICATION_ID_PARAM));
       	
@@ -122,13 +99,15 @@ import com.idega.user.business.UserBusiness;
     }
 
 
-    public void _main(IWContext iwc) throws Exception {
-      Iterator iter = parameters.iterator();
-      while (iter.hasNext()) {
-        String item = (String)iter.next();
-        myForm.maintainParameter(item);
-      }
-
+    public void main(IWContext iwc) throws Exception {
+    		
+      myForm = new Form();
+      confirm = new SubmitButton(ConfirmWindow.PARAMETER_CONFIRM,"   Yes   ");
+      close = new CloseButton("   No    ");
+      
+      initialize();
+      
+      
       String confirmThis = iwc.getParameter(ConfirmWindow.PARAMETER_CONFIRM);
 
       if(confirmThis != null){
@@ -142,7 +121,7 @@ import com.idega.user.business.UserBusiness;
         }
         this.add(myForm);
       }
-      super._main(iwc);
+
     }
 
     public UserBusiness getUserBusiness(IWApplicationContext iwc) throws RemoteException{
