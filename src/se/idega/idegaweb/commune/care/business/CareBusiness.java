@@ -1,6 +1,6 @@
 /*
- * $Id: CareBusiness.java,v 1.3 2004/10/14 13:56:32 thomas Exp $
- * Created on Oct 14, 2004
+ * $Id: CareBusiness.java,v 1.4 2004/10/19 10:33:42 thomas Exp $
+ * Created on Oct 18, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -11,17 +11,20 @@ package se.idega.idegaweb.commune.care.business;
 
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.care.data.CurrentSchoolSeasonHome;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.business.IBOService;
 import com.idega.user.data.User;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 13:56:32 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/19 10:33:42 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface CareBusiness extends IBOService {
 
@@ -34,4 +37,19 @@ public interface CareBusiness extends IBOService {
 	 * @see se.idega.idegaweb.commune.care.business.CareBusinessBean#hasGrantedCheck
 	 */
 	public boolean hasGrantedCheck(User child) throws RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.business.CareBusinessBean#getCurrentSeason
+	 */
+	public SchoolSeason getCurrentSeason() throws java.rmi.RemoteException, javax.ejb.FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.business.CareBusinessBean#getCurrentSchoolSeasonHome
+	 */
+	public CurrentSchoolSeasonHome getCurrentSchoolSeasonHome() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.business.CareBusinessBean#getSchoolSeasonHome
+	 */
+	public SchoolSeasonHome getSchoolSeasonHome() throws java.rmi.RemoteException;
 }

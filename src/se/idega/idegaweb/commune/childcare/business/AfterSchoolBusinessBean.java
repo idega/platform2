@@ -10,15 +10,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
-
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
@@ -126,7 +123,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 	private AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body) throws CreateException, RemoteException {
 		if (season == null) {
 			try {
-				season = getSchoolChoiceBusiness().getCurrentSeason();
+				season = getCareBusiness().getCurrentSeason();
 			}
 			catch (FinderException fex) {
 				season = null;

@@ -4127,7 +4127,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return true;
 	 	}
 	 	
-		private CareBusiness getCareBusiness() {
+		protected CareBusiness getCareBusiness() {
 			try {
 				return (CareBusiness) this.getServiceInstance(CareBusiness.class);
 			}

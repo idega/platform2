@@ -1,5 +1,5 @@
 /*
- * $Id: PlacementBusinessBean.java,v 1.2 2004/10/18 16:36:44 thomas Exp $
+ * $Id: PlacementBusinessBean.java,v 1.3 2004/10/19 10:33:42 thomas Exp $
  * Created on Oct 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,6 +24,7 @@ import se.cubecon.bun24.viewpoint.data.SubCategory;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
 import se.idega.idegaweb.commune.care.resource.business.ResourceBusiness;
@@ -123,7 +124,7 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 			throw new CentralPlacementException(KEY_ERROR_CHILD_ID, "No valid pupil found");
 		
 		try {
-			chosenSeason = getSchoolChoiceBusiness().getSchoolSeasonHome().
+			chosenSeason = getCareBusiness().getSchoolSeasonHome().
 				findByPrimaryKey(new Integer(getSchoolCommuneSession(iwc).getSchoolSeasonID()));
 		} catch (Exception e1) {
 			//empty
@@ -501,9 +502,14 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 		return (SchoolChoiceHome) this.getIDOHome(SchoolChoice.class);
 	}
 	
+	private CareBusiness getCareBusiness() throws RemoteException {
+		return (CareBusiness) getServiceInstance(CareBusiness.class);
+	}
+
 	private ChildCareBusiness getChildCareBusiness() throws RemoteException {
 		return (ChildCareBusiness) getServiceInstance(ChildCareBusiness.class);
 	}
+
 	
 	private CentralPlacementBusiness getCentralPlacementBusiness() throws RemoteException {
 		return (CentralPlacementBusiness) getServiceInstance(CentralPlacementBusiness.class);

@@ -3,9 +3,12 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
+import se.idega.idegaweb.commune.care.business.CareBusiness;
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
@@ -17,16 +20,12 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.util.SelectorUtility;
 
-import se.idega.idegaweb.commune.care.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 /**
  * @author laddi
  */
 public abstract class ChildCareBlock extends CommuneBlock {
 
+	private CareBusiness careBusiness;
 	private ChildCareBusiness business;
 	protected ChildCareSession session;
 	private int _childCareID = -1;
@@ -46,6 +45,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		setResourceBundle(getResourceBundle(iwc));
 		business = getChildCareBusiness(iwc);
 		session = getChildCareSession(iwc);
+		careBusiness = getCareBusiness(iwc);
 		initialize();
 
 		init(iwc);
@@ -64,6 +64,19 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	private ChildCareSession getChildCareSession(IWContext iwc) throws RemoteException {
 		return (ChildCareSession) IBOLookup.getSessionInstance(iwc, ChildCareSession.class);	
 	}
+	
+	private CareBusiness getCareBusiness(IWContext iwc) throws RemoteException {
+		return (CareBusiness) IBOLookup.getServiceInstance(iwc, CareBusiness.class);
+	}
+	
+	
+	/**
+	 * @return CareBusiness
+	 */
+	public CareBusiness getCareBusiness() {
+		return careBusiness;
+	}
+	
 	
 	/**
 	 * @return ChildCareBusiness
@@ -241,7 +254,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 			}
 			catch (FinderException e) {
 				try {
-					SchoolSeason currentSeason = getBusiness().getSchoolChoiceBusiness().getCurrentSeason();
+					SchoolSeason currentSeason = careBusiness.getCurrentSeason();
 					menu.setSelectedElement(currentSeason.getPrimaryKey().toString());
 				}
 				catch (FinderException e1) {

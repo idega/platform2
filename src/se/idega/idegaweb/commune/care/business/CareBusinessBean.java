@@ -1,5 +1,5 @@
 /*
- * $Id: CareBusinessBean.java,v 1.3 2004/10/14 13:56:32 thomas Exp $
+ * $Id: CareBusinessBean.java,v 1.4 2004/10/19 10:33:42 thomas Exp $
  * Created on Oct 13, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,9 +16,13 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheckHome;
+import se.idega.idegaweb.commune.care.data.CurrentSchoolSeason;
+import se.idega.idegaweb.commune.care.data.CurrentSchoolSeasonHome;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
@@ -28,10 +32,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 13:56:32 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/19 10:33:42 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 	
@@ -88,7 +92,20 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 		catch (FinderException fe) {
 			return false;
 		}
-	}	
+	}
+	
+	public SchoolSeason getCurrentSeason() throws java.rmi.RemoteException, javax.ejb.FinderException {
+		CurrentSchoolSeason season = getCurrentSchoolSeasonHome().findCurrentSeason();
+		return getSchoolSeasonHome().findByPrimaryKey(season.getCurrent());
+	}
+	
+	public CurrentSchoolSeasonHome getCurrentSchoolSeasonHome() throws java.rmi.RemoteException {
+		return (CurrentSchoolSeasonHome) this.getIDOHome(CurrentSchoolSeason.class);
+	}
+	
+	public SchoolSeasonHome getSchoolSeasonHome() throws java.rmi.RemoteException {
+		return (SchoolSeasonHome) this.getIDOHome(SchoolSeason.class);
+	}
 	
 	private SchoolBusiness getSchoolBusiness() throws RemoteException {
 		if (schoolBusiness == null) {
@@ -96,4 +113,6 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 		}
 		return schoolBusiness;
 	}
+	
+
 }

@@ -1,6 +1,6 @@
 /*
- * $Id: CareBusinessHomeImpl.java,v 1.2 2004/10/14 13:56:32 thomas Exp $
- * Created on Oct 14, 2004
+ * $Id: CareBusinessHomeImpl.java,v 1.3 2004/10/19 10:33:42 thomas Exp $
+ * Created on Oct 18, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 13:56:32 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/19 10:33:42 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CareBusinessHomeImpl extends IBOHomeImpl implements CareBusinessHome {
 
