@@ -74,12 +74,14 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private final static String PRM_P_COUNT = "prv_pcnt";
 	private final static String PRM_U_COUNT = "prv_ucnt";
 	private final static String PRM_U_CHK = "prv_uchk";
+	private final static String PRM_P_CHK = "prv_pchk";
 
 	private final static String PRM_CURSOR_P = "prv_crs_p";
 	private final static String PRM_CURSOR_U = "prv_crs_u";
 
 	private final static String PRM_PROC_SELECTED = "prv_proc_sel";
 	private final static String PRM_PRINT_SELECTED = "prv_pr_sel";
+	private final static String PRM_REPRINT_SELECTED = "prv_rpr_sel";
 	private final static String PRM_DEL_SELECTED = "prv_del_sel";
 	private final static String PRM_UNDEL_SELECTED = "prv_udel_sel";
 
@@ -324,6 +326,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		String processPrm = iwc.getParameter(PRM_PROC_SELECTED);
 		if (iwc.isParameterSet(PRM_PRINT_SELECTED)) {
 			printSelected(iwc);
+		}
+		else if (iwc.isParameterSet(PRM_PRINT_SELECTED)) {
+			printSelected(iwc);
 		} else if ("undel".equals(processPrm)) {
 			undeleteSelected(iwc);
 		} else if ("del".equals(processPrm)) {
@@ -348,6 +353,26 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				true,
 				flag,
 				bulk);
+		}
+	}
+	
+	private void reprintSelected(IWContext iwc) throws Exception {
+		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
+		//boolean bulk = iwc.isParameterSet("prv_bulk");
+		// show bulk list when printing to bulk files
+		//isBulkManual = bulk;
+		//boolean flag = !iwc.isParameterSet("prv_mark");
+		String[] ids = iwc.getParameterValues(PRM_U_CHK);
+		if (ids != null && ids.length > 0) {
+			getDocumentBusiness(iwc).writeBulkPDF(
+				ids,
+				iwc.getCurrentUser(),
+				localize("printdoc.bulkletter_filename","BulkLetterPDF"),
+				iwc.getApplicationSettings().getDefaultLocale(),
+				currentType,
+				 true,
+				false,
+				false);
 		}
 	}
 
@@ -523,48 +548,69 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getPrintButton() {
 		Table T = new Table();
 		T.setCellpadding(2);
-		SubmitButton print =
-			new SubmitButton(
-				PRM_PRINT_SELECTED,
-				getResourceBundle().getLocalizedString("printdoc.create_file", "Create file(s)"));
+		SubmitButton print = new SubmitButton(	PRM_PRINT_SELECTED,getResourceBundle().getLocalizedString("printdoc.create_file", "Create file(s)"));
 
 		print = (SubmitButton) getButton(print);
 		int col = 1;
 		// make sure PRM_PROC_SELECTED parameter is set, for the form to be processed
 		if (currentStatus.equals(statusDeleted)) {
-			SubmitButton undelete =
-				new SubmitButton(
-					PRM_UNDEL_SELECTED,
-					getResourceBundle().getLocalizedString("printdoc.undelete", "Undelete"));
+			SubmitButton undelete =	new SubmitButton(PRM_UNDEL_SELECTED,getResourceBundle().getLocalizedString("printdoc.undelete", "Undelete"));
 			undelete = (SubmitButton) getButton(undelete);
-			undelete.setSubmitConfirm(
-				localize(
-					"printdoc.undelete_message",
-					"Are you sure you want to mark these letters as unprinted ?"));
+			undelete.setSubmitConfirm(	localize("printdoc.undelete_message",	"Are you sure you want to mark these letters as unprinted ?"));
 			T.add(new HiddenInput(PRM_PROC_SELECTED, "undel"));
 			T.add(undelete, col++, 1);
 		} else {
-			SubmitButton delete =
-				new SubmitButton(
-					PRM_DEL_SELECTED,
-					getResourceBundle().getLocalizedString("printdoc.delete", "Delete"));
+			SubmitButton delete =	new SubmitButton(PRM_DEL_SELECTED,getResourceBundle().getLocalizedString("printdoc.delete", "Delete"));
 			delete = (SubmitButton) getButton(delete);
-			delete.setSubmitConfirm(
-				localize(
-					"printdoc.delete_message",
-					"Are you sure you want to mark these letters as deleted ?"));
+			delete.setSubmitConfirm(localize("printdoc.delete_message",	"Are you sure you want to mark these letters as deleted ?"));
 			T.add(new HiddenInput(PRM_PROC_SELECTED, "del"));
 			T.add(delete, col++, 1);
 		}
 
 		if (!currentStatus.equals(statusDeleted)) {
-			CheckBox mark = new CheckBox("prv_mark");
+			CheckBox mark = getCheckBox("prv_mark","");
 			T.add(mark, col++, 1);
 			T.add(getLocalizedHeader("printdoc.keep_unprinted", "Keep unprinted status"), col++, 1);
 		}
 		CheckBox bulk = new CheckBox("prv_bulk");
 		T.add(bulk, col++, 1);
 		T.add(getLocalizedHeader("printdoc.create_bulk_letter", "Bulk letter"), col++, 1);
+		T.add(print, col++, 1);
+		return T;
+	}
+	
+	private PresentationObject getRePrintButton() {
+		Table T = new Table();
+		T.setCellpadding(2);
+		SubmitButton print = new SubmitButton(	PRM_REPRINT_SELECTED,getResourceBundle().getLocalizedString("printdoc.recreate_file", "Recreate file(s)"));
+
+		print = (SubmitButton) getButton(print);
+		int col = 1;
+		/*
+		// make sure PRM_PROC_SELECTED parameter is set, for the form to be processed
+		if (currentStatus.equals(statusDeleted)) {
+			SubmitButton undelete =	new SubmitButton(PRM_UNDEL_SELECTED,getResourceBundle().getLocalizedString("printdoc.undelete", "Undelete"));
+			undelete = (SubmitButton) getButton(undelete);
+			undelete.setSubmitConfirm(	localize("printdoc.undelete_message",	"Are you sure you want to mark these letters as unprinted ?"));
+			T.add(new HiddenInput(PRM_PROC_SELECTED, "undel"));
+			T.add(undelete, col++, 1);
+		} else {
+			SubmitButton delete =	new SubmitButton(PRM_DEL_SELECTED,getResourceBundle().getLocalizedString("printdoc.delete", "Delete"));
+			delete = (SubmitButton) getButton(delete);
+			delete.setSubmitConfirm(localize("printdoc.delete_message",	"Are you sure you want to mark these letters as deleted ?"));
+			T.add(new HiddenInput(PRM_PROC_SELECTED, "del"));
+			T.add(delete, col++, 1);
+		}
+
+		if (!currentStatus.equals(statusDeleted)) {
+			CheckBox mark = getCheckBox("prv_mark","");
+			T.add(mark, col++, 1);
+			T.add(getLocalizedHeader("printdoc.keep_unprinted", "Keep unprinted status"), col++, 1);
+		}
+		CheckBox bulk = new CheckBox("prv_bulk");
+		T.add(bulk, col++, 1);
+		T.add(getLocalizedHeader("printdoc.create_bulk_letter", "Bulk letter"), col++, 1);
+		*/
 		T.add(print, col++, 1);
 		return T;
 	}
@@ -915,14 +961,17 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		throws RemoteException, FinderException {
 		Table pT = new Table();
 		pT.setWidth(Table.HUNDRED_PERCENT);
-		ColumnList printedLetterDocs = new ColumnList(5);
+		ColumnList printedLetterDocs = new ColumnList(6);
 		printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		printedLetterDocs.setBackroundColor("#e0e0e0");
 		printedLetterDocs.setHeader("#", 1);
 		printedLetterDocs.setHeader(localize("printdoc.created_date", "Message created"), 2);
 		printedLetterDocs.setHeader(localize("printdoc.receiver", "Receiver"), 3);
 		printedLetterDocs.setHeader(localize("printdoc.subject", "Subject"), 4);
-		printedLetterDocs.setHeader(localize("printdoc.file", "File"), 5);
+		CheckBox checkAll = getCheckBox("checkallp","");
+		checkAll.setToCheckOnClick(PRM_P_CHK,"this.checked");
+		printedLetterDocs.setHeader(checkAll, 5);
+		printedLetterDocs.setHeader(localize("printdoc.file", "File"), 6);
 		
 		Collection printedLetters =
 			getMessageBusiness(iwc).getSinglePrintedLetterMessagesByType(currentType, pFrom, pTo,count_p,cursor_p);
@@ -939,10 +988,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 		pT.add(getPrintedDatesForm(), 1, prow++);
 		pT.add(printedLetterDocs, 1, prow++);
-		pT.add(
-			getCursorLinks(printedLetters.size(), cursor_p, PRM_CURSOR_P, count_p),
-			1,
-			prow++);
+		pT.add(getCursorLinks(printedLetters.size(), cursor_p, PRM_CURSOR_P, count_p),1,prow++);
+		pT.setAlignment(1, prow, Table.HORIZONTAL_ALIGN_RIGHT);
+		pT.add(getRePrintButton(), 1, prow++);
 
 		Iterator iter = printedLetters.iterator();
 		int count = cursor_p + 1;
@@ -973,7 +1021,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			//viewLink.setFile(fileID);
 			//Link viewLink = new Link(String.valueOf(fileID));
 			//viewLink.setFile(fileID);
+			CheckBox box = getCheckBox(PRM_U_CHK, msg.getPrimaryKey().toString());
+			printedLetterDocs.add(box);
 			printedLetterDocs.add(getViewLink(String.valueOf(fileID),fileID));
+			
+		
 			/*
 			bulkId = msg.getMessageBulkDataFileID();
 			if (bulkId > 0) {
@@ -986,6 +1038,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			*/
 			count++;
 		}
+		
 		return pT;
 	}
 
@@ -1019,6 +1072,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		printedLetterDocs.setHeader("#", 1);
 		printedLetterDocs.setHeader(localize("printdoc.printed_date", "Printing date"), 2);
 		printedLetterDocs.setHeader(localize("printdoc.n_o_docs", "Number of documents"), 3);
+		
 		printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 
 		Iterator iter = printDocs.iterator();
@@ -1056,6 +1110,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			printedLetterDocs.add(getViewLink(view,fileID));
 			count++;
 		}
+		T.add(new HiddenInput(PARAM_LETTER_TYPE, currentType));
 		return T;
 	}
 
@@ -1113,7 +1168,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		letterList.setHeader(localize("printdoc.receiver", "Receiver"), 3);
 		letterList.setHeader(localize("printdoc.subject", "Subject"), 4);
 
-		CheckBox checkAll = new CheckBox("checkall");
+		CheckBox checkAll = getCheckBox("checkall","");
 		checkAll.setToCheckOnClick(PRM_U_CHK,"this.checked");
 		letterList.setHeader(checkAll, 5);
 		letterList.setHeader(localize("printdoc.file", "File"), 6);
@@ -1146,10 +1201,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 			letterList.add(msg.getSubject());
 			if (useCheckBox) {
-				CheckBox box = new CheckBox(PRM_U_CHK, msg.getPrimaryKey().toString());
-				T.add(new HiddenInput(PARAM_LETTER_TYPE, currentType));
-				//T.add(new HiddenInput(PARAM_LETTER_STATUS, currentStatus));
-				letterList.add(box);
+				letterList.add(getCheckBox(PRM_U_CHK, msg.getPrimaryKey().toString()));
 			} else {
 				Link printLink = new Link(localize("printdoc.print", "Print"));
 				printLink.addParameter(PARAM_PRINT_MSG, "true");
@@ -1188,6 +1240,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 			count++;
 		}
+		T.add(new HiddenInput(PARAM_LETTER_TYPE, currentType));
 		return T;
 	}
 
