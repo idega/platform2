@@ -27,7 +27,8 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 
 public class Quote extends Block implements IWBlock {
 
-private int _quoteID;
+private int _quoteID = -1;
+private int _objectID = -1;
 private boolean _hasEditPermission = false;
 private int _iLocaleID;
 private int _row = 1;
@@ -57,31 +58,32 @@ protected IWBundle _iwb;
   public void main(IWContext iwc) throws Exception {
     _iwb = getBundle(iwc);
     _iwrb = _iwb.getResourceBundle(iwc.getCurrentLocale());
+    _objectID = getICObjectInstanceID();
 
     _hasEditPermission = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
     drawTable();
+    QuoteHolder quote = getQuoteBusiness().getRandomQuote(iwc,_iLocaleID,_objectID);
+    if ( quote != null )
+      _quoteID = quote.getQuoteID();
 
     if ( _hasEditPermission )
       _myTable.add(getAdminTable(iwc),1,_row++);
 
-    _myTable.add(getQuoteTable(iwc),1,_row);
+    _myTable.add(getQuoteTable(iwc,quote),1,_row);
     add(_myTable);
   }
 
-  private Table getQuoteTable(IWContext iwc) {
+  private Table getQuoteTable(IWContext iwc,QuoteHolder quote) {
     Table table = new Table();
       table.setBorder(0);
       table.setWidth("100%");
       table.setHeight("100%");
 
-    QuoteHolder quote = getQuoteBusiness().getRandomQuote(iwc,_iLocaleID);
     if ( quote != null ) {
       table.setAlignment(1,1,"left");
       table.setAlignment(1,3,"right");
-
-      _quoteID = quote.getQuoteID();
 
       String originString = quote.getOrigin();
       String textString = quote.getText();
@@ -95,11 +97,11 @@ protected IWBundle _iwb;
 
       Text quoteOrigin = formatText(originString+":",originStyle_);
       Text quoteText = formatText("\""+textString+"\"",quoteStyle_);
-        quoteText.setHorizontalAlignment(alignment_);
+	quoteText.setHorizontalAlignment(alignment_);
       Text quoteAuthor = formatText("-"+Text.getNonBrakingSpace().getText()+authorString,authorStyle_);
 
       if ( originString != null && originString.length() > 0 ) {
-    	table.add(quoteOrigin,1,1);
+	table.add(quoteOrigin,1,1);
 	    table.add(quoteText,1,2);
 	    table.add(quoteAuthor,1,3);
 	    table.setHeight(1,2,"100%");
@@ -109,7 +111,7 @@ protected IWBundle _iwb;
 	    table.setHeight(1,1,"100%");
 	    table.setVerticalAlignment(1,1,"middle");
 
-    	table.add(quoteText,1,1);
+	table.add(quoteText,1,1);
 	    table.add(quoteAuthor,1,3);
       }
     }
@@ -127,8 +129,10 @@ protected IWBundle _iwb;
       table.setCellspacing(0);
 
     table.add(getCreateLink(iwc),1,1);
-    table.add(getEditLink(iwc),2,1);
-    table.add(getDeleteLink(iwc),3,1);
+    if ( _quoteID != -1 ) {
+      table.add(getEditLink(iwc),2,1);
+      table.add(getDeleteLink(iwc),3,1);
+    }
 
     return table;
   }
@@ -138,7 +142,8 @@ protected IWBundle _iwb;
     _myTable.setCellpadding(0);
     _myTable.setCellspacing(0);
     _myTable.setWidth(width_);
-    _myTable.setHeight(height_);
+    if ( height_ != null )
+      _myTable.setHeight(height_);
   }
 
   private Text formatText(String string, String style) {
@@ -151,6 +156,7 @@ protected IWBundle _iwb;
     Link link = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif",_iwrb.getLocalizedString("new_quote","New Quote")));
       link.setWindowToOpen(QuoteEditor.class);
       link.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_NEW);
+      link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
     return link;
   }
 
@@ -159,6 +165,7 @@ protected IWBundle _iwb;
       link.setWindowToOpen(QuoteEditor.class);
       link.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_EDIT);
       link.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID,_quoteID);
+      link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
     return link;
   }
 
@@ -167,11 +174,11 @@ protected IWBundle _iwb;
       link.setWindowToOpen(QuoteEditor.class);
       link.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_DELETE);
       link.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID,_quoteID);
+      link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
     return link;
   }
 
   private void setDefaultValues() {
-    height_ = "60";
     width_ = "150";
     originStyle_ = "font-size:7pt;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
     quoteStyle_ = "font-size:8pt;font-family:Arial,Helvetica,sans-serif;";

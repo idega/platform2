@@ -19,6 +19,7 @@ public class QuoteEditor extends IWAdminWindow{
 private int _quoteID = -1;
 private boolean _update = false;
 private boolean _save = false;
+private int _objectID = -1;
 private int _iLocaleID;
 private QuoteHolder _quote;
 
@@ -47,6 +48,8 @@ public QuoteEditor(){
       _quoteID = -1;
     }
 
+    _objectID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID));
+
     String mode = iwc.getParameter(QuoteBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_EDIT) ) {
@@ -59,7 +62,7 @@ public QuoteEditor(){
       processForm();
     }
     else if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_DELETE) ) {
-      deleteQuote();
+      deleteQuote(iwc);
     }
     else if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_SAVE) ) {
       saveQuote(iwc);
@@ -89,6 +92,7 @@ public QuoteEditor(){
     addLeft(_iwrb.getLocalizedString("quote","Quote")+":",quoteText,true);
     addLeft(_iwrb.getLocalizedString("author","Author")+":",quoteAuthor,true);
     addHiddenInput(new HiddenInput(QuoteBusiness.PARAMETER_QUOTE_ID,Integer.toString(_quoteID)));
+    addHiddenInput(new HiddenInput(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,Integer.toString(_objectID)));
 
     addSubmitButton(new CloseButton());
     addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_SAVE));
@@ -99,14 +103,14 @@ public QuoteEditor(){
     String quoteText = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_TEXT);
     String quoteAuthor = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_AUTHOR);
 
-    getQuoteBusiness().saveQuote(_quoteID,_iLocaleID,quoteOrigin,quoteText,quoteAuthor);
+    getQuoteBusiness().saveQuote(iwc,_objectID,_quoteID,_iLocaleID,quoteOrigin,quoteText,quoteAuthor);
 
     setParentToReload();
     close();
   }
 
-  private void deleteQuote() {
-    getQuoteBusiness().deleteQuote(_quoteID);
+  private void deleteQuote(IWContext iwc) {
+    getQuoteBusiness().deleteQuote(iwc,_objectID,_quoteID,_iLocaleID);
     setParentToReload();
     close();
   }

@@ -2,6 +2,7 @@ package com.idega.block.quote.business;
 
 
 
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.quote.data.QuoteEntity;
@@ -24,6 +25,7 @@ public class QuoteBusiness{
   public static final String PARAMETER_EDIT = "edit";
   public static final String PARAMETER_SAVE = "save";
   public static final String PARAMETER_CLOSE = "close";
+  public static final String PARAMETER_OBJECT_INSTANCE_ID = "qu_o_i_id";
 
   private static QuoteBusiness instance;
 
@@ -40,20 +42,20 @@ public class QuoteBusiness{
   }
 
 
-  public QuoteHolder getRandomQuote(IWApplicationContext iwc, int localeID){
+  public QuoteHolder getRandomQuote(IWApplicationContext iwc, int localeID, int objectID){
     QuoteHolder holder = null;
     QuoteHolder newHolder = null;
     String date = null;
     String dateNow = new idegaTimestamp().toSQLDateString();
 
     try {
-      holder = (QuoteHolder) iwc.getApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID));
+      holder = (QuoteHolder) iwc.getApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID)+"_"+String.valueOf(objectID));
     }
     catch (Exception e) {
       holder = null;
     }
 
-    date = (String) iwc.getApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(localeID));
+    date = (String) iwc.getApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(localeID)+"_"+String.valueOf(objectID));
 
     if ( date != null && holder != null && date.equalsIgnoreCase(dateNow) )
       return holder;
@@ -64,52 +66,54 @@ public class QuoteBusiness{
 	      newHolder = getQuoteHolder(getRandomQuote(localeID));
       }
       if ( newHolder != null ) {
-	    iwc.setApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID),newHolder);
-	    iwc.setApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(localeID),dateNow);
+	    iwc.setApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID)+"_"+String.valueOf(objectID),newHolder);
+	    iwc.setApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(localeID)+"_"+String.valueOf(objectID),dateNow);
 	    return newHolder;
       }
       return null;
     }
   }
 
-  public void saveQuote(int quoteID,int iLocaleID,String quoteOrigin,String quoteText,String quoteAuthor) {
+  public void saveQuote(IWContext iwc,int objectID,int quoteID,int iLocaleID,String quoteOrigin,String quoteText,String quoteAuthor) {
     try{
       boolean update = false;
       if ( quoteID != -1 ) {
-        update = true;
+	update = true;
       }
       QuoteEntityHome qhome = getQuoteHome();
       QuoteEntity quote = null;
       if ( update ) {
-        quote = qhome.findByPrimaryKey(quoteID);
-        if ( quote == null ) {
-            quote = qhome.create();
-            update = false;
-        }
+	quote = qhome.findByPrimaryKey(quoteID);
+	if ( quote == null ) {
+	    quote = qhome.create();
+	    update = false;
+	}
       }
       else {
-        quote = qhome.create();
+	quote = qhome.create();
       }
 
       if ( quoteOrigin != null || quoteOrigin.length() == 0 ) {
-        quote.setQuoteOrigin(quoteOrigin);
+	quote.setQuoteOrigin(quoteOrigin);
       }
       if ( quoteText != null || quoteText.length() == 0 ) {
-        quote.setQuoteText(quoteText);
+	quote.setQuoteText(quoteText);
       }
       if ( quoteAuthor != null || quoteAuthor.length() == 0 ) {
-        quote.setQuoteAuthor(quoteAuthor);
+	quote.setQuoteAuthor(quoteAuthor);
       }
 
       if ( !update ) {
-        quote.setICLocaleID(iLocaleID);
+	quote.setICLocaleID(iLocaleID);
       }
 
       try {
-        quote.store();
+	quote.store();
+	iwc.removeApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(iLocaleID)+"_"+String.valueOf(objectID));
+	iwc.removeApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(iLocaleID)+"_"+String.valueOf(objectID));
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
 
     }
@@ -118,12 +122,14 @@ public class QuoteBusiness{
     }
   }
 
-  public void deleteQuote(int quoteID) {
+  public void deleteQuote(IWContext iwc,int objectID,int quoteID,int localeID) {
     try {
       if ( quoteID != -1 ) {
 	    QuoteEntityHome qhome = getQuoteHome();
-        QuoteEntity quote = qhome.findByPrimaryKey(quoteID);
-        quote.remove();
+	QuoteEntity quote = qhome.findByPrimaryKey(quoteID);
+	quote.remove();
+	iwc.removeApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID)+"_"+String.valueOf(objectID));
+	iwc.removeApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(localeID)+"_"+String.valueOf(objectID));
       }
     }
     catch (Exception e) {
@@ -136,12 +142,12 @@ public class QuoteBusiness{
     try{
       QuoteHolder holder = null;
       if ( quote != null ) {
-        holder = new QuoteHolder();
-        holder.setQuoteID(((Integer)quote.getPrimaryKey()).intValue());
-        holder.setAuthor(quote.getQuoteAuthor());
-        holder.setOrigin(quote.getQuoteOrigin());
-        holder.setText(quote.getQuoteText());
-        holder.setLocaleID(quote.getICLocaleID());
+	holder = new QuoteHolder();
+	holder.setQuoteID(((Integer)quote.getPrimaryKey()).intValue());
+	holder.setAuthor(quote.getQuoteAuthor());
+	holder.setOrigin(quote.getQuoteOrigin());
+	holder.setText(quote.getQuoteText());
+	holder.setLocaleID(quote.getICLocaleID());
       }
       return holder;
     }
@@ -189,10 +195,10 @@ public class QuoteBusiness{
   protected QuoteEntityHome getQuoteHome(){
     if(quoteHome==null){
       try{
-        quoteHome = (QuoteEntityHome)com.idega.data.IDOLookup.getHome(QuoteEntity.class);
+	quoteHome = (QuoteEntityHome)com.idega.data.IDOLookup.getHome(QuoteEntity.class);
       }
       catch(java.rmi.RemoteException rme){
-        rme.printStackTrace();
+	rme.printStackTrace();
       }
     }
     return quoteHome;
