@@ -400,25 +400,28 @@ public class ReportGenerator extends Block {
 
 								ClassHandler cHandler = clDesc.getClassHandler();
 								InputHandler iHandler = null;
+								boolean isHidden = false;
 								if (cHandler != null) {
 									iHandler = cHandler.getHandler();
+									isHidden = iHandler instanceof HiddenInputHandler;
 								}
 
-								if (iHandler != null && !(iHandler instanceof HiddenInputHandler)) {
+								if (iHandler != null && !isHidden) {
 									obj = iHandler.getResultingObject(prmValues, iwc);
 									String displayNameOfValue = iHandler.getDisplayNameOfValue(obj, iwc);
 									if (displayNameOfValue != null) {
 										_parameterMap.put(clDesc.getName(), displayNameOfValue);
 									}
 								}
-								else {
+								else if (!isHidden){
 									//ONLY HANDLES ONE VALUE!
 									obj = getParameterObject(iwc, prm, prmClassType);
 									_parameterMap.put(clDesc.getName(), prm);
 								}
 
-								_parameterMap.put(_prmLablePrefix + clDesc.getName(), clDesc.getLocalizedName(currentLocale) + ":");
-
+								if (!isHidden) {
+									_parameterMap.put(_prmLablePrefix + clDesc.getName(), clDesc.getLocalizedName(currentLocale) + ":");
+								}
 								//							switch (index) {
 								//								case 0:
 								//									obj = new IWTimestamp(23,12,1898).getDate();
