@@ -27,6 +27,13 @@ public java.util.Collection findAllCitizensRegisteredToSchool(com.idega.block.sc
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findCitizensNotAssignedToClassOnGivenDate(java.sql.Date p0,java.util.Collection p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException,com.idega.data.IDOLookupException,javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CitizenBMPBean)entity).ejbFindCitizensNotAssignedToClassOnGivenDate(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public Citizen findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Citizen) super.findByPrimaryKeyIDO(pk);
  }

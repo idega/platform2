@@ -14,13 +14,17 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.school.data.SchoolChoice;
 
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.data.IDOCompositPrimaryKeyException;
 import com.idega.data.IDOEntityDefinition;
+import com.idega.data.IDOEntityField;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOStoreException;
+import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
 import com.idega.util.ListUtil;
 
@@ -196,6 +200,77 @@ public class CitizenBMPBean extends UserBMPBean {
 			return ListUtil.getEmptyList();
 		}
 	}
+	
+	
+	
+	public Collection ejbFindCitizensNotAssignedToClassOnGivenDate(Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException, FinderException{
+		try {
+			
+			IDOEntityDefinition usrDef = IDOLookup.getEntityDefinitionForClass(User.class);
+			IDOEntityDefinition scmDef = IDOLookup.getEntityDefinitionForClass(SchoolClassMember.class);
+			String usrIdColumn = usrDef.getPrimaryKeyDefinition().getField().getSQLFieldName();
+			IDOEntityField dateOfBirthField = usrDef.findFieldByUniqueName(User.FIELD_DATE_OF_BIRTH);
+
+			IDOEntityField memberField = scmDef.findFieldByUniqueName(SchoolClassMember.FIELD_MEMBER);
+			IDOEntityField registerDateField = scmDef.findFieldByUniqueName(SchoolClassMember.FIELD_REGISTER_DATE);
+			IDOEntityField schoolClassField = scmDef.findFieldByUniqueName(SchoolClassMember.FIELD_SCHOOLCLASS);
+
+			IDOQuery query = this.idoQuery();
+			
+			query.appendSelectAllFrom(usrDef.getSQLTableName());
+			query.appendWhere();
+			query.append(dateOfBirthField);
+			query.appendGreaterThanOrEqualsSign();
+			query.append(firstDateOfBirth);
+			
+			query.appendAnd();
+			query.append(dateOfBirthField);
+			query.appendLessThanOrEqualsSign();
+			query.append(lastDateOfBirth);
+			
+			query.appendAnd();
+			query.append(usrIdColumn);
+			
+			IDOQuery subQuery = this.idoQuery();
+			
+			subQuery.appendSelect();
+			subQuery.append(" usr.");
+			subQuery.append(usrIdColumn);
+			subQuery.appendFrom();
+			subQuery.append(scmDef.getSQLTableName());
+			subQuery.append(" cm, ");
+			subQuery.append(usrDef.getSQLTableName());
+			subQuery.append(" usr ");
+			subQuery.appendWhere();
+			subQuery.append("usr.");
+			subQuery.append(usrIdColumn);
+			subQuery.appendEqualSign();
+			subQuery.append("cm.");
+			subQuery.append(memberField);
+			
+			subQuery.appendAnd();
+			subQuery.append("cm.");
+			subQuery.append(registerDateField);
+			subQuery.appendLessThanOrEqualsSign();
+			subQuery.append(date);
+			
+			subQuery.appendAnd();
+			subQuery.append("cm.");
+			subQuery.append(schoolClassField);
+			subQuery.appendInCollection(classes);
+			
+			query.appendNotIn(subQuery);
+			
+			System.out.println("SQL -> "+this.getClass()+":"+query);
+					
+			return idoFindPKsByQuery(query);
+		} catch (IDOCompositPrimaryKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		return ListUtil.getEmptyList();
+	}
+
 	
 	
 

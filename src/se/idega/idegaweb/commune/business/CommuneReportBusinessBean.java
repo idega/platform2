@@ -8,7 +8,6 @@ package se.idega.idegaweb.commune.business;
 
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
-import is.idega.idegaweb.member.business.NoParentFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -144,7 +143,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+		DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
 		
 		
 		//Child - Fields
@@ -264,7 +263,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				GroupRelation rel = (GroupRelation)iterator.next();
 				Timestamp time = rel.getInitiationDate();
 				if(time != null){
-					data.addData(childGroupInvitationDate,dataFormat.format(time));
+					data.addData(childGroupInvitationDate,dateFormat.format(time));
 				} else {
 					data.addData(childGroupInvitationDate,"No time specified");
 				}
@@ -298,7 +297,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						GroupRelation rel = (GroupRelation)pIterator.next();
 						Timestamp time = rel.getInitiationDate();
 						if(time != null){
-							data.addData(parent1GroupInvitationDate,dataFormat.format(time));
+							data.addData(parent1GroupInvitationDate,dateFormat.format(time));
 						} else {
 							data.addData(parent1GroupInvitationDate,_iwrb.getLocalizedString("CommuneReportBusiness.no_time_specified","No time specified"));
 						}
@@ -330,14 +329,14 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						GroupRelation rel = (GroupRelation)pIterator.next();
 						Timestamp time = rel.getInitiationDate();
 						if(time != null){
-							data.addData(parent2GroupInvitationDate,dataFormat.format(time));
+							data.addData(parent2GroupInvitationDate,dateFormat.format(time));
 						} else {
 							data.addData(parent2GroupInvitationDate,_iwrb.getLocalizedString("CommuneReportBusiness.no_time_specified","No time specified"));
 						}
 				
 					}
 				}
-			} catch (NoParentFound e) {
+			} catch (NoCustodianFound e) {
 				//System.out.println("["+this.getClass()+"]: "+e.getMessage());
 				//e.printStackTrace();
 			} 
@@ -345,7 +344,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			
 		}
 		
-		reportData.addExtraHeaderParameter("label_current_date",_iwrb.getLocalizedString("CommuneReportBusiness.label_current_date","Current date"),"current_date",dataFormat.format(IWTimestamp.getTimestampRightNow()));
+		reportData.addExtraHeaderParameter("label_current_date",_iwrb.getLocalizedString("CommuneReportBusiness.label_current_date","Current date"),"current_date",dateFormat.format(IWTimestamp.getTimestampRightNow()));
 
 		return reportData;
 	}

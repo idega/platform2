@@ -3,6 +3,26 @@ package com.idega.block.school.data;
 
 public interface SchoolClassMember extends com.idega.data.IDOEntity
 {
+	
+	public final static String FIELD_SCHOOLCLASSMEMBERID = "sch_class_member_id";
+	public final static String FIELD_SCHOOLCLASSMEMBER = "sch_class_member";
+	public final static String FIELD_MEMBER = "ic_user_id";
+	public final static String FIELD_NOTES = "notes";
+	public final static String FIELD_SCHOOLCLASS = "sch_school_class_id";
+	public final static String FIELD_REGISTER_DATE = "register_date";
+	public final static String FIELD_REMOVED_DATE = "removed_date";
+	public final static String FIELD_REGISTRATOR = "registrator";
+	public final static String FIELD_NEEDS_SPECIAL_ATTENTION = "NEEDS_SPECIAL_ATTENTION";
+	public final static String FIELD_SPECIALLY_PLACED = "SPECIALLY_PLACED";
+	public final static String FIELD_LANGUAGE = "LANGUAGE";
+	//Added for the kompliterings project
+	public final static String FIELD_COMPENSATION_BY_INVOICE = "comp_by_invoice";
+	public final static String FIELD_INVOICE_INTERVAL = "invoice_int";
+	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";
+
+	
+	
+	
  public int getClassMemberId();
  public boolean getHasCompensationByInvoice();
  public java.lang.String getInvoiceInterval();
