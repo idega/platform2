@@ -397,7 +397,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 			HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		
-			HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
+			HSSFSheet members = excel.getSheetAt(SHEET_BOARD_PART);
 			int firstRow = 6;
 			int lastRow = members.getLastRowNum();
 		
@@ -417,8 +417,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					int firstCell = row.getFirstCellNum();
 					int lastCell = row.getLastCellNum();
 				
-					String name = row.getCell(COLUMN_BOARD_MEMBER_NAME).getStringCellValue();
-					if(name.indexOf("##")!=-1){
+					HSSFCell nameCell = row.getCell(COLUMN_BOARD_MEMBER_NAME);
+					if(nameCell==null){
+						keepOnReading = false;
+					}
+	
+					String name = nameCell.getStringCellValue();
+					if( name==null || name.indexOf("##")!=-1 || name.equals("") ){
 						keepOnReading = false;
 					} 
 					
@@ -437,7 +442,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						}
 						catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-							WorkReportMember member = createWorkReportMember(workReportId,ssn,false);//sets basic data
+							WorkReportMember member = createWorkReportMember(workReportId,ssn,true);//sets basic data
 							member.setAsBoardMember( true);
 							
 							if(streetName!=null && !"".equals(streetName)){	
@@ -500,7 +505,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 				HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 			
-				HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
+				HSSFSheet members = excel.getSheetAt(SHEET_ACCOUNT_PART);
 				int firstRow = 4;
 				int lastRow = members.getLastRowNum();
 			
