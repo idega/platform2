@@ -1,12 +1,3 @@
-/*
- * $Id: CitizenAccountApplication.java,v 1.64 2004/02/19 12:36:31 anders Exp $
- *
- * Copyright (C) 2002 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
- */
 package se.idega.idegaweb.commune.account.citizen.presentation;
 
 import java.rmi.RemoteException;
@@ -61,11 +52,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/02/19 12:36:31 $ by $Author: anders $
+ * Last modified: $Date: 2004/02/26 09:40:51 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.64 $
+ * @version $Revision: 1.65 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -129,7 +120,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 	final static String TENANCY_AGREEMENT_KEY = "caa_tenancy_agreement";
 	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT = "Ansökan är skickad.";
 	private final static String TEXT_APPLICATION_SUBMITTED_KEY = "caa_app_submitted";
-	private final static String UNKNOWN_CITIZEN_DEFAULT = "Du finns inte registrerad som medborgare i Nacka. Du har ändå" + " möjlighet att registrera dig för ett användarkonto om du har" + " planerat att flytta till Nacka eller vill att ditt barn ska gå i" + " skolan i kommunen. Följ instruktionerna nedan.";
+	private final static String UNKNOWN_CITIZEN_DEFAULT = "Du finns inte registrerad som medborgare i kommunen. Du har ändå" + " möjlighet att registrera dig för ett användarkonto om du har" + " planerat att flytta till kommunen eller vill att ditt barn ska gå i" + " skolan i kommunen. Följ instruktionerna nedan.";
 	private final static String UNKNOWN_CITIZEN_KEY = "caa_unknown_citizen";
 	private final static String USER_ALLREADY_HAS_A_LOGIN_DEFAULT = "Du har redan ett konto";
 	private final static String USER_ALLREADY_HAS_A_LOGIN_KEY = "caa_user_allready_has_a_login";
@@ -520,7 +511,7 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 
 		final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 		final User user = business.getUser(ssn);
-		if (null != user) {
+		if (null != user && citizenLivesInNacka (iwc, user)) {
 			viewSimpleApplicationForm(iwc);
 			return;
 		}
