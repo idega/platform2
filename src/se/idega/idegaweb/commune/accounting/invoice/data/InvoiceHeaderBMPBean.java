@@ -33,8 +33,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	private static final String COLUMN_DATE_TRANSACTION = "date_transaction";
 	private static final String COLUMN_CREATED_BY = "created_by";
 	private static final String COLUMN_CHANGED_BY = "changed_by";
-	private static final String COLUMN_OWN_POSTING = "own_posting";
-	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -49,8 +47,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		addAttribute(COLUMN_DATE_TRANSACTION, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CREATED_BY, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_CHANGED_BY, "", true, true, java.lang.String.class, 1000);
-		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
-		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
 
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 		addManyToOneRelationship(COLUMN_CUSTODIAN_ID, User.class);
@@ -88,12 +84,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public String getChangedBy() {
 		return getStringColumnValue(COLUMN_CHANGED_BY);
 	}
-	public String getOwnPosting() {
-		return getStringColumnValue(COLUMN_OWN_POSTING);
-	}
-	public String getDoublePosting() {
-		return getStringColumnValue(COLUMN_DOUBLE_POSTING);
-	}
 
 
 	public void setSchoolCategoryID(String i) {
@@ -128,12 +118,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	}
 	public void setChangedBy(String s) {
 		setColumn(COLUMN_CHANGED_BY, s);
-	}
-	public void setOwnPosting(String s) {
-		setColumn(COLUMN_OWN_POSTING, s);
-	}
-	public void setDoublePosting(String s) {
-		setColumn(COLUMN_DOUBLE_POSTING, s);
 	}
 	
 	public Integer ejbFindByCustodian(User custodian) throws FinderException {

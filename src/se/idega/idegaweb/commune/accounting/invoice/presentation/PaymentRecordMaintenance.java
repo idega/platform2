@@ -53,6 +53,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldBMPBean;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
@@ -65,11 +66,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/07 21:00:00 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/08 10:19:33 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -357,9 +358,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final PdfPTable table = new PdfPTable (fields.length + 1);
         table.setWidthPercentage (100f);
         table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_CENTER);
         for (int i = 0; i < fields.length; i++) {
             addPhrase (table, fields [i].getFieldTitle ());
         }
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
         addPhrase (table, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
         for (int i = 0; i < records.length; i++) {
             final PaymentRecord record = records [i];
@@ -370,12 +373,22 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             int offset = 0;
             for (int j = 0; j < fields.length; j++) {
                 final PostingField field = fields [j];
+                if (field.getJustification ()
+                    == PostingFieldBMPBean.JUSTIFY_RIGHT) {
+                    table.getDefaultCell ().setHorizontalAlignment
+                            (Element.ALIGN_RIGHT);
+                } else {
+                    table.getDefaultCell ().setHorizontalAlignment
+                            (Element.ALIGN_LEFT);
+                }
                 final int endPosition = min (offset + field.getLen (),
                                              postingString.length ());
                 addPhrase (table, postingString.substring
                            (offset, endPosition).trim ());
                 offset = endPosition;
             }
+            table.getDefaultCell ().setHorizontalAlignment
+                    (Element.ALIGN_RIGHT);
             addPhrase (table, ((long)record.getTotalAmount ()) + "");
         }
 		return table;

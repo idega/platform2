@@ -152,8 +152,9 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setCustodianId(((Integer)custodian.getPrimaryKey()).intValue());
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
-						invoiceHeader.setOwnPosting(categoryPosting.getAccount());
-						invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
+                        // SN: posting not applicable in invoice header anymore
+						// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
+						// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						System.out.println("Store Invoice Header with Category '"+invoiceHeader.getSchoolCategoryID());
 						System.out.println("and custodian "+invoiceHeader.getCustodianId());
@@ -422,8 +423,9 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setCustodianId(custodianID);
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
-						invoiceHeader.setOwnPosting(categoryPosting.getAccount());
-						invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
+                        // SN: posting not applicable in invoice header anymore
+						// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
+						// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						invoiceHeader.store();
 					}

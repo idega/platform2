@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/08 08:08:00 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/08 10:19:33 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.86 $
+ * @version $Revision: 1.87 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1070,17 +1070,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             table.add (getStyledInput (PERIOD_KEY, periodFormatter.format
                                        (now)), col++, row++);
             table.setHeight (row++, 12);
-            addSmallHeader (table, col++, row, OWN_POSTING_KEY,
-                            OWN_POSTING_DEFAULT, ":");
-            table.mergeCells (1, row, table.getColumns (), row);
-            table.add (getPostingParameterForm (context, OWN_POSTING_KEY), 1,
-                       row++);
-            addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
-                            DOUBLE_POSTING_DEFAULT, ":");
-            table.mergeCells (1, row, table.getColumns (), row);
-            table.add (getPostingParameterForm (context, DOUBLE_POSTING_KEY), 1,
-                       row++);
-            table.setHeight (row++, 12);
             table.mergeCells (1, row, table.getColumns (), row);
             table.add (getSubmitButton (ACTION_NEW_COMPILATION,
                                         CREATE_INVOICE_COMPILATION_KEY,
@@ -1105,13 +1094,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final int custodianId = Integer.parseInt (context.getParameter
                                                   (INVOICE_RECEIVER_KEY));
         final User currentUser = context.getCurrentUser ();
-        final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
-        final String doublePosting = getPostingString (context,
-                                                       DOUBLE_POSTING_KEY);
         final InvoiceBusiness business = getInvoiceBusiness (context);
         final InvoiceHeader header = business.createInvoiceHeader
-                (operationalField, currentUser, custodianId,  ownPosting,
-                 doublePosting, new java.sql.Date (period.getTime ()));
+                (operationalField, currentUser, custodianId,
+                 new java.sql.Date (period.getTime ()));
         final String [][] parameters =
                 {{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
                 { INVOICE_COMPILATION_KEY,
@@ -1270,10 +1256,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final PdfPTable table = new PdfPTable (fields.length + 1);
         table.setWidthPercentage (100f);
         table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_CENTER);
         for (int i = 0; i < fields.length; i++) {
             addPhrase (table, fields [i].getFieldTitle ());
         }
         addPhrase (table, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
         for (int i = 0; i < records.length; i++) {
             final InvoiceRecord record = records [i];
             final String postingString = record.getOwnPosting ();
@@ -1556,16 +1544,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         TOTAL_AMOUNT_VAT_DEFAULT, ":");
         table.setAlignment (5, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getTotalAmountVat (records) + "", 5, row++);
-        addSmallHeader (table, 1, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
-                        ":");
-        table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getPostingListTable (context, header.getOwnPosting ()), 1,
-                   row++);
-        addSmallHeader (table, 1, row, DOUBLE_POSTING_KEY,
-                        DOUBLE_POSTING_DEFAULT, ":");
-        table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getPostingListTable (context, header.getDoublePosting ()), 1,
-                   row++);
         
         return table;
     }

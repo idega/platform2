@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/07 21:00:00 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/08 10:19:33 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -363,8 +363,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param schoolCategoryKey string constant from SchoolCategoryBMPBean
 	 * @param createdBy the user who was logged on and initiated this
 	 * @param custodianId the invoice receiver's user id
-	 * @param ownPosting egen kontering
-	 * @param doublePosting motkontering
 	 * @param period the month this occurs
 	 * @return the new Invoice Header
 	 * @exception CreateException if lower level fails
@@ -373,8 +371,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		final String schoolCategoryKey,
 		final User createdBy,
 		final int custodianId,
-		final String ownPosting,
-		final String doublePosting,
 		final Date period)
 		throws CreateException {
 		try {
@@ -388,8 +384,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			}
 			header.setCustodianId (custodianId);
 			header.setDateCreated (new Date (new java.util.Date ().getTime ()));
-			if (null != doublePosting) header.setDoublePosting (doublePosting);
-			if (null != ownPosting) header.setOwnPosting (ownPosting);
 			if (null != period) header.setPeriod (period);
 			header.setStatus(ConstantStatus.PRELIMINARY);
 			header.store();
