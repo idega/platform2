@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.5 2002/02/22 17:22:07 palli Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.6 2002/02/27 13:54:58 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package is.idega.idegaweb.campus.block.application.business;
 
 import com.idega.util.idegaTimestamp;
 import com.idega.block.application.data.Applicant;
+//import com.idega.block.application.data.ApplicantBean;
 import com.idega.presentation.IWContext;
 import com.idega.core.user.data.User;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -26,6 +27,7 @@ import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.List;
+import java.util.Iterator;
 import com.idega.data.GenericEntity;
 import com.idega.data.EntityFinder;
 
@@ -35,7 +37,7 @@ import com.idega.data.EntityFinder;
  */
 public class CampusReferenceNumberInfoHelper {
   public static void updatePhoneAndEmail(CampusApplicationHolder holder, String phone, String email) {
-    Applicant applicant = holder.getApplicant();
+    Applicant applicant = (Applicant)holder.getApplicant();
     applicant.setResidencePhone(phone);
     try {
       applicant.update();
@@ -78,11 +80,25 @@ public class CampusReferenceNumberInfoHelper {
 
 
     try {
-      Applicant applicant = new com.idega.block.application.data.Applicant();
+      Applicant applicant = new Applicant();
       List li = EntityFinder.findAllByColumn(applicant,applicant.getSSNColumnName(),ref);
       if (li != null && !li.isEmpty()) {
-        applicant = (Applicant)li.get(li.size()-1);
-        Contract contract = ContractFinder.findByApplicant(applicant.getID());
+        Iterator it = li.iterator();
+        Contract contract = null;
+        while (it.hasNext()) {
+          applicant = (Applicant)it.next();
+          contract = ContractFinder.findByApplicant(applicant.getID());
+          if (contract != null) {
+            if (contract.getIsRented())
+              break;
+            else
+              contract = null;
+          }
+        }
+
+        if (contract == null)
+          return(null);
+
         User user = new User(contract.getUserId().intValue());
         LoginTable login = LoginDBHandler.getUserLogin(user.getID());
 
