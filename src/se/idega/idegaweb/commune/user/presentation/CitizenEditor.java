@@ -3,7 +3,6 @@
  *
  */
 package se.idega.idegaweb.commune.user.presentation;
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCohabitantFound;
 import is.idega.idegaweb.member.business.NoSpouseFound;
@@ -16,6 +15,7 @@ import java.util.Iterator;
 
 import javax.ejb.EJBException;
 
+import se.idega.idegaweb.commune.business.CommuneFamilyService;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
@@ -50,6 +50,7 @@ public class CitizenEditor extends UserEditor {
 		setShowSeperators(true);
 		// allow temporary pid search
 		setLegalNonDigitPIDLetters("TFtf");
+		setGroupRelationConnectorWindow(CommuneFamilyRelationConnector.class);
 		
 	}
 	/* (non-Javadoc)
@@ -65,7 +66,7 @@ public class CitizenEditor extends UserEditor {
 		if (user != null) {
 			addSeperator(iwrb.getLocalizedString("mbe.user_relations","User relations"));
 			//CommuneUserBusiness userService = getCommuneUserService(iwc);
-			MemberFamilyLogic familyService = getFamilyService(iwc);
+			CommuneFamilyService familyService = getFamilyService(iwc);
 			//partner handling
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.spouse", "Spouse")), 1, row);
 			User partner = null;
@@ -258,8 +259,8 @@ public class CitizenEditor extends UserEditor {
 		deleteImage.setToolTip(toolTip);
 		return deleteImage;
 	}
-	public MemberFamilyLogic getFamilyService(IWContext iwc) throws RemoteException {
-		return (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+	public CommuneFamilyService getFamilyService(IWContext iwc) throws RemoteException {
+		return (CommuneFamilyService) IBOLookup.getServiceInstance(iwc, CommuneFamilyService.class);
 	}
 	public CommuneUserBusiness getCommuneUserService(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
@@ -284,7 +285,7 @@ public class CitizenEditor extends UserEditor {
 			Integer thisPageID = pageID>0 ?new Integer(pageID):null;
 			Table bTable = new Table(9,2);
 			
-			MemberFamilyLogic logic = getFamilyService(iwc);
+			CommuneFamilyService logic = getFamilyService(iwc);
 			Integer userID = (Integer) user.getPrimaryKey();
 			Image addImage = iwb.getImage("shared/edit.gif", 12, 12);
 			bTable.setWidth(3,10);
