@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.56 2004/02/26 13:37:21 aron Exp $
+ * $Id: CampusAllocator.java,v 1.57 2004/06/01 00:09:10 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -572,7 +572,7 @@ public class CampusAllocator extends Block implements Campus {
 						TextFontColor = "#0000CC";
 					}
 					
-					if (app.getSubjectId() == 15) {
+					if (app.getSubjectId() == 17) {
 						TextFontColor = "#00CC00";
 					}
 
