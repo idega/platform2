@@ -4,14 +4,12 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOCompositePrimaryKeyException;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOException;
@@ -29,8 +27,8 @@ import com.idega.user.data.UserBMPBean;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/03/02 10:34:48 $ by $Author: staffan $
- * @version $Revision: 1.98 $
+ * Last modified: $Date: 2004/03/10 10:03:41 $ by $Author: staffan $
+ * @version $Revision: 1.99 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -309,35 +307,32 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-    public java.util.Collection ejbFindAllBySchoolAndUsersWithSchoolYearAndNotRemoved (int schoolId, java.util.Collection users) throws javax.ejb.FinderException {
+	public java.util.Collection ejbFindAllBySchoolAndUsersWithSchoolYearAndNotRemoved (int schoolId, java.util.Collection users) throws javax.ejb.FinderException {
 		IDOQuery sql = idoQuery ();
-        sql.appendSelect ().append ("m.*").appendFrom ().append
-                (getEntityName () + " m");
-        if (0 < schoolId) {
-            sql.append (", " + SchoolClassBMPBean.SCHOOLCLASS + " c");
-        }
-        sql.appendWhereIsNull ("m." + REMOVED_DATE);
-        sql.appendAnd ().append ("m." + SCHOOL_YEAR + " is not null");
-        if (0 < schoolId) {
-            sql.appendAndEquals ("c." + SchoolClassBMPBean.SCHOOLCLASS + "_id",
-                                 "m." + SCHOOLCLASS);
-            sql.appendAndEquals ("c." + SchoolClassBMPBean.SCHOOL, schoolId);
-        }
-        if (null != users && 0 < users.size ()) {
-            sql.appendAnd ().appendLeftParenthesis ();
-            boolean isFirst = true;
-            for (Iterator i = users.iterator (); i.hasNext ();) {
-                if (isFirst) {
-                    sql.appendEquals ("m." + MEMBER, (IDOEntity) i.next ());
-                    isFirst = false;
-                } else {
-                    sql.appendOrEquals ("m." + MEMBER, (IDOEntity) i.next ());
-                }
-            }
-            sql.appendRightParenthesis ();
-        }
+		
+		final String M_ = "m."; // sql alias for school class member
+		final String C_ = "c."; // sql alias for school class
+		
+		sql.appendSelect ().append ("m.*");
+		sql.appendFrom ().append (getEntityName () + " m");
+		if (0 < schoolId) {
+			sql.append (", " + SchoolClassBMPBean.SCHOOLCLASS + " c");
+		}
+		sql.appendWhereIsNull (M_ + REMOVED_DATE);
+		sql.appendAndIsNotNull (M_ + SCHOOL_YEAR);
+		if (0 < schoolId) {
+			sql.appendAndEquals (C_ + SchoolClassBMPBean.SCHOOLCLASS + "_id",
+													 M_ + SCHOOLCLASS);
+			sql.appendAndEquals (C_ + SchoolClassBMPBean.SCHOOL, schoolId);
+		}
+		if (null != users && 0 < users.size ()) {
+			sql.appendAnd ().append (M_ + MEMBER);
+			sql.appendIn(idoQuery ().appendCommaDelimited (users));
+		}
+		sql.appendAnd ().append (new Date (System.currentTimeMillis()));
+		sql.appendGreaterThanOrEqualsSign ().append (M_ + REGISTER_DATE);
 		return idoFindPKsBySQL (sql.toString());
-    }
+	}
 
 	public Collection ejbFindByStudentAndSchoolAndTypes(int studentID, int schoolID, Collection schoolTypes) throws FinderException {
 		IDOQuery sql = idoQuery();
