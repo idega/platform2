@@ -88,7 +88,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 	private static final String PAR_AMOUNT_PR_MONTH = KEY_AMOUNT_PR_MONTH;
 	private static final String PAR_DOUBLE_ENTRY_ACCOUNT  = KEY_DOUBLE_ENTRY_ACCOUNT;
-	private static final String PAR_FROM = KEY_FROM;
 	private static final String PAR_SEEK_FROM = "SEEK_" + KEY_FROM;	
 	private static final String PAR_PLACING = KEY_PLACING;
 	private static final String PAR_REMARK = KEY_REMARK;
@@ -232,33 +231,33 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 
 		try{
 			payhdr = getPaymentHeaderHome().create();
+			pay = getPaymentRecordHome().create();
+			inv = getInvoiceRecordHome().create();			
 		}catch(CreateException ex2){
 			ex2.printStackTrace();
 			return;
 		}			
 		
+		
 		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
 			payhdr.setSchoolID(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
 		}
 				
-		payhdr.store();			
-
-		try{
-			pay = getPaymentRecordHome().create();
-			inv = getInvoiceRecordHome().create();
-		}catch(CreateException ex2){
-			ex2.printStackTrace();
-			return;
-		}
-		
 		pay.setPaymentHeader(payhdr);
-		pay.setTotalAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+		inv.setPaymentRecord(pay);
+				
+		float amountPrMonth = 0;
+		try{
+			amountPrMonth = new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue();
+		}catch(NumberFormatException ex){
+			
+		}
+		pay.setTotalAmount(amountPrMonth);
 		
 		pay.setNotes(iwc.getParameter(PAR_REMARK));
 //			pay.setPlacing(iwc.getParameter(PAR_PLACING));
 		pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 
-		
 //			pay.setUser(getUser(iwc));
 		pay.setVATType(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
 		
@@ -274,6 +273,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			handleEditAction(iwc, errorMessages);	
 		}else{		
 	
+			payhdr.store();		
 			pay.store();		
 			inv.store();		
 			//TODO return to calling page
@@ -414,7 +414,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		regSearchPanel.setSchoolIfNull(getSchool(iwc));
 		
 
-		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_PK});
+		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_SEEK_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_PK});
 		
 		regSearchPanel.setParameter(PAR_EDIT_FROM_SCREEN, " ");
 		table.mergeCells(1, row, 10, row);
