@@ -26,7 +26,7 @@ public class LinkGenerator extends TravelWindow {
 
     String productId = iwc.getParameter(parameterProductId);
 
-    String link = iwc.getServerName()+":"+iwc.getServerPort()+"/servlet/ObjectInstanciator?idegaweb_instance_class="+PublicBooking.class.getName()+"&"+this.parameterProductId+"="+productId;
+    String link = iwc.getServerName()+"/servlet/ObjectInstanciator?idegaweb_instance_class="+PublicBooking.class.getName()+"&"+this.parameterProductId+"="+productId;
 
     Text tLink = (Text) text.clone();
       tLink.setBold();
