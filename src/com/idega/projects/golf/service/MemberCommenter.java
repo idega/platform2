@@ -84,11 +84,11 @@ public class MemberCommenter extends Editor{
   }
   private ModuleObject doView(Member member, UnionMemberInfo umi){
     Table T = new Table();
-    T.add(formatText("Nafn :"),1,1);
+    //T.add(formatText("Nafn :"),1,1);
     T.add(formatText(member.getName()),1,1);
     T.add(formatText("Kt :"),1,2);
     T.add(formatText(member.getSocialSecurityNumber()),1,2);
-    T.add(formatText("Athugasemd :"),1,3);
+    //T.add(formatText("Athugasemd :"),1,3);
     String comment = umi.getComment();
     if(comment != null){
        T.add(formatText(comment ),1,4);
