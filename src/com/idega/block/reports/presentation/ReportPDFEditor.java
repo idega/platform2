@@ -419,7 +419,7 @@ public class ReportPDFEditor extends Block implements Reports{
 
 		drp.addMenuElement(String.valueOf(Font.COURIER),"COURIER");
 
-		drp.addMenuElement(String.valueOf(Font.TIMES_NEW_ROMAN),"TIMES_NEW_ROMAN");
+		drp.addMenuElement(String.valueOf(Font.TIMES_ROMAN),"TIMES_NEW_ROMAN");
 
 
 
@@ -437,7 +437,7 @@ public class ReportPDFEditor extends Block implements Reports{
 
       case Font.COURIER: return "COURIER";
 
-      case Font.TIMES_NEW_ROMAN: return "TIMES_NEW_ROMAN";
+      case Font.TIMES_ROMAN: return "TIMES_NEW_ROMAN";
 
     }
 

@@ -151,7 +151,7 @@ public class ContractFilerWindow extends IWAdminWindow
 		DropdownMenu drp = new DropdownMenu(name);
 		drp.addMenuElement(String.valueOf(Font.HELVETICA), "HELVETICA");
 		drp.addMenuElement(String.valueOf(Font.COURIER), "COURIER");
-		drp.addMenuElement(String.valueOf(Font.TIMES_NEW_ROMAN), "TIMES_NEW_ROMAN");
+		drp.addMenuElement(String.valueOf(Font.TIMES_ROMAN), "TIMES_NEW_ROMAN");
 		drp.setSelectedElement(String.valueOf(selected));
 		return drp;
 	}

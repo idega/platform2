@@ -93,8 +93,8 @@ public class StickerWriter
     int count = 50;
     for (int i = 0; i < count; i++) {
       Paragraph p = new Paragraph("");
-      p.add(new Chunk(String.valueOf(100+i),new Font(Font.TIMES_NEW_ROMAN,20)));
-      p.add(new Chunk("\nThis is tenant",new Font(Font.TIMES_NEW_ROMAN,12)));
+      p.add(new Chunk(String.valueOf(100+i),new Font(Font.TIMES_ROMAN,20)));
+      p.add(new Chunk("\nThis is tenant",new Font(Font.TIMES_ROMAN,12)));
       list.add(p);
     }
     try{
