@@ -851,6 +851,9 @@ public class RunRegistration extends Block {
 				}
 				t.add(TextFormatter.formatText(message), 1, row++);
 				t.setHeight(row++, 8);
+				Link l = new Link(iwrb.getLocalizedString("",""));
+				l.setWindowToOpen(RegistrationReceivedPrintable.class);
+				t.add(l,1,row++);
 		
 				t.add(buttonTable, 1, row);
 			}
