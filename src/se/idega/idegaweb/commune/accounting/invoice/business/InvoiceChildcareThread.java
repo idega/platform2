@@ -336,8 +336,11 @@ public class InvoiceChildcareThread extends BillingThread{
 						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,calculationDate);
 					String[] checkPost = getPostingBusiness().getPostingStrings(
 						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,calculationDate);
+					if(school.getPrimaryKey().equals(new Integer(89))){
+						String dummy = "";
+					}
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
-					createVATPaymentRecord(paymentRecord, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+					createVATPaymentRecord(paymentRecord, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
@@ -856,7 +859,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				try {
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
 					log.info("Regular Payment" + errorRelated);
-					createVATPaymentRecord(paymentRecord,school,regularPaymentEntry.getSchoolType(),null);
+					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
 				} catch (IDOLookupException e) {
 					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.IDOLookup");
 					e.printStackTrace();

@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/07 16:53:23 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/08 01:36:11 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.91 $
+ * @version $Revision: 1.92 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -309,7 +309,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			PlacementTimes placementTimes = getPlacementTimes(schoolClassMember);
 			log.info("About to create payment record");
 			final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-			createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+			createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(), school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 			log.info("About to create invoice record");
 			createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			log.info("Done creating invoice record");
@@ -443,7 +443,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes, startDate, endDate);
 			}
 			catch (BruttoIncomeException e) {
@@ -532,7 +532,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 				errorRelated.append("created payment info for Oppen verksamhet" + schoolClassMember.getStudent().getName(),1);
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			}
@@ -605,7 +605,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				try {
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
 					log.info("Regular Payment" + errorRelated);
-					createVATPaymentRecord(paymentRecord,school,regularPaymentEntry.getSchoolType(),null);
+					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
 				}
 				catch (IDOLookupException e) {
 					createNewErrorMessage(errorRelated, "regularPayment.IDOLookup");

@@ -135,6 +135,9 @@ public abstract class BillingThread extends Thread{
 		float amount = postingDetail.getAmount();
 		float vatPercent = postingDetail.getVATPercent();
 		float vatPercentage = vatPercent/100;
+		float newTotalAmount = AccountingUtil.roundAmount(amount*months);
+		float newTotalVATAmount = AccountingUtil.roundAmount(amount*months*vatPercentage);
+		
 		try {
 			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
 			paymentRecord = prechome.findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(ownPosting,doublePosting,ruleSpecType,paymentText,month);
@@ -142,8 +145,8 @@ public abstract class BillingThread extends Thread{
 			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 
-			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+AccountingUtil.roundAmount(amount*months));
-			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+AccountingUtil.roundAmount(amount*months*vatPercentage));
+			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+newTotalAmount);
+			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+newTotalVATAmount);
 			paymentRecord.store();
 		} catch (FinderException e1) {
 			//It didn't exist, so we create it
@@ -161,8 +164,8 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setCreatedBy(BATCH_TEXT);
 			paymentRecord.setPlacements(1);
 			paymentRecord.setPieceAmount(postingDetail.getAmount());
-			paymentRecord.setTotalAmount(AccountingUtil.roundAmount(amount*months));
-			paymentRecord.setTotalAmountVAT(AccountingUtil.roundAmount(amount*months*vatPercentage));
+			paymentRecord.setTotalAmount(newTotalAmount);
+			paymentRecord.setTotalAmountVAT(newTotalVATAmount);
 			paymentRecord.setRuleSpecType(ruleSpecType);
 			paymentRecord.setOwnPosting(ownPosting);
 			paymentRecord.setDoublePosting(doublePosting);
@@ -176,10 +179,10 @@ public abstract class BillingThread extends Thread{
 		return paymentRecord;
 	}
 	
-	protected PaymentRecord createVATPaymentRecord(PaymentRecord regularPaymentRecord, School school, SchoolType sType,SchoolYear sYear) 
+	protected PaymentRecord createVATPaymentRecord(PaymentRecord previousPaymentRecord,PostingDetail postingDetail,float months, School school, SchoolType sType,SchoolYear sYear) 
 	throws CreateException, IDOLookupException {
 		try{
-			Regulation vatRuleRegulation = regularPaymentRecord.getVATRuleRegulation();
+			Regulation vatRuleRegulation = previousPaymentRecord.getVATRuleRegulation();
 			if(vatRuleRegulation!=null){
 				//Get the payment header
 				PaymentHeader paymentHeader = getPaymentHeader(school);		
@@ -189,6 +192,12 @@ public abstract class BillingThread extends Thread{
 				String ruleSpecType = RegSpecConstant.MOMS;
 				RegulationSpecType regSpecType;
 				String[] postingStrings=null;
+				float amount = postingDetail.getAmount();
+				float vatPercent = postingDetail.getVATPercent();
+				float vatPercentage = vatPercent/100;
+				//float newTotalAmount = AccountingUtil.roundAmount(amount*months);
+				float newTotalVATAmount = AccountingUtil.roundAmount(amount*months*vatPercentage);				
+				
 				try {
 					regSpecType = this.getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);
 					int regSpecTypeId= ((Number)regSpecType.getPrimaryKey()).intValue();
@@ -219,7 +228,7 @@ public abstract class BillingThread extends Thread{
 				//String ruleSpecType = postingDetail.getRuleSpecType();
 		
 				String paymentText = vatRuleRegulation.getName();
-				float newamount=regularPaymentRecord.getTotalAmountVAT();
+				//float newamount=previousPaymentRecord.getTotalAmountVAT();
 				float vatAmount=0;
 				//float vatPercent=0;
 				
@@ -229,7 +238,7 @@ public abstract class BillingThread extends Thread{
 					
 					//paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 		
-					paymentRecord.setTotalAmount(AccountingUtil.roundAmount(paymentRecord.getTotalAmount()+newamount));
+					paymentRecord.setTotalAmount(AccountingUtil.roundAmount(paymentRecord.getTotalAmount()+newTotalVATAmount));
 					paymentRecord.setTotalAmountVAT(vatAmount);
 					paymentRecord.store();
 				} catch (FinderException e1) {
@@ -248,7 +257,7 @@ public abstract class BillingThread extends Thread{
 					paymentRecord.setCreatedBy(BATCH_TEXT);
 					paymentRecord.setPlacements(0);
 					//paymentRecord.setPieceAmount(0);
-					paymentRecord.setTotalAmount(AccountingUtil.roundAmount(newamount));
+					paymentRecord.setTotalAmount(newTotalVATAmount);
 					paymentRecord.setTotalAmountVAT(vatAmount);
 					paymentRecord.setRuleSpecType(ruleSpecType);
 					paymentRecord.setOwnPosting(ownPosting);

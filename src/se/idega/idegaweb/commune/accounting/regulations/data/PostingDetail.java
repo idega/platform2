@@ -11,7 +11,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 public class PostingDetail {
 	private String term;
 	private float amount;
-	private float vat;
+	private float vat=0;
 	private int vatRuleRegulationID=-1;
 	private VATRegulation vatRegulation;
 	private String ruleSpecType;
