@@ -10,8 +10,6 @@ delete from COMM_CHILDCARE;
 delete from CC_CHECK;
 delete from VP_VIEWPOINT;
 delete from SCH_REMINDER;
-delete from PROC_CASE_CODE_PROC_CASE_STATU;
-delete from PROC_CASE_STATUS;
 delete from PROC_CASE_LOG; 
 delete from PROC_CASE;
 commit;
