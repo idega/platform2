@@ -1,5 +1,5 @@
 /*
- * $Id: AdminMenu.java,v 1.3 2004/09/07 21:37:09 laddi Exp $
+ * $Id: AdminMenu.java,v 1.4 2004/10/19 15:31:37 eiki Exp $
  * Created on 7.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/07 21:37:09 $ by $Author: laddi $
+ *  Last modified: $Date: 2004/10/19 15:31:37 $ by $Author: eiki $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AdminMenu extends Block {
 
@@ -55,7 +55,9 @@ public class AdminMenu extends Block {
 		int column = 1;
 		
 		IBApplication builder = new IBApplication();
-		if (iwc.hasViewPermission(builder)) {
+//		if (iwc.hasViewPermission(builder)) {
+		//only admin should edit the member sytems website for now
+		if (iwc.isSuperAdmin()) {
 			Image builderIcon = iwb.getImage("/shared/builder.gif");
 			
 			Link link = new Link(builderIcon);
