@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/03/31 08:23:43 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/01 12:02:14 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.67 $
+ * @version $Revision: 1.68 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -131,6 +131,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String USER_ALLREADY_HAS_A_LOGIN_KEY = "caa_user_allready_has_a_login";
 	final static String YES_DEFAULT = "Ja";
 	final static String YES_KEY = "caa_yes";
+	private final static String ONLY_ONE_PERSON_PER_SSN_KEY = "caa_only_one_person_per_ssn";
+	private final static String ONLY_ONE_PERSON_PER_SSN_DEFAULT = "Flera personer kan inte ha personnummer";
 	private final static String YOU_MUST_BE_18_KEY = "caa_youMustBe18";
 	private final static String YOU_MUST_BE_18_DEFAULT = "Du måste vara 18 år gammal för att kunna ansöka om medborgarkonto";
 	private final static String ZIP_CODE_DEFAULT = "Postnummer";
@@ -827,16 +829,15 @@ private static Map parseParameters(final IWResourceBundle bundle, final IWContex
 	for (Iterator i = ssnParameterNames.iterator(); i.hasNext();) {
 		final String key = i.next().toString();
 		final String value = getSsn(iwc, key);
-		if (value == null) {
-			if (mandatoryParameterNames.contains(key)) {
-				throw new ParseException(bundle, key);
-			}
-			else {
-				result.put(key, "");
-			}
-		}
-		else {
-			result.put(key, value);
+		if (value == null && mandatoryParameterNames.contains(key)) {
+			throw new ParseException(bundle, key);
+		}	else if (value != null && result.containsValue (value)) {
+			throw new ParseException
+					(bundle.getLocalizedString (ONLY_ONE_PERSON_PER_SSN_KEY,
+																			ONLY_ONE_PERSON_PER_SSN_DEFAULT) + " "
+					 + value);
+		}	else {
+			result.put(key, value == null ? "" : value);
 		}
 	}
 
