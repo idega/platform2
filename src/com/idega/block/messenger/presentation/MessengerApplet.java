@@ -93,7 +93,10 @@ public class MessengerApplet extends Applet implements Runnable{
 
 
       SingleLineItem test = new SingleLineItem(this);
-      test.setWindowToOpen(new MessageDialog(new Frame(),FRAME_NAME,false,new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki")));
+      Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
+      msg.setRecipientName("TEST");
+
+      test.setWindowToOpen(new MessageDialog(FRAME_NAME,msg));
       if( lb!= null ) test.add(lb);
       test.add(new Label("RAPPERS"));
       test.setSize(16,100);
@@ -147,7 +150,7 @@ public class MessengerApplet extends Applet implements Runnable{
 
         aMessage = (Message) enum.nextElement();
         if( messageDialog == null ) {//debug this should be one window per chat
-          messageDialog = new MessageDialog(new Frame(),FRAME_NAME,false,aMessage);
+          messageDialog = new MessageDialog(FRAME_NAME,aMessage);
           Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
           messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
           messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
@@ -159,6 +162,8 @@ public class MessengerApplet extends Applet implements Runnable{
             ex.printStackTrace(System.err);
           }
           if( logo != null ) messageDialog.setLogoImage(logo);
+
+          messageDialog.setVisible(true);
 
           listener.start();
         }

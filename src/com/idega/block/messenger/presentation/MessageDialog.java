@@ -28,8 +28,8 @@ public class MessageDialog extends Dialog implements ActionListener{
   String recipientName;
   ImageLabel logo;
 
-  public MessageDialog(Frame frame, String title, boolean modal, Message message) {
-    super(frame, title, modal);
+  public MessageDialog(String title, Message message) {
+    super(new Frame(), title, false);
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     this.message = message;
     try {
@@ -42,6 +42,14 @@ public class MessageDialog extends Dialog implements ActionListener{
     }
   }
 
+  public MessageDialog(String title, Message message, ImageLabel imageLogo) {
+    this(title, message);
+    this.logo = imageLogo;
+  }
+
+  public MessageDialog(String title, Message message, Image image) {
+    this(title, message,new ImageLabel(image));
+  }
 
   void jbInit() throws Exception {
     recipientName = message.getRecipientName();
