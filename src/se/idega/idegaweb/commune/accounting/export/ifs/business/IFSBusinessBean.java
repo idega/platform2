@@ -47,6 +47,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
@@ -785,7 +786,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					}
 					bWriter.write(poName);
 					//C/O address
-					String co = getUserBusiness().getUsersCoAddress(iHead.getCustodian()).getName();
+					Address ad = getUserBusiness().getUsersCoAddress(iHead.getCustodian());
+					String co = "";
+					if (ad != null) 
+						co = ad.getName();
 					if (co.length() < 25) {
 							StringBuffer p = new StringBuffer(co);
 							while (p.length() < 25)
