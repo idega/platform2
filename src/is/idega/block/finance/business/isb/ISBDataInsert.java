@@ -1,5 +1,5 @@
 /*
- * $Id: ISBDataInsert.java,v 1.2 2005/03/02 13:13:09 birna Exp $
+ * $Id: ISBDataInsert.java,v 1.3 2005/03/15 11:04:06 birna Exp $
  * Created on Dec 20, 2004
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.block.finance.business.InvoiceDataInsert;
 
 /**
  * 
- *  Last modified: $Date: 2005/03/02 13:13:09 $ by $Author: birna $
+ *  Last modified: $Date: 2005/03/15 11:04:06 $ by $Author: birna $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 	
@@ -163,7 +163,7 @@ public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 	 *  (non-Javadoc)
 	 * @see com.idega.block.finance.business.InvoiceDataInsert#getClaimStatusFromBank(int, int)
 	 */
-	public void getClaimStatusFromBank(int batchNumber, int groupId) {
+	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to) {
 		BankFileManager bfm = new BankInvoiceFileManager();
 		ArrayOfUppreiknudKrafa arrayOfKrofur = new ArrayOfUppreiknudKrafa();
 		
@@ -173,10 +173,10 @@ public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 		try {
 			KrofurWSSoapStub ws = new KrofurWSSoapStub(new URL(ACTION_URL),null);
 			arrayOfKrofur = ws.saekjaKrofubunkasvar(new BigDecimal(bunkanumer));
-			Calendar from = Calendar.getInstance();
-			from.set(2005,1,17);
-			Calendar to = Calendar.getInstance();
-			to.set(2005,2,18);
+			Calendar fromCal = Calendar.getInstance();
+			fromCal.set(2005,1,17);
+			Calendar toCal = Calendar.getInstance();
+			toCal.set(2005,2,18);
 //			arrayOfKrofur = ws.saekjaKrofur("0904649069","IAS",from,to,astandKrofu,1,5000);
 			Calendar gjalddagi = Calendar.getInstance();
 			
@@ -199,6 +199,9 @@ public class ISBDataInsert /*extends Window*/ implements InvoiceDataInsert{
 			System.out.println( "audkenni krofu: " + krafa.getAudkenni());
 			//bfm.setInvoiceStatus(krafa.getStada().getValue(), krafa.getKrofunumer());
 		}
+		
+	}
+	public void deleteClaim(int groupId, int claimNumber, java.util.Date dueDate, String payersSSN) {
 		
 	}
 

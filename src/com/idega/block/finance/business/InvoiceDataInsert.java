@@ -27,5 +27,14 @@ public interface InvoiceDataInsert {
 	 * @param batchNumber
 	 * @param groupId
 	 */
-	public void getClaimStatusFromBank(int batchNumber, int groupId);
+	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to);
+	
+	/**
+	 * Formats the file/data to be sent to the bank when deleting a single claim
+	 * @param groupId
+	 * @param claimNumber
+	 * @param dueDate
+	 * @param payersSSN
+	 */
+	public void deleteClaim(int groupId, int claimNumber, java.util.Date dueDate, String payersSSN);
 }

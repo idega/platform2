@@ -1,5 +1,5 @@
 /*
- * $Id: KBDataInsert.java,v 1.1 2005/02/24 10:35:39 birna Exp $
+ * $Id: KBDataInsert.java,v 1.2 2005/03/15 11:04:18 birna Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -29,10 +29,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/24 10:35:39 $ by $Author: birna $
+ *  Last modified: $Date: 2005/03/15 11:04:18 $ by $Author: birna $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	private static String POST_METHOD = "https://www.bi.is/krofulinan/Pages/Senda_skra.aspx";
@@ -290,9 +290,12 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	/*
 	 * Not functional yet!! 
 	 */
-	public void getClaimStatusFromBank(int batchNumber, int groupId) {
+	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to) {
 		BankFileManager bfm = new BankInvoiceFileManager();
 		sendGetClaimStatusRequest(bfm, groupId);
+	}
+	public void deleteClaim(int groupId, int claimNumber, java.util.Date dueDate, String payersSSN) {
+		
 	}
 	/**
 	 * Sends a http multipart post method to KBBanki to create the claims
