@@ -156,13 +156,13 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public void setCountryId(int id) {
 		this.setColumn(COUNTRY, id);
 	}
-	public int getManagementTypeId() {
-		return this.getIntColumnValue(MANAGEMENT_TYPE);
+	public String getManagementTypeId() {
+		return this.getStringColumnValue(MANAGEMENT_TYPE);
 	}
 	public SchoolManagementType getManagementType() {
 		return (SchoolManagementType) getColumnValue(MANAGEMENT_TYPE);
 	}
-	public void setManagementTypeId(int id) {
+	public void setManagementTypeId(String id) {
 		this.setColumn(MANAGEMENT_TYPE, id);
 	}
 	public String getSchoolName() {

@@ -55,14 +55,14 @@ public java.util.Collection findAllBySchoolName(java.lang.String p0)throws javax
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllBySchoolType(java.util.Collection p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolType(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllBySchoolType(java.util.Collection p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolType(p0);
 	this.idoCheckInPooledEntity(entity);
@@ -82,7 +82,6 @@ public java.util.Collection findAllCentralizedAdministratedByType(java.util.Coll
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
-
 
 public java.util.Collection findAllSchools()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
