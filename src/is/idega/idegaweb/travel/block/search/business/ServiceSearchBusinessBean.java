@@ -212,7 +212,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		  try {
 			iMany += Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
 		  }catch (NumberFormatException n) {
-		  	n.printStackTrace();
+		  	//n.printStackTrace();
 		  }
 		}		
 		
