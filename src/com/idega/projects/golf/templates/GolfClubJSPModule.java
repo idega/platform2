@@ -242,10 +242,9 @@ public class GolfClubJSPModule extends GolfMainJSPModule{
     rightTable.setCellspacing(0);
     rightTable.setVerticalAlignment(1,1,"top");
     rightTable.setColumnAlignment(1, "center");
-    //debug eiki 24 april because of database stuff
-    /*
+
     rightTable.add(ClubSponsors(),1,1);
-    */
+
     return rightTable;
   }
   protected Form ClubSponsors() throws IOException{

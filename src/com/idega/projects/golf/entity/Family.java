@@ -21,10 +21,6 @@ public class Family extends GolfEntity{
 		addAttribute("name","Fjölskylda",true,true,"java.lang.String");
 	}
 
-        public void setDefaultValues(){
-          setUnionId(1);
-        }
-
 	public String getEntityName(){
 		return "family";
 	}
