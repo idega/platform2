@@ -6,6 +6,9 @@
  */
 package se.idega.block.pki.presentation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.nexus.nbs.sdk.HttpMessage;
@@ -41,7 +44,8 @@ public class NBSSigningBlock extends Block implements Builderaware{
 				
 	public final static String NBS_SIGNED_ENTITY = "se.idega.block.pki.business.NBS_SIGNED_ENTITY";
 	
-	
+	private Map _hiddenInputs = new HashMap();
+		
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}	
@@ -70,7 +74,9 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		
 			switch(signedEntity.getAction()){
 				case NBSSignedEntity.ACTION_INIT:
-					add(new NBSSigningApplet(initSignContract(iwc, toBeSigned)));
+					NBSSigningApplet applet = new NBSSigningApplet(initSignContract(iwc, toBeSigned));
+					//applet.setHiddenInputs(_hiddenInputs);
+					add(applet);
 					break;
 										
 				case NBSSignedEntity.ACTION_PROCESS:
@@ -131,6 +137,10 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		return _page;
 	}
 			
+
+	public void setHiddenInput(String name, String value){
+		_hiddenInputs.put(name, value);
+	}
 			
 			
 	public NBSMessageHttp initSignContract(IWContext iwc, String toBeSigned) throws NBSException, Exception{
