@@ -406,7 +406,11 @@ public class Booking extends TravelManager {
 
 
           table.add(Text.BREAK ,1,row);
-          table.add(getBookingForm(iwc),1,row);
+          try {
+	          table.add(getBookingForm(iwc),1,row);
+          }catch (Throwable e) {
+          	e.printStackTrace(System.err);	
+          }
 
       }else {
         if (isExpired) {
