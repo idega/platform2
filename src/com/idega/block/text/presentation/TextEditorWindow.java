@@ -123,12 +123,18 @@ public class TextEditorWindow extends AbstractChooserWindow{
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
     String sLocaleId = iwc.getParameter(prmLocale);
+		sTextId = iwc.getParameter(prmUsedTextId);
 
     if(iwc.isParameterSet(actClose)|| iwc.isParameterSet(actClose+".x")){
-      if (parentReload) {
-        setParentToReload();
+      if (chooserParameterName != null) {
+				getParentPage().setOnLoad(SELECT_FUNCTION_NAME + "('" + sTextId + "','" + sTextId + "')");
       }
-      close();
+      else {
+	      if (parentReload) {
+	        setParentToReload();
+	      }
+	      close();
+      }
     }
     else{
     // LocaleHandling
@@ -149,7 +155,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
     String sAttribute = null;
     String sLocTextId = iwc.getParameter(prmLocalizedTextId);
     sAttribute = iwc.getParameter(prmAttribute);
-    sTextId = iwc.getParameter(prmUsedTextId);
 
     // Delete Request :
     if(iwc.getParameter(prmDelete)!=null){
