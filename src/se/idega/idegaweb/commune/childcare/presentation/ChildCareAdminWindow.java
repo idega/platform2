@@ -1193,16 +1193,21 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		);
 		
 		Table table = new Table();
+		
+		Text heading = getLocalizedHeader("ccconsign_read_before_sign", "Read through the contrat and sign by using your BankId password. Then click OK.");
+		table.add(heading, 1, 1);
+		//table.setHeight(1, 1, Table.HUNDRED_PERCENT);
+		table.setVerticalAlignment(1, 1, "MIDDLE");
 		NBSSigningBlock nbsSigningBlock = new NBSSigningBlock();
 		nbsSigningBlock.setParameter(PARAMETER_ACTION, ""+ACTION_SIGN_CONTRACT);
 		nbsSigningBlock.setParameter(PARAMETER_METHOD, ""+METHOD_SIGN_CONTRACT);		
 		nbsSigningBlock.setParameter(PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
-		table.add(nbsSigningBlock, 1, 1);
+		table.add(nbsSigningBlock, 1, 2);
 		CloseButton closeBtn = new CloseButton(localize("ccconsign_CANCEL", "avbryt"));
 		closeBtn.setAsImageButton(true);
-		table.add(closeBtn, 1, 2);
-		table.setHeight(2, Table.HUNDRED_PERCENT);
-		table.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_BOTTOM);		
+		table.add(closeBtn, 1, 3);
+		table.setHeight(3, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(3, Table.VERTICAL_ALIGN_BOTTOM);		
 		return table; 
 	}
 		
