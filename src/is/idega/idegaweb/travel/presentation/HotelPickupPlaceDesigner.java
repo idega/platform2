@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.util.List;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -54,6 +55,10 @@ public class HotelPickupPlaceDesigner extends TravelManager {
 
     boolean returner = false;
     String del;
+    String add;
+    List products = ProductBusiness.getProducts(supplier.getID());
+    int prodsSize = products.size();
+    Product product;
     if (hppNames != null && hppIds != null)
     try {
       for (int i = 0; i < hppNames.length; i++) {
@@ -73,6 +78,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
           }
         }else {
           del = iwc.getParameter("hotel_pickup_place_to_delete_"+hppIds[i]);
+          add = iwc.getParameter("hotel_pickup_place_add_to_all_"+hppIds[i]);
 
           HotelPickupPlace hpp = new HotelPickupPlace(Integer.parseInt(hppIds[i]));
           Address address = hpp.getAddress();
@@ -83,6 +89,17 @@ public class HotelPickupPlaceDesigner extends TravelManager {
             if (address != null) {
               address.setStreetName(hppNames[i]);
               address.update();
+            }
+            if (add != null) {
+              for (int j = 0; j < prodsSize; j++) {
+                product = (Product) products.get(j) ;
+                try {
+                  hpp.addTo(Service.class, product.getID());
+                  //System.err.println("Adding address \""+hppNames[i]+"\" to service \""+ProductBusiness.getProductName(product)+"\"");
+                }catch (SQLException sql) {
+                  //System.err.println("address \""+hppNames[i]+"\" ALREADY added to service \""+ProductBusiness.getProductName(product)+"\"");
+                }
+              }
             }
           }else {
             hpp.removeFrom(supplier);
@@ -121,17 +138,23 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     Text deleteTxt = (Text) theText.clone();
       deleteTxt.setText(iwrb.getLocalizedString("travel.delete","Delete"));
       deleteTxt.setBold();
+    Text addTxt = (Text) theText.clone();
+      addTxt.setText(iwrb.getLocalizedString("travel.add_to_all","Add to all"));
+      addTxt.setBold();
 
     Text nrTxt;
     TextInput nameInp;
     CheckBox delBox;
+    CheckBox addToAll;
 
     table.setWidth(1,"15");
     table.setWidth(3,"2");
+//    table.setWidth(4,"2");
 
     int row = 1;
     table.add(header,2,row);
     table.add(deleteTxt,3,row);
+    table.add(addTxt,4,row);
     table.setRowColor(row,super.backgroundColor);
 
 
@@ -149,6 +172,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
           nameInp.setSize(textInputWidth);
 
         delBox = new CheckBox("hotel_pickup_place_to_delete_"+places[i].getID());
+        addToAll = new CheckBox("hotel_pickup_place_add_to_all_"+places[i].getID());
 
         table.setRowColor(row,super.GRAY);
 
@@ -158,6 +182,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
         table.add(nameInp,2,row);
         table.add(Text.NON_BREAKING_SPACE,2,row);
         table.add(delBox,3,row);
+        table.add(addToAll,4,row);
     }
     for (int i = 0; i < extraFields; i++) {
         ++row;
@@ -182,12 +207,13 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     ++row;
     table.setRowColor(row,super.GRAY);
     SubmitButton lSave = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction, this.parameterSaveHotelPickupPlaceInfo);
-    table.mergeCells(1,row,3,row);
+    table.mergeCells(1,row,4,row);
     if (super.isInPermissionGroup) {
       table.add(lSave,1,row);
     }
     table.setColumnAlignment(1,"center");
     table.setColumnAlignment(3,"center");
+    table.setColumnAlignment(4,"center");
     table.setAlignment(1,row,"right");
 
     return form;

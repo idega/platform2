@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.tour.data;
 
+import is.idega.idegaweb.travel.data.HotelPickupPlace;
 import com.idega.data.*;
 import is.idega.idegaweb.travel.data.Service;
 import java.sql.*;
@@ -46,18 +47,44 @@ public class Tour extends GenericEntity {
       this.setNumberOfDays(1);
   }
 
+  /**
+   * @deprecated
+   */
   public boolean getIsHotelPickup() {
     return getHotelPickup();
   }
 
+  /**
+   * @deprecated
+   */
   public boolean getHotelPickup() {
-    return getBooleanColumnValue(getHotelPickupColumnName());
+    /**
+     * @todo RUGL LLLLLL
+     */
+    try {
+      HotelPickupPlace[] rugl = (HotelPickupPlace[]) (new Service(this.getID())).findRelated((HotelPickupPlace) (HotelPickupPlace.getStaticInstance(HotelPickupPlace.class)));
+      if (rugl.length == 0) {
+        return false;
+      }else {
+        return true;
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return false;
+    }
+    //return getBooleanColumnValue(getHotelPickupColumnName());
   }
 
+  /**
+   * @deprecated
+   */
   public void setIsHotelPickup(boolean pickup) {
     setHotelPickup(pickup);
   }
 
+  /**
+   * @deprecated
+   */
   public void setHotelPickup(boolean pickup) {
     setColumn(getHotelPickupColumnName(),pickup);
   }

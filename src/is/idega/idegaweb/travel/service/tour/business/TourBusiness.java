@@ -166,6 +166,8 @@ public class TourBusiness extends TravelStockroomBusiness {
           }
 
 
+          service.removeFrom(HotelPickupPlace.class);
+
           if(hotelPickupPlaceIds.length > 0){
             for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
               if (hotelPickupPlaceIds[i] != -1)

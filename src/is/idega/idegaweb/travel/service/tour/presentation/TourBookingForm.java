@@ -257,13 +257,13 @@ public class TourBookingForm extends TravelManager {
             table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(addressId)));
           }
 
-          if (_tour.getIsHotelPickup()) {
+          HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
+          if (hotelPickup.length > 0) {
               ++row;
               table.mergeCells(2,row,4,row);
 
               Text hotelText = (Text) theText.clone();
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
-              HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
               pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
                 pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
                 pickupMenu.keepStatusOnAction();
@@ -914,7 +914,8 @@ public class TourBookingForm extends TravelManager {
           table.mergeCells(4,row,6,row);
 
 
-          if (_tour.getIsHotelPickup()) {
+          HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
+          if (hotelPickup.length > 0) {
               ++row;
               table.mergeCells(1,row,6,row);
               table.add(hr,1,row);
@@ -930,7 +931,6 @@ public class TourBookingForm extends TravelManager {
 
               Text hotelText = (Text) theText.clone();
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
-              HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
               pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
                 pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
 
