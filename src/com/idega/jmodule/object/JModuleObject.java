@@ -157,7 +157,7 @@ public class JModuleObject extends ModuleObjectContainer{
     if(this.isCacheable()){
       if(isCacheValid(modinfo)){
         StringBuffer buffer = (StringBuffer)IWCacheManager.getInstance(modinfo.getApplication()).getObject(getCacheKey(modinfo));
-        modinfo.getResponse().getWriter().print(buffer.toString());
+        modinfo.getWriter().print(buffer.toString());
       }
       else{
         StringBuffer buffer = new StringBuffer();

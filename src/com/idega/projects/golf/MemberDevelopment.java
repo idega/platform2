@@ -29,6 +29,9 @@ public class MemberDevelopment extends JModuleObject {
 private int unionID = -1;
 private idegaTimestamp dateBefore;
 private idegaTimestamp dateAfter;
+private boolean onlyActive = false;
+private boolean onlyInActive = false;
+private boolean phones = false;
 
   public MemberDevelopment() {
     this.unionID = 3;
@@ -97,163 +100,174 @@ private idegaTimestamp dateAfter;
         memberList = union.getAllActiveMembers();
       }
       else {
-        memberList = union.getMembersInUnion();
+        if ( this.onlyActive )
+          memberList = union.getAllActiveMembers();
+        else if ( this.onlyInActive )
+          memberList = union.getAllInActiveMembers();
+        else
+          memberList = union.getMembersInUnion();
       }
 
       Collections.sort(memberList,new GenericMemberComparator(GenericMemberComparator.FIRSTLASTMIDDLE));
 
       if ( memberList != null ) {
         for ( int a = 0; a < memberList.size(); a++ ) {
-          Member member = (Member) memberList.get(a);
+          try {
+            Member member = (Member) memberList.get(a);
 
-          float handicapBefore = 0;
-          float handicapAfter = 0;
-          float difference = 0;
+            float handicapBefore = 0;
+            float handicapAfter = 0;
+            float difference = 0;
 
-          Scorecard[] scorecardBefore = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where scorecard_date < '"+dateBefore.toSQLDateString()+"' and scorecard_date is not null and member_id = "+Integer.toString(member.getID())+" order by scorecard_date desc");
-          Scorecard[] scorecardAfter = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where scorecard_date < '"+dateAfter.toSQLDateString()+"' and scorecard_date > '"+dateBefore.toSQLDateString()+"' and scorecard_date is not null and member_id = "+Integer.toString(member.getID())+" order by scorecard_date desc");
+            Scorecard[] scorecardBefore = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where scorecard_date < '"+dateBefore.toSQLDateString()+"' and scorecard_date is not null and member_id = "+Integer.toString(member.getID())+" order by scorecard_date desc");
+            Scorecard[] scorecardAfter = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where scorecard_date < '"+dateAfter.toSQLDateString()+"' and scorecard_date > '"+dateBefore.toSQLDateString()+"' and scorecard_date is not null and member_id = "+Integer.toString(member.getID())+" order by scorecard_date desc");
 
-          if ( scorecardBefore.length > 0 ) {
-            handicapBefore = scorecardBefore[0].getHandicapAfter();
-          }
-          else {
-            MemberInfo memberInfo = new MemberInfo(member.getID());
-            handicapBefore = memberInfo.getFirstHandicap();
+            if ( scorecardBefore.length > 0 ) {
+              handicapBefore = scorecardBefore[0].getHandicapAfter();
+            }
+            else {
+              MemberInfo memberInfo = new MemberInfo(member.getID());
+              handicapBefore = memberInfo.getFirstHandicap();
 
-            if ( handicapBefore > 40 ) {
-              if ( scorecardAfter.length > 0 ) {
-                if ( scorecardAfter[scorecardAfter.length-1].getHandicapCorrectionBoolean() ) {
-                  handicapBefore = scorecardAfter[scorecardAfter.length-1].getHandicapAfter();
+              if ( handicapBefore > 40 ) {
+                if ( scorecardAfter.length > 0 ) {
+                  if ( scorecardAfter[scorecardAfter.length-1].getHandicapCorrectionBoolean() ) {
+                    handicapBefore = scorecardAfter[scorecardAfter.length-1].getHandicapAfter();
+                  }
                 }
               }
             }
-          }
 
-          if ( scorecardAfter.length > 0 ) {
-            handicapAfter = scorecardAfter[0].getHandicapAfter();
-          }
-          else {
-            handicapAfter = handicapBefore;
-          }
-
-          if ( handicapBefore > 40 ) {
-            if ( member.getGender().equalsIgnoreCase("m") ) {
-              handicapBefore = 36;
+            if ( scorecardAfter.length > 0 ) {
+              handicapAfter = scorecardAfter[0].getHandicapAfter();
             }
-            if ( member.getGender().equalsIgnoreCase("f") ) {
-              handicapBefore = 40;
+            else {
+              handicapAfter = handicapBefore;
             }
-          }
 
-          if ( handicapAfter > 40 ) {
-            if ( member.getGender().equalsIgnoreCase("m") ) {
-              handicapAfter = 36;
-            }
-            if ( member.getGender().equalsIgnoreCase("f") ) {
-              handicapAfter = 40;
-            }
-          }
-
-          difference = handicapBefore - handicapAfter;
-          data = new StringBuffer();
-          String s = "";
-
-          try {
-            s = member.getName(); // Name
-            data.append(s);
-            data.append("\t");
-          }
-          catch ( Exception e ) {
-            e.printStackTrace(System.err);
-          }
-
-          try {
-            s = member.getSocialSecurityNumber(); // SocialSecurityNumber
-            if ( s.length() == 10 ) {
-              s = s.substring(0,6)+"-"+s.substring(6,s.length());
-            }
-            data.append(s);
-            data.append("\t");
-          }
-          catch ( Exception e ) {
-            e.printStackTrace(System.err);
-          }
-
-          try {
-            if ( member.getDateOfBirth() != null ) {
-              s = member.getDateOfBirth().toString();
-              data.append(s);
-            }
-            data.append("\t");
-          }
-          catch ( Exception e ) {
-            e.printStackTrace(System.err);
-          }
-
-          try {
-            if ( member.getGender() != null ) {
-              s = member.getGender();
-              data.append(s);
-            }
-            data.append("\t");
-          }
-          catch ( Exception e ) {
-            e.printStackTrace(System.err);
-          }
-
-          try {
-            s = TextSoap.singleDecimalFormat((double)handicapBefore); // HandicapBefore
-            s = s.replace('.',',');
-            data.append(s);
-            data.append("\t");
-          }
-          catch ( Exception e ) {
-            e.printStackTrace(System.err);
-          }
-
-          try {
-            s = TextSoap.singleDecimalFormat((double)handicapAfter); // HandicapAfter
-            s = s.replace('.',',');
-            data.append(s);
-            data.append("\t");
-          }
-          catch ( Exception e ) {
-            e.printStackTrace(System.err);
-          }
-
-          try {
-            s = TextSoap.singleDecimalFormat((double)difference); // Difference
-            s = s.replace('.',',');
-            data.append(s);
-            data.append("\t");
-          }
-          catch ( Exception e ) {
-            e.printStackTrace(System.err);
-          }
-
-          try {
-            Phone[] phones = member.getPhone();
-            for ( int z = 0; z < phones.length; z++ ) {
-              s = phones[z].getNumber();
-              data.append(s);
-              if ( z + 1 < phones.length ) {
-                 data.append("\t");
+            if ( handicapBefore > 40 ) {
+              if ( member.getGender().equalsIgnoreCase("m") ) {
+                handicapBefore = 36;
               }
-              else {
-                data.append("\n");
+              if ( member.getGender().equalsIgnoreCase("f") ) {
+                handicapBefore = 40;
               }
             }
-            if ( phones.length == 0 ) {
-              data.append("\n");
+
+            if ( handicapAfter > 40 ) {
+              if ( member.getGender().equalsIgnoreCase("m") ) {
+                handicapAfter = 36;
+              }
+              if ( member.getGender().equalsIgnoreCase("f") ) {
+                handicapAfter = 40;
+              }
             }
+
+            difference = handicapBefore - handicapAfter;
+            data = new StringBuffer();
+            String s = "";
+
+            try {
+              s = member.getName(); // Name
+              data.append(s);
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            try {
+              s = member.getSocialSecurityNumber(); // SocialSecurityNumber
+              if ( s.length() == 10 ) {
+                s = s.substring(0,6)+"-"+s.substring(6,s.length());
+              }
+              data.append(s);
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            try {
+              if ( member.getDateOfBirth() != null ) {
+                s = member.getDateOfBirth().toString();
+                data.append(s);
+              }
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            try {
+              if ( member.getGender() != null ) {
+                s = member.getGender();
+                data.append(s);
+              }
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            try {
+              s = TextSoap.singleDecimalFormat((double)handicapBefore); // HandicapBefore
+              s = s.replace('.',',');
+              data.append(s);
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            try {
+              s = TextSoap.singleDecimalFormat((double)handicapAfter); // HandicapAfter
+              s = s.replace('.',',');
+              data.append(s);
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            try {
+              s = TextSoap.singleDecimalFormat((double)difference); // Difference
+              s = s.replace('.',',');
+              data.append(s);
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            if ( phones ) {
+              try {
+                Phone[] phones = member.getPhone();
+                for ( int z = 0; z < phones.length; z++ ) {
+                  s = phones[z].getNumber();
+                  data.append(s);
+                  if ( z + 1 < phones.length ) {
+                     data.append("\t");
+                  }
+                  else {
+                    data.append("\n");
+                  }
+                }
+                if ( phones.length == 0 ) {
+                  data.append("\n");
+                }
+              }
+              catch ( Exception e ) {
+                e.printStackTrace(System.err);
+              }
+            }
+
+            c = data.toString().toCharArray();
+            out.write(c);
           }
-          catch ( Exception e ) {
+          catch (Exception e) {
             e.printStackTrace(System.err);
           }
-
-          c = data.toString().toCharArray();
-          out.write(c);
-
         }
 
       System.out.println("Done: "+new idegaTimestamp().getTimestampRightNow().toString());
@@ -274,6 +288,18 @@ private idegaTimestamp dateAfter;
       sql.printStackTrace();
     }
 
+  }
+
+  public void setOnlyActive() {
+    this.onlyActive=true;
+  }
+
+  public void setOnlyInActive() {
+    this.onlyActive=true;
+  }
+
+  public void setPhones() {
+    this.phones=true;
   }
 
 }
