@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: Tabber.java,v 1.2 2001/06/15 09:55:26 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,13 @@
  */
 package is.idegaweb.campus.service;
 
+import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.user.data.User;
+import com.idega.core.data.GenericGroup;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.login.business.AccessControl;
-import com.idega.data.genericentity.Member;
-import com.idega.data.genericentity.Group;
+import com.idega.block.login.business.LoginBusiness;
 import java.util.Hashtable;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class Tabber extends JModuleObject {
   private String LightColor,MiddleColor,DarkColor;
   private String action;
   public static final String strAction = "manager_action";
-  private Member eMember;
+  private User eUser;
   private ModuleObject Tabs;
   private CampusObject CampObj;
   private Hashtable PermissionHash;
@@ -54,7 +55,7 @@ public class Tabber extends JModuleObject {
   private void control(ModuleInfo modinfo){
 
     try{
-      eMember = AccessControl.getMember(modinfo);
+      eUser = LoginBusiness.getUser(modinfo);
 
       if(modinfo.getParameter(strAction) == null){
         iAct = NOACT;
@@ -63,7 +64,7 @@ public class Tabber extends JModuleObject {
         sAct = modinfo.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
       }
-      if(eMember !=null && getPermissionHash(modinfo,eMember.getID())){
+      if(eUser !=null && getPermissionHash(modinfo,eUser.getID())){
 
         if(PermissionHash.containsValue("administrator") )
           Tabs = AdminTabs();
@@ -103,19 +104,19 @@ public class Tabber extends JModuleObject {
 
       String lang = "IS";
 
-      Link Link1 = new Link(new Image(iAct == ACT1?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/manager.jsp");
+      Link Link1 = new Link(new Image(iAct == ACT1?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/main/manager.jsp");
       Link1.addParameter(strAction,ACT1);
       Link1.addParameter(Action.sAdminAction,ACT1);
-      Link Link2 = new Link(new Image(iAct == ACT2?"/pics/tabs/"+lang+"/residents.gif":"/pics/tabs/"+lang+"/residents1.gif"),"/manager.jsp");
+      Link Link2 = new Link(new Image(iAct == ACT2?"/pics/tabs/"+lang+"/residents.gif":"/pics/tabs/"+lang+"/residents1.gif"),"/main/manager.jsp");
       Link2.addParameter(strAction,ACT2);
       Link2.addParameter(Action.sAdminAction,ACT2);
-      Link Link3 = new Link(new Image(iAct == ACT3?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"),"/manager.jsp");
+      Link Link3 = new Link(new Image(iAct == ACT3?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"),"/main/manager.jsp");
       Link3.addParameter(strAction,ACT3);
       Link3.addParameter(Action.sAdminAction,ACT3);
-      Link Link4 = new Link(new Image(iAct == ACT4?"/pics/tabs/"+lang+"/apartment.gif":"/pics/tabs/"+lang+"/apartment1.gif"),"/manager.jsp");
+      Link Link4 = new Link(new Image(iAct == ACT4?"/pics/tabs/"+lang+"/apartment.gif":"/pics/tabs/"+lang+"/apartment1.gif"),"/main/manager.jsp");
       Link4.addParameter(strAction,ACT4);
       Link4.addParameter(Action.sAdminAction,ACT4);
-      Link Link5 = new Link(new Image(iAct == ACT5?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"),"/manager.jsp");
+      Link Link5 = new Link(new Image(iAct == ACT5?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"),"/main/manager.jsp");
       Link5.addParameter(strAction,ACT5);
       Link5.addParameter(Action.sAdminAction,ACT5);
       LinkTable.add(Link1,1,1);
@@ -219,8 +220,8 @@ public class Tabber extends JModuleObject {
 
 
 
-  private boolean getMemberAccessGroups(int iMemberId)throws SQLException{
-    Group[] group = (Group[])eMember.getGenericGroups();
+  private boolean getUserAccessGroups(int iUserId)throws SQLException{
+    GenericGroup[] group = (GenericGroup[])eUser.getGenericGroups();
     int iGroupLen = group.length;
     PermissionHash = new Hashtable(iGroupLen);
     for(int i = 0; i < iGroupLen ; i++){
@@ -230,13 +231,13 @@ public class Tabber extends JModuleObject {
     return false;
   }
 
-  private boolean getPermissionHash(ModuleInfo modinfo,int iMemberId)throws SQLException{
+  private boolean getPermissionHash(ModuleInfo modinfo,int iUserId)throws SQLException{
     if(modinfo.getParameter("man_perm_hash") != null){
       PermissionHash = (Hashtable) modinfo.getSession().getAttribute("man_perm_hash");
       return true;
     }
     else{
-      boolean returner = getMemberAccessGroups(iMemberId);
+      boolean returner = getUserAccessGroups(iUserId);
       modinfo.getSession().setAttribute("man_perm_hash",PermissionHash);
       return returner;
     }
@@ -245,7 +246,7 @@ public class Tabber extends JModuleObject {
 
   public void main(ModuleInfo modinfo)  {
     try{
-    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo fixa Admin*/
