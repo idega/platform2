@@ -11,20 +11,24 @@ import com.idega.user.data.User;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.ejb.FinderException;
 import javax.servlet.http.HttpSession;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
 /**
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/11/04 18:09:00 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/15 12:30:48 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -58,6 +62,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
     private static final String SCHOOLCLASS_KEY = PREFIX + "schoolClass";
     private static final String SCHOOLYEAR_DEFAULT = "skolår";
     private static final String SCHOOLYEAR_KEY = PREFIX + "schoolYear";
+    private static final String TERMINATE_MESSAGE_KEY = PREFIX + "terminate_message";
+    private static final String TERMINATE_MESSAGE_DEFAULT = "Placeringen för {0} i {2}/{1} avslutades {3,date} av {5}.\n\n{4}.";
     private static final String TERMINATEMEMBERSHIP_DEFAULT
         = "Avsluta placering";
     private static final String TERMINATEMEMBERSHIP_KEY
@@ -147,13 +153,23 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	 *
 	 * @param context session data
 	 */
-    private Table getTerminateMembershipTable (final IWContext context) {
+    private Table getTerminateMembershipTable (final IWContext context) 
+        throws RemoteException, javax.ejb.CreateException {
         // find input values
         final HttpSession session = context.getSession ();
         final SchoolClassMember member = (SchoolClassMember)
                 session.getAttribute (MEMBER_KEY);
         final Date date = getDateFromString (context.getParameter
                                              (TERMINATIONDATE_KEY));
+        final User child = member.getStudent ();
+        final String childName = child.getFirstName () + " "
+                + child.getLastName ();
+        final User adminUser = context.getCurrentUser ();
+        final String adminUserName = adminUser == null ? "Admin"
+                : adminUser.getFirstName () + " " + adminUser.getLastName ();
+        final String schoolName
+                = member.getSchoolClass ().getSchool ().getName ();
+        final String schoolClassName = member.getSchoolClass ().getName ();
         final Table table = new Table ();
         if (null == date) {
             final Text text = new Text (localize (WRONGDATEFORMAT_KEY,
@@ -162,17 +178,40 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             table.add (text, 1, 1);
         } else {
             // terminate membership
-            member.setNotes (context.getParameter (NOTES_KEY));
+            final String notes = context.getParameter (NOTES_KEY);
+            member.setNotes (notes);
             member.setRemovedDate (new  Timestamp (date.getTime ()));
             member.store ();
             
             // put confirmation output
-            table.add (new Text (localize (MEMBERSHIPOF_KEY,
-                                           MEMBERSHIPOF_DEFAULT)
-                                 + member.getStudent ().getFirstName ()
-                                 + " " + member.getStudent ().getLastName ()
-                                 + localize (ISTERMINATED_KEY,
-                                             ISTERMINATED_DEFAULT)), 1, 1);
+            final String subject = localize
+                    (MEMBERSHIPOF_KEY, MEMBERSHIPOF_DEFAULT) + childName
+                    + localize (ISTERMINATED_KEY, ISTERMINATED_DEFAULT);
+            table.add (new Text (subject), 1, 1);
+
+            // send confirmation message
+            final MessageBusiness messageBusiness = (MessageBusiness) IBOLookup
+                    .getServiceInstance (context, MessageBusiness.class);
+            final CommuneUserBusiness communeUserBusiness
+                    = (CommuneUserBusiness) IBOLookup.getServiceInstance
+                    (context, CommuneUserBusiness.class);
+            final User custodian
+                    = communeUserBusiness.getCustodianForChild (child);
+            if (null != custodian) {
+                final int custodianId
+                        = ((Integer) custodian.getPrimaryKey ()).intValue ();
+                final Object [] arguments =
+                        { childName, schoolClassName, schoolName, date, notes,
+                          adminUser };
+                final String messageBody = MessageFormat.format
+                        (localize (TERMINATE_MESSAGE_KEY,
+                                   TERMINATE_MESSAGE_DEFAULT), arguments);
+                final Message message = messageBusiness.createUserMessage
+                        (custodianId, subject, messageBody);
+                message.setSender (context.getCurrentUser ());
+                message.store();
+            }
+
         }
         table.setHeight (2, 12);
         table.add (getSmallLink (localize (BACK_KEY, BACK_DEFAULT)), 1, 3);
