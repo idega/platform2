@@ -136,6 +136,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		boolean showNotStartedComment = false;
 		boolean showRemovedComment = false;
 		boolean hasComments = false;
+		String name = null;
 		
 		IWTimestamp stamp = new IWTimestamp();
 		Collection students = null;
@@ -197,7 +198,8 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			if (hasComments)
 				table.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
 			if (getResponsePage() != null) {
-				childInfo = getSmallLink(child.getNameLastFirst(true));
+				name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
+				childInfo = getSmallLink(name);
 				childInfo.setEventListener(ChildCareEventListener.class);
 				childInfo.addParameter(getSession().getParameterUserID(), student.getClassMemberId());
 				childInfo.setPage(getResponsePage());
