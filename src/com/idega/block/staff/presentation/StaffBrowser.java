@@ -84,12 +84,8 @@ private String _attributesWidth;
 
 private String _width;
 private String _linkStyle;
-private String _visitedStyle;
-private String _activeStyle;
 private String _hoverStyle;
 private String _alphabetLinkStyle;
-private String _alphabetVisitedStyle;
-private String _alphabetActiveStyle;
 private String _alphabetHoverStyle;
 
 private String _textStyle;
@@ -621,13 +617,9 @@ private Table _myTable;
     _alphabetName = "alpha_"+_name;
 
     if ( getParentPage() != null ) {
-      getParentPage().setStyleDefinition("A."+_name+":link",_linkStyle);
-      getParentPage().setStyleDefinition("A."+_name+":visited",_visitedStyle);
-      getParentPage().setStyleDefinition("A."+_name+":active",_activeStyle);
+      getParentPage().setStyleDefinition("A."+_name,_linkStyle);
       getParentPage().setStyleDefinition("A."+_name+":hover",_hoverStyle);
-      getParentPage().setStyleDefinition("A."+_alphabetName+":link",_alphabetLinkStyle);
-      getParentPage().setStyleDefinition("A."+_alphabetName+":visited",_alphabetVisitedStyle);
-      getParentPage().setStyleDefinition("A."+_alphabetName+":active",_alphabetActiveStyle);
+      getParentPage().setStyleDefinition("A."+_alphabetName,_alphabetLinkStyle);
       getParentPage().setStyleDefinition("A."+_alphabetName+":hover",_alphabetHoverStyle);
     }
     else {
@@ -639,15 +631,10 @@ private Table _myTable;
     _width = "100%";
     _selectedLetterColor = "#0000CC";
     _linkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _visitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _activeStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
     _hoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
     _alphabetLinkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _alphabetVisitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _alphabetActiveStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
     _alphabetHoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
     _textStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
-    _headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
     _headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
     _divisionStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
 
@@ -752,16 +739,22 @@ private Table _myTable;
 
   public void setLinkStyle(String style,String style2,String style3,String style4) {
     _linkStyle = style;
-    _visitedStyle = style2;
-    _activeStyle = style3;
     _hoverStyle = style4;
+  }
+
+  public void setLinkStyle(String style,String hoverStyle) {
+    _linkStyle = style;
+    _hoverStyle = hoverStyle;
   }
 
   public void setAlphabetLinkStyle(String style,String style2,String style3,String style4) {
     _alphabetLinkStyle = style;
-    _alphabetVisitedStyle = style2;
-    _alphabetActiveStyle = style3;
     _alphabetHoverStyle = style4;
+  }
+
+  public void setAlphabetLinkStyle(String style,String hoverStyle) {
+    _alphabetLinkStyle = style;
+    _alphabetHoverStyle = hoverStyle;
   }
 
   public void setWidth(String width) {

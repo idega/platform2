@@ -204,9 +204,9 @@ public class StaffFinder {
   }
 
   public static StaffHolder getStaffHolder(User user,int localeID) {
-    StaffEntity staff = StaffFinder.getStaff(user.getID());
-    StaffLocalized staffInfo = StaffFinder.getLocalizedStaff(staff,localeID);
-    StaffMeta[] staffMeta = StaffFinder.getMeta(user.getID(),localeID);
+    StaffEntity staff = getStaff(user.getID());
+    StaffLocalized staffInfo = getLocalizedStaff(staff,localeID);
+    StaffMeta[] staffMeta = getMeta(user.getID(),localeID);
     Phone workPhone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
     Phone mobilePhone = UserBusiness.getUserPhone(user.getID(),PhoneType.MOBILE_PHONE_ID);
     Email email = UserBusiness.getUserMail(user);
@@ -246,6 +246,8 @@ public class StaffFinder {
         attributes[a] = staffMeta[a].getAttribute();
         values[a] = staffMeta[a].getValue();
       }
+      holder.setMetaAttributes(attributes);
+      holder.setMetaValues(values);
     }
     if ( workPhone != null ) {
       holder.setWorkPhone(workPhone.getNumber());
