@@ -195,6 +195,20 @@ public String getActionString(ModuleInfo modinfo)throws IOException{
 	return ActionString.toString();
 }
 
+public void setToDisableOnClick(InterfaceObject objectToDisable){
+  this.setOnClick("this.form."+objectToDisable.getName()+".disabled = true");
+}
+
+public void setToEnableOnClick(InterfaceObject objectToEnable){
+  this.setOnClick("this.form."+objectToEnable.getName()+".disabled = false");
+}
+
+public void setDisabled(boolean disabled){
+  if(disabled){
+    setAttribute("disabled");
+  }
+}
+
 public void handleKeepStatus(ModuleInfo modinfo){
 	if (statusKeptOnAction()){
 		if(modinfo.getParameter(this.getName()) != null){

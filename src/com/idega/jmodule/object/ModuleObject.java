@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.16 2001/08/09 12:39:52 tryggvil Exp $
+ * $Id: ModuleObject.java,v 1.17 2001/08/16 19:40:28 bjarni Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -157,6 +157,10 @@ public class ModuleObject extends Object implements Cloneable {
     this.attributes.put((Object) attributeName,(Object) attributeValue);
   }
 
+  public void setAttribute(String attributeName){
+    setAttribute(attributeName,slash);
+  }
+
   public String getAttribute(String attributeName) {
     if (this.attributes != null){
       return (String)this.attributes.get((Object)attributeName);
@@ -189,9 +193,13 @@ public class ModuleObject extends Object implements Cloneable {
         Attribute = (String)e.nextElement();
         returnString.append(" ");
         returnString.append(Attribute);
-        returnString.append("=\"");
-        returnString.append(getAttribute(Attribute));
-        returnString.append("\" ");
+        String attributeValue=getAttribute(Attribute);
+        if(!attributeValue.equals(slash)){
+          returnString.append("=\"");
+          returnString.append(attributeValue);
+          returnString.append("\"");
+        }
+        returnString.append("");
       }
     }
 
