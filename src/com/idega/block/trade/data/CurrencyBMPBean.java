@@ -62,7 +62,8 @@ public class CurrencyBMPBean extends com.idega.data.GenericEntity implements com
   }
 
   public Currency ejbHomeGetCurrencyByAbbreviation(String currencyAbbreviation) throws FinderException, RemoteException {
-    Collection coll = this.idoFindAllIDsByColumnOrderedBySQL(getColumnNameCurrencyAbbreviation(), currencyAbbreviation, getColumnNameCurrencyAbbreviation() + " desc");
+    //Collection coll = this.idoFindAllIDsByColumnOrderedBySQL(getColumnNameCurrencyAbbreviation(), currencyAbbreviation, getColumnNameCurrencyAbbreviation() + " desc");
+    Collection coll = ejbHomeGetCurrenciesByAbbreviation(currencyAbbreviation);
     Iterator iter = coll.iterator();
     if (iter.hasNext()) {
       return getHome().findByPrimaryKey(iter.next());
