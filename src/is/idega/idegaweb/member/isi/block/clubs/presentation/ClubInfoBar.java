@@ -106,10 +106,13 @@ public class ClubInfoBar extends Block {
 			
 		});
 		
-		String divName = division.getName();
 		CSSMenu topLevelMenu;
 		if(divisionInfoPageId!=null) {
-			Link link = new Link(division.getName());
+		    String divName = division.getShortName();
+		    if (divName == null || divName.equals("")) {
+			    divName = division.getName();
+			}
+		    Link link = new Link(divName);
 			link.setPage(Integer.parseInt(divisionInfoPageId));
 			if(_callingDomain!=null && _callingDomain.length()>0) {
 				link.setHostname(_callingDomain);
