@@ -110,8 +110,8 @@ public class MemberOverview extends Block {
 		table.setColumns(4);
 		int row = 1;
 		
-		Image minusImg = _iwrb.getImage("minus.gif");
-		Image plusImg = _iwrb.getImage("plus.gif");
+		Image minusImg = _iwb.getImage("minus.gif");
+		Image plusImg = _iwb.getImage("plus.gif");
 
 		Link statusLink = new Link(showStatus?minusImg:plusImg);
 		statusLink.setBold();
