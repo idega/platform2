@@ -347,7 +347,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 				provider = queue.getProvider();
 				area = provider.getSchoolArea();
 			
-				date = new DateInput(PARAMETER_DATE+"_"+(a+1));
+				date = (DateInput) getStyledInterface(new DateInput(PARAMETER_DATE+"_"+(a+1)));
 				date.setDate(queue.getStartDate());
 				date.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 				//date.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.invalid_dates_selected","Earliest selectable date is 01-06-2003."));
