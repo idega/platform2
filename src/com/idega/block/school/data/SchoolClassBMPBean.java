@@ -375,4 +375,8 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	public void removeFromUser() throws IDORemoveRelationshipException {
 		this.idoRemoveFrom(User.class);
 	}
+	
+	public Integer ejbFindOneBySchool(int schoolID) throws FinderException {
+		return (Integer) super.idoFindOnePKBySQL("select * from "+this.getEntityName()+" where "+SCHOOL+" = "+String.valueOf(schoolID)+" and ("+COLUMN_VALID+" = '"+VALID+"' or "+COLUMN_VALID+" is null)");
+	}
 }
