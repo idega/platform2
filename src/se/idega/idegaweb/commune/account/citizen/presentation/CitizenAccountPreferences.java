@@ -560,33 +560,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				updatePassword = true;
 			}
 
-            if (null == sEmail || 0 == sEmail.trim ().length ()) {
-                updateEmail = false;
-            } else {
-                // Validate e-mail address
-                if (sEmail.equals("")) {
-                    throw new Exception(localize(KEY_EMAIL_EMPTY, DEFAULT_EMAIL_EMPTY));
-                }
-                if (sEmail.length() < 6) {
-                    throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-                }
-                if (sEmail.indexOf('.') == -1) {
-                    throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-                }					
-                if (sEmail.indexOf('@') == -1) {
-                    throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-                }					
-                String testEmail = sEmail.toLowerCase();
-                for (int i = 0; i < testEmail.length(); i++) {
-                    char c = testEmail.charAt(i);
-                    if ((c < 'a') || (c > 'z')) {
-                        if ((c != '.') && (c != '@') && (c != '_') && ((c < '0') || (c > '9'))) {
-                            throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-                        }
-                    }
-                }
-                updateEmail = true;
-			}
+			updateEmail = validateEmail(sEmail);
 
 			// Validate c/o-address
 			if (useCOAddress) {
@@ -693,6 +667,46 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	
 	private CitizenAccountSession getCitizenAccountSession(IWContext iwc) throws Exception {
 		return (CitizenAccountSession) com.idega.business.IBOLookup.getSessionInstance(iwc, CitizenAccountSession.class);
+	}
+
+
+	/**
+	 * @param sEmail an email address, valid or not, to check
+	 * @return boolean true if there is no problem with all characters and is
+	 * not empty. False if it is an empty string.
+	 * @throws Exception if the sEmail is a non empty string and contains
+	 * erroneous characters.
+	 */
+	private boolean validateEmail(String sEmail)throws Exception{
+		boolean validEmail=false;
+		if (null == sEmail || 0 == sEmail.trim ().length ()) {
+			validEmail = false;
+		} else {
+			// Validate e-mail address
+			if (sEmail.equals("")) {
+				throw new Exception(localize(KEY_EMAIL_EMPTY, DEFAULT_EMAIL_EMPTY));
+			}
+			if (sEmail.length() < 6) {
+				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+			}
+			if (sEmail.indexOf('.') == -1) {
+				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+			}					
+			if (sEmail.indexOf('@') == -1) {
+				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+			}					
+			String testEmail = sEmail.toLowerCase();
+			for (int i = 0; i < testEmail.length(); i++) {
+				char c = testEmail.charAt(i);
+				if ((c < 'a') || (c > 'z')) {
+					if ((c != '.') && (c != '@') && (c != '-') && (c != '_') && ((c < '0') || (c > '9'))) {
+						throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+					}
+				}
+			}
+			validEmail = true;
+		}
+		return validEmail;
 	}
 
 }
