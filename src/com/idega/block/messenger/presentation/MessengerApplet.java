@@ -89,15 +89,17 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     catch(MalformedURLException e) {
       e.printStackTrace(System.err);
     }
-/*
+
     try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
         logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_out.gif"));
       }
       catch (Exception ex) {
         ex.printStackTrace(System.err);
-      }*/
-/*
+      }
+
+      /*
+
     userPanel = new Panel();
     userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
     add(userPanel);*/
