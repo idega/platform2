@@ -2612,6 +2612,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public Collection findAllPendingApplications() {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+
+			return home.findAllCasesByStatus(getCaseStatusPending().getStatus());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return new ArrayList(0);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return new ArrayList(0);
+		}
+	}
+
 	public Collection findAllApplicationsWithChecksToRedeem() {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
