@@ -286,7 +286,7 @@ public class ReportQueryBuilder extends Block {
 				if (! expertMode) {
 					displayStep = (step == 1)? 1 : step -1;
 				}
-				String queryName = (userQueryID > 0) ? helper.getUserQuery().getName() : iwrb.getLocalizedString("step_5_default_queryname", "My query");
+				String queryName = (userQueryID > 0) ? helper.getUserQuery().getName() : iwrb.getLocalizedString("step_all_new_query", "New Query");
 				Text queryNameText = new Text(queryName);
 				queryNameText.setBold();
 				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("step", "Step"));
@@ -444,7 +444,7 @@ public class ReportQueryBuilder extends Block {
 		boolean isPrivate = PRIVATE.equals(iwc.getParameter(PARAM_IS_PRIVATE_QUERY));
 		boolean overwriteQuery = OVERWRITE_QUERY.equals(saveMode);
 		if (name == null) {
-			name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
+			name = iwrb.getLocalizedString("step_6_default_name", "My query");
 		}
 		UserQuery userQuery = sessionBean.storeQuery(name, isPrivate, overwriteQuery);
 		if (userQuery != null) {
@@ -1601,7 +1601,7 @@ public class ReportQueryBuilder extends Block {
 			table.add(iwrb.getLocalizedString("step_5_change_queryname", "Change query name"), 1, row++);
 		}
 		else {
-			queryNameInput.setContent(iwrb.getLocalizedString("step_5_default_queryname", "My query"));
+			queryNameInput.setContent(iwrb.getLocalizedString("step_6_choose_name_for_query", "Choose a name for the query"));
 			table.add(iwrb.getLocalizedString("step_5_set_queryname", "Set query name"), 1, row++);
 		}
 		table.add(queryNameInput, 1 , row++);
