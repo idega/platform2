@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.122 2004/03/08 14:08:39 staffan Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.123 2004/03/12 15:52:40 staffan Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1724,8 +1724,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						float perc = reg.getMaxAmountDiscount();
 						if (!missingIncome && income >= 0.0f && perc > 0.0f) {
 							float amount = income * perc / 100;
-							if (placementTimes != null && placementTimes.getMonths() != 0.0f)
-								total_sum /= placementTimes.getMonths();
+							if (placementTimes != null && placementTimes.getMonths() != 0.0f) {
+								
+								amount *= placementTimes.getMonths();
+							}
 							if (amount < total_sum) {
 								ret = new PostingDetail();
 								ret.setAmount(amount - total_sum);

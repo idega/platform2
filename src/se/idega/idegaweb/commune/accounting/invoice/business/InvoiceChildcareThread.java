@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/03/11 18:52:57 $ by $Author: joakim $
+ * Last modified: $Date: 2004/03/12 15:52:40 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.141 $
+ * @version $Revision: 1.142 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -258,6 +258,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			{
 				try{
 					contract = (ChildCareContract)contractIter.next();
+
 					errorRelated = new ErrorLogger();
 					try {
 						errorRelated.append(getLocalizedString("invoice.ChildcareContract","Childcare Contract")+":"+contract.getPrimaryKey());
@@ -437,7 +438,6 @@ public class InvoiceChildcareThread extends BillingThread{
 									startPeriod.getDate(),
 									conditions,
 									placementTimes);
-								
 							if(postingDetail==null){
 								throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
 							}
@@ -716,7 +716,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setPeriodEndPlacement(regularInvoiceEntry.getTo());
 						invoiceRecord.setDateCreated(currentDate);
 						invoiceRecord.setCreatedBy(BATCH_TEXT);
-						long amount = AccountingUtil.roundAmount(regularInvoiceEntry.getAmount()*months);
+						long amount = AccountingUtil.roundAmount(regularInvoiceEntry.getAmount());
 						totalSum += amount;
 						if(totalSum<0){
 							errorRelated.append(getLocalizedString("invoice.PreviousSum","Previous sum")+":"+amount+" "+
@@ -924,7 +924,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
 		invoiceRecord.setAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*(isDiscount ? 1.0f : placementTimes.getMonths())));
-		invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVATPercent()*placementTimes.getMonths()));
+		invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVATPercent()*invoiceRecord.getAmount ()));
 		invoiceRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
 		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
