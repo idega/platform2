@@ -298,7 +298,6 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendWhereEquals("h.school_id", providerID);
 		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
-		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
 		return idoGetNumberOfRecords(sql);
 	}
