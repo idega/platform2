@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberHome.java,v 1.66 2005/01/17 13:13:55 anders Exp $
+ * $Id: SchoolClassMemberHome.java,v 1.67 2005/01/17 15:44:08 anders Exp $
  * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/17 13:13:55 $ by $Author: anders $
+ * Last modified: $Date: 2005/01/17 15:44:08 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -192,6 +192,11 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindActiveByStudentSchoolCategory
 	 */
 	public SchoolClassMember findActiveByStudentSchoolAndCategory(int studentId, int schoolId, SchoolCategory category) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindNotTerminatedByStudentSeasonSchoolAndCategory
+	 */
+	public SchoolClassMember findNotTerminatedByStudentSeasonSchoolAndCategory(int studentId, SchoolSeason season, int schoolId, SchoolCategory category) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllByUserAndSchoolCategory
