@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.15 2003/09/02 10:43:53 anders Exp $
+ * $Id: VATEditor.java,v 1.16 2003/09/02 12:17:13 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -35,10 +35,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/09/02 10:43:53 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 12:17:13 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -409,7 +409,8 @@ public class VATEditor extends AccountingBlock {
 			while (iter.hasNext()) {
 				VATRegulation vr = (VATRegulation) iter.next();
 				list.add(formatDate(vr.getPeriodFrom(), 4) + " - " + formatDate(vr.getPeriodTo(), 4));
-				list.add(getLink(vr.getDescription(), PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString()));
+				list.add(vr.getDescription());
+//				list.add(getLink(vr.getDescription(), PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString()));
 				list.add("" + vr.getVATPercent());
 				String textKey = vr.getPaymentFlowType().getTextKey();
 				list.add(textKey, textKey);
