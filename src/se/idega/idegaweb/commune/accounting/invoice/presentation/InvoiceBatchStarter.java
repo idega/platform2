@@ -1,7 +1,12 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
+import java.rmi.RemoteException;
+
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -43,6 +48,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		form.add(saveButton);
 		form.add(cancelButton);
 	}
+	
 	/**
 	 * @param iwc
 	 */
@@ -51,6 +57,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 			handleSave(iwc);
 		}
 	}
+	
 	/**
 	 * @param iwc
 	 */
@@ -58,5 +65,9 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		// TODO Auto-generated method stub
 		User user = iwc.getCurrentUser();
 		add("Save pressed for user: "+user.getName());
+	}
+
+	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
+		return (PostingBusinessHome) IDOLookup.getHome(PostingBusiness.class);
 	}
 }
