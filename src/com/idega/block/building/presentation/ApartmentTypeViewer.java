@@ -141,7 +141,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
       Image floorPlan = iwb_.getImage("/shared/room/nopic.gif");
         if(pid > 0)
          floorPlan = new Image(pid);
-       //floorPlan.setMaxImageWidth(200);
+       floorPlan.setMaxImageWidth(200);
        floorPlan.setHorizontalSpacing(6);
        roomTable.add(floorPlan,1,1);
 
