@@ -37,7 +37,6 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
@@ -194,8 +193,10 @@ public class HouseHoldViewer extends AccountingBlock {
 		Text tAdults = getHeader(localize("household.adults","Adults"));
 		
 		//add(tAdults);
-		//Table table = new Table();
+		Table T = new Table();
+		T.add(tAdults,1,1);
 		ListTable table = new ListTable(this,6);
+		T.add(table,1,2);
 	
 		Text tIndividual = getHeader(localize("household.individual", "Individual"));
 		Text tPersonalID = getHeader(localize("household.personal_id", "Personal ID"));
@@ -255,14 +256,18 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		//add(table);
 		//add(Text.getBreak());
-		appForm.setMainPanel(table);
+		T.add(Text.getBreak(),1,3);
+		appForm.setMainPanel(T);
 		
 	}
 
 	public void presentateChildren(IWContext iwc) {
+		Table T = new Table();
 		Text tChildren = getHeader(localize("household.children","Children"));
 		//add(tChildren);
+		T.add(tChildren,1,1);
 		ListTable table = new ListTable(this,8);
+		T.add(table,1,2);
 		Text tIndividual = getHeader(localize("household.individual", "Individual"));
 		Text tPersonalID = getHeader(localize("household.personal_id", "Personal ID"));
 		Text tStreetAddress = getHeader(localize("household.streetaddress", "Street address"));
@@ -335,7 +340,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		//add(table);
 		//add(Text.getBreak());
-		appForm.setMainPanel(table);
+		appForm.setMainPanel(T);
 	}
 
 	public void presentateButtons(IWContext iwc) {
