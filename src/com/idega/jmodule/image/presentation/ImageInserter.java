@@ -42,6 +42,7 @@ private Class windowClass = SimpleChooserWindow.class;
 private Image setImage;
 private boolean limitWidth = true;
 public final String sessionImageParameterName = "im_image_session_name";
+private String prmUseBox = "insertImage";
 
 private IWBundle iwb;
 private IWResourceBundle iwrb;
@@ -131,7 +132,7 @@ public ImageInserter(Class WindowToOpen) {
         imageAdmin.addParameter(imSessionImageName,imageId);
 
       HiddenInput hidden = new HiddenInput(sHiddenInputName,Integer.toString(imageId));
-      CheckBox insertImage = new CheckBox("insertImage","Y");
+      CheckBox insertImage = new CheckBox(prmUseBox,"Y");
         insertImage.setChecked(selected);
 
       Text imageText = new Text(sUseBoxString+":&nbsp;");
@@ -158,6 +159,15 @@ public ImageInserter(Class WindowToOpen) {
 
   public void setHasUseBox(boolean useBox){
     this.hasUseBox = useBox;
+  }
+
+  public void setHasUseBox(boolean useBox,String prmUseBox){
+    this.hasUseBox = useBox;
+    this.prmUseBox = prmUseBox;
+  }
+
+  public void setUseBoxParameterName(String prmUseBox){
+    this.prmUseBox = prmUseBox;
   }
 
   public void setSelected(boolean selected){

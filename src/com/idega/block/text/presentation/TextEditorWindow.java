@@ -48,7 +48,7 @@ public class TextEditorWindow extends IWAdminWindow{
   private static String prmBody = "txep.body";
   //debug
   //private static String prmImageId = "txep.imageid";
-  private static String prmImageId = "image_id";
+  private static String prmImageId = "txep.imageid";
   private static String prmTxTextId = "txep.txtextid";
   private static String prmLocalizedTextId = "txep.loctextid";
   private static String prmUseImage = "txep.useimage";
@@ -213,6 +213,7 @@ public class TextEditorWindow extends IWAdminWindow{
 
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
+    imageInsert.setUseBoxParameterName(prmUseImage);
     imageInsert.setSelected(false);
       if ( update ) {
         if ( txText.getIncludeImage()) {
