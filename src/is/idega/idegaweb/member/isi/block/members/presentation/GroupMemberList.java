@@ -47,11 +47,14 @@ public class GroupMemberList extends Block {
 		_iwrb = getResourceBundle(iwc);
 		Group group = getGroupToShowMembersFor(iwc);
 		Group division = getDivision(iwc);
-		String name = group==null?"":group.getName();
-		Text title = new Text(name + ": ");
-		title.setBold();
-		add(title);
-		addBreak();
+		boolean showClubMainCommitee = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_CLUB_COMMITEE_MAIN));
+		if(!showClubMainCommitee) {
+			String name = group==null?"":group.getName();
+			Text title = new Text(name + ": ");
+			title.setBold();
+			add(title);
+			addBreak();
+		}
 		if(group!=null) {
 			add(getPlayerList(iwc, group, division));
 		}
