@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.8 2002/11/14 12:32:39 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.9 2002/11/14 15:36:05 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.user.Converter;
-import com.idega.user.data.User;
+import com.idega.user.data.*;
 import com.idega.util.PersonalIDFormatter;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -24,8 +24,17 @@ import se.idega.idegaweb.commune.account.citizen.data.*;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
- * @version 1.0
+ * CitizenAccountAdmin is an IdegaWeb block that displays the admintstation user
+ * interface for accpting and rejecting citizen account applications. It is
+ * based on session ejb classes in
+ * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
+ * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
+ * <p>
+ * Last modified: $Date: 2002/11/14 15:36:05 $ by $Author: staffan $
+ *
+ * @author <a href="mail:palli@idega.is">Pall Helgason</a>
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.9 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -33,29 +42,19 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_APPROVE = 2;
 	private final static int ACTION_REJECT = 3;
 
-	private final static String PARAM_PID = "caa_pid";
-	private final static String PARAM_EMAIL = "caa_email";
-	private final static String PARAM_PHONE_HOME = "caa_phone_home";
-	private final static String PARAM_PHONE_WORK = "caa_phone_work";
-	private final static String PARAM_NAME = "caa_adm_name";
-	private final static String PARAM_ADDRESS = "caa_adm_address";
-	private final static String PARAM_MESSAGE = "caa_adm_message";
-	private final static String PARAM_NOT_CITIZEN = "caa_adm_not_citizen";
-
-	private final static String PARAM_APPLICANT_NAME = "caa_applicant_name";
-	private final static String PARAM_CUSTODIAN1_PID = "caa_custodian1_pid";
-	private final static String PARAM_CUSTODIAN1_CIVIL_STATUS = "caa_custodian1_civil_status";
-	private final static String PARAM_CUSTODIAN2_PID = "caa_custodian2_pid";
-	private final static String PARAM_CUSTODIAN2_CIVIL_STATUS = "caa_custodian2_civil_status";
-	private final static String PARAM_STREET = "caa_street";
-	private final static String PARAM_ZIP_CODE = "caa_zip_code";
-	private final static String PARAM_CITY = "caa_city";
+    private final static String ADDRESS_DEFAULT = "Address";
+    private final static String ADDRESS_KEY = "caa_adm_address";
+    private final static String MESSAGE_DEFAULT = "Meddelande";
+    private final static String MESSAGE_KEY = "caa_adm_message";
+    private final static String NAME_DEFAULT = "Namn";
+    private final static String NAME_KEY = "caa_adm_name";
 
 	private final static String PARAM_FORM_APPROVE = "caa_adm_approve";
 	private final static String PARAM_FORM_REJECT = "caa_adm_reject";
 	private final static String PARAM_FORM_DETAILS = "caa_adm_details";
 	private final static String PARAM_FORM_CANCEL = "caa_adm_cancel";
 	private final static String PARAM_FORM_LIST = "caa_adm_list";
+
 
 	public void main(IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -114,9 +113,9 @@ public class CitizenAccountAdmin extends CommuneBlock {
 		int row = 1;
 		int col = 1;
 		table.setRowColor(row, getHeaderColor());
-		table.add(getSmallHeader(localize(PARAM_NAME, "Namn")), col++, row);
-		table.add(getSmallHeader(localize(PARAM_PID, "Personnummer")), col++, row);
-		table.add(getSmallHeader(localize(PARAM_ADDRESS, "Adress")), col, row++);
+		table.add(getSmallHeader(localize(NAME_KEY, NAME_DEFAULT)), col++, row);
+		table.add(getSmallHeader(localize(CitizenAccountApplication.SSN_KEY, CitizenAccountApplication.SSN_DEFAULT)), col++, row);
+		table.add(getSmallHeader(localize(ADDRESS_KEY, ADDRESS_DEFAULT)), col, row++);
 
 		List applications = null;
 		try {
@@ -159,14 +158,18 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
 		int row = 1;
 		int col = 1;
-		table.add(getSmallHeader(localize(PARAM_NAME, "Namn")), col, row++);
-		table.add(getSmallHeader(localize(PARAM_PID, "Personnummer")), col, row++);
-		table.add(getSmallHeader(localize(PARAM_EMAIL, "E-post")), col, row++);
-		table.add(getSmallHeader(localize(PARAM_PHONE_HOME, "Telefon (hem)")), col, row++);
-		table.add(getSmallHeader(localize(PARAM_PHONE_WORK, "Telefon (arbete/mobil)")), col, row++);
-		table.add(getSmallHeader(localize(PARAM_ADDRESS, "Adress")), col, row++);
-		table.add(getSmallHeader(localize(PARAM_NOT_CITIZEN, "Not citizen")), col, row++);
-		table.add(getSmallHeader(localize(PARAM_MESSAGE, "Message")), col++, row);
+		table.add(getSmallHeader(localize(NAME_KEY, NAME_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.SSN_KEY, CitizenAccountApplication.SSN_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.EMAIL_KEY, CitizenAccountApplication.EMAIL_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.PHONE_HOME_KEY, CitizenAccountApplication.PHONE_HOME_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.PHONE_WORK_KEY, CitizenAccountApplication.PHONE_WORK_DEFAULT)), col, row++);
+		table.add(getSmallHeader(localize(ADDRESS_KEY, ADDRESS_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.GENDER_KEY, CitizenAccountApplication.GENDER_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.CIVIL_STATUS_KEY, CitizenAccountApplication.CIVIL_STATUS_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.COHABITANT_KEY, CitizenAccountApplication.COHABITANT_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.CHILDREN_COUNT_KEY, CitizenAccountApplication.CHILDREN_COUNT_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(CitizenAccountApplication.APPLICATION_REASON_KEY, CitizenAccountApplication.APPLICATION_REASON_DEFAULT)), col, row++);
+        table.add (getSmallHeader(localize(MESSAGE_KEY, MESSAGE_DEFAULT)), col, row++);
 
 		try {
 			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
@@ -174,6 +177,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			final int id = new Integer(idAsString).intValue();
 			final CitizenAccount applicant = (CitizenAccount) business.getAccount(id);
 			row = 1;
+            col = 2;
 			table.add(getSmallText(applicant.getApplicantName()), col, row++);
 			final String pid = PersonalIDFormatter.format(applicant.getSsn (), iwc.getApplication().getSettings().getApplicationLocale());
 			table.add(getText(pid), col, row++);
@@ -183,8 +187,24 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			table.add(getSmallText(applicant.getPhoneWork()), col, row++);
 			final String address = applicant.getStreet() + "; " + applicant.getZipCode() + " " + applicant.getCity();
 			table.add(getSmallText(address), col, row++);
-			table.add(new CheckBox(PARAM_NOT_CITIZEN), col, row++);
-			TextArea area = new TextArea(PARAM_MESSAGE);
+            final Gender [] genders = business.getGenders ();
+            for (int i = 0; i < genders.length; i++) {
+                if (genders [i].getPrimaryKey ().equals (applicant.getGenderId ())) {
+                    final String nameInDb = genders [i].getName ();
+                    final String genderName = localize ("caa_" + nameInDb, nameInDb);
+                    table.add (getSmallText(genderName), col, row++);
+                }
+            }
+            
+            table.add (getSmallText(applicant.getCivilStatus ()), col, row++); 
+            table.add (getSmallText(applicant.getChildrenCount () + ""), col, row++);
+            final String hasCohabitant = applicant.hasCohabitant ()
+                    ? localize (CitizenAccountApplication.YES_KEY, CitizenAccountApplication.YES_DEFAULT)
+                    : localize (CitizenAccountApplication.NO_KEY, CitizenAccountApplication.NO_DEFAULT);
+            table.add (getSmallText(hasCohabitant), col, row++);
+            final String applicationReason = localize (applicant.getApplicationReason (), "?");
+            table.add (getSmallText(applicationReason), col, row++);
+			TextArea area = new TextArea(MESSAGE_KEY);
 			area.setHeight(7);
 			area.setWidth(40);
 			table.add(area, col, row++);
@@ -238,11 +258,8 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
 		try {
 			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
-			if (iwc.isParameterSet(PARAM_NOT_CITIZEN)) {
-				business.rejectApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()), "Not citizen of Nacka");
-			}
-			else if (iwc.isParameterSet(PARAM_MESSAGE)) {
-				business.rejectApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()), iwc.getParameter(PARAM_MESSAGE));
+			if (iwc.isParameterSet(MESSAGE_KEY)) {
+				business.rejectApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()), iwc.getParameter(MESSAGE_KEY));
 			}
 
 			form.add(getText(localize("caa_rej_application", "Rejected application number : ") + id));

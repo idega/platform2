@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/13 12:45:30 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/14 15:36:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -118,7 +118,7 @@ public class ViewpointForm extends CommuneBlock {
     private final static String VIEWPOINTS_DEFAULT = "Synpunkter";
     private final static String GOBACKTOMYPAGE_KEY = "viewpoint.goBackToMyPage";
     private final static String GOBACKTOMYPAGE_DEFAULT
-        = "Tillbaka till min sida";
+        = "Tillbaka till Min sida";
 
     private final static String UNKNOWN_PAGE = "Unknown Page";
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.26 2002/11/14 14:02:51 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.27 2002/11/14 15:36:06 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/14 14:02:51 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/14 15:36:06 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -40,31 +40,31 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM_1 = 2;
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM_2 = 3;
     
-    private final static String APPLICATION_REASON_DEFAULT
-        = "Orsak till ansökan om medborgarkonto?";
-    private final static String APPLICATION_REASON_KEY
+    final static String APPLICATION_REASON_DEFAULT
+        = "Orsak till ansökan om medborgarkonto";
+    final static String APPLICATION_REASON_KEY
         = "caa_application_reason";
-    private final static String CHILDREN_COUNT_DEFAULT
-        = "Antal barn i familjen?";
-    private final static String CHILDREN_COUNT_KEY = "caa_children_count";
+    final static String CHILDREN_COUNT_DEFAULT
+        = "Antal barn i familjen";
+    final static String CHILDREN_COUNT_KEY = "caa_children_count";
     private final static String CHILDREN_DEFAULT = "Barn i familjen";
     private final static String CHILDREN_KEY = "caa_children";
     private final static String CITY_DEFAULT = "Postort";
     private final static String CITY_KEY = "caa_city";
-    private final static String CIVIL_STATUS_DEFAULT = "Civilstånd";
-    private final static String CIVIL_STATUS_KEY = "caa_civil_status";
-    private final static String COHABITANT_DEFAULT = "Sammanboende";
-    private final static String COHABITANT_KEY = "caa_cohabitant";
+    final static String CIVIL_STATUS_DEFAULT = "Civilstånd";
+    final static String CIVIL_STATUS_KEY = "caa_civil_status";
+    final static String COHABITANT_DEFAULT = "Sammanboende";
+    final static String COHABITANT_KEY = "caa_cohabitant";
     private final static String CURRENT_KOMMUN_DEFAULT = "Nuvarande kommun";
     private final static String CURRENT_KOMMUN_KEY = "caa_current_kommun";
     private final static String DETACHED_HOUSE_DEFAULT = "Villa";
     private final static String DETACHED_HOUSE_KEY = "caa_detached_house";
-    private final static String EMAIL_DEFAULT = "E-post";
-    private final static String EMAIL_KEY = "caa_email";
+    final static String EMAIL_DEFAULT = "E-post";
+    final static String EMAIL_KEY = "caa_email";
     private final static String FIRST_NAME_DEFAULT = "Förnamn";
     private final static String FIRST_NAME_KEY = "caa_first_name";
-    private final static String GENDER_DEFAULT = "Kön";
-    private final static String GENDER_KEY = "caa_gender";
+    final static String GENDER_DEFAULT = "Kön";
+    final static String GENDER_KEY = "caa_gender";
     private final static String HAS_COHABITANT_DEFAULT = "Är du sammanboende?";
     private final static String HAS_COHABITANT_KEY = "caa_has_cohabitant";
     private final static String HOUSING_TYPE_KEY = "caa_housing_type";
@@ -78,20 +78,20 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String MOVING_TO_NACKA_DEFAULT
         = "Jag flyttar till Nacka kommun";
     private final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
-    private final static String NO_DEFAULT = "Nej";
-    private final static String NO_KEY = "caa_no";
-    private final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
-    private final static String PHONE_HOME_KEY = "caa_phone_home";
-    private final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
-    private final static String PHONE_WORK_KEY = "caa_phone_work";
+    final static String NO_DEFAULT = "Nej";
+    final static String NO_KEY = "caa_no";
+    final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
+    final static String PHONE_HOME_KEY = "caa_phone_home";
+    final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
+    final static String PHONE_WORK_KEY = "caa_phone_work";
     private final static String PROPERTY_TYPE_DEFAULT = "Fastighetsbeteckning (endast villa)";
     private final static String PROPERTY_TYPE_KEY = "caa_property_type";
     private final static String PUT_CHILDREN_IN_NACKA_DEFAULT
         = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
     private final static String PUT_CHILDREN_IN_NACKA_KEY
         = "caa_put_children_in_nacka";
-    private final static String SSN_DEFAULT = "Personnummer";
-    private final static String SSN_KEY = "caa_ssn";
+    final static String SSN_DEFAULT = "Personnummer";
+    final static String SSN_KEY = "caa_ssn";
     private final static String STREET_DEFAULT = "Gatuadress";
     private final static String STREET_KEY = "caa_street";
     private final static String TENANCY_AGREEMENT_DEFAULT = "Hyreskontrakt";
@@ -106,8 +106,8 @@ public class CitizenAccountApplication extends CommuneBlock {
         + " planerat att flytta till Nacka eller vill att ditt barn ska gå i"
         + " skolan i kommunen. Följ instruktionerna nedan.";
     private final static String UNKNOWN_CITIZEN_KEY = "caa_unknown_citizen";
-    private final static String YES_DEFAULT = "Ja";
-    private final static String YES_KEY = "caa_yes";
+    final static String YES_DEFAULT = "Ja";
+    final static String YES_KEY = "caa_yes";
     private final static String ZIP_CODE_DEFAULT = "Postnummer";
     private final static String ZIP_CODE_KEY = "caa_zip_code";
     
