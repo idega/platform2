@@ -142,6 +142,10 @@ public class Reseller extends TreeableEntity {
     return getPhones(Phone.getFaxNumberID());
   }
 
+  public Reseller getParent() {
+    return (Reseller) getParentEntity();
+  }
+
   public void delete() throws SQLException{
     this.setIsValid(false);
     this.update();
