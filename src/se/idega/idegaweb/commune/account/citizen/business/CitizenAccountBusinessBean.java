@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.23 2002/11/14 12:32:39 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.24 2002/11/15 02:28:20 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,12 @@ import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.*;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.data.Address;
+import com.idega.core.data.Email;
+import com.idega.core.data.EmailHome;
+import com.idega.core.data.Phone;
+import com.idega.core.data.PhoneBMPBean;
+import com.idega.core.data.PhoneHome;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.*;
 import com.idega.util.IWTimestamp;
@@ -50,8 +56,12 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                     ((CitizenAccountHome) IDOLookup.getHome
                      (CitizenAccount.class)).create();
 			application.setSsn (ssn);
-			if (user != null)
+			if (user != null) {
 				application.setOwner(user);
+				if (user.getName() != null) {
+					application.setApplicantName(user.getName());
+				}
+			}
 			application.setPhoneHome(phoneHome);
 			if (email != null)
 				application.setEmail(email);
@@ -253,6 +263,41 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
                 (firstName, "", lastName, applicant.getSsn (), gender,
                  timestamp);
+
+                 
+	try {
+		 Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
+		 email.setEmailAddress(applicant.getEmail());
+		 email.store();
+		 user.addEmail(email);
+	} catch (Exception e) {
+		throw new CreateException(e.getMessage());
+	}
+     
+	try {
+		if (applicant.getPhoneHome() != null) {
+		 Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+		 phone.setNumber(applicant.getPhoneHome());
+		 phone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
+		 phone.store();
+		 user.addPhone(phone);
+		}
+	} catch (Exception e) {
+		throw new CreateException(e.getMessage());
+	}
+     
+	try {
+		if (applicant.getPhoneWork() != null) {
+		 Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+		 phone.setNumber(applicant.getPhoneWork());
+		 phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
+		 phone.store();
+		 user.addPhone(phone);
+		}
+	} catch (Exception e) {
+		throw new CreateException(e.getMessage());
+	}
+     
 		applicant.setOwner (user);
         applicant.store ();
 		super.acceptApplication (applicationID, performer);
