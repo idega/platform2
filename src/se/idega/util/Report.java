@@ -1,5 +1,5 @@
 /*
- * $Id: Report.java,v 1.4 2003/10/22 13:33:59 joakim Exp $
+ * $Id: Report.java,v 1.5 2004/04/07 11:49:16 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -50,7 +50,14 @@ public class Report
 	
 	public void store()
 	{
-		System.out.println("\n**REPORT**\n\n" + text + "\n**END OF REPORT**\n\n");
+		store(true);
+	}
+	
+	public void store(boolean doPrint)
+	{
+		if (doPrint) {
+			System.out.println("\n**REPORT**\n\n" + text + "\n**END OF REPORT**\n\n");
+		}
 		//Creating the report file in the DB filesystem.
 		System.out.println("Attempting to access the reports folder");
 		ICFile reportFolder = null;
