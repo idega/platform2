@@ -22,6 +22,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.data.Group;
@@ -164,6 +165,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
 		String make = (String) fieldValues.get(_makeFieldName);
 		_makeField.setSelectedElement(make);
+		
 		_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName,"2");
 		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"0");
 		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"1");
@@ -226,8 +228,6 @@ public class ClubInformationTab extends UserGroupTab {
 	public void initializeTexts() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-
-		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
 
 		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
 		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
@@ -408,10 +408,16 @@ public class ClubInformationTab extends UserGroupTab {
 			group.setMetaData("CLUBINFO_STATUS", status);
 			if (premier != null)
 				group.setMetaData("CLUBINFO_PREMIER", premier.toString());
+			else
+				group.setMetaData("CLUBINFO_PREMIER", Boolean.FALSE.toString());
 			if (inOperation != null)
 				group.setMetaData("CLUBINFO_OPERATION", inOperation.toString());
+			else
+				group.setMetaData("CLUBINFO_OPERATION", Boolean.FALSE.toString());
 			if (usingSystem != null)
 				group.setMetaData("CLUBINFO_SYSTEM", usingSystem.toString());
+			else
+				group.setMetaData("CLUBINFO_SYSTEM", Boolean.FALSE.toString());
 
 			group.store();
 		}

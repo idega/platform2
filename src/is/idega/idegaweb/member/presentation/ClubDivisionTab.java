@@ -57,8 +57,6 @@ public class ClubDivisionTab extends UserGroupTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
-		
-//		setName("Deildir");
 	}
 
 	public ClubDivisionTab(Group group) {

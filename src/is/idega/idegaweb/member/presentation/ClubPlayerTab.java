@@ -18,13 +18,12 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.presentation.UserGroupTab;
-import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -38,10 +37,10 @@ public class ClubPlayerTab extends UserGroupTab {
 	private static final String TAB_NAME = "cplay_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Club Player";
 
-	private TextInput _unionField;
+	private Text _unionField;
 	private TextInput _cplayField;
 	private TextInput _nameField;
-	private TextInput _competitionField;
+	private CheckBox _competitionField;
 	private TextArea _coachesField;
 
 	private Text _unionText;
@@ -104,10 +103,10 @@ public class ClubPlayerTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
 	 */
 	public void updateFieldsDisplayStatus() {
-		_unionField.setContent((String) fieldValues.get(_unionFieldName));
+		_unionField.setText((String) fieldValues.get(_unionFieldName));
 		_cplayField.setContent((String) fieldValues.get(_cplayFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
-		_competitionField.setContent((String) fieldValues.get(_competitionFieldName));		
+		_competitionField.setChecked(((Boolean) fieldValues.get(_competitionFieldName)).booleanValue());		
 		_coachesField.setContent((String) fieldValues.get(_coachesFieldName));		
 	}
 
@@ -115,10 +114,10 @@ public class ClubPlayerTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFields()
 	 */
 	public void initializeFields() {
-		_unionField = new TextInput(_unionFieldName);
+		_unionField = new Text();
 		_nameField = new TextInput(_nameFieldName);
 		_cplayField = new TextInput(_cplayFieldName);
-		_competitionField = new TextInput(_competitionFieldName);
+		_competitionField = new CheckBox(_competitionFieldName);
 		_coachesField = new TextArea(_coachesFieldName);
 	}
 
@@ -126,8 +125,7 @@ public class ClubPlayerTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
 	 */
 	public void initializeTexts() {
-			IWContext iwc = //getEventIWContext();
-	IWContext.getInstance();
+			IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		_unionText = new Text(iwrb.getLocalizedString(_unionFieldName, "Sérsamband") + ":");
@@ -161,17 +159,17 @@ public class ClubPlayerTab extends UserGroupTab {
 	 */
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
-			String union = iwc.getParameter(_unionFieldName);
+//			String union = iwc.getParameter(_unionFieldName);
 			String flokkur = iwc.getParameter(_cplayFieldName);
 			String name = iwc.getParameter(_nameFieldName);
 			String comp = iwc.getParameter(_competitionFieldName);
 			String coach = iwc.getParameter(_coachesFieldName);
 			
 
-			if (union != null)
-				fieldValues.put(_unionFieldName, union);
-			else
-				fieldValues.put(_unionFieldName, "");
+//			if (union != null)
+//				fieldValues.put(_unionFieldName, union);
+//			else
+//				fieldValues.put(_unionFieldName, "");
 			if (flokkur != null)
 				fieldValues.put(_cplayFieldName, flokkur);
 			else
@@ -180,10 +178,7 @@ public class ClubPlayerTab extends UserGroupTab {
 				fieldValues.put(_nameFieldName, name);
 			else
 				fieldValues.put(_nameFieldName, "");
-			if (comp != null)
-				fieldValues.put(_competitionFieldName, comp);
-			else
-				fieldValues.put(_competitionFieldName, "");
+			fieldValues.put(_competitionFieldName, new Boolean(comp != null));
 			if (coach != null)
 				fieldValues.put(_coachesFieldName, coach);
 			else
@@ -206,16 +201,21 @@ public class ClubPlayerTab extends UserGroupTab {
 			// get corressponding service bean
 			ClubInformationPluginBusiness ageGenderPluginBusiness = getClubInformationPluginBusiness(iwc);
 
-			String union = (String) fieldValues.get(_unionFieldName);
+//			String union = (String) fieldValues.get(_unionFieldName);
 			String flokkur = (String) fieldValues.get(_cplayFieldName);
 			String name = (String) fieldValues.get(_nameFieldName);
-			String comp = (String) fieldValues.get(_competitionFieldName);
+			Boolean comp = (Boolean) fieldValues.get(_competitionFieldName);
 			String coach = (String) fieldValues.get(_coachesFieldName);
 
-			group.setMetaData("CLUBPLAYER_UNION", union);
+//			group.setMetaData("CLUBPLAYER_UNION", union);
 			group.setMetaData("CLUBPLAYER_FLOKKUR", flokkur);
 			group.setMetaData("CLUBPLAYER_NAME", name);
-			group.setMetaData("CLUBPLAYER_COMP", comp);
+			if (comp != null) {
+				group.setMetaData("CLUBPLAYER_COMP", comp.toString());
+			}
+			else {
+				group.setMetaData("CLUBPLAYER_COMP", Boolean.FALSE.toString());
+			}
 			group.setMetaData("CLUBPLAYER_COACH", coach);
 
 			group.store();
@@ -239,14 +239,14 @@ public class ClubPlayerTab extends UserGroupTab {
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 
-			String union = group.getMetaData("CLUBPLAYER_UNION");
+//			String union = group.getMetaData("CLUBPLAYER_UNION");
 			String flokkur = group.getMetaData("CLUBPLAYER_FLOKKUR");
 			String name = group.getMetaData("CLUBPLAYER_NAME");
 			String comp = group.getMetaData("CLUBPLAYER_COMP");
 			String coach = group.getMetaData("CLUBPLAYER_COACH");
 
-			if (union != null)
-				fieldValues.put(_unionFieldName, union);
+//			if (union != null)
+//				fieldValues.put(_unionFieldName, union);
 			if (flokkur != null)
 				fieldValues.put(_cplayFieldName, flokkur);
 			if (name != null)
