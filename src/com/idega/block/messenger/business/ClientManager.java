@@ -21,10 +21,18 @@ public class ClientManager implements PacketManager{
 
   private static Hashtable clients = new Hashtable();
 
-  public static void clientCheckIn(String clientId, String memberId){
+  private static String SESSION_ID = "session_id";
+  private static String USER_ID = "user_id";
+  private static String USER_LIST = "user_list";
+  private static String USER_LIST_VERSION = "user_list_version";
+  private static String PREFIX = "v.";
+  private int version = 1;
+
+  public void clientCheckIn(String sessionId, String memberId){
     try{
       User user = new User(Integer.parseInt(memberId));
-      clients.put(clientId,user);
+      clients.put(sessionId,user);
+      version++;
     }
     catch(SQLException e){
       e.printStackTrace(System.err);
@@ -32,20 +40,23 @@ public class ClientManager implements PacketManager{
     }
   }
 
-  public static void clientCheckOut(String clientId, String memberId){
-
+  public void clientCheckOut(String sessionId, String memberId){
+    version++;
   }
 
-  public static String getClientName(String clientId){
-    User user = (User) clients.get(clientId);
+  public static String getClientName(String sessionId){
+    User user = (User) clients.get(sessionId);
     if( user!=null ){
       return user.getName();
     }
     else return null;
   }
 
-  public void processPacket(Packet packet){
+  public synchronized void processPacket(Packet packet){
   System.out.println("ClientManager : process packet");
+  String sessionId = null;
+  String memberId = null;
+  String packetUserListVersion = null;
 
     if( packet!=null ){
       Vector props = packet.getProperties();
@@ -56,30 +67,48 @@ public class ClientManager implements PacketManager{
         for (int i = 0; i < length; i++) {
           Property prop = (Property) props.elementAt(i);
           String key = prop.getKey();
-          String value = prop.getValue();
-          //System.out.println("ClientManager : Property key: "+key+" ; value: "+value);
-
-          User clientId = (User) ClientManager.clients.get(key);
-          //System.out.println("ClientManager : After clients.get(key)");
-
-          if( clientId == null ) clientCheckIn(key,value);//register this client
-
-         // else System.out.println("ClientManager : clientId != null "+clientId);
-
+          if( key.equalsIgnoreCase(SESSION_ID) ){
+            sessionId = (String) prop.getValue();
+          }
+          else if( key.equalsIgnoreCase(USER_ID) ){
+            memberId = (String) prop.getValue();
+          }
+          else if( key.equalsIgnoreCase(USER_LIST_VERSION) ){
+            packetUserListVersion = (String) prop.getValue();
+          }
         }
       }
+
+      if( sessionId!=null ){
+        User user = (User) ClientManager.clients.get(sessionId);
+        if( user == null ) clientCheckIn(sessionId,memberId);//register this client
+      }
+
+      //userlist stuff
+      if( !getUserListVersion().equals(packetUserListVersion) ){
+       //list changed update it..without self
+        packet.addProperty(new Property(USER_LIST, getConnectedClients()));
+      }
+
+          //System.out.println("ClientManager : Property key: "+key+" ; value: "+value);
+          //System.out.println("ClientManager : After clients.get(key)");
     }
     else  System.out.println("ClientManager : client sending. no packet");
 
   }
 
+  public String getUserListVersion(){
+   return (PREFIX+version);
+  }
 
   public static Vector getConnectedClients(){
+    /**@todo: don't make a new instance everytime and don't add the client asking*/
     Vector connClients=new Vector();
     Enumeration enum = ClientManager.clients.keys();
 
     while (enum.hasMoreElements()){
-        connClients.add( (User) ClientManager.clients.get( (String)enum.nextElement()));
+      String sessionId = (String)enum.nextElement();
+      connClients.add( new Property(sessionId,((User)ClientManager.clients.get(sessionId)).getName()) );
     }
 
     return connClients;

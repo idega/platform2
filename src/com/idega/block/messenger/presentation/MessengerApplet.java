@@ -31,11 +31,15 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private static int FRAME_HEIGHT = 310;
   private static String SESSION_ID = "session_id";
   private static String USER_ID = "user_id";
+  private static String USER_LIST = "user_list";
+  private static String USER_LIST_VERSION = "user_list_version";
+
   private static String SERVLET_URL = "servlet_url";
   private static String SERVER_ROOT_URL = "server_root_url";
   private static String RESOURCE_URL = "resource_url";
-  private Hashtable dialogs = new Hashtable();
 
+  private Hashtable dialogs = new Hashtable();
+  private ImageLabel faceLabel;
 
   private Thread t;
 
@@ -75,49 +79,18 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
 
-    ImageLabel lb = null;
-    try {
-      lb = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
-    }
-    catch (Exception ex) {
-      ex.printStackTrace(System.err);
-    }
+      try {
+        faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
+      }
+      catch (Exception ex) {
+        ex.printStackTrace(System.err);
+      }
 
-
-
-      Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
-      msg.setRecipientName("TEST");
-      msg.setSenderName("CORNS");
-      MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
-      dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-
-      dialogs.put(Integer.toString(dialog.hashCode()),dialog);
-
-      dialog.addActionListener(this);
-
-      SingleLineItem test = new SingleLineItem(this);
-      test.setWindowToOpen(dialog);
-      if( lb!= null ) test.add(lb);
-      test.add(new Label("RAPPERS"));
-      test.setSize(16,100);
-      add(test);
-
-
+      threadSleep = 1000*checkTimer;
     }
     catch(Exception e) {
       e.printStackTrace();
     }
-    try {
-      initializeEngine();
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**Component initialization*/
-  private void initializeEngine() throws Exception {
-    threadSleep = 1000*checkTimer;
   }
 
   public void run(){
@@ -250,7 +223,13 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       if( isfirstRun ){
         packetToServlet = new Packet();
-        packetToServlet.addProperty(new Property(sessionId,userId));
+
+        packetToServlet.addProperty(new Property("client_id",sessionId));
+        packetToServlet.addProperty(new Property("user_id",userId));
+        packetToServlet.addProperty(new Property("userlist_version","0"));
+
+
+
         packetToServlet.setSender(sessionId);
         isfirstRun = false;
       }
@@ -315,7 +294,25 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       Vector messages = packetFromServlet.getMessages();
       if( messages!= null) dispatchMessagesToDialogs(messages);
 
-     // getMessagesFromDialog();//check dialog for new messages and send them
+      Vector props = packetFromServlet.getProperties();
+      if( props!=null ){
+        int length = props.size();
+        for (int i = 0; i < length; i++) {
+          if( ((Property)props.elementAt(i)).getKey().equals(USER_LIST) ){
+             Vector userlist = (Vector)((Property)props.elementAt(i)).getValue();
+             if( userlist!=null){
+               int length2 = userlist.size();
+               for (int k = 0; k < length2; k++) {
+                Property user = (Property)userlist.elementAt(k);
+                 addToUserList( user.getKey() , (String)user.getValue() );
+               }
+             }
+          }
+        }
+
+
+
+      }
 
     }else{
      System.err.println("MessengerApplet : packetFromServlet == null !!");
@@ -324,6 +321,26 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     System.out.println("DONE! processing the packet");
 
 
+  }
+
+  private void addToUserList(String sendToId, String name){
+      Message msg = new Message();
+      msg.setSender(sendToId);
+      msg.setSenderName(name);
+
+      MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
+      dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+      dialogs.put(Integer.toString(dialog.hashCode()),dialog);
+      dialog.addActionListener(this);
+
+      SingleLineItem item = new SingleLineItem(this);
+      item.setId(sessionId);
+      item.setWindowToOpen(dialog);
+      if( faceLabel!= null ) item.add(faceLabel);
+      item.add(new Label(name));
+      item.setSize(16,100);
+
+      add(item);
   }
 
   private void cycle(){

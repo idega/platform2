@@ -1,7 +1,7 @@
 package com.idega.block.messenger.data;
+import java.io.Serializable;
 
-
-public class Message extends Packet{
+public class Message implements Serializable{
   private String theMessage;
   private String theSender;
   private String theRecipient;
