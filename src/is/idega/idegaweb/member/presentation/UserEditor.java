@@ -546,22 +546,16 @@ public class UserEditor extends Block {
 					addressTable.add(new Parameter(prm_primaddress_postal_id,postalCode.getPrimaryKey().toString()));
 					addressTable.add(getOldParameter(prm_mainaddress_postal_code, postalCode.getPostalCode()));
 					addressTable.add(getOldParameter(prm_mainaddress_postal_name, postalCode.getName()));
-					try {
+					
 						Country country = postalCode.getCountry();
 						if(country!=null){
 							primaryCountryInput.setSelectedCountry(country);
 							addressTable.add(getOldParameter(prm_mainaddress_postal_name, postalCode.getName()));
 						}
-					}
-					catch (RemoteException e3) {
-						
-					}
-					catch (EJBException e3) {
-						
-					}
+					
 				}
 			}
-			catch (SQLException e2) {
+			catch (Exception e2) {
 				
 			}
 			//primaryPostalAddressInput.setSelectedElement(primaryAddress.getPostalCodeID());
@@ -590,10 +584,7 @@ public class UserEditor extends Block {
 							addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
 						}
 					}
-					catch (RemoteException e3) {
-						
-					}
-					catch (EJBException e3) {
+					catch (Exception e3) {
 						
 					}
 				}
