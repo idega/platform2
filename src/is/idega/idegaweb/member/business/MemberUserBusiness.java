@@ -21,4 +21,5 @@ public interface MemberUserBusiness extends com.idega.business.IBOService,com.id
  public boolean sendEmailFromIWMemberSystemAdministrator(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.idegaweb.IWUserContext p5)throws javax.mail.MessagingException, java.rmi.RemoteException;
  public boolean setClubMemberNumberForUser(java.lang.String p0,com.idega.user.data.User p1,com.idega.user.data.Group p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public Collection getClubGroupsForRegionUnionGroup(Group regionalUnion) throws RemoteException;
+ public boolean isClubUsingTheMemberSystem(Group group) throws RemoteException;
 }

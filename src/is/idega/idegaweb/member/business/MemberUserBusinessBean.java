@@ -399,6 +399,16 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	}
 	
 	/**
+	 * Checks the metadata (IWMemberConstants.META_DATA_CLUB_USING_SYSTEM) of a group to see if is using the member system
+	 * @param group
+	 * @return a boolean
+	 */
+	public boolean isClubUsingTheMemberSystem(Group group) throws RemoteException{
+		String using = group.getMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM);
+		return ( using != null && "TRUE".equals(using.toUpperCase()));
+	}
+	
+	/**
 	 * @return false if number is already taken, else true
 	 */
 	public synchronized boolean setClubMemberNumberForUser(String number, User user, Group club) throws RemoteException{
