@@ -100,9 +100,6 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   private final static String ACTION_VIEW_FORM = "action_view_form";
   private final static String ACTION_FORM_SUBMIT = "action_form_submit";  
   
-  /** number of characters of the new password */
-  private final static int LENGTH_OF_PASSWORD = 8;
-  
   /** The color of all messages shown. */
   private final static String COLOR_RED = "#ff0000";
 
@@ -430,7 +427,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
    * @return an unencrypted password.
    */
   private String createNewPassword() {
-    return com.idega.util.StringHandler.getRandomString(LENGTH_OF_PASSWORD);
+    return LoginDBHandler.getGeneratedPasswordForUser();
   }
    
 }
