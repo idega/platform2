@@ -157,8 +157,8 @@ private UserSearcher _userSearcher = null;
 		Date toDate = parseDate(parTo);
 		
 		String errorMessage;
-		boolean seekFromEmpty = (parFrom != null && parFrom.length() == 0);
-		boolean seekToEmpty = (parTo != null && parTo.length() == 0);
+		boolean seekFromEmpty = parFrom == null || (parFrom != null && parFrom.length() == 0);
+		boolean seekToEmpty = parTo == null || (parTo != null && parTo.length() == 0);
 		boolean seekFromEmptyOnly = seekFromEmpty && ! seekToEmpty;
 		boolean seekToEmptyOnly = seekToEmpty && ! seekFromEmpty;
 		boolean seekFromFormatError = ! seekFromEmpty && fromDate == null;
