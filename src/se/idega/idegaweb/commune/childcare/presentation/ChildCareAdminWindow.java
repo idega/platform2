@@ -77,7 +77,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_CANCEL_DATE = "cc_cancel_date";
 	public static final String PARAMETER_EARLIEST_DATE = "cc_earliest_date";
 	public static final String PARAMETER_CONTRACT_ID = "cc_contract_id";	
-	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";	
+	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";
+	
+	private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
 	public static final String FIELD_CURRENT_DATE = "currentdate";
 	
@@ -557,24 +559,32 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
 		table.add(textInput, 1, row++);
 		
-		IWTimestamp stamp = new IWTimestamp();
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
-		if (archive != null) {
-			IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
-			validFrom.addDays(1);
-			dateInput.setDate(validFrom.getDate());
-			if (validFrom.isEarlierThan(stamp))
-				dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
-			else
-				dateInput.setEarliestPossibleDate(validFrom.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
-			if (archive.getTerminatedDate() != null) {
-				IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
-				dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
-			}
+		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "true");
+		boolean restrictDates = true;
+		if (restrict != null) {
+			restrictDates = Boolean.valueOf(restrict).booleanValue();
 		}
-		else {
-			dateInput.setDate(new IWTimestamp().getDate());
-			dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+		
+		if (!restrictDates) {
+			IWTimestamp stamp = new IWTimestamp();
+			if (archive != null) {
+				IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
+				validFrom.addDays(1);
+				dateInput.setDate(validFrom.getDate());
+				if (validFrom.isEarlierThan(stamp))
+					dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+				else
+					dateInput.setEarliestPossibleDate(validFrom.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+				if (archive.getTerminatedDate() != null) {
+					IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
+					dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
+				}
+			}
+			else {
+				dateInput.setDate(new IWTimestamp().getDate());
+				dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+			}
 		}
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 
