@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.15 2001/08/21 22:44:00 laddi Exp $
+ * $Id: CampusApplicationForm.java,v 1.16 2001/08/21 23:02:51 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -197,7 +197,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Image back = iwrb_.getImage("back.gif");
       back.setAttribute("onClick","history.go(-1)");
-    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")),"status",Integer.toString(id));
+    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")),"status",Integer.toString(statusAppliedFor_));
 
     form.add(heading);
     form.add(Text.getBreak());
@@ -274,7 +274,7 @@ public class CampusApplicationForm extends ApplicationForm {
     }
 
     t.add(back,1,5);
-    t.add("&nbsp;",1,5);
+    t.add("&nbsp;&nbsp;&nbsp;",1,5);
     t.add(ok,1,5);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
@@ -604,7 +604,7 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(text21,1,21);
     t2.add(input13,2,21);
     t2.add(back,1,23);
-    t2.add("&nbsp;",1,23);
+    t2.add("&nbsp;&nbsp;&nbsp;",1,23);
     t2.add(ok,1,23);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
