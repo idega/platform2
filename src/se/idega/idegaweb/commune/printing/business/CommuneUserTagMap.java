@@ -1,0 +1,92 @@
+
+package se.idega.idegaweb.commune.printing.business;
+
+import java.rmi.RemoteException;
+import java.util.HashMap;
+
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.lowagie.text.ElementTags;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.markup.MarkupTags;
+import com.lowagie.text.xml.XmlPeer;
+
+/**
+ * The <CODE>Tags</CODE>-class maps several XHTML-tags to iText-objects.
+ */
+
+public class CommuneUserTagMap extends HashMap {
+    
+/**
+ * Constructs an HtmlTagMap.
+ */
+    
+    public CommuneUserTagMap(IWApplicationContext iwac,User user) {
+        super();
+        UserBusiness ub = getUserBusiness(iwac);
+        
+        XmlPeer peer = new XmlPeer(ElementTags.ITEXT, CommuneUserTags.USERLETTER);
+        put(peer.getAlias(), peer);
+        
+        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.NAME);
+        peer.setContent(user.getName());
+        put(peer.getAlias(), peer);
+        
+        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.FULLNAME);
+        peer.setContent(user.getName());
+        put(peer.getAlias(), peer);
+        
+        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.FIRSTNAME);
+        peer.setContent(user.getFirstName());
+        put(peer.getAlias(), peer);
+        
+        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.MIDDLENAME);
+        peer.setContent(user.getMiddleName());
+        put(peer.getAlias(), peer);
+        
+        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.LASTNAME);
+        peer.setContent(user.getLastName());
+        put(peer.getAlias(), peer);
+        
+        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.PERSONALID);
+        peer.setContent(user.getPersonalID());
+        put(peer.getAlias(), peer);   
+        
+        peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.BIRTHDATE);
+        peer.setContent(user.getDateOfBirth().toString());
+        put(peer.getAlias(), peer);        
+               
+        if(ub!=null){
+        	try{
+        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.EMAIL);
+        	peer.setContent(ub.getUsersMainEmail(user).getEmailAddress());
+        	put(peer.getAlias(), peer); 
+        	
+        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.STREETADDRESS);
+        	peer.setContent(ub.getUsersMainAddress(user).getStreetAddress());
+        	put(peer.getAlias(), peer);
+        	
+        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.POSTALADDRESS);
+        	peer.setContent(ub.getUsersMainAddress(user).getPostalAddress());
+        	put(peer.getAlias(), peer);
+        	
+        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.PHONE);
+        	peer.setContent(ub.getUsersHomePhone(user).getNumber());
+        	put(peer.getAlias(), peer);  
+        	}
+        	catch(Exception ex){}
+        
+        }
+   
+    }
+    
+    private UserBusiness getUserBusiness(IWApplicationContext iwac) {
+    	try{
+    	return (UserBusiness)IBOLookup.getServiceInstance(iwac,UserBusiness.class);
+    	}catch(RemoteException ex){}
+    	return null;
+    }
+    
+}

@@ -2,6 +2,8 @@ package se.idega.idegaweb.commune.message.business;
 
 import javax.ejb.*;
 
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+
 public interface MessageBusiness extends com.idega.business.IBOService
 {
  public se.idega.idegaweb.commune.message.data.Message createPrintArchivationMessage(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
@@ -37,4 +39,5 @@ public interface MessageBusiness extends com.idega.business.IBOService
  public void setIfUserPreferesMessageByEmail(com.idega.user.data.User p0,boolean p1) throws java.rmi.RemoteException;
  public void setIfUserPreferesMessageInMessageBox(com.idega.user.data.User p0,boolean p1) throws java.rmi.RemoteException;
  public void sendMessageToCommuneAdministrators(String subject, String body) throws java.rmi.RemoteException;
+ public PrintedLetterMessage createPasswordMessage(com.idega.user.data.User user, String username,String password) throws CreateException, java.rmi.RemoteException ;
 }

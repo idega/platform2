@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.23 2002/12/28 11:49:25 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.24 2002/12/31 00:34:42 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -364,6 +364,22 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		message.setOwner(user);
 		message.setSubject(subject);
 		message.setBody(body);
+		message.setAsPasswordLetter();
+		try {
+			message.store();
+		}
+		catch (IDOStoreException idos) {
+			throw new IDOCreateException(idos);
+		}
+		return message;
+	}
+	
+	public PrintedLetterMessage createPasswordMessage(User user, String username,String password) throws CreateException, RemoteException {
+		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
+		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
+		message.setOwner(user);
+		message.setSubject("Username and Password");
+		message.setBody(username+"|"+password);
 		message.setAsPasswordLetter();
 		try {
 			message.store();
