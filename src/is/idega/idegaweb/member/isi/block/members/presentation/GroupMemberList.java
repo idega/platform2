@@ -6,15 +6,16 @@
  */
 package is.idega.idegaweb.member.isi.block.members.presentation;
 
-import java.rmi.RemoteException;
+import is.idega.idegaweb.member.isi.block.clubs.presentation.ClubInfoBar;
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -22,10 +23,10 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.Status;
 import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
 
 /**
  * @author jonas
@@ -36,11 +37,109 @@ import com.idega.util.IWTimestamp;
 public class GroupMemberList extends Block {
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private static final String PARAM_NAME_GROUP_ID = "group_id";
+	public static final String PARAM_NAME_GROUP_ID = "group_id";
+	public static final String PARAM_NAME_SHOW_STATUS = "show_status";
+	public static final String PARAM_NAME_SHOW_GROUP = "show_group";
 	
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
+		Group group = getGroupToShowMembersFor(iwc);
+		Group division = getDivision(iwc);
+		String name = group==null?"":group.getName();
+		System.out.println("Showing member list for group " + name);
+		Text title = new Text(name + ": ");
+		title.setBold();
+		add(title);
+		addBreak();
+		if(group!=null) {
+			add(getPlayerList(iwc, group, division));
+		}
+	}
+
+	private PresentationObject getPlayerList(IWContext iwc, Group group, Group division) {
+		boolean showStatus = false;//"true".equals(iwc.getParameter(PARAM_NAME_SHOW_STATUS));
+		boolean showGroup = false;//"true".equals(iwc.getParameter(PARAM_NAME_SHOW_GROUP));
+		
+		String type = group.getGroupType();
+		if(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(type)) {
+			showStatus = true;
+		} else if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type)) {
+			showGroup = true;
+		}
+		
+		Table table = new Table();
+		Iterator userIter; //group.getChildren();
+		try {
+			userIter = getGroupBusiness(iwc).getUsers(group).iterator();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		int row = 1;
+		resetColor();
+		int group_id = Integer.parseInt(group.getPrimaryKey().toString());
+		while(userIter.hasNext()) {
+			User user = (User) userIter.next();
+			
+			int user_id = Integer.parseInt(user.getPrimaryKey().toString());
+			int column = 1;
+			String color = getColor();
+			
+			String name = user.getName();
+			System.out.println("Listing user " + name);
+			table.add(name, column, row);
+			table.setColor(column++, row, color);
+			
+			if(showStatus) {
+				String status = "";
+				try {
+					int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
+					if(status_id != -1) {
+						Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
+						status = st.getStatusKey();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if(status.length()>0) {
+					status = _iwrb.getLocalizedString("member_status_" + status, "");
+				}
+				table.add(status, column, row);
+				table.setColor(column++, row, color);
+			}
+			if(showGroup) {
+				String groupNames = getGroupNamesForTrainer(user, division);
+				table.add(groupNames, column, row);
+				table.setColor(column++, row, color);
+			}
+			
+			row++;
+		}
+		
+		return table;
+	}
+	
+	private String getGroupNamesForTrainer(User trainer, Group division) {
+		Iterator parentIter = trainer.getParentGroups().iterator();
+		Collection divisionChildren = division.getChildGroups();
+		StringBuffer buf = new StringBuffer();
+		while(parentIter.hasNext()) {
+			Group group = (Group) parentIter.next();
+			boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
+			boolean isInDivision = divisionChildren.contains(group);
+			if(isFlock && isInDivision) {
+				if(buf.length()>0) {
+					buf.append(", ");
+				}
+				buf.append(group.getName());
+			}
+		}
+		return buf.toString();
+	}
+	
+	private Group getGroupToShowMembersFor(IWContext iwc) {
 		String groupId = iwc.getParameter(PARAM_NAME_GROUP_ID);
 		if(groupId == null || groupId.length()==0) {
 			System.out.println("no group to display players for");
@@ -51,41 +150,25 @@ public class GroupMemberList extends Block {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		String name = group==null?"":group.getName();
-		Text title = new Text(name + ": ");
-		title.setBold();
-		add(title);
-		addBreak();
-		if(group!=null) {
-			add(getPlayerList(iwc, group));
-		}
-	}
-
-	private PresentationObject getPlayerList(IWContext iwc, Group group) {
-		Table table = new Table();
-		Iterator groupIter; //group.getChildren();
-		try {
-			groupIter = getGroupBusiness(iwc).getUsers(group).iterator();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		int row = 1;
-		resetColor();
-		while(groupIter.hasNext()) {
-			User user = (User) groupIter.next();
-			table.add(user.getName(), 1, row);
-			table.add((new IWTimestamp(user.getDateOfBirth())).getDateString("dd-MM-yyyy"), 2, row);
-			String color = getColor();
-			table.setColor(1, row, color);
-			table.setColor(2, row, color);
-			row++;
-		}
 		
-		return table;
+		return group;
 	}
 	
+	private Group getDivision(IWContext iwc) {
+		String groupId = iwc.getParameter(ClubInfoBar.PARAM_NAME_DIVISION_ID);
+		if(groupId == null || groupId.length()==0) {
+			System.out.println("no club found from request");
+		}
+		Group group = null;
+		try {
+			group = getGroup(iwc, Integer.parseInt(groupId));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return group;
+	}
+
 	private Group getGroup(IWContext iwc, int groupId) {
 		Group group = null;
 		try {
@@ -107,6 +190,19 @@ public class GroupMemberList extends Block {
 		}
 		
 		return _groupBiz;
+	}
+	
+	private UserStatusBusiness getUserStatusBusiness(IWApplicationContext iwc){
+		UserStatusBusiness business = null;
+		if(business == null){
+			try{
+				business = (UserStatusBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserStatusBusiness.class);
+			}
+			catch(java.rmi.RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return business;
 	}
 	
 	private String getColor() {

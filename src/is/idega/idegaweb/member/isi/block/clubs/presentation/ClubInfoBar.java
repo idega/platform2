@@ -7,6 +7,7 @@
 package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
 import is.idega.idegaweb.member.isi.block.clubs.business.ClubInfoBusinessBean;
+import is.idega.idegaweb.member.isi.block.members.presentation.GroupMemberList;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.text.Collator;
@@ -34,6 +35,7 @@ import com.idega.user.data.Group;
 public class ClubInfoBar extends Block {
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	public static final String PARAM_NAME_DIVISION_ID = "division_id";
 	private String pageId = null;
 	
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
@@ -66,6 +68,7 @@ public class ClubInfoBar extends Block {
 	
 	private void addDivisionToMenuBar(CSSMultiLevelMenu menuBar, Group division, Group clubMainBoard) {
 		List playerGroups = new ArrayList(division.getChildGroups());
+		String divisionId = division.getPrimaryKey().toString();
 
 		Group mainBoard = getMainBoard(division);
 		if(mainBoard==null && clubMainBoard!=null) {
@@ -116,12 +119,16 @@ public class ClubInfoBar extends Block {
 				flockInserted = true;
 			}
 			if(showGroup(playerGroup)) {
+				System.out.println("showing group " + playerGroup.getName() + " (" + playerGroup.getPrimaryKey() + ")");
+				
 				Link link = new Link(playerGroup.getName());
 				link.addParameter(PARAM_NAME_GROUP_ID, playerGroup.getPrimaryKey().toString());
 				if(pageId!=null) {
 				  link.setPage(Integer.parseInt(pageId));
 				}
+			
 				link.addParameter(IWMemberConstants.REQUEST_PARAMETER_SELECTED_GROUP_ID,playerGroup.getPrimaryKey().toString());
+				link.addParameter(PARAM_NAME_DIVISION_ID, divisionId);
 				topLevelMenu.add(link);
 			}
 		}
