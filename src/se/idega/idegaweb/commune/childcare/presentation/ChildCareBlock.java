@@ -67,7 +67,10 @@ public class ChildCareBlock extends CommuneBlock {
 		_childCareID = session.getChildCareID();	
 	}
 	
-	public void init(IWContext iwc) throws Exception {}
+	public void init(IWContext iwc) throws Exception {
+		//Override this method...
+		iwc.isLoggedOn();
+	}
 	
 	private ChildCareBusiness getChildCareBusiness(IWContext iwc) throws RemoteException {
 		return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);	
