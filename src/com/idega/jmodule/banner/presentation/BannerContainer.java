@@ -35,7 +35,7 @@ public class BannerContainer extends JModuleObject{
 
             BannerAttributes[] attribs = (BannerAttributes[]) (new BannerAttributes()).findAllByColumn("attribute_name",attributeName,"attribute_id",""+attributeId);
             Ad ad;
-            int row = 0;
+            int row = 1;
 
 
             Table myTable = new Table();
@@ -50,11 +50,11 @@ public class BannerContainer extends JModuleObject{
 
 
                 for (int i = 0 ; i < attribs.length ; i++) {
-                    ++row;
                     ad = new Ad(attribs[i].getAdId());
                       myTable.setAlignment(1,row,"center");
+                      myTable.add( (new InsertAd(ad.getID())),1,row);
+                      row+=2;
 
-                    myTable.add( (new InsertAd(ad.getID())),1,row);
                     if (isAdmin) {
                       link = new Link("Henda",URI);
                       link.addParameter("sub_action","Henda");

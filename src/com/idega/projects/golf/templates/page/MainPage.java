@@ -187,18 +187,22 @@ public class MainPage extends Page{
                 contentTable.setCellpadding(0);
                 contentTable.setCellspacing(0);
 		contentTable.setVerticalAlignment("top");
+                contentTable.setHeight("100%");
 
                 contentTable.add(Left, 1,1);
                 contentTable.setAlignment(1,1,"left");
                 contentTable.setVerticalAlignment(1,1,"top");
+                contentTable.setHeight(1,1,"100%");
 
                 contentTable.add(Center, 2,1);
                 contentTable.setAlignment(2,1,"center");
                 contentTable.setVerticalAlignment(2,1,"top");
+                contentTable.setHeight(2,1,"100%");
 
                 contentTable.add(Right, 3,1);
                 contentTable.setAlignment(3,1,"right");
                 contentTable.setVerticalAlignment(3,1,"top");
+                contentTable.setHeight(3,1,"100%");
 
 		mainTable.add(contentTable,1,2);
 	}
