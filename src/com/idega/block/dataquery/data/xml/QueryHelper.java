@@ -9,6 +9,7 @@ package com.idega.block.dataquery.data.xml;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,11 +17,13 @@ import javax.ejb.FinderException;
 
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
+import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.QuerySequence;
 import com.idega.block.dataquery.data.UserQuery;
 import com.idega.business.IBOLookup;
 import com.idega.data.GenericEntity;
 import com.idega.presentation.IWContext;
+import com.idega.util.StringHandler;
 import com.idega.util.datastructures.HashMatrix;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLAttribute;
@@ -52,7 +55,7 @@ public class QueryHelper {
 	private QuerySQLPart sqlPart = null;
 	private QueryEntityPart sourceEntity = null;
 	private List listOfRelatedEntities = null;
-	private List listOfFields = new ArrayList();
+	private List listOfFields = null;
 	private List listOfConditions = null;
 	private List orderConditions = null;
 	private QueryBooleanExpressionPart booleanExpression = null;
@@ -146,7 +149,7 @@ public class QueryHelper {
 			if (sqlElement != null)	{
 				sqlPart = new QuerySQLPart(sqlElement);
 				List fields = sqlPart.getFields( name);
-				listOfFields.addAll(fields);
+				addFields(fields);
 			}
 			// description
 			description = root.getTextTrim(QueryXMLConstants.DESCRIPTION);
@@ -188,7 +191,7 @@ public class QueryHelper {
 				Iterator iter = fields.getChildren().iterator();
 				while (iter.hasNext()) {
 					XMLElement xmlField = (XMLElement) iter.next();
-					listOfFields.add(new QueryFieldPart(xmlField));
+					addField(new QueryFieldPart(xmlField));
 				}
 				// boolean expression for conditions
 				XMLElement booleanExpressionXML = root.getChild(QueryXMLConstants.BOOLEAN_EXPRESSION);
@@ -413,17 +416,21 @@ public class QueryHelper {
 
 	/**
 	 *Gets the list of fields of the query
-	 * @return the list of fields
+	 * @return the list of fields or null
 	 */
 	public List getListOfFields() {
 		return listOfFields;
 	}
 	
+	// its very unlikely that there aren't any visible fields
+	// therefore we return always a list, even if the list might be empty
+	// the caller doesn't need to check if the return value is null
 	public List getListOfVisibleFields()	{
 		if (listOfFields == null) {
-			return null;
+			return new ArrayList(0);
 		}
-		List visibleFields = new ArrayList();
+		// in most cases the numbers of  fields and the number of visible fields are the same 
+		List visibleFields = new ArrayList(listOfFields.size());
 		Iterator fieldIterator = listOfFields.iterator();
 		while (fieldIterator.hasNext()) {
 			QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
@@ -476,15 +483,6 @@ public class QueryHelper {
 	 */
 	public void setListOfConditions(List list) {
 		listOfConditions = list;
-		checkStep();
-	}
-
-	/**
-	 * Sets the list of fields of the query
-	 * @param list
-	 */
-	public void setListOfFields(List list) {
-		listOfFields = list;
 		checkStep();
 	}
 
@@ -581,11 +579,53 @@ public class QueryHelper {
 		if (listOfFields == null) {
 			listOfFields = new ArrayList();
 		}
-		if(!hasFieldPart(field)){
-			listOfFields.add(field);
+		if (addFieldWithoutChecks(field)) {
 			checkStep();
 		}
 	}
+	
+	public void addFields(List listOfNewFields) {
+		if (listOfFields == null) {
+			listOfFields = new ArrayList(listOfNewFields.size());
+		}
+		boolean atLeastOneFieldWasAdded = false;
+		Iterator iterator = listOfNewFields.iterator();
+		while (iterator.hasNext()) {
+			QueryFieldPart newFieldPart = (QueryFieldPart) iterator.next();
+			atLeastOneFieldWasAdded= addFieldWithoutChecks(newFieldPart);
+		}
+		if (atLeastOneFieldWasAdded) {
+			checkStep();
+		}
+	}
+		
+	private boolean addFieldWithoutChecks(QueryFieldPart field) {
+		if(!hasFieldPart(field)){
+			createAliasNameIfNecessary(field);
+			listOfFields.add(field);
+			return true;
+		}
+		return false;
+	}
+	
+	private void createAliasNameIfNecessary(QueryFieldPart field) {
+		if (!hasFields()) {
+			return;
+		}
+		Collection names = new ArrayList(listOfFields.size());
+		Iterator iter = listOfFields.iterator(); 
+		while (iter.hasNext()) {
+			QueryFieldPart element = (QueryFieldPart) iter.next();
+			names.add(element.getName());
+		}
+		String newName = field.getName();
+		String checkedName = StringHandler.addOrIncreaseCounterIfNecessary(newName, QueryConstants.COUNTER_TOKEN, names);
+		if (! newName.equals(checkedName)) {
+			field.setAliasName(checkedName);
+		}
+	}
+
+	
 	
 	public void addHiddenField(QueryFieldPart field)	{
 		field.setHidden(true);
@@ -658,6 +698,9 @@ public class QueryHelper {
 	 *  Clears the field part of the query and updates the current step
 	 */
 	public void clearFields() {
+		if (listOfFields == null) {
+			return;
+		}
 		List invisibleFields = new ArrayList();
 		Iterator fieldIterator = listOfFields.iterator();
 		while (fieldIterator.hasNext()) {
@@ -779,10 +822,12 @@ public class QueryHelper {
 		if (!hasFields())
 			return false;
 		else {
-			for (Iterator iter = listOfFields.iterator(); iter.hasNext();) {
+			Iterator iter = listOfFields.iterator();
+			while (iter.hasNext()) {
 				QueryFieldPart element = (QueryFieldPart) iter.next();
-				if (element.encode().equals(field.encode()))
+				if (element.encode().equals(field.encode())) {
 					return true;
+				}
 			}
 		}
 		return false;

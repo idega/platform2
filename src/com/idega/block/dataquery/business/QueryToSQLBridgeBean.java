@@ -126,13 +126,13 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
 				StringBuffer buffer = new StringBuffer("CREATE VIEW ");
 				buffer.append(viewTableName);
 				buffer.append(" ( ");
-				List displayNames = sqlQuery.getDisplayNames();
-				Iterator displayIterator = displayNames.iterator();
+				List fieldNames = sqlQuery.getAliasFieldNames();
+				Iterator fieldIterator = fieldNames.iterator();
 				String separator = "";
-				while (displayIterator.hasNext())	{
-					String displayName = (String) displayIterator.next();
+				while (fieldIterator.hasNext())	{
+					String fieldName = (String) fieldIterator.next();
 					buffer.append(separator);
-					buffer.append(displayName);
+					buffer.append(fieldName);
 					separator = " , ";
 				}
 				buffer.append(" )  AS ");

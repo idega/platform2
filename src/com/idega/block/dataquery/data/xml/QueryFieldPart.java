@@ -29,6 +29,7 @@ public class QueryFieldPart implements QueryPart {
 	private IDOEntityField idoField = null;
 	private IDOEntityDefinition entityDef = null;
 	private String name = null;
+	private String aliasName = null;
 	private String entity = null;
 	private String path = null;
 	private String columns = null;
@@ -47,14 +48,15 @@ public class QueryFieldPart implements QueryPart {
 //		this.columns = stringArrayToCommaList(columns);
 //	}
 	
-	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, String handlerClass, String handlerDescription){
-		this( name, entity, path, column, function, display, typeClass, handlerClass, handlerDescription, false);
+	public QueryFieldPart(String name, String aliasName, String entity,String path, String column,String function,String display,String typeClass, String handlerClass, String handlerDescription){
+		this( name, aliasName, entity, path, column, function, display, typeClass, handlerClass, handlerDescription, false);
 	}
 	
 	
 	
-	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, String handlerClass , String handlerDescription, boolean hidden){
+	public QueryFieldPart(String name, String aliasName, String entity,String path, String column,String function,String display,String typeClass, String handlerClass , String handlerDescription, boolean hidden){
 		this.name = convertNullStringToRealNull(name);
+		this.aliasName = convertNullStringToRealNull(aliasName);
 		this.entity = convertNullStringToRealNull(entity);
 		this.path = convertNullStringToRealNull(path);
 		this.columns = convertNullStringToRealNull(column);
@@ -66,7 +68,7 @@ public class QueryFieldPart implements QueryPart {
 		this.hidden = hidden;
 	}
 	
-	public QueryFieldPart(XMLElement xml){
+	public QueryFieldPart(XMLElement xml) {
 		name = xml.getAttribute(QueryXMLConstants.NAME).getValue();
 		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
 		path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
@@ -75,7 +77,8 @@ public class QueryFieldPart implements QueryPart {
 		if(func!=null)
 			function = func.getValue();
 		typeClass = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
-		if(xml.hasChildren()){
+		if(xml.hasChildren()) {
+			aliasName = xml.getTextTrim(QueryXMLConstants.ALIAS_NAME);
 			handlerClass = xml.getTextTrim(QueryXMLConstants.HANDLER);
 			handlerDescription = xml.getTextTrim(QueryXMLConstants.HANDLER_DESCRIPTION);
 			display = xml.getTextTrim(QueryXMLConstants.DISPLAY);
@@ -96,30 +99,36 @@ public class QueryFieldPart implements QueryPart {
 		el.setAttribute(QueryXMLConstants.ENTITY,entity);
 		el.setAttribute(QueryXMLConstants.PATH, path);
 		el.setAttribute(QueryXMLConstants.PROPERTIES,this.columns);
-	  	if(this.function!=null && !this.function.equalsIgnoreCase("null"))
-	  		el.setAttribute(QueryXMLConstants.FUNCTION,function);
-	  	if(this.typeClass!=null && !this.typeClass.equalsIgnoreCase("null"))
-	  		el.setAttribute(QueryXMLConstants.TYPE,typeClass);
+		if(this.function!=null && !this.function.equalsIgnoreCase("null"))
+  		el.setAttribute(QueryXMLConstants.FUNCTION,function);
+  	if(this.typeClass!=null && !this.typeClass.equalsIgnoreCase("null"))
+  		el.setAttribute(QueryXMLConstants.TYPE,typeClass);
+	  if (aliasName != null && !aliasName.equalsIgnoreCase("null")) {
+	  		XMLElement xmlAliasName = new XMLElement(QueryXMLConstants.ALIAS_NAME);
+	  		xmlAliasName.addContent(aliasName);
+	  		el.addContent(xmlAliasName);
+	  }
+	  if (display != null && !display.equalsIgnoreCase("null")) {
 	  	XMLElement xmlDisplay = new XMLElement(QueryXMLConstants.DISPLAY);
 	  	xmlDisplay.addContent(this.display);
 	  	el.addContent(xmlDisplay);
-	  	if (handlerClass != null && !handlerClass.equalsIgnoreCase("null"))	{
-	  		XMLElement xmlHandlerClass = new XMLElement(QueryXMLConstants.HANDLER);
-	  		xmlHandlerClass.addContent(handlerClass);
-	  		el.addContent(xmlHandlerClass);
-	  	}
-	  	if (handlerDescription != null && !handlerDescription.equalsIgnoreCase("null")) {
-	  		XMLElement xmlHandlerDescription = new XMLElement(QueryXMLConstants.HANDLER_DESCRIPTION);
-	  		xmlHandlerDescription.addContent(handlerDescription);
-	  		el.addContent(xmlHandlerDescription);
-	  	}
-	  	if(locked) {
-				el.addContent(new XMLElement(QueryXMLConstants.LOCK));
-	  	}
-			if (hidden) {
-				el.addContent(new XMLElement(QueryXMLConstants.HIDDEN));
-			}
-
+	  }
+  	if (handlerClass != null && !handlerClass.equalsIgnoreCase("null"))	{
+  		XMLElement xmlHandlerClass = new XMLElement(QueryXMLConstants.HANDLER);
+  		xmlHandlerClass.addContent(handlerClass);
+  		el.addContent(xmlHandlerClass);
+  	}
+  	if (handlerDescription != null && !handlerDescription.equalsIgnoreCase("null")) {
+  		XMLElement xmlHandlerDescription = new XMLElement(QueryXMLConstants.HANDLER_DESCRIPTION);
+  		xmlHandlerDescription.addContent(handlerDescription);
+  		el.addContent(xmlHandlerDescription);
+  	}
+  	if(locked) {
+			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
+  	}
+		if (hidden) {
+			el.addContent(new XMLElement(QueryXMLConstants.HIDDEN));
+		}
 		return el;
 	}
 
@@ -155,6 +164,10 @@ public class QueryFieldPart implements QueryPart {
 		return name;
 	}
 
+	public String getAliasName() {
+		return (aliasName == null) ? name : aliasName;
+	}
+	
 	/**
 	 * @return
 	 */
@@ -186,8 +199,12 @@ public class QueryFieldPart implements QueryPart {
 	/**
 	 * @param string
 	 */
-	public void setName(String string) {
-		name = string;
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setAliasName(String aliasName) {
+		this.aliasName = aliasName;
 	}
 
 	public void setHandlerClass(String handlerClass)  {
@@ -248,15 +265,16 @@ public class QueryFieldPart implements QueryPart {
 	
 	public String encode(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(name).append(';');
-		buffer.append(entity).append(';');
-		buffer.append(path).append(';');
-		buffer.append(columns).append(';');
-		buffer.append(function).append(';');
-		buffer.append(display).append(';');
-		buffer.append(typeClass).append(';');
-		buffer.append(handlerClass).append(';');
-		buffer.append(handlerDescription);
+		buffer.append(name).append(';');   // 1
+		buffer.append("null").append(';');  // 2
+		buffer.append(entity).append(';'); // 3
+		buffer.append(path).append(';'); // 4
+		buffer.append(columns).append(';');  // 5
+		buffer.append(function).append(';'); // 6
+		buffer.append(display).append(';'); // 7 
+		buffer.append(typeClass).append(';'); // 8 
+		buffer.append(handlerClass).append(';'); // 9
+		buffer.append(handlerDescription); // 10
 		// the property hidden is always set explicitly
 		// do not add hidden (encode/decode is used for comparision) 
 //		buffer.append(hidden);		
@@ -265,9 +283,10 @@ public class QueryFieldPart implements QueryPart {
 	
 	public static QueryFieldPart  decode(String encoded){
 			StringTokenizer toker = new StringTokenizer(encoded,";");
-			if(toker.countTokens()== 9){
+			if(toker.countTokens()== 10){
 				return new QueryFieldPart(toker.nextToken(),
 						toker.nextToken(), 
+						toker.nextToken(),
 						toker.nextToken(), 
 						toker.nextToken(),
 						toker.nextToken(),

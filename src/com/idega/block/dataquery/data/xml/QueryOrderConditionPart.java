@@ -22,8 +22,8 @@ public class QueryOrderConditionPart implements QueryPart {
 	private String orderType = null;
 	
 	/** used for first initializing (default values for order type is ascendant, order priority is set to one) */
-	public QueryOrderConditionPart(String entity, String path, String[] fields) {
-		this(entity, path, fields[0], QueryXMLConstants.TYPE_ASCENDANT, 1);
+	public QueryOrderConditionPart(String entity, String path, String field) {
+		this(entity, path, field, QueryXMLConstants.TYPE_ASCENDANT, 1);
 	}
 
 	public QueryOrderConditionPart(String entity, String path, String field, String orderType, String orderPriority)	{

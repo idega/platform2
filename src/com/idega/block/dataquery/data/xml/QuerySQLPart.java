@@ -214,7 +214,8 @@ public class QuerySQLPart implements QueryPart {
 			String field = (String) iterator.next();
 			String type = (String) resultFieldTypeMap.get(field);
 			InputDescription inputDescription = (InputDescription) resultInputDescriptionMap.get(field);
-			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type, inputDescription.getInputHandler(), inputDescription.getHandlerDescription());
+			// name, aliasName, entity, path, column,function, display, typeClass, handlerClass, handlerDescription
+			QueryFieldPart fieldPart = new QueryFieldPart(field, null, queryName,queryName,field, null, null, type, inputDescription.getInputHandler(), inputDescription.getHandlerDescription());
 			fields.add(fieldPart);
 		}
 		return fields;

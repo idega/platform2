@@ -347,7 +347,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	}
 	
 	public QueryFieldPart createQueryFieldPart(IWResourceBundle iwrb,String entityName, String path, EntityAttribute attribute){
-		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName(), null, null);
+		// name, aliasName, entity, path, column,function, display, typeClass, handlerClass, handlerDescription
+		return new QueryFieldPart(attribute.getName(), null, entityName, path, attribute.getColumnName(),(String)null,null,attribute.getStorageClassName(), null, null);
 	}
 	
 	
