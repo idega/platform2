@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.33 2002/11/27 10:34:55 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.34 2002/11/27 13:41:40 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -12,14 +12,8 @@ package se.idega.idegaweb.commune.account.citizen.business;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.*;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
-import com.idega.core.data.Address;
-import com.idega.core.data.Email;
-import com.idega.core.data.EmailHome;
-import com.idega.core.data.Phone;
-import com.idega.core.data.PhoneBMPBean;
-import com.idega.core.data.PhoneHome;
-import com.idega.data.IDOAddRelationshipException;
-import com.idega.data.IDOLookup;
+import com.idega.core.data.*;
+import com.idega.data.*;
 import com.idega.user.data.*;
 import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.member.business.*;
@@ -33,13 +27,15 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
 
 /**
+ * Last modified: $Date: 2002/11/27 13:41:40 $ by $Author: staffan $
+ *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
- * @version 1.0
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.34 $
  */
-public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
+public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
+    implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
-
-
 
 	/**
 	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
@@ -358,23 +354,24 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
             email.setEmailAddress(applicant.getEmail());
             email.store();
             user.addEmail(email);
+            Phone homePhone = null;
             
             if (applicant.getPhoneHome() != null) {
-                Phone phone
+                homePhone
                         = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-                phone.setNumber(applicant.getPhoneHome());
-                phone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
-                phone.store();
-                user.addPhone(phone);
+                homePhone.setNumber(applicant.getPhoneHome());
+                homePhone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
+                homePhone.store();
+                user.addPhone (homePhone);
             }
             
             if (applicant.getPhoneWork() != null) {
-                Phone phone
+                final Phone workPhone
                         = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-                phone.setNumber(applicant.getPhoneWork());
-                phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
-                phone.store();
-                user.addPhone(phone);
+                workPhone.setNumber(applicant.getPhoneWork());
+                workPhone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
+                workPhone.store();
+                user.addPhone(workPhone);
             }
 
             final MemberFamilyLogic familyLogic = (MemberFamilyLogic)
@@ -405,7 +402,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                 phone.setPhoneTypeId (PhoneBMPBean.getWorkNumberID());
                 phone.store ();
                 cohabitantUser.addPhone (phone);
-                //                cohabitantUser.store ();
+                if (homePhone != null) {
+                    cohabitantUser.addPhone (homePhone);
+                }
             }
             if (applicant.getChildrenCount () > 0) {
                 final CitizenApplicantChildrenHome home
@@ -428,6 +427,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                              children [i].getLastName (), childrenSsn,
                              childrenGender, childrenTimestamp);
                     familyLogic.setAsParentFor (user, childrenUser);
+                    if (homePhone != null) {
+                        childrenUser.addPhone (homePhone);
+                    }
                 }
             }
         } catch (Exception e) {
