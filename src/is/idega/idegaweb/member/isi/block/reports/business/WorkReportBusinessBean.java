@@ -324,6 +324,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         int groupPk = ( (Integer) group.getPrimaryKey()).intValue();
         try {
           WorkReportGroup workReportGroup = home.findWorkReportGroupByGroupIdAndYear(groupPk,year);
+
           addWorkReportGroupToEntity(reportID, workReportGroup, member);
         }
         catch (FinderException ex) {
