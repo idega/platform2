@@ -77,6 +77,7 @@ public class Box extends Block implements Builderaware {
 	private String _headerStyle;
 	private String _highlightColor = "#0000FF";
 	private boolean _showOnlyBelongingToUser = false;
+	private boolean _showCollection = false;
 
 	private String _target;
 
@@ -434,10 +435,15 @@ public class Box extends Block implements Builderaware {
 			System.out.println("Getting links in getCollectionView()");
 			System.out.println("_showOnlyBelongingToUser = " + _showOnlyBelongingToUser);
 			
-			if (_showOnlyBelongingToUser)
-				links = BoxFinder.getLinksInBoxByUser(box, categories[a], iwc.getUserId());
-			else
-				links = BoxFinder.getLinksInBox(box, categories[a]);
+			if (_showCollection) {
+				links = BoxFinder.getLinksInCategory(categories[a]);
+			}
+			else {
+				if (_showOnlyBelongingToUser)
+					links = BoxFinder.getLinksInBoxByUser(box, categories[a], iwc.getUserId());
+				else
+					links = BoxFinder.getLinksInBox(box, categories[a]);
+			}
 			if (links != null) {
 				for (int b = 0; b < links.length; b++) {
 					column = 1;
@@ -773,4 +779,7 @@ public class Box extends Block implements Builderaware {
 		_showHeaders = b;
 	}
 
+	public void setshowAllLinksInCategories(boolean showAllLinks) {
+		_showCollection = showAllLinks;
+	}
 }
