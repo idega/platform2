@@ -58,7 +58,6 @@ import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.Age;
-import com.idega.util.IWTimestamp;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is base for invoicing 
@@ -282,7 +281,8 @@ public class InvoiceChildcareThread extends BillingThread{
 								contract,
 								regulation,
 								startPeriod.getDate(),
-								conditions);
+								conditions,
+								placementTimes);
 								
 							if(postingDetail==null){
 								throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
@@ -490,8 +490,6 @@ public class InvoiceChildcareThread extends BillingThread{
 	private void regularInvoiceForChild(User child,SchoolClassMember classMember,User custodian,InvoiceHeader invoiceHeader,PlacementTimes pTimes, float totalSum){
 		int days = pTimes.getDays();
 		float months = pTimes.getMonths();
-		IWTimestamp startTime = pTimes.getFirstCheckDay();
-		IWTimestamp endTime = pTimes.getLastCheckDay();
 		int childId = ((Number)child.getPrimaryKey()).intValue();
 		RegularInvoiceEntry regularInvoiceEntry=null;
 		boolean hasBeenHandled = haveInvoiceEntriesBeenHandledForChild(child);
@@ -508,81 +506,78 @@ public class InvoiceChildcareThread extends BillingThread{
 						
 						regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
 	
-							ErrorLogger errorRelated = new ErrorLogger("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey());
-							
-							//Get the child and then look up the custodian
-							//childID = regularInvoiceEntry.getChildId();
-							
-							errorRelated.append("Child "+childId);
-							//MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
-							//User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
-							errorRelated.append("Child name "+child.getName());
-							/*Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
-							while (custodianIter.hasNext() ){//&& invoiceHeader == null) {
-								custodian = (User) custodianIter.next();
-								//try{
-									//invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
-									custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
-									errorRelated.append("Parent "+custodianID+"<br>");
-								//} catch (FinderException e) {
-									//That's OK, just keep looking
-								//}
-							}*/
-							if(invoiceHeader==null){
-		//					try{
-		//						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
-		//					} catch (FinderException e) {
-								//No header was found so we have to create it
-								invoiceHeader = getInvoiceHeaderHome().create();
-								//Fill in all the field available at this times
-								invoiceHeader.setSchoolCategory(category);
-								invoiceHeader.setPeriod(startPeriod.getDate());
-								invoiceHeader.setCustodian(custodian);
-								invoiceHeader.setDateCreated(currentDate);
-								invoiceHeader.setCreatedBy(BATCH_TEXT);
-								// SN: posting not applicable in invoice header anymore
-								// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
-								// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
-								invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
-								invoiceHeader.store();
-								createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
-							}
-							errorRelated.append("Note "+regularInvoiceEntry.getNote());
-							
-							calculateTime(new Date(regularInvoiceEntry.getFrom().getTime()),
-									new Date(regularInvoiceEntry.getTo().getTime()));
-		
-							
-							
-							InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
-							invoiceRecord.setInvoiceHeader(invoiceHeader);
-							invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
-							invoiceRecord.setSchoolClassMember(classMember);
-		
-							invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
-							invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
-							invoiceRecord.setDays(days);
-							invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
-							invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
-							invoiceRecord.setPeriodStartPlacement(startTime.getDate());
-							invoiceRecord.setPeriodEndPlacement(endTime.getDate());
-							invoiceRecord.setDateCreated(currentDate);
-							invoiceRecord.setCreatedBy(BATCH_TEXT);
-							float amount =regularInvoiceEntry.getAmount()*months;
-							invoiceRecord.setAmount(amount);
-							totalSum += amount;
-							if(totalSum<0){
-								createNewErrorMessage(errorRelated.toString(),"invoice.SumLessThanZeroForRegularInvoiceRecord");
-							}
-							invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
-							invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
-							invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
-		
-							invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
-							invoiceRecord.setDoublePosting(regularInvoiceEntry.getDoublePosting());
-							invoiceRecord.store();
-							markInvoiceEntriesHandledForChild(child);
+						ErrorLogger errorRelated = new ErrorLogger("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey());
 						
+						//Get the child and then look up the custodian
+						//childID = regularInvoiceEntry.getChildId();
+						
+						errorRelated.append("Child "+childId);
+						//MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+						//User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
+						errorRelated.append("Child name "+child.getName());
+						/*Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
+						while (custodianIter.hasNext() ){//&& invoiceHeader == null) {
+							custodian = (User) custodianIter.next();
+							//try{
+								//invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
+								custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
+								errorRelated.append("Parent "+custodianID+"<br>");
+							//} catch (FinderException e) {
+								//That's OK, just keep looking
+							//}
+						}*/
+						if(invoiceHeader==null){
+	//					try{
+	//						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
+	//					} catch (FinderException e) {
+							//No header was found so we have to create it
+							invoiceHeader = getInvoiceHeaderHome().create();
+							//Fill in all the field available at this times
+							invoiceHeader.setSchoolCategory(category);
+							invoiceHeader.setPeriod(startPeriod.getDate());
+							invoiceHeader.setCustodian(custodian);
+							invoiceHeader.setDateCreated(currentDate);
+							invoiceHeader.setCreatedBy(BATCH_TEXT);
+							// SN: posting not applicable in invoice header anymore
+							// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
+							// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
+							invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
+							invoiceHeader.store();
+							createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
+						}
+						errorRelated.append("Note "+regularInvoiceEntry.getNote());
+						
+						PlacementTimes placementTimes = calculateTime(contract.getValidFromDate(), contract.getTerminatedDate());
+						
+						InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
+						invoiceRecord.setInvoiceHeader(invoiceHeader);
+						invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
+						invoiceRecord.setSchoolClassMember(classMember);
+	
+						invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
+						invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
+						invoiceRecord.setDays(days);
+						invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
+						invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
+						invoiceRecord.setPeriodStartPlacement(placementTimes.getFirstCheckDay().getDate());
+						invoiceRecord.setPeriodEndPlacement(placementTimes.getLastCheckDay().getDate());
+						invoiceRecord.setDateCreated(currentDate);
+						invoiceRecord.setCreatedBy(BATCH_TEXT);
+						float amount =regularInvoiceEntry.getAmount()*months;
+						invoiceRecord.setAmount(amount);
+						totalSum += amount;
+						if(totalSum<0){
+							createNewErrorMessage(errorRelated.toString(),"invoice.SumLessThanZeroForRegularInvoiceRecord");
+						}
+						invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
+						invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
+						invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
+	
+						invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
+						invoiceRecord.setDoublePosting(regularInvoiceEntry.getDoublePosting());
+						invoiceRecord.store();
+						markInvoiceEntriesHandledForChild(child);
+
 					} catch (RemoteException e) {
 						e.printStackTrace();
 						createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
@@ -590,7 +585,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						e.printStackTrace();
 						createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
 					}
-					
 				}
 			} catch (RemoteException e) {
 				e.printStackTrace();

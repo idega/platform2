@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.99 2003/12/17 15:25:35 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.100 2003/12/17 17:53:31 joakim Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -26,6 +26,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.invoice.business.PlacementTimes;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
@@ -1526,7 +1527,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (match.size() == 1) {
 					Regulation res = (Regulation) match.get(0);
 					try {
-						postingDetail = getPostingDetailFromRegulation(res, condition, contract, null, period, totalSum);
+						postingDetail = getPostingDetailFromRegulation(res, condition, contract, null, period, totalSum, null);
 					}
 					catch (BruttoIncomeException e) {
 					}
@@ -1574,7 +1575,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	//		float totalSum,
 	//		ChildCareContract contract) {
 
-	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum) throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
+	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum, PlacementTimes placementTimes) throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
 		PostingDetail ret = null;
 		if (reg.getSpecialCalculation() != null) {
 			String type = reg.getSpecialCalculation().getSpecialCalculationType();
@@ -1589,6 +1590,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 				if (d != null) {
 					ret = new PostingDetail();
+					if (placementTimes != null && placementTimes.getMonths() != 0.0f)
+					  total_sum /= placementTimes.getMonths();
 					ret.setAmount(Math.round(d.getAmount() - total_sum));
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
@@ -1864,8 +1867,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param contract
 	 * @return PostingDetail
 	 */
-	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
-		return getPostingDetailFromRegulation(regulation, condition, contract, null, period, totalSum);
+	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition, PlacementTimes placementTimes) throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
+		return getPostingDetailFromRegulation(regulation, condition, contract, null, period, totalSum, placementTimes);
 	}
 
 	/**
@@ -1877,8 +1880,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param regulation
 	 * @return
 	 */
-	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
-		return getPostingDetailFromRegulation(regulation, condition, null, schoolClassMember, period, totalSum);
+	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition, PlacementTimes placementTimes) throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
+		return getPostingDetailFromRegulation(regulation, condition, null, schoolClassMember, period, totalSum, placementTimes);
 	}
 
 	/**
