@@ -251,6 +251,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 			IWTimestamp created = new IWTimestamp(vacation.getCreatedDate());
 			String vacationComment = vacation.getComment();
 			Group parish = getUserParish(user);
+			User supervisor = getSupervisor(parish);
 			Map extraInfo = getExtraVacationTypeInformation(type);
 			Collection times = getVacationTimes(vacation);
 			File attachment = null;
@@ -338,7 +339,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					getLocalizedString(type.getLocalizedKey(), type.getTypeName()),
 					from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT),
 					parish != null ? parish.getName() : "xxx", hoursAndDays.toString(), 
-					vacationComment, created.getLocaleDate(locale, IWTimestamp.SHORT), metadata.toString(), logBuffer.toString() };
+					vacationComment, created.getLocaleDate(locale, IWTimestamp.SHORT), metadata.toString(), logBuffer.toString(), supervisor.getName()};
 			sendMessage(
 					email,
 					cc,
@@ -346,7 +347,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					MessageFormat.format(
 							getLocalizedString(
 									"vacation_application.accepted_body",
-									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5}.\n\nThe vacation period is:\nfrom\t {3}\n to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
+									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5},\nAttested by:\t {11}\n\nThe vacation period is:\nfrom\t {3}\n to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
 							arguments), attachment);
 		}
 	}	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
