@@ -130,7 +130,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				selector = new WorkReportSelector();	
 			}
 			else if( action.equals(ACTION_CLOSE_REPORT) ){
-				selector = new WorkReportSelector();	
+				selector = new WorkReportCloser();	
 			}
 			else if( action.equals(ACTION_STATISTICS) ){
 				selector = new WorkReportSelector();	

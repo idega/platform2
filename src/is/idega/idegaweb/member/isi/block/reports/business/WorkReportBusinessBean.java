@@ -1916,6 +1916,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		return true;
 	}
+	
+	public boolean closeWorkReport(int workReportId) {
+		WorkReport report = getWorkReportById(workReportId);
+		report.setAsSent(true);
+		
+		report.store();
+
+		return true;
+	}
+
 
 	public String getWorkReportSentText(int workReportId) {
 		return getWorkReportById(workReportId).getSentReportText();
