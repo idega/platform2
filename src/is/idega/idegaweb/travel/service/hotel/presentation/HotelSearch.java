@@ -167,7 +167,7 @@ public class HotelSearch extends AbstractSearchForm {
 			addAreaCodeInput();
 		} else {
 			try {
-				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentIBPageID())}, new PresentationObject[]{}, true);
+				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentLocaleId())}, new PresentationObject[]{}, true);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
@@ -181,6 +181,7 @@ public class HotelSearch extends AbstractSearchForm {
 		TextInput manyDays = new TextInput(PARAMETER_MANY_DAYS);
 		manyDays.setContent("1");
 		manyDays.setSize(3);
+		manyDays.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_seats", "Invalid number of seats"));
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in"), iwrb.getLocalizedString("travel.search.number_of_days","Number of days")}, new PresentationObject[]{fromDate, manyDays});
 		
 		Collection hotelTypes = new Vector();

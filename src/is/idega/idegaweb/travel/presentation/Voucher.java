@@ -15,19 +15,23 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.tpos.data.TPosAuthorisationEntriesBean;
-import com.idega.block.tpos.data.TPosAuthorisationEntriesBeanHome;
+import com.idega.block.creditcard.business.CreditCardBusiness;
+import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -369,23 +373,19 @@ public abstract class Voucher extends TravelManager {
 				String ccAuthNumber =  _booking.getCreditcardAuthorizationNumber();
 				String cardType = null;
 				if (ccAuthNumber != null) {
-					try {
-						TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
-						Collection authEnts = authEntHome.findByAuthorisationIdRsp(ccAuthNumber);
-						if (authEnts != null && !authEnts.isEmpty()) {
-							Iterator iter = authEnts.iterator();
-							TPosAuthorisationEntriesBean authEnt = (TPosAuthorisationEntriesBean) authEntHome.findByPrimaryKey( iter.next() );
-							cardType = authEnt.getBrandName();
-							_table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
-							_table.add(getText(" : "),1,2);
-							String amount = authEnt.getAuthorisationAmount();
-							double fAmount = Float.parseFloat(amount) / 100.0;
-							_table.add(getText(fAmount+" "+authEnt.getAuthorisationCurrency()), 1, 2);
-							_table.add(Text.BREAK,1,2);
-						}
-					}catch (FinderException fe) {
-						fe.printStackTrace(System.err);
-					}
+					CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(_iwc).getAuthorizationEntry(_supplier, ccAuthNumber, new IWTimestamp(_booking.getDateOfBooking()));
+					//TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
+					//Collection authEnts = authEntHome.findByAuthorisationIdRsp(ccAuthNumber);
+					//if (authEnts != null && !authEnts.isEmpty()) {
+						//Iterator iter = authEnts.iterator();
+						//TPosAuthorisationEntriesBean authEnt = (TPosAuthorisationEntriesBean) authEntHome.findByPrimaryKey( iter.next() );
+						cardType = entry.getBrandName();
+						_table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
+						_table.add(getText(" : "),1,2);
+						//String amount = entry.getAmount();
+						double fAmount = entry.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
+						_table.add(getText(df.format(fAmount)+" "+entry.getCurrency()), 1, 2);
+						_table.add(Text.BREAK,1,2);
 				}
 				_table.add(getText(_iwrb.getLocalizedString("travel.payment_type_lg","PAYMENT TYPE")),1,2);
 				_table.add(getText(" : "),1,2);
@@ -495,7 +495,7 @@ public abstract class Voucher extends TravelManager {
     }
     clientInfo.add(lineToAdd);
   }
-
+  
   protected abstract void setupVoucher(IWContext iwc)throws RemoteException;
 
 }

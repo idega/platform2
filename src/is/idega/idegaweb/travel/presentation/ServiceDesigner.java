@@ -87,7 +87,6 @@ public class ServiceDesigner extends TravelManager {
 				}
 			} catch (IDORelationshipException e) {
 				PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
-				//e.printStackTrace();
 			}
     }
 
@@ -269,18 +268,18 @@ private void finalize(IWContext iwc) throws Exception {
           Product product = getProductBusiness(iwc).getProduct((Integer)this.service.getPrimaryKey());
 
           Link tfAdder = new Link(iwrb.getLocalizedImageButton("travel.timeframes","Timeframes"));
-            tfAdder.addParameter(TimeframeAdder._parameterProductId, product.getID());
-            tfAdder.setWindowToOpen(TimeframeAdder.class);
+          tfAdder.addParameter(TimeframeAdder._parameterProductId, product.getID());
+          tfAdder.setWindowToOpen(TimeframeAdder.class);
 
           Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure places"));
-            addAdder.addParameter(AddressAdder._parameterProductId, product.getID());
-            addAdder.setWindowToOpen(AddressAdder.class);
+          addAdder.addParameter(AddressAdder._parameterProductId, product.getID());
+          addAdder.setWindowToOpen(AddressAdder.class);
 
           Link servDaySetter = new Link(iwrb.getLocalizedImageButton("travel.active_dats","Active days"));
-            servDaySetter.addParameter(ServiceDaySetter.PARAMETER_SERVICE_ID,  product.getID());
-            servDaySetter.setWindowToOpen(ServiceDaySetter.class);
+          servDaySetter.addParameter(ServiceDaySetter.PARAMETER_SERVICE_ID,  product.getID());
+          servDaySetter.setWindowToOpen(ServiceDaySetter.class);
 
-          Link productPriceDesigner = ProductPriceDesigner.getLink(product.getID());// = new Link(iwrb.getLocalizedImageButton("travel.active_dats","Active days"));
+          Link productPriceDesigner = ProductPriceDesigner.getLink(product.getID());
           productPriceDesigner.setImage(iwrb.getLocalizedImageButton("travel.product_price_designer","Price designer"));
 
           Timeframe[] tFrames = product.getTimeframes();

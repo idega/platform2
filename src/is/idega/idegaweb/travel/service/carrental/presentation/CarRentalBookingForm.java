@@ -306,7 +306,7 @@ public class CarRentalBookingForm extends BookingForm {
 					Iterator iter = coll.iterator();
 					PickupPlace p;
 					while (iter.hasNext()) {
-						p = getPickupPlaceHome().findByPrimaryKey(iter.next());
+						p = (PickupPlace) iter.next();
 						pickupPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
 					}	
 				}
@@ -331,7 +331,7 @@ public class CarRentalBookingForm extends BookingForm {
 					Iterator iter = coll.iterator();
 					PickupPlace p;
 					while (iter.hasNext()) {
-						p = getPickupPlaceHome().findByPrimaryKey(iter.next());
+						p = (PickupPlace) iter.next();
 						dropoffPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
 					}	
 				}
@@ -1210,7 +1210,7 @@ public class CarRentalBookingForm extends BookingForm {
 					  Iterator iter = coll.iterator();
 					  PickupPlace p;
 					  while (iter.hasNext()) {
-						  p = getPickupPlaceHome().findByPrimaryKey(iter.next());
+						  p = (PickupPlace) iter.next();
 						  pickupPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
 					  }	
 				  }
@@ -1236,7 +1236,7 @@ public class CarRentalBookingForm extends BookingForm {
 					  Iterator iter = coll.iterator();
 					  PickupPlace p;
 					  while (iter.hasNext()) {
-						  p = getPickupPlaceHome().findByPrimaryKey(iter.next());
+						  p = (PickupPlace) iter.next();
 						  dropoffPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
 					  }	
 				  }
@@ -1264,78 +1264,8 @@ public class CarRentalBookingForm extends BookingForm {
 	
 			   table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 	
-				TextInput ccNumber = new TextInput(this.parameterCCNumber);
-				  ccNumber.setMaxlength(19);
-				  ccNumber.setLength(20);
-				TextInput ccMonth = new TextInput(this.parameterCCMonth);
-				  ccMonth.setMaxlength(2);
-				  ccMonth.setLength(3);
-				TextInput ccYear = new TextInput(this.parameterCCYear);
-				  ccYear.setMaxlength(2);
-				  ccYear.setLength(3);
-	
-				Text ccText = (Text) theText.clone();
-				  ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
-				  ccText.addToText(star);
-	
-				Text ccMY = (Text) theText.clone();
-				  ccMY.setText(iwrb.getLocalizedString("travel.valid","valid"));
-				  ccMY.addToText(star);
-	
-				Text ccSlash = (Text) theText.clone();
-				  ccSlash.setText(" / ");
-	
-	
-				// CREDITCARD STUFF
-				if (this._useInquiryForm) {
-				  table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
-				}else {
-				  ++row;
-				  table.mergeCells(1,row,6,row);
-				  table.add(hr,1,row);
-				  ++row;
-				  table.mergeCells(1,row,6,row);
-				  subHeader = (Text) theBoldText.clone();
-					subHeader.setFontColor(WHITE);
-					subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
-					subHeader.addToText(Text.NON_BREAKING_SPACE);
-				  Text starTextTwo = (Text) theText.clone();
-					starTextTwo.setFontColor(WHITE);
-					starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_only","Visa and Eurocard only.")+")");
-				  table.add(subHeader,1,row);
-				  table.add(starTextTwo,1,row);
-				  table.setAlignment(1,row,"left");
-				  ++row;
-	
-	
-				  Text month = (Text) super.theSmallBoldText.clone();
-					month.setText(iwrb.getLocalizedString("travel.month","Month"));
-				  Text year = (Text) super.theSmallBoldText.clone();
-					year.setText(iwrb.getLocalizedString("travel.year","Year"));
-				  table.add(month,4,row);
-				  table.add(ccSlash,5,row);
-				  table.add(year,6,row);
-	
-	//				table.setBorder(1);
-				//            table.setWidth(4,"2");
-				  table.setAlignment(4,row,"right");
-				  table.setWidth(5,"2");
-	
-				  ++row;
-				  table.add(ccText,1,row);
-				  table.add(ccNumber,2,row);
-				  table.add(ccMY,3,row);
-	
-				  table.add(ccMonth,4,row);
-				  table.add(ccSlash,5,row);
-				  table.add(ccYear,6,row);
-	
-				  table.setAlignment(1,row,"right");
-				  table.setAlignment(2,row,"left");
-				  table.setAlignment(3,row,"right");
-				  table.setAlignment(4,row,"right");
-				}
-	
+         row = addCreditCardFormElements(iwc, product, table, row, hr, star);
+
 				if (super.getUser() != null) {
 				  ++row;
 				  table.mergeCells(1,row,6,row);
@@ -1685,29 +1615,10 @@ public class CarRentalBookingForm extends BookingForm {
 	
 	
 		  if (inquiry == null) {
-			++row;
-			table.setAlignment(1,row,"right");
-			table.setAlignment(2,row,"left");
-			table.add(getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number")),1,row);
-			if (ccNumber.length() <5) {
-			  table.add(getBoldTextWhite(ccNumber),2,row);
-			}else {
-			  for (int i = 0; i < ccNumber.length() -4; i++) {
-				table.add(getBoldTextWhite("*"),2,row);
-			  }
-			  table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
-	
-			}
-			if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
-			  valid = false;
-			  Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
-				ccError.setFontColor(errorColor);
-			  ++row;
-			  table.mergeCells(1, row, 2, row);
-			  table.add(ccError, 1, row);
-			}
+	    		valid = insertCreditcardBookingVerification(iwc, row, table, errorColor);
+	    		row += 5;
 		  }else {
-			debug("inquiry");
+		  		debug("inquiry");
 		  }
 	
 	

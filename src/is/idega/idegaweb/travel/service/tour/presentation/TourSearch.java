@@ -2,6 +2,8 @@ package is.idega.idegaweb.travel.service.tour.presentation;
 
 import is.idega.idegaweb.travel.block.search.business.InvalidSearchException;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
+import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.data.TourHome;
 import is.idega.idegaweb.travel.service.tour.data.TourType;
@@ -9,12 +11,19 @@ import is.idega.idegaweb.travel.service.tour.data.TourTypeHome;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.trade.stockroom.business.ProductComparator;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -32,7 +41,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 
 	IWContext iwc;
 	private static String PARAMETER_TOUR_TYPE_ID = "ts_prm_tti";
-	private static String PARAMETER_MANY_SEATS = "ts_prm_ms";
+	private static String PARAMETER_MANY_SEATS = BookingForm.parameterCountToCheck;//"ts_prm_ms";
 	
 	protected abstract String getTourCategory();
 	
@@ -45,12 +54,16 @@ public abstract class TourSearch extends AbstractSearchForm {
 		super.main(iwc);
 	}
 
+	protected int getDefaultSortMethod() {
+		return ProductComparator.NAME;
+	}
+
 	protected void setupSearchForm() {
 		if (super.definedProduct == null) {
 			addAreaCodeInput();
 		} else {
 			try {
-				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentIBPageID())}, new PresentationObject[]{}, true);
+				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentLocaleId())}, new PresentationObject[]{}, true);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
@@ -64,6 +77,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 		TextInput manySeats = new TextInput(PARAMETER_MANY_SEATS);
 		manySeats.setContent("1");
 		manySeats.setSize(3);
+		manySeats.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_seats", "Invalid number of seats"));
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.date","Date"), iwrb.getLocalizedString("travel.search.number_of_seats","Number of seats")}, new PresentationObject[]{fromDate, manySeats});
 		
 		SelectPanel tourTypes = new SelectPanel(PARAMETER_TOUR_TYPE_ID );
@@ -71,6 +85,20 @@ public abstract class TourSearch extends AbstractSearchForm {
 			Collection categories = getTourTypeHome().findByCategory(getTourCategory());
 			SelectorUtility su = new SelectorUtility();
 			tourTypes = (SelectPanel) su.getSelectorFromIDOEntities(tourTypes, categories, "getLocalizationKey", iwrb);
+
+			if (super.definedProduct != null) {
+				Collection coll = getTourTypes(definedProduct);
+				if (coll != null && !coll.isEmpty()) {
+					TourType tourType;
+					Iterator iter = coll.iterator();
+					while (iter.hasNext()) {
+						tourType = (TourType) iter.next();
+						tourTypes.setSelectedOption(tourType.getPrimaryKey().toString());
+					}
+				}
+				tourTypes.setDisabled(true);
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
@@ -138,6 +166,23 @@ public abstract class TourSearch extends AbstractSearchForm {
 
 	protected String getPriceCategoryKey() {
 		return TourSetup.TOUR_SEARCH_PRICE_CATEGORY_KEY;
+	}
+	
+	protected TourBusiness getTourBusiness(IWApplicationContext iwac) {
+		try {
+			return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
+		} catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	protected Collection getTourTypes(Product product) {
+		try {
+			Tour tour = getTourBusiness(iwc).getTour(product);
+			return tour.getTourTypes();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	

@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.business.SupplierManager;
@@ -25,7 +26,8 @@ import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
@@ -42,12 +44,10 @@ import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 
-public class TravelManager extends Block {
+public class TravelManager extends TravelBlock {
 
     Table table = new Table(2,2);
-    TravelSessionManager tsm;
 
-    private boolean oldLogin = false;
 
     protected Text theText = new Text();
     protected Text theBoldText = new Text();
@@ -84,8 +84,6 @@ public class TravelManager extends Block {
     protected static String parameterHome = "lHome";
     protected static String parameterEngines = "lEngines";
 
-    protected boolean isInPermissionGroup = false;
-    protected boolean isSuperAdmin = false;
 
     public static String theTextStyle = "font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";";
     public static String theBoldTextStyle = "font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;";
@@ -97,54 +95,8 @@ public class TravelManager extends Block {
         super();
     }
 
-
-    public String getBundleIdentifier(){
-      return IW_BUNDLE_IDENTIFIER;
-    }
-
-    public IWBundle getBundle() throws RemoteException{
-      return tsm.getIWBundle();
-    }
-
-    /**
-     * @deprecated
-     * @param iwc IWContext
-     * @return IWResourceBundle
-     * @throws RemoteException
-     */
-    public IWResourceBundle getResourceBundle(IWContext iwc)  throws RemoteException{
-      return tsm.getIWResourceBundle();
-    }
-
-    public IWResourceBundle getResourceBundle()  throws RemoteException{
-      return tsm.getIWResourceBundle();
-    }
-
-    public Locale getLocale() throws RemoteException {
-      return tsm.getLocale();
-    }
-
-    public int getLocaleId() throws RemoteException {
-      return tsm.getLocaleId();
-    }
-
-    public Reseller getReseller() throws RemoteException{
-      return tsm.getReseller();
-    }
-
-    public Supplier getSupplier() throws RemoteException {
-        return tsm.getSupplier();
-    }
-
-    public User getUser() throws RemoteException {
-      return tsm.getUser();
-    }
-
-    public int getUserId() throws RemoteException {
-      return tsm.getUserId();
-    }
-
     public void main(IWContext iwc) throws Exception{
+    		super.main(iwc);
       initializer(iwc);
       
       showLogo = isLoggedOn(iwc);
@@ -160,13 +112,6 @@ public class TravelManager extends Block {
         return false;
     }
 
-    protected boolean hasLoginExpired(IWContext iwc) throws RemoteException {
-      return (!iwc.hasEditPermission(this) && tsm.getSupplier() == null && tsm.getReseller() == null && tsm.getSearchEngine() == null);
-    }
-
-    protected boolean isLoggedOn(IWContext iwc) throws RemoteException {
-      return !hasLoginExpired(iwc);
-    }
 
     protected Table getLogin(IWContext iwc)  throws RemoteException{
       LoginPage lp = new LoginPage();
@@ -331,7 +276,7 @@ public class TravelManager extends Block {
           lHome.addParameter(this.sAction, this.parameterHome);
         table.add(lHome,2,1);
 
-        if (oldLogin) {
+        if (expiredLogin) {
           this.add(tsm.getIWResourceBundle().getLocalizedString("travel.no_permission","No permission"));
         }
 
@@ -350,70 +295,21 @@ public class TravelManager extends Block {
 
 
     public void initializer(IWContext iwc) throws RemoteException {
-      tsm = getTravelSessionManager(iwc);
+    		if (super.tsm == null) {
+    			super.initializer(iwc);
+    		}
 
-      if (!isTravelAdministrator(iwc)) {
-        try {
-            int supplierId = getTravelStockroomBusiness(iwc).getUserSupplierId(iwc);
-            SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
-            Supplier supplier = suppHome.findByPrimaryKey(supplierId);
-            if (!supplier.getIsValid()) {
-              //supplier = null;
-              oldLogin = true;
-            }else {
-              tsm.setSupplier(supplier);
-            }
-        }
-        catch (Exception e) {
-          //e.printStackTrace(System.err);
-          debug(e.getMessage());
-        }
-
-        try {
-            int resellerId = getTravelStockroomBusiness(iwc).getUserResellerId(iwc);
-            Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
-            if (!reseller.getIsValid()) {
-              //reseller = null;
-              oldLogin = true;
-            } else {
-              tsm.setReseller(reseller);
-            }
-        }
-        catch (Exception e) {
-        	//e.printStackTrace(System.err);
-          debug(e.getMessage());
-        }
-        
-        try {
-        	ServiceSearchBusiness ssb = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
-        	User user = tsm.getUser();
-        	if (user != null) {
-        		ServiceSearchEngine engine = ssb.getUserSearchEngine(user);
-        		if (!engine.getIsValid()) {
-        			oldLogin = true;
-        		} else {
-        			tsm.setSearchEngine(engine);
-        		}
-        	}
-        } catch (Exception e) {
-        	debug(e.getMessage());
-        }
-      }
-
-        theText.setFontColor(this.textColor);
-        theBigBoldText.setFontColor(this.textColor);
-        theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_12_STYLE_TAG+"; font-weight: bold;");
-        theBoldText.setFontColor(this.textColor);
-        theText.setFontStyle(theTextStyle);
-        theBoldText.setFontStyle(theBoldTextStyle);
-        smallText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
-        theSmallBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
-
-        smallText.setFontColor(this.textColor);
-        theSmallBoldText.setFontColor(this.textColor);
-
-        this.isInPermissionGroup = this.isInPermissionGroup(iwc);
-        this.isSuperAdmin = isTravelAdministrator(iwc);
+	    theText.setFontColor(this.textColor);
+	    theBigBoldText.setFontColor(this.textColor);
+	    theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_12_STYLE_TAG+"; font-weight: bold;");
+	    theBoldText.setFontColor(this.textColor);
+	    theText.setFontStyle(theTextStyle);
+	    theBoldText.setFontStyle(theBoldTextStyle);
+	    smallText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
+	    theSmallBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
+	
+	    smallText.setFontColor(this.textColor);
+	    theSmallBoldText.setFontColor(this.textColor);
     }
 
     public void add(PresentationObject mo) {
@@ -464,50 +360,6 @@ public class TravelManager extends Block {
     }
 
 
-    public boolean isInPermissionGroup(IWContext iwc) throws RemoteException {
-      return isInPermissionGroup(iwc, tsm.getUser());
-    }
-
-    protected boolean isInPermissionGroup(IWContext iwc, User user) throws RemoteException {
-      if (user != null) {
-        PermissionGroup pGroup = null;
-        try {
-          if (tsm.getReseller() != null) {
-            pGroup = ResellerManager.getPermissionGroup(tsm.getReseller());
-          }
-          else if (tsm.getSupplier() != null) {
-            pGroup = SupplierManager.getPermissionGroup(tsm.getSupplier());
-          } else if (tsm.getSearchEngine() != null) {
-          	ServiceSearchBusiness ssb = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
-          	pGroup = ssb.getPermissionGroup(tsm.getSearchEngine()); 
-          }
-
-          if (pGroup != null) {
-          	UserBusiness uBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-          	GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
-          	//List allUsers = pGroup.getChildGroups();
-          	List allUsers = pGroup.getAllGroupsContainingUser(user);
-//          	Collection allUsers = uBus.getUsersInGroup(pGroup.getID());
-          	Iterator iter = allUsers.iterator();
-//          	System.out.println("allUsers.size() = "+allUsers.size());
-/*          	while (iter.hasNext()) {
-          		System.out.println(((GenericGroup)iter.next()).getID());
-          		//System.out.println("User : "+((User)iter.next()).getName());
-          	}*/
-            //UserGroupBusiness ugb = new UserGroupBusiness();
-            //List allUsers = ugb.getUsersContained(pGroup);
-            if (allUsers != null) {
-              return allUsers.contains(pGroup);
-            }
-          }
-        }catch (Exception sql) {
-          sql.printStackTrace(System.err);
-        }
-
-      }
-      return false;
-    }
-
     public static Table getTable() {
       Table table = new Table();
         table.setCellpaddingAndCellspacing(1);
@@ -529,51 +381,6 @@ public class TravelManager extends Block {
       return text;
     }
 
-    protected boolean hasPermission() {
-    	return this.isInPermissionGroup || this.isSuperAdmin;
-    }
-    protected Booker getBooker(IWApplicationContext iwac) throws RemoteException{
-      return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);
-    }
 
-    protected Assigner getAssigner(IWApplicationContext iwac) throws RemoteException {
-      return (Assigner) IBOLookup.getServiceInstance(iwac, Assigner.class);
-    }
-
-    protected Inquirer getInquirer(IWApplicationContext iwac) throws RemoteException {
-      return (Inquirer) IBOLookup.getServiceInstance(iwac, Inquirer.class);
-    }
-
-    protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
-      return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
-    }
-
-    protected ProductCategoryFactory getProductCategoryFactory(IWApplicationContext iwac) throws RemoteException {
-      return (ProductCategoryFactory) IBOLookup.getServiceInstance(iwac, ProductCategoryFactory.class);
-    }
-
-    protected ServiceHandler getServiceHandler(IWApplicationContext iwac) throws RemoteException {
-      return (ServiceHandler) IBOLookup.getServiceInstance(iwac, ServiceHandler.class);
-    }
-
-    protected ContractBusiness getContractBusiness(IWApplicationContext iwac) throws RemoteException {
-      return (ContractBusiness) IBOLookup.getServiceInstance(iwac, ContractBusiness.class);
-    }
-
-    protected ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
-      return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
-    }
-
-    protected boolean isTravelAdministrator(IWContext iwc) {
-      return iwc.hasEditPermission(this);
-    }
-
-    protected TravelSessionManager getTravelSessionManager(IWContext iwc) throws RemoteException{
-      return TravelManager.getTravelSessionManagerStatic(iwc);
-    }
-
-    public static TravelSessionManager getTravelSessionManagerStatic(IWContext iwc) throws RemoteException{
-      return (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
-    }
     
 }

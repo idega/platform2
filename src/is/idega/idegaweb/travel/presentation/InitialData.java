@@ -70,7 +70,7 @@ public class InitialData extends TravelManager {
 
   private static String parameterSupplierId = "supplier_id";
 
-  private static String dropdownView = "dropdownView";
+  public static String dropdownView = "dropdownView";
 
   private static String parameterViewSupplierInfo = "supplierViewInfo";
   private static String parameterViewResellerInfo = "resellerViewInfo";
@@ -222,7 +222,20 @@ public class InitialData extends TravelManager {
               }
             }else if (selected.equals(this.parameterCreditCardRefund)) {
               try {
-                form = CreditcardRefunder.creditcardRefunderForm(iwc, iwrb);
+	            		Link link = LinkGenerator.getLinkToRefunderForm(iwc);
+	            		Text text = getText("Refunds");
+	            		text.setFontColor(super.WHITE);
+	            		link.setText(text);
+	            		add(link);
+
+              	
+//	              	Link link = LinkGenerator.getLinkToRefunderForm(iwc);
+//		            		link.setText("Refunds");
+	            		//add(link);
+	            		
+//                form = TravelCreditcardRefunderWindow.creditcardRefunderForm(iwc, iwrb);
+ //               form.add(Text.NON_BREAKING_SPACE);
+ //               form.add(link);
               }catch (Exception e) {
                 e.printStackTrace(System.err);
                 form = new Form();
@@ -294,14 +307,22 @@ public class InitialData extends TravelManager {
                 add(selectSupplier(iwc));
               }else if (selected.equals(this.parameterCreditCardRefund)){
                 try {
-                  Form form = CreditcardRefunder.creditcardRefunderForm(iwc, iwrb);
-                  add(form);
+	              		Link link = LinkGenerator.getLinkToRefunderForm(iwc);
+	              		Text text = getText("Refunds");
+	              		text.setFontColor(super.WHITE);
+	              		link.setText(text);
+//	              		add(link);
+                  Form form = TravelCreditcardRefunderWindow.creditcardRefunderForm(iwc, iwrb);
+                  form.add(Text.NON_BREAKING_SPACE);
+                  form.add(link);
+                  	add(form);
+                  
                 }catch (Exception e) {
                   e.printStackTrace(System.err);
                 }
               }else if (selected.equals(this.parameterTPosProperties)) {
                 try {
-                  TPosMerchantEditor tme = new TPosMerchantEditor(iwc);
+                  CreditCardMerchantEditor tme = new CreditCardMerchantEditor(iwc);
                   Form form = tme.getTPosMerchantEditorForm(iwc);
                   form.maintainParameter(this.dropdownView);
                   add(form);

@@ -63,9 +63,8 @@ public class TravelWindow extends Window {
     table.add(s,2,2);
   }
 
-
   public void main(IWContext iwc) throws Exception{
-  	initialize(iwc);
+  		initialize(iwc);
     setTemplate(iwc);
     super.add(table);
     

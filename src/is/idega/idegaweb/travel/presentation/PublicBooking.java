@@ -1,40 +1,48 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.block.tpos.business.TPosException;
-import com.idega.block.tpos.data.TPosMerchant;
-import javax.ejb.FinderException;
-import java.rmi.RemoteException;
-import com.idega.business.IBOLookup;
-import javax.mail.MessagingException;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+
+import javax.ejb.FinderException;
+import javax.mail.MessagingException;
+import javax.transaction.TransactionManager;
+
+import com.idega.block.creditcard.business.CreditCardBusiness;
+import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
+import com.idega.block.creditcard.presentation.Receipt;
+import com.idega.block.creditcard.presentation.ReceiptWindow;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.Settings;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.data.IDOLookup;
-import com.idega.transaction.IdegaTransactionManager;
-import javax.transaction.TransactionManager;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.idegaweb.*;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
-import com.idega.util.*;
-import com.idega.util.text.*;
-import is.idega.idegaweb.travel.business.*;
-import java.text.DecimalFormat;
-import java.util.*;
-import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.core.location.data.Address;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import is.idega.idegaweb.travel.data.*;
-import com.idega.block.trade.data.Currency;
-
-import is.idega.idegaweb.travel.service.presentation.BookingForm;
-import is.idega.idegaweb.travel.service.business.ServiceHandler;
-
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.block.tpos.presentation.*;
-import java.sql.SQLException;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.transaction.IdegaTransactionManager;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.SendMail;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -44,9 +52,10 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class PublicBooking extends Block  {
+public class PublicBooking extends TravelBlock  {
 
   public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
+  
   IWResourceBundle iwrb;
   IWBundle bundle;
   Product product;
@@ -72,6 +81,7 @@ public class PublicBooking extends Block  {
   }
 
   public void main(IWContext iwc)throws Exception {
+  		super.main(iwc);
     init(iwc);
 
     if (productId != -1 ) {
@@ -414,7 +424,7 @@ public class PublicBooking extends Block  {
           success = true;
         }
 
-      }catch(com.idega.block.tpos.business.TPosException e) {
+      }catch(com.idega.block.creditcard.business.TPosException e) {
       	if (!e.getMessage().equals("")) {
 	        display.addToText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")+" ( "+e.getMessage()+" )");
       	}
@@ -478,14 +488,19 @@ public class PublicBooking extends Block  {
           printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
           printVoucher.setWindowToOpen(VoucherWindow.class);
 
-        if (bf._TPosClient != null) {
-          com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(bf._TPosClient, supplier);
-          iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
-
-          Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
-            printCCReceipt.setWindowToOpen(ReceiptWindow.class);
-          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
-          table.add(printCCReceipt, 1, 2);
+        try {
+        CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, gBooking.getCreditcardAuthorizationNumber(),  new IWTimestamp(gBooking.getDateOfBooking()));
+	        if (entry != null) {
+	          Receipt r = new Receipt(entry, supplier);
+	          iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
+	
+	          Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
+	            printCCReceipt.setWindowToOpen(ReceiptWindow.class);
+	          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
+	          table.add(printCCReceipt, 1, 2);
+	        }
+        } catch (Exception e) {
+        		e.printStackTrace(System.err);
         }
 
         table.add(printVoucher,1,3);
@@ -514,6 +529,8 @@ public class PublicBooking extends Block  {
 	try {
 	  ProductHome pHome = (ProductHome)com.idega.data.IDOLookup.getHome(Product.class);
 	  Product prod = pHome.findByPrimaryKey(new Integer(gBooking.getServiceID()));
+    ProductBusiness pBus =  (ProductBusiness) IBOLookup.getServiceInstance(iwc, ProductBusiness.class);
+
 	  Supplier suppl = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(prod.getSupplierId());
 	  Settings settings = suppl.getSettings();
 	  Email sEmail = suppl.getEmail();
@@ -523,6 +540,7 @@ public class PublicBooking extends Block  {
 	  }
 	  String bookEmail = gBooking.getEmail();
 	  boolean doubleSendSuccessful = false;
+	  IWBundle bundle = iwrb.getIWBundleParent();
 	
 	  if (settings.getIfDoubleConfirmation()) {
 	    try {
@@ -530,10 +548,12 @@ public class PublicBooking extends Block  {
 	      StringBuffer mailText = new StringBuffer();
 	      mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness(iwc).getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
-	
+	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.if_you_want_to_cancel",  "If you for any reason would like to cancel your booking please follow this link ")).append(" : ").append(LinkGenerator.getUrlToRefunderPage(iwc, gBooking.getReferenceNumber()));
+	      mailText.append("\n").append(iwrb.getLocalizedString("travel.refund_must_happen_before_48_hours",  "Please note that you can not cancel your booking if 48 hours have passed since your booking was made."));
+	      
 	      SendMail sm = new SendMail();
 	        sm.send(suppEmail, bookEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
 	      doubleSendSuccessful = true;
@@ -550,7 +570,7 @@ public class PublicBooking extends Block  {
 	      StringBuffer mailText = new StringBuffer();
 	      mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness(iwc).getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
 	      if (doubleSendSuccessful) {
@@ -607,6 +627,7 @@ protected static String getLocaleDate(IWTimestamp stamp) {
     return  (new IWCalendar(stamp)).getLocaleDate();
   }
 
+/*
   protected static TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
   }
@@ -617,5 +638,13 @@ protected static String getLocaleDate(IWTimestamp stamp) {
   protected static ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
+  */
+  protected CreditCardBusiness getCreditCardBusiness(IWContext iwc) {
+	  	try {
+	  		return (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
+	  	} catch (IBOLookupException rt) {
+	  		throw new IBORuntimeException();
+	  	}
+	}
 
 }

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.core.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
@@ -17,6 +18,7 @@ import com.idega.presentation.text.Text;
 public class LinkGenerator extends TravelWindow {
 
 	public static final String PROPERTY_SERVER_NAME = "server_name";
+	public static final String PROPERTY_REFUNDER_PAGE_ID = "refunder_form_page_id";
   public static String parameterProductId = "linkGeneratorProductId";
   //private static String http = "http";
   private static Class defaultClass = PublicBooking.class;
@@ -65,14 +67,44 @@ public class LinkGenerator extends TravelWindow {
     return link;
   }
 
+  public static String getUrlToRefunderPage(IWContext iwc, String refNumber) {
+	  	IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+	  	IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
+	  	
+	  	String serverName = iwb.getProperty(PROPERTY_SERVER_NAME);
+	  	String pageID = iwb.getProperty(PROPERTY_REFUNDER_PAGE_ID);
+	  	if (serverName == null) {
+	  		serverName = iwc.getServerName();
+	  	}
+	  	if (pageID == null) {
+	  		return "";
+	  	}
+	  	
+	  	StringBuffer text = new StringBuffer(http+"://"+serverName);
+    if (!http.equals("https")) {
+      text.append(":"+iwc.getServerPort());
+    }
+    text.append("/servlet/IBMainServlet?"+BuilderConstants.IB_PAGE_PARAMETER+"="+pageID);
+    
+    if (refNumber != null) {
+    		text.append("&"+BookingRefunder.PARAMETER_EMAILED_REFERENCE_NUMBER+"="+refNumber);
+    }
+    
+    return text.toString();
+  }
+  
+  public static Link getLinkToRefunderForm(IWContext iwc) {
+  		return new Link("Test", getUrlToRefunderPage(iwc, null));
+  }
+    
   private static String getLinkText(IWContext iwc, int serviceId, Class classToInstanciate) {
-  	IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
-  	IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
-  	
-  	String serverName = iwb.getProperty(PROPERTY_SERVER_NAME);
-  	if (serverName == null) {
-  		serverName = iwc.getServerName();
-  	}
+	  	IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+	  	IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
+	  	
+	  	String serverName = iwb.getProperty(PROPERTY_SERVER_NAME);
+	  	if (serverName == null) {
+	  		serverName = iwc.getServerName();
+	  	}
   	
     StringBuffer text = new StringBuffer(http+"://"+serverName);
     if (!http.equals("https")) {

@@ -6,9 +6,11 @@ import java.util.Collection;
 import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.data.ServiceBMPBean;
 
+import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductBMPBean;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierBMPBean;
+import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.*;
@@ -162,10 +164,12 @@ public class TourBMPBean extends GenericEntity implements Tour {
 
 		try {		
 			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
+			String addressProductMiddleTableName = EntityControl.getManyToManyRelationShipTableName(TravelAddress.class, Product.class);
 			String tourTypeTourMiddleTableName = EntityControl.getManyToManyRelationShipTableName(TourType.class, Tour.class);
 			
 			String postalCodeTableName = IDOLookup.getEntityDefinitionForClass(PostalCode.class).getSQLTableName();//  PostalCodeBMPBean.getEntityName();
 			String addressTableName = IDOLookup.getEntityDefinitionForClass(Address.class).getSQLTableName();
+			String travelAddressTableName = IDOLookup.getEntityDefinitionForClass(TravelAddress.class).getSQLTableName();
 			String serviceTableName = ServiceBMPBean.getServiceTableName();
 			String productTableName = ProductBMPBean.getProductEntityName();
 			String supplierTableName = SupplierBMPBean.getSupplierTableName();
@@ -173,6 +177,7 @@ public class TourBMPBean extends GenericEntity implements Tour {
 	
 			String postalCodeTableIDColumnName = postalCodeTableName+"_id";
 			String addressTableIDColumnName = addressTableName+"_id";
+			String travelAddressTableIDColumnName = travelAddressTableName+"_id";
 			String serviceTableIDColumnName = serviceTableName+"_id";
 			String productTableIDColumnName = productTableName+"_id";
 			String supplierTableIDColumnName = supplierTableName+"_id";
@@ -199,11 +204,17 @@ public class TourBMPBean extends GenericEntity implements Tour {
 			if (postalCode) {
 				sql.append(", ").append(addressSupplierMiddleTableName).append(" asm, ")
 				.append(addressTableName).append(" a, ")
-				.append(postalCodeTableName).append(" pc ");
+				.append(postalCodeTableName).append(" pc, ")
+				.append(addressProductMiddleTableName).append(" pa, ")
+				.append(travelAddressTableName).append(" addr, ")
+				.append(addressTableName).append(" ica ");
 			}
 			
 			sql.append(" where ")
-			.append(" h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
+			.append("p.").append(productTableIDColumnName).append(" = pa.").append(productTableIDColumnName)
+			.append(" AND pa.").append(travelAddressTableIDColumnName).append(" = addr.").append(travelAddressTableIDColumnName)
+			.append(" AND addr.").append(addressTableIDColumnName).append(" = ica.").append(addressTableIDColumnName)
+			.append(" AND h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
 			.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName)
 			.append(" AND p.").append(ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
 			
@@ -224,13 +235,22 @@ public class TourBMPBean extends GenericEntity implements Tour {
 				.append(" AND p.").append(ProductBMPBean.getColumnNameSupplierId()).append(" = su.").append(supplierTableIDColumnName)
 				// HARDCODE OF DEATH ... courtesy of AddressBMPBean
 				.append(" AND a.postal_code_id = pc.").append(postalCodeTableIDColumnName)
-				.append(" AND pc.").append(postalCodeTableIDColumnName).append(" in (");
+				.append(" AND ( pc.").append(postalCodeTableIDColumnName).append(" in (");
 				for (int i = 0; i < postalCodeId.length; i++) {
 					if (i != 0) {
 						sql.append(", ");
 					}
 					sql.append(postalCodeId[i]);
 				}
+				sql.append(") OR ica.postal_code_id in (");
+				for (int i = 0; i < postalCodeId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(postalCodeId[i]);
+				}
+				sql.append(")");
+
 				sql.append(")");
 			}
 			

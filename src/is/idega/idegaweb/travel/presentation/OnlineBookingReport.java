@@ -160,6 +160,11 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
       count = bookings[i].getTotalCount();
       tCount += count;
       price = getBooker(iwc).getBookingPrice(bookings[i]);
+      if (!gBooking.getIsValid()) {
+      		System.out.println("Invalid booking");
+      		price *= -1;
+      }
+
       tPrice += price;
 
       table.add(getText(stamp.getLocaleDate(iwc)), 1, row);
@@ -253,7 +258,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
   }
 
   protected Booking[] getBookings(IWContext iwc, IWTimestamp fromStamp, IWTimestamp toStamp, List products) throws RemoteException, FinderException {
-    return getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, fromStamp, toStamp, null, null, searchByDateOfBooking);
+    return getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, fromStamp, toStamp, null, null, searchByDateOfBooking, true); // Setja i false, thegar a ad skoda deleted
 	}
 	
 	private int insertSearchByDropdown(Table table, int row, int noColumns) {

@@ -1,35 +1,80 @@
 package is.idega.idegaweb.travel.service.presentation;
 
-import com.idega.block.tpos.business.TPosClient;
-import com.idega.block.tpos.business.TPosException;
-import com.idega.block.tpos.data.TPosMerchant;
-import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.data.CurrencyHome;
+import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
+import is.idega.idegaweb.travel.data.BookingEntry;
+import is.idega.idegaweb.travel.data.BookingEntryHome;
+import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceDay;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.presentation.PublicBooking;
+import is.idega.idegaweb.travel.presentation.TravelManager;
 
+import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
-import com.idega.business.IBOLookup;
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import javax.ejb.*;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.mail.MessagingException;
 
-import com.idega.block.calendar.business.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.core.user.data.*;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
+import com.idega.block.creditcard.business.CreditCardAuthorizationException;
+import com.idega.block.creditcard.business.CreditCardBusiness;
+import com.idega.block.creditcard.business.CreditCardClient;
+import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.data.CurrencyHome;
+import com.idega.block.trade.stockroom.business.ProductPriceException;
+import com.idega.block.trade.stockroom.business.ResellerManager;
+import com.idega.block.trade.stockroom.business.SupplierManager;
+import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
+import com.idega.core.user.data.User;
+import com.idega.data.IDOException;
+import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.util.*;
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import is.idega.idegaweb.travel.presentation.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.HorizontalRule;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.ResultOutput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.SendMail;
 /**
  * <p>Title: idega</p>
  * <p>Description: software</p>
@@ -81,6 +126,7 @@ public abstract class BookingForm extends TravelManager{
   public static String parameterCCNumber = "CCNumber";
   public static String parameterCCMonth  = "CCMonth";
   public static String parameterCCYear   = "CCYear";
+  public static String parameterCCCVC = "CCCVC";
   public static String parameterPickupId = "bookingPicId";
   public static String parameterPickupInf= "bookingPicInf";
   public static String parameterPriceCategoryKey = "pcatkey";
@@ -108,7 +154,8 @@ public abstract class BookingForm extends TravelManager{
 	protected int pWidthLeft = 60;
 	protected int pWidthCenter = 60;
 	protected int pWidthRight = 75;
-	public TPosClient _TPosClient;
+	// TODO see if this is used somewhere 
+	public CreditCardClient creditCardClient;
 	protected boolean orderAddresses = false;
 
   protected boolean _useInquiryForm = false;
@@ -629,13 +676,19 @@ public abstract class BookingForm extends TravelManager{
 		  TextInput ccYear = new TextInput(this.parameterCCYear);
 		    ccYear.setMaxlength(2);
 		    ccYear.setLength(3);
-		
+		  TextInput ccCVC = new TextInput(this.parameterCCCVC);
+		  ccCVC.setMaxlength(3);
+		  ccCVC.setLength(5);
 		  Text ccText = (Text) theText.clone();
 		    ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
 		
 		  Text ccMY = (Text) theText.clone();
 		    ccMY.setText(iwrb.getLocalizedString("travel.month_year","month / year"));
 		
+		  Text ccCV = (Text) theText.clone();
+		  ccCV.setText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)"));
+
+		    
 		  Text ccSlash = (Text) theText.clone();
 		    ccSlash.setText(" / ");
 		
@@ -648,6 +701,10 @@ public abstract class BookingForm extends TravelManager{
 		  table.add(ccMonth,2,row);
 		  table.add(ccSlash,2,row);
 		  table.add(ccYear,2,row);
+		  
+		  ++row;
+		  table.add(ccCV, 1, row);
+		  table.add(ccCVC, 2, row);
 		return row;
 	}
   
@@ -1136,77 +1193,8 @@ public abstract class BookingForm extends TravelManager{
 
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
-            TextInput ccNumber = new TextInput(this.parameterCCNumber);
-              ccNumber.setMaxlength(19);
-              ccNumber.setLength(20);
-            TextInput ccMonth = new TextInput(this.parameterCCMonth);
-              ccMonth.setMaxlength(2);
-              ccMonth.setLength(3);
-            TextInput ccYear = new TextInput(this.parameterCCYear);
-              ccYear.setMaxlength(2);
-              ccYear.setLength(3);
+           row = addCreditCardFormElements(iwc, product, table, row, hr, star);
 
-            Text ccText = (Text) theText.clone();
-              ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
-              ccText.addToText(star);
-
-            Text ccMY = (Text) theText.clone();
-              ccMY.setText(iwrb.getLocalizedString("travel.valid","valid"));
-              ccMY.addToText(star);
-
-            Text ccSlash = (Text) theText.clone();
-              ccSlash.setText(" / ");
-
-
-            // CREDITCARD STUFF
-            if (this._useInquiryForm) {
-              table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
-            }else {
-              ++row;
-              table.mergeCells(1,row,6,row);
-              table.add(hr,1,row);
-              ++row;
-              table.mergeCells(1,row,6,row);
-              subHeader = (Text) theBoldText.clone();
-                subHeader.setFontColor(WHITE);
-                subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
-                subHeader.addToText(Text.NON_BREAKING_SPACE);
-              Text starTextTwo = (Text) theText.clone();
-                starTextTwo.setFontColor(WHITE);
-                starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_and_americanexpress_only","Visa, Eurocard and American Express only.")+")");
-              table.add(subHeader,1,row);
-              table.add(starTextTwo,1,row);
-              table.setAlignment(1,row,"left");
-              ++row;
-
-
-              Text month = (Text) super.theSmallBoldText.clone();
-                month.setText(iwrb.getLocalizedString("travel.month","Month"));
-              Text year = (Text) super.theSmallBoldText.clone();
-                year.setText(iwrb.getLocalizedString("travel.year","Year"));
-              table.add(month,4,row);
-              table.add(ccSlash,5,row);
-              table.add(year,6,row);
-
-//              table.setBorder(1);
-            //            table.setWidth(4,"2");
-              table.setAlignment(4,row,"right");
-              table.setWidth(5,"2");
-
-              ++row;
-              table.add(ccText,1,row);
-              table.add(ccNumber,2,row);
-              table.add(ccMY,3,row);
-
-              table.add(ccMonth,4,row);
-              table.add(ccSlash,5,row);
-              table.add(ccYear,6,row);
-
-              table.setAlignment(1,row,"right");
-              table.setAlignment(2,row,"left");
-              table.setAlignment(3,row,"right");
-              table.setAlignment(4,row,"right");
-            }
 
             if (super.getUser() != null) {
               ++row;
@@ -1306,6 +1294,7 @@ public abstract class BookingForm extends TravelManager{
       form.maintainParameter(this.parameterCCNumber);
       form.maintainParameter(this.parameterCCMonth);
       form.maintainParameter(this.parameterCCYear);
+      form.maintainParameter(this.parameterCCCVC);
       form.maintainParameter(this.parameterDepartureAddressId);
       form.maintainParameter(this.parameterInquiry);
       form.maintainParameter(parameterFromDate);
@@ -1599,7 +1588,7 @@ public abstract class BookingForm extends TravelManager{
 		return stamp;
 	}
 
-  public int saveBooking(IWContext iwc) throws CreateException, RemoveException, FinderException, SQLException, TPosException, RemoteException, IDOException{
+  public int saveBooking(IWContext iwc) throws CreateException, RemoveException, FinderException, SQLException, CreditCardAuthorizationException, RemoteException, IDOException{
 
 	
 	     String surname = iwc.getParameter(PARAMETER_FIRST_NAME);
@@ -1637,6 +1626,7 @@ public abstract class BookingForm extends TravelManager{
       String ccNumber = iwc.getParameter(this.parameterCCNumber);
       String ccMonth = iwc.getParameter(this.parameterCCMonth);
       String ccYear = iwc.getParameter(this.parameterCCYear);
+      String ccCVC = iwc.getParameter(this.parameterCCCVC);
 
       String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
       String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
@@ -2005,7 +1995,7 @@ public abstract class BookingForm extends TravelManager{
           }
         }
 
-				handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear);
+				handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear, ccCVC);
 
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
@@ -2014,7 +2004,7 @@ public abstract class BookingForm extends TravelManager{
       return returner;
   }
 
-	protected void handleCreditcardForBooking(IWContext iwc, int bookingId,	String ccNumber, String ccMonth,	String ccYear) throws FinderException, RemoteException, TPosException {
+	protected void handleCreditcardForBooking(IWContext iwc, int bookingId,	String ccNumber, String ccMonth,	String ccYear, String ccCVC) throws FinderException, RemoteException, CreditCardAuthorizationException {
 		if (bookingId > 0 && ccNumber != null && ccMonth != null && ccYear != null && !ccNumber.equals("")) {
 			String heimild;
 			try {
@@ -2037,7 +2027,7 @@ public abstract class BookingForm extends TravelManager{
 					tBook.store();
 				}
 			
-				System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
+				System.out.println("Starting Creditcard Payment : "+IWTimestamp.RightNow().toString());
 				//float price = this.getOrderPrice(iwc, _product, _stamp, true);
 				String currency = getCurrencyForBooking(gBooking);
 				System.out.println("  Price = "+price+" "+currency);
@@ -2045,11 +2035,10 @@ public abstract class BookingForm extends TravelManager{
 				if (currency == null) {
 					currency = "ISK";	
 				}
-				TPosClient t = getTPosClient(iwc, gBooking);
-				// TODO IMPLEMENT CC VERIFY NUMBER
-				heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
-				//heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, null, price,currency, gBooking.getReferenceNumber());
-				System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
+				CreditCardClient t = getCreditCardClient(iwc, gBooking);
+				//heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
+				heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
+				System.out.println("Ending Creditcard Payment test : "+IWTimestamp.RightNow().toString());
 				Iterator iter = bookings.iterator();
 				while (iter.hasNext()) {
 					tBook = (GeneralBooking) iter.next();
@@ -2065,15 +2054,16 @@ public abstract class BookingForm extends TravelManager{
 				gBooking.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
 				gBooking.store();
 		  
-			}catch(com.idega.block.tpos.business.TPosException e) {
+			}catch(CreditCardAuthorizationException e) {
 				//e.printStackTrace(System.err);
 				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", e);
-				throw new TPosException(e.getLocalizedMessage(iwrb));
+
+				throw new CreditCardAuthorizationException(e.getLocalizedMessage(iwrb));
 			}catch (Exception e) {
-				e.printStackTrace(System.err);
+					e.printStackTrace(System.err);
 //				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
 				sendErrorEmail("Online booking failed (unknown error)","An online booking failed.", e);
-				throw new TPosException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
+				throw new CreditCardAuthorizationException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
 			}
 		}
 	}
@@ -2108,7 +2098,7 @@ public abstract class BookingForm extends TravelManager{
 		return -1;
 	}
 	
-	protected void sendErrorEmail(String subject, String bodyHeader, Exception e) throws TPosException {
+	protected void sendErrorEmail(String subject, String bodyHeader, Exception e) throws CreditCardAuthorizationException {
 		String error_notify_email = this.bundle.getProperty(PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION);
 		if (error_notify_email != null) {
 			try {
@@ -2131,7 +2121,7 @@ public abstract class BookingForm extends TravelManager{
 				mail.send("gimmi@idega.is", error_notify_email, cc_error_notify_email, "", "mail.idega.is", subject, msg.toString());
 			} catch (MessagingException e1) {
 				e1.printStackTrace(System.err);
-				throw new TPosException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
+				throw new CreditCardAuthorizationException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
 			}
 		}
 	}
@@ -2615,27 +2605,8 @@ public abstract class BookingForm extends TravelManager{
 
 
       if (inquiry == null) {
-        ++row;
-        table.setAlignment(1,row,"right");
-        table.setAlignment(2,row,"left");
-        table.add(getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number")),1,row);
-        if (ccNumber.length() <5) {
-          table.add(getBoldTextWhite(ccNumber),2,row);
-        }else {
-          for (int i = 0; i < ccNumber.length() -4; i++) {
-            table.add(getBoldTextWhite("*"),2,row);
-          }
-          table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
-
-        }
-        if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
-          valid = false;
-          Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
-            ccError.setFontColor(errorColor);
-          ++row;
-          table.mergeCells(1, row, 2, row);
-          table.add(ccError, 1, row);
-        }
+	    		valid = insertCreditcardBookingVerification(iwc, row, table, errorColor);
+	    		row += 5;
       }else {
         debug("inquiry");
       }
@@ -2810,6 +2781,7 @@ public abstract class BookingForm extends TravelManager{
 		return price;
 	}
 */	
+  /*
 	public com.idega.block.tpos.business.TPosClient getTPosClient(IWContext iwc, GeneralBooking gBooking) throws Exception {
 		TPosMerchant merchant = getTposMerchant(gBooking);
 		com.idega.block.tpos.business.TPosClient t;
@@ -2820,19 +2792,31 @@ public abstract class BookingForm extends TravelManager{
 		}
 		_TPosClient = t;
 		return t;
-	}
+	}*/
 
-	public TPosMerchant getTposMerchant(GeneralBooking gBooking) {
+	public CreditCardClient getCreditCardClient(IWContext iwc, GeneralBooking gBooking) {
+		try {
+			int productSupplierId = gBooking.getService().getProduct().getSupplierId();
+			Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
+			return getCreditCardBusiness(iwc).getCreditCardClient(suppTemp, new IWTimestamp(gBooking.getDateOfBooking()));
+		}catch (Exception e) {
+			System.out.println("CreditCardMerchant NOT found");
+		}
+		
+		return null;
+/*
 		TPosMerchant merchant = null;
 		try {
 			int productSupplierId = gBooking.getService().getProduct().getSupplierId();
 			Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
+			System.out.println("Trying to find TPosMerchant for supplier = "+suppTemp.getName());
 			merchant = suppTemp.getTPosMerchant();
 			System.out.println("TPosMerchant found");
 		}catch (Exception e) {
 			System.out.println("TPosMerchant NOT found for supplier, using system default");
 		}
 		return merchant;
+		*/
 	}
 
 	public String getCurrencyForBooking(GeneralBooking gBooking) throws RemoteException, FinderException {
@@ -2901,6 +2885,178 @@ public abstract class BookingForm extends TravelManager{
 		
 		return false;
 	}
+	
+	 /**
+	 * @param table
+	 * @param row
+	 * @param hr
+	 * @param star
+	 * @return
+	 */
+	protected int addCreditCardFormElements(IWContext iwc, Product product, Table table, int row, HorizontalRule hr, String star) {
+		Text subHeader;
+		TextInput ccNumber = new TextInput(this.parameterCCNumber);
+		ccNumber.setMaxlength(19);
+		ccNumber.setLength(20);
+		TextInput ccMonth = new TextInput(this.parameterCCMonth);
+		ccMonth.setMaxlength(2);
+		ccMonth.setLength(3);
+		TextInput ccYear = new TextInput(this.parameterCCYear);
+		ccYear.setMaxlength(2);
+		ccYear.setLength(3);
+		TextInput ccCVC = new TextInput(this.parameterCCCVC);
+		ccCVC.setMaxlength(3);
+		ccCVC.setLength(5);
+
+		Text ccText = (Text) theText.clone();
+		ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+		ccText.addToText(star);
+
+		Text ccMY = (Text) theText.clone();
+    ccMY.setText(iwrb.getLocalizedString("travel.month_year","Month / Year"));
+		ccMY.addToText(star);
+
+		Text ccCV = (Text) theText.clone();
+		ccCV.setText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)"));
+		ccCV.addToText(star);
+
+		Text ccSlash = (Text) theText.clone();
+		ccSlash.setText(" / ");
+
+
+		// CREDITCARD STUFF
+		if (this._useInquiryForm) {
+		  table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
+		}else {
+			
+			Collection imgs = null;
+			try {
+				Supplier supp = ((SupplierHome) IDOLookup.getHome(Supplier.class)).findByPrimaryKey(product.getSupplierId());
+				imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supp, IWTimestamp.RightNow()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		  ++row;
+		  table.mergeCells(1,row,6,row);
+		  table.add(hr,1,row);
+		  ++row;
+		  table.mergeCells(1,row,6,row);
+		  subHeader = (Text) theBoldText.clone();
+		  subHeader.setFontColor(WHITE);
+		  subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
+		  subHeader.addToText(Text.NON_BREAKING_SPACE);
+		  Text starTextTwo = (Text) theText.clone();
+		  starTextTwo.setFontColor(WHITE);
+		  starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_and_americanexpress_only","Visa, Eurocard and American Express only.")+")");
+		  
+		  table.add(subHeader,1,row);
+		  //table.add(starTextTwo,1,row);
+		  if (imgs != null) {
+		  		Iterator iter = imgs.iterator();
+		  		while (iter.hasNext()) {
+		  			table.add(" ", 1, row);
+		  			table.add((Image) iter.next(), 1, row);
+		  		}
+		  }
+		  table.setAlignment(1,row,"left");
+		  table.setAlignment(4,row,"right");
+		  table.setWidth(5,"2");
+
+		  ++row;
+		  table.mergeCells(1, row, 2, row);
+		  table.mergeCells(3, row, 6, row);
+		  table.add(ccText,1,row);
+		  table.add(ccNumber,3,row);
+		  table.setAlignment(1,row,"right");
+		  
+		  ++row;
+		  table.add(ccMY,1,row);
+
+		  table.mergeCells(1, row, 2, row);
+		  table.mergeCells(3, row, 6, row);
+		  table.add(ccMonth,3,row);
+		  table.add(ccSlash,3,row);
+		  table.add(ccYear,3,row);
+		  
+		  table.setAlignment(1,row,"right");
+
+		  ++row;
+		  table.mergeCells(1, row, 2, row);
+		  table.mergeCells(3, row, 6, row);
+		  table.add(ccCV, 1, row);
+		  table.add(ccCVC, 3, row);
+		  table.setAlignment(1,row,"right");
+
+		}
+		return row;
+	}
+
+  public boolean insertCreditcardBookingVerification(IWContext iwc, int row, Table table, String errorColor) {
+    String ccNumber = iwc.getParameter(parameterCCNumber);
+    String ccMonth = iwc.getParameter(parameterCCMonth);
+    String ccYear = iwc.getParameter(parameterCCYear);
+    String ccCVC = iwc.getParameter(parameterCCCVC);
+
+    Text txtNumber = getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number"));
+    Text txtMonth = getTextWhite(iwrb.getLocalizedString("travel.month","Month"));
+    Text txtYear = getTextWhite(iwrb.getLocalizedString("travel.year","Year"));
+    Text txtCVC = getTextWhite(iwrb.getLocalizedString("travel.cc.cvc_short","CVC"));
+    
+    ++row;
+    table.setAlignment(1,row,"right");
+    table.setAlignment(2,row,"left");
+    table.add(txtNumber,1,row);
+    boolean valid = true;
+    
+    if (ccNumber.length() <5) {
+      table.add(getBoldTextWhite(ccNumber),2,row);
+    }else {
+      for (int i = 0; i < ccNumber.length() -4; i++) {
+        table.add(getBoldTextWhite("*"),2,row);
+      }
+      table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
+    }
+    
+    ++row;
+    table.setAlignment(1,row,"right");
+    table.setAlignment(2,row,"left");
+    table.add(txtMonth,1,row);
+    table.add(getBoldTextWhite(ccMonth), 2, row);
+    ++row;
+    table.setAlignment(1,row,"right");
+    table.setAlignment(2,row,"left");
+    table.add(txtYear,1,row);
+    table.add(getBoldTextWhite(ccYear), 2, row);
+    ++row;
+    table.setAlignment(1,row,"right");
+    table.setAlignment(2,row,"left");
+    table.add(txtCVC,1,row);
+    table.add(getBoldTextWhite(ccCVC), 2, row);
+    
+    if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2 || ccCVC.length() != 3) {
+	    	if (ccNumber.length() < 13 || ccNumber.length() > 19) {
+	    		txtNumber.setFontColor(errorColor);
+	    	}
+	    	if (ccMonth.length() != 2) {
+	    		txtMonth.setFontColor(errorColor);
+	    	}
+	    	if (ccYear.length() != 2) {
+	    		txtYear.setFontColor(errorColor);
+	    	}
+	    	if (ccCVC.length() != 3) {
+	    		txtCVC.setFontColor(errorColor);
+	    	}
+      valid = false;
+      Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
+        ccError.setFontColor(errorColor);
+      ++row;
+      table.mergeCells(1, row, 2, row);
+      table.add(ccError, 1, row);
+    }
+    return valid;
+  }
+
 	
 	public String getPriceCategorySearchKey() {
 		return null;
