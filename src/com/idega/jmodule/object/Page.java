@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.9 2001/07/04 18:11:54 tryggvil Exp $
+ * $Id: Page.java,v 1.10 2001/07/16 17:58:33 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -186,7 +186,9 @@ public class Page extends ModuleObjectContainer {
     setAttribute("onUnLoad",action);
   }
 
-  //Sets the window to close immediately
+  /**
+   * Sets the window to close immediately
+   */
   public void close() {
     setOnLoad("window.close()");
   }
@@ -361,7 +363,7 @@ public class Page extends ModuleObjectContainer {
       }
       catch(Exception ex) {
         println("<p>Villa var&eth;!</p>");
-        println("<p>idega arachnea error</p>");
+        println("<p>IWError</p>");
         println("<p>");
         ex.printStackTrace(modinfo.getResponse().getWriter());
         println("</p>");

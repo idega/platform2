@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.10 2001/07/12 09:01:01 laddi Exp $
+ * $Id: Table.java,v 1.11 2001/07/16 17:58:33 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1038,7 +1038,7 @@ public boolean isEmpty(int x, int y){
       setWidth(values[0]);
     }
     else if (key.equalsIgnoreCase("height")) {
-      setHeight(Integer.parseInt(values[0]));
+      setHeight(values[0]);
     }
     else if (key.equalsIgnoreCase("columns")) {
       setColumns(Integer.parseInt(values[0]));

@@ -392,5 +392,10 @@ public void setEventListener(String eventListenerClassName){
 }
 
 
+  public void sendToControllerFrame(){
+    this.setTarget(IWConstants.IW_CONTROLLER_FRAME_NAME);
+  }
+
+
 } // Class ends
 

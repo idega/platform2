@@ -258,6 +258,13 @@ public void addParameter(String parameterName,int parameterValue){
    addParameter(parameterName,Integer.toString(parameterValue));
 }
 
+public void maintainParameter(String parameterName,ModuleInfo modinfo){
+  String parameterValue = modinfo.getParameter(parameterName);
+  if(parameterValue!=null){
+    addParameter(parameterName,parameterValue);
+  }
+}
+
 private void setOnEvent(String eventType,String eventString){
  //temp
  // String value = this.getAttribute(eventType);
@@ -420,6 +427,10 @@ public ModuleObject getObject(){
       linkObj.ObjectType = this.ObjectType;
       linkObj.parameterString = this.parameterString;
       linkObj.addSessionId = this.addSessionId;
+
+      if(this.parameterString != null){
+        linkObj.parameterString = new StringBuffer(this.parameterString.toString());
+      }
 
     }
     catch(Exception ex) {

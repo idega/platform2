@@ -133,6 +133,21 @@ public Image(int image_id) throws SQLException{
 
 }
 
+
+  public void setProperty(String key, String values[]) {
+    if (key.equalsIgnoreCase("url"))
+      setURL(values[0]);
+    else if (key.equalsIgnoreCase("width")) {
+      setWidth(values[0]);
+    }
+    else if (key.equalsIgnoreCase("height")) {
+      setHeight(values[0]);
+    }
+    else if (key.equalsIgnoreCase("border")) {
+      setHeight(Integer.parseInt(values[0]));
+    }
+  }
+
 public void setBorder(String s){
 	setAttribute("border",s);
 }
