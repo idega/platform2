@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.5 2002/08/12 13:00:43 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.6 2003/05/24 13:14:19 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   public static final String statusEnded = "E";
   public static final String statusResigned = "U";
   public static final String statusGarbage = "G";
+  public static final String statusStorage = "Z";
 
   public static String getStatusColumnName(){return status_;}
   public static String getApplicantIdColumnName(){return applicantId_;}
@@ -223,6 +224,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
         (status.equalsIgnoreCase(statusTerminated))||
         (status.equalsIgnoreCase(statusResigned))||
         (status.equalsIgnoreCase(statusGarbage))||
+		(status.equalsIgnoreCase(statusStorage))||
         (status.equalsIgnoreCase(statusPrinted))){
       setColumn(status_,status);
       setStatusDate(IWTimestamp.RightNow().getSQLDate());
@@ -257,4 +259,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   public void setStatusGarbage(){
     setStatus(statusGarbage);
   }
+  public void setStatusStorage(){
+	  setStatus(statusStorage);
+ }
 }
