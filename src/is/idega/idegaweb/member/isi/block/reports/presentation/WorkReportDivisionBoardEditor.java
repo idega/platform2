@@ -338,12 +338,12 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
       PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
       PresentationObject cancelButton = getCancelButton(resourceBundle);
-      Table buttonTable = new Table(4,1);
-      buttonTable.add(newEntryButton,1,1);
-      buttonTable.add(deleteEntriesButton,2,1);
-      buttonTable.add(cancelButton, 3,1);
+      Table buttonTable = new Table(2,1);
+//      buttonTable.add(newEntryButton,1,1);
+//      buttonTable.add(deleteEntriesButton,2,1);
+      buttonTable.add(cancelButton, 1,1);
       if (! workReport.isBoardPartDone()) {
-        buttonTable.add(getFinishButton(resourceBundle), 4, 1);
+        buttonTable.add(getFinishButton(resourceBundle), 2, 1);
       }
       else {
         Text text = new Text(resourceBundle.getLocalizedString("wr_division_board_editor_board_part_finished", "Board part has been finished."));
@@ -405,7 +405,6 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     // define path short keys and map corresponding converters
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
-      CHECK_BOX, checkBoxConverter,
       LEAGUE, textConverter,
       HOME_PAGE, textEditorConverter,
       PERSONAL_ID, textEditorConverter,
