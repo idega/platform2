@@ -136,6 +136,9 @@ public class ProductCatalog extends CategoryBlock{
       List productCategories = new Vector();
       try {
         productCategories = (List) getCategories();
+        if (productCategories == null) {
+          productCategories = new Vector();
+        }
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }
