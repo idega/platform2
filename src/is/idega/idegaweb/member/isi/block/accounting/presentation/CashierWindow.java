@@ -32,8 +32,8 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.plugin.UserCashierWindow;
 import com.idega.user.presentation.GroupPropertyWindow;
-import com.idega.user.presentation.UserCashierWindow;
 
 /**
  * @author palli

@@ -1,14 +1,11 @@
 package is.idega.block.nationalregister.data;
 
 import is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import com.idega.block.importer.data.GenericImportFile;
 import com.idega.block.importer.data.ImportFile;
-import com.idega.user.handler.UserNationalRegisterImportFile;
 
 /**
  * @author palli
@@ -18,7 +15,7 @@ import com.idega.user.handler.UserNationalRegisterImportFile;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class NationalRegisterImportFile extends GenericImportFile implements ImportFile, UserNationalRegisterImportFile {
+public class NationalRegisterImportFile extends GenericImportFile implements ImportFile {
 	public NationalRegisterImportFile() {
 		super();
 		setRecordDilimiter("\n");
