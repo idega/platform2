@@ -63,19 +63,46 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     return this.getIntColumnValue(REGISTRATOR);
   }
 
-  public Integer ejbFindByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException, RemoteException{
+  public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException,RemoteException {
+  	return ejbFindBySchoolClass(((Integer)schoolClass.getPrimaryKey()).intValue());	
+  }
+  
+  public Collection ejbFindBySchoolClass(int schoolClassID) throws FinderException,RemoteException {
+  	return super.idoFindPKsBySQL("select * from "+this.getEntityName()+" where "+SCHOOLCLASS+" = "+schoolClassID);	
+  }
+  
+  public Collection ejbFindByStudent(User student) throws FinderException,RemoteException {
+  	return ejbFindByStudent(((Integer)student.getPrimaryKey()).intValue());	
+  }
+  
+  public Collection ejbFindByStudent(int studentID) throws FinderException,RemoteException {
   	IDOQuery sql = new IDOQuery();
-  	sql.appendSelectAllFrom(this).appendWhere().append(MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
-  	.appendAnd().append(SCHOOLCLASS).appendEqualSign().append(((Integer)schoolClass.getPrimaryKey()).intValue());
+  	sql.appendSelectAllFrom(getEntityName()).appendWhere().append(MEMBER).appendEqualSign().append(studentID);
+  	
+  	return super.idoFindPKsBySQL(sql.toString());	
+  }
+  
+  public Integer ejbFindByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException, RemoteException{
+		return ejbFindByUserAndSchoolClass(((Integer)user.getPrimaryKey()).intValue(),((Integer)schoolClass.getPrimaryKey()).intValue());
+  }
+
+  public Integer ejbFindByUserAndSchoolClass(int userID, int schoolClassID) throws FinderException, RemoteException{
+  	IDOQuery sql = new IDOQuery();
+  	sql.appendSelectAllFrom(this).appendWhere().append(MEMBER).appendEqualSign().append(userID)
+  	.appendAnd().append(SCHOOLCLASS).appendEqualSign().append(schoolClassID);
 
   	return (Integer)this.idoFindOnePKBySQL(sql.toString());
   }
 
   public Integer ejbFindByUserAndSeason(User user, SchoolSeason season) throws FinderException, RemoteException{
+		return ejbFindByUserAndSeason(((Integer)user.getPrimaryKey()).intValue(),((Integer)season.getPrimaryKey()).intValue());
+  }
+  
+  public Integer ejbFindByUserAndSeason(int userID, int seasonID) throws FinderException, RemoteException{
     IDOQuery sql = new IDOQuery();
     sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")
-    .appendWhere().append(" mb."+MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
-    .appendAnd().append("cl."+SchoolClassBMPBean.SEASON).appendEqualSign().append(((Integer)season.getPrimaryKey()).intValue())
+    .appendWhere().append(" mb."+MEMBER).appendEqualSign().append(userID)
+    .appendAnd().append("cl."+SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID)
     .appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
     //System.err.println(sql.toString());
     return (Integer)this.idoFindOnePKBySQL(sql.toString());
