@@ -33,6 +33,7 @@ private int maxImageWidth =100;
 private boolean limitImageWidth=true;
 
 private boolean backbutton = false;
+private boolean refresh = false;
 private Table outerTable = new Table(1,3);
 private boolean isAdmin = false;
 private String outerTableWidth = "100%";
@@ -116,6 +117,10 @@ public void main(ModuleInfo modinfo)throws Exception{
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
 
+  if( refresh ){
+    modinfo.getSession().removeAttribute("image_previous_catagory_id");
+    modinfo.getSession().removeAttribute("image_entities");
+  }
 
   view = new Image("/pics/jmodules/image/"+language+"/view.gif","View all sizes");
   delete = new Image("/pics/jmodules/image/"+language+"/delete.gif","Delete this image");
@@ -173,11 +178,28 @@ public void main(ModuleInfo modinfo)throws Exception{
         String sFirst = modinfo.getParameter("iv_first");//browsing from this image
         if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
 
+        String previousCatagory =  (String)modinfo.getSession().getAttribute("image_previous_catagory_id");
+
         if ( imageCategoryId != null){
+
+          if( (previousCatagory!=null) && (!previousCatagory.equalsIgnoreCase(imageCategoryId)) ){
+            modinfo.getSession().removeAttribute("image_previous_catagory_id");
+            modinfo.getSession().removeAttribute("image_entities");
+          }
+
+        ImageEntity[] inSession = (ImageEntity[]) modinfo.getSession().getAttribute("image_entities");
+        modinfo.getSession().setAttribute("image_previous_catagory_id",imageCategoryId);
 
           categoryId = Integer.parseInt(imageCategoryId);
           ImageCatagory category = new ImageCatagory(categoryId);
-          imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
+          if ( inSession == null ){
+            imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
+          }
+          else imageEntity = inSession;
+
+          modinfo.getSession().setAttribute("image_entities",imageEntity);
+
+
           Text categoryName = new Text(category.getName());
           categoryName.setBold();
           categoryName.setFontColor(textColor);
@@ -185,10 +207,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           outerTable.add(categoryName,1,1);
 
           if( limitNumberOfImages ) {
-            String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
-            Text middleText = new Text(middle);
-            middleText.setBold();
-            middleText.setFontColor(textColor);
+
 
             Text leftText = new Text("Fyrri myndir <<");
             leftText.setBold();
@@ -196,9 +215,15 @@ public void main(ModuleInfo modinfo)throws Exception{
             Link back = new Link(leftText);
             back.setFontColor(textColor);
             int iback = ifirst-numberOfDisplayedImages;
-            if( iback<0 ) iback = 0;
+            if( iback<0 ) ifirst = 0;
             back.addParameter("iv_first",iback);
             back.addParameter("image_catagory_id",category.getID());
+
+            String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
+            Text middleText = new Text(middle);
+            middleText.setBold();
+            middleText.setFontColor(textColor);
+
 
             Text rightText = new Text(">> Næstu myndir");
             rightText.setBold();
@@ -207,7 +232,8 @@ public void main(ModuleInfo modinfo)throws Exception{
             forward.setFontColor(textColor);
 
             int inext = ifirst+numberOfDisplayedImages;
-            if( inext > imageEntity.length) inext = imageEntity.length-numberOfDisplayedImages;
+            if( inext > (imageEntity.length-1)) inext = (imageEntity.length-1)-numberOfDisplayedImages;
+
             forward.addParameter("iv_first",inext);
             forward.addParameter("image_catagory_id",category.getID());
 
@@ -237,6 +263,8 @@ public void main(ModuleInfo modinfo)throws Exception{
           outerTable.add(header,1,1);
           limitNumberOfImages=false;
           imageEntity=entities;
+
+
         }
 
         outerTable.add(displayCatagory(imageEntity),1,2);
@@ -464,6 +492,10 @@ public void setCopyImage(String imageName){
 
 public void setCutImage(String imageName){
   cut = new Image(imageName);
+}
+
+public void refresh(boolean refresh){
+  this.refresh = refresh;
 }
 
 }
