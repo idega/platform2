@@ -20,6 +20,7 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.LinkContainer;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
@@ -325,11 +326,11 @@ public class CashierWindow extends StyledIWAdminWindow {
 		menu.setRowColor(7, COLOR_MIDDLE);
 		menu.add(selectUser, 1, 8);
 		menu.add(manAss, 1, 9);
-		menu.add(insertContract, 1, 10);
-		menu.add(registerPayment, 1, 11);
-		menu.add(paymentHistory, 1, 12);
-		menu.add(memberCreditCard, 1, 13);
-
+		menu.add(registerPayment, 1, 10);
+		menu.add(paymentHistory, 1, 11);
+		menu.add(memberCreditCard, 1, 12);
+		menu.add(insertContract, 1, 13);
+		
 		menu.add(reports, 1, 15);
 		menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true), 2, 15);
 		menu.setRowColor(15, COLOR_MIDDLE);

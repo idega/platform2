@@ -51,7 +51,7 @@ public class CreditCardTypeBMPBean extends GenericEntity implements CreditCardTy
 
 		String types[] = {TYPE_VISA, TYPE_MASTERCARD, TYPE_UNDEFINED, TYPE_OTHER};
 		
-		String names[] = {"Visa", "Mastercard", "Undefined", "Other"};
+		String names[] = {"Visa", "Mastercard"};
 		
 		CreditCardTypeHome typeHome = (CreditCardTypeHome) IDOLookup.getHome(CreditCardType.class);
 		CreditCardType type;

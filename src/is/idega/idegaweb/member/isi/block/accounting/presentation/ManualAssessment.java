@@ -316,6 +316,9 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	}
 	
 	private boolean isGroupInClubAndDivision(Group group, Group parent) {
+		if (group == null)
+			return false;
+		
 		if (group.equals(parent))
 			return true;
 		
