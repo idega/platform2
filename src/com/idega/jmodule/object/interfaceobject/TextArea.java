@@ -126,6 +126,9 @@ public void print(ModuleInfo modinfo)throws IOException{
 	//}
 }
 
+  public void setStyle(String style) {
+    setAttribute("class",style);
+  }
 
 }
 

@@ -134,6 +134,9 @@ public void setAsAlphabeticText(String errorMessage){
 
 }
 
+public void setStyle(String style) {
+  setAttribute("class",style);
+}
 
 public String getValue(){
 	if (super.getValue() == null){

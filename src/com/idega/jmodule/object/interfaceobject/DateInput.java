@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.10 2001/07/04 18:11:54 tryggvil Exp $
+ * $Id: DateInput.java,v 1.11 2001/07/10 17:03:29 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -210,9 +210,9 @@ private Script getScript(){
 }
 
 public void setStyle(String styleAttribute){
-  theDay.setAttribute("style",styleAttribute);
-  theMonth.setAttribute("style",styleAttribute);
-  theYear.setAttribute("style",styleAttribute);
+  theDay.setStyle(styleAttribute);
+  theMonth.setStyle(styleAttribute);
+  theYear.setStyle(styleAttribute);
 }
 
 

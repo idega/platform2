@@ -218,6 +218,10 @@ private MenuElement getMenuElement(String ElementValue){
 	return theReturn;
 }
 
+public void setStyle(String style) {
+  setAttribute("class",style);
+}
+
 public void print(ModuleInfo modinfo)throws IOException{
 
 	theElements.trimToSize();

@@ -124,6 +124,10 @@ public void setFontStyle(String style){
 	setAttribute("style",style);
 }
 
+public void setStyle(String style) {
+  setAttribute("class",style);
+}
+
 public void addToText(String s){
 	text=text+s;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.1 2001/06/27 14:40:19 palli Exp $
+ * $Id: ApplicationForm.java,v 1.2 2001/07/10 17:03:29 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.Table;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import java.util.List;
@@ -70,42 +71,165 @@ public class ApplicationForm extends Editor {
   }
 
   protected void doSelectSubject(ModuleInfo modinfo) {
-    List subjects = ApplicationFinder.listOfSubject();
+    IWResourceBundle iwrb = getResourceBundle(modinfo);
+    List subjects = ApplicationFinder.listOfNonExpiredSubjects();
+    Text textTemplate = new Text();
+
     Form form = new Form();
+    Table t = new Table(2,3);
+    t.setWidth(1,"50%");
+    t.setWidth(2,"50%");
+
+    Text heading = (Text)textTemplate.clone();
+    heading.setStyle("headlinetext");
+    heading.setText(iwrb.getLocalizedString("applicationSubject","Veldu tegund umsóknar"));
+    Text text1 = (Text)textTemplate.clone();
+    text1.setStyle("bodytext");
+    text1.setText(iwrb.getLocalizedString("applicationSubject","Umsókn um"));
+    text1.setBold();
+    Text required = (Text)textTemplate.clone();
+    required.setText(" * ");
+    required.setBold();
+    required.setStyle("required");
+    Text info = (Text)textTemplate.clone();
+    info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setStyle("subtext");
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
+    subject.setStyle("formstyle");
+    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","áfram"));
+    ok.setStyle("idega");
 
-    form.add("Umsókn um : ");
-    form.add(subject);
+    form.add(heading);
     form.add(Text.getBreak());
-    form.add(new SubmitButton("ok","áfram"));
+    form.add(Text.getBreak());
+    form.add(t);
+
+    t.add(text1,1,1);
+    t.add(required,1,1);
+    t.add(subject,2,1);
+    t.add(ok,2,3);
+    form.add(Text.getBreak());
+    form.add(Text.getBreak());
+    form.add(Text.getBreak());
+    form.add(info);
     form.add(new HiddenInput("status",Integer.toString(statusSubject_)));
     add(form);
   }
 
   protected void doGeneralInformation(ModuleInfo modinfo) {
+    IWResourceBundle iwrb = getResourceBundle(modinfo);
+    Text textTemplate = new Text();
+    TextInput textInputTemplate = new TextInput();
     Form form = new Form();
-    Table t = new Table(2,11);
+    Table t = new Table(2,10);
+    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","áfram"));
+    ok.setStyle("idega");
+
+    Text heading = (Text)textTemplate.clone();
+    heading.setStyle("headlinetext");
+    heading.setText(iwrb.getLocalizedString("generalInfo","Almennar upplýsingar um umsækjanda"));
+    Text text1 = (Text)textTemplate.clone();
+    text1.setStyle("bodytext");
+    text1.setText(iwrb.getLocalizedString("firstName","Fornafn"));
+    text1.setBold();
+    Text text2 = (Text)textTemplate.clone();
+    text2.setStyle("bodytext");
+    text2.setText(iwrb.getLocalizedString("middleName","Millinafn"));
+    Text text3 = (Text)textTemplate.clone();
+    text3.setStyle("bodytext");
+    text3.setText(iwrb.getLocalizedString("lastName","Eftirnafn"));
+    text3.setBold();
+    Text text4 = (Text)textTemplate.clone();
+    text4.setStyle("bodytext");
+    text4.setText(iwrb.getLocalizedString("ssn","Kennitala"));
+    text4.setBold();
+    Text text5 = (Text)textTemplate.clone();
+    text5.setStyle("bodytext");
+    text5.setText(iwrb.getLocalizedString("legalResidence","Lögheimili"));
+    text5.setBold();
+    Text text6 = (Text)textTemplate.clone();
+    text6.setStyle("bodytext");
+    text6.setText(iwrb.getLocalizedString("residence","Dvalarstaður"));
+    text6.setBold();
+    Text text7 = (Text)textTemplate.clone();
+    text7.setStyle("bodytext");
+    text7.setText(iwrb.getLocalizedString("residencePhone","Símanúmer á dvalarstað"));
+    text7.setBold();
+    Text text8 = (Text)textTemplate.clone();
+    text8.setStyle("bodytext");
+    text8.setText(iwrb.getLocalizedString("po","Póstnúmer"));
+    text8.setBold();
+    Text required = (Text)textTemplate.clone();
+    required.setText(" * ");
+    required.setBold();
+    required.setStyle("required");
+    Text info = (Text)textTemplate.clone();
+    info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setStyle("subtext");
+    TextInput input1 = (TextInput)textInputTemplate.clone();
+    input1.setName("firstName");
+    input1.setStyle("formstyle");
+    TextInput input2 = (TextInput)textInputTemplate.clone();
+    input2.setName("middleName");
+    input2.setStyle("formstyle");
+    TextInput input3 = (TextInput)textInputTemplate.clone();
+    input3.setName("lastName");
+    input3.setStyle("formstyle");
+    TextInput input4 = (TextInput)textInputTemplate.clone();
+    input4.setName("ssn");
+    input4.setLength(11);
+    input4.setStyle("formstyle");
+    TextInput input5 = (TextInput)textInputTemplate.clone();
+    input5.setName("legalResidence");
+    input5.setStyle("formstyle");
+    TextInput input6 = (TextInput)textInputTemplate.clone();
+    input6.setName("residence");
+    input6.setStyle("formstyle");
+    TextInput input7 = (TextInput)textInputTemplate.clone();
+    input7.setName("residencePhone");
+    input7.setLength(8);
+    input7.setStyle("formstyle");
+    TextInput input8 = (TextInput)textInputTemplate.clone();
+    input8.setName("po");
+    input8.setLength(3);
+    input8.setStyle("formstyle");
+
+    t.setWidth(1,"50%");
+    t.setWidth(2,"50%");
+    t.add(text1,1,1);
+    t.add(required,1,1);
+    t.add(input1,2,1);
+    t.add(text2,1,2);
+    t.add(input2,2,2);
+    t.add(text3,1,3);
+    t.add(required,1,3);
+    t.add(input3,2,3);
+    t.add(text4,1,4);
+    t.add(required,1,4);
+    t.add(input4,2,4);
+    t.add(text5,1,5);
+    t.add(required,1,5);
+    t.add(input5,2,5);
+    t.add(text6,1,6);
+    t.add(required,1,6);
+    t.add(input6,2,6);
+    t.add(text7,1,7);
+    t.add(required,1,7);
+    t.add(input7,2,7);
+    t.add(text8,1,8);
+    t.add(required,1,8);
+    t.add(input8,2,8);
+    t.add(ok,2,10);
+
+    form.add(heading);
+    form.add(Text.getBreak());
+    form.add(Text.getBreak());
     form.add(t);
-    t.mergeCells(1,1,2,1);
-    t.add("Almennar upplýsingar um umsækjanda",1,1);
-    t.add("Fornafn",1,3);
-    t.add(new TextInput("firstName"),2,3);
-    t.add("Millinafn",1,4);
-    t.add(new TextInput("middleName"),2,4);
-    t.add("Eftirnafn",1,5);
-    t.add(new TextInput("lastName"),2,5);
-    t.add("Kennitala",1,6);
-    t.add(new TextInput("ssn"),2,6);
-    t.add("Lögheimili",1,7);
-    t.add(new TextInput("legalResidence"),2,7);
-    t.add("Dvalarstaður",1,8);
-    t.add(new TextInput("residence"),2,8);
-    t.add("Símanúmer á dvalarstað",1,9);
-    t.add(new TextInput("residencePhone"),2,9);
-    t.add("Póstnúmer",1,10);
-    t.add(new TextInput("po"),2,10);
-    t.add(new SubmitButton("ok","Áfram"),2,11);
+    form.add(Text.getBreak());
+    form.add(Text.getBreak());
+    form.add(Text.getBreak());
+    form.add(info);
     form.add(new HiddenInput("status",Integer.toString(statusGeneralInfo_)));
     add(form);
   }

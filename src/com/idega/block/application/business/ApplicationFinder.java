@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.5 2001/07/10 15:28:30 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.6 2001/07/10 17:03:29 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -122,14 +122,34 @@ public class ApplicationFinder {
     return listOfApplicationHolders(L,A);
   }
 
-  public static List listOfSubject(){
+  public static List listOfSubject() {
     try {
       ApplicationSubject AS = new ApplicationSubject();
       return EntityFinder.findAllDescendingOrdered(AS,AS.getExpiresColumnName());
     }
-    catch(SQLException e){
+    catch(SQLException e) {
+      e.printStackTrace();
       return(null);
     }
   }
 
+  public static List listOfNonExpiredSubjects() {
+    try {
+      ApplicationSubject subject = new ApplicationSubject();
+      StringBuffer sql = new StringBuffer("select ");
+      sql.append("* from ");
+      sql.append(subject.getEntityName());
+      sql.append(" where ");
+      sql.append(subject.getExpiresColumnName());
+      sql.append(" > '");
+      sql.append(com.idega.util.idegaTimestamp.RightNow().toSQLDateString());
+      sql.append("'");
+
+      return(EntityFinder.findAll(subject,sql.toString()));
+    }
+    catch(SQLException e) {
+      e.printStackTrace();
+      return(null);
+    }
+  }
 }

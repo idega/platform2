@@ -134,6 +134,9 @@ public void setTarget(String target){
   }
 
 
+public void setStyle(String style) {
+  setAttribute("class",style);
+}
 
 
 

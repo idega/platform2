@@ -85,6 +85,9 @@ public void print(ModuleInfo modinfo)throws IOException{
     return obj;
   }
 
+  public void setStyle(String style) {
+    setAttribute("class",style);
+  }
 
 }
 
