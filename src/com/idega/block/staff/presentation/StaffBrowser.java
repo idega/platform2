@@ -28,7 +28,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.repository.data.ImplementorRepository;
+import com.idega.user.app.UserApplication;
 import com.idega.user.data.Group;
 import com.idega.util.GenericGroupComparator;
 import com.idega.util.GenericUserComparator;
@@ -693,12 +693,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	private Link getAdminButtons() {
 		Image adminImage = _iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
-		Class  staffApplicationImpl = ImplementorRepository.getInstance().getAnyClassImpl(StaffApplication.class, this.getClass());
-		if (staffApplicationImpl == null) {
-			logWarning("[StaffBrowser] Implementation of StaffApplication could not be found. Implementing bundle was not loaded.");
-			adminLink.setWindowToOpen(staffApplicationImpl);
-		}
-		// prior version adminLink.setWindowToOpen(UserApplication.class);
+		adminLink.setWindowToOpen(UserApplication.class);
 
 		return adminLink;
 	}
