@@ -612,7 +612,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				
 				if(parents != null){
 					//Parent data
-					//Collection parents = _familyLogic.getParentsFor(child);
+					//Collection parents = _familyLogic.getCustodiansFor(child);
 					Iterator pIter = parents.iterator();
 					//parent1
 					if (pIter.hasNext()) {
