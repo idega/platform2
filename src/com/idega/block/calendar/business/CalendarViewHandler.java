@@ -1,5 +1,5 @@
 /*
- * $Id: CalendarViewHandler.java,v 1.4 2002/04/06 18:52:27 tryggvil Exp $
+ * $Id: CalendarViewHandler.java,v 1.5 2003/02/27 21:36:02 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ public class CalendarViewHandler implements PropertyHandler {
     menu.addMenuElement(CalendarBusiness.DAY,"Day view");
     menu.addMenuElement(CalendarBusiness.MONTH,"Month view");
     menu.addMenuElement(CalendarBusiness.YEAR,"Year view");
+		menu.addMenuElement(CalendarBusiness.AHEAD_VIEW,"Ahead view");
     menu.setSelectedElement(value);
     return(menu);
   }

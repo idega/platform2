@@ -31,6 +31,7 @@ public class CalendarEntryBMPBean extends com.idega.data.CategoryEntityBMPBean i
 		addAttribute(getIDColumnName());
     addAttribute(getColumnNameEntryTypeID(),"Type",true,true,Integer.class,"many-to-one",CalendarEntryType.class);
 		addAttribute(getColumnNameEntryDate(),"Date",true,true,Timestamp.class);
+		addAttribute(getColumnNameEntryEndDate(),"End date",true,true,Timestamp.class);
     addAttribute(getColumnNameUserID(), "User", true, true, Integer.class);
     addAttribute(getColumnNameGroupID(), "Group", true, true, Integer.class);
     addManyToManyRelationShip(LocalizedText.class);
@@ -43,6 +44,7 @@ public class CalendarEntryBMPBean extends com.idega.data.CategoryEntityBMPBean i
 	public static String getColumnNameCalendarID() { return "CA_CALENDAR_ID"; }
 	public static String getColumnNameEntryTypeID() { return com.idega.block.calendar.data.CalendarEntryTypeBMPBean.getColumnNameCalendarTypeID(); }
 	public static String getColumnNameEntryDate() { return "ENTRY_DATE"; }
+	public static String getColumnNameEntryEndDate() { return "ENTRY_END_DATE"; }
   public static String getColumnNameUserID(){ return com.idega.core.user.data.UserBMPBean.getColumnNameUserID();}
 	public static String getColumnNameGroupID() { return com.idega.core.data.GenericGroupBMPBean.getColumnNameGroupID(); }
 
@@ -63,6 +65,10 @@ public class CalendarEntryBMPBean extends com.idega.data.CategoryEntityBMPBean i
 		return (Timestamp) getColumnValue(getColumnNameEntryDate());
 	}
 
+	public Timestamp getEndDate(){
+		return (Timestamp) getColumnValue(getColumnNameEntryEndDate());
+	}
+
   public int getUserID() {
     return getIntColumnValue(getColumnNameUserID());
   }
@@ -79,6 +85,10 @@ public class CalendarEntryBMPBean extends com.idega.data.CategoryEntityBMPBean i
 
 	public void setDate(Timestamp date){
 			setColumn(getColumnNameEntryDate(), date);
+	}
+
+	public void setEndDate(Timestamp date){
+			setColumn(getColumnNameEntryEndDate(), date);
 	}
 
   public void setUserID(int userID) {
