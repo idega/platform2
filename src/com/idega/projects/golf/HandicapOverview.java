@@ -59,6 +59,11 @@ private Table myTable;
 private Form myForm = new Form();
 private boolean noIcons = false;
 
+private boolean isTilPicture = false;
+private boolean isFraPicture = false;
+private String tilPictureUrlInBundle;
+private String fraPictureUrlInBundle;
+
 private String headerColor = "#336660";
 private String headerTextColor = "#FFFFFF";
 
@@ -358,7 +363,6 @@ private Link textLink = new Link();
                         tee_text.setText(tee_name);
 				tee_text.setFontSize(1);
 
-                                //Bjarni addded this if-sentance 14.08.01
                                 if (isDefaultColors) tee_text.setFontColor(getTeeColor(teeColorID));
                                 else tee_text.setFontColor(teeTextColor);
 
@@ -589,29 +593,72 @@ private Link textLink = new Link();
         if ( noIcons ) {
           skoda = new SubmitButton(iwrb.getImage(getOverviewButtonImageUrlInBundle));
         }
+                                Table dummyTable = new Table(12,1);
+                                dummyTable.setCellpadding(0);
+                                dummyTable.setCellspacing(0);
 
-				Text fra = ( (Text) tilFraText.clone());
-                                fra.setText(iwrb.getLocalizedString("handicap.from","From")+": ");
-				Text til = ( (Text) tilFraText.clone());
-                                til.setText(iwrb.getLocalizedString("handicap.to","To")+": ");
+                                Image iFra = new Image();
+                                Image iTil = new Image();
+
+                                Text fra = new Text();
+                                Text til = new Text();
+
+                                if  (!isFraPicture){
+                                  fra = ( (Text) tilFraText.clone());
+                                  fra.setText(iwrb.getLocalizedString("handicap.from","From")+": ");
+                                }
+                                else{
+                                  iFra = iwrb.getImage(fraPictureUrlInBundle, iwrb.getLocalizedString("handicap.from","From")+": ");
+                                }
+                                if (!isTilPicture){
+                                  til = ( (Text) tilFraText.clone());
+                                  til.setText(iwrb.getLocalizedString("handicap.to","To")+": ");
+                                }
+                                else{
+                                  iTil = iwrb.getImage(tilPictureUrlInBundle, iwrb.getLocalizedString("handicap.to","To")+": ");
+                                }
 				Text strik = new Text("&nbsp;");
 				Text bil = new Text("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 
-				myTable.add(fra,1,1);
-				myTable.add(start_d,1,1);
-				myTable.add(start_m,1,1);
-				myTable.add(start_y,1,1);
+				if (!isFraPicture) {
 
-				myTable.add(bil,1,1);
+                                }
+                                else {
+                                }
+				dummyTable.add(start_d,2,1);
+				dummyTable.add(start_m,3,1);
+				dummyTable.add(start_y,4,1);
 
-				myTable.add(til,1,1);
-				myTable.add(end_d,1,1);
-				myTable.add(end_m,1,1);
-				myTable.add(end_y,1,1);
+				dummyTable.add(bil,5,1);
 
-				myTable.add(skoda,1,1);
+				if (!isFraPicture) {
+                                  dummyTable.add(fra,1,1);
+                                  dummyTable.add(til,6,1);
+                                  dummyTable.add(skoda,11,1);
+                                }
+                                else {
+                                  Table dummyTable2 = new Table(2,1);
+                                  dummyTable2.add(iFra,1,1);
+                                  dummyTable.add(dummyTable2,1,1);
 
-				myTable.add(strik,1,1);
+                                  Table dummyTable3 = new Table(2,1);
+                                  dummyTable3.add(iTil,1,1);
+                                  dummyTable.add(dummyTable3,7,1);
+
+                                  Table dummyTable4 = new Table(2,1);
+//                                  dummyTable4.add(" ",1,1);
+                                  dummyTable4.add(skoda,2,1);
+                                  dummyTable.add(dummyTable4,11,1);
+                                }
+				dummyTable.add(end_d,8,1);
+				dummyTable.add(end_m,9,1);
+				dummyTable.add(end_y,10,1);
+
+
+
+				dummyTable.add(strik,12,1);
+
+                                myTable.add(dummyTable,1,1);
 
 	}
 
@@ -751,6 +798,16 @@ private Link textLink = new Link();
 
     public void setGetOverviewButtonImageUrl(String getOverviewButtonImageUrlInBundle){
       this.getOverviewButtonImageUrlInBundle = getOverviewButtonImageUrlInBundle;
+    }
+
+    public void setFraPicture(String fraPictureUrlInBundle){
+      isFraPicture = true;
+      this.fraPictureUrlInBundle = fraPictureUrlInBundle;
+    }
+
+    public void setTilPicture(String tilPictureUrlInBundle){
+      isTilPicture = true;
+      this.tilPictureUrlInBundle = tilPictureUrlInBundle;
     }
 
     public void noIcons() {
