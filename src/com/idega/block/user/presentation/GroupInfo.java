@@ -54,13 +54,33 @@ public class GroupInfo extends Block {
 	}
 	
 	private PresentationObject getGroupInfo(IWContext iwc, Group group) {
+		String phone = null;
+		String fax = null;
+		if(_showPhone || _showFax) {
+			Collection phones = group.getPhones();
+			if(phones!=null) {
+				Iterator phoneIter = phones.iterator();
+				while(phoneIter.hasNext()) {
+					Phone phoneObj = (Phone) phoneIter.next();
+					if(phoneObj.getPhoneTypeId() == PhoneType.WORK_PHONE_ID) {
+						phone = emptyIfNull(phoneObj.getNumber());
+						break;
+					} else if(phoneObj.getPhoneTypeId() == PhoneType.FAX_NUMBER_ID) {
+						fax = emptyIfNull(phoneObj.getNumber());
+					}
+				}
+			}
+		}
+		
 		Table table = new Table();
 		int row = 1;
-		String name = group.getName();
-		String nameLabel = _iwrb.getLocalizedString("name", "Name: ");
-		table.add(nameLabel, 2, row);
-		table.add(name, 3, row++);
 		
+		if(_showName) {
+			String name = group.getName();
+			String nameLabel = _iwrb.getLocalizedString("name", "Name: ");
+			table.add(nameLabel, 2, row);
+			table.add(name, 3, row++);
+		}
 		if(_showShortName) {
 			String shortName = emptyIfNull(group.getShortName());
 			if(_showEmptyFields || (shortName!=null && shortName.length()>0)) {
@@ -68,7 +88,34 @@ public class GroupInfo extends Block {
 				addTextToTable(table, row++, shortNameLabel, shortName);
 			}
 		}
-		addBreak();
+		if(_showAddress) {
+			String address = "";
+			try {
+				Address addr = _biz.getGroupAddress(iwc, group);
+				if(addr!=null) {
+					address = addr.getName();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if(_showEmptyFields || (address!=null && address.length()>0)) {
+				String addressLabel = _iwrb.getLocalizedString("address", "Address: ");
+				addTextToTable(table, row++, addressLabel, address);
+			}
+		}
+		if(_showPhone) {
+			if(_showEmptyFields || (phone!=null && phone.length()>0)) {
+				String phoneLabel = _iwrb.getLocalizedString("phone", "Phone: ");
+				addTextToTable(table, row++, phoneLabel, phone);
+			}
+		}
+		if(_showFax) {
+			if(_showEmptyFields || (fax!=null && fax.length()>0)) {
+				String faxLabel = _iwrb.getLocalizedString("fax", "Fax: ");
+				addTextToTable(table, row++, faxLabel, fax);
+			}
+		}
 		if(_showHomePage) {
 			String homePageURL = emptyIfNull(group.getHomePageURL());
 			if(_showEmptyFields || (homePageURL!=null && homePageURL.length()>0)) {
@@ -90,47 +137,6 @@ public class GroupInfo extends Block {
 				}
 			}
 		}
-		if(_showHomePage || _showEmails) {
-			addBreak();
-		}
-		if(_showPhone) {
-			Collection phones = group.getPhones();
-			String phone = "";
-			if(phones!=null) {
-				Iterator phoneIter = phones.iterator();
-				while(phoneIter.hasNext()) {
-					Phone phoneObj = (Phone) phoneIter.next();
-					if(phoneObj.getPhoneTypeId() == PhoneType.WORK_PHONE_ID) {
-						phone = emptyIfNull(phoneObj.getNumber());
-						break;
-					}
-				}
-			}
-			if(_showEmptyFields || (phone!=null && phone.length()>0)) {
-				String phoneLabel = _iwrb.getLocalizedString("phone", "Phone: ");
-				addTextToTable(table, row++, phoneLabel, phone);
-			}
-		}
-		if(_showAddress) {
-			String address = "";
-			try {
-				Address addr = _biz.getGroupAddress(iwc, group);
-				if(addr!=null) {
-					address = addr.getName();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			if(_showEmptyFields || (address!=null && address.length()>0)) {
-				String addressLabel = _iwrb.getLocalizedString("address", "Address: ");
-				addTextToTable(table, row++, addressLabel, address);
-			}
-		}
-		if(_showPhone || _showAddress) {
-			addBreak();
-		}
-		addBreak();
 		if(_showDescription) {
 			String description = emptyIfNull(group.getDescription());
 			if(_showEmptyFields || (description!=null && description.length()>0)) {
@@ -213,6 +219,10 @@ public class GroupInfo extends Block {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	
+	public void setShowName(boolean value) {
+		_showName = value;
+	}
+	
 	public void setShowHomePage(boolean value) {
 		_showHomePage = value;
 	}
@@ -231,6 +241,10 @@ public class GroupInfo extends Block {
 	
 	public void setShowPhone(boolean value) {
 		_showPhone = value;
+	}
+	
+	public void setShowFax(boolean value) {
+		_showFax = value;
 	}
 	
 	public void setShowEmails(boolean value) {
@@ -253,11 +267,13 @@ public class GroupInfo extends Block {
 		_showEmptyFields = value;
 	}
 	
+	private boolean _showName = true;
 	private boolean _showHomePage = false;
 	private boolean _showDescription = false;
 	private boolean _showExtraInfo = false;
 	private boolean _showShortName = false;
 	private boolean _showPhone = false;
+	private boolean _showFax = false;
 	private boolean _showEmails = false;
 	private boolean _showAddress = false;
 	private boolean _showEmptyFields = true;
