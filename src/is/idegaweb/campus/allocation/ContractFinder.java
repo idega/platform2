@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.1 2001/07/12 22:20:59 aron Exp $
+ * $Id: ContractFinder.java,v 1.2 2001/07/13 00:08:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -55,6 +55,21 @@ public abstract class ContractFinder {
       for (int i = 0; i < len; i++) {
         Contract C = (Contract) L.get(i);
         H.put((C.getApartmentId()),C);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
+  public static Hashtable hashOfApplicantsContracts(){
+    List L = listOfContracts();
+    if(L!=null){
+      Hashtable H = new Hashtable();
+      int len = L.size();
+      for (int i = 0; i < len; i++) {
+        Contract C = (Contract) L.get(i);
+        H.put((C.getApplicantId()),C);
       }
       return H;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.5 2001/07/12 21:32:28 aron Exp $
+ * $Id: Contract.java,v 1.6 2001/07/13 00:08:35 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ public class Contract extends GenericEntity {
     addAttribute(applicantId_,"Applicant id",true,true,"java.lang.Integer","one-to-one","com.idega.block.application.data.Applicant");
     addAttribute(validFrom_,"Valid from",true,true,"java.sql.Date");
     addAttribute(validTo_,"Valid to",true,true,"java.sql.Date");
-    addAttribute(status_,"Status",true,true,"java.sql.String");
+    addAttribute(status_,"Status",true,true,"java.lang.String");
     setMaxLength(status_,1);
   }
 
