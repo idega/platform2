@@ -438,7 +438,7 @@ public abstract class VacationBlock extends Block {
 		if (getPage() != null) {
 			cancelButton.setPageToOpen(getPage());
 		}
-		cancelButton.setToolTip(getResourceBundle().getLocalizedString("vacation.cancel.tooltip","Cancels and returns to last page"));
+		cancelButton.setToolTip(getResourceBundle().getLocalizedString("vacation.cancel.tooltip","Cancels and returns to My site"));
 		return cancelButton;
 	}
 
