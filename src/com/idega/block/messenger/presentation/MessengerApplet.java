@@ -42,7 +42,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private Hashtable dialogs = new Hashtable();
   private ImageLabel faceLabel;
   private ImageLabel logoLabel;
-  private Panel userPanel;
+  //debug
+ // private Panel userPanel;
 
   private Thread t;
 
@@ -92,10 +93,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         ex.printStackTrace(System.err);
       }
 
-      userPanel = new Panel();
-      userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-      add(userPanel);
-      userPanel.addNotify();
+      //userPanel = new Panel();
+      //userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+      //add(userPanel);
 
       threadSleep = 1000*checkTimer;
     }
@@ -137,14 +137,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         MessageDialog messageDialog = (MessageDialog) dialogs.get(Integer.toString(aMessage.getId()));
 
         if( messageDialog == null ) { //create a new dialog
-          ImageLabel logo = null;
-          try {
-            logo = new ImageLabel(getImage(new URL(hostURL+resourceURL),"idegalogo.gif"));
-          }
-          catch (MalformedURLException ex) {
-            ex.printStackTrace(System.err);
-          }
-          if( logo != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logo);
+
+          if( logoLabel != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logoLabel);
           else messageDialog = new MessageDialog(FRAME_NAME,aMessage);
 
 
@@ -348,7 +342,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       dialog.addActionListener(this);
 
-      SingleLineItem item = new SingleLineItem(userPanel);
+      SingleLineItem item = new SingleLineItem(this);
       item.setId(sendToId);
       item.setWindowToOpen(dialog);
 
@@ -357,9 +351,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.add(new Label(name));
       item.setSize(16,100);
 
-      userPanel.add(item);
-      userPanel.repaint();
       add(item);
+      item.repaint();
       repaint();
 
 
