@@ -40,14 +40,40 @@ public class HandicapCard extends GolfBlock {
 	private boolean addName = false;
 	private boolean addClub = false;
 
+	public HandicapCard() {
+		this(-1);
+	}
+	
 	public HandicapCard(int memberId) {
 		this.memberId = memberId;
 	}
 
-	public void main(IWContext modinfo) throws Exception {
+	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle();
 		iwrb = getResourceBundle();
-		drawCard(modinfo);
+		
+		String iMemberID = iwc.getRequest().getParameter("member_id");
+		if (iMemberID == null) {
+			iMemberID = (String) iwc.getSession().getAttribute("member_id");
+		}
+		if (iMemberID == null) {
+			Member member = (Member) iwc.getSession().getAttribute("member_login");
+			if (member != null) {
+				iMemberID = String.valueOf(member.getID());
+				if (iMemberID == null) {
+					iMemberID = "1";
+				}
+			}
+			else {
+				iMemberID = "1";
+			}
+		}
+
+		if (memberId == -1) {
+			memberId = Integer.parseInt(iMemberID);
+		}
+		
+		drawCard(iwc);
 	}
 
 	private void drawCard(IWContext modinfo) throws SQLException, FinderException {
