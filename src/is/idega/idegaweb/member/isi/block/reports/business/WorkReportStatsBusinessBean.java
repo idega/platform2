@@ -3244,8 +3244,29 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		int pChangeTotal = pThisYearTotal - pLastYearTotal;
 		int mChangeTotalPercent = (mLastYearTotal==0)?-1:((100*mThisYearTotal)/(mLastYearTotal));
 		int pChangeTotalPercent = (pLastYearTotal==0)?-1:((100*pThisYearTotal)/(pLastYearTotal));
-		int mWeirdNumber = mChangeTotal/mLastYearTotal;
-		int pWeirdNumber = pChangeTotal/pLastYearTotal;
+		
+	//	new DecimalFormat("##0.#").format( ((($V{AllSum}!=null && $V{AllSum}.floatValue()>0)? $V{AllSum}.floatValue() : 0 )/( ($V{AllSumLastYear}!=null && $V{AllSumLastYear}.floatValue()>0)? $V{AllSumLastYear}.floatValue() : (($V{AllSum}!=null && $V{AllSum}.floatValue()>0)? $V{AllSum}.floatValue() : 1 ))) * 100.0 * ( (($V{AllSum}!=null && $V{AllSumLastYear}!=null) && ($V{AllSum}.intValue()>= $V{AllSumLastYear}.intValue()) ) ? 1.0 : -1.0 ) )
+		
+	//	int mWeirdNumber = mChangeTotal/mLastYearTotal;
+	//	int pWeirdNumber = pChangeTotal/pLastYearTotal;
+		
+		double mWeirdNumber = (
+											((double) mChangeTotal) /
+											((double) (mLastYearTotal>0?mLastYearTotal:(mChangeTotal!=0?mChangeTotal:1)))
+										) * 100.0 
+											* (((mChangeTotal!=0 && mLastYearTotal!=0) && (mChangeTotal>=mLastYearTotal))?1.0:-1.0);
+											new DecimalFormat("##0.#").format(mWeirdNumber);
+//		regData.addData(percentReportsDone, (new DecimalFormat("##0.#")).format(mWeirdNumber));
+		double pWeirdNumber = (
+											((double) pChangeTotal) /
+											((double) (pLastYearTotal>0?pLastYearTotal:(pChangeTotal!=0?pChangeTotal:1)))
+										) * 100.0 
+											* (((pChangeTotal!=0 && pLastYearTotal!=0) && (pChangeTotal>=pLastYearTotal))?1.0:-1.0);
+										new DecimalFormat("##0.#").format(mWeirdNumber);
+//		regData.addData(percentReportsDone, (new DecimalFormat("##0.#")).format(mWeirdNumber));
+
+		
+		
 		// get the percentage from total and create last row
 		Iterator rData = regDataCollection.iterator();
 		java.text.DecimalFormat format = new java.text.DecimalFormat();
