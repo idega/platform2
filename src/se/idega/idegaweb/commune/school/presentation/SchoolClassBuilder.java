@@ -215,10 +215,6 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		return table;
 	}
 
-	private UserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
-		return (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);	
-	}	
-
 	private SchoolUserBusiness getSchoolUserBusiness(IWContext iwc) throws RemoteException {
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 	}
