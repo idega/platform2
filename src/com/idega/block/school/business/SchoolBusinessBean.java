@@ -2064,7 +2064,7 @@ public void storeSchoolDepartment(String description, String phone, int schoolID
 	
 	public boolean hasGroupPlacement(int userID, int groupID) {
 		try {
-			return getSchoolClassMemberHome().getNumberOfPlacingsAtSchool(userID, groupID) > 0;
+			return getSchoolClassMemberHome().getNumberOfPlacings(userID, groupID) > 0;
 		}
 		catch (IDOException ie) {
 			return false;
