@@ -381,9 +381,24 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					table.add(recreateContract, column++, 1);
 					column++;
 				}
+				
+				GenericButton placeInGroup = null;
 
-				GenericButton placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
-				table.add(placeInGroup, column, 1);
+				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
+					if (application.getContract().isSigned()) {
+						placeInGroup = (GenericButton) getStyledInterface(new GenericButton("place_in_group", localize("child_care.place_in_group","Place in group")));
+						placeInGroup.setDisabled(true);
+						table.add(placeInGroup, column, 1);
+					}
+					else {
+						placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
+						table.add(placeInGroup, column, 1);
+					}
+				}
+				else {
+					placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
+					table.add(placeInGroup, column, 1);
+				}
 			}
 		}
 		
