@@ -1,43 +1,38 @@
 /*
- * Created on Aug 14, 2003
+ * Created on Aug 18, 2003
  *
  */
-package se.idega.idegaweb.commune.user.presentation;
-
-import is.idega.idegaweb.member.presentation.UserEditor;
+package se.idega.idegaweb.commune.accounting.userinfo.presentation;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
 
 /**
- * UserEditorWindow
+ * BruttoIncomeWindow
  * @author aron 
  * @version 1.0
  */
 
-public class CitizenEditorWindow extends Window {
+public class BruttoIncomeWindow extends Window {
 
-	public CitizenEditorWindow() {
+	public BruttoIncomeWindow() {
 		this.setWidth(500);
 		this.setHeight(500);
 		this.setScrollbar(true);
 		this.setResizable(true);
 		this.setAllMargins(0);
 	}
-
+	
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		CitizenEditor editor = new CitizenEditor();
-		editor.setShowCloseButton(true);
-		add(editor);
+	  BruttoIncomeEditor editor = new BruttoIncomeEditor();
+	  //editor.setShowCloseButton(true);
+	  add(editor);
 	}
-	
-	
 	
 	public static String getUserIDParameterName(){
-		return UserEditor.getUserIDParameterName();
+		return BruttoIncomeEditor.PRM_USER_ID;
 	}
-
 }

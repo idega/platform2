@@ -179,63 +179,6 @@ public class CitizenEditor extends UserEditor {
 
 		addToMainPart(relationsTable);
 	}
-
-	public void presentateButtons(IWContext iwc) {
-		Table buttonTable = new Table();
-		int row = 1, col = 1;
-		SubmitButton save =
-			new SubmitButton(iwrb.getLocalizedString("mbe.save", "Save"), PRM_SAVE, user.getPrimaryKey().toString());
-		setStyle(save, STYLENAME_BUTTON);
-
-		buttonTable.add(save, col++, row);
-		try {
-			MemberFamilyLogic logic = getFamilyService(iwc);
-
-			//Image regSpouse = iwrb.getLocalizedImageButton("mbe.register_spouse","Register spouse");
-			//regSpouse.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_spouse","Try to attach a spouse relationship to user"));
-			//Link spouseLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getSpouseRelationType(),regSpouse);
-			SubmitButton spouseButton =
-				getConnectorButton(
-					iwc,
-					iwrb.getLocalizedString("mbe.register_spouse", "Register spouse"),
-					(Integer) user.getPrimaryKey(),
-					logic.getSpouseRelationType(),
-					null);
-			buttonTable.add(spouseButton, col++, row);
-
-			//Image regCustodian = iwrb.getLocalizedImageButton("mbe.register_custodian","Register custodian");
-			//regCustodian.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_custodian","Try to attach a custodian relationship to user"));
-			//Link custodianLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getChildRelationType(),regCustodian);
-			//buttonTable.add(custodianLink, col++, row);
-			SubmitButton custodianButton =
-				getConnectorButton(
-					iwc,
-					iwrb.getLocalizedString("mbe.register_custodian", "Register custodian"),
-					(Integer) user.getPrimaryKey(),
-					logic.getChildRelationType(),
-					null);
-			buttonTable.add(custodianButton, col++, row);
-
-			//Image regChild = iwrb.getLocalizedImageButton("mbe.register_child","Register child");
-			//regChild.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_child","Try to attach a child relationship to user"));
-			//Link childLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getCustodianRelationType(),regChild);
-			//buttonTable.add(childLink, col++, row);
-			SubmitButton childButton =
-				getConnectorButton(
-					iwc,
-					iwrb.getLocalizedString("mbe.register_child", "Register child"),
-					(Integer) user.getPrimaryKey(),
-					logic.getCustodianRelationType(),
-					null);
-			buttonTable.add(childButton, col++, row);
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-
-		addToMainPart(buttonTable);
-	}
-	
 	
 
 	/**
@@ -263,6 +206,56 @@ public class CitizenEditor extends UserEditor {
 	protected void storeUserAsDeceased(IWContext iwc, Integer userID, Date deceasedDate) {
 		try {
 			getCommuneUserService(iwc).setUserAsDeceased(userID,deceasedDate);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserEditor#presentateButtonRegister(com.idega.presentation.IWContext)
+	 */
+	protected void presentateButtonRegister(IWContext iwc) {
+		try {
+			MemberFamilyLogic logic = getFamilyService(iwc);
+
+			//Image regSpouse = iwrb.getLocalizedImageButton("mbe.register_spouse","Register spouse");
+			//regSpouse.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_spouse","Try to attach a spouse relationship to user"));
+			//Link spouseLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getSpouseRelationType(),regSpouse);
+			SubmitButton spouseButton =
+				getConnectorButton(
+					iwc,
+					iwrb.getLocalizedString("mbe.register_spouse", "Register spouse"),
+					(Integer) user.getPrimaryKey(),
+					logic.getSpouseRelationType(),
+					null);
+			addButton(spouseButton);
+
+			//Image regCustodian = iwrb.getLocalizedImageButton("mbe.register_custodian","Register custodian");
+			//regCustodian.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_custodian","Try to attach a custodian relationship to user"));
+			//Link custodianLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getChildRelationType(),regCustodian);
+			//buttonTable.add(custodianLink, col++, row);
+			SubmitButton custodianButton =
+				getConnectorButton(
+					iwc,
+					iwrb.getLocalizedString("mbe.register_custodian", "Register custodian"),
+					(Integer) user.getPrimaryKey(),
+					logic.getChildRelationType(),
+					null);
+			addButton(custodianButton);
+
+			//Image regChild = iwrb.getLocalizedImageButton("mbe.register_child","Register child");
+			//regChild.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_child","Try to attach a child relationship to user"));
+			//Link childLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getCustodianRelationType(),regChild);
+			//buttonTable.add(childLink, col++, row);
+			SubmitButton childButton =
+				getConnectorButton(
+					iwc,
+					iwrb.getLocalizedString("mbe.register_child", "Register child"),
+					(Integer) user.getPrimaryKey(),
+					logic.getCustodianRelationType(),
+					null);
+			addButton(childButton);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

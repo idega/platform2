@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -45,6 +46,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.CountryDropdownMenu;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
@@ -118,15 +120,16 @@ public class UserEditor extends Block {
 	private Table mainTable = null;
 	/** the current layout table row */
 	private int mainRow = 1;
+	/** the button table */
+	private Table buttonTable = null;
 
-	/** Header style */
-	private String headerStyle = "";
-	/** Header style class */
-	private String headerStyleClass = "";
 	/** flag for family relation types */
 	protected boolean showAllRelationTypes = true;
 	/** Class of relation connector window */
 	protected Class connectorWindowClass = FamilyRelationConnector.class;
+	
+	/** flag for showing close button */
+	protected boolean showCloseButton = false;
 
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_HEADER = "Header";
@@ -246,6 +249,7 @@ public class UserEditor extends Block {
 
 	/**
 	 * Presentates the whole UserEditor
+	 * will call other presentate* methods
 	 * @param iwc the current context
 	 */
 	public void presentate(IWContext iwc) throws RemoteException {
@@ -346,32 +350,80 @@ public class UserEditor extends Block {
 		return relatedLink;
 	}
 
-	public void presentateButtons(IWContext iwc) {
-		Table buttonTable = new Table();
-		int row = 1, col = 1;
-		SubmitButton save =
-			new SubmitButton(
-				iwrb.getLocalizedImageButton("mbe.save", "Save"),
-				PRM_SAVE,
-				user.getPrimaryKey().toString());
-		SubmitButton clear = new SubmitButton(iwrb.getLocalizedImageButton("mbe.clear", "Clear"));
-
-		buttonTable.add(save, col++, row);
-		buttonTable.add(clear, col++, row);
+	/**
+	 * Handles presentation of buttons
+	 * calls all presentateButton* methods when appropiate
+	 * @param iwc
+	 */
+	protected void presentateButtons(IWContext iwc) {
+		buttonTable = new Table();
+		presentateButtonSave(iwc);
+		
 		if (showUserRelations) {
-			for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
-				String type = (String) iter.next();
-				Link registerLink =
-					getConnectorLink(
-						(Integer) user.getPrimaryKey(),
-						type,null,
-						iwb.getImageButton(iwrb.getLocalizedString("mbe.register_as_" + type, "Register as " + type)));
-				buttonTable.add(registerLink, col++, row);
-			}
+			presentateButtonRegister(iwc);
 		}
-		add(buttonTable);
+		if(showCloseButton){
+			presentateButtonClose(iwc);
+		}
+		addToMainPart(buttonTable);
+	}
+	
+	/**
+	 * Presentates the save button
+	 * @param iwc
+	 */
+	protected void presentateButtonSave(IWContext iwc){
+		SubmitButton save =	new SubmitButton(iwrb.getLocalizedString("mbe.save", "Save"),
+						PRM_SAVE,
+						user.getPrimaryKey().toString());
+		
+		save.setStyleClass(buttonStyleName);
+		addButton(save);
+	}
+	
+	/**
+	 * Presentates the close button
+	 * @param iwc
+	 */
+	protected void presentateButtonClose(IWContext iwc){
+		CloseButton close = new CloseButton(iwrb.getLocalizedString("mbe.close","Close"));
+		close.setStyleClass(buttonStyleName);
+		getParentPage().setToReload();
+		addButton(close);
+	}
+	
+	/**
+	 * Presentates the user relation register buttons
+	 * @param iwc
+	 */
+	protected void presentateButtonRegister(IWContext iwc){
+		for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
+			String type = (String) iter.next();
+			SubmitButton registerButton =
+			getConnectorButton(iwc,
+				(iwrb.getLocalizedString("mbe.register_as_" + type, "Register as " + type)),
+				(Integer) user.getPrimaryKey(),
+				type,null);
+				addButton(registerButton);
+		}
+	}
+	
+	/**
+	 * Adds a object to the button area 
+	 * @param button
+	 */
+	protected void addButton(PresentationObject button){
+		buttonTable.add(button,buttonTable.getColumns()+1,1);
 	}
 
+	/**
+	 * Gets a relation connector link
+	 * @param roleUserID
+	 * @param type
+	 * @param reverseType
+	 * @param object
+	 * @return
+	 */
 	protected Link getConnectorLink(Integer roleUserID, String type,String reverseType, PresentationObject object) {
 		Link registerLink = new Link(object);
 
@@ -384,6 +436,15 @@ public class UserEditor extends Block {
 		return registerLink;
 	}
 	
+	/**
+	 * Gets a relation connector button
+	 * @param iwc
+	 * @param display
+	 * @param roleUserID
+	 * @param type
+	 * @param reverseType
+	 * @return
+	 */
 	protected SubmitButton getConnectorButton(IWContext iwc,String display,Integer roleUserID, String type,String reverseType){
 		SubmitButton button = new SubmitButton(display);
 		String URL = Window.getWindowURL(connectorWindowClass, iwc) ;
@@ -397,6 +458,15 @@ public class UserEditor extends Block {
 		return button;		
 	}
 
+	/**
+	 * Gets a relation disconnector link
+	 * @param type
+	 * @param reverseType
+	 * @param roleUserID
+	 * @param victimUserID
+	 * @param object
+	 * @return
+	 */
 	protected Link getDisConnectorLink(
 		String type,String reverseType,
 		Integer roleUserID,
@@ -822,7 +892,7 @@ public class UserEditor extends Block {
 			// deceased part
 			if (iwc.isParameterSet(prm_deceased_date)) {
 				IWTimestamp deceased = new IWTimestamp(iwc.getParameter(prm_deceased_date));
-				getUserStatusService(iwc).setUserAsDeceased(userID, deceased.getDate());
+				storeUserAsDeceased(iwc,userID,deceased.getDate());
 				//TODO use some userbusiness to inform any services that want to know about a deceased user
 			}
 		}
@@ -846,6 +916,15 @@ public class UserEditor extends Block {
 
 	private void initRelationTypes(IWContext iwc) throws RemoteException {
 
+	}
+	
+	protected void storeUserAsDeceased(IWContext iwc, Integer userID, Date deceasedDate){
+		try {
+			getUserStatusService(iwc).setUserAsDeceased(userID,deceasedDate);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -951,6 +1030,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 * Gets the relation connector window class
 	 * @return
 	 */
 	public Class getConnectorWindowClass() {
@@ -958,6 +1038,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 * Gets the current heading style
 	 * @return
 	 */
 	public String getHeaderFontStyle() {
@@ -965,13 +1046,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
-	 * @return
-	 */
-	public String getHeaderStyle() {
-		return headerStyle;
-	}
-
-	/**
+	 * Gets the user search block
 	 * @return
 	 */
 	public UserSearcher getSearcher() {
@@ -979,6 +1054,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 * Tests flag for showing all relations
 	 * @return
 	 */
 	public boolean isShowAllRelationTypes() {
@@ -986,6 +1062,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 * Tests flag for showing user relations
 	 * @return
 	 */
 	public boolean isShowUserRelations() {
@@ -993,6 +1070,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 * Gets the normal text style
 	 * @return
 	 */
 	public String getTextFontStyle() {
@@ -1000,6 +1078,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 * Sets the relation connector window (Subclass of UserRelationConnector )
 	 * @param class1
 	 */
 	public void setConnectorWindowClass(Class class1) {
@@ -1007,20 +1086,17 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 *  Sets the style for headings
 	 * @param string
 	 */
-	public void setHeaderFontStyle(String string) {
-		headerFontStyle = string;
+	public void setHeaderFontStyle(String style) {
+		headerFontStyle = style;
 	}
 
-	/**
-	 * @param string
-	 */
-	public void setHeaderStyle(String string) {
-		headerStyle = string;
-	}
+	
 
 	/**
+	 * Sets the user searcher block
 	 * @param searcher
 	 */
 	public void setSearcher(UserSearcher searcher) {
@@ -1028,20 +1104,23 @@ public class UserEditor extends Block {
 	}
 
 	/**
-	 * @param b
+	 * Set flag for showing all found user relations
+	 * @param flag
 	 */
-	public void setShowAllRelationTypes(boolean b) {
-		showAllRelationTypes = b;
+	public void setShowAllRelationTypes(boolean flag) {
+		showAllRelationTypes = flag;
 	}
 
 	/**
-	 * @param b
+	 * Sets flag for showing user relations
+	 * @param flag
 	 */
-	public void setShowUserRelations(boolean b) {
-		showUserRelations = b;
+	public void setShowUserRelations(boolean flag) {
+		showUserRelations = flag;
 	}
 
 	/**
+	 * Sets the style for the normal text
 	 * @param string
 	 */
 	public void setTextFontStyle(String string) {
@@ -1055,6 +1134,7 @@ public class UserEditor extends Block {
 	}
 
 	/**
+	 * Gets the style used to present the deceased date if set
 	 * @return
 	 */
 	public String getDeceasedFontStyle() {
@@ -1062,81 +1142,86 @@ public class UserEditor extends Block {
 	}
 
 	/**
-	 * @param string
+	 * Set the style for the deceased date font style
+	 * @param style
 	 */
-	public void setDeceasedFontStyle(String string) {
-		deceasedFontStyle = string;
+	public void setDeceasedFontStyle(String style) {
+		deceasedFontStyle = style;
 	}
 
+	/**
+	 * Gets unique static parameter name for the user id
+	 * @return
+	 */
 	public static String getUserIDParameterName() {
 		return UserSearcher.getUniqueUserParameterName("edt");
 	}
 
-	/**
-	 * @param length
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setFirstNameLength(int ) 
 	 */
 	public void setFirstNameLength(int length) {
 		searcher.setFirstNameLength(length);
 	}
 
-	/**
-	 * @param length
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setLastNameLength(int ) 
 	 */
 	public void setLastNameLength(int length) {
 		searcher.setLastNameLength(length);
 	}
 
-	/**
-	 * @param cols
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setMaxFoundUserCols(int ) 
 	 */
 	public void setMaxFoundUserCols(int cols) {
 		searcher.setMaxFoundUserCols(cols);
 	}
 
-	/**
-	 * @param rows
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setMaxFoundUserRows(int ) 
 	 */
 	public void setMaxFoundUserRows(int rows) {
 		searcher.setMaxFoundUserRows(rows);
 	}
 
-	/**
-	 * @param length
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setMiddleNameLength(int ) 
 	 */
 	public void setMiddleNameLength(int length) {
 		searcher.setMiddleNameLength(length);
 	}
 
-	/**
-	 * @param length
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setPersonalIDLength(int ) 
 	 */
 	public void setPersonalIDLength(int length) {
 		searcher.setPersonalIDLength(length);
 	}
 
-	/**
-	 * @param b
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setShowFirstNameInSearch(boolean)
 	 */
 	public void setShowFirstNameInSearch(boolean b) {
 		searcher.setShowFirstNameInSearch(b);
 	}
 
-	/**
-	 * @param b
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setShowLastNameInSearch(boolean)
 	 */
 	public void setShowLastNameInSearch(boolean b) {
 		searcher.setShowLastNameInSearch(b);
 	}
 
-	/**
-	 * @param b
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setShowMiddleNameInSearch(boolean)
 	 */
 	public void setShowMiddleNameInSearch(boolean b) {
 		searcher.setShowMiddleNameInSearch(b);
 	}
 
-	/**
-	 * @param b
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setShowPersonalIDInSearch(boolean)
 	 */
 	public void setShowPersonalIDInSearch(boolean b) {
 		searcher.setShowPersonalIDInSearch(b);
@@ -1149,19 +1234,30 @@ public class UserEditor extends Block {
 		searcher.setSkipResultsForOneFound(flag);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.presentation.PresentationObjectContainer#add(com.idega.presentation.PresentationObject)
+	/**
+	 * Adds object to the next row in the main table
+	 * @param object
 	 */
-	public void addToMainPart(PresentationObject modObject) {
-		mainTable.add(modObject, 1, mainRow++);
+	public void addToMainPart(PresentationObject object) {
+		mainTable.add(object, 1, mainRow++);
 	}
 
+	/**
+	 * Gets a styled Text object using the header text style
+	 * @param  text to be displayed
+	 * @return
+	 */
 	public Text getHeader(String text) {
 		Text t = new Text(text);
 		setStyle(t, STYLENAME_HEADER);
 		return t;
 	}
 
+	/**
+	 * Gets a styled Text object using the normal text style
+	 * @param  text to be displayed
+	 * @return
+	 */
 	public Text getText(String text) {
 		Text t = new Text(text);
 		setStyle(t, STYLENAME_TEXT);
@@ -1169,31 +1265,51 @@ public class UserEditor extends Block {
 	}
 
 	/**
-	 * @return
+	 * Gets the current style used on buttons
+	 * @return style
 	 */
 	public String getButtonStyle() {
 		return buttonStyle;
 	}
 
 	/**
-	 * @return
+	 * Gets the current style used on input interfaces
+	 * @return style
 	 */
 	public String getInterfaceStyle() {
 		return interfaceStyle;
 	}
 
 	/**
-	 * @param string
+	 * Sets the style for buttons
+	 * @param style
 	 */
-	public void setButtonStyle(String string) {
-		buttonStyle = string;
+	public void setButtonStyle(String style) {
+		buttonStyle = style;
 	}
 
 	/**
-	 * @param string
+	 * Sets the style for input interfaces
+	 * @param style
 	 */
-	public void setInterfaceStyle(String string) {
-		interfaceStyle = string;
+	public void setInterfaceStyle(String style) {
+		interfaceStyle = style;
+	}
+
+	/**
+	 * Testing flag for showing close button in the button area
+	 * @return
+	 */
+	public boolean isShowCloseButton() {
+		return showCloseButton;
+	}
+
+	/**
+	 * Set flag for showing close button in the button area
+	 * @param flag
+	 */
+	public void setShowCloseButton(boolean flag) {
+		showCloseButton = flag;
 	}
 
 }
