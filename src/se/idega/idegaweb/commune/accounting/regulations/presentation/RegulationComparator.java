@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationComparator.java,v 1.5 2003/11/03 16:41:57 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.6 2003/11/03 16:44:12 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.resource.data.Resource;
 /**
  * RegulationComparator compares objects for the dropdowns
  * <p>
- * $Id: RegulationComparator.java,v 1.5 2003/11/03 16:41:57 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.6 2003/11/03 16:44:12 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RegulationComparator implements Comparator {
 
@@ -58,7 +58,7 @@ public class RegulationComparator implements Comparator {
 				s2 = ""+((SchoolStudyPath) o2).getCode();
 			}
 			if (o1.getClass().getName().indexOf("CommuneBMPBean") != -1) {
-				// Nasty hack to get the StudyPath entity with special methods to order properly
+				// Nasty hack to get the Commune entity with special methods to order properly
 				// Gotta find a better way to do this /Kelly
 				s1 = ""+((Commune) o1).getCommuneName();
 				s2 = ""+((Commune) o2).getCommuneName();
