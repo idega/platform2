@@ -9,7 +9,7 @@ import is.idega.idegaweb.campus.block.request.data.Request;
 import is.idega.idegaweb.campus.block.request.presentation.RequestView;
 
 import java.rmi.RemoteException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
@@ -356,7 +356,7 @@ public class TenantsProfile extends CampusBlock {
     	Date moving = contract.getMovingDate();
     	if (moving != null) {
     		table.add(localize("resignation","Resigned"),1,row);
-    		table.add(new IWTimestamp(moving).getLocaleDate(iwc.getCurrentLocale()),2,row++);
+    		table.add(new IWTimestamp(moving.getTime()).getLocaleDate(iwc.getCurrentLocale()),2,row++);
     	}
     }
 
@@ -418,15 +418,16 @@ public class TenantsProfile extends CampusBlock {
       while(iter.hasNext()){
         AccountInfo account = (AccountInfo) iter.next();
         table.add(formatText(account.getName()),1,row);
-        table.add(formatText(new IWTimestamp(account.getLastUpdated()).getLocaleDate(iwc.getCurrentLocale())),2,row);
+        Date lastUpdate = getCampusService(iwc).getFinanceService().getAccountLastUpdate(account.getAccountId());
+        table.add(formatText(new IWTimestamp().getLocaleDate(iwc.getCurrentLocale())),2,row);
 
-        float balance = account.getBalance();
+        double balance = getCampusService(iwc).getFinanceService().getAccountBalancePublished(account.getAccountId());
         boolean debet = balance >= 0 ? true : false ;
         String color = "";
           if ( debet ) color = "#0000FF";
           else color = "#FF0000";
-
-        table.add(formatText(Float.toString(balance),color),3,row);
+        
+        table.add(getAmountText((balance)),3,row);
         table.setAlignment(3,row,"right");
         row++;
       }

@@ -10,6 +10,8 @@ import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -28,6 +30,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
 
 /**
  * CampusAccountTariffer
@@ -57,18 +60,25 @@ public class CampusAccountTariffer extends AccountTariffer {
 		DataTable T = getDataTable();
 		T.setUseBottom(false);
 		T.setWidth(Table.HUNDRED_PERCENT);
-		T.setTitlesVertical(true);
+		T.setTitlesVertical(false);
 		if(getAccountId()!=null){
 		try {
-			ContractAccountApartment caa =getContractAccountApartmentHome().findByAccountAndRented(getAccountId(),true);
-			T.add(getHeader(localize("apartment","Apartment")),1,1);
-			Apartment apartment = getApartmentHome().findByPrimaryKey(new Integer(caa.getApartmentId()));
-			Building building = getBuildingHome().findByPrimaryKey(new Integer(caa.getBuildingId()));
-			T.add(getText(apartment.getName()+" ,"+building.getName()),2,1);
-			T.add(getHeader(localize("contract_period","Contract period")),1,2);
-			DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
-			T.add(getText(df.format(caa.getValidFrom())+" - "+df.format(caa.getValidTo())),2,2);
-			T.add(new HiddenInput(getExternalIDParameter(),String.valueOf(caa.getApartmentId())));
+			int row = 1;
+			T.add(getHeader(localize("apartment","Apartment")),1,row);
+			T.add(getHeader(localize("contract_period","Contract period")),2,row);
+			Collection caas =getContractAccountApartmentHome().findByAccount(getAccountId());
+			for (Iterator iter = caas.iterator(); iter.hasNext();) {
+				ContractAccountApartment caa = (ContractAccountApartment) iter.next();
+				
+				Apartment apartment = getApartmentHome().findByPrimaryKey(new Integer(caa.getApartmentId()));
+				Building building = getBuildingHome().findByPrimaryKey(new Integer(caa.getBuildingId()));
+				T.add(getText(apartment.getName()+" ,"+building.getName()),1,1);
+				
+				DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
+				T.add(getText(df.format(caa.getValidFrom())+" - "+df.format(caa.getValidTo())),2,2);
+				RadioButton rb = new RadioButton(getExternalIDParameter(),String.valueOf(caa.getApartmentId()));
+				T.add(rb,3,2);
+			}
 			
 		} catch (IDOLookupException e) {
 			e.printStackTrace();

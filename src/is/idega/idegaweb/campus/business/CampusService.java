@@ -1,5 +1,9 @@
 package is.idega.idegaweb.campus.business;
 
+import java.rmi.RemoteException;
+
+import com.idega.block.finance.business.FinanceService;
+
 
 public interface CampusService extends com.idega.business.IBOService
 {
@@ -8,4 +12,8 @@ public interface CampusService extends com.idega.business.IBOService
  public is.idega.idegaweb.campus.business.CampusSettings getCampusSettings() throws java.rmi.RemoteException;
  public is.idega.idegaweb.campus.block.allocation.business.ContractService getContractService()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSettings(is.idega.idegaweb.campus.business.CampusSettings p0) throws java.rmi.RemoteException;
+/**
+ * @return
+ */
+ public FinanceService getFinanceService()throws RemoteException;
 }

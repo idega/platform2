@@ -10,6 +10,7 @@ import is.idega.idegaweb.campus.business.CampusService;
 import is.idega.idegaweb.campus.business.CampusSettings;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -566,5 +567,13 @@ public abstract class CampusBlock extends Block {
 	
 	public ContractService getContractService(IWContext iwc)throws RemoteException{
 		return (ContractService) IBOLookup.getServiceInstance(iwc,ContractService.class);
+	}
+	
+	public NumberFormat getCurrencyFormat(){
+		return java.text.NumberFormat.getCurrencyInstance(this.getIWApplicationContext().getApplicationSettings().getDefaultLocale());
+	}
+	
+	public Text getAmountText(double amount){
+		return getText(getCurrencyFormat().format(amount));
 	}
 }
