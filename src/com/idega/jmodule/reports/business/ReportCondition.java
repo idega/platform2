@@ -1,6 +1,6 @@
 package com.idega.jmodule.reports.business;
 
-import com.idega.block.reports.data.*;
+import com.idega.jmodule.reports.data.*;
 import java.util.StringTokenizer;
 import java.sql.SQLException;
  /**

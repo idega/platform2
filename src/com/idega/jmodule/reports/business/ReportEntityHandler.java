@@ -3,7 +3,7 @@ package com.idega.jmodule.reports.business;
 import java.io.*;
 import java.util.*;
 import java.sql.SQLException;
-import com.idega.block.reports.data.*;
+import com.idega.jmodule.reports.data.*;
 
 /**
  * Title:

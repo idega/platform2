@@ -3,7 +3,7 @@ package com.idega.jmodule.reports.business;
 import java.io.*;
 import java.util.*;
 import com.idega.jmodule.object.ModuleInfo;
-import com.idega.block.reports.data.Report;
+import com.idega.jmodule.reports.data.Report;
 
 /**
  * Title:

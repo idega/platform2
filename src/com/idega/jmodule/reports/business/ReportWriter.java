@@ -5,7 +5,7 @@ import java.util.*;
 import java.sql.*;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
-import com.idega.block.reports.data.Report;
+import com.idega.jmodule.reports.data.Report;
 import com.idega.util.database.ConnectionBroker;
 
 
