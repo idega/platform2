@@ -130,7 +130,10 @@ public void main(ModuleInfo modinfo)throws Exception{
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
 
+    ImageBusiness.storeEditForm(modinfo);
+
   outerTable.add(getEditForm(),1,2);
+
 
   if( refresh ){
     modinfo.getSession().removeAttribute("image_previous_catagory_id");
