@@ -88,4 +88,11 @@ public class GroupApplicationTab extends UserTab {
 	private GroupApplicationBusiness getGroupApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (GroupApplicationBusiness) IBOLookup.getServiceInstance(iwac, GroupApplicationBusiness.class);	
 	}
+	
+	/**
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return "is.idega.idegaweb.member";
+	}
 }

@@ -26,9 +26,7 @@ public class GroupApplicationFormHandler extends Block {
 	private static final String GROUPS_PARAM = "groups";
 	private static final String GENDER_PARAM = "gender";
 	
-	private static final String GENDER_MALE = "m";
-	private static final String GENDER_FEMALE = "f";
-		
+	
 
 	private Group applicationGroup = null;
 	
@@ -52,15 +50,16 @@ public class GroupApplicationFormHandler extends Block {
 				
 				String name = iwc.getParameter(USER_NAME_PARAM);
 				String pin = iwc.getParameter(PIN_PARAM);
-				String phone = iwc.getParameter(PHONE_PARAM);
-				String address = iwc.getParameter(ADDRESS_PARAM);
-				String email = iwc.getParameter(EMAIL_PARAM);
-				String comment = iwc.getParameter(COMMENT_PARAM);
 				String gender = iwc.getParameter(GENDER_PARAM);
+				String email = iwc.getParameter(EMAIL_PARAM);
+				String address = iwc.getParameter(ADDRESS_PARAM);
+				String phone = iwc.getParameter(PHONE_PARAM);
+				String comment = iwc.getParameter(COMMENT_PARAM);
+
 				
 				String[] groups = iwc.getParameterValues(GROUPS_PARAM);
 				
-				biz.createGroupApplication(name,pin,gender);
+				biz.createGroupApplication(applicationGroup,name,pin,gender,email,address,phone,comment);
 				
 
 			
@@ -87,4 +86,11 @@ public class GroupApplicationFormHandler extends Block {
 	
 
 	  
+	/**
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return "is.idega.idegaweb.member";
+	}
+
 }

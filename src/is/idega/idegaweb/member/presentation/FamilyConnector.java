@@ -233,4 +233,11 @@ public class FamilyConnector extends Window {
 		}
 		return business;
 	}
+	
+		/**
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return "is.idega.idegaweb.member";
+	}
 }

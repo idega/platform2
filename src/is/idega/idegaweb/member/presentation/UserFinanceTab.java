@@ -73,5 +73,12 @@ public class UserFinanceTab extends UserTab {
 	 */
 	public void initFieldContents() {
 	}
+	
+		/**
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return "is.idega.idegaweb.member";
+	}
 
 }

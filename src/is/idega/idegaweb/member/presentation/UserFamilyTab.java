@@ -258,4 +258,11 @@ public class UserFamilyTab extends UserTab {
 		}
 		return familyLogic;
 	}
+	
+		/**
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return "is.idega.idegaweb.member";
+	}
 }
