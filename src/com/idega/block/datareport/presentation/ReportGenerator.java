@@ -47,6 +47,7 @@ import com.idega.block.datareport.xml.methodinvocation.MethodDescription;
 import com.idega.block.datareport.xml.methodinvocation.MethodInput;
 import com.idega.block.datareport.xml.methodinvocation.MethodInvocationDocument;
 import com.idega.block.datareport.xml.methodinvocation.MethodInvocationParser;
+import com.idega.business.HiddenInputHandler;
 import com.idega.business.IBOLookup;
 import com.idega.business.InputHandler;
 import com.idega.core.file.data.ICFile;
@@ -403,7 +404,7 @@ public class ReportGenerator extends Block {
 									iHandler = cHandler.getHandler();
 								}
 
-								if (iHandler != null) {
+								if (iHandler != null && !(iHandler instanceof HiddenInputHandler)) {
 									obj = iHandler.getResultingObject(prmValues, iwc);
 									String displayNameOfValue = iHandler.getDisplayNameOfValue(obj, iwc);
 									if (displayNameOfValue != null) {
