@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import com.idega.block.school.business.SchoolBusiness;
-//import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
@@ -81,10 +80,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/01 11:32:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 14:00:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -560,8 +559,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             final Regulation regulation
                     = (Regulation) regulations.iterator ().next ();
             final String regulationName = regulation.getName ();
+            final RegulationSpecType regSpecType = regulation.getRegSpecType ();
             final Integer regSpecTypeId
-                    = (Integer) regulation.getRegSpecType ().getPrimaryKey ();
+                    = (Integer) regSpecType.getPrimaryKey ();
             final VATRule vatRule = regulation.getVATRegulation ();
             final SchoolCategory category = header.getSchoolCategory ();
             final RegulationsBusiness regulationsBusiness
@@ -570,21 +570,56 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     = regulationsBusiness.getSchoolType (regulation);
             final PostingBusiness postingBusiness
                     = getPostingBusiness (context);
+            inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
+                                                       regulationName));
+            inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY,
+                                                          regulationName));
+            inputs.put (AMOUNT_KEY, getStyledInput
+                        (AMOUNT_KEY, regulation.getAmount () + ""));
+            inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
+            inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
+                        (business.getAllRegulationSpecTypes (), regSpecType));
+            inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
+                        (business.getAllVatRules (), vatRule));
             try {
                 final String [] postings = postingBusiness.getPostingStrings
                         (category, schoolType, regSpecTypeId.intValue (),
                          provider, period);	
-                add ("own=" + postings [0]);
-                add ("double=" + postings [1]);
+                final PresentationObject ownPostingForm
+                        = getPostingParameterForm (context, OWN_POSTING_KEY,
+                                                   postings [0]);
+                inputs.put (OWN_POSTING_KEY, ownPostingForm);
+                final PresentationObject doublePostingForm
+                        = getPostingParameterForm (context, DOUBLE_POSTING_KEY,
+                                                   postings [1]);
+                inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
             } catch (PostingException e) {
                 e.printStackTrace ();
+                inputs.put (OWN_POSTING_KEY, getPostingParameterForm
+                            (context, OWN_POSTING_KEY));
+                inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+                            (context, DOUBLE_POSTING_KEY));
             }
         } else {
             if (!regulations.isEmpty ()) {
-                add (regulations);                
+                final Table table = createTable (1);
+                int row = 1;
+                for (Iterator i = regulations.iterator (); i.hasNext ();) {
+                    final Regulation regulation = (Regulation) i.next ();
+                    final Link link = getSmallLink (regulation.getName ());
+                    link.addParameter (ACTION_KEY,
+                                       context.getParameter (ACTION_KEY));
+                    link.addParameter (RULE_TEXT_KEY, regulation.getName ());
+                    link.addParameter
+                            (INVOICE_COMPILATION_KEY, context.getParameter
+                             (INVOICE_COMPILATION_KEY));
+                    table.add (link, 1, row++);
+                }
+                inputs.put (RULE_TEXT_LINK_LIST_KEY, table);
             }
             inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
                                                        searchString));
+            inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
             inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
             inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
             inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
@@ -598,7 +633,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
         inputs.put (INVOICE_RECEIVER_KEY, getSmallText (getUserInfo
                                                         (custodian)));
-        inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
         inputs.put (CHECK_START_PERIOD_KEY, getStyledInput
                     (CHECK_START_PERIOD_KEY, nowPeriod));
         inputs.put (CHECK_END_PERIOD_KEY, getStyledInput
@@ -2104,13 +2138,24 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private DropdownMenu getLocalizedDropdown (final VATRule [] rules) {
+        return getLocalizedDropdown (rules, null);
+    }
+
+    private DropdownMenu getLocalizedDropdown
+        (final VATRule [] rules, final VATRule defaultRule) {
         final DropdownMenu dropdown = (DropdownMenu)
                 getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
+        final Object defaultRuleId = null != defaultRule
+                ? defaultRule.getPrimaryKey () : null;
         for (int i = 0; i < rules.length; i++) {
             final VATRule rule = rules [i];
             final String ruleName = rule.getVATRule ();
-            dropdown.addMenuElement (rule.getPrimaryKey () + "",
+            final Object ruleId = rule.getPrimaryKey ();
+            dropdown.addMenuElement (ruleId + "",
                                      localize (ruleName, ruleName));
+            if (null != defaultRuleId && defaultRuleId.equals (ruleId)) {
+                dropdown.setSelectedElement (ruleId + "");
+            }
         }
         return dropdown;
     }
@@ -2177,8 +2222,29 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
         return dropdown;
     }
+ 
+    private DropdownMenu getLocalizedDropdown
+        (final RegulationSpecType [] types,
+         final RegulationSpecType defaultType) {
+        final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                (new DropdownMenu (REGULATION_SPEC_TYPE_KEY));
+        final Object defaultTypeId = null != defaultType
+                ? defaultType.getPrimaryKey () : null;
+        for (int i = 0; i < types.length; i++) {
+            final RegulationSpecType type = types [i];
+            final Object typeId = type.getPrimaryKey ();
+            final String name = type.getRegSpecType ();
+            if (null != name && !name.endsWith (".blank")) {
+                dropdown.addMenuElement (typeId + "", localize (name, name));
+            }
+            if (null != defaultTypeId && defaultTypeId.equals (typeId)) {
+                dropdown.setSelectedElement (typeId + "");
+            }
+        }
+        return dropdown;
+    }
 
-    private static RegulationHome getRegulationHome ()
+   private static RegulationHome getRegulationHome ()
         throws IDOLookupException {
         return (RegulationHome) IDOLookup.getHome (Regulation.class);
     }
