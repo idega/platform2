@@ -62,6 +62,9 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+			//TODO (JJ) change to use ExportDataMapping.getAccountSettlement
+			// and ExportBusinessBean.getAccountSettlementTypeXXXX() instead of the 
+			// if statement below
 			if(invoiceBusiness.isHighShool(schoolCategory)){
 				readDateInput = new DateInput(PARAM_READ_DATE,true);
 				String date = iwc.getParameter(PARAM_READ_DATE);

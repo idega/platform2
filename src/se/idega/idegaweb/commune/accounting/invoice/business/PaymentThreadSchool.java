@@ -71,11 +71,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/06 16:47:50 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/12 14:21:27 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.117 $
+ * @version $Revision: 1.118 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -102,24 +102,24 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		validFritidsklubbYears.add("S6");
 	}
 
-	private static final HashSet FritidsklubbYears = new HashSet();
+	private static final HashSet fritidsklubbYears = new HashSet();
 	{
-		validFritidsklubbYears.add("Fr4");
-		validFritidsklubbYears.add("Fr5");
-		validFritidsklubbYears.add("Fr6");
+		fritidsklubbYears.add("Fr4");
+		fritidsklubbYears.add("Fr5");
+		fritidsklubbYears.add("Fr6");
 	}
 
 	private static final HashSet validOppenVerksamhet = new HashSet();
 	{
-		validFritidsklubbYears.add("1");
-		validFritidsklubbYears.add("2");
-		validFritidsklubbYears.add("3");
-		validFritidsklubbYears.add("S1");
-		validFritidsklubbYears.add("S2");
-		validFritidsklubbYears.add("S3");
-		validFritidsklubbYears.add("G1");
-		validFritidsklubbYears.add("G2");
-		validFritidsklubbYears.add("G3");
+		validOppenVerksamhet.add("1");
+		validOppenVerksamhet.add("2");
+		validOppenVerksamhet.add("3");
+		validOppenVerksamhet.add("S1");
+		validOppenVerksamhet.add("S2");
+		validOppenVerksamhet.add("S3");
+		validOppenVerksamhet.add("G1");
+		validOppenVerksamhet.add("G2");
+		validOppenVerksamhet.add("G3");
 	}
 
 	public PaymentThreadSchool(Date month, IWContext iwc) {
@@ -161,7 +161,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					school = (School) i.next();
 //					school = getSchoolHome().findByPrimaryKey(new Integer(8));
 					errorRelated = new ErrorLogger();
-					errorRelated.append("School " + school.getName(),1);
+					errorRelated.append("School:" + school.getName(),1);
 					final boolean schoolIsInDefaultCommune;
 					final boolean schoolIsPrivate;
 					Provider provider = null;
@@ -169,17 +169,17 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
 						//Only look at those not "payment by invoice"
 						//Check if it is private or in Nacka
-						errorRelated.append("School commune: " + school.getCommune().getCommuneName());
+						errorRelated.append("School commune:" + school.getCommune().getCommuneName());
 						schoolIsInDefaultCommune = school.getCommune().getIsDefault();
 						schoolIsPrivate = provider.getProviderTypeId() == privateType;
 					}
 					catch (NullPointerException e) {
-						errorRelated.append(e);
+//						errorRelated.append(e);
 						throw new SchoolMissingVitalDataException("");
 					}
 //					errorRelated.logToConsole();
 					if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
-						ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated.toString());
+						ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated);
 						Collection pupils = getSchoolClassMembers(school);
 						Iterator j = pupils.iterator();
 //						for (Iterator j = getSchoolClassMembers(school).iterator(); j.hasNext();) {
@@ -332,25 +332,25 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
 			throws FinderException, EJBException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 
-		errorRelated.append("SchoolClassMemeber: "+schoolClassMember.getPrimaryKey());
+		errorRelated.append("SchoolClassMemeber:"+schoolClassMember.getPrimaryKey());
 		if (null != schoolClassMember.getStudent()) {
-			errorRelated.append("Student "+schoolClassMember.getStudent().getName());
-			errorRelated.append("Student P#"+schoolClassMember.getStudent().getPersonalID());
+			errorRelated.append("Student:"+schoolClassMember.getStudent().getName()+"; P#"+schoolClassMember.getStudent().getPersonalID());
 		}
 //		errorRelated.logToConsole();
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
 		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
 		final boolean placementIsInValidGroup = schoolClassMember.getSchoolClass().getValid();
 		final boolean comp_by_agreement = schoolClassMember.getHasCompensationByAgreement();
-		errorRelated.append("Default Commune "+userIsInDefaultCommune);
-		errorRelated.append("Valid group "+placementIsInValidGroup);
-		errorRelated.append("Comp by agreement "+comp_by_agreement);
+//		errorRelated.append("Default Commune "+userIsInDefaultCommune);
+//		errorRelated.append("Valid group "+placementIsInValidGroup);
+//		errorRelated.append("Comp by agreement "+comp_by_agreement);
 		if (placementIsInValidGroup && placementIsInPeriod
 				&& (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)
 				&& !comp_by_agreement) {
+			//sdfgsfdg
 			ArrayList conditions = getConditions(schoolClassMember, provider);
 			School school = schoolClassMember.getSchoolClass().getSchool();
-			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + calculationDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
+			errorRelated.append("Date:" + calculationDate.toString());
 			//Get the check
 			currentProvider = provider;
 			PostingDetail postingDetail = getCheck(regBus, conditions,schoolClassMember); 
@@ -413,9 +413,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 //					errorRelated = new ErrorLogger();
 					User user = null != schoolClassMember ? schoolClassMember.getStudent() : null;
 					String studentInfo = null != user ? user.getName() + " " + user.getPersonalID() : "";
-					errorRelated.append("Student = " + studentInfo);
-					errorRelated.append("Conditions = " + conditions);
-					errorRelated.append("Resource = " + resource);
+					errorRelated.append("Student:" + studentInfo);
+					errorRelated.append("Conditions:" + conditions);
+					errorRelated.append("Resource:" + resource);
 //					java.io.StringWriter sw = new java.io.StringWriter();
 //					e.printStackTrace(new java.io.PrintWriter(sw, true));
 					errorRelated.append(e);
@@ -536,13 +536,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		String schoolYearName = schoolClassMember.getSchoolClass().getName();
 		int len = schoolYearName.length();
 		String schoolYearCM = schoolYearName.substring(len-1,len);
+//		System.out.println("SchoolYear:"+schoolYearName+"  or "+schoolYearCM);
 		
 		Iterator yearIter = school.findRelatedSchoolYears().iterator();
 		//check if school has a fritidsklubb year same as the school year for the placement
 		boolean yearFound = false;
 		while(yearIter.hasNext()){
 			SchoolYear schoolYear = (SchoolYear) yearIter.next();
-			if(FritidsklubbYears.contains(schoolYear.getName())){
+//			System.out.println("SchoolYear to test if it is fritidsklub year:"+schoolYearName+"  or "+schoolYearCM);
+			if(fritidsklubbYears.contains(schoolYear.getName())){
 				schoolYearName = schoolYear.getName();
 				len = schoolYearName.length();
 				String schoolYearS = schoolYearName.substring(len-1,len);
@@ -756,7 +758,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		int studyPathId = schoolClassMember.getStudyPathId();
 		if (studyPathId != -1) {
 			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(studyPathId)));
-			errorRelated.append("Study path ID " + schoolClassMember.getStudyPathId());
+//			errorRelated.append("Study path ID " + schoolClassMember.getStudyPathId());
 			try {
 				SchoolStudyPath schoolStudyPath = ((SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class)).findByPrimaryKey(new Integer(schoolClassMember.getStudyPathId()));
 				errorRelated.append("Study path code " + schoolStudyPath.getCode());
