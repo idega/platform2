@@ -9,22 +9,20 @@ package se.idega.idegaweb.ehealth.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
-//import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.RadioGroup;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-//import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserSearcher;
+import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
 import com.idega.util.text.TextSoap;
@@ -60,6 +58,8 @@ public class CareLinkSearchPatient extends EHealthBlock {
 	private static final String AGREE_TEXT_3_DEFAULT = "Yes, ";
 	private static final String AGREE_TEXT_4_DEFAULT = "Yes, until..";
 	private static final String NEXT_DEFAULT =  "Next";
+	
+	private String prmTo = PREFIX + "to";
 	
 	private String searchString;
 	private String personalID = null;
@@ -228,21 +228,54 @@ public class CareLinkSearchPatient extends EHealthBlock {
 		table.setCellspacing(0);
 		form.add(table);
 		
-		final RadioGroup radioGroup = new RadioGroup (PARAMETER_AGREE);
-		radioGroup.addRadioButton (localize (AGREE_TEXT_1_KEY, AGREE_TEXT_1_DEFAULT));
-		radioGroup.addRadioButton (localize (AGREE_TEXT_2_KEY, AGREE_TEXT_2_DEFAULT));
-		radioGroup.addRadioButton (localize (AGREE_TEXT_3_KEY, AGREE_TEXT_3_DEFAULT));
-		radioGroup.addRadioButton (localize (AGREE_TEXT_4_KEY, AGREE_TEXT_4_DEFAULT));
+		table.setBorder(0);
+		table.setWidth(3, 1, "15");
+		
+		TextInput textip = new TextInput();
+		textip.setStyleClass("ehealth_Interface");
+		textip.setLength(30);
+		
+		IWTimestamp stamp = new IWTimestamp();
+		
+		DateInput to = (DateInput) getStyledInterface(new DateInput(prmTo, true));
+		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
+		
+		final RadioButton radiobut1 = getRadioButton(PARAMETER_AGREE, localize (AGREE_TEXT_1_KEY, AGREE_TEXT_1_DEFAULT));
+		final RadioButton radiobut2 = getRadioButton(PARAMETER_AGREE, localize (AGREE_TEXT_2_KEY, AGREE_TEXT_2_DEFAULT));
+		final RadioButton radiobut3 = getRadioButton(PARAMETER_AGREE, localize (AGREE_TEXT_3_KEY, AGREE_TEXT_3_DEFAULT));
+		final RadioButton radiobut4 = getRadioButton(PARAMETER_AGREE, localize (AGREE_TEXT_4_KEY, AGREE_TEXT_4_DEFAULT));
+		
+		Text tradio1 = getLocalizedText(AGREE_TEXT_1_KEY, AGREE_TEXT_1_DEFAULT);
+		Text tradio2 = getLocalizedText(AGREE_TEXT_2_KEY, AGREE_TEXT_2_DEFAULT);
+		Text tradio3 = getLocalizedText(AGREE_TEXT_3_KEY, AGREE_TEXT_3_DEFAULT);
+		Text tradio4 = getLocalizedText(AGREE_TEXT_4_KEY, AGREE_TEXT_4_DEFAULT);
 		
 		GenericButton send = getButton(new GenericButton("next", localize(NEXT_KEY, NEXT_DEFAULT)));
 		
-		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		table.add(new Break(2), 3, 1);
 		
-		table.add(radioGroup, 1, 1);
-		table.setHeight(2, 1, "20");
-		table.add(send, 3, 1);
+		table.setVerticalAlignment(4, 1, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(4, 5, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setAlignment(4, 5, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setAlignment(4, 4, Table.HORIZONTAL_ALIGN_RIGHT);
+		
+	//	table.add(new Break(2), 3, 1);
+		
+		table.add(radiobut1, 1, 1);
+		table.add(radiobut2, 1, 2);
+		table.add(radiobut3, 1, 3);
+		table.add(radiobut4, 1, 4);
+		
+		table.add(tradio1, 2, 1);
+		table.add(tradio2, 2, 2);
+		table.add(tradio3, 2, 3);
+		table.add(tradio4, 2, 4);
+		
+		table.add(textip, 4, 2);
+		table.add(to, 4, 4);
+		
+		table.setHeight(4, 5, "25");
+		table.add(send, 4, 5);
+		
 		
 		add(form);
 	}
