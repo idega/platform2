@@ -265,21 +265,25 @@ private Table myTable;
         textTable.add(clubText,1,7);
 
         Table imageTable = new Table();
-                imageTable.setAlignment(1,1,"center");
-                imageTable.setBorder(0);
-                imageTable.setAlignment("center");
-                imageTable.setCellpadding(0);
-                imageTable.setCellspacing(1);
-                imageTable.setColor("#000000");
-                imageTable.setColor(1,1,"#CEDFD0");
+          imageTable.setAlignment(1,1,"center");
+          imageTable.setBorder(0);
+          imageTable.setAlignment("center");
+          imageTable.setCellpadding(0);
+          imageTable.setCellspacing(1);
+          imageTable.setColor("#000000");
+          imageTable.setColor(1,1,"#CEDFD0");
 
-        Image memberImage = new Image(memberInfo.getImageId());
-                if ( memberImage.getURL().equals("/servlet/imageModule?image_id=1") ) {
-                        memberImage = iwrb.getImage("/member/x2.gif");
-                }
-              memberImage.setMaxImageWidth(102);
-              memberImage.setAttribute("alt",memberInfo.getName());
-              memberImage.setAttribute("align","absmiddle");
+        Image memberImage = null;
+          if ( memberInfo.getImageId() == 1 ) {
+            memberImage = iwrb.getImage("/member/x2.gif");
+          }
+          else {
+            memberImage = new Image(memberInfo.getImageId());
+          }
+
+          memberImage.setMaxImageWidth(102);
+          memberImage.setAttribute("alt",memberInfo.getName());
+          memberImage.setAttribute("align","absmiddle");
 
         Image swingImage = new Image("/pics/handicap/swing.gif","",161,300);
 
