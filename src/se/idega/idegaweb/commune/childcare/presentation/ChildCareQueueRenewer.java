@@ -32,13 +32,11 @@ public class ChildCareQueueRenewer extends ChildCareBlock {
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
 
-		Table table = new Table(1,3);
+		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
 		table.setHeight(2, 12);
-		table.setHeight(4, 6);
-		table.setHeight(6, 12);
 		
 		if (getResponsePage() == null) {
 			throw new RemoteException("Response page must be set...");
