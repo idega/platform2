@@ -3,8 +3,13 @@
  */
 package com.idega.block.school.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
 
 /**
  * @author laddi
@@ -17,6 +22,12 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	public static final String COLUMN_NAME = "category_name";
 	public static final String COLUMN_LOCALIZED_KEY = "localized_key";
 	
+	public static final String CATEGORY_CHILD_CARE = "CHILD_CARE";
+	public static final String CATEGORY_PRIMARY_SCHOOL = "PRIMARY_SCHOOL";
+	public static final String CATEGORY_HIGH_SCHOOL = "HIGH_SCHOOL";
+	public static final String CATEGORY_COLLEGE = "COLLEGE";
+	public static final String CATEGORY_UNIVERSITY = "UNIVERSITY";
+	
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
 	 */
@@ -28,7 +39,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	 * @see com.idega.data.GenericEntity#insertStartData()
 	 */
 	public void insertStartData() throws Exception {
-		String[] categories = { "CHILD_CARE", "PRIMARY_SCHOOL", "HIGH_SCHOOL", "COLLEGE", "UNIVERSITY" };
+		String[] categories = { CATEGORY_CHILD_CARE, CATEGORY_PRIMARY_SCHOOL, CATEGORY_HIGH_SCHOOL, CATEGORY_COLLEGE, CATEGORY_UNIVERSITY };
 		String[] names = { "Child care", "Primary school", "High school", "College", "University" };
 		
 		SchoolCategoryHome categoryHome = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
@@ -38,7 +49,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 			category = categoryHome.create();
 			category.setCategory(categories[i]);
 			category.setName(names[i]);
-			category.setLocalizedKey("sch."+categories[i]);
+			category.setLocalizedKey("school_category."+categories[i]);
 			category.store();
 		}
 	}
@@ -63,7 +74,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	
 	//Setters
 	public void setCategory(String category) {
-		setColumn(COLUMN_CATEGORY, category);
+		setColumn(COLUMN_CATEGORY, category.toUpperCase());
 	}
 
 	public void setName(String name) {
@@ -86,5 +97,14 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 
 	public String getLocalizedKey() {
 		return getStringColumnValue(COLUMN_LOCALIZED_KEY);
+	}
+	
+	
+	//Find methods
+	public Collection ejbFindAllCategories() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		
+		return idoFindPKsByQuery(query);
 	}
 }
