@@ -1790,11 +1790,15 @@ public class HotelBookingForm extends BookingForm {
 			if (max < 1) {
 				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 				ServiceDay sDay;// = sDayHome.create();
-				sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
-		  
-				if (sDay != null) {
-					max = sDay.getMax();
+				try {
+					sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
+					if (sDay != null) {
+						max = sDay.getMax();
+					}
+				}catch (Exception e) {
+					logDebug("No serviceDay found for product: "+product.getID());
 				}
+		  
 			}
 		}
 	
