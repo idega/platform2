@@ -1,12 +1,19 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.core.data.ICFile;
+import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.block.presentation.ImageWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
 
 /**
  *  Title: idegaWeb TravelBooking Description: Copyright: Copyright (c) 2001
@@ -22,6 +29,7 @@ public class ProductItemThumbnail extends ProductItem {
   private Image defaultImage = _defaultImage;
   private int _width = 0;
   private int _height = 0;
+  private boolean _clickableThumbnail;
 
   /**
    *  Constructor for the ProductItemThumbnail object
@@ -63,7 +71,38 @@ public class ProductItemThumbnail extends ProductItem {
       if ( _height > 0 ) {
         image.setWidth( _height );
       }
-      add( image );
+      
+		  if (_clickableThumbnail) {
+				List images = null;
+				try {
+					if (_product != null) {
+						Collection coll = _product.getICFile();
+						if (coll != null)
+							images = new Vector(coll);
+						else
+							images = new Vector();
+						//	images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
+					}
+					else {
+						images = new Vector();
+					}
+				}
+				catch (IDORelationshipException ido) {
+					ido.printStackTrace(System.err);
+					images = new Vector();
+				}
+
+				if (!images.isEmpty()) {
+					Link imageLink = new Link(image);
+					imageLink.setWindowToOpen(ImageWindow.class);
+					imageLink.addParameter(ImageWindow.prmImageId, ((ICFile) images.get(0)).getPrimaryKey().toString());
+					add(imageLink);
+				}
+				else
+					add(image);
+			}
+		  else
+      	add( image );
     }
   }
 
@@ -85,4 +124,7 @@ public class ProductItemThumbnail extends ProductItem {
     _height = height;
   }
 
+	public void setClickableThumbnail(boolean clickableThumbnail) {
+		_clickableThumbnail = clickableThumbnail;
+	}
 }

@@ -73,6 +73,8 @@ public class ProductViewer extends Block {
   boolean _showImages = true;
   boolean _addCategoryID = false;
 
+ boolean _showMetaData = true;
+
   public ProductViewer() { }
 
 
@@ -289,6 +291,10 @@ public class ProductViewer extends Block {
 
   public void setShowThumbnail(boolean showThumbnail) {
     _showThumbnail = showThumbnail;
+  }
+
+  public void setShowMetaData(boolean showMetaData) {
+		_showMetaData = showMetaData;
   }
 
   public void setSpaceBetweenTitleAndBody(String spaceBetween) {

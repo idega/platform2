@@ -14,6 +14,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -38,8 +39,10 @@ public class ProductItem extends Block {
   protected int _localeId = -1;
   protected Image _defaultImage;
   protected IWResourceBundle _iwrb;
+  protected IWBundle _iwb;
 
   private String _fontStyle;
+  private String _headerFontStyle;
 
   public ProductItem() {
   }
@@ -74,7 +77,8 @@ public class ProductItem extends Block {
     }
     this._locale = iwc.getCurrentLocale();
     this._localeId = ICLocaleBusiness.getLocaleId(_locale);
-    this._iwrb = iwc.getApplication().getBundle(getBundleIdentifier()).getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
+    this._iwrb = _iwb.getResourceBundle(iwc);
 
     String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.image";
     _defaultImage = iwc.getApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", _locale);
@@ -86,6 +90,14 @@ public class ProductItem extends Block {
       text.setFontStyle(this._fontStyle);
     }
     return text;
+  }
+
+  protected Text getHeaderText(String content) {
+	Text text = new Text(content);
+	if (this._headerFontStyle != null) {
+	  text.setFontStyle(this._headerFontStyle);
+	}
+	return text;
   }
 
   protected Image getImage(int imageId) {
@@ -109,6 +121,10 @@ public class ProductItem extends Block {
 
   public void setFontStyle(String style) {
     this._fontStyle = style;
+  }
+
+  public void setHeaderFontStyle(String style) {
+		this._headerFontStyle = style;
   }
 
   protected StockroomBusiness getStockroomBusiness(IWApplicationContext iwac) throws RemoteException{

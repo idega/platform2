@@ -246,6 +246,7 @@ public class CategoryWindow extends IWAdminWindow {
 		}
 		T.add(formatText("  "+iwrb.getLocalizedString("add_child", "Add child")+"  "),5,row);
 		T.add(formatText("  "+iwrb.getLocalizedString("delete", "Delete")+"  "),6,row);
+		T.add(formatText("  "+iwrb.getLocalizedString("metadata", "Metadata")+"  "),7,row);
 		row++;
 		TextInput name = new TextInput("name");
 		TextInput info = new TextInput("info");
@@ -315,6 +316,7 @@ public class CategoryWindow extends IWAdminWindow {
 			CheckBox box;
 			RadioButton rad;
 			Link deleteLink;
+			Link metadataLink;
 			int id;
 			int iOrder = 0;
 			while (iter.hasNext()) {
@@ -374,6 +376,9 @@ public class CategoryWindow extends IWAdminWindow {
 					deleteLink.addParameter(actDelete, "true");
 					deleteLink.addParameter(prmCategoryId, id);
 					deleteLink.addParameter(actForm, "true");
+					metadataLink = new Link(core.getImage("/shared/edir.gif"));
+					metadataLink.setWindowToOpen(CategoryMetaDataWindow.class);
+					metadataLink.addParameter(CategoryMetaDataWindow.PARAMETER_CATEGORY_ID, id);
 					addParametersToLink(childLink);
 					addParametersToLink(deleteLink);
 					addParametersToLink(Li);
@@ -382,6 +387,7 @@ public class CategoryWindow extends IWAdminWindow {
 					}				
 					T.add(childLink,5,row);
 					T.add(deleteLink, 6, row);
+					T.add(metadataLink, 7, row);
 					
 				}
 				if (multi) {

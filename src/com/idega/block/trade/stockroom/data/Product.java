@@ -1,7 +1,7 @@
 package com.idega.block.trade.stockroom.data;
 
 
-public interface Product extends com.idega.data.IDOEntity
+public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDataCapable
 {
  public void addArrivalAddress(com.idega.core.data.Address p0) throws java.rmi.RemoteException;
  public boolean addCategory(com.idega.block.trade.stockroom.data.ProductCategory p0) throws java.rmi.RemoteException;

@@ -1,17 +1,36 @@
 package com.idega.block.trade.stockroom.data;
 
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import javax.ejb.*;
+import javax.ejb.FinderException;
 
-import com.idega.block.text.business.*;
-import com.idega.block.text.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.core.data.*;
-import com.idega.data.*;
-import com.idega.util.*;
+import com.idega.block.text.business.TextFinder;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.LocalizedTextBMPBean;
+import com.idega.block.text.data.TxText;
+import com.idega.block.trade.stockroom.business.TimeframeComparator;
+import com.idega.core.data.Address;
+import com.idega.core.data.ICFile;
+import com.idega.data.EntityControl;
+import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOException;
+import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.MetaData;
+import com.idega.data.MetaDataCapable;
+import com.idega.util.IWTimestamp;
 
 /**
  *  Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
@@ -23,7 +42,7 @@ import com.idega.util.*;
  *@version    1.0
  */
 
-public class ProductBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.Product, IDOLegacyEntity {
+public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyEntity, MetaDataCapable {
 
   public final static int DISCOUNT_TYPE_ID_AMOUNT = 0;
   public final static int DISCOUNT_TYPE_ID_PERCENT = 1;
@@ -65,6 +84,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     this.addManyToManyRelationShip( Address.class, "SR_PRODUCT_IC_ADDRESS" );
     this.addManyToManyRelationShip( TxText.class );
     this.addManyToManyRelationShip( ICFile.class );
+    addMetaDataRelationship();
   }
 
 
@@ -789,5 +809,11 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     this.idoAddTo(text);
   }
 
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#delete()
+	 */
+	public void delete() throws SQLException {
+		this.removeFrom(MetaData.class);
+		super.delete();
+	}
 }
-
