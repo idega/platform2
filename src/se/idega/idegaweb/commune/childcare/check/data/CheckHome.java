@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.childcare.check.data;
 
+import com.idega.user.data.User;
+
 
 public interface CheckHome extends com.idega.data.IDOHome
 {
@@ -10,6 +12,9 @@ public interface CheckHome extends com.idega.data.IDOHome
  public java.util.Collection findChecks()throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findChecksByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findChecksByUserAndStatus(com.idega.user.data.User p0,java.lang.String p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection findNonApprovedChecks()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection findNonApprovedChecks()throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findByUserAndChild(User user,Integer childID)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findByStatusAndUserAndChild(String status,User user,Integer childID)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findByStatusAndChild(String status,Integer childID)throws javax.ejb.FinderException,java.rmi.RemoteException;
 	public Check findCheckForChild(int p0) throws javax.ejb.FinderException;
 }

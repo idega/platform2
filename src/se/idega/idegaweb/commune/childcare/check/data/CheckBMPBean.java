@@ -279,4 +279,16 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID,childID);
 		return (Integer) super.idoFindOnePKByQuery(query);
 	}
+	
+	public Collection ejbFindByStatusAndChild(String status, Integer child) throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatus(status).appendAndEquals(COLUMN_CHILD_ID,child.intValue()));
+	}
+	
+	public Collection ejbFindByUserAndChild(User user, Integer child) throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByUser(user).appendAndEquals(COLUMN_CHILD_ID,child.intValue()));
+	}
+	
+	public Collection ejbFindByStatusAndUserAndChild(String status,User user,Integer childID) throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByUserAndStatus(user,status).appendAndEquals(COLUMN_CHILD_ID,childID.intValue()));
+	}
 }
