@@ -1,5 +1,5 @@
 /*
- * $Id: StandardMessageArea.java,v 1.1 2004/10/11 13:35:42 aron Exp $
+ * $Id: StandardMessageArea.java,v 1.2 2004/10/11 17:15:25 aron Exp $
  * Created on 8.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,9 @@
 package se.idega.idegaweb.commune.message.presentation;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,10 +34,10 @@ import com.idega.presentation.ui.TextArea;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/11 13:35:42 $ by $Author: aron $
+ *  Last modified: $Date: 2004/10/11 17:15:25 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StandardMessageArea extends CommuneBlock {
     
@@ -124,7 +127,18 @@ public class StandardMessageArea extends CommuneBlock {
      */
     private GenericInput getChoice(MessageContentValue value) {
         RadioButton rad = getRadioButton("RB_"+value.type,value.ID.toString());
-        rad.setOnClick("this.form."+getTextAreaName()+".value='" + value.body + "';");
+        StringReader reader = new StringReader(value.body);
+        BufferedReader breader = new BufferedReader(reader);
+        StringBuffer buffer = new StringBuffer();
+        try {
+            String line;
+            while((line = breader.readLine())!=null){
+               buffer.append(line).append("\\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        rad.setOnClick("this.form."+getTextAreaName()+".value='" + buffer + "';");
         return rad;
     }
 
