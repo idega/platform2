@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.37 2002/07/03 23:31:57 aron Exp $
+ * $Id: CampusApprover.java,v 1.38 2002/07/04 10:36:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1413,9 +1413,9 @@ public class CampusApprover extends Block {
     if (comment != null)
       eCampusApplication.setOtherInfo(comment);
 
-    String key1 = (String)iwc.getParameter("drp_one").trim();
-    String key2 = (String)iwc.getParameter("drp_two").trim();
-    String key3 = (String)iwc.getParameter("drp_three").trim();
+    String key1 = (String)iwc.getParameter("drp_one");
+    String key2 = (String)iwc.getParameter("drp_two");
+    String key3 = (String)iwc.getParameter("drp_three");
     if(key1!=null && key2!=null && key3!=null){
       Applied applied1 = null;
       Applied applied2 = null;
@@ -1493,7 +1493,7 @@ public class CampusApprover extends Block {
 
       }
       if(applied2 !=null && "-1".equals(key2)){
-       
+
          try{
           applied2.delete();
         }
@@ -1503,7 +1503,7 @@ public class CampusApprover extends Block {
           applied3.setOrder(1);
       }
       if(applied3 !=null && "-1".equals(key3)){
-      
+
         try{
         applied3.delete();
         }
