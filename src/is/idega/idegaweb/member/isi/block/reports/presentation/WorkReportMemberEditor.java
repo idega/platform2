@@ -526,9 +526,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       browser.setEntityToPresentationConverter(column, converter);
     }
     // add more columns
-    Collection allFields = new ArrayList(fieldList);
-    allFields.addAll(leagueList);
-    Iterator iterator = allFields.iterator();
+    Iterator iterator = leagueList.iterator();
     int i = 6;
     while (iterator.hasNext())  {
       String leagueName = (String) iterator.next();
