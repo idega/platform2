@@ -430,6 +430,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						ChildCareContract archive = getBusiness().getLatestTerminatedContract(getSession().getChildID());
 						if (archive != null) {
 							IWTimestamp terminationDate = new IWTimestamp(archive.getTerminatedDate());
+							terminationDate.addDays(1);
+														
 							IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
 							dateWarning = localize("child_care.earliest_possible_placement_date", "Earliest possible placement date") + ": " + terminationDate.getLocaleDate(iwc.getLocale(), IWTimestamp.SHORT);
 							if (terminationDate.isLaterThanOrEquals(validFrom)) {
