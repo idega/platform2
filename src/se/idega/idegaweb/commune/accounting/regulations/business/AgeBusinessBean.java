@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.3 2003/08/28 08:50:20 anders Exp $
+ * $Id: AgeBusinessBean.java,v 1.4 2003/09/02 13:57:32 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.sql.Date;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
@@ -22,10 +23,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/08/28 08:50:20 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 13:57:32 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -41,8 +42,9 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_AGE_TO_MISSING = KP + "age_to_missing";
 	public final static String KEY_AGE_TO_VALUE = KP + "age_to_value";
 	public final static String KEY_AGE_VALUES = KP + "age_values";
+	public final static String KEY_AGE_OVERLAP = KP + "age_overlap";
 	public final static String KEY_DESCRIPTION_MISSING = KP + "description_missing";
-	public final static String KEY_CUT_DATE_MISSING = KP + "cut_date_missing";
+//	public final static String KEY_CUT_DATE_MISSING = KP + "cut_date_missing";
 	public final static String KEY_CANNOT_SAVE_AGE_REGULATION = KP + "cannot_save_age_regulation";
 	public final static String KEY_CANNOT_DELETE_AGE_REGULATION = KP + "cannot_delete_age_regulation";
 	public final static String KEY_CANNOT_FIND_AGE_REGULATION = KP + "cannot_find_age_regulation";
@@ -57,8 +59,9 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_AGE_TO_MISSING = "lder till mŒste fyllas i.";
 	public final static String DEFAULT_AGE_TO_VALUE = "lder till mŒste vara mellan 0 och 18.";
 	public final static String DEFAULT_AGE_VALUES = "lder till mŒste vara mindre Šn Œlder frŒn.";
+	public final static String DEFAULT_AGE_OVERLAP = "ldersintervall fŒr ej šverlappa. Det finns redan en regel inom detta intervall.";
 	public final static String DEFAULT_DESCRIPTION_MISSING = "BenŠmning av Œldersregeln mŒste fyllas i.";
-	public final static String DEFAULT_CUT_DATE_MISSING = "Brytdatum mŒste fyllas i.";
+//	public final static String DEFAULT_CUT_DATE_MISSING = "Brytdatum mŒste fyllas i.";
 	public final static String DEFAULT_CANNOT_SAVE_AGE_REGULATION = "ldersregeln kunde inte sparas pŒ grund av tekniskt fel.";
 	public final static String DEFAULT_CANNOT_DELETE_AGE_REGULATION = "ldersregeln kunde inte tas bort pŒ grund av tekniskt fel.";
 	public final static String DEFAULT_CANNOT_FIND_AGE_REGULATION = "Kan ej hitta Œldersregeln.";
@@ -223,6 +226,18 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			throw new AgeException(KEY_AGE_VALUES, DEFAULT_AGE_VALUES);
 		}
 
+		Collection c = findAllAgeRegulations();
+		Iterator iter = c.iterator();
+		while (iter.hasNext()) {
+			AgeRegulation ar = (AgeRegulation) iter.next();
+			if (((ageFrom > ar.getAgeFrom()) && (ageFrom < ar.getAgeTo())) ||
+					((ageTo > ar.getAgeFrom()) && (ageTo < ar.getAgeTo())) ||
+					((ageFrom <= ar.getAgeFrom()) && (ageTo >= ar.getAgeTo()))) {
+				throw new AgeException(KEY_AGE_OVERLAP, DEFAULT_AGE_OVERLAP);
+			}
+		}
+		
+
 		// Description
 		s = description.trim();
 		if (s.equals("")) {
@@ -233,12 +248,8 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 		
 		// Cut date
 		s = cutDateString.trim();
-		if (s.equals("")) {
-			throw new AgeException(KEY_CUT_DATE_MISSING, DEFAULT_CUT_DATE_MISSING);
-		} else {
-			if (cutDate == null) {
-				throw new AgeException(KEY_DATE_FORMAT, DEFAULT_DATE_FORMAT);
-			}
+		if (!s.equals("") && (cutDate == null)) {
+			throw new AgeException(KEY_DATE_FORMAT, DEFAULT_DATE_FORMAT);
 		}
 		
 		try {
