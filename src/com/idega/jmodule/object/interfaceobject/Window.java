@@ -209,26 +209,6 @@ public void setHeight(int height){
 	this.height=height;
 }
 
-//Sets the window to close immediately
-public void close(){
-	//setAttribute("OnLoad","window.close()");
-    setOnLoad("window.close()");
-}
-
-public void setToGoBack(){
-	//setAttribute("OnLoad","history.go(-1)");
-        setOnLoad("history.go(-1)");
-}
-
-
-//Sets the parent (caller) window to reload on Unload
-public void setParentToReload(){
-	//setAttribute("OnUnload","window.opener.location.reload()");
-        setOnUnLoad("window.opener.location.reload()");
-}
-
-
-
 /*
 public String getUrl(){
 	return this.url;
