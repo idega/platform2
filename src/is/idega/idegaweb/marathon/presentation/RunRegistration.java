@@ -5,16 +5,14 @@ package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
-
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.text.business.TextFormatter;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -759,17 +757,18 @@ public class RunRegistration extends Block {
 		backBlue.setAsBackLink();
 		backGreen.setAsBackLink();
 		String message = "";
-		
+		String refNum = "";
 		boolean isAlreadyRegistered = getRunBiz(iwc).isRegisteredInRun(Integer.parseInt(run), iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale()) ? ssnIS : ssn);
 		if (!isAlreadyRegistered) {
 			
 			if (agrees) {
 				if (ssnIS != null && !ssnIS.equals("")) {
 					userID = runBiz.saveUser(name, ssnIS, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
-					
+					refNum = ssnIS;
 				}
 				else if (ssn != null && !ssn.equals("")) {
 					userID = runBiz.saveUser(name, ssn, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
+					refNum = ssn;
 				}
 		
 				if (userID > 0) {
@@ -821,8 +820,12 @@ public class RunRegistration extends Block {
 						showPayment = false;
 					}
 					payBlue.setURL(URL);
+					payBlue.setLocale(iwc.getCurrentLocale());
+					payBlue.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
 					payBlue.setTarget(Link.TARGET_NEW_WINDOW);
 					payGreen.setURL(URL);
+					payGreen.setLocale(iwc.getCurrentLocale());
+					payBlue.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
 					payGreen.setTarget(Link.TARGET_NEW_WINDOW);
 				}
 		
