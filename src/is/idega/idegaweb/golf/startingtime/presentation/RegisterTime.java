@@ -346,7 +346,7 @@ public class RegisterTime extends GolfBlock {
               	
               	Paragraph links = new Paragraph();
               	
-              	Link yes = new Link(localize("start.reserve","Reserve"));
+              	Link yes = new Link(localize("yes","Yes"));
               	yes.maintainParameter("secure_num",modinfo);
               	yes.maintainParameter("line",modinfo);
               	yes.maintainParameter("date",modinfo);

@@ -14,6 +14,7 @@ import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -268,8 +269,18 @@ public class TeeTimeSearch extends GolfBlock {
 		countOfPlayers.setSelectedElement(1);
 		
 		InterfaceObject playerCountInputBox = countOfPlayers;//insertEditBox("fjoldi", 2);
-		InterfaceObject firstTimeDropdownMenu = insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), TEE_TIME_SEARCH_INTERVALE);
-		InterfaceObject lastTimeDropdownMenu = insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), TEE_TIME_SEARCH_INTERVALE);
+		
+		IWTimestamp firstOpenTime = service.getFirstOpentime();
+		IWTimestamp lastOpenTime = service.getLastClosetime();
+		IWTimestamp approxSelectedTime = IWTimestamp.RightNow();
+		approxSelectedTime.setAsTime();
+		
+		DropdownMenu firstTimeDropdownMenu = getTimeDropdown("ftime",(IWTimestamp)firstOpenTime.clone(),(IWTimestamp)lastOpenTime.clone(),TEE_TIME_SEARCH_INTERVALE,approxSelectedTime);
+		firstOpenTime.addMinutes(TEE_TIME_SEARCH_INTERVALE);
+		approxSelectedTime.addMinutes(TEE_TIME_SEARCH_INTERVALE);
+		DropdownMenu lastTimeDropdownMenu = getTimeDropdown("ltime",(IWTimestamp)firstOpenTime.clone(),(IWTimestamp)lastOpenTime.clone(),TEE_TIME_SEARCH_INTERVALE,approxSelectedTime);
+//		InterfaceObject firstTimeDropdownMenu = insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), TEE_TIME_SEARCH_INTERVALE);
+//		InterfaceObject lastTimeDropdownMenu = insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), TEE_TIME_SEARCH_INTERVALE);
 		InterfaceObject dateDropdownMenu = insertDropdown("date", dateFunc, getMaxDaysShown(), modinfo);
 		
 		Label vollur = new Label(getResourceBundle().getLocalizedString("start.search.course", "Course"),fieldDropdownMenu);
@@ -816,6 +827,7 @@ public class TeeTimeSearch extends GolfBlock {
 		Field[] field = service.getStartingEntryField();
 		for (int i = 0; i < field.length; i++) {
 			try {
+//				if ((isUser(iwc) && myField.nonMemberRegistration()) || (isMemberOfUnion(iwc, iwc.getSessionAttribute("union_id").toString()) && myField.publicRegistration())&&((iwc.getSessionAttribute("union_id").equals("100")&&now.isLaterThan(opent)) || !iwc.getSessionAttribute("union_id").equals("100") ))
 				Union union = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(field[i].getUnionID());
 				myDropdownMenu.addMenuElement(field[i].getID(), union.getAbbrevation() + " - " + field[i].getName());
 			}
@@ -1081,6 +1093,30 @@ public class TeeTimeSearch extends GolfBlock {
 
 		return myDropdown;
 	}
+	
+	public DropdownMenu getTimeDropdown(String dropdownName, IWTimestamp firstOpenTime, IWTimestamp lastCloseTime, int interval, IWTimestamp approxSelectedTime) {
+
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
+
+		SimpleDateFormat valueFormat = new SimpleDateFormat("HH:mm:ss");
+		SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+		boolean selectedElementChosen = false;
+
+		while(lastCloseTime.isLaterThanOrEquals(firstOpenTime)){
+			myDropdown.addMenuElement(valueFormat.format(firstOpenTime.getDate()), displayFormat.format(firstOpenTime.getDate()));
+			if(!selectedElementChosen && firstOpenTime.isLaterThanOrEquals(approxSelectedTime)){
+				myDropdown.setSelectedElement(valueFormat.format(firstOpenTime.getDate()));
+				selectedElementChosen=true;
+			}
+				
+			firstOpenTime.addMinutes(interval);
+		}
+
+		myDropdown.keepStatusOnAction();
+
+		return myDropdown;
+	}
+
 
 	public TextInput insertEditBox(String name) {
 		TextInput myInput = (TextInput) getStyledInterface(new TextInput(name));

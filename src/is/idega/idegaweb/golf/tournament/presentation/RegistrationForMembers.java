@@ -417,37 +417,30 @@ public class RegistrationForMembers extends GolfBlock {
   
   public void getDirectRegistrationTableWML(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException, SQLException {
     Tournament tournament = getTournament(modinfo);
-    String tournament_round_id = modinfo.getParameter("tournament_round");
 
-    if (tournament_round_id == null) {
-        TournamentRound[] tRounds = (TournamentRound[]) tournament.getTournamentRounds();
-        if (tRounds.length > 0 ) {
-            tournament_round_id = Integer.toString(tRounds[0].getID());
-        }
-    }
+    TournamentRound[] tRounds = (TournamentRound[]) tournament.getTournamentRounds();
 
-    if (tournament_round_id != null) {
+    if (tRounds.length > 0) {
 
-        TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
-        form.setSubmitButtonParameter("action", "open");
-
-        
-        Form from = new Form();
-        
-        DropdownMenu teetimes = new DropdownMenu();
-        
-        Label l = new Label(localize("start.choose_teetime","Choose teetime"),teetimes);
-        
-        SubmitButton button = new SubmitButton(localize("tournament.register","Register"));
-        
-        from.add(l);
-        form.add(teetimes);
-        form.add(button);
-        //add(form);
-		
+//        TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
+//        form.setSubmitButtonParameter("action", "open");
+    	
+    		
         Paragraph p = new Paragraph();
         p.add(new Text(localize("temp.not_ready","It is not possible to register to this type of tournament at the moment.")));
         add(p);
+    	
+        Form form = new Form();
+        form.addParameter("action", "open");
+        
+        DropdownMenu teetimes = getAvailableGrupNumsDropdownMenu(modinfo,"group_num",tournament,tRounds[0]);
+        Label l = new Label(localize("start.choose_teetime","Choose teetime"),teetimes);
+        SubmitButton button = new SubmitButton(localize("tournament.register","Register"));
+        
+        form.add(l);
+        form.add(teetimes);
+        form.add(button);
+        add(form);
         
     }
     else {
@@ -1017,5 +1010,56 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
 
     getDirectRegistrationTable(modinfo,iwrb);
 }
+
+
+public DropdownMenu getAvailableGrupNumsDropdownMenu(IWContext iwc, String dropdownName, Tournament tournament, TournamentRound tRound) throws SQLException, RemoteException {
+	DropdownMenu menu = new DropdownMenu(dropdownName);
+
+	int interval = tournament.getInterval();
+	int grupNum = 0;
+	IWTimestamp start = new IWTimestamp(tRound.getRoundDate());
+	start.addMinutes(-interval);
+	IWTimestamp end = new IWTimestamp(tRound.getRoundEndDate());
+	java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
+//	menu.addMenuElement(0, "");
+
+	boolean displayTee = false;
+	if (tRound.getStartingtees() > 1) {
+		displayTee = true;
+	}
+	
+	int totalMinutes = IWTimestamp.getMinutesBetween(start,end);
+	int numberOfGroups = totalMinutes/interval+1;
+	
+	boolean[] isFull_1 = getTournamentBusiness(iwc).getIfTeetimeGroupsAreFull(tournament,tRound,numberOfGroups,1);
+	boolean[] isFull_10 = null;
+	
+	if(displayTee){
+		isFull_10=getTournamentBusiness(iwc).getIfTeetimeGroupsAreFull(tournament,tRound,numberOfGroups,10);
+	}
+
+	while (end.isLaterThan(start)) {
+		++grupNum;
+		start.addMinutes(interval);
+		
+		if (displayTee) {
+			if(!isFull_1[grupNum-1]){
+				menu.addMenuElement(grupNum, extraZero.format(start.getHour()) + ":" + extraZero.format(start.getMinute()) + "&nbsp;&nbsp; ("+localize("tournament.tee","Tee")+" 1)");
+			}
+			if(!isFull_10[grupNum-1]){
+				menu.addMenuElement(grupNum + "_", extraZero.format(start.getHour()) + ":" + extraZero.format(start.getMinute()) + "&nbsp;&nbsp;  ("+localize("tournament.tee","Tee")+" 10)");
+			}
+		}
+		else {
+			if(!isFull_1[grupNum-1]){
+				menu.addMenuElement(grupNum, extraZero.format(start.getHour()) + ":" + extraZero.format(start.getMinute()));
+			}
+		}
+	}
+
+	return menu;
+}
+
+
 
 }
