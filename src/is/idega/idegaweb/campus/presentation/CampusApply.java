@@ -1,49 +1,55 @@
+/*
+ * $Id: CampusApply.java,v 1.3 2001/11/29 11:17:34 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package is.idega.idegaweb.campus.presentation;
-
 
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.IWContext;
-import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
 import com.idega.idegaweb.IWBundle;
-
+import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
 
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
- * Company:      idega
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
-
 public class CampusApply extends PresentationObjectContainer {
+  private static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
 
-	private static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
-
+  /**
+   *
+   */
   public CampusApply() {
   }
 
-	public String getBundleIdentifier(){
-	  return IW_RESOURCE_BUNDLE;
-	}
+  /**
+   *
+   */
+  public String getBundleIdentifier() {
+    return IW_RESOURCE_BUNDLE;
+  }
 
-  public void main(IWContext iwc){
-		IWBundle iwb = getBundle(iwc);
-   Table T = new Table(2,1);
-      T.setWidth("100%");
-      //T.setBorder(1);
-      T.setWidth(1,"500");
-      T.setAlignment(2,1,"center");
-      T.setVerticalAlignment(1,1,"top");
-      T.setVerticalAlignment(2,1,"top");
+  public void main(IWContext iwc) {
+    IWBundle iwb = getBundle(iwc);
+    Table T = new Table(2,1);
+    T.setWidth("100%");
+    T.setWidth(1,"500");
+    T.setAlignment(2,1,"center");
+    T.setVerticalAlignment(1,1,"top");
+    T.setVerticalAlignment(2,1,"top");
 
     Image textImage = iwb.getImage("/text_pictures/apply.jpg");
-      textImage.setVerticalSpacing(12);
+    textImage.setVerticalSpacing(12);
 
     T.add(new CampusApplicationForm(),1,1);
-    if ( iwc.getParameter("status") == null || iwc.getParameter("status").equalsIgnoreCase("2") ) {
+    if (iwc.getParameter("status") == null || iwc.getParameter("status").equals("2")) {
       T.add(textImage,2,1);
     }
     else {
