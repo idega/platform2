@@ -29,8 +29,8 @@ import com.idega.user.data.UserBMPBean;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/03/25 13:58:24 $ by $Author: joakim $
- * @version $Revision: 1.102 $
+ * Last modified: $Date: 2004/03/25 14:26:08 $ by $Author: joakim $
+ * @version $Revision: 1.103 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1288,8 +1288,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			query.append(".ic_commune_id");
 			
 			query.appendAnd();
-			query.append(variables[3]);
-			query.appendEqualsQuoted(".default_commune","Y");
+			query.appendEqualsQuoted(variables[3]+".default_commune","Y");
 			
 //			u.IC_USER_ID=ua.ic_user_id
 //			AND ua.ic_address_id=a.ic_address_id
