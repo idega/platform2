@@ -394,5 +394,20 @@ public abstract class PhoneFinder {
 			return null;
 		}
 	}
-	//>>>>>>> 1.8
+	
+	public static List listOfPhoneContracts(String phoneNumber){
+		StringBuffer sql = new StringBuffer("select c.* from cam_contract c,cam_phone p");
+		sql.append(" where p.bu_apartment_id = c.bu_apartment_id ");
+		sql.append(" and p.phone_number = '");
+		sql.append(phoneNumber);
+		sql.append("'");
+		sql.append(" order by c.cam_contract_id");	
+		try {
+			return EntityFinder.getInstance().findAll(is.idega.idegaweb.campus.block.allocation.data.Contract.class, sql.toString());
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
 }

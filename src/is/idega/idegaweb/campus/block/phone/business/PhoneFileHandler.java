@@ -2,6 +2,8 @@ package is.idega.idegaweb.campus.block.phone.business;
 
 import java.io.*;
 import com.idega.block.finance.data.*;
+
+import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Vector;
@@ -13,6 +15,9 @@ import com.idega.data.EntityBulkUpdater;
 import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.data.AccountPhone;
 import is.idega.idegaweb.campus.block.phone.data.PhoneFileInfo;
+import java.util.Date;
+import java.text.DateFormat;
+import java.sql.Timestamp;
 
 /**
  * Title:
@@ -118,13 +123,15 @@ public class PhoneFileHandler {
 	public void process3(File PhoneFile) throws java.rmi.RemoteException {
 		Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
 		Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
-
+		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is_IS"));
 		// If we can assess something
 		if (M != null && M2 != null) {
 			try {
 				long phonetime = -1;
 				long from = -1;
 				long to = -1;
+				long deliverTime = -1;
+				long returnTime = -1;
 
 				FileReader fin = new FileReader(PhoneFile);
 				LineNumberReader lin = new LineNumberReader(fin);
@@ -151,9 +158,12 @@ public class PhoneFileHandler {
 					Account eAccount;
 					AccountPhone ap;
 					List accountList;
+					boolean foundAccount = false;
 					int listsize;
 					boolean cont = false;
 					while ((line = lin.readLine()) != null) { //&& count != 0){
+						//System.err.println();
+						foundAccount = false;
 						cont = false;
 						st = new StringTokenizer(line, ";");
 						if (st.countTokens() == 8) {
@@ -206,7 +216,12 @@ public class PhoneFileHandler {
 											ap = (AccountPhone) accountList.get(i);
 											from = ap.getValidFrom().getTime();
 											to = ap.getValidTo().getTime();
-											if( phonetime >= from && phonetime <= to){
+											deliverTime = ap.getDeliverTime()!=null?ap.getDeliverTime().getTime():from;
+											returnTime = ap.getReturnTime()!=null?ap.getReturnTime().getTime():to;
+											if(deliverTime <= phonetime && phonetime <= returnTime){
+												
+											//System.err.println("YES Contract "+ap.getAccountId().toString()+"\t del:"+df.format( new Date(deliverTime))+" ret:"+df.format(new Date(returnTime))+" phoned:"+new Timestamp(phonetime).toString()+" number:"+number);
+											//if( phonetime >= from && phonetime <= to){
 //											if (phonetime <= to) {
 												//System.err.println("ape "+ape.getSubNumber()+" account "+ap.getAccountId().intValue());
 												ape.setAccountId(ap.getAccountId());
@@ -217,9 +232,18 @@ public class PhoneFileHandler {
 													M2.put(ap.getAccountId(), eAccount);
 												}
 												ape.insert();
+												foundAccount=true;
 												totPrice += ape.getPrice();
 												break;
 											}
+											else{
+												//System.err.println("NOS Contract "+ap.getAccountId().toString()+"\t del:"+df.format(new Date(deliverTime))+" ret:"+df.format(new Date(returnTime))+" phoned:"+new Timestamp(phonetime)+" number:"+number);
+											}
+										}
+										if(!foundAccount){
+											sbNoAccount.append(line);
+											sbNoAccount.append("\n");
+											noAccountCount++;
 										}
 									}
 								}
