@@ -48,6 +48,24 @@ public class TPosClient {
    * @return The authorisation code as a String
    */
   public String doSale(String cardnumber, String monthExpires, String yearExpires, double amount, String currency) throws TPosException {
+    return(doAuth(cardnumber,monthExpires,yearExpires,amount,currency,"1"));
+  }
+
+  /**
+   * @return The authorisation code as a String
+   */
+  public String doRefund(String cardnumber, String monthExpires, String yearExpires, double amount, String currency) throws TPosException {
+    return(doAuth(cardnumber,monthExpires,yearExpires,amount,currency,"3"));
+  }
+
+  /**
+   *
+   */
+  public String getBundleIdentifier(){
+    return(IW_BUNDLE_IDENTIFIER);
+  }
+
+  private String doAuth(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType) throws TPosException {
       _client.setProperty(TPOS3Client.PN_USERID, "IDE");
       _client.setProperty(TPOS3Client.PN_PASSWORD, "IDE");
       _client.setProperty(TPOS3Client.PN_MERCHANTID, "IDE");
@@ -60,7 +78,7 @@ public class TPosClient {
       String stringAmount = Integer.toString((int)amount);
       _client.setProperty(TPOS3Client.PN_AMOUNT,stringAmount);
       _client.setProperty(TPOS3Client.PN_CURRENCY,currency);
-      _client.setProperty(TPOS3Client.PN_TRANSACTIONTYPE,"1");
+      _client.setProperty(TPOS3Client.PN_TRANSACTIONTYPE,transactionType);
       _client.setProperty(TPOS3Client.PN_CARDHOLDERCODE,"2");
 
       TPosException ex = new TPosException();
@@ -102,12 +120,5 @@ public class TPosClient {
       }
 
     return("-1");
-  }
-
-  /**
-   *
-   */
-  public String getBundleIdentifier(){
-    return(IW_BUNDLE_IDENTIFIER);
   }
 }
