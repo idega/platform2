@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.22 2001/07/30 10:56:12 tryggvil Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.23 2001/08/08 00:42:18 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -62,9 +62,9 @@ public class GolfMainJSPModulePage extends MainPage {
     add("top", Top(modinfo));
     add("bottom", golfFooter());
     add(Left(modinfo), Center(), Right(modinfo));
-	  setWidth(1, "" + LEFTWIDTH);
-	  setContentWidth( "100%");
-	  setWidth(3, "" + RIGHTWIDTH);
+    setWidth(1, Integer.toString(LEFTWIDTH) );
+    setContentWidth( "100%");
+    setWidth(3, Integer.toString(RIGHTWIDTH) );
   }
 
   protected Table Top(ModuleInfo modinfo) throws SQLException,IOException{
@@ -84,9 +84,9 @@ public class GolfMainJSPModulePage extends MainPage {
     topTable.setVerticalAlignment(2,1, "middle");
     topTable.setVerticalAlignment(3,1, "middle");
 
-    topTable.setWidth(1, "" + LEFTWIDTH);
+    topTable.setWidth(1, Integer.toString(LEFTWIDTH));
     topTable.setWidth("100%");
-    topTable.setWidth(3, "" + RIGHTWIDTH);
+    topTable.setWidth(3, Integer.toString(RIGHTWIDTH));
 
     return topTable;
   }
@@ -114,7 +114,10 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.setCellspacing(0);
 
     leftTable.setAlignment(1,1,"center");
-    leftTable.add(Canon(),1,1);
+
+    // uncomment this and change for different tournaments
+   // leftTable.add(getHoleView(),1,1);
+
     leftTable.addBreak(1,1);
     leftTable.addBreak(1,1);
     leftTable.add(Languages(),1,2);
@@ -128,7 +131,7 @@ public class GolfMainJSPModulePage extends MainPage {
     return leftTable;
   }
 
-  protected Link Canon() {
+  protected Link getHoleView() {
       Window window = new Window("Hola fyrir holu",796,600,"/tournament/holeview.jsp?&tournamentID=100&tournamentGroupID=3&tournamentRoundID=232");
           window.setMenubar(true);
           window.setResizable(true);
@@ -278,12 +281,12 @@ public class GolfMainJSPModulePage extends MainPage {
 
     for (int a = 0; a < 5; a++) {
       if (news.length > a) {
-        News[] clubNews = (News[]) (new News()).findAllByColumnOrdered("news_category_id",""+news[a].getNewsCategoryId(),"news_date desc");
+        News[] clubNews = (News[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAllByColumnOrdered("news_category_id",Integer.toString(news[a].getNewsCategoryId()),"news_date desc");
         Text unionText = new Text();
         unionText.setFontSize(1);
         unionText.setFontColor("#666666");
 
-        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (new NewsCategoryAttributes()).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
+        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.jmodule.news.data.NewsCategory")).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
 
         int union_id = 0;
 
@@ -448,10 +451,29 @@ public class GolfMainJSPModulePage extends MainPage {
           setVerticalAlignment( "top" );
         }
 
+    protected HeaderTable getProGolfers() {
+      HeaderTable table = new HeaderTable();
+      table.setBorderColor("#8ab490");
+      table.setHeadlineSize(1);
+      table.setHeadlineColor("#FFFFFF");
+      table.setHeadlineLeft();
+      table.setWidth(148);
+      table.setHeaderText(iwrb.getLocalizedString("golferpage.header_table_name","Pro golfers"));
+      //this should be automated
+      Table golfers = new Table(1,3);
+
+      Link golferLink = new Link("Björgvin Sigurbergsson","/golfers/");
+      golferLink.setFontSize(1);
+
+      golfers.add(golferLink,1,2);
+      table.add(golfers);
+
+      return table;
+    }
 
         protected Table Right(ModuleInfo modinfo) throws SQLException,IOException{
-          Table rightTable = new Table(1,10);
-          rightTable.setWidth("" + RIGHTWIDTH);
+          Table rightTable = new Table(1,11);
+          rightTable.setWidth(RIGHTWIDTH);
           rightTable.setCellpadding(0);
           rightTable.setCellspacing(0);
 
@@ -467,13 +489,13 @@ public class GolfMainJSPModulePage extends MainPage {
           rightTable.setVerticalAlignment(1,10,"top");
 
           rightTable.setColumnAlignment(1, "center");
+          rightTable.add(getProGolfers(),1,1);
+          rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
+          rightTable.add(getPollVoter(),1,5);
 
-          rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,1);
-          rightTable.add( getPollVoter() ,1,3);
-
-          rightTable.add( getGSIAssociates(),1,5);
-          rightTable.add(getGolfLinks(),1,7);
-          rightTable.add(getYellowLine(),1,9);
+          rightTable.add(getGSIAssociates(),1,7);
+          rightTable.add(getGolfLinks(),1,9);
+          rightTable.add(getYellowLine(),1,11);
 
 
           return rightTable;

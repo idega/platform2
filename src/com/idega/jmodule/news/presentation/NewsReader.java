@@ -26,6 +26,7 @@ public class NewsReader extends JModuleObject{
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
 private boolean showNewsCollectionButton=true;
+private boolean byDate=false;
 private int categoryId = 0;
 private String date = null;
 private boolean backbutton = false;
@@ -112,9 +113,9 @@ public NewsReader(int categoryId, idegaTimestamp timestamp){
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
+
   this.isAdmin=this.isAdministrator(modinfo);
   IWBundle iwb = getBundle(modinfo);
-
   IWResourceBundle iwrb = getResourceBundle(modinfo);
 
   if( newsReaderURL == null ){
@@ -134,7 +135,6 @@ public void main(ModuleInfo modinfo)throws Exception{
   editor = iwrb.getImage("newseditor.gif");
   collection = iwrb.getImage("collection.gif");
 
-  boolean byDate=false;
   News[] news = new News[1];
 
   String news_id = modinfo.getParameter("news_id");
@@ -150,7 +150,8 @@ public void main(ModuleInfo modinfo)throws Exception{
         showSingleNews = false;//nope we are showing a collection!
         showAll = false;
         //System.out.println("inni í category");
-    }else if( (news_category_id==null) && (news_id != null) ){ //yup only one to see if this. owns the newscategory!
+    }
+    else if( (news_category_id==null) && (news_id != null) ){ //yup only one to see if this. owns the newscategory!
      // System.out.println("(news_category_id==null) && (news_id =="+news_id);
       /*if( categoryId != 0 ){
          System.out.println("categoryId != 0 ");
@@ -190,17 +191,18 @@ public void main(ModuleInfo modinfo)throws Exception{
       if ( categoryId == 0) {//show the whole collection
         setLayout(SINGLE_FILE_LAYOUT);
         showAll = true;
-        attribs = (NewsCategoryAttributes[]) (new NewsCategoryAttributes()).findAllByColumn("attribute_name",attributeName,"attribute_id",""+attributeId);
+        attribs = (NewsCategoryAttributes[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.NewsCategoryAttributes")).findAllByColumn("attribute_name",attributeName,"attribute_id",Integer.toString(attributeId));
         categoryString = getColumnString(attribs);
 
         //gimmi bætti við 14.2.01
         if (attribs.length > 0) {
-          this.categoryId = attribs[0].getNewsCategoryId();
-        }
+          categoryId = attribs[0].getNewsCategoryId();
         //debug
-//        System.out.println("news categorystring "+categoryString);
+        System.out.println("news categoryId "+categoryId);
 
-       // System.err.println("Inside categoryId=0");
+        }
+
+        System.err.println("Inside categoryId=0");
       }
       else{ // just this category
         showAll = false;
@@ -214,35 +216,35 @@ public void main(ModuleInfo modinfo)throws Exception{
           if( categoryString!=null ) categoryString = " where " + categoryString;
           else categoryString = "";
 
-          news = (News[]) (new News()).findAll("select * from news "+categoryString+orderBy);
+          news = (News[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAll("select * from news "+categoryString+orderBy);
         }
-        else news = (News[]) (new News()).findAllByColumn("news_category_id",categoryId);
+        else news = (News[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAllByColumn("news_category_id",categoryId);
       }
       else{// by date
       //debug
      // System.err.println(date);
-        String DatastoreType = getDatastoreType( new News() );
+        String DatastoreType = getDatastoreType( GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News") );
         byDate=true;
         if( (categoryString!=null) && !(categoryString.equals("")) ) categoryString = " OR " + categoryString;
         if( (showAll) && !(DatastoreType.equals("oracle"))  ){
           String statementstring = selectFrom+"news_date >= '"+date+"'  "+categoryString+orderBy;
           //debug eiki
         //  System.err.println(statementstring);
-          news = (News[]) (new News()).findAll(statementstring);
+          news = (News[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAll(statementstring);
          // if (news != null) System.err.println("fann "+ news.length +"fréttir");
 
         }
-        else if( (showAll) && (DatastoreType.equals("oracle"))  )  news = (News[]) (new News()).findAll(selectFrom+"news_date >= "+date+" "+categoryString+orderBy);
+        else if( (showAll) && (DatastoreType.equals("oracle"))  )  news = (News[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAll(selectFrom+"news_date >= "+date+" "+categoryString+orderBy);
         else {
           if ( !(DatastoreType.equals("oracle")) ){
 
           String statementstring = selectFrom+sNewsCategoryId+categoryId+"' and news_date >= '"+date+"'"+orderBy;
 //System.err.println(statementstring);
 
-           news = (News[]) (new News()).findAll(statementstring);
+           news = (News[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAll(statementstring);
 
           }
-          else news = (News[]) (new News()).findAll(selectFrom+sNewsCategoryId+categoryId+"' and news_date >= "+date+orderBy);
+          else news = (News[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAll(selectFrom+sNewsCategoryId+categoryId+"' and news_date >= "+date+orderBy);
         }
       }
 
@@ -254,7 +256,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           String statementstring = selectFrom+categoryString+orderBy;
           //debug eiki 24.dec
          // System.err.println("OUT OF RANGE "+statementstring);
-          news = (News[]) (new News()).findAll(statementstring);
+          news = (News[]) (GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAll(statementstring);
 
           if( news.length!=0){
             setNumberOfDisplayedNews(1);
@@ -356,7 +358,8 @@ private Table drawNewsTable(News[] news)throws IOException,SQLException{
 
     headline = news[i].getHeadline();
     includeImage = news[i].getIncludeImage();
-    timestamp = (news[i].getDate()).toString();
+    timestamp = news[i].getDate().toString();
+
     author = news[i].getAuthor();
     source = news[i].getSource();
     daysshown = news[i].getDaysShown();
@@ -388,8 +391,7 @@ private Table drawNewsTable(News[] news)throws IOException,SQLException{
 
 
 
-private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int newsId,int image_id) throws SQLException
-{
+private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int newsId,int image_id) throws SQLException{
 
   Text headline = new Text(Headline);
   boolean showMore = false;
@@ -410,7 +412,6 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   headline = setHeadlineAttributes(headline);
   if( headline.getAttribute("size") == null ) headline.setFontSize(2);
   else if( headline.getAttribute("size").equals("") )  headline.setFontSize(2);
-
 
   Text newstext = new Text(NewsText);
   newstext = setTextAttributes( newstext );
@@ -468,8 +469,8 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   newsTable.setRowVerticalAlignment(3, "Top");
 
   if( backbutton ) {
-          newsTable.add(Text.getBreak(),1,3);
-          newsTable.add(new BackButton(back), 1, 3);
+    newsTable.add(Text.getBreak(),1,3);
+    newsTable.add(new BackButton(back), 1, 3);
   }
   else {
     //if(showMore && !headlineAsLink) {//always show the more button
@@ -574,7 +575,7 @@ private String formatDateWithTime(String date ,String DatastoreType)
 private Text getInfoText(String Author, String Source, String Category, String TimeStamp)
 {
   Text information = new Text();
-  String DatastoreType = getDatastoreType( new News() );
+  String DatastoreType = getDatastoreType( GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News") );
   TimeStamp = formatDateWithTime(TimeStamp,DatastoreType);
 
   if ( showOnlyDates ) {
