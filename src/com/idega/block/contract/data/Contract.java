@@ -34,4 +34,5 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public void setSignedFlag(Boolean p0);
  public boolean isSigned();
  public void setSignedDate(java.sql.Date time);
+ public java.sql.Date getSignedDate(); 
 }

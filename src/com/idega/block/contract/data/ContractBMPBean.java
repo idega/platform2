@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.7 2003/05/23 15:05:58 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.8 2003/05/27 15:54:27 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -214,6 +214,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
   
   public void setSignedDate(java.sql.Date time){ 
   	setColumn(signedDate_, time);
+  }
+  
+  public Date getSignedDate(){
+  	return (Date) getColumnValue(signedDate_);  
   }
     
     
