@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.62 2004/01/27 18:02:34 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.63 2004/03/08 11:07:50 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -69,6 +69,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private boolean _showOnlyAfterSchoolCare = false;
 	
 	private String _caseCode = null;
+	private ICPage _renewQueuePage;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -81,6 +82,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		setCacheable(false);
 		childCarebusiness = getChildCareBusiness(iwc);
+		
+		if (_renewQueuePage != null) {
+			if (_showOnlyChildcare && childCarebusiness.hasPendingApplications(getChildId(iwc), _caseCode)) {
+				iwc.forwardToIBPage(getParentPage(), _renewQueuePage);
+			}
+		}
 
 		Form form = new Form();
 		Table layoutTbl = new Table();
@@ -870,5 +877,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		if (showOnlyChildcare) {
 			this._showOnlyAfterSchoolCare = false;
 		}
+	}
+	
+	/**
+	 * @param renewQueuePage The renewQueuePage to set.
+	 */
+	public void setRenewQueuePage(ICPage renewQueuePage) {
+		this._renewQueuePage = renewQueuePage;
 	}
 }
