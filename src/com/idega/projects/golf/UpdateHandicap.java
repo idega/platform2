@@ -22,6 +22,7 @@ public class UpdateHandicap {
     public static void update(int member_id,idegaTimestamp stampur) {
         try {
             Member member = new Member(member_id);
+            stampur.addDays(-1);
             UpdateHandicap.update(member,stampur);
         }
         catch (SQLException sql) {
@@ -187,11 +188,14 @@ public class UpdateHandicap {
                     }
                 }
                 else {
+                    System.out.println("Setting handicapBefore");
                     scorecard[m].setHandicapBefore((float) grunn);
                     if ( m == 0 ) {
                       scorecard[m].setHandicapBefore(memberInfo.getFirstHandicap());
                     }
+                    System.out.println("Setting handicapAfter = Correction");
                     grunn = (double) scorecard[m].getHandicapAfter();
+                    System.out.println(grunn+" - "+scorecard[m].getHandicapAfter());
                 }
 
                   scorecard[m].update();
