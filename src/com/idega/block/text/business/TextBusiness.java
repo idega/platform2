@@ -51,12 +51,11 @@ public class TextBusiness{
     try {
 
       TxText txText= new TxText(iTextId);
-      if(ContentBusiness.deleteContent( txText.getContentId() ) ){
-
-        if(iObjectInstanceId > 0  ){
+      if(iObjectInstanceId > 0  ){
           ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
           txText.removeFrom(obj);
-        }
+      }
+      if(ContentBusiness.deleteContent( txText.getContentId() ) ){
         txText.delete();
       }
     }
