@@ -23,8 +23,8 @@ public abstract class Editor extends com.idega.jmodule.object.ModuleObjectContai
   protected boolean isAdmin = false;
   protected String MiddleColor,LightColor,DarkColor,WhiteColor,TextFontColor,HeaderFontColor,IndexFontColor;
   protected Table Frame,MainFrame,HeaderFrame;
-  protected final int BORDER = 0;
-  protected String sHeader;
+  protected int BORDER = 0;
+  protected String sHeader = null;
   protected int fontSize = 2;
   protected boolean fontBold = false;
   protected String styleAttribute = "font-size: 8pt";
@@ -49,7 +49,7 @@ public abstract class Editor extends com.idega.jmodule.object.ModuleObjectContai
     TextFontColor = "#000000";
     HeaderFontColor = DarkColor;
     IndexFontColor = "#000000";
-    this.sHeader = "";
+    this.sHeader = null;
   }
 
   protected abstract void control(ModuleInfo modinfo);
@@ -93,7 +93,7 @@ public abstract class Editor extends com.idega.jmodule.object.ModuleObjectContai
     this.makeHeader();
   }
   protected void makeMainFrame(){
-    MainFrame = new Table(1,4);
+    MainFrame = new Table(1,2);
     MainFrame.setWidth("100%");
     MainFrame.setCellspacing(0);
     MainFrame.setCellpadding(0);
@@ -109,21 +109,27 @@ public abstract class Editor extends com.idega.jmodule.object.ModuleObjectContai
     this.addFrame();
   }
   protected void makeHeader(){
-    Table HeaderFrame = new Table(2,1);
-    HeaderFrame.setColumnAlignment(2,"right");
-    Text T = new Text(this.sHeader);
-    T.setBold();
-    T.setFontColor(this.DarkColor);
-    HeaderFrame.add(T,1,1);
+    HeaderFrame = new Table();
+    if(sHeader != null){
+      HeaderFrame = new Table(2,1);
+      HeaderFrame.setColumnAlignment(2,"right");
+      Text T = new Text(this.sHeader);
+      T.setBold();
+      T.setFontColor(this.DarkColor);
+      HeaderFrame.add(T,1,1);
+    }
+    HeaderFrame.setBorder(BORDER);
     this.addHeader(HeaderFrame);
   }
   protected void addFrame(){
-    Table BorderTable = new Table();
+    Table BorderTable = new Table(1,1);
+    BorderTable.setBorder(BORDER);
     BorderTable.setCellpadding(this.iBorder);
     BorderTable.setCellspacing(0);
     BorderTable.setColor(DarkColor);
     BorderTable.setWidth("100%");
-    Table whiteTable = new Table();
+    Table whiteTable = new Table(1,1);
+    whiteTable.setBorder(BORDER);
     whiteTable.setColor(WhiteColor);
     whiteTable.setCellpadding(2);
     whiteTable.setCellspacing(0);
@@ -135,13 +141,18 @@ public abstract class Editor extends com.idega.jmodule.object.ModuleObjectContai
   protected void addMain(ModuleObject T){
     this.Frame.add(T,1,2);
   }
+
   protected void addLinks(ModuleObject T){
     this.MainFrame.add(T,1,1);
   }
   protected void addHeader(ModuleObject T){
     this.Frame.add(T,1,1);
   }
+  protected void addToHeader(ModuleObject T){
+    this.HeaderFrame.add(T);
+  }
   protected void addToRightHeader(ModuleObject T){
+    if(sHeader != null)
     this.HeaderFrame.add(T,2,1);
   }
   protected void addMsg(ModuleObject T){
