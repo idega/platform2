@@ -320,6 +320,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						
 						if (hasPriority != null)
 							appl.setHasQueuePriority(hasPriority[i]);
+						else {
+							if (hasQueuePriority(child, providerID))
+								appl.setHasQueuePriority(true);
+						}
 						
 						if (checkId != -1)
 							appl.setCheckId(checkId);
@@ -360,6 +364,57 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 		return true;
+	}
+	
+	private boolean hasQueuePriority(User child, int providerID) throws RemoteException {
+		SchoolClassMember member = null;
+		try {
+			member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(((Integer) member.getPrimaryKey()).intValue(), providerID);
+			if (member.getNeedsSpecialAttention())
+				return true;
+		}
+		catch (FinderException e) {
+			member = null;
+		}
+		
+		Collection parents = getUserBusiness().getParentsForChild(child);
+		if (parents != null) {
+			IWTimestamp stamp = new IWTimestamp();
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				User parent = (User) iter.next();
+				Collection children = getUserBusiness().getChildrenForUser(parent);
+				if (children != null) {
+					Iterator iterator = children.iterator();
+					while (iterator.hasNext()) {
+						User sibling = (User) iterator.next();
+						if (((Integer)child.getPrimaryKey()).intValue() != ((Integer)sibling.getPrimaryKey()).intValue()) {
+							try {
+								member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(((Integer) sibling.getPrimaryKey()).intValue(), providerID);
+							}
+							catch (FinderException e) {
+								member = null;
+							}
+							
+							if (member != null) {
+								if (member.getNeedsSpecialAttention())
+									return true;
+									
+								if (member.getRemovedDate() != null) {
+									IWTimestamp removed = new IWTimestamp(member.getRemovedDate());
+									if (removed.isLaterThan(stamp))
+										return true;
+								}
+								else
+									return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate) {
