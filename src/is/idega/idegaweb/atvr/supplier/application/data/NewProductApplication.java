@@ -1,6 +1,5 @@
 package is.idega.idegaweb.atvr.supplier.application.data;
 
-import javax.ejb.*;
 
 public interface NewProductApplication extends com.idega.data.IDOEntity
 {

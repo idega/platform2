@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.mailinglist.data;
 
-import com.idega.data.CategoryEntity;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 

@@ -1,19 +1,18 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
-import com.idega.block.building.business.ApartmentHolder;
-import com.idega.core.user.data.User;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.core.contact.data.Email;
-import com.idega.block.application.data.Applicant;
-//import com.idega.block.application.data.ApplicantBean;
-import com.idega.block.application.data.Application;
-import com.idega.block.application.business.ApplicationBusiness;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+
 import java.util.List;
 import java.util.Vector;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import com.idega.block.building.business.ApartmentHolder;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
 
 /**
  * Title:

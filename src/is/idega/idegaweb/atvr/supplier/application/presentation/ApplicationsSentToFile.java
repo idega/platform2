@@ -9,20 +9,17 @@
  */
 package is.idega.idegaweb.atvr.supplier.application.presentation;
 
-import com.idega.core.user.data.User;
-import com.idega.idegaweb.IWBundle;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.SubmitButton;
-
 import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
 import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication;
 
-import java.io.FileWriter;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
+import com.idega.core.user.data.User;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 
 /**
  * This class does something very clever.....

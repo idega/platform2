@@ -1,6 +1,6 @@
 /*
 
- * $Id: TextControl3.java,v 1.2 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: TextControl3.java,v 1.3 2004/05/24 14:21:40 palli Exp $
 
  *
 
@@ -26,13 +26,9 @@ package is.idega.idegaweb.campus.presentation;
 
 import java.sql.SQLException;
 
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.block.text.presentation.TextReader;
-
 import com.idega.block.text.data.TxText;
+import com.idega.block.text.presentation.TextReader;
+import com.idega.presentation.Table;
 
 
 

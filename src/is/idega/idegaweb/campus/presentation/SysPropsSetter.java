@@ -2,28 +2,24 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.data.SystemProperties;
-import com.idega.presentation.Block;
-import java.util.List;
+
 import java.sql.SQLException;
+import java.util.List;
+
+import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import com.idega.data.EntityFinder;
-import java.sql.SQLException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 
 /**
  * Title:   idegaclasses

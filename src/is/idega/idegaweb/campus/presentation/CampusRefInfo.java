@@ -1,5 +1,5 @@
 /*
- * $Id: CampusRefInfo.java,v 1.3 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: CampusRefInfo.java,v 1.4 2004/05/24 14:21:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,12 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.idegaweb.IWBundle;
 import is.idega.idegaweb.campus.block.application.presentation.ReferenceNumberInfo;
+
+import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

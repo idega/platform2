@@ -4,14 +4,10 @@ package is.idega.idegaweb.campus.data;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 
-import com.idega.block.building.data.Apartment;
-
-import com.idega.block.building.business.BuildingCacher;
-
 import java.util.List;
-
 import java.util.Vector;
 
+import com.idega.block.building.data.Apartment;
 import com.idega.util.IWTimestamp;
 
 

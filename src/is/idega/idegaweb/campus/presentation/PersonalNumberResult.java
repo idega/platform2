@@ -1,23 +1,31 @@
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.util.TextFormat;
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.campus.block.allocation.business.*;
-import com.idega.block.application.data.*;
+import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.Apartment;
-import com.idega.business.*;
-import com.idega.data.*;
 
-import java.util.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.FinderException;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicantHome;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.util.TextFormat;
 
 /**
  * <p>Title: </p>

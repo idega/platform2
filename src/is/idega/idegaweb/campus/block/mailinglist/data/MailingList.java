@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.mailinglist.data;
 
-import javax.ejb.*;
 
 public interface MailingList extends com.idega.data.CategoryEntity
 {

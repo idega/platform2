@@ -1,31 +1,29 @@
 package is.idega.idegaweb.campus.block.phone.presentation;
 
-import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
-import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.util.TextFormat;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.block.building.data.*;
-import com.idega.block.building.business.*;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityFinder;
-import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWTimestamp;
-import java.util.*;
+import is.idega.idegaweb.campus.presentation.Edit;
+
 import java.rmi.RemoteException;
 import java.text.DateFormat;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.util.TextFormat;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
-import com.idega.business.IBOLookup;
 
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: PersonalNumberSearch.java,v 1.4 2004/03/14 18:45:42 aron Exp $
+ * $Id: PersonalNumberSearch.java,v 1.5 2004/05/24 14:21:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,19 +9,17 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.HelpButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.text.Text;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HelpButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>

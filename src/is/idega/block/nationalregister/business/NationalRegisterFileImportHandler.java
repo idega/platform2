@@ -1,6 +1,5 @@
 package is.idega.block.nationalregister.business;
 
-import javax.ejb.*;
 
 public interface NationalRegisterFileImportHandler extends com.idega.business.IBOService,com.idega.block.importer.business.ImportFileHandler
 {

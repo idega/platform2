@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.application.data;
 
-import javax.ejb.*;
 
 public interface CurrentResidency extends com.idega.data.IDOLegacyEntity
 {

@@ -28,7 +28,6 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.util.IWTimestamp;
 
 /**
  * CampusAccountTariffer

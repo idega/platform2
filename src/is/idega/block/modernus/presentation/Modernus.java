@@ -11,7 +11,6 @@ package is.idega.block.modernus.presentation;
 import java.net.URLEncoder;
 
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
 
 /**

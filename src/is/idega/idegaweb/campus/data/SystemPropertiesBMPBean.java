@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.data;
 
-import com.idega.data.*;
 import com.idega.util.IWTimestamp;
 
 /**

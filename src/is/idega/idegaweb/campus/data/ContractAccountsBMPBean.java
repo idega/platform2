@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractAccountsBMPBean.java,v 1.2 2004/03/13 18:38:06 aron Exp $
+ * $Id: ContractAccountsBMPBean.java,v 1.3 2004/05/24 14:21:41 palli Exp $
 
  *
 
@@ -24,15 +24,9 @@ package is.idega.idegaweb.campus.data;
 
 
 
-import com.idega.data.IDOLegacyEntity;
-
 import java.sql.Date;
-
-import java.sql.Timestamp;
-
-import java.lang.IllegalStateException;
-
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;

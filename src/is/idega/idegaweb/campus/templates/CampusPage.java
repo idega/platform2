@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusPage.java,v 1.3 2002/04/06 19:11:15 tryggvil Exp $
+ * $Id: CampusPage.java,v 1.4 2004/05/24 14:21:40 palli Exp $
 
  *
 
@@ -20,31 +20,17 @@ package is.idega.idegaweb.campus.templates;
 
 
 
-import com.idega.block.login.presentation.Login;
-
-import com.idega.block.application.presentation.ReferenceNumber;
-
-import com.idega.block.application.business.ReferenceNumberHandler;
-
-import com.idega.presentation.Image;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.ui.Window;
-
-import com.idega.presentation.text.Text;
-
-import com.idega.presentation.text.Link;
-
 import is.idega.idegaweb.campus.presentation.CampusMenu;
-
-import is.idega.idegaweb.campus.presentation.Title;
-
 import is.idega.idegaweb.campus.presentation.CampusTabber;
-
+import is.idega.idegaweb.campus.presentation.Title;
 import is.idega.idegaweb.campus.presentation.TitleIcons;
 
+import com.idega.block.application.presentation.ReferenceNumber;
+import com.idega.block.login.presentation.Login;
 import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Window;
 
 
 

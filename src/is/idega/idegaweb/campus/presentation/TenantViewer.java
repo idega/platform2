@@ -2,45 +2,27 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.presentation.PresentationObjectContainer;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.core.contact.data.Email;
-
-import com.idega.core.user.data.User;
-
-import com.idega.core.accesscontrol.data.LoginTable;
-
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-
-import com.idega.core.user.business.UserBusiness;
-
-import com.idega.core.accesscontrol.business.AccessControl;
-
-import com.idega.block.login.presentation.LoginEditorWindow;
-
-
-import com.idega.block.login.presentation.LoginEditor;
-
-import com.idega.block.application.business.ApplicationFinder;
-
-import com.idega.block.application.data.Applicant;
-
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 
 import java.sql.SQLException;
-
 import java.util.List;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.login.presentation.LoginEditor;
+import com.idega.block.login.presentation.LoginEditorWindow;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.contact.data.Email;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.TextInput;
 
 
 

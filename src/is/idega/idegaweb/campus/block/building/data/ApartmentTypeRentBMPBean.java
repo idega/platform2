@@ -1,14 +1,12 @@
 
 package is.idega.idegaweb.campus.block.building.data;
-import java.sql.*;
+import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.building.data.ApartmentType;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
-import com.idega.util.IWTimestamp;
 /**
  *
 

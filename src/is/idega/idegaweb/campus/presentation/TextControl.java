@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.6 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: TextControl.java,v 1.7 2004/05/24 14:21:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,18 +10,18 @@
 package is.idega.idegaweb.campus.presentation;
 
 
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.IWContext;
-//import com.idega.jmodule.login.business.AccessControl;
-import com.idega.data.genericentity.Member;
-import com.idega.data.genericentity.Group;
-import com.idega.block.text.presentation.TextReader;
-import com.idega.block.text.data.TxText;
-import java.util.Hashtable;
 import java.sql.SQLException;
-import java.io.IOException;
+import java.util.Hashtable;
+
+import com.idega.block.text.data.TxText;
+import com.idega.block.text.presentation.TextReader;
+import com.idega.data.genericentity.Member;
 import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 
 /**
  *

@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusTabber.java,v 1.5 2003/05/03 02:19:48 tryggvil Exp $
+ * $Id: CampusTabber.java,v 1.6 2004/05/24 14:21:40 palli Exp $
 
  *
 
@@ -20,40 +20,22 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
-
-import com.idega.core.user.data.User;
-
-import com.idega.core.accesscontrol.data.PermissionGroup;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.ui.Parameter;
-
-
-import java.util.Hashtable;
-
 import java.sql.SQLException;
-
-import java.io.IOException;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-
-import is.idega.idegaweb.campus.templates.*;
-
-import com.idega.idegaweb.IWMainApplication;
-
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
-import java.util.Iterator;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Parameter;
 
 
 

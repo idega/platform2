@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.9 2004/03/04 12:54:15 aron Exp $
+ * $Id: WaitingListBMPBean.java,v 1.10 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,10 @@
  */
 package is.idega.idegaweb.campus.block.application.data;
 
-import com.idega.data.IDOLegacyEntity;
-import java.sql.Timestamp;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
 
 /**

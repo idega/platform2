@@ -1,5 +1,5 @@
 /*
- * $Id: AppliedBMPBean.java,v 1.3 2002/06/20 16:27:08 palli Exp $
+ * $Id: AppliedBMPBean.java,v 1.4 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package is.idega.idegaweb.campus.block.application.data;
 
-import com.idega.data.IDOLegacyEntity;
 import java.sql.SQLException;
 
 /**

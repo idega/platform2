@@ -1,6 +1,6 @@
 /*
 
- * $Id: BuildingApartmentBMPBean.java,v 1.1 2002/04/06 19:11:13 tryggvil Exp $
+ * $Id: BuildingApartmentBMPBean.java,v 1.2 2004/05/24 14:21:42 palli Exp $
 
  *
 
@@ -21,12 +21,6 @@ package is.idega.idegaweb.campus.block.building.data;
 
 
 
-
-import com.idega.data.IDOLegacyEntity;
-
-import java.sql.Date;
-
-import java.lang.IllegalStateException;
 
 import java.sql.SQLException;
 

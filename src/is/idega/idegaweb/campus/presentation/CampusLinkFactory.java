@@ -4,17 +4,12 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.presentation.text.Link;
-
-import com.idega.presentation.PresentationObject;
-
-import com.idega.block.finance.presentation.AccountViewer;
-
-import com.idega.block.building.presentation.BuildingViewer;
-
 import is.idega.idegaweb.campus.templates.CampusPage;
 
-import is.idega.idegaweb.campus.presentation.Title;
+import com.idega.block.building.presentation.BuildingViewer;
+import com.idega.block.finance.presentation.AccountViewer;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Link;
 
 
 

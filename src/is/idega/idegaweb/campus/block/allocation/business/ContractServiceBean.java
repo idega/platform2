@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.5 2004/02/02 11:14:31 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.6 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,25 +10,34 @@
 package is.idega.idegaweb.campus.block.allocation.business;
 
 
-import com.idega.block.application.data.*;
-import com.idega.block.building.business.*;
-import com.idega.block.building.data.*;
-import com.idega.block.finance.business.*;
-import com.idega.business.*;
-import com.idega.core.data.*;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
-import com.idega.user.business.*;
-import com.idega.user.data.*;
-import com.idega.util.*;
-import is.idega.idegaweb.campus.block.allocation.data.*;
-import is.idega.idegaweb.campus.block.application.data.*;
-import is.idega.idegaweb.campus.block.building.data.*;
-import is.idega.idegaweb.campus.block.mailinglist.business.*;
-import is.idega.idegaweb.campus.data.*;
-import is.idega.idegaweb.campus.presentation.*;
-import java.sql.*;
-import java.util.*;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import com.idega.block.application.data.ApplicationBMPBean;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.finance.business.AccountManager;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title: Service Bean for the campus contract system

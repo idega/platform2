@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.phone.data;
 
-import javax.ejb.*;
 
 public interface CampusPhone extends com.idega.data.IDOLegacyEntity
 {

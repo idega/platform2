@@ -1,30 +1,26 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 
 
-import com.idega.presentation.PresentationObjectContainer;
-import java.util.List;
-import java.sql.SQLException;
-import com.idega.presentation.IWContext;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
 import is.idega.idegaweb.campus.presentation.Edit;
-import com.idega.presentation.PresentationObject;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.data.EntityFinder;
-import java.util.Hashtable;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 
 /**
  * Title:   idegaclasses

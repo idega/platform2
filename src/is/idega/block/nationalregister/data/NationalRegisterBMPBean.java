@@ -6,7 +6,6 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOQuery;
 
 /**
  * A data class to hold the national register data, for Iceland, which is read

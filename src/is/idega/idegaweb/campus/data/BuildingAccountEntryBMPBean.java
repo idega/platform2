@@ -1,5 +1,5 @@
 /*
- * $Id: BuildingAccountEntryBMPBean.java,v 1.3 2002/07/07 18:50:02 aron Exp $
+ * $Id: BuildingAccountEntryBMPBean.java,v 1.4 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,10 +11,6 @@ package is.idega.idegaweb.campus.data;
 
 
 
-import com.idega.data.IDOLegacyEntity;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.lang.IllegalStateException;
 import java.sql.SQLException;
 
 /**

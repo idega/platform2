@@ -4,69 +4,7 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
 
-import is.idega.idegaweb.campus.presentation.Edit;
-
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
-
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
-
-import is.idega.idegaweb.campus.data.SystemProperties;
-
-import is.idega.idegaweb.campus.block.application.data.WaitingList;
-
-import is.idega.idegaweb.campus.block.allocation.business.WaitingListFinder;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.PresentationObject;
-
-import com.idega.presentation.Table;
-
 import com.idega.presentation.PresentationObjectContainer;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.block.building.business.BuildingCacher;
-
-import com.idega.block.building.data.*;
-
-import com.idega.block.application.data.Applicant;
-
-
-
-import com.idega.util.IWTimestamp;
-
-import java.sql.SQLException;
-
-import com.idega.core.contact.data.Email;
-
-import com.idega.core.user.business.UserBusiness;
-
-import com.idega.block.finance.business.FinanceFinder;
-
-import com.idega.block.finance.data.Account;
-
-
-import com.idega.core.accesscontrol.business.LoginCreator;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-
-import com.idega.core.user.data.User;
-
-import com.idega.core.data.GenericGroup;
-
-import com.idega.core.accesscontrol.data.LoginTable;
-
-import java.util.List;
-
-import java.util.Iterator;
-
-import com.idega.util.SendMail;
 
 /**
 

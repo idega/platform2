@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.8 2002/04/30 11:25:14 palli Exp $
+ * $Id: CampusAllocation.java,v 1.9 2004/05/24 14:21:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,31 +10,22 @@
 package is.idega.idegaweb.campus.presentation;
 
 
-import com.idega.presentation.BlockMenu;
-import is.idega.idegaweb.campus.presentation.EmailSetter;
-import is.idega.idegaweb.campus.block.building.presentation.AprtTypePeriodMaker;
-import is.idega.idegaweb.campus.block.application.presentation.*;
-import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.presentation.SysPropsSetter;
-import is.idega.idegaweb.campus.block.allocation.presentation.*;
-import is.idega.idegaweb.campus.block.mailinglist.presentation.Emailer;
+import is.idega.idegaweb.campus.block.allocation.presentation.CampusAllocator;
+import is.idega.idegaweb.campus.block.allocation.presentation.CampusContracts;
+import is.idega.idegaweb.campus.block.allocation.presentation.ContractTextSetter;
+import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.block.finance.presentation.*;
-import com.idega.block.application.data.*;
-import com.idega.block.application.presentation.ApplicationSubjectMaker;
-import com.idega.block.application.business.ApplicationFinder;
+import is.idega.idegaweb.campus.block.mailinglist.presentation.Emailer;
 
 import java.util.List;
 import java.util.Vector;
-import java.util.Collection;
+
+import com.idega.block.application.presentation.ApplicationSubjectMaker;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.BlockMenu;
+import com.idega.presentation.IWContext;
 
 /**
  * Title:

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBMPBean.java,v 1.3 2003/08/11 21:44:35 aron Exp $
+ * $Id: RequestBMPBean.java,v 1.4 2004/05/24 14:21:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,13 @@
  */
 package is.idega.idegaweb.campus.block.request.data;
 
-import com.idega.data.IDOLegacyEntity;
-import com.idega.core.user.data.User;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+
+import com.idega.core.user.data.User;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

@@ -1,6 +1,5 @@
 package is.idega.experimental.idotest;
 
-import javax.ejb.*;
 
 public interface Response extends com.idega.data.IDOEntity
 {

@@ -4,8 +4,6 @@ package is.idega.idegaweb.campus.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.block.finance.presentation.Finance;
-import is.idega.idegaweb.campus.block.phone.presentation.PhoneFiles;
 
 
 /**

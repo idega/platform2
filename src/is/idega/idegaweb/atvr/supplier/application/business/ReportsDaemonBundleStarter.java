@@ -10,14 +10,10 @@ package is.idega.idegaweb.atvr.supplier.application.business;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.Iterator;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
-import com.idega.user.business.GroupBusiness;
-import com.idega.user.data.GroupRelation;
 import com.idega.util.EventTimer;
 import com.idega.util.IWTimestamp;
 

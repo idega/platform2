@@ -6,7 +6,6 @@ import is.idega.idegaweb.campus.presentation.Edit;
 import java.rmi.RemoteException;
 
 import com.idega.business.IBOLookup;
-import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;

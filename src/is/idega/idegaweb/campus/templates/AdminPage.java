@@ -1,6 +1,6 @@
 /*
 
- * $Id: AdminPage.java,v 1.4 2002/04/06 19:11:15 tryggvil Exp $
+ * $Id: AdminPage.java,v 1.5 2004/05/24 14:21:40 palli Exp $
 
  *
 
@@ -22,17 +22,12 @@ package is.idega.idegaweb.campus.templates;
 
 
 
-import java.io.*;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.data.*;
-
 import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.6 2003/08/11 21:06:19 aron Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.7 2004/05/24 14:21:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,42 +9,38 @@
  */
 package is.idega.idegaweb.campus.block.request.presentation;
 
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.core.user.data.User;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TimeInput;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.util.IWTimestamp;
-import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.data.Request;
 import is.idega.idegaweb.campus.block.request.data.RequestHome;
+import is.idega.idegaweb.campus.presentation.Edit;
+
+import java.rmi.RemoteException;
+import java.sql.Timestamp;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.application.data.Applicant;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
-import com.idega.block.building.data.Floor;
 import com.idega.block.building.data.Building;
-import com.idega.block.application.data.Applicant;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import com.idega.block.building.data.Floor;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
-import java.rmi.RemoteException;
-import javax.ejb.FinderException;
-import java.sql.Timestamp;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

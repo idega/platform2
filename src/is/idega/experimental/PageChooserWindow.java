@@ -1,9 +1,7 @@
 package is.idega.experimental;
 
-import com.idega.presentation.ui.AbstractChooserWindow;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.TreeViewer;
-import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.AbstractChooserWindow;
 
 
 /**

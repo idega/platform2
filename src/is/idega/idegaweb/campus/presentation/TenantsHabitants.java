@@ -1,33 +1,39 @@
 package is.idega.idegaweb.campus.presentation;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Collections;
-import com.idega.presentation.Block;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.DataTable;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.*;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
-import is.idega.idegaweb.campus.business.*;
+import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
+import is.idega.idegaweb.campus.business.HabitantsCollector;
+import is.idega.idegaweb.campus.business.HabitantsComparator;
+import is.idega.idegaweb.campus.business.HabitantsFinder;
 import is.idega.idegaweb.campus.data.Habitant;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 import com.idega.block.application.data.Applicant;
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.util.text.TextStyler;
-import com.idega.util.text.StyleConstants;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DataTable;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.StyleConstants;
+import com.idega.util.text.TextStyler;
 
 /**
  * Title:

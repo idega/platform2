@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.8 2003/05/03 02:19:48 tryggvil Exp $
+ * $Id: RequestView.java,v 1.9 2004/05/24 14:21:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,26 +9,25 @@
  */
 package is.idega.idegaweb.campus.block.request.presentation;
 
+import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
+import is.idega.idegaweb.campus.presentation.Edit;
+
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Window;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TimeInput;
-import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
-import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

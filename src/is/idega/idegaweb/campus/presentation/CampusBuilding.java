@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusBuilding.java,v 1.4 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: CampusBuilding.java,v 1.5 2004/05/24 14:21:40 palli Exp $
 
  *
 
@@ -22,31 +22,21 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.ui.IFrame;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.Table;
-
-import com.idega.presentation.PresentationObject;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.block.finance.presentation.*;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.block.building.presentation.BuildingEditorWindow;
-
-import com.idega.block.building.presentation.BuildingStatistics;
-
+import is.idega.idegaweb.campus.block.building.presentation.ApartmentFreezer;
+import is.idega.idegaweb.campus.block.building.presentation.ApartmentSerie;
 import is.idega.idegaweb.campus.block.phone.presentation.CampusPhones;
 
-import is.idega.idegaweb.campus.block.building.presentation.*;
+import com.idega.block.building.presentation.BuildingEditorWindow;
+import com.idega.block.building.presentation.BuildingStatistics;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.IFrame;
 
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.7 2003/07/25 18:00:16 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.8 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,10 +10,9 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
 
-import com.idega.data.IDOLegacyEntity;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import javax.ejb.FinderException;
 

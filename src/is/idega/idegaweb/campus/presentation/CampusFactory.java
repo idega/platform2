@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.16 2002/07/02 17:24:44 aron Exp $
+ * $Id: CampusFactory.java,v 1.17 2004/05/24 14:21:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,21 +9,13 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.block.application.presentation.ReferenceNumber;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Block;
-import com.idega.block.finance.presentation.AccountViewer;
-import com.idega.block.finance.presentation.Finance;
-import com.idega.block.finance.presentation.FinanceIndex;
-import com.idega.block.building.presentation.BuildingViewer;
-import is.idega.idegaweb.campus.templates.CampusPage;
-import is.idega.idegaweb.campus.presentation.Title;
 import is.idega.idegaweb.campus.block.application.presentation.ReferenceNumberInfo;
-import is.idega.idegaweb.campus.block.phone.presentation.PhoneFiles;
+
+import com.idega.block.application.presentation.ReferenceNumber;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.Parameter;
 
 /**
  * Title:   idegaclasses

@@ -1,31 +1,38 @@
 package is.idega.idegaweb.campus.block.phone.presentation;
 
 
-import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.block.building.data.*;
-import com.idega.block.building.business.*;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityFinder;
-import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWTimestamp;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
-import java.util.ListIterator;
-import java.util.LinkedList;
+import is.idega.idegaweb.campus.presentation.Edit;
+
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.sql.SQLException;
+
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.business.BuildingFinder;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.event.IWPageEventListener;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWException;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.27 2004/03/26 14:12:05 palli Exp $
+ * $Id: ContractBusiness.java,v 1.28 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,53 +9,43 @@
  */
 package is.idega.idegaweb.campus.block.allocation.business;
 
-import is.idega.idegaweb.campus.presentation.SysPropsSetter;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
-import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
-import com.idega.block.building.data.Apartment;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.data.SystemProperties;
+import is.idega.idegaweb.campus.presentation.SysPropsSetter;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.List;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-
-import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Iterator;
-import com.idega.core.user.data.User;
-import com.idega.core.user.data.UserHome;
-import com.idega.block.application.data.*;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.core.contact.data.Email;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.block.finance.business.AccountManager;
-import com.idega.block.finance.data.Account;
-import com.idega.core.accesscontrol.business.LoginCreator;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.user.data.User;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.idegaweb.IWApplicationContext;
 import java.util.List;
-import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import com.idega.block.application.data.ApplicationBMPBean;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.finance.business.AccountManager;
+import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.LoginCreator;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.contact.data.Email;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.core.user.data.UserHome;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
-import com.idega.block.application.data.Application;
-import is.idega.idegaweb.campus.presentation.Campus;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2000-2001 idega.is All Rights

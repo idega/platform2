@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBusiness.java,v 1.6 2002/08/12 13:00:42 palli Exp $
+ * $Id: RequestBusiness.java,v 1.7 2004/05/24 14:21:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,11 @@
  */
 package is.idega.idegaweb.campus.block.request.business;
 
-import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.block.request.data.Request;
-import java.sql.SQLException;
+
 import java.sql.Timestamp;
+
+import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

@@ -6,33 +6,33 @@ import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
-import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.*;
-import com.idega.block.application.data.Applicant;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
-import java.sql.SQLException;
-
-import com.idega.core.contact.data.Email;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.block.finance.business.AccountManager;
-import com.idega.block.finance.data.Account;
-import com.idega.core.accesscontrol.business.LoginCreator;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.user.data.User;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.accesscontrol.data.LoginTable;
-import java.util.List;
-import com.idega.util.SendMail;
 
 /**
  * Title:   idegaclasses

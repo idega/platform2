@@ -1,6 +1,6 @@
 /*
 
- * $Id: Menu.java,v 1.4 2003/10/03 01:52:42 tryggvil Exp $
+ * $Id: Menu.java,v 1.5 2004/05/24 14:21:40 palli Exp $
 
  *
 
@@ -24,31 +24,17 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.data.genericentity.Group;
-
-import com.idega.data.genericentity.Member;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.ui.*;
-
-
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.core.localisation.business.LocaleSwitcher;
-
-import com.idega.util.LocaleUtil;
-
 import java.util.Enumeration;
 
-import java.sql.SQLException;
-
-import java.io.IOException;
+import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.util.LocaleUtil;
 
 
 

@@ -1,7 +1,6 @@
 package is.idega.demo.textviewer.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
+import com.idega.presentation.text.Text;
 
 /**
  * Title:

@@ -24,8 +24,6 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
-import com.idega.block.finance.business.FinanceFinder;
-import com.idega.block.finance.data.AccountHome;
 import com.idega.block.finance.data.AccountInfo;
 import com.idega.block.finance.data.AccountInfoHome;
 import com.idega.data.IDOLookup;

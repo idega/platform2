@@ -1,29 +1,14 @@
 package is.idega.experimental.pdftest;
 
-import java.awt.Graphics2D;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import com.idega.block.messenger.data.Message;
-import com.idega.core.file.data.ICFile;
 import com.idega.io.MemoryFileBuffer;
-import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
-import com.idega.user.data.User;
-import com.lowagie.text.Cell;
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
-import com.lowagie.text.Graphic;
-import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -31,11 +16,8 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.xml.SAXmyHandler;
 import com.lowagie.text.xml.XmlParser;
 
 /**

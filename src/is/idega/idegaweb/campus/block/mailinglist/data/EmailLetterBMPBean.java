@@ -9,10 +9,7 @@ package is.idega.idegaweb.campus.block.mailinglist.data;
  * @version 1.0
  */
 
-import com.idega.data.IDOLegacyEntity;
-import com.idega.core.file.data.ICFile;
-
-import java.sql.*;
+import java.sql.SQLException;
 
 public class EmailLetterBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter {
 

@@ -1,24 +1,15 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import com.idega.block.media.business.MediaBusiness;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.text.Link;
 import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
-import com.idega.presentation.Block;
-import com.idega.presentation.Page;
+
+import java.util.StringTokenizer;
+
+import com.idega.block.media.business.MediaBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
+import com.idega.presentation.ui.Window;
 import com.lowagie.text.Font;
-import java.util.StringTokenizer;
-import com.idega.util.IWTimestamp;
-import com.idega.io.MemoryFileBuffer;
-import com.idega.io.MemoryInputStream;
-import com.idega.io.MemoryOutputStream;
-import java.util.Map;
-import java.util.Hashtable;
-import com.lowagie.text.*;
-import java.io.*;
 
 
 

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.questionaire1011.data;
 
-import javax.ejb.*;
 
 public interface Questionaire extends com.idega.data.IDOEntity
 {

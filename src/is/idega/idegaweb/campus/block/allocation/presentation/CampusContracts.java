@@ -1,38 +1,40 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
+import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.block.allocation.business.*;
-import is.idega.idegaweb.campus.block.allocation.data.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.block.finance.presentation.*;
-import com.idega.core.user.data.User;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.data.ApplicationSubject;
 
-import com.idega.block.application.business.*;
-import com.idega.block.building.data.*;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.util.IWTimestamp;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWCalendar;
-import com.idega.util.IWTimestamp;
-import com.idega.presentation.Image;
-
-import java.text.DateFormat;
 import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
-import java.util.ListIterator;
+import java.text.DateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.core.user.data.User;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 
 /**
 * Title:   idegaclasses

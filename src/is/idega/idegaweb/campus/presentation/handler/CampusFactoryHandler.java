@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusFactoryHandler.java,v 1.3 2002/04/06 19:11:15 tryggvil Exp $
+ * $Id: CampusFactoryHandler.java,v 1.4 2004/05/24 14:21:41 palli Exp $
 
  *
 
@@ -20,21 +20,14 @@ package is.idega.idegaweb.campus.presentation.handler;
 
 
 
-import is.idega.idegaweb.campus.presentation.TitleIcons;
-
 import is.idega.idegaweb.campus.presentation.CampusFactory;
 
-import com.idega.builder.handler.PropertyHandler;
-
-import com.idega.presentation.PresentationObject;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.ui.DropdownMenu;
-
-import com.idega.presentation.text.Text;
-
 import java.util.List;
+
+import com.idega.builder.handler.PropertyHandler;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.DropdownMenu;
 
 
 

@@ -5,7 +5,6 @@
 package is.idega.block.counters.presentation;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.util.Date;
 
 import com.idega.idegaweb.IWBundle;

@@ -12,8 +12,8 @@ package is.idega.idegaweb.campus.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.presentation.ContractFiler;
+
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.LinkedList;
@@ -35,11 +35,9 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 

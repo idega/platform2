@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.questionaire1011.business;
 
-import javax.ejb.*;
 
 public interface QuestionaireBusiness extends com.idega.business.IBOService
 {

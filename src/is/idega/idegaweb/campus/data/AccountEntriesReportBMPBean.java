@@ -5,12 +5,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+
 import javax.ejb.EJBHome;
 import javax.ejb.EJBLocalHome;
 import javax.ejb.EntityContext;
@@ -18,7 +17,6 @@ import javax.ejb.FinderException;
 
 import com.idega.block.finance.data.AccountKey;
 import com.idega.block.finance.data.AccountKeyHome;
-import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.SimpleQuerier;

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
-import javax.ejb.*;
 
 public interface Contract extends com.idega.data.IDOLegacyEntity
 {

@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusAdminPage.java,v 1.3 2002/04/06 19:11:15 tryggvil Exp $
+ * $Id: CampusAdminPage.java,v 1.4 2004/05/24 14:21:40 palli Exp $
 
  *
 
@@ -24,11 +24,10 @@ package is.idega.idegaweb.campus.templates;
 
 
 
-import is.idega.idegaweb.campus.presentation.*;
-
-import com.idega.presentation.Image;
-
-import com.idega.presentation.text.Text;
+import is.idega.idegaweb.campus.presentation.CampusMenu;
+import is.idega.idegaweb.campus.presentation.CampusTabber;
+import is.idega.idegaweb.campus.presentation.Title;
+import is.idega.idegaweb.campus.presentation.TitleIcons;
 
 
 

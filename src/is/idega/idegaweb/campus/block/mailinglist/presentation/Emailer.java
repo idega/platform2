@@ -1,9 +1,16 @@
 package is.idega.idegaweb.campus.block.mailinglist.presentation;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter;
+import is.idega.idegaweb.campus.block.mailinglist.data.MailingList;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import com.idega.core.contact.data.Email;
-import com.idega.development.presentation.Localizer;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -19,14 +26,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.util.Edit;
-import com.idega.util.LocaleUtil;
 import com.idega.util.text.ContentParsable;
-import com.idega.util.text.ContentParser;
-import is.idega.idegaweb.campus.block.mailinglist.business.*;
-import is.idega.idegaweb.campus.block.mailinglist.data.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:

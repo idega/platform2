@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.13 2003/05/05 07:23:53 tryggvil Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.14 2004/05/24 14:21:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,26 +9,25 @@
  */
 package is.idega.idegaweb.campus.block.application.business;
 
-import com.idega.util.IWTimestamp;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.data.WaitingList;
+
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
-//import com.idega.block.application.data.ApplicantBean;
-import com.idega.presentation.IWContext;
-import com.idega.core.user.data.User;
 import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.business.ReferenceNumberHandler;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
-import java.sql.SQLException;
-import java.util.Vector;
-import java.util.List;
-import java.util.Iterator;
-import com.idega.data.IDOLegacyEntity;
+import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

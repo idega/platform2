@@ -1,9 +1,7 @@
 package is.idega.idegaweb.campus.block.application.data;
 
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityAttribute;
-import java.sql.SQLException;
 import java.sql.Date;
+import java.sql.SQLException;
 
 /**
  * A specific application for the campus system.

@@ -2,19 +2,16 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 
 
-import com.idega.presentation.ui.Window;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import is.idega.idegaweb.campus.block.application.business.*;
-
-import java.util.Vector;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 
 import java.util.List;
+import java.util.Vector;
+
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Window;
 
 
 

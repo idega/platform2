@@ -15,12 +15,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.idega.io.FileSaver;
 import com.idega.block.pdf.ITextXMLHandler;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
-import com.idega.io.MemoryOutputStream;
-import com.idega.util.FileUtil;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.xml.XmlPeer;
 /**

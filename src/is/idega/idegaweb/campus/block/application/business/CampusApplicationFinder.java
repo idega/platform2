@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.16 2003/07/25 17:59:41 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.17 2004/05/24 14:21:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Vector;
 

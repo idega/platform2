@@ -2,8 +2,6 @@ package is.idega.idegaweb.campus.block.phone.data;
 
 
 
-import com.idega.data.IDOLegacyEntity;
-
 import java.sql.SQLException;
 
 

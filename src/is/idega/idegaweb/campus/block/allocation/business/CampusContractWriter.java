@@ -1,39 +1,46 @@
 package is.idega.idegaweb.campus.block.allocation.business;
 
 
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.building.data.*;
-import com.idega.block.application.data.Applicant;
-import com.idega.util.text.TextSoap;
-import com.idega.util.IWTimestamp;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.IDOLookup;
-import com.idega.block.application.data.*;
-import com.idega.core.file.data.ICFile;
-
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfWriter;
-
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.data.*;
+import is.idega.idegaweb.campus.block.allocation.data.ContractText;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRent;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRentHome;
-/** @todo  */
-// get rid of this interconnection
-import com.idega.block.finance.data.*;
-import java.io.FileOutputStream;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Hashtable;
+
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import com.idega.io.MemoryOutputStream;
-import com.idega.io.MemoryInputStream;
+import com.idega.block.application.data.Applicant;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.block.finance.data.TariffIndex;
+import com.idega.block.finance.data.TariffIndexBMPBean;
+import com.idega.core.file.data.ICFile;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryOutputStream;
+import com.lowagie.text.Chapter;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.HeaderFooter;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Section;
+import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * Title:        idegaclasses

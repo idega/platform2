@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApply.java,v 1.16 2002/06/12 16:35:34 aron Exp $
+ * $Id: CampusApply.java,v 1.17 2004/05/24 14:21:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,13 +10,13 @@
 
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
+import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
+
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.campus.block.application.presentation.CampusApplicationForm;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
 
 /**
  * Title:   idegaclasses

@@ -9,19 +9,16 @@
  */
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.FinderException;
-
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.data.SystemPropertiesBMPBean;
 import is.idega.idegaweb.campus.presentation.Edit;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;

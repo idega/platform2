@@ -1,7 +1,6 @@
 package is.idega.idegaweb.campus.block.finance.business;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntry;
-import is.idega.idegaweb.campus.data.ApartmentAccountEntryBMPBean;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryHome;
 import is.idega.idegaweb.campus.data.BatchContract;
 import is.idega.idegaweb.campus.data.BatchContractHome;
@@ -16,14 +15,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.finance.business.AssessmentBusiness;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.AccountEntry;
-import com.idega.block.finance.data.AccountEntryBMPBean;
 import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AssessmentRoundHome;
@@ -33,7 +32,6 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.util.IWTimestamp;
 /**

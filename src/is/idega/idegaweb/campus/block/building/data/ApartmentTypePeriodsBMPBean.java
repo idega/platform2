@@ -1,6 +1,6 @@
 /*
 
- * $Id: ApartmentTypePeriodsBMPBean.java,v 1.3 2002/08/12 13:00:42 palli Exp $
+ * $Id: ApartmentTypePeriodsBMPBean.java,v 1.4 2004/05/24 14:21:42 palli Exp $
 
  *
 
@@ -24,9 +24,7 @@ package is.idega.idegaweb.campus.block.building.data;
 
 
 
-import java.sql.*;
-
-import com.idega.data.IDOLegacyEntity;
+import java.sql.SQLException;
 
 import com.idega.util.IWTimestamp;
 

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.building.data;
 
-import javax.ejb.*;
 
 public interface BuildingApartment extends com.idega.data.IDOLegacyEntity
 {

@@ -13,7 +13,6 @@ import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplicationHom
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
 
 /**

@@ -1,9 +1,10 @@
 package is.idega.idegaweb.campus.business;
 
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOFinderException;
 import is.idega.idegaweb.campus.data.Habitant;
+
 import java.util.List;
+
+import com.idega.data.EntityFinder;
 
 public class HabitantsFinder {
   public static List findHabitants(int complexId){

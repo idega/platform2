@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApartments.java,v 1.2 2002/02/15 12:29:24 aron Exp $
+ * $Id: CampusApartments.java,v 1.3 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,24 +10,20 @@
 package is.idega.idegaweb.campus.presentation;
 
 
-import com.idega.presentation.BlockMenu;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.IFrame;
-import com.idega.presentation.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.block.building.presentation.BuildingEditor;
-import com.idega.block.building.presentation.BuildingEditorWindow;
-import com.idega.block.building.presentation.BuildingStatistics;
+import is.idega.idegaweb.campus.block.building.presentation.ApartmentFreezer;
+import is.idega.idegaweb.campus.block.building.presentation.ApartmentSerie;
+import is.idega.idegaweb.campus.block.building.presentation.AprtTypePeriodMaker;
 import is.idega.idegaweb.campus.block.phone.presentation.CampusPhones;
-import is.idega.idegaweb.campus.block.building.presentation.*;
 
 import java.util.List;
 import java.util.Vector;
-import java.util.Collection;
+
+import com.idega.block.building.presentation.BuildingEditor;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.BlockMenu;
+import com.idega.presentation.IWContext;
 
 /**
  * Title:

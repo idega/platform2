@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.phone.data;
 
-import javax.ejb.*;
 
 public interface PhoneFileInfo extends com.idega.data.IDOLegacyEntity
 {

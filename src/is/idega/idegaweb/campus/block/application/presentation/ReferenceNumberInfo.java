@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.32 2003/08/06 00:17:24 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.33 2004/05/24 14:21:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,57 +10,53 @@
 
 package is.idega.idegaweb.campus.block.application.presentation;
 
-import is.idega.idegaweb.campus.presentation.CampusColors;
-import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
-import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
-import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusReferenceNumberInfoHelper;
+import is.idega.idegaweb.campus.block.application.data.Applied;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
+import is.idega.idegaweb.campus.presentation.CampusColors;
+
+import java.text.DateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.data.ApplicationHome;
+import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.text.Text;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Form;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
-
-import java.util.Collection;
-import java.util.Vector;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Hashtable;
-import java.util.TreeSet;
-import java.text.DateFormat;
-
-import javax.ejb.FinderException;
 
 /**
  *

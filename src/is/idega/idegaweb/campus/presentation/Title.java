@@ -6,21 +6,11 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.data.genericentity.Group;
-
-import com.idega.data.genericentity.Member;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import java.sql.SQLException;
-
-import java.io.IOException;
-
 import com.idega.idegaweb.IWBundle;
-
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 
 
 

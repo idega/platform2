@@ -4,21 +4,13 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
 
-import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
-
-import com.idega.presentation.Block;
-
-import com.idega.presentation.Page;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.presentation.IWContext;
-
-import com.lowagie.text.Font;
-
 import java.util.StringTokenizer;
 
-import com.idega.util.IWTimestamp;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
+import com.lowagie.text.Font;
 
 
 

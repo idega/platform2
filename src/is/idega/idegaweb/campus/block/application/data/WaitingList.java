@@ -2,8 +2,6 @@ package is.idega.idegaweb.campus.block.application.data;
 
 import java.sql.Timestamp;
 
-import javax.ejb.*;
-
 public interface WaitingList extends com.idega.data.IDOLegacyEntity
 {
  public void setChoiceNumber(java.lang.Integer p0);

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.12 2003/08/11 21:11:14 aron Exp $
+ * $Id: RequestAdminView.java,v 1.13 2004/05/24 14:21:43 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,26 +9,22 @@
  */
 package is.idega.idegaweb.campus.block.request.presentation;
 
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.RadioGroup;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.text.Link;
-import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
+import is.idega.idegaweb.campus.block.request.data.Request;
 import is.idega.idegaweb.campus.presentation.Edit;
+
 import java.util.List;
 
-import is.idega.idegaweb.campus.block.request.data.Request;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.RadioGroup;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
