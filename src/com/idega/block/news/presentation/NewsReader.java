@@ -45,6 +45,7 @@ private String sNewsEditorUrl ="/news/editor.jsp";
 private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
 private boolean showHeadlineImage = false;
 private boolean showMoreButton = false;
+private Window adminWindow;
 
 private Text textProxy = new Text();
 private Text headlineProxy = new Text();
@@ -138,7 +139,10 @@ public void main(ModuleInfo modinfo)throws Exception{
   editor = iwrb.getImage("newseditor.gif");
   collection = iwrb.getImage("collection.gif");
 
-  boolean byDate=false;
+  adminWindow = new Window("AdminWindow",NewsEditor.class,com.idega.jmodule.object.Page.class);
+    adminWindow.setWidth(570);
+    adminWindow.setHeight(550);  boolean byDate=false;
+
   News[] news = new News[1];
 
   String news_id = modinfo.getRequest().getParameter("news_id");
@@ -172,8 +176,7 @@ public void main(ModuleInfo modinfo)throws Exception{
     }
 
     if(isAdmin) {
-      Form newsEditor = new Form(sNewsEditorUrl);
-      newsEditor.add(new SubmitButton(editor));
+      Link newsEditor = new Link(editor,adminWindow);
       add(newsEditor);
     }
 
@@ -486,10 +489,10 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
 
   if(isAdmin) {
     Table links = new Table(2,1);
-    Link newsEdit = new Link(change,sNewsEditorUrl);
+    Link newsEdit = new Link(change,adminWindow);
     newsEdit.addParameter("news_id",newsId);
 
-    Link newsDelete = new Link(delete,sNewsEditorUrl);
+    Link newsDelete = new Link(delete,adminWindow);
     newsDelete.addParameter("news_id",newsId);
     newsDelete.addParameter("mode","delete");
 

@@ -99,6 +99,9 @@ private int attributeId = 3;
     this.sImage = Lang[7];
     this.sEditor = Lang[0];
 
+    this.getParentPage().setAllMargins(0);
+    this.getParentPage().setTitle(sEditor);
+
     headlinestring = new Text("<b>"+Lang[1]+"</b>");
     newsstring = new Text("<b>"+Lang[2]+"</b>");
     categorystring = new Text("<b>"+Lang[3]+"</b>");
@@ -120,7 +123,7 @@ private int attributeId = 3;
             add(feedBack(false));
         }
         else if( mode.equals("delete") ){
-          add(deleteNews(modinfo.getParameter("news_id")));
+          deleteNews(modinfo.getParameter("news_id"));
         }
       }
 
@@ -138,11 +141,12 @@ private int attributeId = 3;
     }
   }
 
-  public Text deleteNews(String news_id) throws SQLException{
-  News news = new News(Integer.parseInt(news_id));
-  news.delete();
+  public void deleteNews(String news_id) throws SQLException{
+    News news = new News(Integer.parseInt(news_id));
+    news.delete();
 
-  return new Text("Deleted the news");
+    getParentPage().setParentToReload();
+    getParentPage().close();
   }
 
   public Text getHeaderText(String s){
@@ -155,11 +159,15 @@ private int attributeId = 3;
   public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException{
 
     Table mainTable = new Table(1, 2);
+      mainTable.setWidth("100%");
+      mainTable.setHeight("100%");
+
     Table topToolTable = new Table(1,1);
+
     Text tEditor = new Text(sEditor);
-    tEditor.setBold();
-    tEditor.setFontColor("#FFFFFF");
-    tEditor.setFontSize("3");
+      tEditor.setBold();
+      tEditor.setFontColor("#FFFFFF");
+      tEditor.setFontSize("3");
 
     topToolTable.add(tEditor,1,1);
     topToolTable.setColor("4d6476");
@@ -207,12 +215,12 @@ private int attributeId = 3;
     if(update) {
       String theheadline = news.getHeadline();
       if( theheadline!=null )
-        headlineArea = insertTextArea("NewsHeader",theheadline, 0, 60);
+        headlineArea = insertTextArea("NewsHeader",theheadline, 0, 40);
       else
-        headlineArea = insertTextArea("NewsHeader","", 0, 60);
+        headlineArea = insertTextArea("NewsHeader","", 0, 40);
     }
     else
-      headlineArea = insertTextArea("NewsHeader","", 0, 60);
+      headlineArea = insertTextArea("NewsHeader","", 0, 40);
 
     mainPanel.add(headlineArea,1,2);
 
@@ -220,12 +228,12 @@ private int attributeId = 3;
     if(update) {
       String thenewstext=news.getText();
       if ( thenewstext!=null)
-        newsArea = insertTextArea("NewsText",thenewstext,15, 60);
+        newsArea = insertTextArea("NewsText",thenewstext,25, 45);
       else
-        newsArea = insertTextArea("NewsText","",15, 60);
+        newsArea = insertTextArea("NewsText","",25, 45);
     }
     else
-      newsArea = insertTextArea("NewsText","",15, 60);
+      newsArea = insertTextArea("NewsText","",25, 45);
 
     mainPanel.add(newsArea,1,4);
 
@@ -305,14 +313,19 @@ private int attributeId = 3;
       if ( update ) {
         if ( news.getIncludeImage() != null ) {
           if ( news.getIncludeImage().equalsIgnoreCase("y") ) {
-            imageInsert.setImageId(news.getImageId());
             imageInsert.setSelected(true);
+          }
+          if ( news.getImageId() != -1 ) {
+            imageInsert.setImageId(news.getImageId());
           }
         }
       }
 
     sideToolTable.add(imageInsert, 1, 10);
-    SubmitButton mySubmit = new SubmitButton("mode", "save");
+    SubmitButton mySubmit = new SubmitButton(new Image("/pics/jmodules/news/"+language+"/save.gif"));
+    HiddenInput submitInput = new HiddenInput("mode","save");
+    sideToolTable.setAlignment(1,11,"right");
+    sideToolTable.add(submitInput, 1,11);
     sideToolTable.add(mySubmit, 1,11);
     mainPanel.setVerticalAlignment(2,1,"top");
     return mainTable;
@@ -361,15 +374,12 @@ private int attributeId = 3;
       news.setDaysShown(new Integer(daysShown));
 
     String includeImage = modinfo.getParameter("insertImage");
-    System.out.println("includeImage: "+includeImage);
     if( includeImage!=null )
       news.setIncludeImage(includeImage);
     else
       news.setIncludeImage("N");
 
     String image_id = modinfo.getParameter("image_id");
-    System.out.println("imageID: "+image_id);
-
     if(image_id == null)
       image_id="-1";
 
@@ -439,9 +449,8 @@ private int attributeId = 3;
     //myTable.setBorder(1);
 
     if(isOk){
-      myTable.addText("Fréttin hefur verið skráð", 1, 1);
-      myTable.add(backForm, 1, 2);
-      myTable.add(actionForm, 2, 2);
+      getParentPage().setParentToReload();
+      getParentPage().close();
     }
     else {
       myTable.addText("Fylla verður í alla reiti auk þess að velja flokk", 1, 1);
