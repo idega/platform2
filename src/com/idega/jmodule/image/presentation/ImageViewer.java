@@ -734,7 +734,6 @@ private Form getEditForm(){
   buttonTable.setCellpadding(0);
   buttonTable.setCellspacing(0);
   SubmitButton save = new SubmitButton("Vista","catagory_edit_form","save");
-  save.
   buttonTable.add(save,3,1);
   buttonTable.setWidth(3,1,"60");
   SubmitButton cancel = new SubmitButton("Hætta við","catagory_edit_form", "cancel");
