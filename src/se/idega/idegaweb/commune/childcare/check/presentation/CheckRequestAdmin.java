@@ -332,32 +332,21 @@ public class CheckRequestAdmin extends CommuneBlock {
 			viewCheck(iwc, check, true);
 			return;
 		}
-		getCheckBusiness(iwc).approveCheck(check);
+		String subject = getResourceBundle(iwc).getLocalizedString("check.granted_message_headline","Check granted");
+		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body","Your check has been granted");
+		getCheckBusiness(iwc).approveCheck(iwc,check,subject,body);
 
-		//Create message for archive
-		//Create post message to citizen
-
-		String subject = "...";
-		String body = "...";
-		int userID = getCheckBusiness(iwc).getUserID(check);
-		getCheckBusiness(iwc).sendMessageToCitizen(iwc,check,userID,subject,body);
-		getCheckBusiness(iwc).sendMessageToArchive(iwc,check,userID,subject,body);
-		getCheckBusiness(iwc).sendMessageToPrinter(iwc,check,userID,subject,body);
-
-		add(getText("Check granted:"));
+		add(getText("Check granted: ")+((Integer)check.getPrimaryKey()).toString());
+		add(new Break(2));
 		viewCheckList(iwc);
 	}
 
 	private void retrialCheck(IWContext iwc) throws Exception {
 		Check check = verifyCheckRules(iwc);
-		getCheckBusiness(iwc).retrialCheck(check);
-
-		//Create message to user
-		String subject = "...";
-		String body = "...";
-		int userID = getCheckBusiness(iwc).getUserID(check);
-		getCheckBusiness(iwc).sendMessageToCitizen(iwc,check,userID,subject,body);
-
+		String subject = getResourceBundle(iwc).getLocalizedString("check.retrial_message_headline","Check denied");
+		String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body","Your check has been denied");
+		getCheckBusiness(iwc).retrialCheck(iwc,check,subject,body);
+		
 		viewCheckList(iwc);
 	}
 

@@ -197,12 +197,15 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.store();
 	}
 
-	public void approveCheck(Check check) throws Exception {
+	public void approveCheck(IWContext iwc,Check check,String subject,String body) throws Exception {
+		sendMessageToCitizen(iwc,check,getUserID(check),subject,body);
+		sendMessageToArchive(iwc,check,getUserID(check),subject,body);
+		sendMessageToPrinter(iwc,check,getUserID(check),subject,body);
 		check.setCaseStatus(this.getCaseStatusGranted());
 		commit(check);
 	}
 
-	public void retrialCheck(Check check) throws Exception {
+	public void retrialCheck(IWContext iwc,Check check,String subject,String body) throws Exception {
 		check.setCaseStatus(this.getCaseStatusReview());
 		commit(check);
 	}
