@@ -209,6 +209,7 @@ public class StaffFinder {
     StaffMeta[] staffMeta = StaffFinder.getMeta(user.getID(),localeID);
     Phone workPhone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
     Phone mobilePhone = UserBusiness.getUserPhone(user.getID(),PhoneType.MOBILE_PHONE_ID);
+    Email email = UserBusiness.getUserMail(user);
 
     StaffHolder holder = new StaffHolder();
     if ( user != null ) {
@@ -250,6 +251,9 @@ public class StaffFinder {
     }
     if ( mobilePhone != null ) {
       holder.setArea(mobilePhone.getNumber());
+    }
+    if ( email != null ) {
+      holder.setEmail(email.getEmailAddress());
     }
     return holder;
   }
