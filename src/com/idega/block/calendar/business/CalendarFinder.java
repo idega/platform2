@@ -21,7 +21,7 @@ public class CalendarFinder {
 
   public static CalendarEntry[] getEntries(idegaTimestamp stamp) {
     try {
-      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toSQLDateString()+" "+idegaTimestamp.FIRST_SECOND_OF_DAY,CalendarEntry.getColumnNameEntryTypeID(),"=");
+      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toSQLDateString(),CalendarEntry.getColumnNameEntryTypeID(),"=");
       if ( cal.length > 0 )
         return cal;
       return null;
@@ -49,7 +49,7 @@ public class CalendarFinder {
       idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
         stamp.addDays(-daysBack);
 
-      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLDateString()+" "+idegaTimestamp.LAST_SECOND_OF_DAY,CalendarEntry.getColumnNameEntryDate(),stamp.toSQLDateString()+" "+idegaTimestamp.FIRST_SECOND_OF_DAY,CalendarEntry.getColumnNameEntryDate(),"<",">=");
+      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLDateString(),CalendarEntry.getColumnNameEntryDate(),stamp.toSQLDateString(),CalendarEntry.getColumnNameEntryDate(),"<",">=");
       if ( cal.length > 0 )
         return cal;
       return null;
