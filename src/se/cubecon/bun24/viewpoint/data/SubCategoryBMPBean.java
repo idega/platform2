@@ -13,10 +13,10 @@ import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 
 /**
- * Last modified: $Date: 2003/11/24 07:45:06 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/23 14:36:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -67,7 +67,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
             { "Förslag", "Politiker", "Namndsekreterare" },
             { "Kundvalet", "Politiker", "Kundvalsgruppen" },
             { "Övrigt", "Politiker", "Namndsekreterare" },
-            { "Nacka24", "Myndigheten", "Kundvalsgruppen" },
+            { "Denna sajt", "Myndigheten", "Kundvalsgruppen" },
             { "Barnomsorgscheck", "Myndigheten", "Finansgruppen" },
             { "Handikapp", "Myndigheten", "Myndighetsgruppen" },
             { "Likvärdighetsgaranti", "Myndigheten", "Myndighetsgruppen" },

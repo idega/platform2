@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2004/01/12 08:38:50 $ by $Author: laddi $
+ * Last modified: $Date: 2004/02/23 14:36:06 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.48 $
+ * @version $Revision: 1.49 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -95,7 +95,7 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String CONTINUE_DEFAULT = "Fortsätt";
 	private final static String DESCRIPTION1_KEY = "viewpoint.description1";
 	private final static String DESCRIPTION1_DEFAULT
-        = "När du använder 'Synpunkter' i Nacka24 så ska du ange vilken typ av "
+        = "När du använder 'Synpunkter' så ska du ange vilken typ av "
         + "synpunkter du vill lämna. Det möjliggör för oss att länka dem till "
         + "rätt tjänsteman för snabb handläggning och respons. De olika "
         + "kategorierna ger också möjlighet till en systematisk uppföljning av "
@@ -226,14 +226,14 @@ public class ViewpointForm extends CommuneBlock {
 	private void showIdentificationForm () {
 		final Form form = new Form();
         final Text useSsnHeader = getSmallHeader ("Du som redan har medborgakonto");
-        final Text useSsnText = getSmallText ("Om du redan har ett medborgarkonto på Nacka24 så kan du lämna en synpunkt utan att logga in genom att ange ditt perssonnummer nedan:");
+        final Text useSsnText = getSmallText ("Om du redan har ett medborgarkonto så kan du lämna en synpunkt utan att logga in genom att ange ditt perssonnummer nedan:");
 		final TextInput ssnInput = (TextInput) getStyledInterface
                 (new TextInput (PARAM_SSN));
 		ssnInput.setLength (10);
 		final SubmitButton submit = getSubmitButton
                 (SHOWTOPCATEGORIESFORM_ACTION, CONTINUE_KEY, CONTINUE_DEFAULT);
         final Text applyHeader = getSmallHeader ("Om du vill ansöka om medborgarkonto");
-        final Text applyText = getSmallText ("Om du bor i Nacka kommun, men ännu inte har skaffat medborgarkonto på Nacka24 så kan du göra en ansökan nu genom att klicka på ansökningslänken i övre marginalen.");
+        final Text applyText = getSmallText ("Om du bor i kommunen, men ännu inte har skaffat medborgarkonto så kan du göra en ansökan nu genom att klicka på ansökningslänken i övre marginalen.");
         final Text submitNameAndEmailHeader = getSmallHeader ("Du som bara vill lämna en synpunkt");
         final Text submitNameAndEmailText = getSmallText ("Du kan också lämna en synpunkt genom att ange ditt namn och din e-post nedan:");
 		final TextInput nameInput = (TextInput) getStyledInterface
@@ -914,7 +914,7 @@ public class ViewpointForm extends CommuneBlock {
             // nothing, since algorithm is in finally clause
         } finally {
             if (null == result) {
-                result = new Link ("Tillbaka till Nacka24:s startsida", "/");
+                result = new Link ("Tillbaka till startsidan", "/");
             }
         }
         return result;
