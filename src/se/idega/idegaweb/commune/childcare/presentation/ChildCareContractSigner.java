@@ -23,6 +23,8 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 
 import com.idega.presentation.text.Link;
@@ -162,7 +164,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		
 		Iterator i = contracts.iterator();
 		
-		Table t = new Table(3, contracts.size());
+		Table t = new Table(4, contracts.size());
 		t.setCellpadding(2);
 		t.setCellspacing(2);	
 		t.setBorder(0);	
@@ -185,18 +187,18 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 			}
 			
 			ContractCategory cat = ContractBusiness.findCategory(contract.getCategoryId().intValue());
-			
-			t.add(new Text(cat.getName()), 1, row);
+			t.add(getContractIcon(iwc,contract), 1, row);
+			t.add(new Text(cat.getName()), 2, row);
 						
 			if (contract.isSigned()) {
-				t.add(new Text(iwrb.getLocalizedString("ccconsign_signed", "Signed") + contract.getSignedDate()), 3, row);
+				t.add(new Text(iwrb.getLocalizedString("ccconsign_signed", "Signed") + contract.getSignedDate()), 4, row);
 			}else {
 
 				Link signBtn = new Link(iwrb.getLocalizedString("ccconsign_signcon","Sign Contract"));
 				signBtn.setAsImageButton(true);
 				signBtn.setParameter(PAR_CONTRACT_ID, ""+contract.getID());
 				signBtn.setParameter(ACTION, ACTION_SIGN);
-				t.add(signBtn, 2, row);				
+				t.add(signBtn, 3, row);				
 			}
 				
 //			t.add(new Text(""+contract.getID()), 2, row);
@@ -209,6 +211,18 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		setStyle(this, "font-size:10px");		
 		setStyle(this, "font-family: sans-serif");
 		return t;
+	}
+
+	/**
+	 * @param iwc
+	 * @param contract
+	 * @return
+	 */
+	private PresentationObject getContractIcon(IWContext iwc, Contract contract)
+	{
+		//TODO Display a PDF link if possible
+		Image image = getBundle(iwc).getImage("contracticon.gif");
+		return image;
 	}
 
 	private static IBPage _page;	
