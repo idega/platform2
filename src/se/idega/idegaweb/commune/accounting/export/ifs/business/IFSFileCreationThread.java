@@ -226,23 +226,26 @@ public class IFSFileCreationThread extends Thread {
 				StringBuffer fileName3 = new StringBuffer(folder);
 				fileName3.append("n24_ifs_knd_bom_");
 				StringBuffer fileName4 = new StringBuffer(folder);
-				fileName4.append("n24_attestlist_lev_bom_");
+				fileName4.append("n24_attestlista_lev_bom_");
 				StringBuffer fileName5 = new StringBuffer(folder);
-				fileName5.append("n24_attestlist_knd_bom_");
+				fileName5.append("n24_attestlista_knd_bom_");
+				StringBuffer fileName6 = new StringBuffer(folder);
+				fileName6.append("n24_avvikelselista_knd_bom_");
 				fileName1.append(now.getDateString("yyMMdd_HHmm"));
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 				fileName3.append(now.getDateString("yyMMdd_HHmm"));
 				fileName4.append(now.getDateString("yyMMdd_HHmm"));
 				fileName5.append(now.getDateString("yyMMdd_HHmm"));
+				fileName6.append(now.getDateString("yyMMdd_HHmm"));
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName5.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
 				}
 				try {
-					createInvoiceFiles(fileName3.toString(), _schoolCategory, now, _currentLocale, _periodText, header);
+					createInvoiceFiles(fileName3.toString(), fileName5.toString(), fileName6.toString(), _schoolCategory, now, _currentLocale, _periodText, header);
 				}
 				catch (IOException e6) {
 					e6.printStackTrace();
@@ -254,16 +257,13 @@ public class IFSFileCreationThread extends Thread {
 				StringBuffer fileName2 = new StringBuffer(folder);
 				fileName2.append("n24_ifs_lev_gsk_");
 				StringBuffer fileName4 = new StringBuffer(folder);
-				fileName4.append("n24_attestlist_lev_gsk_");
-				StringBuffer fileName5 = new StringBuffer(folder);
-				fileName5.append("n24_attestlist_knd_bom_");
+				fileName4.append("n24_attestlista_lev_gsk_");
 				fileName1.append(now.getDateString("yyMMdd_HHmm"));
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 				fileName4.append(now.getDateString("yyMMdd_HHmm"));
-				fileName5.append(now.getDateString("yyMMdd_HHmm"));
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName5.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -275,16 +275,12 @@ public class IFSFileCreationThread extends Thread {
 				StringBuffer fileName2 = new StringBuffer(folder);
 				fileName2.append("n24_ifs_lev_gym_");
 				StringBuffer fileName4 = new StringBuffer(folder);
-				fileName4.append("n24_attestlist_lev_gym_");
-				StringBuffer fileName5 = new StringBuffer(folder);
-				fileName5.append("n24_attestlist_knd_bom_");
+				fileName4.append("n24_attestlista_lev_gym_");
 				fileName1.append(now.getDateString("yyMMdd_HHmm"));
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 				fileName4.append(now.getDateString("yyMMdd_HHmm"));
-				fileName5.append(now.getDateString("yyMMdd_HHmm"));
-
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName5.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -297,7 +293,7 @@ public class IFSFileCreationThread extends Thread {
 		header.store();
 	}
 
-	private void createPaymentFiles(String fileName1, String fileName2, String fileName3, String fileName4, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
+	private void createPaymentFiles(String fileName1, String fileName2, String fileName3, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
 		String localizedSchoolCategoryName = _iwac.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(_currentLocale).getLocalizedString("school_category."+_schoolCategory);
 		Collection phInCommune = null;
 		try {
@@ -324,21 +320,12 @@ public class IFSFileCreationThread extends Thread {
 		phAll.addAll(phOutsideCommune);
 		phAll.addAll(phInCommune);
 		try {
-			createSigningFilesExcel(phAll, fileName3 + ".xls", "Attestlista "+localizedSchoolCategoryName+", Utbetalningsattestlista, "+executionDate.getDateString("yyyy-MM-dd"));
+			createPaymentSigningFilesExcel(phAll, fileName3 + ".xls", "Utbetalningsattestlista "+localizedSchoolCategoryName+", "+executionDate.getDateString("yyyy-MM-dd"));
 		}
 		catch (IOException e3) {
 			e3.printStackTrace();
 		}
 		catch (FinderException e3) {
-			e3.printStackTrace();
-		}
-		try {
-			createSigningFilesExcel(fileName4 + ".xls", "Attestlista "+localizedSchoolCategoryName+", Faktureringsattestlista, "+executionDate.getDateString("yyyy-MM-dd"));
-		}
-		catch (IOException e3) {
-			e3.printStackTrace();
-		}
-		catch (IDOException e3) {
 			e3.printStackTrace();
 		}
 		if (phInCommune != null && !phInCommune.isEmpty()) {
@@ -353,7 +340,7 @@ public class IFSFileCreationThread extends Thread {
 				e2.printStackTrace();
 			}						
 			try {		
-				createPaymentFilesExcel(rec, fileName1 + ".xls", "Checkutbetalning "+localizedSchoolCategoryName+", egna kommunala anordnare, "+executionDate.getDateString("yyyy-MM-dd"));
+				createPaymentFilesExcel(rec, fileName1 + ".xls", "Checkutbetalning "+localizedSchoolCategoryName+", egna kommunala anordnare, "+executionDate.getDateString("yyyy-MM-dd"), true);
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
@@ -541,7 +528,7 @@ public class IFSFileCreationThread extends Thread {
 				e2.printStackTrace();
 			}			
 			try {							
-				createPaymentFilesExcel(recOutside, fileName2 + ".xls","Checkutbetalning "+localizedSchoolCategoryName+", övriga anordnare, "+executionDate.getDateString("yyyy-MM-dd"));				
+				createPaymentFilesExcel(recOutside, fileName2 + ".xls","Checkutbetalning "+localizedSchoolCategoryName+", övriga anordnare, "+executionDate.getDateString("yyyy-MM-dd"), false);				
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
@@ -751,7 +738,7 @@ public class IFSFileCreationThread extends Thread {
 		}
 	}
 	
-	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, Locale currentLocale, String periodText, IFSCheckHeader checkHeader) throws IOException {
+	private void createInvoiceFiles(String fileName1, String fileName2, String fileName3, String schoolCategory, IWTimestamp executionDate, Locale currentLocale, String periodText, IFSCheckHeader checkHeader) throws IOException {
 		Collection iHeaders = null;
 		try {
 			iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("P", schoolCategory);
@@ -762,7 +749,24 @@ public class IFSFileCreationThread extends Thread {
 		catch (FinderException e2) {
 			e2.printStackTrace();
 		}
-
+		try {
+			createInvoiceSigningFilesExcel(fileName2 + ".xls", "Faktureringsattestlista Barnomsorg, "+executionDate.getDateString("yyyy-MM-dd"));
+		}
+		catch (IOException e3) {
+			e3.printStackTrace();
+		}
+		catch (IDOException e3) {
+			e3.printStackTrace();
+		}
+		try {
+			createDeviationFileExcel(iHeaders, fileName3+".xls", "Faktureringsavvikelselista Barnomsorg, "+executionDate.getDateString("yyyy-MM-dd"));
+		}
+		catch (IOException e4) {
+			e4.printStackTrace();
+		}
+		catch (FinderException e4) {
+			e4.printStackTrace();
+		}
 		StringBuffer empty = new StringBuffer("");
 		for (int i = 0; i < 25; i++) {
 			empty.append("          ");
@@ -781,7 +785,7 @@ public class IFSFileCreationThread extends Thread {
 			format2.setMinimumIntegerDigits(10);
 			format2.setMaximumIntegerDigits(10);
 			format2.setGroupingUsed(false);
-			FileWriter writer = new FileWriter(fileName.toString());
+			FileWriter writer = new FileWriter(fileName1.toString());
 			BufferedWriter bWriter = new BufferedWriter(writer);
 
 			PostingBusiness pb = getIFSBusiness().getPostingBusiness();
@@ -1250,7 +1254,54 @@ public class IFSFileCreationThread extends Thread {
 	}
 	
 
-	public void createPaymentFilesExcel(Collection data, String fileName, String headerText) throws IOException {
+	private void createDeviationFileExcel(Collection data, String fileName, String headerText) throws IOException, FinderException {
+		if (data != null && !data.isEmpty()) {
+			int[] columnWidths = { 30, 15, 15 };
+			String[] columnNames = { "Fakturaperiod", "Fakturmottagars personnummer", "Belopp" };
+			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames, headerText);
+			HSSFSheet sheet = wb.getSheet("Excel");
+			HSSFCellStyle styleAlignRight = wb.createCellStyle(); 
+			styleAlignRight.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+			short rowNumber = (short) (sheet.getLastRowNum() + 1);
+			short cellNumber = 0;
+			float totalAmount = 0;
+			float recordAmount;
+			HSSFRow row = null;
+			HSSFCell cell = null;
+			Iterator it = data.iterator();
+			while (it.hasNext()) {
+				
+				InvoiceHeader iHead = (InvoiceHeader) it.next();	
+				ArrayList iRecs = new ArrayList(((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead));
+				//Collections.sort(iRecs, new InvoiceComparator());
+				if (!iRecs.isEmpty()) {
+					Iterator irIt = iRecs.iterator();
+				
+					while (irIt.hasNext()) {
+						InvoiceRecord iRec = (InvoiceRecord) irIt.next();				
+						recordAmount = AccountingUtil.roundAmount(iRec.getAmount());
+						if (recordAmount >= 0) {
+						totalAmount += recordAmount;
+						row = sheet.createRow(rowNumber++);					
+						row.createCell(cellNumber++).setCellValue(iHead.getPeriod().toString());
+						row.createCell(cellNumber++).setCellValue(iHead.getCustodian().getPersonalID());
+						cell = row.createCell(cellNumber);
+						cell.setCellValue(getNumberFormat().format(recordAmount));
+						cell.setCellStyle(styleAlignRight);
+						cellNumber = 0;
+						}
+					}
+				}
+			}
+			row = sheet.createRow(rowNumber++);
+			cell = row.createCell(cellNumber+=2);
+			cell.setCellValue(getNumberFormat().format(totalAmount));
+			cell.setCellStyle(styleAlignRight);
+			saveExcelWorkBook(fileName, wb);
+		}		
+	}
+	
+	public void createPaymentFilesExcel(Collection data, String fileName, String headerText, boolean extra) throws IOException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35 };
 			String[] columnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Belopp", "Text" };
@@ -1274,18 +1325,29 @@ public class IFSFileCreationThread extends Thread {
 			while (it.hasNext()) {
 				cellNumber = 0;
 				PaymentRecord pRec = (PaymentRecord) it.next();
+				amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
+				totalAmount += amount;
+				numberOfRecords++;
 				row = sheet.createRow(rowNumber++);
 				row.createCell(cellNumber++).setCellValue(pRec.getDateCreated().toString());
 				short loopTillEndOfPostingFields = (short) (cellNumber + 8);
 				for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
 					row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
-				amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
 				cell = row.createCell(cellNumber++);
 				cell.setCellValue(getNumberFormat().format(amount));
 				cell.setCellStyle(styleAlignRight);
 				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
-				totalAmount = totalAmount + amount;
-				numberOfRecords++;
+				if (extra) {
+					cellNumber = 0;
+					row = sheet.createRow(rowNumber++);
+					row.createCell(cellNumber++).setCellValue(pRec.getDateCreated().toString());				
+					for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
+						row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getDoublePosting(), columnNames[i]));
+					cell = row.createCell(cellNumber++);
+					cell.setCellValue(getNumberFormat().format(-1*amount));
+					cell.setCellStyle(styleAlignRight);
+					row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+				}
 			}
 			//sheet.createRow(rowNumber++).createCell((short) (row.getLastCellNum() - 1)).setCellValue(totalAmount);
 			sheet.createRow(rowNumber+=2).createCell(row.getFirstCellNum()).setCellValue(numberOfRecords + " bokföringsposter,   Kreditbelopp totalt:  - " + getNumberFormat().format(totalAmount) + ",   Debetbelopp totalt: " + getNumberFormat().format(totalAmount));
@@ -1293,7 +1355,7 @@ public class IFSFileCreationThread extends Thread {
 		}
 	}
 	
-	private void createSigningFilesExcel(String fileName, String headerText) throws IOException, IDOException {
+	private void createInvoiceSigningFilesExcel(String fileName, String headerText) throws IOException, IDOException {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Excel");
 		sheet.setColumnWidth((short)0, (short) (30 * 256));
@@ -1314,7 +1376,7 @@ public class IFSFileCreationThread extends Thread {
 		int numberOfChildrenForCurrentMonth = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).getNumberOfChildrenForCurrentMonth();
 		int numberOfChildrenForPreviousMonth = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).getNumberOfChildrenForMonth(previousMonth);
 		int totalInvoiceRecordAmountForCurrentMonth = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).getTotalInvoiceRecordAmountForCurrentMonth();
-		int totalInvoiceRecordAmountFoPreviousMonth = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).getTotalInvoiceRecordAmountForMonth(previousMonth);		
+		int totalInvoiceRecordAmountFoPreviousMonth = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).getTotalInvoiceRecordAmountForMonth(previousMonth);
 		row = sheet.createRow(rowNumber++);				
 		row.createCell(cellNumber++).setCellValue("Innevarande månad");
 		row.createCell(cellNumber).setCellValue("Föregående månad");
@@ -1337,7 +1399,7 @@ public class IFSFileCreationThread extends Thread {
 		saveExcelWorkBook(fileName, wb);
 	}
 
-	private void createSigningFilesExcel(Collection data, String fileName, String headerText) throws IOException, FinderException {
+	private void createPaymentSigningFilesExcel(Collection data, String fileName, String headerText) throws IOException, FinderException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 25, 35, 25 };
 			String[] columnNames = { "Anordnare", "Text", "Belopp" };
