@@ -1,11 +1,15 @@
 package is.idega.idegaweb.golf.service;
 
-import java.sql.*;
-import com.idega.data.*;
-import is.idega.idegaweb.golf.entity.*;
-import com.idega.util.*;
-import com.idega.presentation.ui.*;
-import java.io.*;
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+import is.idega.idegaweb.golf.entity.Address;
+import is.idega.idegaweb.golf.entity.Card;
+import is.idega.idegaweb.golf.entity.Family;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.Phone;
+
+import java.sql.Blob;
+import java.sql.Date;
 
 /**
  * Title:        Golf<p>

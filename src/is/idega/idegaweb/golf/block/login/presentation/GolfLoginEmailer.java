@@ -4,18 +4,21 @@
 
 package is.idega.idegaweb.golf.block.login.presentation;
 
-import is.idega.idegaweb.golf.entity.LoginTable;
-import com.idega.util.SendMail;
-import is.idega.idegaweb.golf.block.login.business.*;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.block.login.data.LoginTable;
 import is.idega.idegaweb.golf.entity.Member;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import java.util.*;
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
-import java.io.IOException;
+
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.SendMail;
 
 /**
  * Title: is.idega.idegaweb.golf.login.presentation.LoginEmailer

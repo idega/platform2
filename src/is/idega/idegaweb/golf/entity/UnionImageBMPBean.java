@@ -3,7 +3,7 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import java.sql.SQLException;
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 
 import com.idega.data.GenericEntity;
 

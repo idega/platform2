@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.13 2004/04/13 15:05:05 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.14 2004/04/21 16:11:18 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,6 @@ package is.idega.idegaweb.golf.templates.page;
 
 import is.idega.idegaweb.golf.block.boxoffice.presentation.BoxReader;
 import is.idega.idegaweb.golf.block.login.presentation.GolfLogin;
-import is.idega.idegaweb.golf.block.poll.presentation.BasicPollVoter;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.presentation.ClubNewsBox;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentBox;
@@ -475,30 +474,6 @@ public class GolfMainJSPModulePage extends MainPage {
 
 	}
 
-	protected HeaderTable getPollVoter() {
-		BasicPollVoter poll = new BasicPollVoter("/poll/results.jsp", true);
-		poll.setConnectionAttributes("union_id", 3);
-		poll.setHeaderColor("#8ab490");
-		poll.setColor1("#FFFFFF");
-		poll.setHeadlineColor("#FFFFFF");
-		poll.setHeadlineSize(1);
-		poll.setNumberOfShownPolls(3);
-		poll.setHeadlineLeft();
-		poll.setAdminButtonURL("/pollmanager.gif");
-
-		HeaderTable pollTable = new HeaderTable();
-		pollTable.setBorderColor("#8ab490");
-		pollTable.setHeadlineSize(1);
-		pollTable.setHeadlineColor("#FFFFFF");
-		pollTable.setHeadlineLeft();
-		pollTable.setWidth(148);
-		pollTable.setHeaderText(iwrb.getLocalizedString("questionOfTheDay", "Question of the week"));
-
-		pollTable.add(poll);
-
-		return pollTable;
-	}
-
 	protected Table Center() {
 		return centerTable;
 	}
@@ -621,9 +596,6 @@ public class GolfMainJSPModulePage extends MainPage {
 		HeaderTable teaching = getGolfTeaching();
 		rightTable.add(Block.getCacheableObject(teaching, "golfTeaching", 86400000), 1, 9);
 
-		HeaderTable poll = getPollVoter();
-		//poll.setCacheable("poll",3600000);//1 hour
-		rightTable.add(Block.getCacheableObject(poll, "poll", 3600000), 1, 11); //1,5
 
 		HeaderTable asses = getGSIAssociates();
 		//asses.setCacheable("asses",86400000);//24 hour
@@ -664,9 +636,6 @@ public class GolfMainJSPModulePage extends MainPage {
 		rightTable.setVerticalAlignment(1, 9, "top");
 
 		rightTable.setColumnAlignment(1, "center");
-
-		HeaderTable poll = getPollVoter();
-		rightTable.add(Block.getCacheableObject(poll, "poll", 3600000), 1, 1); //1,5
 
 		//ForumBox forums = new ForumBox();
 		//forums.setRight(true);

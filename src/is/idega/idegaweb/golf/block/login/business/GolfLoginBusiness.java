@@ -5,21 +5,18 @@
 
 package is.idega.idegaweb.golf.block.login.business;
 
-import is.idega.idegaweb.golf.entity.LoginTable;
+import is.idega.idegaweb.golf.block.login.data.LoginTable;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.genericentity.Group;
-import com.idega.event.IWEventListener;
 import com.idega.event.IWPageEventListener;
 import com.idega.event.IWPresentationEvent;
 import com.idega.idegaweb.IWException;

@@ -1,5 +1,7 @@
 package is.idega.idegaweb.golf.entity;
 
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+
 
 public interface Member extends GolfEntity
 {

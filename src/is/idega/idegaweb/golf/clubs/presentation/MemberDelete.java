@@ -3,32 +3,11 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
-import javax.ejb.FinderException;
-
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
-import com.idega.presentation.Editor;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Text;
+import is.idega.idegaweb.golf.block.login.data.LoginTable;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Address;
 import is.idega.idegaweb.golf.entity.Card;
 import is.idega.idegaweb.golf.entity.Group;
-import is.idega.idegaweb.golf.entity.LoginTable;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.MemberInfo;
@@ -40,6 +19,28 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.Editor;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * @author laddi

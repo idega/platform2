@@ -3,6 +3,8 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+import is.idega.idegaweb.golf.block.login.data.LoginTable;
 import is.idega.idegaweb.golf.block.login.data.LoginType;
 
 import java.sql.Connection;

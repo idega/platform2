@@ -3,6 +3,8 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+
 import com.idega.data.GenericEntity;
 
 public class FieldImageBMPBean extends GenericEntity implements FieldImage{

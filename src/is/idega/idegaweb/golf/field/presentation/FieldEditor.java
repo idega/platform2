@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.golf.field.presentation;
 
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+import is.idega.idegaweb.golf.block.image.data.ImageEntityHome;
 import is.idega.idegaweb.golf.block.text.data.TextModule;
 import is.idega.idegaweb.golf.block.text.presentation.TextReader;
 import is.idega.idegaweb.golf.entity.Field;
@@ -11,8 +13,6 @@ import is.idega.idegaweb.golf.entity.FieldImage;
 import is.idega.idegaweb.golf.entity.FieldImageHome;
 import is.idega.idegaweb.golf.entity.HoleText;
 import is.idega.idegaweb.golf.entity.HoleTextHome;
-import is.idega.idegaweb.golf.entity.ImageEntity;
-import is.idega.idegaweb.golf.entity.ImageEntityHome;
 import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeHome;
