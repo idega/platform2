@@ -9,6 +9,7 @@ package se.idega.idegaweb.commune.provider.presentation;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
+import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolYear;
@@ -277,13 +279,15 @@ public class SchoolGroupEditor extends ProviderBlock {
 			subGroup.setSelectedElement(String.valueOf(_group.getIsSubGroup()));
 		table.add(subGroup, 3, row++);
 		
-		Collection schoolYears = null;
+		List schoolYears = null;
 		try {
-			schoolYears = _provider.findRelatedSchoolYears();
+			schoolYears = new ArrayList(_provider.findRelatedSchoolYears());
 		}
 		catch (IDORelationshipException e1) {
 			schoolYears = new ArrayList();
 		}
+		if (!schoolYears.isEmpty())
+			Collections.sort(schoolYears, new SchoolYearComparator());
 		
 		Collection groupYears = new ArrayList();
 		if (_group != null) {
