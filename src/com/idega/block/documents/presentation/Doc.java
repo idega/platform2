@@ -162,7 +162,7 @@ public class Doc extends FolderBlock implements IWBlock {
 	_detachImage = _iwb.getImage("shared/detach.gif");
 
 	_isAdmin = iwc.hasEditPermission(this);
-
+	System.out.println("Doc . _isAdmin "+_isAdmin);
 	_hasEditPermission = iwc.hasEditPermission(this);
 
 	if(_hasEditPermission){
@@ -170,7 +170,6 @@ public class Doc extends FolderBlock implements IWBlock {
 	} else {
 	  _hasAddPermission = iwc.hasPermission(_addPermisson,this);
 	}
-
 
 	//_isAdmin = true;
 	_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());

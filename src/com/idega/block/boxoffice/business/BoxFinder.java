@@ -113,9 +113,13 @@ public class BoxFinder {
   public static List getCategoriesNotInBox(int boxID) {
     try {
       BoxEntity box = BoxFinder.getBox(boxID);
-      if ( box != null )
-        return EntityFinder.findNonRelated(box,com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
-      return null;
+      if ( box != null ) {
+      	EntityFinder.debug = true;
+        List list = EntityFinder.findNonRelated(box,com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+        return list;
+      }else {
+	      return null;
+      }
     }
     catch (Exception e) {
       e.printStackTrace(System.err);

@@ -1,10 +1,18 @@
 package com.idega.block.school.data;
 
+import com.idega.block.text.business.TextFinder;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.core.data.ICFile;
+import com.idega.core.data.ICFileHome;
 import com.idega.data.*;
 import com.idega.user.data.Group;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
 
 
 /**
@@ -49,6 +57,9 @@ public class SchoolBMPBean extends GenericEntity implements School {
     this.addAttribute(HEADMASTER,"Headmaster",true,true,Integer.class,this.MANY_TO_ONE,Group.class);
     this.addManyToManyRelationShip(SchoolType.class);
     this.addManyToManyRelationShip(SchoolYear.class);
+    // Grimur 16.10.2002
+    this.addManyToManyRelationShip(LocalizedText.class);
+    this.addManyToManyRelationShip(ICFile.class);
   }
   public String getEntityName() {
     return SCHOOL;
@@ -223,7 +234,69 @@ public class SchoolBMPBean extends GenericEntity implements School {
   }
   
 
+	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException, RemoteException {
+    LocalizedText text = TextFinder.getLocalizedText(this, localeId);
+    if (text == null) text = TextFinder.getLocalizedText(this, 1);
+
+		return text;
+
+/*
+		Collection coll = this.idoGetRelatedEntities( LocalizedText.class);
+		if (coll != null && coll.size() > 0) {
+			Iterator iter = coll.iterator();
+			try {
+				return ((LocalizedTextHome) IDOLookup.getHome(LocalizedText.class)).findByPrimaryKey(iter.next());
+			} catch (FinderException e) {
+				e.printStackTrace(System.err);
+			}
+		}
+		return null;
+*/		
+	}
+
    
+  public void setLocalizedText(LocalizedText text) throws IDORelationshipException {
+  	/** Supports only one locale, if a new one in inserted it will overwrite the old one... */
+		this.idoRemoveFrom( LocalizedText.class);	
+  	this.idoAddTo(text);	
+  }
+  
+  public Collection getImages() throws IDORelationshipException {
+  	return this.idoGetRelatedEntities( ICFile.class);
+  }
+   
+  public void removeImages() throws IDORelationshipException {
+  	this.idoRemoveFrom(ICFile.class);	
+  } 
+  
+  public void setImage(ICFile image) throws IDORelationshipException {
+		removeImages();
+  	this.idoAddTo(image);	
+  }
+
+  public void addImage(ICFile image) throws IDORelationshipException {
+  	this.idoAddTo(image);	
+  }
+  
+  public void setImages(Collection images) throws IDORelationshipException, RemoteException {
+  	this.idoRemoveFrom( ICFile.class );
+  	if (images != null) {
+  		Iterator iter = images.iterator();
+  		ICFile file;
+  		while (iter.hasNext()) {
+				try {
+					file = ((ICFileHome) IDOLookup.getHome( ICFile.class)).findByPrimaryKey(iter.next());
+	  			addImage(file);
+				} catch (FinderException e) {
+					e.printStackTrace(System.err);
+				} catch (IDORelationshipException e) {
+				}
+  		}	
+  	}
+  }
+  
+  
+
    public static void main(String[] args){
    	System.out.println("hellu there");
    }

@@ -1,0 +1,71 @@
+package com.idega.block.school.presentation;
+
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.core.data.ICFile;
+import com.idega.data.IDORelationshipException;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+
+/**
+ * @author gimmi
+ */
+public class SchoolContentItemImage extends SchoolContentItem {
+	private int _maxImageWidth = -1;	
+	private int _cellSpacing = 0;
+	/**
+	 * @see com.idega.block.school.presentation.SchoolContentItem#getObject()
+	 */
+	protected PresentationObject getObject() throws RemoteException {
+		try {
+			Collection images = _school.getImages();
+			if (images != null && images.size() > 0) {
+				Table table = new Table(1, images.size());
+				table.setCellpadding(0);
+				table.setCellspacing(_cellSpacing);
+				Image image;
+				
+				ICFile file;
+				int rowCounter = 0;
+				Iterator iter = images.iterator();
+				while (iter.hasNext()) {
+					file = (ICFile) iter.next();
+					try {
+						image = new Image(file.getID());
+						setupImage(image);
+						
+						++rowCounter;
+						table.add(image, 1, rowCounter);
+					} catch (SQLException e) {
+						e.printStackTrace(System.err);
+					}
+
+				}
+				return table;
+			}
+		} catch (IDORelationshipException e) {
+			e.printStackTrace(System.err);
+		}
+		
+		return new Table();
+	}
+	
+	private void setupImage(Image image) {
+		if (_maxImageWidth > 0 ) {
+			image.setMaxImageWidth(_maxImageWidth);
+		}
+	}
+	
+	public void setMaxImageWidth(int maxImageWidth) {
+		_maxImageWidth = maxImageWidth;	
+	}
+	
+	public void setSpaceBetweenImage(int spaceBetweenImages) {
+		_cellSpacing = spaceBetweenImages;	
+	}
+
+}

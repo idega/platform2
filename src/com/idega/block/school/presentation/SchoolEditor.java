@@ -116,7 +116,7 @@ public class SchoolEditor extends Block {
       if(area!=null)
         areaId = Integer.parseInt(area);
         
-		//System.err.println("school id is "+id);      
+//		System.err.println("school id is "+id);      
 		sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types,years);
     }
   }

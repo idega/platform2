@@ -13,16 +13,9 @@ public class SchoolHomeImpl extends com.idega.data.IDOFactory implements SchoolH
  }
 
 
-public java.util.Collection findAllByAreaAndType(int p0,int p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllSchools()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllByAreaAndType(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findAllBySchoolArea(int p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolArea(p0);
+	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllSchools();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -41,17 +34,23 @@ public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderEx
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllBySchoolName(String name)throws javax.ejb.FinderException{
+public java.util.Collection findAllByAreaAndType(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolName(name);
+	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllByAreaAndType(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-
-public java.util.Collection findAllSchools()throws javax.ejb.FinderException{
+public java.util.Collection findAllBySchoolName(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllSchools();
+	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllBySchoolArea(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllBySchoolArea(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -59,6 +58,7 @@ public java.util.Collection findAllSchools()throws javax.ejb.FinderException{
  public School findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (School) super.findByPrimaryKeyIDO(pk);
  }
+
 
 
 }
