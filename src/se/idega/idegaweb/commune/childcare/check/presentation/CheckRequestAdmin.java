@@ -251,6 +251,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 				while (iter2.hasNext()) {
 					User parent = (User) iter2.next();
 					checkInfoTable.add(getSmallText(parent.getNameLastFirst(true)), 2, ++row);
+					checkInfoTable.add(getSmallText(" - " + PersonalIDFormatter.format(parent.getPersonalID(), iwc.getCurrentLocale())), 2, row);
 					if (check != null && getWorkSituation(check.getWorkSituation1()) != null) {
 						if (count == 1 && getWorkSituation(check.getWorkSituation1()) != null)
 							checkInfoTable.add(getSmallText(", " + getWorkSituation(check.getWorkSituation1())), 2, row);
