@@ -25,13 +25,15 @@ import com.idega.block.importer.presentation.Importer;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOLookup;
+import com.idega.core.location.business.AddressBusiness;
+import com.idega.core.location.business.CommuneBusiness;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
-import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Age;
@@ -96,12 +98,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private final static String FATE_CHANGE_OLD_ID = "BRNN";
 	private boolean postalCodeFix = false;
 	private boolean relationsOnly = false;
-	private Group citizenGroup = null;
+//	private Group citizenGroup = null;
 	private User performer = null;
 	private FamilyLogic famLog = null;
 	private final static int BYTES_PER_RECORD = 301;
 	NumberFormat twoDigits = 	NumberFormat.getNumberInstance();
 	NumberFormat precentNF = NumberFormat.getPercentInstance();
+	private HashMap postalToGroupMap = new HashMap();
+	private NationalRegisterBusiness natBiz;
+	private UserBusiness uBiz;
+	private CommuneBusiness cBiz;
+	private AddressBusiness aBiz;
 
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
@@ -113,6 +120,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		clock.start();
 
 		try {
+			natBiz = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
+			uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
+			cBiz = (CommuneBusiness) getServiceInstance(CommuneBusiness.class);
+			aBiz = (AddressBusiness) getServiceInstance(AddressBusiness.class);
 			//if the transaction failes all the users and their relations are removed
 //			transaction.begin();
 			performer = IWContext.getInstance().getCurrentUser();
@@ -125,15 +136,15 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			affectedFamilies = new HashSet();
 			postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
 			relationsOnly = (sRelationOnly != null && sRelationOnly.equalsIgnoreCase("yes"));
-			if (sGroupID != null) {
-				try {
-					citizenGroup = ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(sGroupID));
-				} catch (Exception e) {
-					System.out.println("NationalRegisterHandler citizenGroup is NULL ("+e.getMessage()+")");
-				}
-			} else {
-				System.out.println("NationalRegisterHandler citizenGroup is NULL");
-			}
+//			if (sGroupID != null) {
+//				try {
+//					citizenGroup = ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(sGroupID));
+//				} catch (Exception e) {
+//					System.out.println("NationalRegisterHandler citizenGroup is NULL ("+e.getMessage()+")");
+//				}
+//			} else {
+//				System.out.println("NationalRegisterHandler citizenGroup is NULL");
+//			}
 			
 			int count = 0;
 			if (postalCodeFix) {
@@ -598,7 +609,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	}	
 	
 	
-	private boolean processRecord(String record) throws RemoteException {
+	private boolean processRecord(String record) throws RemoteException, CreateException {
 		_value = _file.getValuesFromRecordString(record);
 
 		boolean success = storeNationRegisterEntry();
@@ -617,7 +628,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		}
 	}
 
-	protected boolean storeNationRegisterEntry() throws RemoteException {
+	protected boolean storeNationRegisterEntry() throws RemoteException, CreateException {
 		//variables
 		String symbol = getProperty(COLUMN_SYMBOL);
 		String oldId = getProperty(COLUMN_OLD_ID);
@@ -652,6 +663,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		String newSsnOrName = getProperty(COLUMN_NEW_SSN_OR_NAME);
 		String dateOfBirth = getProperty(COLUMN_DATE_OF_BIRTH);
 		
+		Group group;
+		
 		//		System.out.println("ssn = " + ssn);
 		boolean success = true;
 		
@@ -660,15 +673,15 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 
 		if (!relationsOnly) {
-			//initialize business beans and data homes           
-			NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
-			UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
+			//initialize business beans and data homes
+			
+			group = getGroupForPostalCode(po);
 	
-			success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
+			success = natBiz.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
 			    floor,sex,maritialStatus,empty,prohibitMarking,
 			    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
 					addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-					agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, citizenGroup);
+					agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, group);
 	
 	
 			if(FATE_DECEASED.equalsIgnoreCase(fate)){
@@ -692,7 +705,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			}
 			
 			if(FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)){
-				natReg.updateUserPersonalID(ssn,newSsnOrName);
+				natBiz.updateUserPersonalID(ssn,newSsnOrName);
 				return true;
 			}
 			
@@ -709,7 +722,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			}
 			
 			if(FATE_CHANGE_OLD_ID.equalsIgnoreCase(fate)){
-				natReg.updateUserOldID(oldId,ssn);
+				natBiz.updateUserOldID(oldId,ssn);
 				return true;
 			}
 			
@@ -717,7 +730,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				try {
 	//				User user = uBiz.getUser(ssn);
 					if (postalCodeFix) {
-						natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
+						natBiz.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
 					}
 					return true;
 				} catch (Exception e){
@@ -740,6 +753,29 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			
 		return success;
 	}
+
+	/**
+	 * @param po
+	 * @return
+	 * @throws CreateException
+	 * @throws RemoteException
+	 */
+	private Group getGroupForPostalCode(String po) throws RemoteException, CreateException {
+		//First see if it already has been fetched and stored in map. If so just return it
+		Group group = (Group)postalToGroupMap.get(po);
+		if(null!=group) {
+			return group;
+		}
+		
+		//Group not found, so finding it
+		PostalCode postalCode = natBiz.getPostalCode(po);
+		Commune commune = cBiz.getCommuneByPostalCode(postalCode);
+		group = commune.getGroup();
+		postalToGroupMap.put(po, group);
+		return group;
+	}
+
+
 
 	private String getProperty(int columnIndex) {
 		String value = null;

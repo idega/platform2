@@ -236,7 +236,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		userBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
 	}
 
-	private PostalCode getPostalCode(String po) throws RemoteException {
+	public PostalCode getPostalCode(String po) throws RemoteException {
 		if (postalCodes == null) {
 			postalCodes = new HashMap();
 		}

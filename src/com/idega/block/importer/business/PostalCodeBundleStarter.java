@@ -58,6 +58,17 @@ private IWApplicationContext iwac;
 				}
 			}
 		}
+		
+		//Add an "other" commmune
+		
+		try {
+			AddressBusiness biz = getAddressBusiness();
+			biz.getOtherCommuneCreateIfNotExist();
+		} catch (Exception e) {
+			System.out.println("Could not create the 'Other' commune");
+			e.printStackTrace();
+		}
+
 	}
 
 

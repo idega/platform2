@@ -21,6 +21,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
@@ -29,7 +30,9 @@ import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.business.AddressBusiness;
+import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
@@ -77,6 +80,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	private Group rootCustomerChoiceGroup;
 	private Group rootDeceasedCitizensGroup;
 
+	CommuneBusiness cBiz = null;
+
+	private CommuneBusiness getCommuneBusiness() throws IBOLookupException {
+		if(null==cBiz) {
+			cBiz = (CommuneBusiness) getServiceInstance(CommuneBusiness.class);
+		}
+		return cBiz;
+	}
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
@@ -271,6 +282,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * throws a CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootCitizenGroup() throws CreateException, FinderException, RemoteException {
+		Commune commune = getCommuneBusiness().getDefaultCommune();
+		if(null!= commune) {
+			Group group = commune.getGroup();
+			if(null!=group) {
+				return group;
+			}
+		}
+
 		//create the default group
 
 		if (rootCitizenGroup != null)
@@ -287,8 +306,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			System.err.println("trying to store Commune Root group");
 			final GroupBusiness groupBusiness = getGroupBusiness();
 			rootCitizenGroup = groupBusiness.createGroup("Commune Citizens", "The Root Group for all Citizens of the Commune");
-			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, rootCitizenGroup.getPrimaryKey());
+			
+			//settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, rootCitizenGroup.getPrimaryKey());
 		}
+		getCommuneBusiness().getDefaultCommune().setGroup(rootCitizenGroup);
 		return rootCitizenGroup;
 	}
 	/**
@@ -297,6 +318,13 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootOtherCommuneCitizensGroup() throws CreateException, FinderException, RemoteException {
+		Commune commune = getCommuneBusiness().getOtherCommuneCreateIfNotExist();
+		if(null!= commune) {
+			Group group = commune.getGroup();
+			if(null!=group) {
+				return group;
+			}
+		}
 		//create the default group
 		if (rootOtherCommuneCitizenGroup != null)
 			return rootOtherCommuneCitizenGroup;
@@ -313,8 +341,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupBusiness groupBusiness = getGroupBusiness();
 			rootOtherCommuneCitizenGroup = groupBusiness.createGroup("Non-Commune Citizens", "The Root Group for all Citizens in other Communes.");
 			
-			settings.setProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME, rootOtherCommuneCitizenGroup.getPrimaryKey());
+//			settings.setProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME, rootOtherCommuneCitizenGroup.getPrimaryKey());
 		}
+		getCommuneBusiness().getOtherCommuneCreateIfNotExist().setGroup(rootOtherCommuneCitizenGroup);
 		return rootOtherCommuneCitizenGroup;
 	}
 	

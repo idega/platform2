@@ -1,21 +1,38 @@
+/*
+ * $Id$
+ * Created on 14.9.2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.block.nationalregister.business;
 
+import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.nationalregister.data.NationalRegister;
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.List;
 import javax.ejb.CreateException;
+import javax.ejb.RemoveException;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOService;
+import com.idega.core.location.data.PostalCode;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 
 /**
- * @author Joakim
- *
+ * 
+ *  Last modified: $Date$ by $Author$
+ * 
+ * @author <a href="mailto:Joakim@idega.com">Joakim</a>
+ * @version $Revision$
  */
-public interface NationalRegisterBusiness extends IBOService, UserGroupPlugInBusiness{
+public interface NationalRegisterBusiness extends IBOService {
 
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getEntryBySSN
@@ -48,5 +65,92 @@ public interface NationalRegisterBusiness extends IBOService, UserGroupPlugInBus
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#updateUserAddress
 	 */
 	public void updateUserAddress(User user, UserBusiness userBiz, String address, String po) throws RemoteException,
-			CreateException, java.rmi.RemoteException;
+			CreateException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getPostalCode
+	 */
+	public PostalCode getPostalCode(String po) throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#beforeUserRemove
+	 */
+	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#afterUserCreate
+	 */
+	public void afterUserCreate(User user) throws CreateException, RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#beforeGroupRemove
+	 */
+	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#afterGroupCreate
+	 */
+	public void afterGroupCreate(Group group) throws CreateException, RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getPresentationObjectClass
+	 */
+	public Class getPresentationObjectClass() throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#instanciateEditor
+	 */
+	public PresentationObject instanciateEditor(Group group) throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#instanciateViewer
+	 */
+	public PresentationObject instanciateViewer(Group group) throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getUserPropertiesTabs
+	 */
+	public List getUserPropertiesTabs(User user) throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getGroupPropertiesTabs
+	 */
+	public List getGroupPropertiesTabs(Group group) throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getMainToolbarElements
+	 */
+	public List getMainToolbarElements() throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getGroupToolbarElements
+	 */
+	public List getGroupToolbarElements(Group group) throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getListViewerFields
+	 */
+	public Collection getListViewerFields() throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#findGroupsByFields
+	 */
+	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators,
+			Collection listViewerFieldValues) throws RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#isUserAssignableFromGroupToGroup
+	 */
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup)
+			throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#isUserSuitedForGroup
+	 */
+	public String isUserSuitedForGroup(User user, Group targetGroup) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getFamilyLogic
+	 */
+	public FamilyLogic getFamilyLogic() throws RemoteException;
 }
