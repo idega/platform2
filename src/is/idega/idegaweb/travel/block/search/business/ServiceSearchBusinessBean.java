@@ -14,6 +14,7 @@ import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +22,10 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
+import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -59,6 +62,8 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	private String PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS = "post_wmi";
 	private String PARAMETER_POSTAL_CODE_SPACER = "post_space";
 	
+	private ProductComparator productComparator;
+	
 	public ServiceSearchBusinessBean() {
 		super();
 	}
@@ -78,7 +83,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_ICELAND, iwrb.getLocalizedString("travel.search.west_iceland", "West Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_FJORDS, iwrb.getLocalizedString("travel.search.westfjords", "Westfjords"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND, iwrb.getLocalizedString("travel.search.north_west_iceland", "North-west Iceland"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND, iwrb.getLocalizedString("travel.search.north_iceland", "North Iceland"));
+			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND, iwrb.getLocalizedString("travel.search.north_east_iceland", "North-east Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_EAST_ICELAND, iwrb.getLocalizedString("travel.search.east_iceland", "East Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_SOUTH_ICELAND, iwrb.getLocalizedString("travel.search.south_iceland", "South Iceland"));
 			menu.addMenuElement(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS, iwrb.getLocalizedString("travel.search.westman_islands", "Westman islands"));
@@ -220,6 +225,23 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return list;
 	}
 
+	public Collection sortProducts(Collection productIdsToSort, PriceCategory priceCat) {
+		try {
+			if (productComparator == null) {
+				productComparator = new ProductComparator(ProductComparator.PRICE);
+				productComparator.setPriceCategoryValues(priceCat, -1, IWTimestamp.getTimestampRightNow());
+			}
+			/** Gera betra */
+			Collection tmp = getInstanceCollectionFromPKS(productIdsToSort);
+			Collections.sort( (Vector) tmp, productComparator);
+			
+			return getPKCollectionFromInstances(tmp);
+		}catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return productIdsToSort;		 
+	}
+
 	public HashMap checkResults(IWContext iwc, Collection results) throws RemoteException {
 		if (results != null && !results.isEmpty()) {
 			HashMap map = new HashMap();
@@ -234,6 +256,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				int betw = Integer.parseInt(iwc.getParameter(AbstractSearchForm.PARAMETER_MANY_DAYS));
 				to = new IWTimestamp(from);
 				to.addDays(betw);
+				
 				//to = new IWTimestamp(((IWContext) getIWApplicationContext()).getParameter(AbstractSearchForm.PARAMETER_TO_DATE));
 			}catch (Exception e) {
 				System.out.println("error getting stamps : "+e.getMessage());
@@ -254,7 +277,16 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 						tmp = new IWTimestamp(from);
 						productIsValid = true;
 						while ( tmp.isEarlierThan(to) && productIsValid) {
-							productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
+							/** Checking if day is available */
+							productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
+							
+							if (productIsValid) {
+								bf.isFullyBooked(iwc, product, tmp);
+							}
+							if (productIsValid) {
+								bf.isUnderBooked(iwc, product, tmp);
+							}
+							//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
 							//productIsValid = bus.getIfDay(iwc, product, tmp);
 							tmp.addDays(1);
 						}
@@ -268,6 +300,31 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			return map;
 		}
 		return new HashMap();
+	}
+
+	private Collection getInstanceCollectionFromPKS(Collection pks) {
+		Collection coll = new Vector();
+		try {
+			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+			Iterator iter = pks.iterator();
+			while (iter.hasNext()) {
+				coll.add(pHome.findByPrimaryKey(iter.next()));
+			}
+		} catch (Exception e) {
+			
+		}
+		return coll;
+	}
+	
+	private Collection getPKCollectionFromInstances(Collection insts) {
+		Collection coll = new Vector();
+		
+		Iterator iter = insts.iterator();
+		while (iter.hasNext()) {
+			coll.add( ((Product)iter.next()).getPrimaryKey());
+		}
+		
+		return coll;
 	}
 
 
