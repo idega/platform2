@@ -83,21 +83,39 @@ public class BuildingCacher {
   }
 
   public static List getBuildings(){
+    if(hComplexes == null){
+      reload();
+    }
     return Buildings;
   }
   public static List getComplexes(){
+    if(hBuildings == null){
+      reload();
+    }
     return Complexes;
   }
   public static List getFloors(){
+    if(hFloors == null){
+      reload();
+    }
     return Floors;
   }
   public static List getTypes(){
+    if(hTypes == null){
+      reload();
+    }
     return Types;
   }
   public static List getCategories(){
+    if(hCategories == null){
+      reload();
+    }
     return Categories;
   }
   public static List getApartments(){
+    if(hApartments == null){
+      reload();
+    }
     return Apartments;
   }
 

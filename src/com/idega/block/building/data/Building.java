@@ -29,6 +29,7 @@ public class Building extends GenericEntity {
     addAttribute(getComplexIdColumnName(),"Complex",true,true,"java.lang.Integer");
     addAttribute(getStreetColumnName(),"Street",true,true,"java.lang.String");
     addAttribute(getStreetNumberColumnName(),"Streetnumber",true,true,"java.lang.Integer");
+    addAttribute(getSerieColumnName(),"Serie",true,true,"java.lang.String",2);
     super.setMaxLength("info",4000);
   }
 
@@ -42,6 +43,7 @@ public class Building extends GenericEntity {
   public static String getImageIdColumnName(){return "ic_image_id";}
   public static String getStreetColumnName(){return "street";}
   public static String getStreetNumberColumnName(){return "street_number";}
+  public static String getSerieColumnName(){return "serie";}
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());
@@ -85,5 +87,11 @@ public class Building extends GenericEntity {
   }
   public void setStreetNumber(String street_number){
     setColumn(getStreetNumberColumnName(),street_number);
+  }
+  public String getSerie(){
+    return getStringColumnValue(getSerieColumnName());
+  }
+  public void setSerie(String serie){
+    setColumn(getSerieColumnName(),serie);
   }
 }

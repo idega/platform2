@@ -32,6 +32,7 @@ public class Apartment extends GenericEntity {
     addAttribute(getRentableColumnName(),"Leigjanleg",true,true,"java.lang.Boolean");
     addAttribute(getImageIdColumnName(),"Mynd",true,true,"java.lang.Integer");
     addAttribute(getUnavailableUntilColumnName(),"Frosin",true,true,"java.sql.Date");
+    addAttribute(getSerieColumnName(),"Serie",true,true,"java.lang.String",2);
     super.setMaxLength("info",5000);
   }
   public String getEntityName() {
@@ -45,6 +46,7 @@ public class Apartment extends GenericEntity {
   public static String getApartmentTypeColumnName(){return "BU_APRT_TYPE_ID"; }
   public static String getRentableColumnName(){return "rentable"; }
   public static String getUnavailableUntilColumnName(){return "unavailable_until"; }
+  public static String getSerieColumnName(){return "serie";}
 
 
   public String getName(){
@@ -100,5 +102,11 @@ public class Apartment extends GenericEntity {
 
   public void setUnavailableUntil(Date date) {
     setColumn(getUnavailableUntilColumnName(),date);
+  }
+  public String getSerie(){
+    return getStringColumnValue(getSerieColumnName());
+  }
+  public void setSerie(String serie){
+    setColumn(getSerieColumnName(),serie);
   }
 }
