@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.1 2003/10/30 09:07:43 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.2 2003/10/30 09:08:30 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,7 +20,7 @@ import com.idega.business.IBOServiceBean;
  * $id$
  *
  * @author Kelly
- * @version $revision$
+ * @version $Version$
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
 

@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.1 2003/10/30 09:07:43 kjell Exp $
+/* $Id: ControlListWriter.java,v 1.2 2003/10/30 09:09:53 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -49,10 +49,9 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $id$
+ * $Id: ControlListWriter.java,v 1.2 2003/10/30 09:09:53 kjell Exp $
  *
  * @author Kelly
- * @version $revision$
  */
 public class ControlListWriter implements MediaWritable {
 
