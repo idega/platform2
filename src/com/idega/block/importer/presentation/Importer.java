@@ -27,6 +27,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 import com.idega.user.data.Group;
 import com.idega.util.IWColor;
 import com.idega.util.IWTimestamp;
@@ -40,7 +41,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class Importer extends Block {
+public class Importer extends Window {
 	
   private String folderPath;
   private ICFile importFolder;  
