@@ -22,7 +22,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	protected final static String COLUMN_NAME_CLUB_NAME = "CLUB_NAME";
 	protected final static String COLUMN_NAME_CLUB_SHORT_NAME = "CLUB_SHORT_NAME";
 	protected final static String COLUMN_NAME_CLUB_NUMBER = "CLUB_NUMBER";
-	protected final static String COLUMN_NAME_WORK_REPORT_YEAR = "YEAR";
+	protected final static String COLUMN_NAME_WORK_REPORT_YEAR = "YEAR_OF_REPORT";
 	protected final static String COLUMN_NAME_MEMBERS_DONE = "MEMB_DONE";
 	protected final static String COLUMN_NAME_ACCOUNT_DONE = "ACC_DONE";
 	protected final static String COLUMN_NAME_BOARD_DONE = "BOARD_DONE";
