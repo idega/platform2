@@ -10,13 +10,15 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupRelation;
+import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author jonas
@@ -26,39 +28,59 @@ import com.idega.user.data.User;
  */
 public class MemberGroupData {
 	
-	public MemberGroupData(User user) {
+	public static final String LOCALIZE_KEY_PREFIX_GROUP_CATEGORY = "group_category_";
+	
+	public MemberGroupData(User user, IWResourceBundle iwrb) {
 		_user = user;
-		Collection parentGroups = user.getParentGroups();
-		Iterator iter = parentGroups.iterator();
+		Collection history = null;
+		try {
+			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(user.getID(),"GROUP_PARENT");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//Collection parentGroups = user.getParentGroups();
+		//Iterator iter = parentGroups.iterator();
+		Iterator iter = history.iterator();
 		StringBuffer buf = new StringBuffer();
 		while(iter.hasNext()) {
-			Group group = (Group) iter.next();
+			GroupRelation groupRel = (GroupRelation) iter.next();
+			/*Group group = (Group) iter.next();
 			if(group==null) {
 				System.out.println("a parent group was null!!");
 				continue;
 			}
-			String memberInfo = processGroup(group);
-			if(memberInfo!=null && memberInfo.length()>0) {
-				_memberInfo.add(memberInfo.split(" - "));
-			}
-			buf.setLength(0);
+			processGroup(group);*/
+			processGroupRelation(groupRel, iwrb);
 		}
 	}
 	
 	/**
-	 * Returns a String with infor on membership based on a group. Searches all ascendant groups and includes clubs, 
+	 * Returns a String with info on membership based on a group. Searches all ascendant groups and includes clubs, 
 	 * leagues, regional unions, unions, federations and divisions
 	 * @param group an imediate parent group of the member
 	 */
-	private String processGroup(Group group) {
-		boolean ok = processGroup(group, _buf, true);
-		String result = "";
-		if(ok) {
-			result = _buf.toString();
-			_stringByFinalGroup.put(group, result);
+	private void processGroupRelation(GroupRelation groupRel, IWResourceBundle iwrb) {
+		Group group = groupRel.getGroup();
+		String groupTypeName = iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + group.getGroupType(), "Unknown");
+		if(groupTypeName.equals("Unknown")) {
+			groupTypeName="";
+			System.out.println("Name for group type not defined, skipping group (key=\"" + LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + group.getGroupType() + "\")");
+			return;
 		}
 		_buf.setLength(0);
-		return result;
+		processGroup(group, _buf, true);
+		if(_buf.length()>0) {
+			String[] result = new String[4];
+			result[0] = _buf.toString();
+			result[1] = groupTypeName;
+			result[2] = (new IWTimestamp(groupRel.getInitiationDate())).getDateString("dd-MM-yyyy");
+			if(groupRel.getTerminationDate()!=null) {
+				result[3] = (new IWTimestamp(groupRel.getTerminationDate())).getDateString("dd-MM-yyyy");
+			} else {
+				result[3] = null;
+			}
+			_groupInfoList.add(result);
+		}
 	}
 	
 	/**
@@ -70,26 +92,16 @@ public class MemberGroupData {
 	 * @returns true if a club, league, regional union, union or federation was found among groups ancestors (including
 	 * group itself)
 	 */
-	private boolean processGroup(Group group, StringBuffer buf, boolean isFirstGroup) {
-		if(group == null) return false;
+	private void processGroup(Group group, StringBuffer buf, boolean isFirstGroup) {
 		
 		String type = group.getGroupType();
-		
-		System.out.println("Checking group " + group.getName() + "-" + group.getPrimaryKey());
+		String name = group.getName();
 		
 		boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type);
-		if(!isFlock && isFirstGroup) {
-			return false;
-		}
-		
 		boolean isClub = IWMemberConstants.GROUP_TYPE_CLUB.equals(type);
-		if(isClub) {
-			String clubName = group.getName();
-			if(!_clubList.contains(clubName)) {
-				_clubList.add(clubName);
-			}
+		if(isClub && !_clubList.contains(name)) {
+			_clubList.add(name);
 		}
-		
 		boolean isFinalGroup = IWMemberConstants.GROUP_TYPE_CLUB.equals(type) ||
 		                       IWMemberConstants.GROUP_TYPE_LEAGUE.equals(type) ||
 		                       IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(type) ||
@@ -99,44 +111,23 @@ public class MemberGroupData {
 		
 		boolean ok = true; // assume final group will be found
 		
+		if(isFirstGroup) {
+			buf.append(name);
+		} else if(isDivision) {
+			buf.append(" - ").append(name);
+		}
+		
 		if(!isFinalGroup) {
 			Collection groups = group.getParentGroups();
-			if(groups==null || groups.size()==0) {
-				// final group not found
-				ok = false;
-			} else {
+			if(groups!=null && groups.size()>0) {
 				Iterator iter = groups.iterator();
 				while(iter.hasNext()) {
-					ok = processGroup((Group) iter.next(), buf, false);
+					processGroup((Group) iter.next(), buf, false);
 				}
 			}
 		} else {
-			String name = group.getName();
-			buf.append(name);
+			buf.append(" - ").append(name);
 		}
-		
-		if(isDivision || isFirstGroup) {
-			buf.append(" - ").append(group.getName());
-		}
-		
-		return ok;
-	}
-	
-	/*
-	 * Get a string from the list in getMemberInfo base on the group displayd in the last part of the String
-	 * @param group the group at the end of the string
-	 * @return the string
-	 */
-	public String getStringByGroup(Group group) {
-		return (String) _stringByFinalGroup.get(group);
-	}
-	
-	public List getMemberInfo() {
-		return _memberInfo;
-	}
-	
-	public List getClubList() {
-		return _clubList;
 	}
 	
 	/**
@@ -147,12 +138,30 @@ public class MemberGroupData {
 		return _user;
 	}
 	
-	/* A list of Strings with membership info */
-	private List _memberInfo = new ArrayList();
-	/* A list of Strings with names of clubs user is in */
-	private List _clubList = new ArrayList();
-	private Map _stringByFinalGroup = new HashMap();
-	private User _user;
+	/**
+	 * A list of String arrays. Each array contains info on a membership, the Strings in the array are as following
+	 * <ul>
+	 *   <li>[0]: The name of the group and it's relevant ancestors</li>
+	 *   <li>[1]: The name of the group type, empty if not known</li>
+	 *   <li>[2]: The time the user was registered in the group</li>
+	 *   <li>[3]: The time the user war unregistered from the group, null if user is still in the group</li>
+	 * </ul>
+	 * @return list of membeship info entries
+	 */
+	public List getGroupInfoList() {
+		return _groupInfoList;
+	}
 	
+	/**
+	 * Gets a list of the names of the clubs the user is in
+	 * @return list of club names
+	 */
+	public List getClubList() {
+		return _clubList;
+	}
+	
+	private List _groupInfoList = new ArrayList();
+	private List _clubList = new ArrayList();
+	private User _user;
 	private StringBuffer _buf = new StringBuffer();
 }
