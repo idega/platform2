@@ -10,6 +10,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public java.sql.Timestamp getRegisterDate();
  public int getRegistratorId();
  public java.sql.Timestamp getRemovedDate();
+ public com.idega.block.school.data.SchoolClass getSchoolClass();
  public int getSchoolClassId();
  public boolean getSpeciallyPlaced();
  public com.idega.user.data.User getStudent();

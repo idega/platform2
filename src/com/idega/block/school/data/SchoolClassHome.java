@@ -5,14 +5,14 @@ public interface SchoolClassHome extends com.idega.data.IDOHome
 {
  public SchoolClass create() throws javax.ejb.CreateException;
  public SchoolClass findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public SchoolClass findByNameAndSchool(java.lang.String p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public SchoolClass findByNameAndSchool(java.lang.String p0,com.idega.block.school.data.School p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public SchoolClass findByNameAndSchool(java.lang.String p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchool(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchool(com.idega.block.school.data.School p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndSeason(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
- public java.util.Collection findBySchoolAndSeasonAndTeacher(int p0,int p1,int p2)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndSeasonAndTeacher(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolSeason p1,com.idega.user.data.User p2)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findBySchoolAndSeasonAndTeacher(int p0,int p1,int p2)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndSeasonAndYear(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolSeason p1,com.idega.block.school.data.SchoolYear p2)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndTeacher(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;

@@ -65,6 +65,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public int getSchoolClassId(){
     return this.getIntColumnValue(SCHOOLCLASS);
   }
+	public SchoolClass getSchoolClass(){
+		return (SchoolClass) this.getColumnValue(SCHOOLCLASS);
+	}
   public void setRegisterDate(Timestamp stamp){
     this.setColumn(REGISTER_DATE,stamp);
   }
@@ -172,6 +175,17 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
   
+	public Collection ejbFindByStudentAndSchool(int userID, int schoolID) throws FinderException, RemoteException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")
+		.appendWhere().append(" mb."+MEMBER).appendEqualSign().append(userID)
+		.appendAnd().append("cl."+SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID)
+		.appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
+		sql.appendOrderBy(REGISTER_DATE+" desc");
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+  
 	public Collection ejbFindAllByUserAndSeason(User user, SchoolSeason season) throws FinderException, RemoteException{
 		return ejbFindAllByUserAndSeason(((Integer)user.getPrimaryKey()).intValue(),((Integer)season.getPrimaryKey()).intValue());
 	}
@@ -243,6 +257,27 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			sql.appendAndEquals("mb."+SCHOOLCLASS, schoolClassID);
 		//sql.appendAnd().appendLeftParenthesis().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date)
 			//.appendOr().append(REGISTER_DATE).append(" is null").appendRightParenthesis();
+		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date)
+			.appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+  
+	public Collection ejbFindBySchool(int schoolID, int schoolClassID, Date date, boolean showNotYetActive) throws FinderException, RemoteException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl, ic_user u")
+		.appendWhere().append(" cl."+SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID)
+		.appendAndEquals("u.ic_user_id", "mb."+this.MEMBER)
+		.appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
+		if (schoolClassID != -1)
+			sql.appendAndEquals("mb."+SCHOOLCLASS, schoolClassID);
+		if (showNotYetActive) {
+			sql.appendAnd().append(REGISTER_DATE).appendGreaterThanSign().append(date);
+		}
+		else {
+			sql.appendAnd().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date);
+		}
 		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date)
 			.appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
