@@ -35,6 +35,7 @@ public class ServiceOverview extends TravelManager {
   private String actionParameter = "service_overview_action";
   private String deleteParameter = "service_to_delete_id";
 
+  private idegaCalendar cal = new idegaCalendar();
 
   public ServiceOverview() {
   }
@@ -119,11 +120,12 @@ public class ServiceOverview extends TravelManager {
       add(Text.getBreak());
       Form form = new Form();
       Table topTable = this.getTopTable(modinfo);
-//        form.add(topTable);
         form.add(Text.BREAK);
       Table table = new Table();
-        table.setBorder(0);
-        table.setWidth(1,"150");
+        table.setBorder(1);
+        table.setWidth(1,"100");
+        table.setWidth(2,"90");
+        table.setWidth(4,"90");
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
@@ -139,6 +141,16 @@ public class ServiceOverview extends TravelManager {
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
+      String[] dayOfWeekName = new String[8];
+        dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,modinfo).substring(0,3);
+        dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,modinfo).substring(0,3);
+        dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,modinfo).substring(0,3);
+        dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,modinfo).substring(0,3);
+        dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,modinfo).substring(0,3);
+        dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,modinfo).substring(0,3);
+        dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,modinfo).substring(0,3);
+
+      int[] dayOfWeek = new int[] {};
 
       Link delete;
       Link getLink;
@@ -161,6 +173,9 @@ public class ServiceOverview extends TravelManager {
       Text departureTimeText = (Text) theText.clone();
           departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
           departureTimeText.addToText(":");
+      Text activeDaysText = (Text) theText.clone();
+          activeDaysText.setText(iwrb.getLocalizedString("travel.active_days","Active days"));
+          activeDaysText.addToText(":");
 
       Image image = new Image("/pics/mynd.gif");
 
@@ -174,6 +189,17 @@ public class ServiceOverview extends TravelManager {
         Timeframe timeframe;
         Address address;
 
+        idegaTimestamp depTimeStamp;
+        Text prodName;
+        Text timeframeTxt;
+        Text depFrom;
+        Text depTime;
+        Text actDays;
+
+        Text nameOfCategory;
+        Text priceText;
+        ProductPrice[] prices;
+
 
         for (int i = 0; i < products.length; i++) {
           try {
@@ -181,19 +207,22 @@ public class ServiceOverview extends TravelManager {
             timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
             address = service.getAddress();
 
-            Text prodName = (Text) theBoldText.clone();
+            prodName = (Text) theBoldText.clone();
                 prodName.setText(service.getName());
 
-            Text timeframeTxt = (Text) theBoldText.clone();
-                timeframeTxt.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(modinfo) + " - " +new idegaTimestamp(timeframe.getTo()).getLocaleDate(modinfo));
+            timeframeTxt = (Text) theBoldText.clone();
+                timeframeTxt.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(modinfo) + " - ");
+                timeframeTxt.addToText(Text.BREAK);
+                timeframeTxt.addToText(new idegaTimestamp(timeframe.getTo()).getLocaleDate(modinfo));
 
-            Text depFrom = (Text) theBoldText.clone();
+            depFrom = (Text) theBoldText.clone();
                 depFrom.setText(address.getStreetName());
 
-            idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
-            Text depTime = (Text) theBoldText.clone();
+            depTimeStamp = new idegaTimestamp(service.getDepartureTime());
+            depTime = (Text) theBoldText.clone();
                 depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
+            actDays = (Text) theBoldText.clone();
 
             ++row;
             table.mergeCells(1,row,1,row+3);
@@ -226,10 +255,50 @@ public class ServiceOverview extends TravelManager {
             table.add(depTime,5,row);
 
             ++row;
+            table.setVerticalAlignment(2,row,"top");
+            table.setVerticalAlignment(3,row,"top");
+            table.setAlignment(2,row,"right");
+            table.setAlignment(3,row,"left");
+
+            dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
+            for (int j = 0; j < dayOfWeek.length; j++) {
+              if (j > 0) actDays.addToText(", ");
+              actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
+            }
+
+            table.add(activeDaysText,2,row);
+            table.add(actDays,3,row);
+
+
+            prices = tsb.getProductPrices(service.getID(), false);
+            table.mergeCells(2,row,2,(row+prices.length-1));
+            table.mergeCells(3,row,3,(row+prices.length-1));
+
+            for (int j = 0; j < prices.length; j++) {
+              nameOfCategory = (Text) theText.clone();
+                nameOfCategory.setText(prices[j].getPriceCategory().getName());
+                nameOfCategory.addToText(":");
+              priceText = (Text) theBoldText.clone();
+                priceText.setText(Float.toString(tsb.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+
+
+              table.setVerticalAlignment(4,row,"top");
+              table.setVerticalAlignment(5,row,"top");
+              table.setAlignment(4,row,"right");
+              table.setAlignment(5,row,"left");
+
+              table.add(nameOfCategory,4,row);
+              table.add(priceText,5,row);
+              ++row;
+            }
+
+
+
+
 
             ++row;
-            table.mergeCells(2,row,5,row);
-            table.setAlignment(2,row,"right");
+            table.mergeCells(1,row,5,row);
+            table.setAlignment(1,row,"right");
 
             getLink = new Link("getLink");
               getLink.setWindowToOpen(LinkGenerator.class);
@@ -242,14 +311,14 @@ public class ServiceOverview extends TravelManager {
             book = (Link) bookClone.clone();
               book.addParameter(Booking.parameterProductId,products[i].getID());
 
-            table.add(book,2,row);
-            table.add("&nbsp;&nbsp;",2,row);
-            table.add(getLink,2,row);
-            table.add("&nbsp;&nbsp;",2,row);
-            table.add(delete,2,row);
+            table.add(book,1,row);
+            table.add("&nbsp;&nbsp;",1,row);
+            table.add(getLink,1,row);
+            table.add("&nbsp;&nbsp;",1,row);
+            table.add(delete,1,row);
 
 
-            table.setColor(2,row,super.backgroundColor);
+            table.setColor(1,row,super.backgroundColor);
 
             ++row;
             table.mergeCells(1,row,5,row);

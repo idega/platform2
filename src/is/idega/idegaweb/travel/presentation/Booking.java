@@ -387,6 +387,7 @@ public class Booking extends TravelManager {
   public Table getCalendar(ModuleInfo modinfo) {
       String colorForAvailableDay = super.textColor;
       String colorForInquery = super.YELLOW;
+      String colorForToday = "#71CBFB";
 
       Table table = new Table(4,5);
           table.setBorder(0);
@@ -397,29 +398,29 @@ public class Booking extends TravelManager {
       idegaCalendar cal = new idegaCalendar();
 
       Text jan = (Text) theText.clone();
-        jan.setText(cal.getShortNameOfMonth(1,modinfo));
+        jan.setText(cal.getShortNameOfMonth(1,modinfo).substring(0,3));
       Text feb = (Text) theText.clone();
-        feb.setText(cal.getShortNameOfMonth(2,modinfo));
+        feb.setText(cal.getShortNameOfMonth(2,modinfo).substring(0,3));
       Text mar = (Text) theText.clone();
-        mar.setText(cal.getShortNameOfMonth(3,modinfo));
+        mar.setText(cal.getShortNameOfMonth(3,modinfo).substring(0,3));
       Text apr = (Text) theText.clone();
-        apr.setText(cal.getShortNameOfMonth(4,modinfo));
+        apr.setText(cal.getShortNameOfMonth(4,modinfo).substring(0,3));
       Text may = (Text) theText.clone();
-        may.setText(cal.getShortNameOfMonth(5,modinfo));
+        may.setText(cal.getShortNameOfMonth(5,modinfo).substring(0,3));
       Text jun = (Text) theText.clone();
-        jun.setText(cal.getShortNameOfMonth(6,modinfo));
+        jun.setText(cal.getShortNameOfMonth(6,modinfo).substring(0,3));
       Text jul = (Text) theText.clone();
-        jul.setText(cal.getShortNameOfMonth(7,modinfo));
+        jul.setText(cal.getShortNameOfMonth(7,modinfo).substring(0,3));
       Text aug = (Text) theText.clone();
-        aug.setText(cal.getShortNameOfMonth(8,modinfo));
+        aug.setText(cal.getShortNameOfMonth(8,modinfo).substring(0,3));
       Text sep = (Text) theText.clone();
-        sep.setText(cal.getShortNameOfMonth(9,modinfo));
+        sep.setText(cal.getShortNameOfMonth(9,modinfo).substring(0,3));
       Text oct = (Text) theText.clone();
-        oct.setText(cal.getShortNameOfMonth(10,modinfo));
+        oct.setText(cal.getShortNameOfMonth(10,modinfo).substring(0,3));
       Text nov = (Text) theText.clone();
-        nov.setText(cal.getShortNameOfMonth(11,modinfo));
+        nov.setText(cal.getShortNameOfMonth(11,modinfo).substring(0,3));
       Text dec = (Text) theText.clone();
-        dec.setText(cal.getShortNameOfMonth(12,modinfo));
+        dec.setText(cal.getShortNameOfMonth(12,modinfo).substring(0,3));
 
       Link lJan = new Link(jan,Booking.class);
         lJan.addParameter("year",stamp.getYear());
@@ -499,7 +500,8 @@ public class Booking extends TravelManager {
           sm.setHeaderColor(super.textColor);
           sm.setBodyColor("#8484D6");
           sm.setInActiveCellColor("#B1B1E5");
-          sm.useColorToday(false);
+//          sm.useColorToday(true);
+          sm.setColorToday(colorForToday);
 
 
       int month = stamp.getMonth();

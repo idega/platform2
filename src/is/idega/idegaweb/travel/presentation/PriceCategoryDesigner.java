@@ -63,7 +63,6 @@ public class PriceCategoryDesigner extends TravelWindow {
       String sAction = modinfo.getParameter(action);
       if (sAction == null) sAction = "";
 
-      System.err.println("Action = "+sAction);
       if ( (sAction.equals("")) || (sAction.equals(this.parameterCloserLook)) ){
         if (sAction.equals(this.parameterCloserLook)) fillForm = true;
         mainMenu(modinfo);
@@ -260,7 +259,6 @@ public class PriceCategoryDesigner extends TravelWindow {
   }
 
   private void saveUpdate(ModuleInfo modinfo, boolean isUpdate) {
-    System.err.println("er hér - -1");
 
       String name =   modinfo.getParameter("name");
       String desc =   modinfo.getParameter("description");

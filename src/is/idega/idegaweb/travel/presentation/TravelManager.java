@@ -221,7 +221,9 @@ public class TravelManager extends JModuleObject {
     }
 
     public void add(String string) {
-        table.add(string,1,2);
+      Text text = (Text) theText.clone();
+        text.setText(string);
+      this.add(text);
     }
 
 

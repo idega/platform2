@@ -54,15 +54,16 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
       }else if (action.equals(this.parameterSave) ) {
         savePickupPlace(modinfo);
       }else if (action.equals(this.parameterClose) ) {
-        this.closer();
+        closer();
       }
 
     }
   }
 
   public void closer() {
+    jPage.setParentToReload();
     jPage.setOnUnLoad("window.opener."+ServiceDesigner.NAME_OF_FORM+".submit()");
-    super.close(true);
+    super.close(false);
   }
 
   private void savePickupPlace(ModuleInfo modinfo) {
