@@ -1,12 +1,20 @@
 package is.idega.idegaweb.travel.data;
 
-import javax.ejb.RemoveException;
-import javax.ejb.FinderException;
 import java.rmi.RemoteException;
-import java.util.*;
-import com.idega.data.*;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
 import com.idega.block.trade.stockroom.data.Reseller;
-import java.sql.SQLException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDOQuery;
+import com.idega.data.SimpleQuerier;
 
 
 /**
@@ -31,15 +39,45 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
   public ResellerDayBMPBean() {
   }
   public void initializeAttributes() {
-    addAttribute(getIDColumnName(),"Reseller_id",true,true,Integer.class,"many-to-one",Reseller.class);
+    addAttribute(getColumnNameResellerId(),"Reseller_id",true,true,Integer.class,"many-to-one",Reseller.class);
     addAttribute(getColumnNameServiceId(), "Service_id", true, true, Integer.class, "many-to-one", Service.class);
     addAttribute(getColumnNameDayOfWeek(), "Day of week", true, true, Integer.class);
 
+    this.setAsPrimaryKey(getColumnNameResellerId(), true);
+    this.setAsPrimaryKey(getColumnNameServiceId(), true);
+    this.setAsPrimaryKey(getColumnNameDayOfWeek(), true);
+    
   }
   public String getEntityName() {
     return getResellerDaysTableName();
   }
 
+  public Object ejbFindByPrimaryKey(ResellerDayPK primaryKey) throws FinderException {
+  	return super.ejbFindByPrimaryKey(primaryKey);
+  }
+  
+  public Object ejbFindByPrimaryKey(Object primaryKey) throws FinderException {
+  	return this.ejbFindByPrimaryKey((ResellerDayPK) primaryKey);
+  }
+  
+  public Object ejbCreate(ResellerDayPK primaryKey) throws CreateException {
+  	setPrimaryKey(primaryKey);
+  	return super.ejbCreate();
+  }
+  
+  /* (non-Javadoc)
+   * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
+   */
+  public Class getPrimaryKeyClass() {
+  	return ResellerDayPK.class;
+  }
+
+  protected boolean doInsertInCreate() {
+  	return true;
+  }
+  /*
+   * @deprecated
+   */
   public String getIDColumnName() {
     return getColumnNameResellerId();
   }
@@ -74,34 +112,55 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
     return getIntColumnValue(getColumnNameServiceId());
   }
 
-  public int[] getDaysOfWeek(int resellerId, int serviceId) throws RemoteException{
-    int[] returner = {};
-    try {
-        ResellerDay[] days = (ResellerDay[]) (is.idega.idegaweb.travel.data.ResellerDayBMPBean.getStaticInstance(ResellerDay.class)).findAllByColumnOrdered(getColumnNameResellerId(), Integer.toString(resellerId),getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek());
-        returner = new int[days.length];
-        for (int i = 0; i < days.length; i++) {
-          returner[i] = days[i].getDayOfWeek();
-        }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-    }
-    return returner;
+  
+  public Collection ejbHomeGetDaysOfWeek(int resellerId, int serviceId) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this)
+			.appendWhereEquals(getColumnNameResellerId(), resellerId)
+			.appendAndEquals(getColumnNameServiceId(), serviceId)
+			.appendOrderBy(getColumnNameDayOfWeek());
+		return this.idoFindPKsByQuery(query);
   }
 
+  public int[] ejbHomeGetDaysOfWeekInt(int resellerId, int serviceId) throws FinderException {
+  	Collection coll = ejbHomeGetDaysOfWeek(resellerId, serviceId);
+  	if (coll != null && !coll.isEmpty()) {
+  		int[] returner = new int[coll.size()];
+  		Iterator iter = coll.iterator();
+  		try {
+	  		ResellerDayHome rdHome = (ResellerDayHome) IDOLookup.getHome(ResellerDay.class);
+	  		for (int i = 0; iter.hasNext(); i++) {
+	  			returner[i] = ((ResellerDay) rdHome.findByPrimaryKey(iter.next())).getDayOfWeek();
+	  		}
+  		} catch (IDOLookupException e) {
+  			throw new FinderException(e.getMessage());
+  		}
+  		return returner;
+  	}
+  	return new int[]{};
+  }
 
   public boolean ejbHomeGetIfDay(int resellerId, int serviceId, int dayOfWeek) {
     boolean returner = false;
     try {
-        ResellerDay[] days = (ResellerDay[]) (is.idega.idegaweb.travel.data.ResellerDayBMPBean.getStaticInstance(ResellerDay.class)).findAllByColumn(getColumnNameResellerId(), Integer.toString(resellerId) ,getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
-        if (days.length == 1) {
+    	IDOQuery query = idoQuery();
+    	query.appendSelectAllFrom(this)
+			.appendWhereEquals(getColumnNameResellerId(), resellerId)
+			.appendAndEquals(getColumnNameServiceId(), serviceId)
+			.appendAndEquals(getColumnNameDayOfWeek(), dayOfWeek);
+    	Collection days = this.idoFindPKsByQuery(query);
+    	
+    	if (days != null && !days.isEmpty()) {
+        if (days.size() == 1) {
           returner = true;
-        }else if (days.length > 1) {
+        }else {
           returner = true;
           System.err.println("ResellerDay : getIfDay : Primary Key Error");
         }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-    }
+    	}
+    }catch (FinderException e) {
+			e.printStackTrace();
+		}
 
     return returner;
   }
@@ -111,8 +170,9 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
     Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(), Integer.toString(serviceId));
     Iterator days = coll.iterator();
     ResellerDay rDay;
+    ResellerDayHome rdHome = (ResellerDayHome) IDOLookup.getHome(ResellerDay.class);
     while (days.hasNext()) {
-      rDay = (ResellerDay) this.ejbFindByPrimaryKey(days.next());
+      rDay = (ResellerDay) rdHome.findByPrimaryKey(days.next());
       rDay.remove();
     }
   }
@@ -121,8 +181,9 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
     Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameResellerId(), Integer.toString(resellerId));
     Iterator days = coll.iterator();
     ResellerDay rDay;
+    ResellerDayHome rdHome = (ResellerDayHome) IDOLookup.getHome(ResellerDay.class);
     while (days.hasNext()) {
-      rDay = (ResellerDay) this.ejbFindByPrimaryKey(days.next());
+      rDay = (ResellerDay) rdHome.findByPrimaryKey(days.next());
       rDay.remove();
     }
 
@@ -134,11 +195,25 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
       */
   }
 
-	public boolean ejbHomeRemoveResellerDays(Reseller reseller, Service service) throws Exception {
-		String sql = "delete from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getID();
-		return SimpleQuerier.execute(sql);	
+	public void ejbHomeRemoveResellerDays(Reseller reseller, Service service) throws RemoveException {
+		try {
+			Collection days = ejbHomeGetDaysOfWeek(Integer.parseInt(reseller.getPrimaryKey().toString()),Integer.parseInt(service.getPrimaryKey().toString()));
+			if (days != null && !days.isEmpty()) {
+				Iterator iter = days.iterator();
+				ResellerDay rDay;
+				ResellerDayHome rdHome = (ResellerDayHome) IDOLookup.getHome(ResellerDay.class);
+				while (iter.hasNext()) {
+					rDay = (ResellerDay) rdHome.findByPrimaryKey(iter.next());
+					rDay.remove();
+				}
+			}
+		} catch (FinderException f) {
+			throw new RemoveException(f.getMessage());
+		} catch (IDOLookupException e) {
+			throw new RemoveException(e.getMessage());
+		}
 	}
-
+/*
   public int[] ejbHomeGetResellerDays(Reseller reseller, Service service) throws RemoteException, FinderException{
 //    return this.idoFindPKsBySQL("select * from "+getResellerDaysTableName()+" where "+getColumnNameResellerId()+" = "+reseller.getPrimaryKey().toString()+" AND "+getColumnNameServiceId()+" = "+service.getPrimaryKey().toString());
 //		System.out.println("[ResellerDayBMPBean] Service : "+service.getName(1)+", id = "+service.getID());
@@ -157,7 +232,7 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
 			throw new FinderException(e.getMessage());	
 		}
   }
-
+*/
 
   public static String getResellerDaysTableName() {return "TB_RESELLER_DAY";}
   public static String getColumnNameResellerId() {return "SR_RESELLER_ID";}
