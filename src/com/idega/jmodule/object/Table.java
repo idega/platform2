@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.13 2001/08/16 10:34:04 tryggvil Exp $
+ * $Id: Table.java,v 1.14 2001/08/20 12:08:36 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -315,11 +315,11 @@ public class Table extends ModuleObjectContainer {
   }
 
   public void setFrameHsides() {
-      setAttribute("FRAMES","hsides");
+      setAttribute("FRAME","hsides");
   }
 
   public void setFrameVsides() {
-      setAttribute("FRAMES","vsides");
+      setAttribute("FRAME","vsides");
   }
 
   public void setCellspacing(int i){
