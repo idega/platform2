@@ -1,0 +1,8 @@
+package se.idega.idegaweb.commune.accounting.invoice.business;
+
+
+public interface PaymentAuthorizationBusiness extends com.idega.business.IBOService
+{
+ public void authorizePayments(com.idega.user.data.User p0) throws java.rmi.RemoteException;
+ public java.lang.String getProviderNameForUser(com.idega.user.data.User p0) throws java.rmi.RemoteException;
+}
