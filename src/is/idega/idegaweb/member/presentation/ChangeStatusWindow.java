@@ -1,10 +1,8 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.GroupApplicationBusiness;
-import is.idega.idegaweb.member.data.GroupApplicationHome;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
 import java.util.Vector;
 
 import com.idega.idegaweb.IWApplicationContext;
