@@ -240,7 +240,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		Collection groups = null;
 		
 		try {
-			groups  = getGroupHome().findGroupsByMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION,league.getPrimaryKey().toString());
+			groups  = getGroupHome().findGroupsByMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION,league.getPrimaryKey().toString());
 		}
 		catch (EJBException e) {
 			e.printStackTrace();
