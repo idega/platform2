@@ -606,7 +606,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		
-		if (!restrictDates) {
+		if (restrictDates) {
 			IWTimestamp stamp = new IWTimestamp();
 			if (archive != null) {
 				IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
@@ -1272,7 +1272,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 
 	private void alterValidFromDate(IWContext iwc) throws RemoteException {
-		System.out.println("Altering valid from date + care time...");
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int careTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), iwc.getCurrentLocale(), iwc.getCurrentUser());
