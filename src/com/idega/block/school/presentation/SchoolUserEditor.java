@@ -389,7 +389,7 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 		boolean main_headmaster = false;
 		String rowColor = "#C7C7C7";
 		
-			Table tableDepForm = this.getDepartmentForm(iwc, school);
+			Table tableDepForm = this.getDepartmentForm();
 			Table tableDep = this.schoolDepartmentTable(iwc, school);
 			Table tableUser = this.getUserFormHighSchool(iwc, school);
 			Table tableShowInfo = this.getShowInfoTable();		
@@ -1263,7 +1263,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 			return table;
 		}
 		
-private Table getDepartmentForm(IWContext iwc, School school) {
+private Table getDepartmentForm() {
 			String school_department = PARAMETER_SCHOOL_DEPARTMENT;
 			String school_department_phone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
 		
@@ -1474,7 +1474,7 @@ private Table getDepartmentForm(IWContext iwc, School school) {
 							user.addPhone(phone);
 						}
 
-						postSaveUpdate(school, user, iUserType);
+						postSaveUpdate();
 					}
 			
 			}
@@ -1526,7 +1526,7 @@ private Table getDepartmentForm(IWContext iwc, School school) {
 					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType);
 				}
 
-				postSaveNew(school, user, iUserType);
+				postSaveNew();
 				try { 
 					if (schdep_id != -1) {
 						getSchoolBusiness(iwc).addSchoolUsr(schdep_id, schUsr);
@@ -1580,7 +1580,7 @@ public void deleteDepartment(IWContext iwc, School school) throws FinderExceptio
 	}
 
 
-public boolean updateDepartment(IWContext iwc, School school) throws RemoteException {
+public boolean updateDepartment(IWContext iwc) throws RemoteException {
 		String sdepartmentname = PARAMETER_SCHOOL_DEPARTMENT;
 		String sdepartmentphone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
 		
@@ -1637,7 +1637,7 @@ public boolean updateDepartment(IWContext iwc, School school) throws RemoteExcep
 	 * @param school School
 	 * @param user User
 	 */
-	protected void postSaveNew(School school, User user, int userType) throws RemoteException{
+	protected void postSaveNew(){
 
 	}
 
@@ -1646,7 +1646,7 @@ public boolean updateDepartment(IWContext iwc, School school) throws RemoteExcep
 	 * @param school School
 	 * @param user User
 	 */
-	protected void postSaveUpdate(School school, User user, int userType) throws RemoteException{
+	protected void postSaveUpdate(){
 
 	}
 	
@@ -1771,7 +1771,7 @@ public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSu
 			add(mainForm(iwc));
 		}
 			else if (action.equals(ACTION_UPDATE_DEPM)) {
-			updateDepartment(iwc, _school);  //Malin
+			updateDepartment(iwc);  //Malin
 			add(mainForm(iwc));
 		}
 		

@@ -63,12 +63,12 @@ public class SchoolEditor extends Block {
 
     if(iwc.isParameterSet("sch_save_school")){
       saveSchool(iwc);
-      F.add(getListTable(null));
+      F.add(getListTable());
     }
     else if(iwc.isParameterSet("sch_delete_school")){
       int id = Integer.parseInt(iwc.getParameter("sch_delete_school"));
       sabBean.removeSchool(id);
-      F.add(getListTable(null));
+      F.add(getListTable());
     }
     else if(iwc.isParameterSet("sch_school_id")){
       int id = Integer.parseInt(iwc.getParameter("sch_school_id"));
@@ -79,7 +79,7 @@ public class SchoolEditor extends Block {
       F.add(getInput(iwc,-1));
     }
     else
-      F.add(getListTable(null));
+      F.add(getListTable());
 
     add(F);
 
@@ -142,7 +142,7 @@ public class SchoolEditor extends Block {
     }
   }
 
-  public PresentationObject getListTable(School ent)throws RemoteException {
+  public PresentationObject getListTable()throws RemoteException {
     Table T = new Table();
     int row = 1;
 
@@ -233,7 +233,7 @@ public class SchoolEditor extends Block {
     TextInput inputKeyCode = new TextInput("sch_keycode");
     TextInput inputLON = new TextInput("sch_lon");
     TextInput inputLAT = new TextInput("sch_lat");
-    DropdownMenu drpArea = new DropdownMenu(getSchoolAreas(iwc),"sch_area_id");
+    DropdownMenu drpArea = new DropdownMenu(getSchoolAreas(),"sch_area_id");
     DropdownMenu communes = new DropdownMenu("sch_commune");
 		SelectorUtility su = new SelectorUtility();
 		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
@@ -243,8 +243,8 @@ public class SchoolEditor extends Block {
     if(ent!=null){
 
       try{
-	      schooltypes = getSchoolRelatedSchoolTypes(iwc,ent);
-	      schoolyears = getSchoolRelatedSchoolYears(iwc,ent);
+	      schooltypes = getSchoolRelatedSchoolTypes(ent);
+	      schoolyears = getSchoolRelatedSchoolYears(ent);
 	
 	      Id = ((Integer)ent.getPrimaryKey()).intValue();
 	      inputName.setContent(ent.getSchoolName());
@@ -306,7 +306,7 @@ public class SchoolEditor extends Block {
 
     Table typeTable = new Table();
     int row2 = 1;
-    Collection types = getSchoolTypes(iwc);
+    Collection types = getSchoolTypes();
     if(types!=null && !types.isEmpty()){
       java.util.Iterator iter = types.iterator();
       boolean hasMap = schooltypes!=null;
@@ -328,7 +328,7 @@ public class SchoolEditor extends Block {
 
 				Table yearTable = new Table();
 				/////////////////
-				Collection years = getSchoolYears(iwc, primaryKey.intValue());
+				Collection years = getSchoolYears(primaryKey.intValue());
 				if(years!=null && !years.isEmpty()){
 				  java.util.Iterator yearIter = years.iterator();
 				  boolean yearMap = schoolyears!=null;
@@ -382,23 +382,23 @@ public class SchoolEditor extends Block {
     return T;
   }
 
-  private Map getSchoolRelatedSchoolTypes(IWContext iwc,School school)throws java.rmi.RemoteException{
+  private Map getSchoolRelatedSchoolTypes(School school)throws java.rmi.RemoteException{
     return sabBean.getSchoolRelatedSchoolTypes(school);
   }
 
-  private Map getSchoolRelatedSchoolYears(IWContext iwc,School school)throws java.rmi.RemoteException{
+  private Map getSchoolRelatedSchoolYears(School school)throws java.rmi.RemoteException{
     return sabBean.getSchoolRelatedSchoolYears(school);
   }
 
-  private Collection getSchoolTypes(IWContext iwc)throws java.rmi.RemoteException{
+  private Collection getSchoolTypes()throws java.rmi.RemoteException{
     return sabBean.findAllSchoolTypes();
   }
 
-   private Collection getSchoolYears(IWContext iwc, int schoolTypeId)throws java.rmi.RemoteException{
+   private Collection getSchoolYears(int schoolTypeId)throws java.rmi.RemoteException{
      return sabBean.findAllSchoolYearsBySchoolType(schoolTypeId);
   }
 
-  private Collection getSchoolAreas(IWContext iwc)throws java.rmi.RemoteException{
+  private Collection getSchoolAreas()throws java.rmi.RemoteException{
     return sabBean.findAllSchoolAreas();
   }
 

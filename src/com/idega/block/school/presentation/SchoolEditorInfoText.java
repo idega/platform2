@@ -147,11 +147,11 @@ return text;
 		}
 
 
-public void setTextStyleNormal(Text text) {
+public void setTextStyleNormal() {
   	//this.TEXT_NORMAL = text;	
   }
   
-  public void setTextStyleTitle(Text text) {
+  public void setTextStyleTitle() {
   	//this.TEXT_TITLE = text;	
   }
 

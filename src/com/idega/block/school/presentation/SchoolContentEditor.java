@@ -673,7 +673,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				
 				_school.store();
 				
-				sue.updateDepartment(iwc, _school);
+				sue.updateDepartment(iwc);
 				sue.updateUsers(iwc, _school);
 	
 				return true;

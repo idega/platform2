@@ -195,7 +195,7 @@ public class SchoolYearPlacesEditor extends Block {
     return T;
   }
 
-  public PresentationObject getInputTable(IWContext iwc,SchoolYearPlaces ent){
+  public PresentationObject getInputTable(){
     Table T = new Table(3,16);
     T.mergeCells(1,1,3,1);
 

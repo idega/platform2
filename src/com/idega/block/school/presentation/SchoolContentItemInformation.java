@@ -1,7 +1,5 @@
 package com.idega.block.school.presentation;
 
-import java.rmi.RemoteException;
-
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.PresentationObject;
@@ -19,7 +17,7 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 	/**
 	 * @see com.idega.block.school.presentation.SchoolItem#getObject()
 	 */
-	protected PresentationObject getObject() throws RemoteException{
+	protected PresentationObject getObject(){
 		LocalizedText lText = null;
 		try {
 			lText = _school.getLocalizedText(_iwc.getCurrentLocaleId());
