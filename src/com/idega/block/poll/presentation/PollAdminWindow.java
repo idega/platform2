@@ -57,7 +57,7 @@ public PollAdminWindow(){
     addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
     Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
 
-    editImage = iwrb.getImage("change.gif");
+    editImage = iwrb.getImage("edit.gif");
       editImage.setHorizontalSpacing(4);
       editImage.setVerticalSpacing(3);
     createImage = iwrb.getImage("create.gif");
