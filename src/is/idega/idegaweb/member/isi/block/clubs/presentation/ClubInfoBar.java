@@ -23,6 +23,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.CSSMultiLevelMenu;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.CSSMultiLevelMenu.CSSMenu;
+import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
@@ -35,6 +36,8 @@ public class ClubInfoBar extends Block {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private String pageId = null;
 	
+	public static final String PARAM_NAME_GROUP_ID = "group_id";
+	
 	public void main(IWContext iwc) {
 	    
 		pageId = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_PAGE_ID);
@@ -45,8 +48,6 @@ public class ClubInfoBar extends Block {
 			System.out.println("No club to show division menu for");
 			return;
 		}
-		
-		//System.out.println("creating link bar for club " + club.getName());
 		
 		_biz = getBusiness(iwc);
 		Collection divisions = _biz.getDivisionsForClub(club);
@@ -67,7 +68,25 @@ public class ClubInfoBar extends Block {
 		Collections.sort(playerGroups, new Comparator() {
 			
 			public int compare(Object arg0, Object arg1) {
-				return _collator.compare( ((Group) arg0).getName(), ((Group) arg1).getName());
+				Group g0 = (Group) arg0;
+				Group g1 = (Group) arg1;
+				String t0 = g0.getGroupType();
+				String t1 = g1.getGroupType();
+				int result = _collator.compare( g0.getName(), g1.getName());
+				if(!t0.equals(t1)) {
+					if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(t0)) {
+						result = 1;
+					} else if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(t1)) {
+						result = -1;
+					} else {
+						if(IWMemberConstants.GROUP_TYPE_CLUB_TRAINER.equals(t0)) {
+							result = -1;
+						} else {
+							result = 1;
+						}
+					}
+				}
+				return result;
 			}
 			
 		});
@@ -78,17 +97,33 @@ public class ClubInfoBar extends Block {
 		menuBar.add(topLevelMenu);
 		
 		Iterator playerGroupIter = playerGroups.iterator();
+		boolean flockInserted = false;
 		while(playerGroupIter.hasNext()) {
 			Group playerGroup = (Group) playerGroupIter.next();
-		
-			Link link = new Link(playerGroup.getName());
-			if(pageId!=null) {
-			  link.setPage(Integer.parseInt(pageId));
+			boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(playerGroup.getGroupType());
+			if(isFlock && !flockInserted) {
+				topLevelMenu.add(new HorizontalRule());
+				flockInserted = true;
 			}
-			link.addParameter(IWMemberConstants.REQUEST_PARAMETER_SELECTED_GROUP_ID,playerGroup.getPrimaryKey().toString());
-			topLevelMenu.add(link);
+			if(showGroup(playerGroup)) {
+				Link link = new Link(playerGroup.getName());
+				link.addParameter(PARAM_NAME_GROUP_ID, playerGroup.getPrimaryKey().toString());
+				if(pageId!=null) {
+				  link.setPage(Integer.parseInt(pageId));
+				}
+				link.addParameter(IWMemberConstants.REQUEST_PARAMETER_SELECTED_GROUP_ID,playerGroup.getPrimaryKey().toString());
+				topLevelMenu.add(link);
+			}
 		}
 
+	}
+	
+	private boolean showGroup(Group group) {
+		String type = group.getGroupType();
+		boolean show = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type) || 
+		               IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type) || 
+		               IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_COMMITTEE.equals(type);
+		return show;
 	}
 		
 	public String getBundleIdentifier() {
