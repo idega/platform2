@@ -970,6 +970,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		Group division = null;
 		Group group = null;
 		User user = null;
+		PaymentType paymentType = null;
 		ClubTariffType tariffType = null;
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
@@ -978,6 +979,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String groupString = null;
 			String userString = null;
 			String personalID = null;
+			String paymentTypeString = null;
 			String tariffTypeString = null;
 
 			division = financeEntry.getDivision();
@@ -994,6 +996,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 				}
 			}
+			paymentType = financeEntry.getPaymentType();
+			if (paymentType != null)
+				paymentTypeString = paymentType.getName();
 			tariffType = financeEntry.getTariffType();
 			if (tariffType != null)
 				tariffTypeString = tariffType.getName();
@@ -1006,9 +1011,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(paymentModeField, financeEntry.getPaymentType() );
+			data.addData(paymentModeField, paymentTypeString );
 			data.addData(infoField, financeEntry.getInfo() );
-			data.addData(tariffTypeField, tariffTypeString );		
+			data.addData(tariffTypeField, tariffTypeString );
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 			if (statsForDivision == null)
