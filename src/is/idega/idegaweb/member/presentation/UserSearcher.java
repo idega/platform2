@@ -399,6 +399,7 @@ public class UserSearcher extends Block {
 					String field = (String) iter.next();
 					clearAction += getClearActionPart(field, uniqueIdentifier,"''");
 				}
+				clearAction +=getClearActionObjectTest(PRM_USER_ID,uniqueIdentifier);
 				clearAction += getClearActionPart(PRM_USER_ID,uniqueIdentifier,"-1");
 				SubmitButton reset = new SubmitButton(SEARCH_CLEARED, iwrb.getLocalizedString("clear", "Clear"));
 				reset.setStyleClass(buttonStyleName);
@@ -414,6 +415,7 @@ public class UserSearcher extends Block {
 						String field = (String) iter2.next();
 						otherClearActions += getClearActionPart(field, identifier,"''");
 					}
+					otherClearActions +=getClearActionObjectTest(PRM_USER_ID,identifier);
 					otherClearActions +=getClearActionPart(PRM_USER_ID,identifier,"-1");
 				}
 			
@@ -427,6 +429,10 @@ public class UserSearcher extends Block {
 }
 private String getClearActionPart(String field, String identifier,String value) {
 	return "this.form." + field + identifier + ".value ="+value+" ;";
+}
+
+private String getClearActionObjectTest(String field,String identifier){
+	return "if(this.form." + field + identifier + ")";
 }
 /**
 	 * Presentates the users found by search
