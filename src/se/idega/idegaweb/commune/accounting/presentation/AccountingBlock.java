@@ -6,7 +6,10 @@ package se.idega.idegaweb.commune.accounting.presentation;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParsePosition;
 import java.util.Locale;
+import java.sql.Date;
 
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -136,5 +139,54 @@ public class AccountingBlock extends CommuneBlock {
 		button.setHeight("20");
 		return (SubmitButton) setStyle(button,STYLENAME_INTERFACE_BUTTON);
 	}
-
+	
+	/**
+	 * Parses the specified string to a java.sql.Date object. 
+	 * The date formats yyMM, yyMMdd, yyyyMMdd, yy-MM-dd, yyyy-MM-dd are accepted.
+	 * @param dateString the date string to parse
+	 * @author anders
+	 */
+	protected Date parseDate(String dateString) {
+		if (dateString == null) {
+			return null;
+		}
+		
+		SimpleDateFormat formatter = null;
+		ParsePosition pos = null;
+		java.util.Date d = null;
+		String s = dateString.trim();
+		
+		if ((d == null) && (s.length() == 4)) {
+			pos = new ParsePosition(0);
+			formatter = new SimpleDateFormat ("yyMM");
+			d = formatter.parse(s, pos);
+		}
+		if ((d == null) && (s.length() == 6)) {
+			pos = new ParsePosition(0);
+			formatter = new SimpleDateFormat ("yyMMdd");
+			d = formatter.parse(s, pos);
+		}
+		if ((d == null) && (s.length() == 8) && (s.indexOf('-') == -1)) {
+			pos = new ParsePosition(0);
+			formatter = new SimpleDateFormat ("yyyyMMdd");
+			d = formatter.parse(s, pos);
+		}
+		if ((d == null) && (s.length() == 8)) {
+			pos = new ParsePosition(0);
+			formatter = new SimpleDateFormat ("yy-MM-dd");
+			d = formatter.parse(s, pos);
+		}
+		if ((d == null) && (s.length() == 10)) {
+			pos = new ParsePosition(0);
+			formatter = new SimpleDateFormat ("yyyy-MM-dd");
+			d = formatter.parse(s, pos);
+		}
+				
+		Date date = null;
+		
+		if (d != null) {
+			date = new Date(d.getTime());
+		} 	
+		return date;
+	}
 }
