@@ -40,7 +40,8 @@ import com.idega.util.text.TextSoap;
  */
 public class AccountingStatsBusinessBean extends IBOSessionBean implements AccountingStatsBusiness {
 	
-	private static final String LOCALIZED_LABEL = "AccountingStatsBusiness.current_date";
+	private static final String LOCALIZED_CURRENT_DATE = "AccountingStatsBusiness.current_date";
+	private static final String LOCALIZED_CLUB_NAME = "AccountingStatsBusiness.club_name";
 	private static final String LOCALIZED_DIVISION_NAME = "AccountingStatsBusiness.division_name";
 	private static final String LOCALIZED_GROUP_NAME = "AccountingStatsBusiness.group_name";
 	private static final String LOCALIZED_NAME = "AccountingStatsBusiness.name";
@@ -106,12 +107,25 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
 		
+		Group club = null;
+		try {
+			club = getClubForUser(this.getCurrentUser() );
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
+		if (club != null);
+			reportCollection.addExtraHeaderParameter(
+				"label_club_name", _iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"),
+				"club_name", club.getName());
+		System.out.println(club.getName());
 		reportCollection.addExtraHeaderParameter(
-		 "label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
-		 "current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
-		 
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
+				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+		
 		 //PARAMETERS that are also FIELDS
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		 //The name you give the field/parameter must not contain spaces or special characters		
@@ -156,13 +170,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //create a row and insert into an ordered map
 		 //then iterate the map and insert into the final report collection.
 		 //getGroupBusiness().getpar
-		 Group club = null;
-		 try {
-		 	club = getClubForUser(this.getCurrentUser() );
-		 }
-		 catch (FinderException e) {
-		 	e.printStackTrace();
-		 }
+		
 		 String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
 		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		 Map financeEntriesByDivisions = new TreeMap();
@@ -237,7 +245,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
@@ -365,7 +373,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
@@ -493,7 +501,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
@@ -621,7 +629,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
@@ -749,7 +757,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
-				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_CURRENT_DATE, "Current date"),
 				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
