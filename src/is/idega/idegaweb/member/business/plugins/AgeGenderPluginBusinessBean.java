@@ -41,7 +41,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   
   private static final int LOWER_AGE_LIMIT_DEFAULT = 0;
   private static final int UPPER_AGE_LIMIT_DEFAULT = 110;
-  private static final String DEFAULT_KEY_DATE = "31-12"; /// 31st of december
+  private static final String DEFAULT_KEY_DATE = "12-31"; /// 31st of december <month>-<day>
   
   private static final String LOWER_AGE_LIMIT_META_DATA_KEY = "lowerAgeLimit";
   private static final String UPPER_AGE_LIMIT_META_DATA_KEY = "upperAgeLimit";
