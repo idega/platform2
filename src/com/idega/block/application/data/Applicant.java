@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.3 2001/06/25 18:06:16 palli Exp $
+ * $Id: Applicant.java,v 1.4 2001/06/26 00:30:27 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ public class Applicant extends GenericEntity {
   private static final String name_ = "app_applicant";
   private static final String firstName_ = "first_name";
   private static final String middleName_ = "middle_name";
-  private static final String lastName_ = "lastName";
+  private static final String lastName_ = "last_name";
   private static final String ssn_ = "ssn";
   private static final String legalResidence_ = "legal_residence";
   private static final String residence_ = "residence";
@@ -140,16 +140,12 @@ public class Applicant extends GenericEntity {
     return((String)getColumnValue(residence_));
   }
 
-  public void setResidencePhone(int phone) {
+  public void setResidencePhone(String phone) {
     setColumn(residencePhone_,phone);
   }
 
-  public void setResidencePhone(Integer phone) {
-    setColumn(residencePhone_,phone);
-  }
-
-  public Integer getResidencePhone() {
-    return((Integer)getColumnValue(residencePhone_));
+  public String getResidencePhone() {
+    return((String)getColumnValue(residencePhone_));
   }
 
   public void setPO(String po) {

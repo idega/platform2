@@ -1,5 +1,5 @@
 /*
- * $Id: SpouseOccupation.java,v 1.3 2001/06/25 22:57:18 palli Exp $
+ * $Id: SpouseOccupation.java,v 1.4 2001/06/26 00:30:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,10 +20,6 @@ import java.sql.SQLException;
 public class SpouseOccupation extends GenericEntity {
   private static final String name_ = "cam_spouse_occ";
   private static final String description_ = "description";
-
-  public String getDescriptionColumnName() {
-    return(description_);
-  }
 
   public SpouseOccupation() {
     super();
