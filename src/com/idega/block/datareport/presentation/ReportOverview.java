@@ -97,6 +97,7 @@ public class ReportOverview extends Block {
 	private static final String REPORT_HEADLINE_KEY = "ReportTitle";
 	
 	private static final String USER_ACCESS_VARIABLE = "user_access_variable";
+	private static final String GROUP_ACCESS_VARIABLE = "group_access_variable";
 	
 	// sets the investigation level of the query builder (-1 means, that the query builder is shown in the simple mode)
 	private static final int SIMPLE_MODE = -1; 
@@ -433,7 +434,9 @@ public class ReportOverview extends Block {
 	    if (query.isDynamic()) {
 	    	Map identifierValueMap = query.getIdentifierValueMap();
 	    	boolean containsOnlyAccessVariable = 
-	    		identifierValueMap.containsKey(USER_ACCESS_VARIABLE) && identifierValueMap.size() == 1;
+	    		(	identifierValueMap.containsKey(USER_ACCESS_VARIABLE)  || 
+	    			identifierValueMap.containsKey(GROUP_ACCESS_VARIABLE)) && 
+	    			(identifierValueMap.size() == 1);
 	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action) &&
 	    			! containsOnlyAccessVariable) {
 	    		// show input fields
@@ -588,9 +591,10 @@ public class ReportOverview extends Block {
 				groupIds.add(group.getPrimaryKey());
 			}
 		}
-		// create the where condition
-		StringBuffer buffer = new StringBuffer("(select related_ic_group_id from ic_group_relation where ic_group_id in ( ");
+		// create the where condition for user view
+		StringBuffer userBuffer = new StringBuffer("(select related_ic_group_id from ic_group_relation where ic_group_id in ");
 		Iterator groupIdsIterator = groupIds.iterator();
+		StringBuffer buffer = new StringBuffer("( ");
 		String separator = "";
 		while (groupIdsIterator.hasNext()) {
 			buffer.append(separator);
@@ -598,8 +602,11 @@ public class ReportOverview extends Block {
 			buffer.append(groupId.toString());
 			separator = " , ";
 		}
-		buffer.append(" ) and group_relation_status = 'ST_ACTIVE')");
-		identifierValueMap.put(USER_ACCESS_VARIABLE, buffer.toString());
+		buffer.append(" )");
+		userBuffer.append(buffer).append(" and group_relation_status = 'ST_ACTIVE')");
+		identifierValueMap.put(USER_ACCESS_VARIABLE, userBuffer.toString());
+		// create the where condition for group view
+		identifierValueMap.put(GROUP_ACCESS_VARIABLE, buffer.toString());
 	}
 		
 				    	
@@ -621,7 +628,8 @@ public class ReportOverview extends Block {
   	while (iterator.hasNext())	{
   		Map.Entry entry = (Map.Entry) iterator.next();
   		String key = (String) entry.getKey();
-  		if (! USER_ACCESS_VARIABLE.equals(key)) {
+  		if (! USER_ACCESS_VARIABLE.equals(key) && 
+  				!GROUP_ACCESS_VARIABLE.equals(key)) {
 	  		String description = (String) identifierDescriptionMap.get(key);
 	  		String value = (String) identifierValueMap.get(key);
 	  		TextInput textInput = new TextInput(key, value);
