@@ -28,7 +28,6 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -46,14 +45,8 @@ public class FieldOverview extends GolfBlock {
   private int iMaxImageWidth = 0;
   
   private ICPage holeViewPage;
-  private ICPage fieldViewPage;
 
 	public void main(IWContext modinfo) throws Exception {
-		String union_id = modinfo.getParameter("union_id");
-		if (union_id == null) {
-			union_id = (String) modinfo.getSessionAttribute("golf_union_id");
-		}
-
 		String hole_number = modinfo.getParameter("hole_number");
 		String field_id = modinfo.getParameter("field_id");
 		if (field_id == null)
@@ -76,20 +69,6 @@ public class FieldOverview extends GolfBlock {
 			Table myTable = getHoleInfo(modinfo,field, field_id, hole_number);
 
 			contentTable.add(myTable, 1, 1);
-		}
-
-		if (isAdmin()) {
-			Form form = new Form();
-			form.setWindowToOpen(FieldEditor.class);
-			form.add(new HiddenInput("field_id", field_id + ""));
-			form.add(new HiddenInput("union_id", union_id));
-			if(hole_number!=null) {
-				form.addParameter("hole_number",hole_number);
-				form.addParameter("action","view_hole");
-			}
-			form.add(new HiddenInput("redir", getResourceBundle().getLocalizedString("field.field_editor", "Field editor")));
-			form.add(new SubmitButton(getResourceBundle().getLocalizedString("field.field_editor", "Field editor")));
-			add(form);
 		}
 
 		add(contentTable);
@@ -338,15 +317,16 @@ public class FieldOverview extends GolfBlock {
 
 	public Table getHoleInfo(IWContext iwc, Field field, String field_id, String hole_number) throws IOException, SQLException {
 
-		Table outerTable = new Table(1, 4);
+		Table outerTable = new Table();
 		outerTable.setWidth("100%");
+		outerTable.setCellpadding(0);
+		outerTable.setCellspacing(0);
+		int row = 1;
 
 		Table myTable = new Table();
 		myTable.setColor("000000");
 		myTable.setCellpadding(6);
 		myTable.setCellspacing(2);
-
-		int row = 1;
 
 		Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select * from tee where field_id='" + String.valueOf(field.getID()) + "' and hole_number='" + hole_number + "' and tee_color_id<5");
 
@@ -376,36 +356,25 @@ public class FieldOverview extends GolfBlock {
 			myTable.setColor(a + 3, 1, getTeeColor(tee[a].getIntColumnValue("tee_color_id")));
 		}
 
-		if (tee.length > 0) {
-			Text holeText = new Text(getResourceBundle().getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE + hole_number);
-			holeText.setBold();
-			holeText.setFontSize(6);
-
-			Text holeName = new Text("");
-			holeName.setBold();
-			holeName.setFontSize(5);
-
-			if (tee[0].getStringColumnValue("hole_name") != null) {
-
-				holeName.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + tee[0].getStringColumnValue("hole_name"));
-			}
-
-			outerTable.add(holeText, 1, row);
-			outerTable.add(holeName, 1, row);
-			++row;
-		}
-
 		TeeImage[] teeImage = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()), "hole_number", hole_number);
-
 		if (teeImage.length != 0) {
-
 			Image teeMynd = new Image(teeImage[0].getImageID());
-
-			outerTable.add(teeMynd, 1, row);
-
+			outerTable.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+			outerTable.add(teeMynd, 1, row++);
+			outerTable.setHeight(row++, 6);
 		}
 
-		++row;
+		outerTable.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+		outerTable.add(myTable, 1, row++);
+		outerTable.setHeight(row++, 6);
+
+		if (tee.length > 0) {
+			if (tee[0].getStringColumnValue("hole_name") != null) {
+				Text holeName = getHeader(tee[0].getStringColumnValue("hole_name"));
+				outerTable.add(holeName, 1, row++);
+				outerTable.setHeight(row++, 3);
+			}
+		}
 
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", hole_number);
@@ -419,63 +388,10 @@ public class FieldOverview extends GolfBlock {
 			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);
 			fieldText.setCacheable(false);
-		}
-
-		if (fieldText != null) {
 			outerTable.add(fieldText, 1, row);
-			outerTable.add(Text.getBreak(), 1, row);
-			outerTable.add(Text.getBreak(), 1, row);
-			outerTable.setCellpaddingLeft(1,row,"10%");
-			outerTable.setCellpaddingRight(1,row,"10%");
-			outerTable.setCellpaddingBottom(1,row,20);
-			outerTable.setCellpaddingTop(1,row,10);
-			//outerTable.setBorder(1);
-			++row;
 		}
-
-		outerTable.add(myTable, 1, 3);
-
-		Table linksTable = new Table(3, 1);
-		linksTable.setWidth("100%");
-		linksTable.setAlignment(2, 1, "center");
-		linksTable.setAlignment(3, 1, "right");
-		linksTable.setWidth(1, "33%");
-		linksTable.setWidth(2, "33%");
-		linksTable.setWidth(3, "33%");
-
-		Link backHole = new Link(getResourceBundle().getLocalizedString("field.previous_hole", "&lt;&lt;&nbsp;Previous&nbsp;hole"));
-		backHole.addParameter("hole_number", String.valueOf(Integer.parseInt(hole_number) - 1));
-		backHole.addParameter("field_id", field_id);
-
-		Link courseOverview = new Link(getResourceBundle().getLocalizedString("field.field_overview", "-&nbsp;Field&nbsp;overview&nbsp;-"));
-		courseOverview.addParameter("field_id", field_id);
-		courseOverview.setToMaintainAllParameter(false);
-		if (fieldViewPage != null) {
-			courseOverview.setPage(fieldViewPage);
-		}
-
-		Link nextHole = new Link(getResourceBundle().getLocalizedString("field.next_hole", "Next&nbsp;hole&nbsp;&gt;&gt;"));
-		nextHole.addParameter("hole_number", String.valueOf(Integer.parseInt(hole_number) + 1));
-		nextHole.addParameter("field_id", field_id);
-
-		linksTable.add(courseOverview, 2, 1);
-
-		if (Integer.parseInt(hole_number) > 1) {
-			linksTable.add(backHole, 1, 1);
-		}
-
-		if (Integer.parseInt(hole_number) < 18) {
-			linksTable.add(nextHole, 3, 1);
-		}
-
-		outerTable.add(linksTable, 1, 4);
-
-		outerTable.setCellspacing(3);
-		outerTable.setAlignment(1, 2, "center");
-		outerTable.setAlignment(1, 3, "center");
 
 		return outerTable;
-
 	}
 
 	public String scale_decimals(String nyForgjof, int scale) throws IOException {
@@ -487,24 +403,21 @@ public class FieldOverview extends GolfBlock {
 		return nyForgjof2;
 
 	}
-  /**
+  
+	/**
    * @param gameHandicapPage The gameHandicapPage to set.
    */
   public void setGameHandicapPage(ICPage gameHandicapPage) {
     this.gameHandicapPage = gameHandicapPage;
   }
-	/**
+
+  /**
 	 * @param maxImageWidth The iMaxImageWidth to set.
 	 */
 	public void setMaxImageWidth(int maxImageWidth) {
 		iMaxImageWidth = maxImageWidth;
 	}
-	/**
-	 * @param fieldViewPage The fieldViewPage to set.
-	 */
-	public void setFieldViewPage(ICPage fieldViewPage) {
-		this.fieldViewPage = fieldViewPage;
-	}
+
 	/**
 	 * @param holeViewPage The holeViewPage to set.
 	 */
