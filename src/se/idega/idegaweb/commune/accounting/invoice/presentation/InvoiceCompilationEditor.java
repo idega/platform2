@@ -21,7 +21,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
@@ -86,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/29 15:43:22 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/29 16:48:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.95 $
+ * @version $Revision: 1.96 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -107,6 +106,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
     private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
+    private static final String CLEAR_DEFAULT = "Rensa";
+    private static final String CLEAR_KEY = PREFIX + "clear";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
@@ -233,20 +234,21 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
-    private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
+	private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
-            ACTION_SHOW_COMPILATION_LIST = 1,
-            ACTION_NEW_RECORD = 2,
-            ACTION_DELETE_COMPILATION = 3,
-            ACTION_DELETE_RECORD = 4,
-            ACTION_SHOW_NEW_COMPILATION_FORM = 5,
-            ACTION_NEW_COMPILATION = 6,
-            ACTION_SHOW_RECORD_DETAILS = 7,
-            ACTION_SHOW_EDIT_RECORD_FORM = 8,
-            ACTION_SAVE_RECORD = 9,
-            ACTION_SHOW_NEW_RECORD_FORM = 10,
-            ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT = 11,
-            ACTION_GENERATE_COMPILATION_PDF = 12;
+			ACTION_SHOW_COMPILATION_LIST = 1,
+			ACTION_NEW_RECORD = 2,
+			ACTION_DELETE_COMPILATION = 3,
+			ACTION_DELETE_RECORD = 4,
+			ACTION_SHOW_NEW_COMPILATION_FORM = 5,
+			ACTION_NEW_COMPILATION = 6,
+			ACTION_SHOW_RECORD_DETAILS = 7,
+			ACTION_SHOW_EDIT_RECORD_FORM = 8,
+			ACTION_SAVE_RECORD = 9,
+			ACTION_SHOW_NEW_RECORD_FORM = 10,
+			ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT = 11,
+			ACTION_GENERATE_COMPILATION_PDF = 12,
+			ACTION_SHOW_COMPILATION_LIST_AND_CLEAR_FORM = 13;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -796,12 +798,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addUserSearcherForm (table, row++, context, searcher);
         table.mergeCells (2, row, table.getColumns () - 1, row);
         addPeriodForm (table, row, context);
-        table.setAlignment (table.getColumns (), row,
-                            Table.HORIZONTAL_ALIGN_RIGHT);
+				final int colCount = table.getColumns ();
+        table.setAlignment (colCount, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST,
-                                    SEARCH_KEY, SEARCH_DEFAULT),
-                   table.getColumns (), row);
-				addClearFormButton (table, table.getColumns (), row++);
+                                    SEARCH_KEY, SEARCH_DEFAULT), colCount, row);
+				table.add (Text.getNonBrakingSpace (), colCount, row);
+        table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST_AND_CLEAR_FORM,
+                                    CLEAR_KEY, CLEAR_DEFAULT), colCount, row);
 
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
@@ -837,12 +840,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         createForm (context, table, INVOICE_COMPILATION_LIST_KEY,
                     INVOICE_COMPILATION_LIST_DEFAULT);
     }
-
-	private void addClearFormButton (final Table table, final int col,
-																	 final int row) {
-		table.add (Text.getNonBrakingSpace (), col, row);
-		table.add (getButton (new ResetButton ("Rensa")), col, row);
-	}
 
 	/**
      * Shows one invoice compilation.
@@ -1181,6 +1178,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         setColumnWidthsEqual (table);
         int row = 2; // first row is reserved for setting column widths
         addOperationalFieldDropdown (context, table, row++);
+
         addUserSearcherForm (table, row++, context, searcher);
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
@@ -1932,23 +1930,30 @@ public class InvoiceCompilationEditor extends AccountingBlock {
          final UserSearcher searcher) throws RemoteException {
         int col = 1;
         table.add (new HiddenInput (USERSEARCHER_ACTION_KEY), col, row);
-        try {
+				String ssn = "";
+				String firstName = "";
+				String lastName = "";
+				if (ACTION_SHOW_COMPILATION_LIST_AND_CLEAR_FORM
+						!= getActionId (context)) {
+					try {
             searcher.process (context);
-        } catch (final FinderException dummy) {
+					} catch (final FinderException dummy) {
             // do nothing, it's ok that none was found
-        }
-        final User user = searcher.getUser ();
-        final String ssn = null != user ? user.getPersonalID ()
-                : context.isParameterSet (USERSEARCHER_PERSONALID_KEY)
-                ? context.getParameter (USERSEARCHER_PERSONALID_KEY) : "";
-        final String firstName = null != user ? user.getFirstName ()
-                : context.isParameterSet (USERSEARCHER_FIRSTNAME_KEY)
-                ? context.getParameter (USERSEARCHER_FIRSTNAME_KEY) : "";
-        final String lastName = null != user ? user.getLastName ()
-                : context.isParameterSet (USERSEARCHER_LASTNAME_KEY)
-                ? context.getParameter (USERSEARCHER_LASTNAME_KEY) : "";
-
-
+					}
+					final User user = searcher.getUser ();
+					if (null != user) {
+						ssn = user.getPersonalID ();
+						firstName = user.getFirstName ();
+						lastName = user.getLastName ();
+					} else {
+						ssn = context.isParameterSet (USERSEARCHER_PERSONALID_KEY)
+								? context.getParameter (USERSEARCHER_PERSONALID_KEY) : "";
+						firstName = context.isParameterSet (USERSEARCHER_FIRSTNAME_KEY)
+								? context.getParameter (USERSEARCHER_FIRSTNAME_KEY) : "";
+						lastName = context.isParameterSet (USERSEARCHER_LASTNAME_KEY)
+								? context.getParameter (USERSEARCHER_LASTNAME_KEY) : "";
+					}
+				}
         addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
         table.add (getStyledInput (USERSEARCHER_PERSONALID_KEY, ssn), col++,
                    row);
