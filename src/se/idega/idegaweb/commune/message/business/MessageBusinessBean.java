@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.45 2003/11/01 13:54:17 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.46 2003/11/01 14:02:05 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -236,11 +236,20 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			else {
 				if (sendLetter)
 					createPrintedLetterMessage(parentCase, receiver, subject, body);
-				if (this.getIWApplicationContext().getApplication().isDebugActive()) {
-					System.out.println("[MessageBusiness] Creating user message with subject:" + subject);
-					System.out.println("[MessageBusiness] Body: " + body);
-				}
 			}
+
+			if (this.getIWApplicationContext().getApplication().isDebugActive()) {
+				System.out.println("[MessageBusiness] Creating user message with subject:" + subject);
+				System.out.println("[MessageBusiness] Body: " + body);
+				if (parentCase != null)
+					System.out.println("[MessageBusiness] Parent case:" + parentCase.getClass().getName() + " (" + parentCase.getPrimaryKey().toString() + ")");
+				System.out.println("[MessageBusiness] Receiver: " + receiver.getName() + " (" + receiver.getPrimaryKey().toString() + ")");
+				if (sender != null)
+					System.out.println("[MessageBusiness] Sender: " + sender.getName() + " (" + sender.getPrimaryKey().toString() + ")");
+				if (handler != null)
+					System.out.println("[MessageBusiness] Handler: " + handler.getName() + " (" + handler.getPrimaryKey().toString() + ")");
+			}
+
 			//return message;
 			return message;
 		}
