@@ -3,7 +3,6 @@ package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.data.GroupApplication;
 import is.idega.idegaweb.member.data.GroupApplicationHome;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +11,16 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOServiceBean;
+import com.idega.core.business.AddressBusiness;
+import com.idega.core.data.Address;
+import com.idega.core.data.AddressHome;
+import com.idega.core.data.AddressType;
+import com.idega.core.data.Email;
+import com.idega.core.data.EmailHome;
+import com.idega.core.data.Phone;
+import com.idega.core.data.PhoneHome;
+import com.idega.core.data.PhoneType;
+import com.idega.core.data.PhoneTypeHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -36,23 +45,63 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	
 	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String address, String phone, String comment, String[] groupIds) throws RemoteException, FinderException, CreateException ,IDOAddRelationshipException{
 		UserBusiness userBiz = this.getUserBusiness();
+		EmailHome eHome = userBiz.getEmailHome();
+		AddressHome addressHome = userBiz.getAddressHome();
+		AddressBusiness addressBiz = getAddressBusiness();
+		PhoneHome phoneHome = userBiz.getPhoneHome();		
+		PhoneTypeHome phoneTypeHome = (PhoneTypeHome) this.getIDOHome(PhoneType.class);
+		
+		
+		//user
 		User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,pin,getGender(gender), getBirthDateFromPin(pin));
 		
+		//gender
 		user.setGender((Integer) this.getGender(gender).getPrimaryKey() );
+
 		
-		//email, address, phone
-				
+		//email
+		//@todo look for the email first to avoid duplicated
+		if( email!=null){
+			Email uEmail = eHome.create();
+			uEmail.setEmailAddress(email);
+			uEmail.store();
+			user.addEmail(uEmail);
+		}
+		//address
+		//@todo look for the address first to avoid duplicated
+		if( address!=null ){
+			AddressType mainAddress = addressHome.getAddressType1();
+			Address uAddress = addressHome.create();
+			uAddress.setAddressType(mainAddress);
+			uAddress.setStreetName(addressBiz.getStreetNameFromAddressString(address));
+			uAddress.setStreetNumber(addressBiz.getStreetNumberFromAddressString(address));
+			uAddress.store();
+			user.addAddress(uAddress);
+		}
+		
+		// phone
+		//@todo look for the phone first to avoid duplicated
+		if( phone!=null ){
+			Phone uPhone = phoneHome.create();
+			uPhone.setNumber(phone);
+			//missing type of phone
+			uPhone.store();
+			user.addPhone(uPhone);
+		}
+		//groups	
 		List groups = null;
 
 		if( groupIds!=null ){
 			GroupBusiness groupBiz = getGroupBusiness();
 			groups = ListUtil.convertCollectionToList(groupBiz.getGroups(groupIds));
 		}
-			
-		String status = getGroupApplicationHome().getPendingStatusString();	
+		
+		//status			
+		String status = getPendingStatusString();	
+		
+						
 		
 		user.store(); 
-				
 		
 		return createGroupApplication(applicationGroup, user, status, comment, groups);
 		
@@ -157,6 +206,10 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 
 	public UserBusiness getUserBusiness() throws RemoteException {
 		return (UserBusiness) getServiceInstance(UserBusiness.class);	
+	}
+	
+	public AddressBusiness getAddressBusiness() throws RemoteException {
+		return (AddressBusiness) getServiceInstance(AddressBusiness.class);	
 	}
 	
 	public GroupBusiness getGroupBusiness() throws RemoteException {
