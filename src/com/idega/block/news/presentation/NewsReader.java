@@ -92,6 +92,7 @@ public class NewsReader extends Block implements IWBlock{
   private static String prmEdit = "nwr_edit";
   private static String prmNew = "nwr_new";
   private static String prmMore = "nwr_more";
+	private static String prmCollection = "nwr_collection";
 
   public static String prmListCategory = "nwr_newscategoryid";
   public static String prmNewsCategoryId = "nwr_listcategory";
@@ -187,19 +188,18 @@ public class NewsReader extends Block implements IWBlock{
         if(sNewsId != null){
           int id = Integer.parseInt(sNewsId);
           NewsHelper nh = NewsFinder.getNewsHelper(id);
-          T.add(getNewsTable(nh,newsCategory,locale,true,iwc),1,1);
+          T.add(getNewsTable(nh,newsCategory,locale,true,false,iwc),1,1);
         }
         else if(listCategory){
 
           T.add(getCategoryList(newsCategory,locale,iwc),1,1);
         }
         else
-          T.add(publishNews(iwc,newsCategory,locale),1,1);
+          T.add(publishNews(iwc,newsCategory,locale,iwc.isParameterSet(prmCollection)),1,1);
       }
     }
     else{
       T.add(new Text(iwrb.getLocalizedString("no_news_category","No news category")));
-      showCategoryMaker();
     }
     super.add(T);
   }
@@ -247,6 +247,8 @@ public class NewsReader extends Block implements IWBlock{
     T.setWidth("100%");
     return T;
   }
+
+
 
   private PresentationObject getCategoryList(NewsCategory newsCategory,Locale locale,IWContext iwc){
     List L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),50,locale);
@@ -360,22 +362,24 @@ public class NewsReader extends Block implements IWBlock{
     return T;
   }
 
-  private PresentationObject publishNews(IWContext iwc ,NewsCategory newsCategory,Locale locale){
+  private PresentationObject publishNews(IWContext iwc ,NewsCategory newsCategory,Locale locale,boolean collection){
 		List L = null;
-		if(iLayout == COLLECTION_LAYOUT){
+		if(iLayout == COLLECTION_LAYOUT || collection){
 		  L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),numberOfCollectionNews,locale);
 		}
 		else{
       L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
 		}
     NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT ,cellPadding,cellSpacing,firstTableColor,secondTableColor);
-
+		int count = NewsFinder.countNewsInCategory(newsCategory.getID());
     boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
     if(L!=null){
       int len = L.size();
       Integer I;
       NewsHelper newsHelper;
       for (int i = 0; i < len; i++) {
+				if (numberOfExpandedNews == i)
+					collection = true;
         newsHelper = (NewsHelper) L.get(i);
         I = new Integer(i);
         if(objectsBetween != null && objectsBetween.containsKey(I)){
@@ -385,8 +389,16 @@ public class NewsReader extends Block implements IWBlock{
           T.add(t,sObjectAlign );
           objectsBetween.remove(I);
         }
-        T.add(getNewsTable(newsHelper,newsCategory,locale ,false,iwc),useDividedTable,"left");
+        T.add(getNewsTable(newsHelper,newsCategory,locale ,false,collection,iwc),useDividedTable,"left");
       }
+			// news collection
+			if(len < count){
+				Link collectionLink = new Link(iwrb.getImage("collection.gif"));
+				collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
+				collectionLink.addParameter(prmCollection,"true");
+				T.add(collectionLink);
+			}
+			// Finish objectsbetween
       if(objectsBetween != null && objectsBetween.size() > 0){
         Vector V = new Vector(objectsBetween.values());
         Collections.reverse(V);
@@ -395,6 +407,7 @@ public class NewsReader extends Block implements IWBlock{
           T.add((PresentationObject)iter.next(),sObjectAlign );
         }
       }
+
     }
     else{
       T.add(new Text(iwrb.getLocalizedString("no_news","No News")));
@@ -403,7 +416,7 @@ public class NewsReader extends Block implements IWBlock{
   }
 
   // Make a table around each news
-  private PresentationObject getNewsTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,boolean showAll,IWContext iwc){
+  private PresentationObject getNewsTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,boolean showAll,boolean collection,IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -439,61 +452,52 @@ public class NewsReader extends Block implements IWBlock{
 		// Check if using single_line_layout
 		if(iLayout != SINGLE_LINE_LAYOUT){
 
-
-			if(locText!=null){
-        sNewsBody =  locText.getBody();
-			}
-
-
-			// shortening newstext
-			if(!showAll && sNewsBody.length() >= numberOfLetters){
-				sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
-			}
-
-			sNewsBody = NewsFormatter.formatNews(sNewsBody,String.valueOf(textSize));
-
-			Text newsBody = new Text(sNewsBody);
-
-			if( showAll ) {
-					T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
-			}
-
-			newsBody = setTextAttributes(newsBody);
 			T.add(newsInfo,1,1);
 
-				if(showImages){
-				//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
-				List files = newsHelper.getContentHelper().getFiles();
-				if(files!=null){
-					try{
-					Table imageTable = new Table(1, 2);
-					ICFile imagefile = (ICFile)files.get(0);
-					int imid = imagefile.getID();
-					String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+			if(locText!=null && !collection){
+        sNewsBody =  locText.getBody();
 
-					Image newsImage = new Image(imid);
-					if(att != null)
-						newsImage.setAttributes(getAttributeMap(att));
-					//newsImage.setAlignment("right");
-					//imageTable.setAlignment("right");
-					//imageTable.setVerticalAlignment("top");
-					//imageTable.add(newsImage, 1, 1);
-					T.add(newsImage,1,3);
-					}
-					catch(SQLException ex){
-						ex.printStackTrace();
+				// shortening newstext
+				if(!showAll && sNewsBody.length() >= numberOfLetters){
+					sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
+				}
+
+				sNewsBody = NewsFormatter.formatNews(sNewsBody,String.valueOf(textSize));
+
+				Text newsBody = new Text(sNewsBody);
+				newsBody = setTextAttributes(newsBody);
+
+				if(showImages){
+					//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+					List files = newsHelper.getContentHelper().getFiles();
+					if(files!=null){
+						try{
+						Table imageTable = new Table(1, 2);
+						ICFile imagefile = (ICFile)files.get(0);
+						int imid = imagefile.getID();
+						String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+
+						Image newsImage = new Image(imid);
+						if(att != null)
+							T.add(newsImage,1,3);
+						}
+						catch(SQLException ex){
+							ex.printStackTrace();
+						}
 					}
 				}
+
+			  T.add(newsBody,1,3);
 			}
-			//else
-			//System.err.println(" no news files");
-
-			T.add(newsBody,1,3);
-
+			if( showAll ) {
+				T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
+			}
 			//  add news
-			 if(!showAll && showMoreButton){
+			if(!showAll && showMoreButton){
 				Link moreLink = new Link(iwrb.getImage("more.gif"));
 				moreLink.addParameter(prmMore,news.getID());
+				if(viewPageId > 0)
+					moreLink.setPage(viewPageId);
 				T.add(moreLink, 1, 4);
 			}
 
@@ -570,10 +574,6 @@ public class NewsReader extends Block implements IWBlock{
 
   private Text getInfoText(NwNews nwNews,Content content ,String sCategoryName,Locale locale, boolean ifUseOnlyDates,boolean ifShowTime,boolean ifShowTimeFirst){
     return new Text(NewsFormatter.getInfoText(nwNews,content,sCategoryName,locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst) );
-  }
-
-  private void showCategoryMaker(){
-
   }
 
   public void main(IWContext iwc)throws Exception{
