@@ -143,8 +143,8 @@ public class InvoiceChildcareThread extends BillingThread{
 	private User getInvoiceReceiver(ChildCareContract contract){
 		//First option is to set it to the invoice receiver according to the contract
 		User invoiceReceiver = contract.getInvoiceReceiver();
-		errorRelated.append("Contract owner "+contract.getApplication().getOwner().getName());
-		errorRelated.append("Contract owner P# "+contract.getApplication().getOwner().getPersonalID());
+//		errorRelated.append("Contract owner "+contract.getApplication().getOwner().getName());
+//		errorRelated.append("Contract owner P# "+contract.getApplication().getOwner().getPersonalID());
 		User child = contract.getChild();
 		
 		//If non is set in the contract, start looking for parents at the same address
@@ -237,15 +237,15 @@ public class InvoiceChildcareThread extends BillingThread{
 					contract = (ChildCareContract)contractIter.next();
 					errorRelated = new ErrorLogger();
 					errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
-					errorRelated.append("Contract "+contract.getContractID());
-					errorRelated.append("Contract Start "+contract.getValidFromDate());
-					errorRelated.append("Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
+//					errorRelated.append("Contract "+contract.getContractID());
+//					errorRelated.append("Contract Start "+contract.getValidFromDate());
+//					errorRelated.append("Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
 					
 					//Moved up for better logging
 					//Get all the parameters needed to select the correct contract
 					SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
 					User child = schoolClassMember.getStudent();
-					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
+//					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
 					String childcareType =schoolType.getLocalizationKey();
 					errorRelated.append("SchoolType "+schoolType.getName());
@@ -276,7 +276,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						invoiceHeader.store();
 					}
-					errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey());
+//					errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey());
 				
 					// **Calculate how big part of time period this contract is valid for
 					placementTimes = calculateTime(contract.getValidFromDate(), contract.getTerminatedDate());
@@ -299,7 +299,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					ArrayList conditions = new ArrayList();
 					errorRelated.append("Hours "+contract.getCareTime());
 					errorRelated.append("Age "+ageInYears+" years");
-					errorRelated.append("Date of birth "+contract.getChild().getDateOfBirth());
+//					errorRelated.append("Date of birth "+contract.getChild().getDateOfBirth());
 					
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
@@ -309,14 +309,11 @@ public class InvoiceChildcareThread extends BillingThread{
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
 						errorRelated.append("EmploymentType "+employmentType.getLocalizationKey());
 					}
-					errorRelated.append("Category:"+category.getCategory());
-					errorRelated.append("PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT);
-					errorRelated.append("calculationDate:"+calculationDate);
+//					errorRelated.append("calculationDate:"+calculationDate);
 					errorRelated.append("RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED);
 					errorRelated.append("RegSpecConstant.CHECK:"+RegSpecConstant.CHECK);
-					errorRelated.append("conditions:"+conditions.size());
-					errorRelated.append("totalSum:"+totalSum);
-					errorRelated.append("contract:"+contract.getPrimaryKey());
+//					errorRelated.append("totalSum:"+totalSum);
+//					errorRelated.append("contract:"+contract.getPrimaryKey());
 
 					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
 						category.getCategory(),		//The ID that selects barnomsorg in the regulation
@@ -1001,7 +998,9 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		invoiceRecord.setInvoiceText2(text2);
-		errorRelated.append("Created invoice for check '"+header+"','"+text2+"' "+postingDetail.getTerm()+" Invoiceheader "+invoiceHeader.getPrimaryKey(),1);
+		errorRelated.append("Created invoice for check "
+//				+header+","+text2+" "+postingDetail.getTerm()
+				+" Invoiceheader "+invoiceHeader.getPrimaryKey(),1);
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
@@ -1054,7 +1053,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
 		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
-		errorRelated.append("Order ID = "+postingDetail.getOrderID(),1);
+//		errorRelated.append("Order ID = "+postingDetail.getOrderID(),1);
 		RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 		try {
 		    RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());
