@@ -49,6 +49,7 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
       }
       else if(modinfo.getSessionAttribute(sessImageParameterName)!=null)
         sessImageParameter = (String) modinfo.getSessionAttribute(sessImageParameterName);
+       //add(sessImageParameter);
     }
 
     public void main(ModuleInfo modinfo){
@@ -59,10 +60,10 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
     }
 
     public void control(ModuleInfo modinfo){
-      add(sessImageParameter);
+      //add(sessImageParameter);
       String sContentType = modinfo.getRequest().getContentType();
       if(sContentType !=null && sContentType.indexOf("multipart")!=-1){
-        add(sContentType);
+        //add(sContentType);
         add(parse(modinfo));
       }
       else{
@@ -77,7 +78,7 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
     public Form getMultiForm(ModuleInfo modinfo){
       Form f = new Form();
       f.setMultiPart();
-      f.setAction(modinfo.getRequestURI()+"?"+com.idega.idegaweb.IWMainApplication.classToInstanciateParameter+"="+com.idega.idegaweb.IWMainApplication.getEncryptedClassName(this.getClass()));
+      f.setAction(modinfo.getRequestURI()+"?"+com.idega.jmodule.object.Page.IW_FRAME_CLASS_PARAMETER+"="+com.idega.idegaweb.IWMainApplication.getEncryptedClassName(this.getClass()));
       f.add(new FileInput());
       f.add(new SubmitButton());
       return f;
@@ -117,6 +118,7 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
       if(ip !=null){
         int i = ImageBusiness.SaveImage(ip);
         modinfo.setSessionAttribute(sessImageParameter,String.valueOf(i));
+        setParentToReload();
         try {
           add(new Image(i));
         }
