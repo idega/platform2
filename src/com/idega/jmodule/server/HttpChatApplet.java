@@ -16,6 +16,8 @@ public class HttpChatApplet extends Applet implements Runnable {
   Thread thread;
   String user;
 
+  private boolean running = true;
+
   public void init() {
     // Check if this applet was loaded directly from the filesystem.
     // If so, explain to the user that this applet needs to be loaded
@@ -96,14 +98,15 @@ public class HttpChatApplet extends Applet implements Runnable {
   }
 
   public void run() {
-    while (true) {
+    while (running) {
       text.append(getNextMessage());
     }
   }
 
   public void stop() {
-    thread.stop();
-    thread = null;
+    running = false;
+//    thread.stop();
+//    thread = null;
   }
 
   void broadcastMessage(String message) {

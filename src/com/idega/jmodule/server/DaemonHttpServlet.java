@@ -11,15 +11,15 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-/** 
- * A superclass for HTTP servlets that wish to accept raw socket 
- * connections.  DaemonHttpServlet 
- * starts listening for client requests in its <tt>init()</tt> method 
- * and stops listening in its <tt>destroy()</tt> method.  In between, 
- * for every connection it receives, it calls the abstract 
- * <tt>handleClient(Socket client)</tt> method.  This method should 
+/**
+ * A superclass for HTTP servlets that wish to accept raw socket
+ * connections.  DaemonHttpServlet
+ * starts listening for client requests in its <tt>init()</tt> method
+ * and stops listening in its <tt>destroy()</tt> method.  In between,
+ * for every connection it receives, it calls the abstract
+ * <tt>handleClient(Socket client)</tt> method.  This method should
  * be implemented by the servlet subclassing DaemonHttpServlet.
- * The port on which the servlet is to listen is determined by the 
+ * The port on which the servlet is to listen is determined by the
  * <tt>getSocketPort()</tt> method.
  *
  * @see com.oreilly.servlet.RemoteDaemonHttpServlet
@@ -33,13 +33,13 @@ public abstract class DaemonHttpServlet extends HttpServlet {
    * The default listening port (1313)
    */
   protected int DEFAULT_PORT = 1313;
-  private Thread daemonThread;
+  private Daemon daemonThread;
 
   /**
    * Begins a thread listening for socket connections.  Subclasses
-   * that override this method must be sure to first call 
+   * that override this method must be sure to first call
    * <tt>super.init(config)</tt>.
-   * 
+   *
    * @param config the servlet config
    * @exception ServletException if a servlet exception occurs
    */
@@ -58,9 +58,9 @@ public abstract class DaemonHttpServlet extends HttpServlet {
 
   /**
    * Returns the socket port on which the servlet will listen.
-   * A servlet can change the port in three ways: by using the 
+   * A servlet can change the port in three ways: by using the
    * <tt>socketPort</tt> init parameter, by setting the <tt>DEFAULT_PORT</tt>
-   * variable before calling <tt>super.init()</tt>, or by overriding this 
+   * variable before calling <tt>super.init()</tt>, or by overriding this
    * method's implementation.
    *
    * @return the port number on which to listen
@@ -79,13 +79,14 @@ public abstract class DaemonHttpServlet extends HttpServlet {
 
   /**
    * Halts the thread listening for socket connections.  Subclasses
-   * that override this method must be sure to first call 
+   * that override this method must be sure to first call
    * <tt>super.destroy()</tt>.
    */
   public void destroy() {
     try {
-      daemonThread.stop();
-      daemonThread = null;
+      //daemonThread.stop();
+      //daemonThread = null;
+      daemonThread.running = false;
     }
     catch (Exception e) {
       log("Problem stopping server socket daemon thread: " +
@@ -101,6 +102,8 @@ class Daemon extends Thread {
 
   private ServerSocket serverSocket;
   private DaemonHttpServlet servlet;
+
+  public boolean running = true;
 
   public Daemon(DaemonHttpServlet servlet) {
     this.servlet = servlet;
@@ -118,7 +121,7 @@ class Daemon extends Thread {
     }
 
     try {
-      while (true) {
+      while (running) {
         // As each connection comes in, call the servlet's handleClient().
         // Note this method is blocking.  It's the servlet's responsibility
         // to spawn a handler thread for long-running connections.
