@@ -98,7 +98,7 @@ public class PKIServlet extends HttpServlet
 	 * Authentication is initiated
 	 * with HTTP GET.
 	 */
-	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException
 	{
 		System.out.println("PKIServlet.doGet(...) - begins");
 		NBSMessageResult result = null;
@@ -157,7 +157,7 @@ public class PKIServlet extends HttpServlet
 	/**
 	 *
 	 */
-	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException
 	{
 		System.out.println("PKIServlet.doPost(...) - begins");
 		NBSResult result = null;
