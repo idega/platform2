@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/17 10:30:55 $ by $Author: goranb $
- * @version $Revision: 1.71 $
+ * Last modified: $Date: 2003/11/19 12:20:27 $ by $Author: goranb $
+ * @version $Revision: 1.72 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -211,6 +211,32 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	
 	public int getStudyPathId() {
 		return this.getIntColumnValue(STUDY_PATH);
+	}
+	
+	public Collection ejbFindAllOrderedByRegisterDate(User user) throws FinderException {
+		int userID = ((Integer) user.getPrimaryKey()).intValue();
+		return ejbFindAllOrderedByRegisterDate(userID);
+	}
+	
+	public Collection ejbFindAllOrderedByRegisterDate(int userID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this)		
+		.appendWhere()
+		
+		.append(MEMBER)
+		.appendEqualSign()
+		.append(userID)
+		.appendAnd()
+		
+		.append(REMOVED_DATE)
+		.appendGreaterThanOrEqualsSign()
+		.append(REGISTER_DATE)
+		
+		.append(" ORDER BY " + REGISTER_DATE + " DESC");
+		
+		String sqlStr = sql.toString();
+				
+		return idoFindPKsBySQL(sqlStr);
 	}
 
 	public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException {
