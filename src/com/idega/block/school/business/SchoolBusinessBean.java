@@ -299,6 +299,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids) throws RemoteException {
+		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, type_ids, year_ids, null, null, -1, null, -1, -1, null);
+	}
+
+	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids,
+				String organizationNumber,
+				String extraProviderId,
+				int managementTypeId,
+				java.sql.Date terminationDate,
+				int communeId,
+				int countryId,
+				Boolean centralizedAdministration) throws RemoteException {
+						
 		SchoolHome shome = getSchoolHome();
 		School newSchool;
 		try {
@@ -339,6 +351,21 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			newSchool.setSchoolZipArea(ziparea);
 		if (zipcode != null)
 			newSchool.setSchoolZipCode(zipcode);
+
+		if (organizationNumber != null)
+			newSchool.setOrganizationNumber(organizationNumber);
+		if (extraProviderId != null)
+			newSchool.setExtraProviderId(extraProviderId);
+		if (managementTypeId > 0)
+			newSchool.setManagementTypeId(managementTypeId);
+		if (terminationDate != null)
+			newSchool.setTerminationDate(terminationDate);
+		if (communeId > 0)
+			newSchool.setCommuneId(communeId);
+		if (countryId > 0)
+			newSchool.setCountryId(countryId);
+		if (centralizedAdministration != null)
+			newSchool.setCentralizedAdministration(centralizedAdministration.booleanValue());
 
 		newSchool.store();
 		if (type_ids != null)
