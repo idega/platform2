@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.idega.block.media.business.MediaBusiness;
+import com.idega.core.data.Address;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
@@ -296,12 +298,37 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     // corresponding division board group
     Integer id = (Integer) clubDivision.getPrimaryKey();
     workReportDivisionBoard.setGroupId(id.intValue());
-    /** @TODO: thi check and fetch metadata of clubDivision to get the missing data
-     */
     // home page 
+    String homePageURL = clubDivision.getHomePageURL();
+    if (homePageURL != null)  {
+      workReportDivisionBoard.setHomePage(homePageURL);
+    }
     // personal id 
-    // street name
-    // postal code
+    String ssn = clubDivision.getMetaData(IWMemberConstants.META_DATA_CLUB_SSN);
+    if (ssn != null)  {
+      workReportDivisionBoard.setPersonalId(ssn);
+    }
+    // address
+    try {
+      // street and number
+      Address address = getGroupBusiness().getGroupMainAddress(clubDivision);
+      String streetAndNumber = address.getStreetAddress();
+      if (streetAndNumber != null)  {
+        workReportDivisionBoard.setStreetName(streetAndNumber);
+      }
+      // postal code id
+      PostalCode postalCode = address.getPostalCode();
+      if (postalCode != null)   {
+        workReportDivisionBoard.setPostalCode(postalCode);
+      }
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBusiness]: Can't retrieve GroupBusiness or an address. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness or an address.");
+    } 
     // first phone and second phone
     Collection phones = clubDivision.getPhones();
     Iterator phoneIterator = phones.iterator();
@@ -1143,8 +1170,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         // mark the sucessfull creation
         workReport.setCreationFromDatabaseDone(true);
         workReport.store();
-        //tm.commit();
-        tm.rollback();
+        tm.commit();
         return true;
       }
       else {
