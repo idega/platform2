@@ -59,13 +59,13 @@ public class OrderByGroupPersonDateDropDownMenu extends DropdownMenu implements 
 			
 			String displayName = "";
 			if (NAME_ORDER.equals(value)) {
-				displayName = iwrb.getLocalizedString("MemberOrderDropDownMenu.name_order", "Name");
+				displayName = iwrb.getLocalizedString("OrderByGroupPersonDateDropDownMenu.name_order", "Name");
 			}
 			else if (GROUP_NAME_ORDER.equals(value)) {
-				displayName = iwrb.getLocalizedString("MemberOrderDropDownMenu.group_name_order", "Group name");
+				displayName = iwrb.getLocalizedString("OrderByGroupPersonDateDropDownMenu.group_name_order", "Group name");
 			}
 			else {
-				displayName = iwrb.getLocalizedString("MemberOrderDropDownMenu.entry_date_order", "Entry date");
+				displayName = iwrb.getLocalizedString("OrderByGroupPersonDateDropDownMenu.entry_date_order", "Entry date");
 			}
 			return displayName;
 		}
