@@ -11,16 +11,15 @@ import com.idega.jmodule.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.projects.golf.templates.page.JmoduleWindowModuleWindow;
-import com.idega.projects.golf.startingtime.presentation.RegisterTime;
+import com.idega.projects.golf.startingtime.presentation.AdminRegisterTime;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
 
-public class RegisterTeeTime extends com.idega.jmodule.JSPWindowModule {
+public class AdminRegisterTeeTime extends com.idega.jmodule.JSPWindowModule {
 
   public void initializePage(){
-    setPage(new RegisterTime());
-
+    setPage(new AdminRegisterTime());
   }
 
 }

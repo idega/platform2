@@ -1,4 +1,4 @@
-package com.idega.projects.golf.service;
+package com.idega.projects.golf.startingtime.business;
 
 import java.sql.*;
 import com.idega.data.*;
@@ -9,6 +9,7 @@ import java.io.*;
 import com.idega.util.text.TextSoap;
 import com.idega.data.EntityFinder;
 import java.util.List;
+import com.idega.projects.golf.startingtime.data.TeeTime;
 
 /**
  * Title:        Golf<p>
@@ -20,9 +21,9 @@ import java.util.List;
  */
 
 
-public class StartService{
+public class TeeTimeBusiness{
 
-  private Startingtime startTime;                 //notaður sem almennur hlutur til að nalgast almenn föll ohað id
+  private TeeTime startTime;                 //notaður sem almennur hlutur til að nalgast almenn föll ohað id
   private StartingtimeFieldConfig fieldConfig;    //notaður sem almennur hlutur til að nalgast almenn föll ohað id
   private Field field;		//notaður sem almennur hlutur til að nalgast almenn föll ohað id
   private Union union;		//notaður sem almennur hlutur til að nalgast almenn föll ohað id
@@ -32,9 +33,9 @@ public class StartService{
 
   //  ####  smiðir  #####
 
-  public StartService(){              //throws SQLException{
+  public TeeTimeBusiness(){              //throws SQLException{
   super();
-  startTime = new Startingtime();
+  startTime = new TeeTime();
   fieldConfig = new StartingtimeFieldConfig();
   field = new Field();
   union = new Union();
@@ -62,23 +63,23 @@ public class StartService{
   }
 
   // ##%%##%%##%%#%%## var að breyta DESC til að fa fyrstu menn fyrst, kanna hvort virkar eftir að Innskraning virkar
-  public synchronized Startingtime[] getTableEntries(String date, int first_group, int last_group, int field_id )throws SQLException{
-    return (Startingtime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date + " 00:00:00.0' and grup_num >= " + first_group + " and grup_num < " + last_group + " and field_id = " + field_id + " order by grup_num DESC, startingtime_id");
-//    return (Startingtime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date + " 00:00:00.0' and grup_num >= " + first_group + " and grup_num < " + last_group + " and field_id = " + field_id + " order by grup_num DESC");
+  public synchronized TeeTime[] getTableEntries(String date, int first_group, int last_group, int field_id )throws SQLException{
+    return (TeeTime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date + "' and grup_num >= " + first_group + " and grup_num < " + last_group + " and field_id = " + field_id + " order by grup_num DESC, "+startTime.getIDColumnName());
+//    return (TeeTime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date + " 00:00:00.0' and grup_num >= " + first_group + " and grup_num < " + last_group + " and field_id = " + field_id + " order by grup_num DESC");
   }
 
   public synchronized List getStartingtimeTableEntries(idegaTimestamp date, String field_id, int firstGroup, int lastGroup )throws SQLException{
     date.setHour(0);
     date.setMinute(0);
     date.setSecond(0);
-    return EntityFinder.findAll(startTime,"SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date.toSQLDateString() + "' and field_id = " + field_id + " and grup_num >= " + firstGroup + " and grup_num <= " + lastGroup + " order by grup_num DESC, startingtime_id");
+    return EntityFinder.findAll(startTime,"SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date.toSQLDateString() + "' and field_id = " + field_id + " and grup_num >= " + firstGroup + " and grup_num <= " + lastGroup + " order by grup_num DESC, "+startTime.getIDColumnName());
   }
 
   public synchronized List getStartingtimeTableEntries(idegaTimestamp date, String field_id)throws SQLException{
     date.setHour(0);
     date.setMinute(0);
     date.setSecond(0);
-    return EntityFinder.findAll(startTime,"SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date.toSQLDateString() + "' and field_id = " + field_id + " order by grup_num DESC, startingtime_id");
+    return EntityFinder.findAll(startTime,"SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date.toSQLDateString() + "' and field_id = " + field_id + " order by grup_num DESC, "+startTime.getIDColumnName());
   }
 
 
@@ -106,7 +107,7 @@ public class StartService{
 
 
   public synchronized void preSetStartingtime(int group_num, String date, String field_id)throws SQLException{
-    Startingtime insert = new Startingtime();
+    TeeTime insert = new TeeTime();
 
     insert.setGroupNum(new Integer(group_num));
     insert.setStartingtimeDate( new idegaTimestamp(date).getSQLDate() );
@@ -117,7 +118,7 @@ public class StartService{
 
 
   public synchronized void setStartingtime(int group_num, idegaTimestamp date, String field_id, String member_id, String owner_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
-    Startingtime insert = new Startingtime();
+    TeeTime insert = new TeeTime();
 
     if(card != null){
       insert.setCardName(card);
@@ -174,7 +175,7 @@ public class StartService{
 
 
   public int countEntriesInGroup( int group_num, String field_id, idegaTimestamp date )throws SQLException{
-    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toString() + "'");
+    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toSQLDateString() + "'");
   }
 
   public int entriesInGroup( int group_num, String field_id, String date )throws SQLException{
@@ -182,17 +183,17 @@ public class StartService{
   }
 
   public int countOwnersEntries( int owner_id, String field_id, idegaTimestamp date )throws SQLException{
-    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE owner_id = '" + owner_id + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toString() + "'");
+    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE owner_id = '" + owner_id + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toSQLDateString() + "'");
   }
 
   public int countMembersEntries( int member_id, String field_id, idegaTimestamp date )throws SQLException{
-    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE member_id = '" + member_id + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toString() + "'");
+    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE member_id = '" + member_id + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toSQLDateString() + "'");
   }
 
-  public Startingtime getStartingtime(int member_id, idegaTimestamp date )throws SQLException{
-    GenericEntity[] time = this.startTime.findAllByColumn("member_id",Integer.toString(member_id),"startingtime_date",date.toString());
+  public TeeTime getStartingtime(int member_id, idegaTimestamp date )throws SQLException{
+    GenericEntity[] time = this.startTime.findAllByColumn("member_id",Integer.toString(member_id),"startingtime_date",date.toSQLDateString());
     if(time != null && time.length > 0){
-      return (Startingtime)time[0];
+      return (TeeTime)time[0];
     }else{
       return null;
     }
@@ -234,13 +235,13 @@ public class StartService{
     return new Field(field_id).getUnionID();
   }
 
-public Startingtime[] findAllPlayersInFieldOrdered(String field_id, String orderby_clause)throws IOException, SQLException{
+public TeeTime[] findAllPlayersInFieldOrdered(String field_id, String orderby_clause)throws IOException, SQLException{
 
-	Startingtime stime = new Startingtime();
-	Startingtime[] startingtimeimeArray = null;
+	TeeTime stime = new TeeTime();
+	TeeTime[] startingtimeimeArray = null;
 	try
 	{
-		startingtimeimeArray = (Startingtime[]) stime.findAll("select * from startingtime where field_id = "+field_id+" and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"' order by "+orderby_clause);
+		startingtimeimeArray = (TeeTime[]) stime.findAll("select * from startingtime where field_id = "+field_id+" and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"' order by "+orderby_clause);
 	}
 	catch (SQLException E) {
 		E.printStackTrace();
@@ -248,13 +249,13 @@ public Startingtime[] findAllPlayersInFieldOrdered(String field_id, String order
 	return startingtimeimeArray;
 }
 
-public Startingtime[] findAllPlayersByMemberOrdered(String field_id, String member_id, String orderby_clause)throws IOException, SQLException{
+public TeeTime[] findAllPlayersByMemberOrdered(String field_id, String member_id, String orderby_clause)throws IOException, SQLException{
 
-	Startingtime stime = new Startingtime();
-	Startingtime[] startingtimeimeArray = null;
+	TeeTime stime = new TeeTime();
+	TeeTime[] startingtimeimeArray = null;
 	try
 	{
-		startingtimeimeArray = (Startingtime[]) stime.findAll("select * from startingtime where field_id = "+field_id+" and member_id = "+member_id+" and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"' order by "+orderby_clause);
+		startingtimeimeArray = (TeeTime[]) stime.findAll("select * from startingtime where field_id = "+field_id+" and member_id = "+member_id+" and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"' order by "+orderby_clause);
 	}
 	catch (SQLException E) {
 		E.printStackTrace();
@@ -262,14 +263,14 @@ public Startingtime[] findAllPlayersByMemberOrdered(String field_id, String memb
 	return startingtimeimeArray;
 }
 
-public Startingtime[] getPlayersStartingToDay(String columnName, String toFind)throws SQLException
+public TeeTime[] getPlayersStartingToDay(String columnName, String toFind)throws SQLException
 {
-	Startingtime stime = new Startingtime();
-	Startingtime[] startArray = null;
+	TeeTime stime = new TeeTime();
+	TeeTime[] startArray = null;
 
 	try
 	{
-		startArray = (Startingtime[]) stime.findAll("select * from "+stime.getEntityName()+" where "+columnName+" like '"+toFind+"' and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"'");
+		startArray = (TeeTime[]) stime.findAll("select * from "+stime.getEntityName()+" where "+columnName+" like '"+toFind+"' and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"'");
 	}
 	catch (SQLException E) {
 		E.printStackTrace();
@@ -277,14 +278,14 @@ public Startingtime[] getPlayersStartingToDay(String columnName, String toFind)t
 	return startArray;
 }
 
-public Startingtime[] getPlayersStartingToDay(String column1, String toFind1, String column2, String toFind2)throws SQLException
+public TeeTime[] getPlayersStartingToDay(String column1, String toFind1, String column2, String toFind2)throws SQLException
 {
-	Startingtime stime = new Startingtime();
-	Startingtime[] startArray = null;
+	TeeTime stime = new TeeTime();
+	TeeTime[] startArray = null;
 
 	try
 	{
-		startArray = (Startingtime[]) stime.findAll("select * from "+stime.getEntityName()+" where "+column1+" like '"+toFind1+"' and "+column2+" like '"+toFind2+"' and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"'");
+		startArray = (TeeTime[]) stime.findAll("select * from "+stime.getEntityName()+" where "+column1+" like '"+toFind1+"' and "+column2+" like '"+toFind2+"' and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"'");
 	}
 	catch (SQLException E) {
 		E.printStackTrace();

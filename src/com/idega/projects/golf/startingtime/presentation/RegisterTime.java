@@ -1,7 +1,7 @@
 package com.idega.projects.golf.startingtime.presentation;
 
 import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.projects.golf.service.StartService;
+import com.idega.projects.golf.startingtime.business.TeeTimeBusiness;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.interfaceobject.TextInput;
@@ -42,7 +42,7 @@ import java.util.Vector;
 
 public class RegisterTime extends JmoduleWindowModuleWindow {
 
-  private StartService business;
+  private TeeTimeBusiness business;
   private DropdownMenu unionDropdown;
   private Form myForm = null;
   private Table frameTable;
@@ -67,7 +67,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
     frameTable.setWidth("100%");
     myForm.add(frameTable);
     this.add(myForm);
-    business = new StartService();
+    business = new TeeTimeBusiness();
     unionDropdown = (DropdownMenu)GolfCacher.getUnionAbbreviationDropdown("club").clone();
     templText = new Text("");
     templText.setFontSize(1);
@@ -145,8 +145,6 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
     public void lineUpTable(int skraMarga, ModuleInfo modinfo)throws IOException
     {
 
-            String btnSkraUrl = "/pics/formtakks/boka.gif";
-            String btnCancelUrl = "/pics/formtakks/cancel.gif";
 
             int memberId = -1;
             boolean memberAvailable = false;
@@ -191,10 +189,10 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
               myTable.setHeight(1,"30");
 
 
-              myTable.addText("<b>Tími</b>", 2, 1);
-              myTable.addText("<b>Kennitala</b>", 3, 1);
-              myTable.addText("<b>Sérkort</b>", 5, 1);
-              myTable.addText("<b>Kortanúmer</b>", 6, 1);
+              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.time", "Time")+"</b>", 2, 1);
+              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.social_nr","Social nr.")+"</b>", 3, 1);
+              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.vip_card","VIP card")+"</b>", 5, 1);
+              myTable.addText("<b>"+this.iwrb.getLocalizedString("start.card_number","Card number")+"</b>", 6, 1);
 
               myTable.setColumnAlignment(1,"center");
               myTable.setColumnAlignment(5,"center");
@@ -238,8 +236,8 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
               //setPlayers(modinfo);
 
               myTable.mergeCells(4, i+2, 6, i+2);
-              myTable.add(insertButton(new Image(btnSkraUrl),"", modinfo.getRequestURI(), "post", myForm), 4, i+2);
-              myTable.add(new SubmitButton(new Image(btnCancelUrl),closeParameterString, "true"), 4, i+2);
+              myTable.add(insertButton(this.iwrb.getImage("buttons/book.gif"),"", modinfo.getRequestURI(), "post", myForm), 4, i+2);
+              myTable.add(new SubmitButton(this.iwrb.getImage("buttons/cancel.gif"),closeParameterString, "true"), 4, i+2);
               myTable.setAlignment(4, i+2, "right");
               frameTable.empty();
               frameTable.add(myTable);
@@ -387,7 +385,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
                   //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
                   frameTable.add(Text.getBreak());
                   frameTable.add(Text.getBreak());
-                  frameTable.add(new CloseButton("Loka glugga"));
+                  frameTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
 
               }else{
                 this.setParentToReload();
@@ -403,7 +401,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
             //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
             frameTable.add(Text.getBreak());
             frameTable.add(Text.getBreak());
-            frameTable.add(new CloseButton("Loka glugga"));
+            frameTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
           }
         }else{
           Text comment = (Text)templText.clone();
@@ -414,15 +412,12 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
           //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
           frameTable.add(Text.getBreak());
           frameTable.add(Text.getBreak());
-          frameTable.add(new CloseButton("Loka glugga"));
+          frameTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
         }
     }
 
     public void setErroResponse(Form myForm, boolean inputErr)
     {
-            String btnCloseUrl = "/pics/rastimask/Takkar/TLoka1.gif";
-            String btnBackUrl = "/pics/rastimask/Takkar/Ttilbaka1.gif";
-
             Table myTable = new Table(2, 3);
             if(inputErr){
                     myTable.addText("Nauðsynlegt er að skrá eins marga og teknir voru frá", 2, 1);
@@ -430,7 +425,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
             }
             else{
                     myTable.addText("Þetta holl er því miður fullt. Gjörðu svo vel að velja þér nýjan tíma", 2, 1);
-                    myTable.add(new CloseButton("Loka glugga"), 2, 3);
+                    myTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")), 2, 3);
             }
 
             myTable.setAlignment(2, 3, "center");
@@ -476,7 +471,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
 
 
  public void noPermission(){
-    Text satyOut = new Text("Þú hefur ekki réttindi fyrir þessa síðu");
+    Text satyOut = new Text(this.iwrb.getLocalizedString("start.no_permission","No permission"));
     satyOut.setFontSize(4);
     Table AlignmentTable = new Table();
     AlignmentTable.setBorder(0);
@@ -485,15 +480,12 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
     AlignmentTable.setAlignment("center");
     AlignmentTable.add(Text.getBreak());
     AlignmentTable.add(Text.getBreak());
-//    Link close = new Link("Loka glugga");
-//    close.addParameter(closeParameterString, "true");
-//    AlignmentTable.add(close);
     frameTable.empty();
     frameTable.add(AlignmentTable);
   }
 
   public void lineUpTournamentDay(ModuleInfo modinfo, List Tournaments){
-    Text dayReserved = new Text("Dagur frátekinn fyrir mót");
+    Text dayReserved = new Text(this.iwrb.getLocalizedString("start.day_reserved_for_tournament","Day reserved for tournament"));
     dayReserved.setFontSize(4);
     Table AlignmentTable = new Table();
     AlignmentTable.setBorder(0);
@@ -505,7 +497,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
     AlignmentTable.setAlignment("center");
     AlignmentTable.add(Text.getBreak());
     AlignmentTable.add(Text.getBreak());
-    AlignmentTable.add(new CloseButton("Loka glugga"));
+    AlignmentTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
     frameTable.empty();
     frameTable.add(AlignmentTable);
   }
@@ -514,6 +506,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
 
 public void main(ModuleInfo modinfo) throws Exception {
     super.main(modinfo);
+    this.setTitle(this.iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
 
 
     if(modinfo.getParameter(closeParameterString+".x") != null || modinfo.getParameter(closeParameterString) != null){
