@@ -452,6 +452,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		return rootGroup;
 	}
+	
 	/**
 	 * Gets all the users that have the CommuneAdministrator group as its primary group.
 	* @return Collection of com.idega.user.data.User objects with all the users in the CommuneAdministrators group.
@@ -459,7 +460,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	*/
 	public Collection getAllCommuneAdministrators() throws FinderException {
 		try {
-			return getUsersInPrimaryGroup(getRootCommuneAdministratorGroup());
+			return getUsersInGroup(getRootCommuneAdministratorGroup());
+			//return getUsersInPrimaryGroup(getRootCommuneAdministratorGroup());
 		}
 		catch (Exception e) {
 			throw new IDOFinderException(e);
