@@ -9,6 +9,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 
 /**
@@ -131,10 +132,24 @@ public class HoleBMPBean extends GenericEntity implements Hole {
 		return idoFindPKsByQuery(query);
 	}
 
-	public Collection ejbFindAllByCourse(int courseID, int teeColorID) throws FinderException {
+	public Collection ejbFindAllByCourseAndTeeColor(int courseID, int teeColorID) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID);
 		query.appendAndIsNull(COLUMN_VALID_TO).appendOrderBy(COLUMN_NUMBER);
 		return idoFindPKsByQuery(query);
+	}
+
+	public Integer ejbFindHoleByCourseAndTeeColorAndNumber(int courseID, int teeColorID, int holeNumber) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID);
+		query.appendAndIsNull(COLUMN_VALID_TO).appendAndEquals(COLUMN_NUMBER, holeNumber);
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+	
+	public int ejbHomeGetCoursePar(int courseID, int teeColorID) throws IDOException {
+		IDOQuery query = idoQuery();
+		query.appendSelect().appendSum(COLUMN_PAR).appendFrom().append(ENTITY_NAME);
+		query.appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID);
+		return idoGetNumberOfRecords(query);
 	}
 }

@@ -118,5 +118,4 @@ public class CourseBMPBean extends GenericEntity implements Course {
 
 		return (Integer) idoFindOnePKByQuery(query);
 	}
-
 }
