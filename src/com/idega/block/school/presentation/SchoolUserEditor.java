@@ -111,8 +111,8 @@ public class SchoolUserEditor extends Block {
 	private List parameterValues;
 	private Collection schoolTypeIds;
 	private int mobilePhoneType = PhoneType.MOBILE_PHONE_ID;
-	private String schoolTypeCategory = "";
-	private String schoolTypeHighSchool = "";
+	private String _schoolCategory = "";
+	private String _schoolTypeHighSchool = "";
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -370,6 +370,7 @@ private Table schoolUsersTable(IWContext iwc, School school, boolean addSubmitBu
 			contTable.add(table, 1, cRow);
 */
 			if (addSubmitButton) {
+				++cRow;
 				SubmitButton update = new SubmitButton(_iwrb.getLocalizedImageButton("school.save","Save"), PARAMETER_ACTION, ACTION_UPDATE);
 				contTable.add(update, 1, cRow);
 			}
@@ -477,6 +478,7 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 							}
 													 
 							contTable.add(table, 1, ++cRow);
+						++cRow;
 //contTable.setBorder(1);
 //contTable.setBorderColor("black");
 						}
@@ -506,6 +508,7 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 			}
 
 			if (addSubmitButton) {
+				++cRow;
 				SubmitButton update = new SubmitButton(_iwrb.getLocalizedImageButton("school.save","Save"), PARAMETER_ACTION, ACTION_UPDATE);
 				contTable.add(update, 1, cRow);
 			}
@@ -903,7 +906,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 				this.setTextInputStyle(pPhone);
 				table.add(pPhone, 7, row);
 				
-			if (schoolTypeCategory == schoolTypeHighSchool){
+			if (_schoolCategory == _schoolTypeHighSchool){
 				TextInput pMobilePhone = new TextInput(smobilephone+"_"+hmId);
 				this.setTextInputStyle(pMobilePhone);
 				table.add(pMobilePhone, 9, mobRow);
@@ -1483,10 +1486,12 @@ private Table getDepartmentForm(IWContext iwc, School school) {
 			String hmEmail    = iwc.getParameter(semail);
 			String hmPhone    = iwc.getParameter(sphone);
 			String hmMobile	  = iwc.getParameter(smobilephone);
+			int schdep_id = -1;
 			
+			if (sDep_ID != null && !sDep_ID.equals("")) {
+				schdep_id 	  = Integer.parseInt(sDep_ID);			
+			}
 			
-			int schdep_id 	  = Integer.parseInt(sDep_ID);			
-
 			if (headmaster != null && !headmaster.equals("") && priGroup != null) {
 				User user = getUserBusiness(iwc).createUser(headmaster, "","", ((Integer)priGroup.getPrimaryKey()).intValue());
 //				getSchoolUserBusiness(iwc).addWebAdmin(school, user);
@@ -1516,20 +1521,22 @@ private Table getDepartmentForm(IWContext iwc, School school) {
 				}
 				
 				SchoolUser schUsr;
-				if (schoolTypeCategory == schoolTypeHighSchool){ //if schoolTypeHighSchool then set if the contact should be shown in the contact list
-				schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType, showcontact, main_headmaster);
+				if (_schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType, showcontact, main_headmaster);
 				}else {
-				schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType);
+					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType);
 				}
 
 				postSaveNew(school, user, iUserType);
-				try { //MAlin
+				try { 
+					if (schdep_id != -1) {
 						getSchoolBusiness(iwc).addSchoolUsr(schdep_id, schUsr);
-					} catch (RemoteException e2) {
-						e2.printStackTrace();
-					} catch (RemoveException e2) {
-						e2.printStackTrace();
 					}
+				} catch (RemoteException e2) {
+					e2.printStackTrace();
+				} catch (RemoveException e2) {
+					e2.printStackTrace();
+				}
 
 			}
 			
@@ -1692,6 +1699,8 @@ public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSu
   		}
   	}
   	
+  	
+  	
   	String uId = iwc.getParameter(PARAMETER_EDIT_USER);
   	if (uId != null) {
   		userToEdit = Integer.parseInt(uId);
@@ -1734,7 +1743,21 @@ public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSu
   
 	public void main(IWContext iwc) throws RemoteException {
 		init(iwc);
-		
+		if (_school != null) {
+			try {
+				Collection coll = _school.getSchoolTypes();
+					Iterator iterCollection = coll.iterator();	
+			
+				while (iterCollection.hasNext()) {									
+					SchoolType schoolType = (SchoolType) iterCollection.next();
+					_schoolCategory =  schoolType.getSchoolCategory();				
+				}
+									
+				}
+				catch (Exception e){
+			}
+		}
+			
 		String action = iwc.getParameter(PARAMETER_ACTION);
 		
 		if (action == null) {
@@ -1743,7 +1766,7 @@ public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSu
 			add(mainForm(iwc));
 		}else if (action.equals(ACTION_UPDATE) && _school != null) {
 			updateUsers(iwc, _school);
-			//add(mainForm(iwc));
+			add(mainForm(iwc));
 		}
 			else if (action.equals(ACTION_UPDATE_DEPM)) {
 			updateDepartment(iwc, _school);  //Malin
