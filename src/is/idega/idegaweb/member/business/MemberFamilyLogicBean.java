@@ -160,7 +160,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
       Group group = (Group)coll.iterator().next();
       return convertGroupToUser(group);
     }
-    catch(Exception e){
+    catch(FinderException e){
       throw new NoSpouseFound(userName);
     }
   }
@@ -187,7 +187,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
       }
       return convertGroupCollectionToUserCollection(coll);
     }
-    catch(Exception e){
+    catch(FinderException e){
       throw new NoCustodianFound(userName);
     }
   }
@@ -207,7 +207,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 			}
 			return convertGroupCollectionToUserCollection(coll);
 		}
-		catch(Exception e){
+		catch(FinderException e){
 			throw new NoParentFound(userName);
 		}
 	}
