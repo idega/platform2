@@ -31,15 +31,12 @@ import se.agura.applications.vacation.data.VacationType;
 import se.agura.applications.vacation.data.VacationTypeHome;
 
 import com.idega.block.process.data.Case;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.NoEmailFoundException;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
