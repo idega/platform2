@@ -667,7 +667,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
-		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getCategory", 1, row++);
+		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getDescription", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
