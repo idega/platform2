@@ -62,7 +62,7 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 		}
 		data.setDocument(helper.createDocument());
 		data.setName(name);
-		ICFile query =  data.store(getIWApplicationContext());
+		ICFile query =  data.store();
 		if(folderID>0 && query !=null)
 			MediaBusiness.moveMedia(((Integer)query.getPrimaryKey()).intValue(),folderID);
 			
