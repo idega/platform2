@@ -1,6 +1,8 @@
 package se.cubecon.bun24.viewpoint.presentation;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -27,10 +29,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/09 08:00:20 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/09 12:53:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -64,8 +66,6 @@ public class ViewpointForm extends CommuneBlock {
         = "vp_answerviewpoint_action";
 	private final static String FORWARDVIEWPOINT_ACTION
         = "vp_forwardviewpoint_action";
-	private final static String SHOWFORWARDFORM_ACTION
-        = "vp_showforwardform_action";
     private final static String CANCEL_ACTION = "vp_cancel_action";
 
 	private final static String ANSWER_KEY = "viewpoint.answer";
@@ -109,12 +109,18 @@ public class ViewpointForm extends CommuneBlock {
         = "viewpoint.enterTopCategory";
 	private final static String ENTERTOPCATEGORY_DEFAULT
         = "Vilket område vill du ge synpunkter om?";
+	private final static String FORWARDTO_KEY = "viewpoint.forwardTo";
+	private final static String FORWARDTO_DEFAULT = "Vidarebefordra till:";
+	private final static String FORWARD_KEY = "viewpoint.forward";
+	private final static String FORWARD_DEFAULT = "Vidarebefordra";
 	private final static String FROMCITIZEN_KEY = "viewpoint.fromCitizen";
 	private final static String FROMCITIZEN_DEFAULT = "Från medborgare";
 	private final static String IACCEPTTOHANDLETHISVIEWPOINT_KEY
         = "viewpoint.iAcceptToHandleThisViewpoint";
 	private final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT
         = "Jag accepterar att handlägga den här synpunkten";
+	private final static String LOGINNAME_KEY = "viewpoint.loginName";
+	private final static String LOGINNAME_DEFAULT = "Användarnamn";
 	private final static String MESSAGE_KEY = "viewpoint.message";
 	private final static String MESSAGE_DEFAULT = "Meddelande";
     private final static String NOTAUTHORIZEDTOSHOWVIEWPOINT_KEY
@@ -166,10 +172,8 @@ public class ViewpointForm extends CommuneBlock {
                 acceptToHandleViewpoint (context);
             } else if (context.isParameterSet (ANSWERVIEWPOINT_ACTION)) {
                 answerViewpoint (context);
-            } else if (context.isParameterSet (SHOWFORWARDFORM_ACTION)) {
-                showForwardViewpointForm ();
             } else if (context.isParameterSet (FORWARDVIEWPOINT_ACTION)) {
-                forwardViewpoint ();
+                forwardViewpoint (context);
             } else if (context.isParameterSet (CANCEL_ACTION)) {
                 showHomepage (context);
             } else if (context.isParameterSet (PARAM_VIEWPOINT_ID)) {
@@ -332,10 +336,13 @@ public class ViewpointForm extends CommuneBlock {
         final boolean isCurrentUserPotentialHandler
                 = handler == null && currentUsersGroups.contains (handlerGroup);
         if (isCurrentUserPotentialHandler) {
+            // ask user if he wants to handle this viewpoint
             showAcceptForm (context);
         } else if (isCurrentUserHandler && !viewpoint.isAnswered ()) {
+            // user handles this viewpoint, let him send answer
             showAnswerForm (context);
         } else if (isCurrentUserOriginator || isCurrentUserHandler) {
+            // user just wants to see the viewpoint
             final Table table = createViewpointTable (viewpoint, context);
             int row = 5;
             if (viewpoint.isAnswered ()) {
@@ -347,6 +354,7 @@ public class ViewpointForm extends CommuneBlock {
             table.add(getUserHomepageLink (context), 1, row++);
             add (table);
         } else {
+            // user is not authorized to see this particular viewpoint
             add (getLocalizedHeader (NOTAUTHORIZEDTOSHOWVIEWPOINT_KEY,
                                      NOTAUTHORIZEDTOSHOWVIEWPOINT_DEFAULT));
         }
@@ -415,20 +423,26 @@ public class ViewpointForm extends CommuneBlock {
 		final TextArea textArea = new TextArea (PARAM_ANSWER);
 		textArea.setColumns (40);
 		textArea.setRows (10);
-        final SubmitButton submit
+        final SubmitButton answerButton
                 = getSubmitButton (ANSWERVIEWPOINT_ACTION,
                                    SENDANSWERTOCITIZEN_KEY,
                                    SENDANSWERTOCITIZEN_DEFAULT);
+        final SubmitButton cancelButton
+                = getSubmitButton (CANCEL_ACTION, CANCEL_KEY, CANCEL_DEFAULT);
         final Table table = createViewpointTable (viewpoint, context);
         int row = 5;
-		table.add(getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(textArea, 1, row++);
-		table.add(submit, 1, row++);
-		table.add (getSubmitButton (CANCEL_ACTION, CANCEL_KEY, CANCEL_DEFAULT),
-                   1, row++);
-		form.add(table);
-		add(form);
+		table.add (getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
+		table.add (new Break(), 1, row);
+		table.add (textArea, 1, row++);
+		table.setHeight (row++, 12);
+        final Table buttonTable = new Table ();
+        table.add (buttonTable, 1, row++);
+		buttonTable.add (answerButton, 1, 1);
+		buttonTable.add (cancelButton, 2, 1);
+		table.setHeight (row++, 24);
+		form.add (table);
+		add (form);
+        showForwardViewpointForm (context);
 	}
 
 	private void answerViewpoint(final IWContext context) throws
@@ -490,14 +504,48 @@ public class ViewpointForm extends CommuneBlock {
 		add (table);
 	}
 
-	private void forwardViewpoint () {
-        add ("forwardViewpoint");
-        throw new UnsupportedOperationException ();
+	private void forwardViewpoint (final IWContext context) {
+        boolean foundReceiver = false;
+        final String forwardType = context.getParameter (FORWARDTO_KEY);
+
+        if (null != forwardType && forwardType.equals (LOGINNAME_KEY)) {
+            final String loginName = context.getParameter (LOGINNAME_KEY);
+            if (loginName != null) {
+                final LoginTable loginTable
+                        = LoginDBHandler.getUserLoginByUserName(loginName);
+                if (loginTable != null) {
+                    add (loginName + ".userid=" + loginTable.getUserId());
+                } else {
+                    add (loginName + " not found...");
+                }
+            } else {
+                add ("loginname = null");
+            }
+        } else {
+            add ("forward type = " + forwardType);
+        }
 	}
 
-	private void showForwardViewpointForm () {
-        add ("showForwardViewpointForm");
-        throw new UnsupportedOperationException ();
+	private void showForwardViewpointForm (final IWContext context) {
+        /*
+		final int viewpointId
+                = Integer.parseInt (context.getParameter (PARAM_VIEWPOINT_ID));
+		final Form form = new Form();
+		form.add(new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
+        final SubmitButton forwardButton = getSubmitButton
+                (FORWARDVIEWPOINT_ACTION, FORWARD_KEY, FORWARD_DEFAULT);
+        final Table table = new Table ();
+		table.setWidth (getWidth ());
+		table.setCellspacing (0);
+		table.setCellpadding (getCellpadding ());
+		int row = 1;
+		table.add (getLocalizedHeader(FORWARDTO_KEY, FORWARDTO_DEFAULT), 1,
+                   row++);
+        table.add (getRadioButton (FORWARDTO_KEY, LOGINNAME_KEY, LOGINNAME_DEFAULT, true), 1, row++);
+		table.add (forwardButton, 1, row++);
+		form.add (table);
+		add (form);
+        */
 	}
 
 	private void showHomepage (final IWContext context) throws RemoteException {
@@ -505,6 +553,27 @@ public class ViewpointForm extends CommuneBlock {
 		table.add (getUserHomepageLink (context), 1, 1);
 		add (table);
 	}
+
+    private Table getRadioButton (final String name, final String key,
+                                  String defaultValue, boolean selected) {
+        Table table = new Table (3, 1);
+        table.setCellpadding (0);
+        table.setCellspacing (0);
+        table.setWidth (2, "3");
+        
+        RadioButton button = getRadioButton (name, key);
+        if (selected) {
+            button.setSelected();
+        }
+		final TextInput textInput = (TextInput) getStyledInterface
+                (new TextInput (key));
+		textInput.setLength (40);
+        table.add (button, 1, 1);
+        table.add (getSmallText(localize(key, defaultValue)), 3, 1);
+        table.add (textInput, 5, 1);
+        
+        return table;
+    }
 
     private Link getUserHomepageLink (final IWContext context)
         throws RemoteException {
