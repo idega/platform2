@@ -462,13 +462,12 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		User currentUser = iwuc.getCurrentUser();
 		UserBusiness userBusiness = getUserBusiness();
 		// TODO: thi solve problem with group types
-		String[] groupTypes = 
-			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
-		Group group = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwuc);
+		List groupTypes = Arrays.asList(DataqueryConstants.highestTopNodeGroupTypes);
+		Group group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupTypes, iwuc);
 		if (group == null) {
-			List groupType = new ArrayList();
-			groupType.add("general");
-			group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType, iwuc);
+			groupTypes = new ArrayList();
+			groupTypes.add("general");
+			group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupTypes, iwuc);
 		}
 		return group;
 	}
