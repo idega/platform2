@@ -6,6 +6,7 @@ import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.Reseller;
 import java.sql.Timestamp;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -113,6 +114,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 
   public int getExpireDays() {
     return getIntColumnValue(getColumnNameExpiresDaysBeforeDeparture());
+  }
+  
+  public Collection ejbHomeFindByProductId(int productId) throws FinderException {
+  	return this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(), Integer.toString(productId));
   }
 
 
