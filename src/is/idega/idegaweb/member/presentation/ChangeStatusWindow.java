@@ -92,7 +92,7 @@ import com.idega.user.business.UserBusiness;
       	
       	boolean success = biz.changeGroupApplicationStatus(appId, status);
 		
-		if(!success) add("Change status failed!");
+		System.out.println("Changed status : "+success);
 		
         
       }
@@ -111,9 +111,10 @@ import com.idega.user.business.UserBusiness;
       String confirmThis = iwc.getParameter(ConfirmWindow.PARAMETER_CONFIRM);
 
       if(confirmThis != null){
+      	System.out.println("CONFIRMING");
         this.actionPerformed(iwc);
         this.setParentToReload();
-      //  this.close();
+      	this.close();
       } else{
         this.empty();
         if(myTable == null){

@@ -141,6 +141,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 			app.setModified(IWTimestamp.getTimestampRightNow());
 			
 			if( approved.equals(status) ){
+				System.out.println("Approving application nr."+app.getPrimaryKey().toString());
 				
 				Collection groups = app.getGroups();
 				User user = app.getUser();
@@ -152,13 +153,19 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 					group.addGroup(user);
 				}
 				
+				app.setStatus(status);
+				
 			}
 			else if( pending.equals(status) ){
 				//extra stuff?
+				app.setStatus(status);
 			}
 			else if( denied.equals(status) ){
-				//extra stuff?				
+				//extra stuff?	
+				app.setStatus(status);			
 			}
+			
+			
 			
 			
 			
