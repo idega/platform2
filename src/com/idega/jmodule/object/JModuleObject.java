@@ -24,6 +24,7 @@ public class JModuleObject extends ModuleObjectContainer{
   private long cacheInterval;
 
   private static final String concatter = "_";
+  private static final String newline = "\n";
 
   public JModuleObject(){
 
@@ -120,18 +121,16 @@ public class JModuleObject extends ModuleObjectContainer{
     this.cacheInterval=millisecondsInterval;
   }
 
-  public void beginCacheing(ModuleInfo modinfo)throws Exception{
+  public void beginCacheing(ModuleInfo modinfo,StringBuffer buffer)throws Exception{
     PrintWriter servletWriter = modinfo.getWriter();
     modinfo.setCacheing(true);
-    StringBuffer buffer = new StringBuffer();
     PrintWriter writer = new JModuleCacheWriter(servletWriter,buffer);
     modinfo.setCacheWriter(writer);
-    IWCacheManager.getInstance(modinfo.getApplication()).setObject(getCacheKey(modinfo),buffer,cacheInterval);
-
   }
 
-  public void endCacheing(ModuleInfo modinfo){
+  public void endCacheing(ModuleInfo modinfo,StringBuffer buffer){
     modinfo.setCacheing(false);
+    IWCacheManager.getInstance(modinfo.getApplication()).setObject(getCacheKey(modinfo),buffer,cacheInterval);
   }
 
   public void _main(ModuleInfo modinfo)throws Exception{
@@ -157,9 +156,10 @@ public class JModuleObject extends ModuleObjectContainer{
         modinfo.getResponse().getWriter().print(buffer.toString());
       }
       else{
-        beginCacheing(modinfo);
+        StringBuffer buffer = new StringBuffer();
+        beginCacheing(modinfo,buffer);
         super.print(modinfo);
-        endCacheing(modinfo);
+        endCacheing(modinfo,buffer);
       }
     }
     else{
@@ -203,11 +203,11 @@ public class JModuleObject extends ModuleObjectContainer{
   }
 
 
-  public static class JModuleCacheWriter extends java.io.PrintWriter{
+  public class JModuleCacheWriter extends java.io.PrintWriter{
 
     private PrintWriter underlying;
     private StringBuffer buffer;
-    private static final String newline = "\n";
+
 
     public JModuleCacheWriter(PrintWriter underlying,StringBuffer buffer){
       super(underlying);
