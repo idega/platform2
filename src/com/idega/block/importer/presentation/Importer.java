@@ -185,17 +185,27 @@ public class Importer extends StyledIWAdminWindow {
 		Form form = new Form();
 		form.setMultiPart();
 		//SimpleFileChooser chooser = new SimpleFileChooser(form, IMPORT_FILE_IDS);
-		FileInput chooser = new FileInput();
-		Help help = getHelp(HELP_TEXT_KEY,iwc);
-		SubmitButton confirm = new SubmitButton("Confirm");
-		form.add(iwrb.getLocalizedString("importer.select_file", "Select a file to import"));
-		form.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES));
-		form.add(new HiddenInput(PARAMETER_IMPORT_HANDLER, importHandler));
-		form.add(new HiddenInput(PARAMETER_IMPORT_FILE, importFile));
-		form.add(chooser);
-		form.add(help);
-		form.add(confirm);
+
+		Table table = new Table(2,3);
+		table.setStyleClass("main");
+		table.setCellpaddingAndCellspacing(0);
+		table.setWidth(200);
+		table.setHeight(100);
 		
+		FileInput chooser = new FileInput();
+		Help help = getHelp(HELP_TEXT_KEY);
+		SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("confirm","Confirm"));
+		confirm.setAsImageButton(true);
+		
+		table.add(iwrb.getLocalizedString("importer.select_file", "Select a file to import"+":"),1,1);
+		table.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES),1,2);
+		table.add(new HiddenInput(PARAMETER_IMPORT_HANDLER, importHandler),1,2);
+		table.add(new HiddenInput(PARAMETER_IMPORT_FILE, importFile),1,2);
+		table.add(chooser,1,2);
+		table.add(help,1,3);
+		table.add(confirm,2,3);
+		
+		form.add(table);
 		add(form,iwc);
 	}
 	/**
