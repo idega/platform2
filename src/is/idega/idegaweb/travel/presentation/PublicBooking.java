@@ -890,6 +890,7 @@ public class PublicBooking extends Block  {
       }
 
       if (success && gBooking != null) {
+        boolean sendEmail = false;
         try {
           Product prod = ((ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(gBooking.getServiceID());
           Supplier suppl = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(prod.getSupplierId());
@@ -900,13 +901,13 @@ public class PublicBooking extends Block  {
             suppEmail = sEmail.getEmailAddress();
           }
           String bookEmail = gBooking.getEmail();
+          boolean doubleSendSuccessful = false;
 
-          debug("Repps test");
           if (settings.getIfDoubleConfirmation()) {
             try {
-              debug("Trying double");
+              sendEmail = true;
               StringBuffer mailText = new StringBuffer();
-              mailText.append(iwrb.getLocalizedString("travel.double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
+              mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
               mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
@@ -914,24 +915,35 @@ public class PublicBooking extends Block  {
 
               SendMail sm = new SendMail();
                 sm.send(suppEmail, bookEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
-            }catch (Exception me) {
+              doubleSendSuccessful = true;
+            }catch (MessagingException me) {
+              doubleSendSuccessful = false;
               me.printStackTrace(System.err);
             }
           }
 
           if (settings.getIfEmailAfterOnlineBooking()) {
             try {
-              debug("Trying afteronline");
+              String subject = "Booking";
+
               StringBuffer mailText = new StringBuffer();
               mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
               mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
+              if (doubleSendSuccessful) {
+                mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
+              }else {
+                mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_not_been_sent","Double confirmation has NOT been sent."));
+                mailText.append("\n").append("   - ").append(iwrb.getLocalizedString("travel.email_was_probably_incorrect","E-mail was probably incorrect."));
+                subject = "Booking - double confirmation failed!";
+              }
+
 
               SendMail sm = new SendMail();
-                sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
-            }catch (Exception me) {
+                sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", subject,mailText.toString());
+            }catch (MessagingException me) {
               me.printStackTrace(System.err);
             }
           }
@@ -945,6 +957,11 @@ public class PublicBooking extends Block  {
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
         table.add(Text.BREAK);
         table.add(Text.BREAK);
+        if (sendEmail) {
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receiva an email shortly confirming your booking.")));
+          table.add(Text.BREAK);
+          table.add(Text.BREAK);
+        }
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
         table.add(getBoldTextWhite(" : "));
         table.add(getBoldTextWhite(heimild));
