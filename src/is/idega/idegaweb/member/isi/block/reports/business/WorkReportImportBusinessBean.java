@@ -568,6 +568,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 				if (export != null) {
 					HSSFWorkbook workbook = getExcelWorkBookFromFileId(templateId);
+
+					updateWorkbookWithLastYear(workbook, club, year);
+
 					String number = club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
 					StringBuffer fileName = new StringBuffer();
 					if (number != null && !"".equals(number)) {
@@ -628,7 +631,38 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			e1.printStackTrace();
 			return null;
 		}
+	}
 
+	private void updateWorkbookWithLastYear(HSSFWorkbook workbook, Group club, int year) {
+		try {
+			WorkReport rep = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(((Integer) club.getPrimaryKey()).intValue(), year - 1);
+			if (rep != null) {
+				Collection members = getWorkReportBusiness().getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(((Integer) rep.getPrimaryKey()).intValue());
+				if (members != null && !members.isEmpty()) {
+					HSSFSheet memberSheet = workbook.getSheetAt(SHEET_MEMBER_PART);
+					int rowNr = 5;
+
+					Iterator it = members.iterator();
+					while (it.hasNext()) {
+						WorkReportMember memb = (WorkReportMember) it.next();
+						HSSFRow row = memberSheet.createRow(rowNr++);
+						HSSFCell name = row.createCell(COLUMN_MEMBER_NAME);
+						HSSFCell ssn = row.createCell(COLUMN_MEMBER_SSN);
+						name.setCellValue(memb.getName());
+						ssn.setCellValue(memb.getPersonalId());
+					}
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean importBoardPart(int workReportFileId, int workReportId) throws WorkReportImportException, RemoteException {

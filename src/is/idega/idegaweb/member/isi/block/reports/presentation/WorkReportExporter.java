@@ -59,6 +59,7 @@ public class WorkReportExporter extends RegionalUnionAndYearSelector {
 					if (file.getFileId() > 0) {
 						String name = getWorkReportBusiness(iwc).getFileName(file.getFileId()); 				
 						add(new Link(file.getFileId(),name));
+						addBreak();
 					}
 				}
 			}

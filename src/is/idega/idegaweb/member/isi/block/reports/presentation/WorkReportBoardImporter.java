@@ -49,12 +49,18 @@ public class WorkReportBoardImporter extends WorkReportImporter {
 			}
 			catch (WorkReportImportException e) {
 				add(iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
-				if (e.getRowForError() != null) 
+				if (e.getRowForError() != null) {
+					addBreak();
 					add(iwrb.getLocalizedString(ROW_LABEL,"Row") + " : " + e.getRowForError());
-				if (e.getColumnForError() != null) 
+				}
+				if (e.getColumnForError() != null)  { 
+					addBreak();
 					add(iwrb.getLocalizedString(COL_LABEL,"Col") + " : " + e.getColumnForError());
-				if (e.getDetail() != null) 
+				}
+				if (e.getDetail() != null) { 
+					addBreak();
 					add(iwrb.getLocalizedString(DESC_LABEL,"Desc") + " : " + e.getDetail());
+				}					
 			}
 		}
 	}
