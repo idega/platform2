@@ -1588,7 +1588,7 @@ public class IFSFileCreationThread extends Thread {
 			while (it.hasNext()) {
 
 				InvoiceHeader iHead = (InvoiceHeader) it.next();
-				ArrayList iRecs = new ArrayList(((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead));
+				Collection iRecs = ((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead);
 				if (!iRecs.isEmpty()) {
 					Iterator irIt = iRecs.iterator();
 
@@ -1765,7 +1765,7 @@ public class IFSFileCreationThread extends Thread {
 	private void createPaymentSigningFilesExcel(Collection data, String fileName, String headerText, boolean signingFooter) throws IOException, FinderException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 25, 35, 12, 12 };
-			String[] columnNames = { "Anordnare", "Text", "Placeringer", "Belopp" };
+			String[] columnNames = { "Anordnare", "Text", "Placeringar", "Belopp" };
 			createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
@@ -1963,27 +1963,27 @@ public class IFSFileCreationThread extends Thread {
 		deviationString = _deviationString;
 	}
 
-	public HSSFCellStyle getStyleAlignRight() {
+	private HSSFCellStyle getStyleAlignRight() {
 		return styleAlignRight;
 	}
 
-	public HSSFCellStyle getStyleBold() {
+	private HSSFCellStyle getStyleBold() {
 		return styleBold;
 	}
 
-	public HSSFCellStyle getStyleBoldAlignRight() {
+	private HSSFCellStyle getStyleBoldAlignRight() {
 		return styleBoldAlignRight;
 	}
 
-	public HSSFCellStyle getStyleBoldUnderline() {
+	private HSSFCellStyle getStyleBoldUnderline() {
 		return styleBoldUnderline;
 	}
 
-	public HSSFCellStyle getStyleBoldUnderlineAlignRight() {
+	private HSSFCellStyle getStyleBoldUnderlineAlignRight() {
 		return styleBoldUnderlineAlignRight;
 	}
 
-	public HSSFCellStyle getStyleItalicUnderlineAlignRight() {
+	private HSSFCellStyle getStyleItalicUnderlineAlignRight() {
 		return styleItalicUnderlineAlignRight;
 	}
 	
@@ -2039,11 +2039,11 @@ public class IFSFileCreationThread extends Thread {
 		return styleItalicUnderlineAlignRight;
 	}
 
-	public float getInCommuneSum() {
+	private float getInCommuneSum() {
 		return inCommuneSum;
 	}
 
-	public void setInCommuneSum(float inCommuneSum) {
+	private void setInCommuneSum(float inCommuneSum) {
 		this.inCommuneSum = inCommuneSum;
 	}
 
