@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.1 2003/11/04 01:47:52 kjell Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.2 2004/03/22 10:55:58 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
  * This business handles the logic for Payment authorisation
  * 
  * <p>
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.1 2003/11/04 01:47:52 kjell Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.2 2004/03/22 10:55:58 roar Exp $
  *
  * @author Kelly
  */
@@ -66,6 +66,13 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 			while (payments.hasNext()) {
 				Date today = new Date(System.currentTimeMillis());
 				PaymentHeader ph = (PaymentHeader) payments.next();
+				Iterator records = getPaymentRecordHome().findByPaymentHeader(ph).iterator();
+				while(records.hasNext()){
+					PaymentRecord pr = (PaymentRecord) records.next();
+					pr.setStatus(ConstantStatus.PRELIMINARY);
+					pr.store();
+				}
+
 				ph.setStatus(ConstantStatus.PRELIMINARY);
 				ph.setSignaturelID(user);
 				ph.setDateAttested(today);
