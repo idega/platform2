@@ -1,4 +1,6 @@
 package is.idega.idegaweb.travel.service.presentation;
+import com.idega.util.IWTimestamp;
+import com.idega.block.trade.stockroom.data.Product;
 import java.util.Collection;
 import java.util.List;
 import java.rmi.*;
@@ -18,4 +20,5 @@ import com.idega.presentation.*;
 
 public interface BookingOverview {
   public Table getBookingOverviewTable(IWContext iwc, Collection products) throws CreateException, RemoteException, FinderException;
+  public Table getDetailedInfo(IWContext iwc, Product product, IWTimestamp stamp) throws FinderException, CreateException, RemoteException;
 }

@@ -137,7 +137,6 @@ public class ServiceViewer extends Window {
     }
 
     // ...hingað
-    debug("main(iwc)");
     init(iwc);
     handleEvents(iwc);
   }

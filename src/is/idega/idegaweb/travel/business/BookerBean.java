@@ -1,32 +1,25 @@
 package is.idega.idegaweb.travel.business;
 
-import com.idega.util.text.TextSoap;
-import com.idega.business.IBOServiceBean;
-import com.idega.business.IBOLookup;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import java.rmi.RemoteException;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.*;
+import java.rmi.*;
 import java.sql.*;
-import com.idega.data.*;
-import com.idega.data.SimpleQuerier;
-import com.idega.util.IWTimestamp;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import is.idega.idegaweb.travel.data.BookingEntry;
-import is.idega.idegaweb.travel.data.GeneralBooking;
-import com.idega.util.database.ConnectionBroker;
 import java.util.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import com.idega.block.trade.data.Currency;
-import com.idega.idegaweb.*;
-import com.idega.core.data.Address;
 
+import javax.ejb.*;
+
+import com.idega.block.trade.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.business.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.util.*;
+import com.idega.util.text.*;
 import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.service.tour.data.*;
+import is.idega.idegaweb.travel.interfaces.*;
 import is.idega.idegaweb.travel.service.business.*;
+import is.idega.idegaweb.travel.service.tour.data.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -254,7 +247,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   public  int getNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, boolean orderByDateOfBooking) throws RemoteException{
-    if (orderByDateOfBooking) {
+    if (!orderByDateOfBooking) {
       return getGeneralBookingHome().getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, new int[] {});
     } else {
       return getGeneralBookingHome().getNumberOfBookingsByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, null);

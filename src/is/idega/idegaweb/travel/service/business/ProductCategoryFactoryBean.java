@@ -84,13 +84,13 @@ public class ProductCategoryFactoryBean extends IBOServiceBean implements Produc
   public String getProductCategoryTypeDefaultName(String type) {
     if (type != null) {
       if (type.equals(this.CATEGORY_TYPE_TOUR)) {
-        return "Tours";
+        return "Tour";
       }else if (type.equals(this.CATEGORY_TYPE_HOTEL)) {
-        return "Hotels";
+        return "Accomodation";
       }else if (type.equals(this.CATEGORY_TYPE_FISHING)) {
         return "Fishing";
       }else if (type.equals(this.CATEGORY_TYPE_PRODUCT)) {
-        return "Products";
+        return "Product";
       }else if (type.equals(this.CATEGORY_TYPE_CAR_RENTAL)) {
         return "Car rental";
       }

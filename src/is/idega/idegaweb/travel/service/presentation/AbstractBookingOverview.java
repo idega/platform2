@@ -73,8 +73,17 @@ public class AbstractBookingOverview extends TravelManager implements BookingOve
   }
 
   public Table getBookingOverviewTable(IWContext iwc, Collection products) throws CreateException, RemoteException, FinderException {
-    return new Table();
+    Table table = new Table();
+    table.add(getHeaderText("Unimplemented"));
+    return table;
   }
+
+  public Table getDetailedInfo(IWContext iwc, Product product, IWTimestamp stamp) throws FinderException, CreateException, RemoteException {
+    Table table = new Table();
+    table.add(getHeaderText("Unimplemented"));
+    return table;
+  }
+
   // BUSINESS
 
   public IWTimestamp getTimestampFrom(IWContext iwc) {
