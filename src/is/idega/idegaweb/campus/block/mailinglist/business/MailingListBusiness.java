@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.block.mailinglist.business;
 import com.idega.core.data.Email;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.SendMail;
 import com.idega.util.IWTimestamp;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import is.idega.idegaweb.campus.presentation.Campus;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -244,6 +246,11 @@ public class MailingListBusiness {
      */
     public static boolean processMailEvent(IWApplicationContext iwac, EntityHolder holder, String type) {
         try {
+        	IWBundle bundle = iwac.getApplication().getBundle(Campus.CAMPUS_BUNDLE_IDENTIFIER);
+        	if(bundle.getProperty("no_mailevents")!=null){
+        		System.err.println("not sending any mail although requested");
+        		return false;
+        	}
             System.err.println("Sending email of type : " + type);
             List letters = EntityFinder.findAllByColumn(((is.idega.idegaweb.campus.block.mailinglist.data.EmailLetterHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetter.class)).createLegacy(), is.idega.idegaweb.campus.block.mailinglist.data.EmailLetterBMPBean.TYPE, type);
             if (letters != null) {
