@@ -402,7 +402,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			}
 		}
 	
-		SubmitButton sbUpdate = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
+		SubmitButton sbUpdate = (SubmitButton) getButton(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
 		
 		row++;
 		table.setHeight(row, 12);
