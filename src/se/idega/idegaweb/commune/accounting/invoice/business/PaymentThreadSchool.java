@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/05 10:35:30 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/05 14:09:20 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.81 $
+ * @version $Revision: 1.82 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -634,7 +634,13 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		int studyPathId = schoolClassMember.getStudyPathId();
 		if (studyPathId != -1) {
 			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(studyPathId)));
-			errorRelated.append("Study path " + schoolClassMember.getStudyPathId());
+			errorRelated.append("Study path ID " + schoolClassMember.getStudyPathId());
+			try {
+				SchoolCategory schoolCategory = (SchoolCategory)((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(new Integer(schoolClassMember.getStudyPathId()));
+				errorRelated.append("Study path " + schoolCategory.getLocalizedKey());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return conditions;
 	}
