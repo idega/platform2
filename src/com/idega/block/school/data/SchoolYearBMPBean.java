@@ -84,7 +84,7 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 	public int getSchoolTypeId() {
 		int schoolTypeId = getIntColumnValue(SCHOOL_TYPE);
 
-		if (schoolTypeId < 1) {
+		/*if (schoolTypeId < 1) {
 			System.out.println("SchoolYearBMPBean : SchoolTypeId = " + schoolTypeId + " ... trying to find a new one");
 			String name = this.getSchoolYearName();
 			if (name != null) {
@@ -98,7 +98,7 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 			else {
 				System.out.println("... SchoolYear has name = NULL (pk=" + getPrimaryKey().toString() + ")");
 			}
-		}
+		}*/
 
 		return schoolTypeId;
 	}
