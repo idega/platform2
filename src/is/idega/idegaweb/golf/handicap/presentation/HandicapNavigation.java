@@ -89,12 +89,15 @@ public class HandicapNavigation extends GolfBlock {
 
 		Link information = new Link(mynd4, uri);
 		information.addParameter("handicap_action", "information");
+		information.setPage(getParentPageID());
 
 		Link registerScore = new Link(mynd5, uri);
 		registerScore.addParameter("handicap_action", "registerScore");
+		registerScore.setPage(getParentPageID());
 
 		Link overView = new Link(mynd6, uri);
 		overView.addParameter("handicap_action", "overView");
+		overView.setPage(getParentPageID());
 
 		if ((action == null) || ("information".equalsIgnoreCase(action))) {
 			myTable.add(mynd1, 1, 1);

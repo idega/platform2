@@ -30,6 +30,8 @@ import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -227,14 +229,16 @@ public class HandicapInfo extends GolfBlock {
 		clubText.setFontSize(2);
 		clubText.setBold();
 
-		Window memberWindow = new Window("", 400, 280, "/handicap/select_member.jsp");
+		GolfWindow memberWindow = new GolfWindow("", 400, 280);
+		memberWindow.add(new HandicapFindMember());
 		memberWindow.setResizable(true);
 		Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif", "handicap.select", "Select member");
 		selectMemberImage.setHorizontalSpacing(10);
 		Link selectMember = new Link(selectMemberImage, memberWindow);
 		selectMember.clearParameters();
 
-		Window handicapWindow = new Window("", 400, 280, "/handicap/update_handicap.jsp");
+		GolfWindow handicapWindow = new GolfWindow("", 400, 280);
+		handicapWindow.add(new HandicapUpdate());
 		Image updateHandicapImage = iwrb.getImage("buttons/update.gif", "handicap.update_handicap", "Update handicap");
 		updateHandicapImage.setHorizontalSpacing(10);
 		Link handicapUpdate = new Link(updateHandicapImage, handicapWindow);

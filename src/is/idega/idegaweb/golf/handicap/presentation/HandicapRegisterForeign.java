@@ -48,7 +48,7 @@ public class HandicapRegisterForeign extends GolfBlock {
 					myTable.setCellpadding(5);
 					myTable.setAlignment("center");
 
-					Form myForm = new Form("foreign_round.jsp", "get");
+					Form myForm = new Form();
 					myTable.add(new HiddenInput("member_id", member_id));
 					myTable.add(new HiddenInput("mode", "save"));
 

@@ -32,6 +32,9 @@ import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.JmoduleWindowModule;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import com.idega.util.IWCalendar;
 
 public class HandicapScore extends GolfBlock {
@@ -200,13 +203,15 @@ public class HandicapScore extends GolfBlock {
 		select_tee.keepStatusOnAction();
 		select_tee.setSelectedElement(tee_number);
 
-		Window memberWindow = new Window("", 400, 220, "/handicap/select_member.jsp");
+		GolfWindow memberWindow = new GolfWindow("", 400, 220);
+		memberWindow.add(new HandicapFindMember());
 		Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif", "handicap.select", "Select member");
 		selectMemberImage.setHorizontalSpacing(10);
 		Link selectMember = new Link(selectMemberImage, memberWindow);
 		selectMember.clearParameters();
 
-		Window fieldWindow = new Window("", 400, 220, "/handicap/select_field.jsp");
+		GolfWindow fieldWindow = new GolfWindow("", 400, 220);
+		fieldWindow.add(new HandicapUtility());
 		Image selectFieldImage = iwrb.getImage("buttons/choose.gif", "handicap.select_course", "Select course");
 		selectFieldImage.setHorizontalSpacing(10);
 		Link selectField = new Link(selectFieldImage, fieldWindow);
@@ -268,11 +273,11 @@ public class HandicapScore extends GolfBlock {
 		myTable.setAlignment(1, 7, "right");
 		myTable.setVerticalAlignment(1, 7, "top");
 
-		Window foreignWindow = new Window("", 400, 220, "/handicap/foreign_round.jsp");
+		GolfWindow foreignWindow = new GolfWindow("", 400, 220);
+		foreignWindow.add(new HandicapRegisterForeign());
 		Image foreignImage = iwrb.getImage("buttons/foreign_round.gif", "handicap.foreign_round", "Foreign round");
 		foreignImage.setHorizontalSpacing(4);
 		Link foreignRound = new Link(foreignImage, foreignWindow);
-		foreignRound.clearParameters();
 		foreignRound.addParameter("member_id", member_id);
 		myTable.add(foreignRound, 1, 7);
 
@@ -292,8 +297,11 @@ public class HandicapScore extends GolfBlock {
 	}
 
 	private void getForm() {
-		Window skraWindow = new Window("", 600, 600, "/handicap/handicap.jsp");
-		myForm = new Form(skraWindow);
+		//GolfWindow skraWindow = new GolfWindow("", 600, 600);
+		//skraWindow.add(new HandicapRegister());
+		//myForm = new Form(skraWindow);
+		myForm = new Form();
+		myForm.setWindowToOpen(HandicapRegisterWindow.class);
 		myForm.add(new HiddenInput("member_id", member_id));
 	}
 }

@@ -148,7 +148,7 @@ public class HandicapRegister extends GolfBlock {
 			}
 			year = String.valueOf(scoreDate.getYear());
 			month = String.valueOf(scoreDate.getMonth());
-			day = String.valueOf(scoreDate.getDate());
+			day = String.valueOf(scoreDate.getDay());
 			tournament_round_id = String.valueOf(scorecardID.getTournamentRoundId());
 			if (tournament_round_id.equalsIgnoreCase("1")) {
 				tournament = false;
