@@ -149,11 +149,11 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 					TextInput nameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CLASS_NAME));
 					nameInput.setValue(element.getName());
 					
-					Collection users;
+					Collection userPKs;
 					try {
-						users = getSchoolUserBusiness(iwc).getTeachers(getSchoolID());
+						userPKs = getSchoolUserBusiness(iwc).getTeacherUserIds(getSchoolID());
 						UserChooser uc = new UserChooser(PARAMETER_TEACHER_ID);
-						uc.setValidUserPks(users);
+						uc.setValidUserPks(userPKs);
 						table.add(uc,2,row);
 					} catch (FinderException e) {
 						e.printStackTrace(System.err);

@@ -343,15 +343,53 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindAllBySeasonAndMaximumAge(int seasonID, int maxAge) throws FinderException, RemoteException {
+	public Collection ejbFindAllLastYearStudentsBySeasonAndMaximumAge(SchoolSeason season, int maxAge) throws FinderException {
+		return ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge(season,null,maxAge);
+	}
+
+	/**
+	 * Finds all Students who are on the last year in their school. Does not take into account years with age higher than 14 by default.
+	 * @param season
+	 * @param year
+	 * @return
+	 * @throws FinderException
+	 * @throws RemoteException
+	 */
+	public Collection ejbFindAllLastYearStudentsBySeasonAndYear(SchoolSeason season,SchoolYear year) throws FinderException {
+		int maxAge=14;
+		return  ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge(season,year,maxAge);
+	}
+
+	/**
+	 * Finds all Students who are on the last year in their school
+	 * @param season
+	 * @param year
+	 * @param maxAge The age to be maximum taken into account for a last year.
+	 * @return
+	 * @throws FinderException
+	 * @throws RemoteException
+	 */
+	public Collection ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge(SchoolSeason season,SchoolYear year,int maxAge) throws FinderException {
+		if(season==null){
+			throw new FinderException("ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge: SchoolSeason not set");
+		}
 		final StringBuffer sql = new StringBuffer();
+		int seasonId = ((Integer)season.getPrimaryKey()).intValue();
+		int yearId=-1;
+		if(year!=null){
+			yearId = ((Integer)year.getPrimaryKey()).intValue();
+		}		
+		//int maxAge = 14;
 		sql.append("select student.*");
 		sql.append(" from sch_school_sch_school_year school,sch_school_year schoolyear, sch_school_class class, " + getTableName() + " student");
 		sql.append(" where school.sch_school_year_id = schoolyear.sch_school_year_id");
 		sql.append(" and class.sch_school_year_id = school.sch_school_year_id");
 		sql.append(" and class.school_id = school.sch_school_id");
-		sql.append(" and class.sch_school_season_id = " + seasonID);
+		sql.append(" and class.sch_school_season_id = " + seasonId);
 		sql.append(" and class.sch_school_class_id = student." + SCHOOLCLASS);
+		if(year!=null){
+			sql.append(" and schoolyear.sch_school_year_id = " + yearId);
+		}
 		sql.append(" and exists");
 		sql.append(" (");
 		sql.append(" select s.sch_school_id, max (y.year_age)");

@@ -433,9 +433,22 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}	
 
 	protected GenericButton getSubmitButton(String parameterName){
-		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_SUBMIT_KEY,"Submit")));
+		GenericButton button = getSubmitButton2(parameterName,null);
 		return button;
 	}
+	
+	//TODO: Rename this method getSubmitButton!
+	protected GenericButton getSubmitButton2(String parameterName,String parameterValue){
+		GenericButton button=null;
+		if(parameterValue==null){
+			button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_SUBMIT_KEY,"Submit")));
+		}
+		else{
+			button = getButton(new SubmitButton(localize(LOCALIZATION_SUBMIT_KEY,"Submit"),parameterName,parameterValue));
+		}
+		return button;
+	}
+	
 	
 	protected GenericButton getResetButton(){
 		GenericButton button = getButton(new ResetButton(localize(LOCALIZATION_RESET_KEY,"Reset")));

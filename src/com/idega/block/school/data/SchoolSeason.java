@@ -4,6 +4,7 @@ package com.idega.block.school.data;
 public interface SchoolSeason extends com.idega.data.IDOEntity
 {
  public java.lang.String getName();
+ public com.idega.block.school.data.SchoolSeason getPreviousSeason()throws javax.ejb.FinderException;
  public java.sql.Date getSchoolSeasonDueDate();
  public java.sql.Date getSchoolSeasonEnd();
  public java.lang.String getSchoolSeasonName();

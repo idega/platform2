@@ -3,6 +3,7 @@ package com.idega.block.school.data;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -78,14 +79,49 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
   public java.util.Collection ejbFindAllSchoolSeasons()throws FinderException{
     return super.idoFindAllIDsBySQL();
   }
+  
+  /**
+   * Gets the previous season to this one.
+   * @throws FinderException if none is found
+   */
+  public SchoolSeason getPreviousSeason() throws FinderException{
+  	return getSchoolSeasonHome().findPreviousSchoolSeason(this);
+  }
 
-  public java.util.Collection ejbFindAllPreviousSchoolSeasons(SchoolSeason schoolSeason)throws FinderException, RemoteException {
+	protected SchoolSeasonHome getSchoolSeasonHome(){
+		return (SchoolSeasonHome) getEJBLocalHome();
+	}
+
+  /**
+   * Find precisely the  schoolseasons that is previous to SchoolSeason schoolSeason
+   * @param schoolSeason
+   * @return
+   * @throws FinderException If no season was found
+   */
+  public Integer ejbFindPreviousSchoolSeason(SchoolSeason schoolSeason)throws FinderException {
+	Collection coll = ejbFindAllPreviousSchoolSeasons(schoolSeason);
+	if(coll!=null){
+		Iterator iter = coll.iterator();
+		if(iter.hasNext()){
+			return (Integer)iter.next();
+		}
+	}
+	throw new FinderException("No previous SchoolSeasons to season "+schoolSeason+" found");
+  }
+
+  /**
+   * Find all schoolseasons that start before SchoolSeason schoolSeason and order by start date
+   * @param schoolSeason
+   * @return
+   * @throws FinderException If an error occured during the search
+   */
+  public java.util.Collection ejbFindAllPreviousSchoolSeasons(SchoolSeason schoolSeason)throws FinderException {
     IDOQuery sql = idoQuery();
     sql.appendSelectAllFrom(this.getEntityName()).appendWhere().append(START).append("<").appendWithinSingleQuotes(schoolSeason.getSchoolSeasonStart().toString()).appendOrderBy(START);
     return super.idoFindPKsBySQL(sql.toString());
   }
 
-	public Integer ejbFindSeasonByDate(Date date)throws FinderException, RemoteException {
+	public Integer ejbFindSeasonByDate(Date date)throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhere().append(START).appendLessThanOrEqualsSign().append(date);
 		sql.appendAnd().append(END).appendGreaterThanOrEqualsSign().append(date);

@@ -23,9 +23,9 @@ public java.util.Collection findAllBySeasonAndInvoiceInterval(int p0,java.lang.S
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllBySeasonAndMaximumAge(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySeasonAndMaximumAge(p0,p1);
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -37,16 +37,23 @@ public java.util.Collection findAllByUserAndSeason(int p0,int p1)throws javax.ej
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllLastYearStudentsBySeasonAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllLastYearStudentsBySeasonAndMaximumAge(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllLastYearStudentsBySeasonAndYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindBySchool(p0,p1,p2);
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllLastYearStudentsBySeasonAndYear(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -54,6 +61,13 @@ public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2)throws j
 public java.util.Collection findBySchool(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindBySchool(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindBySchool(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -79,14 +93,14 @@ public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2)th
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolClass(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findBySchoolClass(com.idega.block.school.data.SchoolClass p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindBySchoolClass(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolClass(com.idega.block.school.data.SchoolClass p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findBySchoolClass(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindBySchoolClass(p0);
 	this.idoCheckInPooledEntity(entity);
@@ -149,14 +163,14 @@ public SchoolClassMember findByUserAndSchoolClass(com.idega.user.data.User p0,co
 	return this.findByPrimaryKey(pk);
 }
 
-public SchoolClassMember findByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByUserAndSeason(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
 
-public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public SchoolClassMember findByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByUserAndSeason(p0,p1);
 	this.idoCheckInPooledEntity(entity);
