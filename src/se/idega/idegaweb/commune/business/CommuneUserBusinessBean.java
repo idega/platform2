@@ -960,6 +960,22 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 	}
 	
+	public void updateCitizenAddress(int userID, String address, String postalCode, String postalName, Integer communeId) throws RemoteException {
+		try {
+			AddressBusiness addressBiz = (AddressBusiness) getServiceInstance(AddressBusiness.class);
+			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("SE");
+			PostalCode code = addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,country);
+
+			updateUsersMainAddressOrCreateIfDoesNotExist(new Integer(userID), address, (Integer) code.getPrimaryKey(), country.getName(), postalName, postalName, null, communeId);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace(System.err);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+		}
+	}
+	
 	public Email getEmail(User user) {
 		try {
 			return getUsersMainEmail(user);
