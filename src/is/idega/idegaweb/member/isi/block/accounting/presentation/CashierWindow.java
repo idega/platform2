@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.datareport.presentation.ReportGenerator;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -67,10 +68,23 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private static final String REPORT_ENTRY_OVERVIEW = "isi_acc_cw_rep_entry_overview";
 	private static final String REPORT_LATE_PAYMENT_LIST = "isi_acc_cw_rep_late_payment_list";
 	private static final String REPORT_PAYMENT_LIST = "isi_acc_cw_rep_payment_list";
+	
+	private static final String STATS_LOCALIZABLE_KEY_NAME = "STATS_LOCALIZABLE_KEY_NAME";
+	//public static final String STATS_LAYOUT_PREFIX = "STATS_LAYOUT_PREFIX";
+	private static final String STATS_LAYOUT_PARAM = "STATS_LAYOUT_PARAM";
+	private static final String STATS_INVOCATION_PARAM = "STATS_INVOCATION_PARAM";
+	//private static final String STATS_INVOCATION_PREFIX = "stats_invocation_xml_file_id_";
+	private static final String STATS_LAYOUT_NAME_FROM_BUNDLE = "STATS_LAYOUT_NAME_FROM_BUNDLE";
+	private static final String STATS_INVOCATION_NAME_FROM_BUNDLE = "STATS_INVOCATION_NAME_FROM_BUNDLE";
+	
 
 	private String PARAMETER_PID = "cw_pid";
 	private String PARAMETER_STATUS = "cw_sta";
 	private String PARAMETER_SAVE = "cw_sv";
+	private String PARAMETER_Group = "cw_group";
+	
+	private IWResourceBundle iwrb;
+	private IWBundle iwb;
 
 	private static final String HELP_TEXT_KEY = "cashier_window";
 
@@ -328,11 +342,38 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 		
 		//reports
+		Text statistics = formatHeadline(iwrb.getLocalizedString("isi_acc_cashierwindow.statistics", "Statistics"));
+
+		Table stats = new Table(2,14);
+		stats.setColumnWidth(1,"20");
+		stats.mergeCells(1,1,2,1);
+		stats.mergeCells(1,3,2,3);
+		stats.mergeCells(1,5,2,5);
+		stats.mergeCells(1,7,2,7);
+		stats.mergeCells(1,9,2,9);
+		stats.mergeCells(1,11,2,11);
+		stats.mergeCells(1,13,2,13);
+		
+		stats.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.leagues", "Leagues")),1,1);
+		
 		LinkContainer paymentStatus = new LinkContainer();
-		paymentStatus.setStyleClass(styledLink);
-		paymentStatus.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.paymentStatus", "Payment status (A.29)")));
+		paymentStatus.add(formatText(iwrb.getLocalizedString("isi_acc_cashierwindow.paymentStatus", "Payment Status"), false));
 		paymentStatus.addParameter(ACTION, REPORT_PAYMENT_STATUS);
 		paymentStatus.addParameter(PARAMETER_GROUP_ID, ((Integer) _group.getPrimaryKey()).toString());
+		paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.1.xml");
+		paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-A29.1.xml");
+		paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.payment_status_reportname");
+		if (_user != null) {
+			paymentStatus.addParameter(PARAMETER_USER_ID, ((Integer) _user.getPrimaryKey()).toString());
+		}
+		if (_club != null) {
+			paymentStatus.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
+		}
+			
+		paymentStatus.setStyleClass(styledLink);
+		
+		stats.add(paymentStatus,2,2);
+		stats.addBreak(2,2);
 
 		LinkContainer paymentOverview = new LinkContainer();
 		paymentOverview.setStyleClass(styledLink);
@@ -436,10 +477,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 			return false;
 		}
 		
-		System.out.println("Going to get all the cashierGroups for the user");
+		//System.out.println("Going to get all the cashierGroups for the user");
 		
 		Collection cashierGroupsInClubForUser = getGroupsForUser(iwc, currentUser);
-		System.out.println("Done getting groups.");
+		//System.out.println("Done getting groups.");
 		if (cashierGroupsInClubForUser == null || cashierGroupsInClubForUser.isEmpty()) {
 			Text errorText = new Text(_iwrb.getLocalizedString("isi_acc_user_not_cashier", "You are not logged in as a cashier for this club. Please log in as a cashier and try again."));
 			errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
@@ -511,7 +552,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
-		
+		iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
 		init(iwc);
 		
 		boolean hasPermission = getHasPermissionToViewWindow(iwc);
@@ -549,6 +591,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 		Table menuTable = getMenuTable(iwc);
 
 		table.add(menuTable, 1, 1);
+		
+		add(table, iwc);
 
 		if (action != null) {
 			CashierSubWindowTemplate subWindow = null;
@@ -603,6 +647,55 @@ public class CashierWindow extends StyledIWAdminWindow {
 				subWindow = new EditTariffList();
 				helpTextKey = ACTION_MEMBER_CREDITCARD + "_help";
 				subWindow = new UserCreditcard();
+			} 
+			else if (action.equals(REPORT_PAYMENT_STATUS)) {
+				ReportGenerator repGen = new ReportGenerator();
+				repGen.setParameterToMaintain(ACTION);
+				repGen.setParameterToMaintain(STATS_INVOCATION_PARAM);
+				repGen.setParameterToMaintain(STATS_LAYOUT_PARAM);
+				repGen.setParameterToMaintain(STATS_LAYOUT_NAME_FROM_BUNDLE);
+				repGen.setParameterToMaintain(STATS_INVOCATION_NAME_FROM_BUNDLE);
+				repGen.setParameterToMaintain(STATS_LOCALIZABLE_KEY_NAME);
+				repGen.setParameterToMaintain(PARAMETER_GROUP_ID);
+				repGen.setParameterToMaintain(PARAMETER_CLUB_ID);
+				String invocationKey = iwc.getParameter(STATS_INVOCATION_PARAM);
+				String invocationFileName = iwc.getParameter(STATS_INVOCATION_NAME_FROM_BUNDLE);
+				String layoutKey = iwc.getParameter(STATS_LAYOUT_PARAM);
+				String layoutFileName = iwc.getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
+				String localizedNameKey = iwc.getParameter(STATS_LOCALIZABLE_KEY_NAME);
+				if( (invocationKey!=null && iwb.getProperty(invocationKey,"-1")!=null) || invocationFileName!=null ){
+					
+					if(invocationFileName!=null){
+						repGen.setMethodInvocationBundleAndFileName(iwb,invocationFileName);
+					}
+					else{
+						Integer invocationICFileID = new Integer(iwb.getProperty(invocationKey));
+						
+						if(invocationICFileID.intValue()>0){
+							repGen.setMethodInvocationICFileID(invocationICFileID);
+						}
+					}
+					if(layoutFileName!=null){
+						repGen.setLayoutBundleAndFileName(iwb,layoutFileName);
+					}
+					else if(layoutKey!=null && iwb.getProperty(layoutKey,"-1")!=null ){
+						Integer layoutICFileID = new Integer(iwb.getProperty(layoutKey));
+						if(layoutICFileID.intValue()>0)
+							repGen.setLayoutICFileID(layoutICFileID);
+					}				
+					if(localizedNameKey!=null){
+						String reportName = iwrb.getLocalizedString(localizedNameKey);
+						repGen.setReportName(reportName);						
+						table.add(formatHeadline(reportName),2,1);	//not a selector
+						table.addBreak(2,1);
+					}
+				}
+				table.add(repGen,2,1);	//not a selector
+				//selectorIsSet = true;
+				//this.addTitle(iwrb.getLocalizedString(REPORT_PAYMENT_STATUS, "Statistics"));
+				//this.addTitle(iwrb.getLocalizedString(REPORT_PAYMENT_STATUS, "Statistics"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				this.addTitle("Statistics");
+				this.addTitle("Statistics", IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 
 			if (_club != null) {
@@ -628,8 +721,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 				table.add(subWindow, 2, 1);
 			}
 		}
-
-		add(table, iwc);
 	}
 
 	public String getBundleIdentifier() {
