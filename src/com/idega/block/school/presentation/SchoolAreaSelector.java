@@ -114,8 +114,10 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 
 			int row = 0;
 			int col = 1;
-		
-			Iterator iter = coll.iterator(); //coll = collection with all schools for a specific category
+			
+			Collection collSchools = sb.getHomeCommuneSchools(coll);
+			Iterator iter = collSchools.iterator(); //collSchools = collection with all schools for a specific category and the home commune
+			
 			while (iter.hasNext()) {
 				++row;		
 				table.setWidth(col, row, _spaceBetween);
