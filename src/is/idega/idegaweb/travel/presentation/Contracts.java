@@ -104,7 +104,8 @@ public class Contracts extends TravelManager {
       resellers = getResellers();
 
       if (reseller != null) {
-        suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName() );
+        suppliers = super.getContractBusiness(iwc).getSuppliersWithContracts(reseller.getID(), com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName());
+//        suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName() );
       }
 
   }
@@ -298,7 +299,8 @@ public class Contracts extends TravelManager {
       }else {
         products = ResellerManager.getProductsWithContracts(res, reseller.getID(), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
       }*/
-      products = ResellerManager.getProductsWithContracts(reseller, com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
+      products = super.getContractBusiness(iwc).getProductsWithContracts(reseller, com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
+//      products = ResellerManager.getProductsWithContracts(reseller, com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
       //products = tsb.getProducts(Integer.parseInt(supplier_id));
     }
 //    System.err.println("products.length = "+products.length);
@@ -353,7 +355,8 @@ public class Contracts extends TravelManager {
 //        table.mergeCells(1,row,3,row);
 
 //          if (supplier != null) {
-            if (ResellerManager.isActiveContract( tReseller.getID(), products[i].getID())) {
+            if (super.getContractBusiness(iwc).isActiveContract(tReseller.getID(), products[i].getID()) ) {
+//            if (ResellerManager.isActiveContract( tReseller.getID(), products[i].getID())) {
 //            if (ResellerManager.isActiveContract(supplier.getID() , tReseller.getID(), products[i].getID())) {
               pIsActive = (Text) theBoldText.clone();
                 pIsActive.setFontColor(BLACK);

@@ -1,7 +1,6 @@
 package com.idega.block.trade.stockroom.business;
 
 import com.idega.block.trade.stockroom.presentation.ProductCatalog;
-import is.idega.idegaweb.travel.presentation.ServiceViewer;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -21,7 +20,8 @@ import com.idega.block.trade.stockroom.data.*;
 /**
  * @todo losa við service;
  */
-import is.idega.idegaweb.travel.data.Service;
+//import is.idega.idegaweb.travel.data.Service;
+//import is.idega.idegaweb.travel.presentation.ServiceViewer;
 
 
 /**
@@ -119,7 +119,7 @@ public class ProductBusiness {
       }
     }
 
-    ProductBusiness.removeProductApplication(IWContext.getInstance(), supplierId);
+    ProductBusiness.clearProductCache(IWContext.getInstance(), supplierId);
     return product.getID();
   }
 
@@ -386,9 +386,8 @@ public class ProductBusiness {
   }
 
 
-  public static void removeProductApplication(IWContext iwc, int supplierId) {
+  public static void clearProductCache(IWContext iwc, int supplierId) {
     iwc.removeApplicationAttribute(productsApplication+supplierId);
-    iwc.getApplication().getIWCacheManager().invalidateCache(ServiceViewer.CACHE_KEY+supplierId);
     iwc.getApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
   }
 
@@ -597,21 +596,6 @@ public class ProductBusiness {
       sql.printStackTrace(System.err);
     }
     return returner;
-  }
-
-  public static idegaTimestamp getDepartureTime(Product product) throws SQLException {
-    return getDepartureTime(product.getID());
- }
-
-  public static idegaTimestamp getDepartureTime(int productId) throws SQLException {
-    /** @todo FIXA STRAX !!! */
-    try {
-      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
-      idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
-      return tempStamp;
-    }catch (Exception e) {
-      throw new SQLException(e.getMessage());
-    }
   }
 
   public static Address[] getDepartureAddressesOld(Product product) throws SQLException {

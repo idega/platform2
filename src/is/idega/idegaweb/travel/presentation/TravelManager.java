@@ -467,6 +467,10 @@ public class TravelManager extends Block {
       return (ServiceHandler) IBOLookup.getServiceInstance(iwac, ServiceHandler.class);
     }
 
+    protected ContractBusiness getContractBusiness(IWApplicationContext iwac) throws RemoteException {
+      return (ContractBusiness) IBOLookup.getServiceInstance(iwac, ContractBusiness.class);
+    }
+
     protected boolean isTravelAdministrator(IWContext iwc) {
       return iwc.hasEditPermission(this);
       /*

@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.business;
 
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import java.rmi.RemoteException;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -34,6 +35,7 @@ public class ProductComparator implements Comparator {
   private int localeId = -1;
   private int sortBy;
   private StockroomBusiness stockroomBusiness;
+  private ServiceHandler serviceHandler;
 
   public ProductComparator() {
     this(1);
@@ -109,8 +111,8 @@ public class ProductComparator implements Comparator {
     Product p2 = (Product) o2;
 
     try {
-      idegaTimestamp s1 = ProductBusiness.getDepartureTime(p1);
-      idegaTimestamp s2 = ProductBusiness.getDepartureTime(p2);
+      idegaTimestamp s1 = getServiceHandler().getDepartureTime(p1);
+      idegaTimestamp s2 = getServiceHandler().getDepartureTime(p2);
 
       if (s1.isLaterThan(s2)) {
 	return 1;
@@ -122,6 +124,8 @@ public class ProductComparator implements Comparator {
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
       return 0;
+    }catch (RemoteException r) {
+      throw new RuntimeException(r.getMessage());
     }
 
   }
@@ -246,6 +250,17 @@ public class ProductComparator implements Comparator {
         stockroomBusiness = (StockroomBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), StockroomBusiness.class);
       }
       return stockroomBusiness;
+    }catch (RemoteException re) {
+      throw new RuntimeException(re.getMessage());
+    }
+  }
+
+  private ServiceHandler getServiceHandler() {
+    try {
+      if (serviceHandler == null) {
+        serviceHandler = (ServiceHandler) IBOLookup.getServiceInstance(IWContext.getInstance(), ServiceHandler.class);
+      }
+      return serviceHandler;
     }catch (RemoteException re) {
       throw new RuntimeException(re.getMessage());
     }

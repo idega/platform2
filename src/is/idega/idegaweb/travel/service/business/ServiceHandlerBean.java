@@ -1,5 +1,9 @@
 package is.idega.idegaweb.travel.service.business;
 
+import is.idega.idegaweb.travel.presentation.ServiceViewer;
+import is.idega.idegaweb.travel.data.Service;
+import java.sql.SQLException;
+import com.idega.util.idegaTimestamp;
 import java.util.*;
 import java.rmi.RemoteException;
 import com.idega.business.*;
@@ -109,4 +113,28 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   private ProductCategoryFactory getProductCategoryFactory() throws RemoteException{
     return (ProductCategoryFactory) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductCategoryFactory.class);
   }
+
+
+  public idegaTimestamp getDepartureTime(Product product) throws SQLException {
+    return getDepartureTime(product.getID());
+ }
+
+  public idegaTimestamp getDepartureTime(int productId) throws SQLException {
+    /** @todo FIXA STRAX !!! */
+    try {
+      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
+      idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
+      return tempStamp;
+    }catch (Exception e) {
+      throw new SQLException(e.getMessage());
+    }
+  }
+
+  public void removeProductApplication(IWContext iwc, int supplierId) {
+    ProductBusiness.clearProductCache(iwc, supplierId);
+    iwc.getApplication().getIWCacheManager().invalidateCache(ServiceViewer.CACHE_KEY+""+supplierId);
+  }
+
+
+
 }

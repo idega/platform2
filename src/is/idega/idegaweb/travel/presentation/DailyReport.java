@@ -871,7 +871,7 @@ public class DailyReport extends TravelManager implements Report{
 	bookings = getBooker(iwc).getBookings(prod.getID(), stamp);
 	count = getBooker(iwc).getNumberOfBookings(prod.getID(), stamp);
 	price =  getBooker(iwc).getBookingPrice(iwc, bookings);
-	depTime = ProductBusiness.getDepartureTime(prod);
+	depTime = getServiceHandler(iwc).getDepartureTime(prod);
 	totalCount += count;
 	totalPrice += price;
 

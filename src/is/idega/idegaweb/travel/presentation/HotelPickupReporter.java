@@ -139,7 +139,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
       try {
         if (bookings.length > 0) {
           ++row;
-          tempStamp = ProductBusiness.getDepartureTime(prod);
+          tempStamp = getServiceHandler(iwc).getDepartureTime(prod);
           table.mergeCells(1,row,3,row);
           productNameTxt = new Text();
             productNameTxt.setFontStyle(super.theBoldTextStyle+";text-decoration: underline");
