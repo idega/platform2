@@ -60,11 +60,13 @@ import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 import com.lowagie.text.BadElementException;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.Font;
+
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -74,6 +76,7 @@ import com.lowagie.text.markup.MarkupTags;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
+
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
@@ -390,7 +393,7 @@ public class DocumentBusinessBean
 	/**
 	 * Gets the point equal to given millimetercount
 	 **/
-	protected float getPointsFromMM(float millimeters) {
+	public float getPointsFromMM(float millimeters) {
 		float pointPerMM = 72 / 25.4f;
 		return millimeters * pointPerMM;
 	}
@@ -834,6 +837,34 @@ public class DocumentBusinessBean
 		image.setAbsolutePosition(getPointsFromMM(logoAbsPosX),getPointsFromMM(logoAbsPosY));
 		document.add(image);
 	
+	}
+	
+	public void createHeaderDate(Document document,PdfWriter writer,String dateString)throws DocumentException{
+		/*final PdfPTable header = new PdfPTable(new float[]{1});
+		header.setWidthPercentage(100f);
+		final PdfPCell defaultCell = header.getDefaultCell();
+		defaultCell.setBorder(0);
+		//defaultCell.setFixedHeight(getPointsFromMM(40));
+		defaultCell.setPadding(0);
+		defaultCell.setNoWrap(true);
+		defaultCell.setVerticalAlignment(align);
+		header.addCell(new Phrase(new Chunk(dateString, getDefaultParagraphFont())));
+		document.add(header);*/
+		PdfContentByte cb = writer.getDirectContent();
+		cb.beginText();
+		Font font = getDefaultParagraphFont();
+		
+		try {
+			BaseFont bf = BaseFont.createFont(font.getFamilyname(),BaseFont.CP1252,BaseFont.NOT_EMBEDDED);
+			cb.setFontAndSize(bf,font.size());
+			// we show some text starting on some absolute position with a given alignment
+			cb.showTextAligned(PdfContentByte.ALIGN_RIGHT, dateString, getPointsFromMM(210-20), getPointsFromMM(297-20), 0);
+			cb.endText();
+		}
+		
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void createAddressContent(String addressString, PdfWriter writer) throws DocumentException {

@@ -38,4 +38,6 @@ public interface DocumentBusiness extends com.idega.business.IBOService
  public void writeBulkPDF(java.lang.String[] p0,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3,java.lang.String p4,boolean p5,boolean p6,boolean p7)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public void writeBulkPDF(java.util.Collection p0,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3,java.lang.String p4,boolean p5,boolean p6,boolean p7) throws java.rmi.RemoteException;
  public int writePDF(se.idega.idegaweb.commune.message.data.PrintMessage p0,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3,boolean p4)throws java.lang.Exception, java.rmi.RemoteException;
+ public float getPointsFromMM(float millimeters) ;
+ public void createHeaderDate(com.lowagie.text.Document document,com.lowagie.text.pdf.PdfWriter writer,String dateString)throws com.lowagie.text.DocumentException;
 }
