@@ -153,7 +153,7 @@ public class PageCounter extends Block {
   }
 
   private boolean updateStats(String ipNumber){
-    return ipFilter.containsValue(ipNumber);
+    return !(ipFilter.containsValue(ipNumber));
   }
 
  public synchronized Object clone() {
