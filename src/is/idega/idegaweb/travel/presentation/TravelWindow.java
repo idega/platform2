@@ -27,6 +27,7 @@ public class TravelWindow extends Window {
   private Table table = new Table(3,2);
   protected Page jPage;
 
+
   protected Text text = new Text();
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
@@ -66,13 +67,12 @@ public class TravelWindow extends Window {
 
   }
 
-  private void initialize(IWContext iwc) {
-        user = LoginBusiness.getUser(iwc);
-        if (user != null) {
-          userId = user.getID();
-          isSuperAdmin = iwc.isSuperAdmin();
-        }
-
+  private void initialize(IWContext iwc) throws RemoteException{
+    user = LoginBusiness.getUser(iwc);
+    if (user != null) {
+      userId = user.getID();
+      isSuperAdmin = iwc.isSuperAdmin();
+    }
   }
   private void setTemplate(IWContext iwc) {
     //iwrb = super.getResourceBundle(iwc);
@@ -125,7 +125,8 @@ public class TravelWindow extends Window {
     return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
 
-  protected TravelSessionManager getTravelSessionManager(IWApplicationContext iwac) throws RemoteException {
-    return (TravelSessionManager) IBOLookup.getServiceInstance(iwac, TravelSessionManager.class);
+  protected TravelSessionManager getTravelSessionManager(IWContext iwc) throws RemoteException {
+    return TravelManager.getTravelSessionManagerStatic(iwc);
+//    return (TravelSessionManager) IBOLookup.getServiceInstance(iwc, TravelSessionManager.class);
   }
 }

@@ -486,6 +486,10 @@ public class TravelManager extends Block {
     }
 
     protected TravelSessionManager getTravelSessionManager(IWContext iwc) throws RemoteException{
+      return TravelManager.getTravelSessionManagerStatic(iwc);
+    }
+
+    public static TravelSessionManager getTravelSessionManagerStatic(IWContext iwc) throws RemoteException{
       return (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
     }
 }
