@@ -5,7 +5,11 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOQuery;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
  * Title:
@@ -132,24 +136,37 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 	}
   
   public Collection ejbFindAllSchoolTypes() throws javax.ejb.FinderException{
-	IDOQuery sql = idoQuery();
-	sql.appendSelectAllFrom(this);
-	sql.appendOrderBy();
-	sql.append(NAME);
-	return idoFindPKsByQuery(sql);
+      Table table = new Table(this);
+      SelectQuery query = new SelectQuery(table);
+      query.addColumn(new WildCardColumn());
+      query.addOrder(table,NAME,true); 
+      return idoFindPKsByQuery(query);
   }
 
   public Collection ejbFindAllByCategory(String category) throws javax.ejb.FinderException {
-    return super.idoFindAllIDsByColumnBySQL(SCHOOLCATEGORY,category);
+      Table table = new Table(this);
+	  SelectQuery query = new SelectQuery(table);
+	  query.addColumn(new WildCardColumn());
+	  query.addCriteria(new MatchCriteria(table,SCHOOLCATEGORY,MatchCriteria.EQUALS,category,true));
+	  return idoFindPKsByQuery(query);
   }
 
 	public Collection ejbFindAllByCategory(String category, boolean showFreetimeTypes) throws javax.ejb.FinderException {
+	    Table table = new Table(this);
+	    SelectQuery query = new SelectQuery(table);
+	    query.addColumn(new WildCardColumn());
+	    query.addCriteria(new MatchCriteria(table,SCHOOLCATEGORY,MatchCriteria.EQUALS,category,true));
+	    if(!showFreetimeTypes){
+	        query.addCriteria(new OR(new MatchCriteria(table,IS_FREETIME_TYPE,MatchCriteria.EQUALS,false),new MatchCriteria(table,IS_FREETIME_TYPE,MatchCriteria.IS,MatchCriteria.NULL)));
+	    }
+	    return super.idoFindPKsByQuery(query);
+	    /*
 		IDOQuery query = this.idoQueryGetSelect();
 		query.appendWhereEqualsQuoted(SCHOOLCATEGORY,category);
 		if (!showFreetimeTypes) {
 			query.appendAnd().appendLeftParenthesis().appendEquals(IS_FREETIME_TYPE, false).appendOr().append(IS_FREETIME_TYPE).appendIsNull().appendRightParenthesis();
 		}
-		return super.idoFindPKsByQuery(query);
+		return super.idoFindPKsByQuery(query);*/
 	}
 
 	/**
@@ -157,14 +174,18 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 	 *	@throws javax.ejb.FinderException if no SchoolType is found.	
 	 */
   public Integer ejbFindByTypeKey(String typeKey) throws javax.ejb.FinderException{
-  	IDOQuery query = this.idoQueryGetSelect();
-  	query.appendWhereEqualsQuoted(LOC_KEY,typeKey);
-  	return (Integer)super.idoFindOnePKByQuery(query);
+      Table table = new Table(this);
+	  SelectQuery query = new SelectQuery(table);
+	  query.addColumn(new WildCardColumn());
+	  query.addCriteria(new MatchCriteria(table,LOC_KEY,MatchCriteria.EQUALS,typeKey,true));
+  	  return (Integer)super.idoFindOnePKByQuery(query);
   }
   
   public Collection ejbFindAllFreetimeTypes() throws FinderException {
-  	IDOQuery query = this.idoQueryGetSelect();
-  	query.appendWhereEquals(IS_FREETIME_TYPE, true).appendOrderBy(NAME);
-  	return idoFindPKsByQuery(query);
+      Table table = new Table(this);
+	  SelectQuery query = new SelectQuery(table);
+	  query.addColumn(new WildCardColumn());
+	  query.addCriteria(new MatchCriteria(table,IS_FREETIME_TYPE,MatchCriteria.EQUALS,true));
+  	  return idoFindPKsByQuery(query);
   }
 }
