@@ -16,7 +16,7 @@ import com.idega.user.data.Group;
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class WorkReportBMPBean extends GenericEntity implements WorkReport{
+public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	protected final static String ENTITY_NAME = "ISI_WORK_REPORT";
 	protected final static String COLUMN_NAME_CLUB_ID = "CLUB_ID";
 	protected final static String COLUMN_NAME_CLUB_NAME = "CLUB_NAME";
@@ -26,6 +26,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	protected final static String COLUMN_NAME_MEMBERS_DONE = "MEMB_DONE";
 	protected final static String COLUMN_NAME_ACCOUNT_DONE = "ACC_DONE";
 	protected final static String COLUMN_NAME_BOARD_DONE = "BOARD_DONE";
+  protected final static String COLUMN_NAME_CREATION_FROM_DATABASE_DONE = "CREATION_FROM_DATABASE_DONE";
 	protected final static String COLUMN_NAME_STATUS = "STATUS";
 	protected final static String COLUMN_NAME_MEMBER_FILE_ID = "MEMBER_PART_FILE_ID";
 	protected final static String COLUMN_NAME_ACCOUNT_FILE_ID = "ACCOUNT_PART_FILE_ID";
@@ -49,7 +50,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 		addAttribute(COLUMN_NAME_MEMBERS_DONE, "Is the members-part of the work report finished", true, true, Boolean.class);
 		addAttribute(COLUMN_NAME_ACCOUNT_DONE, "Is the account-part of the work report finished", true, true, Boolean.class);		
 		addAttribute(COLUMN_NAME_BOARD_DONE, "Is the board-part of the work report finished", true, true, Boolean.class);	
-		addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, "Has the data been created from database?", true, true, Boolean.class);
+    addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
 		
 		addManyToManyRelationShip(WorkReportGroup.class);//so we can get the clubs related to leagues/divisions
 		
@@ -166,6 +168,14 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	public void setAccountPartDone(boolean isDone){
 		setColumn(COLUMN_NAME_ACCOUNT_DONE,isDone);
 	}
+  
+  public void setCreationFromDatabaseDone(boolean isDone) {
+    setColumn(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, isDone);
+  }
+  
+  public boolean isCreationFromDatabaseDone() {
+    return getBooleanColumnValue(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, false);
+  }
 	
 	public Integer ejbFindWorkReportByClubIdAndYearOfReport(int clubId, int yearOfReport) throws FinderException{
 		IDOQuery sql = idoQuery();

@@ -15,6 +15,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void initializeAttributes();
  public boolean isAccountPartDone();
  public boolean isBoardPartDone();
+ public boolean isCreationFromDatabaseDone();
  public boolean isMembersPartDone();
  public void setAccountFileId(int p0);
  public void setAccountPartDone(boolean p0);
@@ -25,6 +26,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setClubName(java.lang.String p0);
  public void setClubNumber(java.lang.String p0);
  public void setClubShortName(java.lang.String p0);
+ public void setCreationFromDatabaseDone(boolean p0);
  public void setMemberFileId(int p0);
  public void setMembersPartDone(boolean p0);
  public void setStatus(java.lang.String p0);
