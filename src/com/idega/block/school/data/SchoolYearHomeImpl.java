@@ -13,16 +13,9 @@ public class SchoolYearHomeImpl extends com.idega.data.IDOFactory implements Sch
  }
 
 
-public SchoolYear findByYearName(java.lang.String p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllByAge(com.idega.block.school.data.SchoolType p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((SchoolYearBMPBean)entity).ejbFindByYearName(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
-public java.util.Collection findAllSchoolYears()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllSchoolYears();
+	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllByAge(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -32,6 +25,34 @@ public java.util.Collection findAllByAge(int p0)throws javax.ejb.FinderException
 	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllByAge(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllSchoolYearBySchoolType(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllSchoolYearBySchoolType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllSchoolYears()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllSchoolYears();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public SchoolYear findByYearName(com.idega.block.school.data.SchoolType p0,java.lang.String p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolYearBMPBean)entity).ejbFindByYearName(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public SchoolYear findByYearName(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolYearBMPBean)entity).ejbFindByYearName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
 }
 
  public SchoolYear findByPrimaryKey(Object pk) throws javax.ejb.FinderException{

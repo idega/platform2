@@ -3,10 +3,13 @@ package com.idega.block.school.data;
 
 public interface SchoolYearHome extends com.idega.data.IDOHome
 {
- public SchoolYear create() throws javax.ejb.CreateException, java.rmi.RemoteException;
- public SchoolYear findByPrimaryKey(Object pk) throws javax.ejb.FinderException, java.rmi.RemoteException;
- public SchoolYear findByYearName(java.lang.String p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection findAllSchoolYears()throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection findAllByAge(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
+ public SchoolYear create() throws javax.ejb.CreateException;
+ public SchoolYear findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+ public java.util.Collection findAllByAge(com.idega.block.school.data.SchoolType p0,int p1)throws javax.ejb.FinderException;
+ public java.util.Collection findAllByAge(int p0)throws javax.ejb.FinderException;
+ public java.util.Collection findAllSchoolYearBySchoolType(int p0)throws javax.ejb.FinderException;
+ public java.util.Collection findAllSchoolYears()throws javax.ejb.FinderException;
+ public SchoolYear findByYearName(com.idega.block.school.data.SchoolType p0,java.lang.String p1)throws javax.ejb.FinderException;
+ public SchoolYear findByYearName(java.lang.String p0)throws javax.ejb.FinderException;
 
 }

@@ -3,12 +3,15 @@ package com.idega.block.school.data;
 
 public interface SchoolYear extends com.idega.data.IDOEntity
 {
- public int getSchoolYearAge() throws java.rmi.RemoteException;
- public java.lang.String getName() throws java.rmi.RemoteException;
- public void setSchoolYearAge(int p0) throws java.rmi.RemoteException;
- public void setSchoolYearName(java.lang.String p0) throws java.rmi.RemoteException;
- public void setSchoolYearInfo(java.lang.String p0) throws java.rmi.RemoteException;
- public void initializeAttributes() throws java.rmi.RemoteException;
- public java.lang.String getSchoolYearName() throws java.rmi.RemoteException;
- public java.lang.String getSchoolYearInfo() throws java.rmi.RemoteException;
+ public java.lang.String getName();
+ public int getSchoolTypeId();
+ public int getSchoolYearAge();
+ public java.lang.String getSchoolYearInfo();
+ public java.lang.String getSchoolYearName();
+ public java.util.Collection getSchoolYears(com.idega.block.school.data.SchoolType p0)throws javax.ejb.FinderException;
+ public void initializeAttributes();
+ public void setSchoolTypeId(int p0);
+ public void setSchoolYearAge(int p0);
+ public void setSchoolYearInfo(java.lang.String p0);
+ public void setSchoolYearName(java.lang.String p0);
 }
