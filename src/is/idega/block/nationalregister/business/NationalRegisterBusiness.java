@@ -126,7 +126,7 @@ public interface NationalRegisterBusiness extends IBOService , UserGroupPlugInBu
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getGroupToolbarElements
 	 */
-	public List getGroupToolbarElements(Group group) throws RemoteException;
+	public List getGroupToolbarElements(Group group) throws RemoteException;     
 
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getListViewerFields
