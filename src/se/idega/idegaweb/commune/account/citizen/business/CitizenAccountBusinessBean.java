@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.61 2004/01/21 11:51:19 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.62 2004/03/03 08:45:46 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2004/01/21 11:51:19 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/03/03 08:45:46 $ by $Author: anders $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.61 $
+ * @version $Revision: 1.62 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -419,7 +419,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final IWTimestamp timestamp = birthDate != null ? new IWTimestamp(birthDate.getTime()) : null;
 			final CommuneUserBusiness userBusiness = getUserBusiness();
 			final String applicationReason = applicant.getApplicationReason();
-			final boolean notNackaResident = applicationReason != null && (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY));
+			final boolean notNackaResident = applicationReason != null && (
+					applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) ||
+					applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY) ||
+					applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY));
 			final User user = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp) : userBusiness.createOrUpdateCitizenByPersonalID(firstName, "", lastName, ssn, gender, timestamp);
 			Integer communeId = null;
 			try {
