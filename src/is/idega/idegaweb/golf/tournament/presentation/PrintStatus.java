@@ -90,31 +90,31 @@ public class PrintStatus extends GolfBlock {
 		
 
         StringBuffer data = new StringBuffer();
-        data.append("Sta?a"); data.append("\t");
-        data.append("Kylfingur"); data.append("\t");
-        data.append("Klœbbur"); data.append("\t");
-        data.append("Fgj."); data.append("\t");
+        data.append(localize("tournament.position","Position")); data.append("\t");
+        data.append(localize("tournament.player","Player")); data.append("\t");
+        data.append(localize("tournament.club","Club")); data.append("\t");
+        data.append(localize("tournament.handicap","Handicap")); data.append("\t");
         
 		  switch (tournamentType) {
 		    case ResultComparator.TOTALSTROKES :
-		        data.append("S’?asti hringur"); data.append("\t");
+		        data.append(localize("tournament.latest_rount","Latest round")); data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append(""); data.append("\t");
-		        data.append("Hringir"); data.append("\t");
+		        data.append(localize("trounament.rounds","Rounds")); data.append("\t");
 		        if (totalRounds > 1) {
 		        	for (int i = 2; i <= totalRounds; i++) {
 		        		data.append(""); data.append("\t");
 		        	}
 		        }
-		        data.append("Samt");data.append("\t");
+		        data.append(localize("trounament.total","Total"));data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append("\n");
 		    break;
 		
 		    case ResultComparator.TOTALSTROKESWITHHANDICAP :
-		        data.append("S’?asti hringur"); data.append("\t");
+		        data.append(localize("trounament.last_rounds","Last round")); data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append(""); data.append("\t");
@@ -123,17 +123,17 @@ public class PrintStatus extends GolfBlock {
 	        		data.append("H"+i); data.append("\t");
 	        		data.append(""); data.append("\t");
 	        	}
-		        data.append("Samt");data.append("\t");
+		        data.append(localize("trounament.total","Total"));data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append("\n");
 		    break;
 		
 		    case ResultComparator.TOTALPOINTS :
-		        data.append("S’?asti hringur"); data.append("\t");
+		        data.append(localize("trounament.last_rounds","Last round")); data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append(""); data.append("\t");
 		        data.append(""); data.append("\t");
-		        data.append("Hringir"); data.append("\t");
+		        data.append(localize("trounament.rounds","Rounds")); data.append("\t");
 		        if (totalRounds > 1) {
 		        	for (int i = 2; i <= totalRounds; i++) {
 		        		data.append(""); data.append("\t");
@@ -149,40 +149,40 @@ public class PrintStatus extends GolfBlock {
         data.append(""); data.append("\t");
         data.append(""); data.append("\t");
         data.append(""); data.append("\t");
-        data.append("Hola"); data.append("\t");
-        data.append("F9"); data.append("\t");
-        data.append("S9"); data.append("\t");
-        data.append("Samt"); data.append("\t");
+        data.append(localize("trounament.hole","Hole")); data.append("\t");
+        data.append(localize("trounament.F9","F9")); data.append("\t");
+        data.append(localize("trounament.S9","S9")); data.append("\t");
+        data.append(localize("trounament.total","Total")); data.append("\t");
 		  switch (tournamentType) {
 		    case ResultComparator.TOTALSTROKES :
-	        	data.append("Sta?a"); data.append("\t");
-		        data.append("H1"); data.append("\t");
+	        	data.append(localize("trounament.placement","Placement")); data.append("\t");
+		        data.append(localize("trounament.H1","H1")); data.append("\t");
 		        if (totalRounds > 1) {
 		        	for (int i = 2; i <= totalRounds; i++) {
-		        		data.append("H"+i); data.append("\t");
+		        		data.append(localize("trounament.H","H")+i); data.append("\t");
 		        	}
-			        data.append("Samt"); data.append("\t");
-		    	    data.append("Sta?a"); data.append("\t");
+			        data.append(localize("trounament.total","Total")); data.append("\t");
+		    	    data.append(localize("trounament.placement","Placement")); data.append("\t");
 		        }
 		        data.append("\n");
 		    break;
 		
 		    case ResultComparator.TOTALSTROKESWITHHANDICAP :
-	        	data.append("Netto"); data.append("\t");
+	        	data.append(localize("trounament.netto","Netto")); data.append("\t");
 	        	for (int i = 1; i <= totalRounds; i++) {
-	        		data.append("Samt"); data.append("\t");
-	        		data.append("Netto"); data.append("\t");
+	        		data.append(localize("trounament.total","Total")); data.append("\t");
+	        		data.append(localize("trounament.netto","Netto")); data.append("\t");
 	        	}
-		        data.append("Samt"); data.append("\t");
-	    	    data.append("Netto"); data.append("\t");
+		        data.append(localize("trounament.total","Total")); data.append("\t");
+	    	    data.append(localize("trounament.netto","Netto")); data.append("\t");
 		        data.append("\n");
 		    break;
 		
 		    case ResultComparator.TOTALPOINTS :
-		        data.append("H1"); data.append("\t");
+		        data.append(localize("trounament.H1","H1")); data.append("\t");
 		        if (totalRounds > 1) {
 		        	for (int i = 2; i <= totalRounds; i++) {
-		        		data.append("H"+i); data.append("\t");
+		        		data.append(localize("trounament.H","H")+i); data.append("\t");
 		        	}
 		        }
 		        data.append("\n");
