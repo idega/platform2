@@ -14,11 +14,9 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
-import com.idega.block.school.data.SchoolType;
 import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
-import com.idega.core.data.PostalCode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ExceptionWrapper;
@@ -31,8 +29,10 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
+import com.idega.util.PersonalIDFormatter;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
@@ -43,7 +43,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * This class does something very clever.....
@@ -62,11 +61,15 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private final static String PROVIDERS = "cca_providers";
 	private final static String LAST_NAME = "cca_last_name";
 	private final static String FIRST_NAME = "cca_first_name";
+	private final static String NAME = "cca_name";
+	private final static String PID = "cca_pid";
 	private final static String ADDRESS = "cca_address";
 	private final static String PO_TOWN = "cca_po_town";
 	private final static String CARE_FROM = "cca_care_from";
 	private final static String WANT_PROVIDER = "cca_want_provider";
 	private final static String WANT_PROVIDER_LINK = "cca_want_provider_link";
+	private final static String CHILD_CARE_CHOICES = "cca_choices";
+	private final static String SELECT_CHILD = "cca_select_child";
 
 	private final static String PARAM_FORM_SUBMIT = "cca_submit";
 	private final static String PARAM_DATE = "cca_date";
@@ -136,7 +139,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	protected Collection _areas = null;
 	protected Collection _providers = null;
 	protected Collection _schoolTypes = null;
-//	protected Collection _schoolType = null;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
@@ -199,6 +201,16 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	 * @param iwc The IdegaWeb context
 	 */
 	private void viewChecks(IWContext iwc) {
+		Form f = new Form();
+		Table T = new Table();
+		T.setCellpadding(0);
+		T.setCellspacing(0);
+		
+		int row = 1;
+		
+		T.add(getSmallText(localize(SELECT_CHILD,"Select the appropriate child") + ":"),1,row++);
+		T.setHeight(row++,12);
+						
 		Collection checks = null;
 
 		try {
@@ -223,31 +235,35 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				}
 
 				Link link = null;
-				//try {
 				if (child != null) {
-					link = new Link(child.getName());
+					link = getLink(child.getName());
 					link.addParameter(PARAM_CHECK_ID, ((Integer) check.getPrimaryKey()).toString());
 				}
-				//}
-				//catch (RemoteException e) {
-				//}
 
 				if (link != null) {
-					add(link);
-					add(Text.BREAK);
+					T.add(link, 1, row++);
+					T.setHeight(row++,2);
 				}
 			}
 		}
 		else {
 			add(getErrorText(localize(ERROR_NO_CHECKS, "This user has no checks")));
 		}
+		
+		f.add(T);
+		add(f);
 	}
 
 	private void viewForm(IWContext iwc) {
 		Form form = new Form();
 		form.setName(PARAM_FORM_NAME);
 		form.setOnSubmit("return checkApplication()");
-
+		
+		Table T = new Table();
+		T.setWidth(getWidth());
+		T.setCellpadding(0);
+		T.setCellspacing(0);
+		
 		String checkId = iwc.getParameter(PARAM_CHECK_ID);
 		form.addParameter(PARAM_CHECK_ID, checkId);
 		Check check = null;
@@ -270,102 +286,81 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			}
 		}
 
-		Table nameTable1 = new Table(2, 2);
-		nameTable1.setCellpadding(4);
-		nameTable1.setCellspacing(3);
-		nameTable1.setColor(1, 1, getBackgroundColor());
-		nameTable1.setColor(2, 1, getBackgroundColor());
-		nameTable1.add(getSmallText(localize(LAST_NAME, "Last name")), 1, 1);
-		nameTable1.add(getSmallText(localize(FIRST_NAME, "First name")), 2, 1);
-		if (child != null) {
-			try {
-				nameTable1.add(getSmallText(child.getLastName()), 1, 2);
-				nameTable1.add(getSmallText(child.getFirstName()), 2, 2);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+		Table nameTable = new Table();
+		nameTable.setColumns(3);
+		nameTable.setCellpadding(2);
+		nameTable.setCellspacing(0);
+		
+		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(NAME, "Name")+":"), 1, 1);
+		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(PID, "Personal ID")+":"), 1, 2);
+		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(ADDRESS, "Address")+":"), 1, 3);
 
-			form.addParameter(PARAM_CHILD_ID, ((Integer) child.getPrimaryKey()).intValue());
+		nameTable.add(getSmallText(child.getNameLastFirst(true)), 3, 1);
+		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
+		nameTable.add(getSmallText(personalID), 3, 2);
+
+		try {
+			Address address = getCheckBusiness(iwc).getUserAddress(child);
+//			PostalCode code = getCheckBusiness(iwc).getUserPostalCode(child);
+			if (address != null)
+				nameTable.add(getSmallText(address.getStreetAddress() + ", " + address.getPostalAddress()), 3, 3);
 		}
-
-		Table nameTable2 = new Table(2, 2);
-		nameTable2.setCellpadding(4);
-		nameTable2.setCellspacing(3);
-		nameTable2.setColor(1, 1, getBackgroundColor());
-		nameTable2.setColor(2, 1, getBackgroundColor());
-		nameTable2.add(getSmallText(localize(ADDRESS, "Address")), 1, 1);
-		nameTable2.add(getSmallText(localize(PO_TOWN, "Postoffice and town")), 2, 1);
-		if (child != null) {
-			try {
-				Address address = getCheckBusiness(iwc).getUserAddress(child);
-				PostalCode code = getCheckBusiness(iwc).getUserPostalCode(child);
-				if (address != null)
-					nameTable2.add(getSmallText(address.getStreetName() + " " + address.getStreetNumber()), 1, 2);
-				if (code != null)
-					nameTable2.add(getSmallText(code.getPostalCode() + " " + code.getName()), 2, 2);
-			}
-			catch (RemoteException e) {
-			}
-			catch (Exception e) {
-			}
+		catch (RemoteException e) {
 		}
+		catch (Exception e) {
+		}		
 
-		Table inputTable = new Table(3, 11);
-		inputTable.setCellspacing(2);
-		inputTable.setCellpadding(4);
-		inputTable.setAlignment(3, 11, "right");
-		inputTable.setColor(getBackgroundColor());
-		inputTable.mergeCells(1, 1, 3, 1);
-		inputTable.mergeCells(1, 2, 3, 2);
-		inputTable.mergeCells(1, 3, 3, 3);
-		inputTable.mergeCells(2, 4, 3, 4);
-		inputTable.mergeCells(1, 5, 3, 5);
-		inputTable.mergeCells(1, 11, 3, 11);
+		nameTable.setWidth(1, "100");
+		nameTable.setWidth(2, "8");
 
-		inputTable.add(getHeader(localize(PROVIDERS, "Providers")), 1, 2);
+		Table inputTable = new Table();
+		inputTable.setCellspacing(0);
+		inputTable.setCellpadding(2);
+		inputTable.setColumns(5);
 
-		SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, localize(PARAM_FORM_SUBMIT, "Submit application"));
-		submit.setAsImageButton(true);
-		inputTable.setAlignment(1, 11, "Right");
-		inputTable.add(submit, 1, 11);
+		int row = 1;
+		inputTable.mergeCells(1, 1, inputTable.getColumns(), row);
+		inputTable.add(getHeader(localize(PROVIDERS, "Providers")), 1, row++);
 
 		String provider = localize(PARAM_PROVIDER, "Provider");
-		String from = localize(CARE_FROM, "From");
+		String from = localize(CARE_FROM, "From") + ":";
 		Text providerText = null;
-		Text fromText = getSmallText(from);
+		Text fromText = getSmallHeader(from);
 
-		DateInput date = new DateInput(PARAM_DATE);
+		DateInput date = (DateInput)getStyledInterface(new DateInput(PARAM_DATE));
 		date.setToCurrentDate();
 		date.setStyleAttribute("style", getSmallTextFontStyle());
-		inputTable.add(fromText, 1, 4);
-		inputTable.add(date, 2, 4);
+		inputTable.add(fromText, 1, row);
+		inputTable.mergeCells(3, 2, inputTable.getColumns(), 2);
+		inputTable.add(date, 3, row++);
 
-		/*DropdownMenu drpFirstArea = this.getAreaDrop(iwc,"area1");//getDropdown(iwc, prmFirstArea, null, prmType, prmFirstArea, prmFirstSchool, 2, _iwrb.getLocalizedString("school.area_first", "School Area...................."));
-		drpFirstArea.setOnChange(getFilterCallerScript("area1", prmFirstSchool));
-		
-		DropdownMenu drpFirstSchool = (DropdownMenu) getStyledInterface(new DropdownMenu(prmFirstSchool));
-//		drpFirstSchool.addMenuElementFirst("-1", _iwrb.getLocalizedString("school.school_first", "School........................."));
-
-		inputTable.add(drpFirstArea,2,6);
-		inputTable.add(drpFirstSchool,3,6);*/
 		for (int i = 1; i < 6; i++) {
-			DropdownMenu areaDrop = getAreaDrop(iwc,PARAM_AREA + "_" + i);
+			DropdownMenu areaDrop = getAreaDrop(iwc, PARAM_AREA + "_" + i);
 			areaDrop.setOnChange(getFilterCallerScript(PARAM_AREA + "_" + i, PARAM_PROVIDER + "_" + i));
 			DropdownMenu providerDrop = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAM_PROVIDER + "_" + i));
 			providerDrop.addMenuElementFirst("-1", _iwrb.getLocalizedString("school.school_first", "School........................."));
-			areaDrop.setAttribute("style", getSmallTextFontStyle());
-			providerDrop.setAttribute("style", getSmallTextFontStyle());
-			providerText = getSmallText(provider + " " + i);
-			inputTable.add(providerText, 1, 5 + i);
-			inputTable.add(areaDrop, 2, 5 + i);
-			inputTable.add(providerDrop, 3, 5 + i);
+			providerText = getSmallHeader(provider + " " + i + ":");
+			inputTable.add(providerText, 1, row);
+			inputTable.add(areaDrop, 3, row);
+			inputTable.add(providerDrop, 5, row++);
 		}
 
-		add(nameTable1);
-		add(nameTable2);
-		add(Text.BREAK);
-		form.add(inputTable);
+		inputTable.setWidth(1, "100");
+		inputTable.setWidth(2, "8");
+		inputTable.setWidth(4, "3");
+
+		int row2 = 1;
+		T.add(nameTable,1,row2++);
+		T.setHeight(row2++, 12);
+		T.add(inputTable,1,row2++);
+		T.setHeight(row2++, 12);
+
+		SubmitButton submit = (SubmitButton)getButton(new SubmitButton(PARAM_FORM_SUBMIT, localize(PARAM_FORM_SUBMIT, "Submit application")));
+		
+		T.add(submit, 1, row2);
+		T.add(new HiddenInput(PARAM_CHILD_ID, child.getPrimaryKey().toString()));
+		
+		form.add(T);
 
 		Page p = this.getParentPage();
 		if (p != null) {
@@ -428,17 +423,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		return null;
 	}
 
-	/*	private Collection getAreasByType(IWContext iwc, Collection schoolTypes) {
-			try {
-				SchoolAreaBusiness saBuiz = (SchoolAreaBusiness) IBOLookup.getServiceInstance(iwc, SchoolAreaBusiness.class);
-				return saBuiz.findAllSchoolAreasByType(type);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			return null;
-		}*/
-
 	private Collection getAreas(IWContext iwc) {
 		try {
 			SchoolAreaBusiness sBuiz = (SchoolAreaBusiness) IBOLookup.getServiceInstance(iwc, SchoolAreaBusiness.class);
@@ -454,7 +438,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		try {
 			SchoolBusiness sBuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 			//@todo Remove hardcoding
-			return sBuiz.findAllSchoolsByAreaAndTypes(area_id,this._schoolTypes);
+			return sBuiz.findAllSchoolsByAreaAndTypes(area_id, this._schoolTypes);
 		}
 		catch (Exception ex) {
 		}
@@ -463,62 +447,16 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	}
 
 	private DropdownMenu getAreaDrop(IWContext iwc, String name) {
-			DropdownMenu drp = new DropdownMenu(name);
-			drp.addMenuElement("-1", _iwrb.getLocalizedString("cca_area", "Area"));
-			Iterator iter = _areas.iterator();
-			while (iter.hasNext()) {
-				SchoolArea area = (SchoolArea) iter.next();
-				drp.addMenuElement(area.getPrimaryKey().toString(), area.getName());
-			}
+		DropdownMenu drp = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
+		drp.addMenuElement("-1", _iwrb.getLocalizedString("cca_area", "Area"));
+		Iterator iter = _areas.iterator();
+		while (iter.hasNext()) {
+			SchoolArea area = (SchoolArea) iter.next();
+			drp.addMenuElement(area.getPrimaryKey().toString(), area.getName());
+		}
 
-			return drp;
-//		DropdownMenu drp = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-//		drp.addMenuElement("-1", iwrb.getLocalizedString("school.school_type_select", "School type select"));
-//		Iterator iter = schoolTypes.iterator();
-//		boolean changeValues = false;
-//		
-//		while (iter.hasNext()) {
-//			SchoolType type = (SchoolType) iter.next();
-//			drp.addMenuElement(type.getPrimaryKey().toString(), type.getSchoolTypeName());
-//		}
-//		
-//		return drp;
+		return drp;
 	}
-
-
-//	private DropdownMenu getAreaDrop(String name) {
-//		try {
-//			DropdownMenu drp = new DropdownMenu(name);
-//			drp.addMenuElement("-1", _iwrb.getLocalizedString("cca_area", "Area"));
-//			Iterator iter = _areas.iterator();
-//			while (iter.hasNext()) {
-//				SchoolArea area = (SchoolArea) iter.next();
-//				drp.addMenuElement(area.getPrimaryKey().toString(), area.getName());
-//			}
-//
-//			return drp;
-//		}
-//		catch (java.rmi.RemoteException e) {
-//			return null;
-//		}
-//	}
-//
-//	private DropdownMenu getProviderDrop(String name) {
-//		try {
-//			DropdownMenu drp = new DropdownMenu(name);
-//			drp.addMenuElement("-1", _iwrb.getLocalizedString("cca_provider", "Provider"));
-//			Iterator iter = _providers.iterator();
-//			while (iter.hasNext()) {
-//				School provider = (School) iter.next();
-//				drp.addMenuElement(provider.getPrimaryKey().toString(), provider.getName());
-//			}
-//
-//			return drp;
-//		}
-//		catch (java.rmi.RemoteException e) {
-//			return null;
-//		}
-//	}
 
 	private CheckBusiness getCheckBusiness(IWContext iwc) throws Exception {
 		return (CheckBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CheckBusiness.class);
@@ -539,9 +477,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			_valArea[i] = iwc.isParameterSet(PARAM_AREA + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 		}
 		_valDate = iwc.getParameter(PARAM_DATE);
-		/**
-		 * @todo Setja inn tékk á þessum breytum
-		 */
 
 		return true;
 	}
@@ -573,85 +508,56 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		s.append("}").append("\n\t\t\t");
 
 		// Data Filling ::
-
-//		StringBuffer t = new StringBuffer("if(index==1){\n\t");
-//		StringBuffer a = new StringBuffer("else if(index==2){\n\t");
-		StringBuffer t = new StringBuffer();
 		StringBuffer a = new StringBuffer("if(index==1){\n\t");
 		StringBuffer c = new StringBuffer("else if(index==2){\n\t");
 
-//		Collection Types = _schoolType;
-//		if (Types != null && !Types.isEmpty()) {
-//			Iterator iter = Types.iterator();
-//			Integer type;
-			SchoolArea area;
-			School school;
-//			Collection areas;
-			Collection schools;
-//			// iterate through schooltypes
-//			while (iter.hasNext()) {
-//				type = (Integer) iter.next();
+		SchoolArea area;
+		School school;
+		Collection schools;
+		if (_areas != null && !_areas.isEmpty()) {
+			Iterator iter2 = _areas.iterator();
 
-				//System.err.println("checking type "+tPK.toString());
-//				areas = getAreas(iwc); //getSchoolAreasWithType(iwc, tPK.intValue());
-				if (_areas != null && !_areas.isEmpty()) {
-					Iterator iter2 = _areas.iterator();
-//					t.append("if(selected == \"").append(type.toString()).append("\"){").append("\n\t\t");
+			Hashtable aHash = new Hashtable();
 
-					Hashtable aHash = new Hashtable();
-
-					// iterate through areas whithin types
-					while (iter2.hasNext()) {
-						area = (SchoolArea) iter2.next();
-						Integer aPK = (Integer) area.getPrimaryKey();
-						// System.err.println("checking area "+aPK.toString());
-						if (!aHash.containsKey(aPK)) {
-							aHash.put(aPK, aPK);
-							schools = this.getProviders(iwc, aPK.intValue()); //getSchoolByAreaAndType(iwc, aPK.intValue(), tPK.intValue());
-							if (schools != null) {
-								Iterator iter3 = schools.iterator();
-								a.append("if(selected == \"").append(aPK.toString()).append("\"){").append("\n\t\t");
-								Hashtable hash = new Hashtable();
-								// iterator through schools whithin area and type
-								while (iter3.hasNext()) {
-									school = (School) iter3.next();
-									String pk = school.getPrimaryKey().toString();
-									//System.err.println("checking school "+pk.toString());
-									if (!hash.containsKey(pk)) {
-										a.append("schoolSelect.options[schoolSelect.options.length] = new Option(\"");
-										a.append(school.getSchoolName()).append("\",\"");
-										a.append(pk).append("\");\n\t\t");
-										hash.put(pk, pk);
-									}
-
-								}
-								a.append("}\n\t\t");
+			// iterate through areas whithin types
+			while (iter2.hasNext()) {
+				area = (SchoolArea) iter2.next();
+				Integer aPK = (Integer) area.getPrimaryKey();
+				if (!aHash.containsKey(aPK)) {
+					aHash.put(aPK, aPK);
+					schools = this.getProviders(iwc, aPK.intValue()); 
+					if (schools != null) {
+						Iterator iter3 = schools.iterator();
+						a.append("if(selected == \"").append(aPK.toString()).append("\"){").append("\n\t\t");
+						Hashtable hash = new Hashtable();
+						// iterator through schools whithin area and type
+						while (iter3.hasNext()) {
+							school = (School) iter3.next();
+							String pk = school.getPrimaryKey().toString();
+							if (!hash.containsKey(pk)) {
+								a.append("schoolSelect.options[schoolSelect.options.length] = new Option(\"");
+								a.append(school.getSchoolName()).append("\",\"");
+								a.append(pk).append("\");\n\t\t");
+								hash.put(pk, pk);
 							}
-						}
-						else {
-							System.err.println("shools empty");
-						}
-						t.append("areaSelect.options[areaSelect.options.length] = new Option(\"");
-						t.append(area.getSchoolAreaName()).append("\",\"");
-						t.append(area.getPrimaryKey().toString()).append("\");").append("\n\t\t");
 
+						}
+						a.append("}\n\t\t");
 					}
-//					t.append("}\n\t");
 				}
-				else
-					System.err.println("areas empty");
-//			}
-//		}
-//		else
-//			System.err.println("types empty");
+				else {
+					System.err.println("shools empty");
+				}
+			}
+		}
+		else
+			System.err.println("areas empty");
 
 		s.append("\n\n");
 
-//		t.append("\n\t }");
 		a.append("\n\t }");
 		c.append("\n\t }");
 
-//		s.append(t.toString());
 		s.append(a.toString());
 		s.append(c.toString());
 		s.append("\n}");
@@ -662,11 +568,11 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	public String getSchoolCheckScript() {
 		StringBuffer s = new StringBuffer();
 		s.append("\nfunction checkApplication(){\n\t");
-		s.append("\n\t var dropOne = ").append("findObj('").append(PARAM_PROVIDER+"_1").append("');");
-		s.append("\n\t var dropTwo = ").append("findObj('").append(PARAM_PROVIDER+"_2").append("');");
-		s.append("\n\t var dropThree = ").append("findObj('").append(PARAM_PROVIDER+"_3").append("');");
-		s.append("\n\t var dropFour = ").append("findObj('").append(PARAM_PROVIDER+"_4").append("');");
-		s.append("\n\t var dropFive = ").append("findObj('").append(PARAM_PROVIDER+"_5").append("');");
+		s.append("\n\t var dropOne = ").append("findObj('").append(PARAM_PROVIDER + "_1").append("');");
+		s.append("\n\t var dropTwo = ").append("findObj('").append(PARAM_PROVIDER + "_2").append("');");
+		s.append("\n\t var dropThree = ").append("findObj('").append(PARAM_PROVIDER + "_3").append("');");
+		s.append("\n\t var dropFour = ").append("findObj('").append(PARAM_PROVIDER + "_4").append("');");
+		s.append("\n\t var dropFive = ").append("findObj('").append(PARAM_PROVIDER + "_5").append("');");
 
 		s.append("\n\t var one = 0;");
 		s.append("\n\t var two = 0;");
