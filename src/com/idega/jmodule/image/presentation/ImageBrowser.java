@@ -49,7 +49,7 @@ private String width="100%";
     Table tileTable = new Table(1,1);
       tileTable.setCellpadding(0);
       tileTable.setCellspacing(0);
-      tileTable.setHeight(21);
+      tileTable.setHeight(23);
       tileTable.setWidth("100%");
       tileTable.setBackgroundImage(1,1,new Image("/pics/jmodules/image/myndamodule/footer/foottiler.gif"));
 
@@ -63,7 +63,7 @@ private String width="100%";
       imageTable.setWidth(1,1,"150");
       imageTable.setWidth(2,1,"10");
       imageTable.setHeight(1,1,"100%");
-      imageTable.setHeight(1,2,"21");
+      imageTable.setHeight(1,2,"23");
       imageTable.setVerticalAlignment(1,1,"top");
       imageTable.setVerticalAlignment(1,2,"bottom");
       imageTable.add(tileTable,1,2);
@@ -77,6 +77,8 @@ private String width="100%";
       ImageViewer viewer = new ImageViewer();
         viewer.limitImageWidth(true);
         viewer.setNumberOfDisplayedImages(9);
+        viewer.setHeaderFooterColor("#336699");
+        viewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
       imageTable.add(viewer,3,1);
     }
     else {
@@ -172,12 +174,13 @@ private String width="100%";
       }
 
       else {
-         image = (ImageEntity[]) (new ImageEntity()).findAll("select * from image,image_image_catagory where image.image_id=image_image_catagory.image_id and image_text like '%"+searchString+"%'  or image_name like '%"+searchString+"%' and image_catagory_id="+category_id);
+         image = (ImageEntity[]) (new ImageEntity()).findAll("select * from image,image_image_catagory where image_image_catagory.image_catagory_id="+category_id+" and image.image_id=image_image_catagory.image_id and image.image_text like '%"+searchString+"%'  or image.image_name like '%"+searchString+"%'");
       }
 
       if ( image.length > 0 ) {
         ImageViewer imageViewer = new ImageViewer(image);
           imageViewer.setHeaderFooterColor("#336699");
+          imageViewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
           imageViewer.setHeaderText("Fann "+image.length+" myndir sem uppfylltu leitarskilyrðið: <u>"+searchString+"</u>");
 
         myTable.add(imageViewer);
