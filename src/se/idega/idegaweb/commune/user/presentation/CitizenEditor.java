@@ -148,9 +148,10 @@ public class CitizenEditor extends UserEditor {
 				1,
 				row);
 			Collection children = null;
+			int childrowstart = row;
 			try {
 				//System.out.println("geting children in custody of "+user.getName());
-				children = familyService.getChildrenInCustodyOf(user);
+				children = familyService.getChildrenFor(user);
 				if (children != null && !children.isEmpty()) {
 					for (Iterator iter = children.iterator(); iter.hasNext();) {
 						User child = (User) iter.next();
@@ -172,6 +173,7 @@ public class CitizenEditor extends UserEditor {
 			catch (Exception e2) {
 			}
 			//	custody children handling
+			row = childrowstart;
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.custody_children", "Custody children")), 5, row);
 			try {
 				children = userService.getMemberFamilyLogic().getChildrenInCustodyOf(user);
