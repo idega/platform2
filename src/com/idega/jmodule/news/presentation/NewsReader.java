@@ -157,6 +157,9 @@ public void main(ModuleInfo modinfo)throws Exception{
   newsReaderURL = iwb.getProperty("newsreaderurl");
   newsCollectionURL = iwb.getProperty("newscollectionurl");
 
+  if( newsReaderURL == null ) newsCollectionURL = "";
+  if( newsCollectionURL == null ) newsCollectionURL = "";
+
   back = iwrb.getImage("back.gif");
   more  = iwrb.getImage("more.gif");
   change = iwrb.getImage("change.gif");
