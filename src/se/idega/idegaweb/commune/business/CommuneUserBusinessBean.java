@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
@@ -37,11 +37,11 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDORemoveRelationshipException;
-import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
@@ -1162,23 +1162,16 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				e5.printStackTrace();
 			}
 			
-			// Remove the deceased user as invoice receiver for 
-			try {
-				ChildCareContractHome ccch = (ChildCareContractHome)getIDOHome(ChildCareContract.class);
-				Collection activeOrFutureContracts = ccch.findByInvoiceReceiverActiveOrFuture(userID,new java.sql.Date(deceasedDate.getTime()));
-				for (Iterator iter = activeOrFutureContracts.iterator(); iter
-						.hasNext();) {
-					ChildCareContract contract = (ChildCareContract) iter.next();
-					contract.setInvoiceReceiverID(null);
-					contract.store();
-				}
-			} catch (IDOStoreException e1) {
-				logError("Invoice reciver could not be set as null for deceased user "+userID);
-			} catch (FinderException e1) {
-				// empty				
+			// perform deceased user business plugins
+			ImplementorRepository repository = ImplementorRepository.getInstance();
+			List list = repository.newInstances(DeceasedUserBusiness.class, CommuneUserBusiness.class);
+			Iterator iterator = list.iterator();
+			boolean resultIsOkay = true;
+			while (iterator.hasNext() && resultIsOkay) {
+				DeceasedUserBusiness deceasedUserBusiness = (DeceasedUserBusiness) iterator.next();
+				resultIsOkay = deceasedUserBusiness.setUserAsDeceased(userID, deceasedDate, getIWApplicationContext());
 			}
-			
-			return true;
+			return resultIsOkay;
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
