@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -154,7 +155,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 			//			System.out.println("Current row is at: " + currRow);
 			//			System.out.println("Last row is at: " + lastRow);
-
 			if (lastRow != 42) {
 				//				System.err.println("Wrong number of lines in account sheet " + lastRow);
 				throw new WorkReportImportException("workreportimportexception.wrong_number_lines");
@@ -232,9 +232,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			}
 
 			//Get the expenses part
+			String parentKey = null;
+			double sum = 0.0;
 			for (currRow = 11; currRow < 26; currRow++) {
-				String parentKey = null;
-				double sum = 0.0;
 				if (currRow != 15) {
 					HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
 					HSSFCell cell = row.getCell((short) 1);
@@ -307,7 +307,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							}
 						}
 					}
-
 				}
 				else {
 					HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
@@ -318,7 +317,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						parentKey = cell.getStringCellValue();
 					else
 						parentKey = null;
-
 				}
 			}
 
@@ -380,11 +378,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 			}
 
+			parentKey = null;
 			double totalDept = 0;
+			sum = 0.0;
 			//Get the dept part
 			for (currRow = 38; currRow < 42; currRow++) {
-				String parentKey = null;
-				double sum = 0.0;
 				if (currRow != 39) {
 					HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
 					HSSFCell cell = row.getCell((short) 1);
@@ -650,8 +648,17 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						HSSFRow row = memberSheet.createRow((short)rowNr++);
 						HSSFCell name = row.createCell(COLUMN_MEMBER_NAME);
 						HSSFCell ssn = row.createCell(COLUMN_MEMBER_SSN);
+						HSSFCell address = row.createCell(COLUMN_MEMBER_STREET_NAME);
+						HSSFCell po = row.createCell(COLUMN_MEMBER_POSTAL_CODE);
 						name.setCellValue(memb.getName());
 						ssn.setCellValue(memb.getPersonalId());
+						address.setCellValue(memb.getStreetName());
+						try {
+							po.setCellValue(memb.getPostalCode().getPostalCode());
+						}
+						catch (SQLException e1) {
+							e1.printStackTrace();
+						}
 					}					
 				}
 			}
@@ -936,6 +943,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 				String homePage = getStringValueFromExcelNumberOrStringCell(row, (short) 2);
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, (short) 3);
+				ssn = TextSoap.findAndCut(ssn, "-");
+				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
 				String address = getStringValueFromExcelNumberOrStringCell(row, (short) 4);
 				String pnr = getStringValueFromExcelNumberOrStringCell(row, (short) 5);
 				String tel1 = getStringValueFromExcelNumberOrStringCell(row, (short) 6);
@@ -964,6 +973,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 
 				board.setHomePage(homePage);
+				System.out.println("ssn = " + ssn);
 				board.setPersonalId(ssn);
 				board.setStreetName(address);
 				try {

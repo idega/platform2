@@ -98,16 +98,11 @@ public class WorkReportImporter extends WorkReportSelector {
 			t.setCellspacing(0);
 
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("workreportimporter.start", "start"));
+			//Do I need this??
+			submit.setOnClick("this.form.submit()");			
 			BusyBar busy = new BusyBar("readingfiles");
-			if (!iwc.isIE()) {
-				busy.addDisabledObject(submit);
-				busy.addBusyObject(submit);
-			}
-			else {
-				busy.setBusyOnChange();
-				busy.addBusyObject(submit);
-			}
-			//			busy.setBusyBarUrl(iwc.getApplication().getBundle("com.idega.core").getImage("loading.gif").getURL());
+			busy.addDisabledObject(submit);
+			busy.addBusyObject(submit);
 			t.add(iwrb.getLocalizedString("workreportimporter.click.start", "Click start to import the data. It may take a while."), 1, 1);
 			t.add(submit, 1, 2);
 			t.add(busy, 1, 3);
