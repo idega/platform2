@@ -93,7 +93,7 @@ public void run(){
   }
 
   try{
-    grabber.sleep(1200000); //sleep for 20 minutes.
+    grabber.sleep(60*1000*120); //sleep for 120 minutes.
   }
   catch(InterruptedException ignored){
     ignored.printStackTrace();
