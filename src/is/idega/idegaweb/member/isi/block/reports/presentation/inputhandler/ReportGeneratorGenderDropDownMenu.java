@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -28,12 +29,11 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 		super();
 	}
 
-	public void main(IWContext iwc) {
+	private void initialize(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		this.addMenuElement(MALE, iwrb.getLocalizedString("GenderDropdownmenu.male", "Male"));
 		this.addMenuElement(FEMALE, iwrb.getLocalizedString("GenderDropdownmenu.female", "Female"));
 		this.addMenuElement(BOTH, iwrb.getLocalizedString("GenderDropdownmenu.both", "Both"));
-		this.setSelectedElement(BOTH);
 	}
 	/*
 	 * (non-Javadoc)
@@ -41,38 +41,28 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+		initialize(iwc);
 		this.setName(name);
-
 		if (value != null) {
-			this.setSelectedElement(value);
+			setSelectedElement(value);
 		}
-
+		else {
+			setSelectedElement(BOTH);
+		}
 		return this;
 	}
 
 	/**
-	 * @return the year, Integer
-	 *  
+	 * @return genders as Collection of Integer objects
 	 */
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
-		Collection genders = null;
-		if (values != null && values.length > 0) {
-			if(values.length==1 && values[0].equals(BOTH)) {
-				values = ALL;
-			}
-			genders = new ArrayList();
-			
-			for(int i=0; i<values.length; i++) {
-				int age = Integer.parseInt(values[i]);
-				
-				IWTimestamp stamp = IWTimestamp.RightNow();
-				
-				stamp.addYears(-age);
-				
-				genders.add(stamp.toString());
-			}
-		} else {
+		Collection genders =	new ArrayList();
+		if(values == null || (values.length==1 && values[0].equals(BOTH))) {
 			values = ALL;
+		}
+		for(int i=0; i<values.length; i++) {
+			Integer gender = new Integer(values[i]);
+			genders.add(gender);
 		}
 		return genders;
 	}
@@ -83,20 +73,19 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
+		Collection values = (Collection) value;
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		if (value != null) {
-			
+		if (values != null) {
 			String displayName = "";
-			if (BOTH.equals(value)) {
+			if (values.size() != 1) {
 				displayName = iwrb.getLocalizedString("GenderDropdownmenu.both", "Both");
 			}
-			else if (MALE.equals(value)) {
+			else if (values.contains(new Integer(MALE))) {
 					displayName = iwrb.getLocalizedString("GenderDropdownmenu.male", "Male");
 			}
 			else {
 				displayName = iwrb.getLocalizedString("GenderDropdownmenu.female", "Female");
 			}
-
 			return displayName;
 		}
 		else
@@ -110,7 +99,11 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 	}
 
 	public PresentationObject getHandlerObject(String name, Collection values, IWContext iwc) {
-		String value = (String) Collections.min(values);
+		String value = null;
+		// if there are more than one value set value to null, then all values are set
+		if (values != null && values.size() == 1) {
+			value = (String) values.iterator().next();
+		}			
 		return getHandlerObject(name, value, iwc);
 	}
 

@@ -15,6 +15,7 @@ import com.idega.util.IWTimestamp;
  * A presentation object for dynamic reports. Select an age (1-123).
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
+ * 
  */
 public class ReportGeneratorAgeDropDownMenu extends DropDownMenuInputHandler  {
 
