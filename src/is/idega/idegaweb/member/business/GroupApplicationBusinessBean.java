@@ -110,8 +110,9 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		//address
 		if( address!=null ){			
 			Address uAddress = getUserBusiness().getUsersMainAddress(user);
-
-			if( uAddress == null ){		
+			boolean add = false;
+			if( uAddress == null ){	
+				add = true;	
 				AddressType mainAddress = addressHome.getAddressType1();
 				uAddress = addressHome.create();
 				uAddress.setAddressType(mainAddress);
@@ -120,7 +121,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 			uAddress.setStreetName(addressBiz.getStreetNameFromAddressString(address));
 			uAddress.setStreetNumber(addressBiz.getStreetNumberFromAddressString(address));
 			uAddress.store();
-			user.addAddress(uAddress);
+			if ( add ) user.addAddress(uAddress);
 		}
 		
 		// phone
@@ -197,6 +198,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		appl.store();
 		
 		appl.addGroups(groups);
+		appl.store();
 
 		
 		
