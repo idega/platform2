@@ -1859,7 +1859,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void alterCareTime(IWContext iwc) throws RemoteException {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		String childCareTime = iwc.getParameter(PARAMETER_CHILDCARE_TIME);
-		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
+		int employmentType = -1;
+		if (iwc.isParameterSet(PARAMETER_EMPLOYMENT_TYPE))
+			employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
+		
+		
 		int schoolTypeId = -1;
 		if(iwc.isParameterSet(PARAMETER_SCHOOL_TYPES))
 		schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
@@ -2045,7 +2049,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String childCareTime = iwc.getParameter(PARAMETER_CHILDCARE_TIME);
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
 		int typeID = Integer.parseInt(iwc.getParameter(getSession().getParameterSchoolTypeID()));
-		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
+		int employmentType = -1;
+		if (iwc.isParameterSet(PARAMETER_EMPLOYMENT_TYPE))
+			employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
+		
 		
 		String subject = localize("child_care.placing_subject","Your child placed in child care.");
 		String body = localize("child_care.placing_body","{0} has been placed in a group at {1}.");
@@ -2058,7 +2065,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void cancelContract(IWContext iwc) throws RemoteException {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
 		if (application != null) {
-			boolean reason = Boolean.valueOf(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
+			boolean reason = true;
+			if (iwc.isParameterSet(PARAMETER_CANCEL_REASON))
+				reason = Boolean.valueOf(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
 			String message = iwc.getParameter(PARAMETER_CANCEL_MESSAGE);
 			IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
 			
