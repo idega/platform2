@@ -26,7 +26,7 @@ import com.idega.user.data.User;
  */
 public class RegularInvoiceEntryBMPBean extends GenericEntity implements RegularInvoiceEntry {
 
-
+	private static final String COLUMN_PRIMARY_KEY = "cacc_reg_inv_entry_id";
 	private static final String COLUMN_EDIT_NAME = "edit_name";
 	private static final String COLUMN_EDIT_DATE = "edit_date";
 	private static final String COLUMN_CREATED_NAME = "created_date";
@@ -82,6 +82,9 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		return ENTITY_NAME;
 	}
 			
+	public String getIDColumnName(){
+		return COLUMN_PRIMARY_KEY;
+	}
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getFrom()
