@@ -5,6 +5,7 @@ public interface SchoolYear extends com.idega.data.IDOEntity
 {
  public java.lang.String getName();
  public int getSchoolTypeId();
+ public SchoolType getSchoolType();
  public int getSchoolYearAge();
  public java.lang.String getSchoolYearInfo();
  public java.lang.String getSchoolYearName();
