@@ -28,7 +28,8 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 
 	String _headerStyle;
 	String _headerColor;
-	int spaceBetween = 5;
+	String _headerFontClass;
+	int _spaceBetween = 5;
 
 	/**
 	 * @see com.idega.block.school.presentation.SchoolContentItem#getObject()
@@ -58,7 +59,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		if (address != null || zipArea != null || zipCode != null || phone != null || fax != null) {
 			if (useBreak) {
 				++row;
-				table.setHeight(row, spaceBetween);
+				table.setHeight(row, _spaceBetween);
 				++row;
 			}
 			table.add(getHeader(_iwrb.getLocalizedString("school.address","Address")+":"), 1, row);
@@ -94,7 +95,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			if (headmasterId > 0 ) {
 				if (useBreak) {
 					++row;
-					table.setHeight(row, spaceBetween);
+					table.setHeight(row, _spaceBetween);
 					++row;
 				}
 				table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
@@ -112,7 +113,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			if (assistantHeadmasterId > 0 ) {
 				if (useBreak) {
 					++row;
-					table.setHeight(row, spaceBetween);
+					table.setHeight(row, _spaceBetween);
 					++row;
 				}
 				table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
@@ -130,7 +131,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		if (webPage != null) {
 			if (useBreak) {
 				++row;
-				table.setHeight(row, spaceBetween);
+				table.setHeight(row, _spaceBetween);
 				++row;
 			}
 			Link link = new Link(getText(webPage), webPage);
@@ -217,6 +218,9 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		if (_headerColor != null) {
 			text.setFontColor(_headerColor);	
 		}
+		if (_headerFontClass != null) {
+			text.setFontClass(_headerFontClass);	
+		}
 		return text;
 	}
 	
@@ -224,8 +228,16 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		_headerStyle = style;	
 	}
 	
+	public void setHeaderFontClass(String fontClass) {
+		_headerFontClass = fontClass;	
+	}
+	
 	public void setHeaderColor(String color) {
 		_headerColor = color;	
+	}
+	
+	public void setSpaceBetween(int spaceBetween) {
+		_spaceBetween = spaceBetween;
 	}
 
 	private UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {

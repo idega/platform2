@@ -17,6 +17,7 @@ import com.idega.presentation.Table;
 public class SchoolContentItemImage extends SchoolContentItem {
 	private int _maxImageWidth = -1;	
 	private int _cellSpacing = 0;
+	private String _horizontalAlignment;
 	/**
 	 * @see com.idega.block.school.presentation.SchoolContentItem#getObject()
 	 */
@@ -27,6 +28,9 @@ public class SchoolContentItemImage extends SchoolContentItem {
 				Table table = new Table(1, images.size());
 				table.setCellpadding(0);
 				table.setCellspacing(_cellSpacing);
+				if (_horizontalAlignment != null) {
+					table.setAlignment(_horizontalAlignment);
+				}
 				Image image;
 				
 				ICFile file;
@@ -68,4 +72,7 @@ public class SchoolContentItemImage extends SchoolContentItem {
 		_cellSpacing = spaceBetweenImages;	
 	}
 
+	public void setHorizontalAlignment(String alignment) {
+		_horizontalAlignment = alignment;	
+	}
 }
