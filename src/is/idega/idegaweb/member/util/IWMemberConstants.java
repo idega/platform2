@@ -6,6 +6,7 @@ package is.idega.idegaweb.member.util;
  *
  */
 public final class IWMemberConstants {
+	public static final String META_DATA_LEAGUE_CONNECTION = "CLUBINFO_CONN";
 	public static final String GROUP_TYPE_FEDERATION = "iwme_federation";
 	public static final String GROUP_TYPE_FEDERATION_STAFF = "iwme_federation_staff";
 	public static final String GROUP_TYPE_FEDERATION_COMMITTEE = "iwme_federation_committee";

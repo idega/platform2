@@ -1,14 +1,12 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
-import is.idega.idegaweb.member.util.IWMemberConstants;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.ejb.FinderException;
+import java.util.Vector;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -22,6 +20,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.GroupComparator;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -118,12 +117,30 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 		table.setWidthAndHeightToHundredPercent();
 		table.setAlignment(1,5,Table.HORIZONTAL_ALIGN_RIGHT);
 		
-		Collection groups = null;
+		List groups = null;
 		try {
-			groups = groupBiz.getGroupHome().findGroupsByType(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
+			List list = memBiz.getLeaguesListForUser(iwc.getCurrentUser(),iwc);
+			
+			
+			if(list!=null && !list.isEmpty()){
+				groups = new Vector();
+				Iterator iter = list.iterator();
+				while (iter.hasNext()) {
+					Group group = (Group) iter.next();
+					groups.addAll(memBiz.getAllClubDivisionsForLeague(group));
+				}
+				
+			}
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+		
+		if(groups!=null){
+			GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
+			groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
+			Collections.sort(groups, groupComparator);//sort alphabetically
 		}
 		
 		DropdownMenu divisionFrom = getGroupDropDown(groups,PARAMETER_FROM_CLUB_DIVISION_ID);
