@@ -69,6 +69,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 			}
 			else {
 				table.add(getLocalizedLabel("invbr.total_number_of_handled_providers","Number of handled providers"),1,i++);
+				table.add(getLocalizedLabel("invbr.number_of_billed_individuals","Number of handled individuals"), 1, i++);
 				table.add(getLocalizedLabel("invbr.total_number_of_handled_placements","Number of handled placements"),1,i++);
 				table.add(getLocalizedLabel("invbr.total_Amount_excluding_VAT","Total amount excluding VAT"),1,i++);
 			}
@@ -104,6 +105,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 			}
 			else {
 				table.add(Integer.toString(invoiceBusiness.getNoProviders(batchRun)),2,i++);
+				table.add(Integer.toString(invoiceBusiness.getNumberOfHandledChildren(batchRun)), 2, i++);
 				table.add(Integer.toString(invoiceBusiness.getNoPlacements(batchRun)),2,i++);
 			}
 			table.add(numberFormat.format(invoiceBusiness.getTotAmountWithoutVAT(batchRun)),2,i++);
