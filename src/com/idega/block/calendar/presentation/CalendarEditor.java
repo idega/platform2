@@ -190,11 +190,16 @@ public CalendarEditor(){
 
     DateInput entryDate = new DateInput(CalendarBusiness.PARAMETER_ENTRY_DATE);
       entryDate.setYearRange(new idegaTimestamp().getYear()-5,new idegaTimestamp().getYear()+10);
-      if(_stamp!=null)
+      if(_stamp==null){
         _stamp = idegaTimestamp.RightNow();
+        System.err.println("_stamp is null");
+      }
+      entryDate.setDate(_stamp.getSQLDate());
+      /*
       entryDate.setDay(_stamp.getDay());
       entryDate.setMonth(_stamp.getMonth());
       entryDate.setYear(_stamp.getYear());
+      */
       entryDate.setStyleAttribute("style",STYLE);
     addLeft(_iwrb.getLocalizedString("date","Date")+":",entryDate,true);
     addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_IC_CAT,String.valueOf(iCategoryId)));
