@@ -112,7 +112,10 @@ public class ServiceViewer extends Window {
     dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
     dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
     dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
+  }
 
+  public void main(IWContext iwc) throws Exception{
+    // VERDUR AD GERAST FYRST I MAIN...
     String languageString = iwc.getParameter(LocaleSwitcher.languageParameterString);
     if(languageString!=null){
       Locale locale = LocaleUtil.getLocale(languageString);
@@ -121,9 +124,6 @@ public class ServiceViewer extends Window {
       }
     }
 
-  }
-
-  public void main(IWContext iwc) throws Exception{
     init(iwc);
     handleEvents(iwc);
   }
