@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountAdmin.java,v 1.1 2002/07/24 18:49:43 tryggvil Exp $
+ * $Id: ProviderAccountAdmin.java,v 1.2 2002/07/29 23:28:32 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.account.provider.business.ProviderAccountBusiness;
@@ -46,7 +47,8 @@ public class ProviderAccountAdmin extends CommuneBlock
 	private final static String PARAM_FORM_APPROVE = "paa_adm_approve";
 	private final static String PARAM_FORM_REJECT = "paa_adm_reject";
 	private final static String PARAM_FORM_NOT_CITIZEN = "paa_adm_not_citizen";
-	private final static String PARAM_FORM_DETAILS = "paa_add_details";
+	//private final static String PARAM_FORM_DETAILS = "paa_add_details";
+	private final static String PARAM_APPLICATION_ID = ProviderAccountApplication.PARAM_APPLICATION_ID;
 	private final static String ERROR_LIST_VIEW = "paa_error_list_view";
 	public void main(IWContext iwc)
 	{
@@ -74,8 +76,9 @@ public class ProviderAccountAdmin extends CommuneBlock
 	}
 	private int parseAction(IWContext iwc)
 	{
-		if (iwc.isParameterSet(PARAM_FORM_DETAILS))
+		if (iwc.isParameterSet(PARAM_APPLICATION_ID))
 		{
+			System.out.println("Viewing details ");
 			return ACTION_VIEW_DETAILS;
 		}
 		else
@@ -98,12 +101,13 @@ public class ProviderAccountAdmin extends CommuneBlock
 				if (value != null && !value.equals(""))
 					System.out.println("Not citizen " + value);
 			}
-			if (iwc.isParameterSet(PARAM_FORM_DETAILS))
+			if (iwc.isParameterSet(PARAM_APPLICATION_ID))
 			{
-				String value = iwc.getParameter(PARAM_FORM_DETAILS);
+				String value = iwc.getParameter(PARAM_APPLICATION_ID);
 				if (value != null && !value.equals(""))
 					System.out.println("Details for " + value);
 			}
+			System.out.println("Viewing list ");
 			return ACTION_VIEW_LIST;
 		}
 	}
@@ -138,10 +142,15 @@ public class ProviderAccountAdmin extends CommuneBlock
 				data.add(getSmallText(name), col++, row);
 				data.add(getSmallText(Integer.toString(numPlaces)), col++, row);
 				data.add(getSmallText(address), col++, row);
-				SubmitButton details =
-					new SubmitButton(
+				/*SubmitButton details =
+					new SubmitButton(//element.getPrimaryKey().toString(),
 						localize(PARAM_FORM_DETAILS, "Administrate"),
 						PARAM_FORM_DETAILS,
+						element.getPrimaryKey().toString());
+				details.setAsImageButton(true);
+				*/
+				Link details = new Link(localize("paa_app_administrate", "Administrate"));
+				details.addParameter(PARAM_APPLICATION_ID,
 						element.getPrimaryKey().toString());
 				details.setAsImageButton(true);
 				data.add(details, col, row++);
@@ -164,6 +173,19 @@ public class ProviderAccountAdmin extends CommuneBlock
 	{}
 	private void viewDetails(IWContext iwc)
 	{
+		System.out.println("In viewDetails()");
+		try{
+			int appID = getViewApplicationID(iwc);
+			System.out.println("appID="+appID);
+			ProviderApplication app = getBusiness(iwc).getProviderApplication(appID);
+			ProviderAccountApplicationView view = new ProviderAccountApplicationView();
+			view.setProviderApplication(app);
+			add(view);
+		}
+		catch(Exception e){
+			add(e);	
+		}
+
 		/*      SubmitButton approve = new SubmitButton(localize(PARAM_FORM_APPROVE,"Approve"),PARAM_FORM_APPROVE,Integer.toString(i));
 		      approve.setAsImageButton(true);
 		      SubmitButton reject = new SubmitButton(localize(PARAM_FORM_REJECT,"Reject"),PARAM_FORM_REJECT,Integer.toString(i));
@@ -171,6 +193,17 @@ public class ProviderAccountAdmin extends CommuneBlock
 		      SubmitButton notCitizen = new SubmitButton(localize(PARAM_FORM_NOT_CITIZEN,"Not citizen"),PARAM_FORM_NOT_CITIZEN,Integer.toString(i));
 		      notCitizen.setAsImageButton(true);*/
 	}
+
+	/**
+	 * Method getViewApplicationID.
+	 * @param iwc
+	 * @return int
+	 */
+	protected int getViewApplicationID(IWContext iwc)
+	{
+		return Integer.parseInt(iwc.getParameter(PARAM_APPLICATION_ID));
+	}
+
 	protected ProviderAccountBusiness getBusiness(IWApplicationContext iwc) throws RemoteException
 	{
 		return (ProviderAccountBusiness) IBOLookup.getServiceInstance(iwc, ProviderAccountBusiness.class);

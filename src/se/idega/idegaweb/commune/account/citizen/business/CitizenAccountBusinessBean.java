@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.5 2002/07/24 18:49:09 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.6 2002/07/29 23:28:32 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -171,6 +171,29 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		 * @todo Implement
 		 */
 		return null;
+	}
+	/**
+	 * Overrided from superclass
+	 */
+	protected User createUserForApplication(AccountApplication theCase) throws CreateException, RemoteException
+	{
+		return createCitizenForApplication(theCase);
+	}	
+	
+	/**
+	 * Creates a citizen in the Commune system
+	 */
+	protected User createCitizenForApplication(AccountApplication theCase) throws CreateException, RemoteException
+	{
+		String firstName = theCase.getApplicantName().substring(0, theCase.getApplicantName().indexOf(" "));
+		String lastName =
+			theCase.getApplicantName().substring(
+				theCase.getApplicantName().lastIndexOf(" ") + 1,
+				theCase.getApplicantName().length());
+		User user = null;
+		user = getUserBusiness().createCitizen(firstName, null, lastName, null);
+		theCase.setOwner(user);
+		return user;
 	}
 
 }

@@ -23,4 +23,7 @@ public interface ProviderApplication extends com.idega.data.IDOEntity,com.idega.
  public void setManagerName(java.lang.String p0) throws java.rmi.RemoteException;
  public java.lang.String getApplicantName()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getCaseCodeKey() throws java.rmi.RemoteException;
+   public String getPhone()throws java.rmi.RemoteException;
+  public void setPhone(String phoneString) throws java.rmi.RemoteException;
+
 }
