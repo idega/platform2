@@ -142,7 +142,7 @@ public class TextEditorWindow extends IWAdminWindow{
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
-    TextArea taBody = new TextArea(prmBody,65,19);
+    TextArea taBody = new TextArea(prmBody,65,16);
     if ( hasLocalizedText ) {
       if ( locText.getHeadline() != null ) {
         tiHeadline.setContent(locText.getHeadline());
