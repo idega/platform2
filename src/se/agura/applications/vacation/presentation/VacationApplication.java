@@ -225,7 +225,7 @@ public class VacationApplication extends VacationBlock {
 		toDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.to_date_not_empty", "This field may not be empty"));
 		toDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.to_date_back_in_time", "To date can not be back in time."));
 		
-		DropdownMenu hours = new DropdownMenu(PARAMETER_VACATION_WORKING_HOURS);
+		DropdownMenu hours = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_VACATION_WORKING_HOURS));
 		hours.addMenuElement(1, "1");
 		hours.addMenuElement(2, "2");
 		hours.addMenuElement(3, "3");
