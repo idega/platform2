@@ -32,7 +32,7 @@ import com.idega.block.presentation.CategoryBlock;
 
 public class Calendar extends CategoryBlock implements IWBlock {
 
-private boolean _isAdmin = false;
+private boolean hasEdit = false,hasAdd = false,hasPref = false;
 private int _iLocaleID;
 private int _view = CalendarBusiness.MONTH;
 
@@ -55,12 +55,20 @@ protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
 protected IWBundle _iwbCalendar;
 
+private String AddPermission = "add";
+private String PrePermission = "pref";
+
 public Calendar(){
 }
 
 public Calendar(idegaTimestamp timestamp){
   _stamp = timestamp;
 }
+
+  public void registerPermissionKeys(){
+    registerPermissionKey(AddPermission);
+    registerPermissionKey(PrePermission);
+  }
 
   public String getCategoryType(){
     return new CalendarCategory().getCategoryType();
@@ -75,7 +83,10 @@ public Calendar(idegaTimestamp timestamp){
     _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     _iwbCalendar = getBundle(iwc);
 
-    _isAdmin = iwc.hasEditPermission(this);
+    hasEdit = iwc.hasEditPermission(this);
+    hasAdd = iwc.hasPermission(AddPermission,this);
+    hasPref = iwc.hasPermission(PrePermission,this);
+
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_VIEW) != null ) {
@@ -117,12 +128,23 @@ public Calendar(idegaTimestamp timestamp){
       int imageID;
       int ypos = 1;
 
-    if ( _isAdmin ) {
-      entriesTable.add(getAddIcon(),1,ypos);
-      entriesTable.add(getPropertiesIcon(),1,ypos);
-      entriesTable.add(getCategoryIcon(),1,ypos);
-      ypos++;
+    ///// Permisson Area ////////////
+    boolean buttonsAdded = false;
+    if(hasAdd || hasEdit){
+        entriesTable.add(getAddIcon(),1,ypos);
+        buttonsAdded = true;
     }
+    if(hasPref || hasEdit){
+      entriesTable.add(getPropertiesIcon(),1,ypos);
+      buttonsAdded = true;
+    }
+    if(hasEdit){
+      entriesTable.add(getCategoryIcon(),1,ypos);
+      buttonsAdded = true;
+    }
+    if(buttonsAdded)
+      ypos++;
+    /////////////////////////////////
 
     int numberOfShown = 0;
 
@@ -199,7 +221,7 @@ public Calendar(idegaTimestamp timestamp){
         entriesTable.setAlignment(xpos,ypos,"right");
         entriesTable.add(dateText,xpos,ypos);
 
-        if ( _isAdmin ) {
+        if ( hasEdit || hasPref ) {
           xpos++;
           entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
         }
@@ -228,7 +250,7 @@ public Calendar(idegaTimestamp timestamp){
       entriesTable.add(headlineText,1,2);
       ypos++;
     }
-    if ( _isAdmin ) {
+    if ( buttonsAdded ) {
       entriesTable.mergeCells(1,1,entriesTable.getColumns(),1);
     }
 
@@ -253,12 +275,23 @@ public Calendar(idegaTimestamp timestamp){
       monthTable.setCellspacing(0);
       int ypos = 1;
 
-    if ( _isAdmin ) {
-      monthTable.add(getAddIcon(),1,ypos);
-      monthTable.add(getPropertiesIcon(),1,ypos);
-      monthTable.add(getCategoryIcon(),1,ypos);
-      ypos++;
+    ///// Permisson Area ////////////
+    boolean buttonsAdded = false;
+    if(hasAdd || hasEdit){
+        monthTable.add(getAddIcon(),1,ypos);
+        buttonsAdded = true;
     }
+    if(hasPref || hasEdit){
+      monthTable.add(getPropertiesIcon(),1,ypos);
+      buttonsAdded = true;
+    }
+    if(hasEdit){
+      monthTable.add(getCategoryIcon(),1,ypos);
+      buttonsAdded = true;
+    }
+    if(buttonsAdded)
+      ypos++;
+    /////////////////////////////////
 
     monthTable.add(cal,1,ypos);
     add(monthTable);
@@ -291,12 +324,24 @@ public Calendar(idegaTimestamp timestamp){
     int ypos = 1;
     int xpos = 1;
 
-    if ( _isAdmin ) {
-      yearTable.add(getAddIcon(),1,ypos);
-      yearTable.add(getPropertiesIcon(),1,ypos);
-      yearTable.add(getCategoryIcon(),1,ypos);
-      ypos++;
+    ///// Permisson Area ////////////
+    boolean buttonsAdded = false;
+    if(hasEdit || hasAdd){
+        yearTable.add(getAddIcon(),1,ypos);
+        buttonsAdded = true;
     }
+    if(hasEdit || hasPref){
+      yearTable.add(getPropertiesIcon(),1,ypos);
+      buttonsAdded = true;
+    }
+    if(hasEdit){
+      yearTable.add(getCategoryIcon(),1,ypos);
+      buttonsAdded = true;
+    }
+    if(buttonsAdded)
+      ypos++;
+    /////////////////////////////////
+
 
     for ( int a = 1; a <= 12; a++ ) {
       yearStamp = new idegaTimestamp(_stamp.getDay(),a,_stamp.getYear());
