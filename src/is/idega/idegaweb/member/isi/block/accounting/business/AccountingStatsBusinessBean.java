@@ -859,7 +859,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	/*
 	 * Returns a club the user is a member of.
 	 */
-	public Group getClubForUser(User user) throws FinderException, RemoteException{
+	private Group getClubForUser(User user) throws FinderException, RemoteException{
 		Collection parents = getGroupBusiness().getParentGroupsRecursive(user);
 		Group club = null;
 		if(parents!=null && !parents.isEmpty()){
