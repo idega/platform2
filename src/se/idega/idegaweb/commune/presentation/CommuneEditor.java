@@ -156,6 +156,7 @@ public class CommuneEditor extends CommuneBlock {
 		table.setColumnWidth(3, "30");
 		table.setColumnWidth(4, "10");
 		table.setColumnWidth(5, "10");
+		table.setWidth(570);
 		
 		add(form);
 	}
