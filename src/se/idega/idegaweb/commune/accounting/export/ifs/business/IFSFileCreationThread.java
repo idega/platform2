@@ -33,6 +33,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.business.PaymentComparator;
+import se.idega.idegaweb.commune.accounting.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
@@ -1812,9 +1814,21 @@ public class IFSFileCreationThread extends Thread {
     }
 
     private boolean hasNoCheck(InvoiceRecord iRec) {
-        return iRec.getChildCareContract() == null
-                || iRec.getChildCareContract().getApplication() == null
-                || iRec.getChildCareContract().getApplication().getCheck() == null;
+    		ChildCareContract contract = iRec.getChildCareContract();
+    		if (contract == null) {
+    			return true;
+    		}
+    		if (contract.getApplication() == null) {
+    			return true;
+    		}
+    		
+    		try {
+				CheckBusiness business = (CheckBusiness) IBOLookup.getServiceInstance(iwac, CheckBusiness.class);
+				return !business.hasGrantedCheck(contract.getChild());
+			}
+			catch (RemoteException re) {
+				return true;
+			}
     }
 
     private void createPaymentFilesExcel(Collection data, String fileName,
