@@ -327,6 +327,21 @@ public class NewsFinder {
     }
   }
 
+  public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
+    int id = -1;
+    try {
+      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+      id = getObjectInstanceCategoryId(obj);
+      if(id <= 0 && CreateNew ){
+        id = NewsBusiness.createNewsCategory(iObjectInstanceId );
+      }
+    }
+    catch (Exception ex) {
+
+    }
+    return id;
+  }
+
   public static int getObjectInstanceCategoryId(int iObjectInstanceId){
     try {
       ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);

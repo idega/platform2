@@ -270,7 +270,7 @@ public class NewsBusiness{
 
   }
 */
-  public static void saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
+  public static NewsCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try{
      t.begin();
@@ -300,7 +300,7 @@ public class NewsBusiness{
       }
 
       t.commit();
-
+      return newsCat;
     }
     catch(Exception e) {
       try {
@@ -311,7 +311,11 @@ public class NewsBusiness{
       }
       e.printStackTrace();
     }
+    return null;
+  }
 
+  public static int createNewsCategory(int iObjectInstanceId){
+    return saveNewsCategory(-1,"News","News",iObjectInstanceId ).getID();
   }
 }
 

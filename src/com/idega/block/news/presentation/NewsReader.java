@@ -155,7 +155,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
       if(sCategoryId != null)
         iCategoryId = Integer.parseInt(sCategoryId);
       else if(getICObjectInstanceID() > 0){
-        iCategoryId = NewsFinder.getObjectInstanceCategoryId(getICObjectInstanceID());
+        iCategoryId = NewsFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
         if(iCategoryId <= 0 ){
           newobjinst = true;
         }
@@ -228,10 +228,8 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
 
       T.add(newLink,2,1);
     }
-
     T.setWidth("100%");
     return T;
-
   }
 
   private PresentationObject getCategoryList(NewsCategory newsCategory,Locale locale){
@@ -413,7 +411,6 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     headLine = setHeadlineAttributes(headLine);
     newsBody = setTextAttributes(newsBody);
     T.add(newsInfo,1,1);
-
 
     //if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
     List files = newsHelper.getContentHelper().getFiles();
