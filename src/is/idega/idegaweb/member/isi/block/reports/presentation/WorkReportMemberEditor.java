@@ -149,7 +149,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			table.add(new SubmitButton("Submit", PARAMETER_SAVE, "true"), column, row);
 
 			add(form);
-			add(iwrb.getLocalizedString("WorkReportMemberEditor.number_of_members","Number of members : ")+(row-1));
+			add(iwrb.getLocalizedString("WorkReportMemberEditor.number_of_members","Number of members : ")+(Math.max(row-3,0)));
 		}
 		catch (RemoteException re) {
 		}
