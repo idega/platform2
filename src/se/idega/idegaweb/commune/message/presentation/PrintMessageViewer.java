@@ -313,7 +313,7 @@ public class PrintMessageViewer extends CommuneBlock {
 		msgHome = getPrintedLetterMessageHome();
 		if (msgHome != null) {
 			for (int i = 0; i < primaryKeys.length; i++) {
-				msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
+				msg = msgHome.findByPrimaryKey(primaryKeys[i]);
 				coll.add(msg);
 			}
 		}

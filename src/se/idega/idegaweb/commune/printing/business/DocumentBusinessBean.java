@@ -266,7 +266,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		    SystemArchivationMessageHome msgHome = getSystemArchivationMessageHome();
 		    if (msgHome != null) {
 				for (int i = 0; i < primaryKeys.length; i++) {
-					msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
+					msg = msgHome.findByPrimaryKey(primaryKeys[i]);
 					coll.add(msg);
 				}
 			}
@@ -275,7 +275,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		    PrintedLetterMessageHome msgHome = getPrintedLetterMessageHome();
 		    if (msgHome != null) {
 				for (int i = 0; i < primaryKeys.length; i++) {
-					msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
+					msg = msgHome.findByPrimaryKey(primaryKeys[i]);
 					coll.add(msg);
 				}
 			}

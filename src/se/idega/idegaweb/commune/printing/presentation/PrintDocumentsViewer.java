@@ -299,7 +299,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		if (msgID > 0) {
 			PrintedLetterMessage msg =
-				(PrintedLetterMessage) getDocumentBusiness(iwc)
+				getDocumentBusiness(iwc)
 					.getPrintedLetterMessageHome()
 					.findByPrimaryKey(
 					new Integer(msgID));
