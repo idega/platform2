@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusiness.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
+ * $Id: MeetingFeeBusiness.java,v 1.3 2004/12/09 15:41:45 laddi Exp $
  * Created on 6.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,21 +15,21 @@ import java.util.Collection;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.agura.applications.business.ApplicationsBusiness;
 import se.agura.applications.meeting.fee.data.MeetingFee;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 
-import com.idega.block.process.business.CaseBusiness;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
+ * Last modified: $Date: 2004/12/09 15:41:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public interface MeetingFeeBusiness extends CaseBusiness {
+public interface MeetingFeeBusiness extends ApplicationsBusiness {
 
 	/**
 	 * @see se.agura.applications.meeting.fee.business.MeetingFeeBusinessBean#getMeetingFee
