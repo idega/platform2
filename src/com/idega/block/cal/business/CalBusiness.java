@@ -14,15 +14,18 @@ import java.util.Collection;
 import com.idega.block.cal.data.AttendanceEntity;
 import com.idega.block.cal.data.CalendarEntry;
 import com.idega.block.cal.data.CalendarLedger;
+import com.idega.presentation.IWContext;
 
 public interface CalBusiness extends com.idega.business.IBOService {
 	public java.util.List getAllLedgers();
-	public CalendarLedger getLedger(int p0);
+	public CalendarLedger getLedger(int ledgerID);
 	public int getLedgerIDByName(String name); 
 //	public CalendarLedger getLedgerByUserID(int userID);
 	public com.idega.block.cal.data.CalendarEntryType getEntryTypeByName(String entryTypeName); 
 	public CalendarEntry getEntry(int p0);
 	public void deleteEntry(int entryID);
+	public void deleteLedger(int ledgerID);
+	public void deleteUserFromLedger(int userID, int ledgerID, IWContext iwc);
 	public AttendanceEntity getAttendanceByUserIDandEntry(int userID, CalendarEntry entry);
 	public void updateAttendance(int attendanceID, int userID, int ledgerID, CalendarEntry entry, String mark);
 	public java.util.List getAllEntryTypes();
@@ -42,5 +45,6 @@ public interface CalBusiness extends com.idega.business.IBOService {
 	public Collection getEntriesBetweenTimestamps(Timestamp fromStamp, Timestamp toStamp);
 	public Collection getEntriesByLedgerID(int ledgerID);
 	public Collection getPracticesByLedgerID(int ledgerID);
+	public Collection getPracticesByLedIDandMonth(int ledgerID, int month, int year);
 	public java.util.List getAllMarks();
 }

@@ -4,7 +4,6 @@
 package com.idega.block.cal.presentation;
 
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -32,7 +31,6 @@ import com.idega.presentation.ui.TimeInput;
 import com.idega.presentation.ui.Window;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
 import com.idega.user.presentation.GroupChooser;
 import com.idega.util.IWTimestamp;
 
@@ -45,6 +43,7 @@ import com.idega.util.IWTimestamp;
 public class CalendarEntryCreator extends Window{
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	public final static String ENTRY = "entry";
 	
 	
 	//parameter names
@@ -326,6 +325,7 @@ public class CalendarEntryCreator extends Window{
 			deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryIDString);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
+			deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,ENTRY);
 			deleteLink.addParameter(CalendarView.ACTION,"");
 			deleteLink.setAsImageButton(true,true);
 						
@@ -442,48 +442,12 @@ public class CalendarEntryCreator extends Window{
 		form.add(table);
 		return form;
 	}
-	public Table lineUpView(IWContext iwc) {
-		
-		Table table = new Table();
-		table.setStyleClass(borderAllWhite);
-		table.setCellspacing(0);
-		table.setCellpadding(0);
-		table.add(headlineText,1,1);
-		table.add(viewHeadline,2,1);
-		table.add(typeText,1,2);
-		table.add(viewType,2,2);
-		table.add(repeatText,1,3);
-		table.add(viewRepeat,2,3);
-		table.add(dayFromText,1,4);
-		table.add(viewDayFrom,2,4);
-		table.add(dayToText,1,5);
-		table.add(viewDayTo,2,5);
-		table.add(locationText,1,6);
-		table.add(viewLocation,2,6);
-		table.add(descriptionText,1,7);
-		table.add(viewDescription,2,7);
-		table.setAlignment(2,8,"right");
-		User user = iwc.getCurrentUser();
-		String[] groupTypeTrainer = {"iwme_club_trainer"};
-		Collection trainers = null;
-		//get only the groups that have the type iwme_club_trainer
-		try {
-			trainers = getUserBusiness(iwc).getUserGroups(user,groupTypeTrainer,true);
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		if(iwc.isSuperAdmin() || trainers.size() != 0 && trainers != null) {
-			table.add(change,2,8);			
-		}
-		return table;
-	}
 	/**
 	 * Saves an entry to the calendar. Either updates it or creates a new one. 
 	 * @param iwc
 	 */
 	public void saveEntry(IWContext iwc,Page parentPage) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-//		Page parentPage = getParentPage();
 		
 		CalBusiness calBus = getCalBusiness(iwc);
 
@@ -500,29 +464,51 @@ public class CalendarEntryCreator extends Window{
 		String entryLedger = iwc.getParameter(ledgerFieldParameterName);
 		String entryDescription = iwc.getParameter(descriptionFieldParameterName);
 		String entryLocation = iwc.getParameter(locationFieldParameterName);
-	
+		String entryID = iwc.getParameter(entryIDParameterName);
+		
+		if(entryAttendees == null || entryAttendees.equals(""))
+			entryAttendees = "";
+		else {
+			entryAttendees = entryAttendees.substring(entryAttendees.lastIndexOf("_")+1);
+		}
+
 		Timestamp from = Timestamp.valueOf(entryDate);
 		Timestamp to = Timestamp.valueOf(entryEndDate);
 		from.setHours(Integer.parseInt(entryTimeHour));
 		from.setMinutes(Integer.parseInt(entryTimeMinute));
 		to.setHours(Integer.parseInt(entryEndTimeHour));
 		to.setMinutes(Integer.parseInt(entryEndTimeMinute));
+		
+		int ledgerID;
+		Timestamp ledStartTime = from;
+
+		if(entryLedger != null && !entryLedger.equals("") && !entryLedger.equals("-1")) {
+			ledgerID = Integer.parseInt(entryLedger);
+			CalendarLedger ledger = getCalBusiness(iwc).getLedger(ledgerID);
+			ledStartTime = ledger.getDate();
+		}
+		
+		
 		if(from.compareTo(to)>0) {
 			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.to_date_before_from_date_message","The from day is later than the to day!"));
 			displayingTimeConflict = true;
 		}
-		if(entryAttendees == null || entryAttendees.equals(""))
-			entryAttendees = "";
-		else {
-			entryAttendees = entryAttendees.substring(entryAttendees.lastIndexOf("_")+1);
+		
+		else if(from.compareTo(ledStartTime)<0) {
+			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.from_date_before_led_start_date_message","The from day is before the ledgers start day!"));
+			displayingTimeConflict = true;
 		}
-		String entryID = iwc.getParameter(entryIDParameterName);
-		if(entryID != null && !entryID.equals("")) {
-			calBus.updateEntry(entryID,entryHeadline, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryDescription, entryLocation);
-		}
+			
+								
 		else {
-			calBus.createNewEntry(entryHeadline, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation);			
-		}	
+			if(entryID != null && !entryID.equals("")) {
+				calBus.updateEntry(entryID,entryHeadline, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryDescription, entryLocation);
+			}
+			else {
+				calBus.createNewEntry(entryHeadline, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation);			
+			}
+		}
+			
 	}
 	public void main(IWContext iwc) {
 //		CalendarBusiness calBiz = getCalendarBusiness(iwc);
@@ -534,22 +520,14 @@ public class CalendarEntryCreator extends Window{
 //			calBiz.deleteEntryType(ii);
 //		}
 		initializeTexts(iwc);
-		initializeFields(iwc);
-		
-//		String save = iwc.getParameter(saveButtonParameterName);
-//		if(save != null) {
-//			saveEntry(iwc);	
-//		}
-		
+		initializeFields(iwc);		
+
 		add(lineUpEdit(iwc));
-		
-				
 	}
+	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
-	
-
 
 	public CalBusiness getCalBusiness(IWApplicationContext iwc) {
 		if (calBiz == null) {
@@ -562,6 +540,7 @@ public class CalendarEntryCreator extends Window{
 		}
 		return calBiz;
 	}
+	
 	protected UserBusiness getUserBusiness(IWApplicationContext iwc) {
 		UserBusiness userBusiness = null;
 		if (userBusiness == null) {

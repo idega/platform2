@@ -712,8 +712,6 @@ public class CalendarView extends Block{
 
 	public void main(IWContext iwc) throws Exception{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		
-		
 	
 		Page parentPage = this.getParentPage();
 		String styleSrc = iwc.getIWMainApplication().getBundle(getBundleIdentifier()).getResourcesURL();
@@ -808,6 +806,9 @@ public class CalendarView extends Block{
 				Link ledgerLink =new Link(ledger.getName());
 				ledgerLink.setStyleClass(styledLink);
 				ledgerLink.addParameter("ledger",ledger.getPrimaryKey().toString());
+				ledgerLink.addParameter(CalendarParameters.PARAMETER_DAY,timeStamp.getDay());
+				ledgerLink.addParameter(CalendarParameters.PARAMETER_MONTH,timeStamp.getMonth());
+				ledgerLink.addParameter(CalendarParameters.PARAMETER_YEAR,timeStamp.getYear());
 				ledgerLink.setWindowToOpen(LedgerWindow.class);
 				if(user != null) {
 					if(((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID()) {

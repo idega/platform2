@@ -9,11 +9,9 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -98,25 +96,20 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		initializeFields();
 		lineUp();
 		
-		String ledgerIDString = iwc.getParameter(LedgerWindow.LEDGER);
-		HiddenInput hi = new HiddenInput(LedgerWindow.LEDGER,ledgerIDString);
-		form.add(hi);
+		form.maintainParameter(LedgerWindow.LEDGER);
 		String mark = iwc.getParameter(markFieldParameterName);
 		String description = iwc.getParameter(markDescriptionFieldParameterName);
 		String save = iwc.getParameter("submit");
 		
-		add(form,iwc);
+		
 		
 		if(save != null && !save.equals("")) {
 			getCalBusiness(iwc).createNewMark(mark,description);
-			Link l = new Link();
-			l.addParameter(LedgerWindow.LEDGER,ledgerIDString);
-			l.setWindowToOpen(LedgerWindow.class);
-			String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-			setOnLoad(script);
+			setOnLoad("window.opener.parent.location.reload()");
 			close();
 			
 		}
+		add(form,iwc);
 		
 	}
 	public String getBundleIdentifier() {

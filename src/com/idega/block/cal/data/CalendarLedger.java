@@ -20,5 +20,7 @@ public interface CalendarLedger extends com.idega.data.IDOEntity{
 	public void addUser(User user);
 	public void setCoachID(int coachID);
 	public void setCoachGroupID(int coachGroupID);
+	public void removeUserRelation();
+	public void removeOneUserRelation(User user);
 
 }

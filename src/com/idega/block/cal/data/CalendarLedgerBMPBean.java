@@ -114,4 +114,20 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 		return super.idoFindOnePKByQuery(query);
 	}
 	
+	public void removeUserRelation() {
+		try {
+			idoRemoveFrom(User.class);
+		}catch (Exception e) {
+			System.out.println("cannot remove from middle table");
+			e.printStackTrace();
+		}			
+	}
+	public void removeOneUserRelation(User user) {
+		try {
+			idoRemoveFrom(user);
+		}catch(Exception e) {
+			System.out.println("cannot remove from middle table");
+			e.printStackTrace();
+		}
+	}
 }

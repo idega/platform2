@@ -13,11 +13,9 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
@@ -41,7 +39,6 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 	private static String ssnFieldParameterName = "cul_ssn";
 	private static String submitButtonParameterName = "submit";
 	private static String submitButtonParameterValue ="save";
-	private static String icelandicSSNErrorMsg = "cul_icelandicSSNErrorMsg";
 	
 	//texts
 	private Text nameText;
@@ -76,7 +73,6 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		
 		nameField = new TextInput(nameFieldParameterName);		
 		ssnField = new TextInput(ssnFieldParameterName);
-		ssnField.setAsIcelandicSSNumber(iwrb.getLocalizedString(icelandicSSNErrorMsg,"SSN is not a valid icelandic ssn"));
 		
 		submitButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),submitButtonParameterName,submitButtonParameterValue);
 		//closes the window
@@ -97,6 +93,7 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		form.add(table);
 	}
 	public void main(IWContext iwc) throws Exception {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		form = new Form();
 		initializeTexts();
 		initializeFields();
@@ -105,11 +102,8 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 
 		String ledgerString = iwc.getParameter(LedgerWindow.LEDGER);
 		Integer ledgerID = new Integer(ledgerString);
-		HiddenInput hi = new HiddenInput(LedgerWindow.LEDGER,ledgerString);
-		form.add(hi);
-		
-		add(form,iwc);
-		
+		form.maintainParameter(LedgerWindow.LEDGER);
+				
 		CalendarLedger ledger = null;
 		
 		String ssn = iwc.getParameter(ssnFieldParameterName);
@@ -120,14 +114,32 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		
 		String save = iwc.getParameter("submit");
 		if(save != null && !save.equals("")){
+			if((ssn == null || ssn.equals("")) && (name == null || name.equals(""))) {
+				setAlertOnLoad(iwrb.getLocalizedString("create_user_in_ledger.no_input_warning","Name or SSN must be selected"));
+			}
+			if(name == null || name.equals("") && ssn != null) {
+				name = ssn;
+			}
 			User user = null;
-			try {
-				user = getUserBusiness(iwc).getUser(ssn);	
+			
+			if(ssn != null && !ssn.equals("")) {
+				try {
+					user = getUserBusiness(iwc).getUser(ssn);					
+				}catch (Exception e){
+					user = null;
+				} 
+			}
+			
+			
+			if(user != null) {
+				try {
+					groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);					
+				}catch (Exception e) {
+					
+				}
+			}
+			if(ledgerID != null) {
 				ledger = getCalendarBusiness(iwc).getLedger(ledgerID.intValue());
-				groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
-				
-			}catch (Exception e){
-				e.printStackTrace();
 			}
 			if(groups != null) {
 				Iterator groupIter = groups.iterator();
@@ -157,20 +169,24 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 			else {
 				try {
 					user = getUserBusiness(iwc).createUserByPersonalIDIfDoesNotExist(name,ssn,null,null);
+					user.setMetaData(NEW_USER_IN_LEDGER,NEW_USER_IN_LEDGER);
 					user.store();
-					ledger.addUser(user);
+					if(ssn == null || ssn.equals("")) {
+						user.setPersonalID(Integer.toString(((Integer)user.getPrimaryKey()).intValue()));
+						user.store();
+					}
+					if(ledger != null) {
+						ledger.addUser(user);
+					}
 				}catch (Exception e){
 					e.printStackTrace();
 				}
 				
-			}
-			Link l = new Link();
-			l.setWindowToOpen(LedgerWindow.class);
-			l.addParameter(LedgerWindow.LEDGER, ledgerString);
-			String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-			setOnLoad(script);
+			}			
+			setOnLoad("window.opener.parent.location.reload()");			
 			close();
 		}
+		add(form,iwc);
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;

@@ -6,19 +6,19 @@ package com.idega.block.cal.presentation;
 import java.util.Date;
 
 import com.idega.block.cal.business.CalBusiness;
+import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
+import com.idega.block.cal.business.LedgerVariationsHandler;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.GroupChooser;
 
@@ -31,6 +31,8 @@ import com.idega.user.presentation.GroupChooser;
 public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
+	
 	
 	
 	//parameter names
@@ -141,8 +143,6 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		mainTable.add(closeButton,2,5);
 				
 		form.add(mainTable);
-		
-		
 	}
 	/**
 	 * Saves the ledger which is created by the name of the group and the groupID 
@@ -150,17 +150,31 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	 * @throws Exception
 	 */
 	public void saveLedger(IWContext iwc,int groupID,String coachName,int coachGroupID) throws Exception{
-		CalBusiness calBiz = getCalBusiness(iwc);
-		GroupBusiness grBiz =getGroupBusiness(iwc);
+		String bClass = null;
+		try {
+			bClass = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS);
+		} catch(Exception e) {
+			// just user default LedgerVariationHandler class
+		}
+		LedgerVariationsHandler ledgerVariationsHandler;
+		if(bClass!=null && bClass.trim().length()>0) {
+			Class classDef;
+			try {
+				classDef = Class.forName(bClass);
+				ledgerVariationsHandler = (LedgerVariationsHandler) classDef.newInstance();
+			} catch (Exception e) {
+				System.out.println("Couldn't instantiate class for ledgerVariationsHandler, using default: " + bClass);
+				e.printStackTrace();
+				ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+			}
+		} else {
+			ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+		}
 		
-		Group g = grBiz.getGroupByGroupID(groupID);
-		String name = g.getName();
+
 		String date = iwc.getParameter(dateFieldParameterName);
 		
-		
-		
-		calBiz.createNewLedger(name + "_ledger",groupID,coachName,date,coachGroupID);
-		
+		ledgerVariationsHandler.saveLedger(iwc,groupID,coachName,coachGroupID,date);		
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -169,15 +183,12 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		initializeFields();
 		
 		Integer groupID =null;
-		String groupName = null;
 		groupString =iwc.getParameter(groupFieldParameterName);
 		if(groupString == null || groupString.equals(""))
 			groupString = "";
 		else {
 			groupString = groupString.substring(groupString.lastIndexOf("_")+1);
 			groupID = new Integer(groupString);
-			Group group = getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue());
-			groupName = group.getName();
 		}
 		String coachGroupIDString = iwc.getParameter(otherCoachesFieldParameterName);
 		Integer coachGroupID =null;
@@ -196,20 +207,16 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		String save = iwc.getParameter("submit");
 		if(save != null && !save.equals("")) {
 			saveLedger(iwc,groupID.intValue(),coach,coachGroupID.intValue());
-			int ledgerID = getCalBusiness(iwc).getLedgerIDByName(groupName + "_ledger");
-			Integer i = new Integer(ledgerID);
-			//the link is not displayed but contains the window to open
-			//and the ledgerID parameter
-			Link l = new Link();
-			l.setWindowToOpen(LedgerWindow.class);
-			l.addParameter(ledgerFieldParameterName, i.toString());
-			String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-			setOnLoad(script);
-			close();
 			
-		}
-		
+//			Link l = new Link();
+//			l.setWindowToOpen(CalendarWindow.class);
+//			String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
+//			setOnLoad(script);
+			close();
+			setOnLoad("window.opener.parent.location.reload()");
+		}		
 	}
+	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}

@@ -32,6 +32,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * Description: <br>
@@ -101,6 +102,22 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		return list;
 	}
+	public Collection getPracticesByLedIDandMonth(int ledgerID, int month, int year) {
+		List list = new ArrayList();
+		List practices = (List) getPracticesByLedgerID(ledgerID);
+		Iterator prIter = practices.iterator();
+		while(prIter.hasNext()) {
+			CalendarEntry entry = (CalendarEntry) prIter.next();
+			Timestamp entryDate = entry.getDate();
+			IWTimestamp i = new IWTimestamp(entryDate);
+			int m = i.getMonth();
+			int y = i.getYear();
+			if(m == month && y == year) {
+				list.add(entry);
+			}
+		}
+		return list;		
+	}
 	
 	//GET methods for EntryTypes
 	/**
@@ -141,9 +158,9 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	 * @param entryID
 	 * @return
 	 */
-	public CalendarLedger getLedger(int entryID) {
+	public CalendarLedger getLedger(int ledgerID) {
 		CalendarLedger ledger = null;
-		Integer id = new Integer(entryID);
+		Integer id = new Integer(ledgerID);
 		try {
 			CalendarLedgerHome ledgerHome = (CalendarLedgerHome) getIDOHome(CalendarLedger.class);
 			ledger = ledgerHome.findByPrimaryKey(id);
@@ -198,17 +215,13 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	public AttendanceEntity getAttendanceByUserIDandEntry(int userID, CalendarEntry entry) {
 		AttendanceEntity attendance = null;
 		Timestamp stamp = entry.getDate();
-//		List list = null;
 		try {
 			AttendanceEntityHome attendanceHome = (AttendanceEntityHome) getIDOHome(AttendanceEntity.class);
-			attendance = attendanceHome.findAttendanceByUserIDandTimestamp(userID,stamp);
-//			attendance = (AttendanceEntity) list.get(0);
-			return attendance;
-			
+			attendance = attendanceHome.findAttendanceByUserIDandTimestamp(userID,stamp);			
 		} catch(Exception e) {
-			e.printStackTrace();
-			return null;
+			attendance = null;
 		}
+		return attendance;
 		
 	}
 	public List getAttendancesByLedgerID(int ledgerID) {
@@ -257,6 +270,80 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
+		}
+	}
+	public void deleteLedger(int ledgerID) {
+		CalendarLedger led = getLedger(ledgerID);	
+		if(led != null) {
+			/*
+			 * get all the attendance markings for this ledger and delete them
+			 */
+			Collection att = getAttendancesByLedgerID(ledgerID);
+			Iterator attIter = att.iterator();
+			while(attIter.hasNext()) {
+				AttendanceEntity attendance = (AttendanceEntity) attIter.next();
+				try {
+					attendance.remove();
+				}catch (Exception e) {
+					e.printStackTrace();
+				}			
+			}
+			/*
+			 * get all entries for this ledger and delete them
+			 */
+			Collection entries = getEntriesByLedgerID(ledgerID);
+			Iterator entIter = entries.iterator();
+			while(entIter.hasNext()) {
+				CalendarEntry entry = (CalendarEntry) entIter.next();
+				try {
+					entry.remove();
+				} catch (Exception e) {
+					e.printStackTrace(System.err);
+				}
+			}
+			try {
+				led.removeUserRelation();
+				led.remove();
+			}catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+	}
+	
+	public void deleteUserFromLedger(int userID, int ledgerID, IWContext iwc) {
+		UserBusiness userBiz = getUserBusiness(iwc);
+		GroupBusiness groupBiz = getGroupBusiness(iwc);
+		CalendarLedger ledger = getLedger(ledgerID);
+		User user = null;
+		try{
+			user = 	userBiz.getUser(userID);
+		}catch (Exception e) {
+			
+		}
+		if(user !=null) {
+			Collection att = getAttendancesByLedgerID(ledgerID);
+			Iterator attIter = att.iterator();
+			while(attIter.hasNext()) {
+				AttendanceEntity attendance = (AttendanceEntity) attIter.next();
+				if(attendance.getUserID() == userID) {
+					try {
+						attendance.remove();
+					}catch (Exception e) {
+						e.printStackTrace();
+					}	
+				}
+			}
+			try {
+				ledger.removeOneUserRelation(user);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				userBiz.removeUserFromGroup(user,groupBiz.getGroupByGroupID(ledger.getGroupID()),iwc.getCurrentUser());
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 
@@ -339,6 +426,9 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		if(attendees != null && !attendees.equals("")) {
 			groupID = new Integer(attendees);
 		}	
+		else {
+			groupID = new Integer(-1);
+		}
 		while(start < end) {				
 			try {
 				CalendarEntryType entryType = getEntryTypeByName(type);

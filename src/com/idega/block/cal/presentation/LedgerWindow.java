@@ -3,14 +3,19 @@
  */
 package com.idega.block.cal.presentation;
 
+import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import com.idega.block.cal.business.CalBusiness;
+import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
+import com.idega.block.cal.business.LedgerVariationsHandler;
 import com.idega.block.cal.data.AttendanceEntity;
 import com.idega.block.cal.data.AttendanceMark;
 import com.idega.block.cal.data.CalendarEntry;
@@ -23,10 +28,15 @@ import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.PostalCode;
+import com.idega.data.EntityRepresentation;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -34,7 +44,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -57,6 +66,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	public static final String SELECTED_USERS_KEY = "selected_users";
 	public static final String DELETE_USERS_KEY = "delete_selected_users";
 	public static final String NEW_USER_IN_LEDGER = "user_new_in_ledger_";
+	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
 	
 	public static final String GROUP ="group";
 	public static final String LEDGER ="ledger";
@@ -76,6 +86,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	private Text groupText;
 	private Text dateText;
 	private Text clubNameText;
+	private Text allowedMarksText;
 	
 	//fields
 	private Text coachNameField;
@@ -88,16 +99,20 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	private SubmitButton saveButton;
 	private CloseButton closeButton;
 	private PrintButton printButton;
+	private Link deleteLink;
 	
 	private CalBusiness calBiz = null;
 	private GroupBusiness groupBiz = null;
 
 	private Form form;
 	private Table mainTable;
+	private EntityBrowser entityBrowser;
 	
 	private String mainTableStyle = "main";
+	private String borderAllWhiteStyle = "borderAllWhite";
 	private String styledLink = "styledLink";
 	private String styledLinkUnderline = "styledLinkUnderline";
+	private String bold = "bold";
 	
 	private String groupString = null;
 	private Integer groupID;
@@ -118,10 +133,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		coachText = new Text(iwrb.getLocalizedString(coachFieldParameterName,"Coach"));
+		coachText.setStyleClass(bold);
 		otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
+		otherCoachesText.setStyleClass(bold);
 		groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
+		groupText.setStyleClass(bold);
 		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Start Date"));
+		dateText.setStyleClass(bold);
 		clubNameText = new Text(iwrb.getLocalizedString(clubNameParameterName,"Club name"));
+		clubNameText.setStyleClass(bold);
+		allowedMarksText = new Text(iwrb.getLocalizedString("ledgerwindow.allowed_marks", "Allowed marks"));
+		allowedMarksText.setStyleClass(bold);
 	}
 	/**
 	 * initializes the fields in the form of the window
@@ -130,6 +152,10 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	protected void initializeFields() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		IWBundle iwb = getBundle(iwc);
+		
+		
+		LedgerVariationsHandler ledgerVariationsHandler = getLedgerVariationsHandler(iwc);
 		
 		String lIDString = iwc.getParameter(LEDGER);
 		Integer lID = new Integer(lIDString);
@@ -170,19 +196,15 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		int groupID = getCalendarBusiness(iwc).getLedger(lID.intValue()).getGroupID();
 		try {
 			groupNameField = getGroupBusiness(iwc).getGroupByGroupID(groupID).getName();
-			parentGroups = new ArrayList(getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID)));
+			Collection c = getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID));
+			if(c != null) {		
+				parentGroups = new ArrayList(c);
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		if(parentGroups != null) {
-			Iterator pgIter = parentGroups.iterator();
-			while(pgIter.hasNext()) {
-				Group g = (Group) pgIter.next();
-				String type = g.getGroupType();
-				if("iwme_club".equals(type)) {
-					clubNameField = g.getName();
-				}
-			}
+			clubNameField = ledgerVariationsHandler.getParentGroupName(parentGroups);
 		}
 		if(clubNameField == null) {
 			clubNameField = iwrb.getLocalizedString("ledgerwindow.no_club_text","No club");
@@ -190,14 +212,26 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		Timestamp fromD = getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate();
 		IWTimestamp iwFromD = new IWTimestamp(fromD);
 		//fromDate is the start date of the ledger
-		fromDateField = iwFromD.getDateString("dd. MMMMMMM yyyy");
+		fromDateField = iwFromD.getDateString("dd. MMMMMMMM yyyy");
 		
 		//when save button is pushed the new ledger is created
 		saveButton = new SubmitButton(iwrb.getLocalizedString("ledgerwindow.save","Save"),saveButtonParameterName,saveButtonParameterValue);
 		//closes the window
 		closeButton = new CloseButton(iwrb.getLocalizedString("ledgerwindow.close","Close"));
 		
-		printButton = new PrintButton(iwrb.getLocalizedString("ledgerwindow.print","Print"));		
+		Image print = iwb.getImage("printer2.gif");
+		print.setAlt(iwrb.getLocalizedString("ledger_window.print","Print"));
+		printButton = new PrintButton(print);
+		
+		deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
+		deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
+		deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, lIDString);
+		deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
+		deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,LEDGER);
+		Image del = iwb.getImage("delete2.gif");
+		del.setAlt(iwrb.getLocalizedString("ledger_window.close_ledger","Close Ledger"));
+		deleteLink.setImage(del);
+		
 	}
 
 	/**
@@ -205,17 +239,38 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	 *
 	 */
 	public void lineUp(IWContext iwc, List marks) {
-		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
+		CalendarView c = new CalendarView();
+		
+		IWTimestamp timeStamp = null;
+
+		String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+		String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+		String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+
+		if(month != null && !month.equals("") &&
+				day != null && !day.equals("") &&
+				year != null && !year.equals("")) {
+			timeStamp = c.getTimestamp(day,month,year);
+		}
+		else {
+			timeStamp = IWTimestamp.RightNow();
+		}
+				
+		Link right = c.getRightLink(iwc);
+		Link left = c.getLeftLink(iwc);
+		addNextMonthPrm(right, timeStamp, iwc);
+		addLastMonthPrm(left, timeStamp, iwc);
 		
 		mainTable = new Table();
-		mainTable.setWidth(288);
+//		mainTable.setWidth(288);
 		mainTable.setCellspacing(0);
 		mainTable.setCellpadding(5);
-		mainTable.setStyleClass(mainTableStyle);
-		mainTable.add(clubNameText,1,1);
-		mainTable.add(clubNameField,2,1);
-		mainTable.add(coachText,1,2);
-		mainTable.add(coachNameField,2,2);
+		mainTable.setStyleClass(borderAllWhiteStyle);
+		mainTable.add(coachText,1,1);
+		mainTable.add(coachNameField,2,1);
+		mainTable.add(clubNameText,1,2);
+		mainTable.add(clubNameField,2,2);
 		mainTable.setVerticalAlignment(1,3,"top");
 		mainTable.add(otherCoachesText,1,3);
 		mainTable.add(otherCoachesNameField,2,3);
@@ -224,25 +279,36 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		mainTable.add(dateText,1,5);
 		mainTable.add(fromDateField,2,5);
 		
-		mainTable.mergeCells(3,1,3,4);
-		mainTable.add(iwrb.getLocalizedString("ledgerwindow.allowed_marks", "Allowed marks") ,3,1);
-		mainTable.add("<br><br>",3,1);
+		mainTable.add(left,1,6);
+		String dateString = timeStamp.getDateString("MMMMMMMM, yyyy",iwc.getCurrentLocale());
+		mainTable.add(dateString,1,6);
+		mainTable.add(right,2,6);
+		
+		mainTable.mergeCells(4,1,4,4);
+		mainTable.setVerticalAlignment(3,1,"top");
+		mainTable.setVerticalAlignment(4,1,"top");
+		mainTable.add(allowedMarksText ,3,1);
 		Iterator markIter = marks.iterator();
 		while(markIter.hasNext()) {
 			AttendanceMark mark = (AttendanceMark) markIter.next();
-			mainTable.add(mark.getMark()+": "+mark.getMarkDescription(),3,1);
-			mainTable.add("<br>",3,1);
+			mainTable.add(mark.getMark()+": "+mark.getMarkDescription(),4,1);
+			mainTable.add("<br>",4,1);
 		}
+		mainTable.setVerticalAlignment(5,4,"bottom");
+		mainTable.setAlignment(5,4,"right");
+		mainTable.add(printButton,5,4);
+		mainTable.add(deleteLink,5,4);
 				
-		mainTable.mergeCells(1,7,3,7);
-		mainTable.add(getUserList(iwc),1,7);
+		mainTable.mergeCells(1,7,5,7);
+		EntityBrowser eBr = getUserList(iwc);
+		Form f = new Form();
+		f.add(eBr);
+		mainTable.add(f,1,7);
 	
 		mainTable.setAlignment(3,8,"right");
 		mainTable.add(saveButton,3,8);
 		mainTable.add(Text.NON_BREAKING_SPACE,3,8);
 		mainTable.add(closeButton,3,8);
-		mainTable.add(Text.NON_BREAKING_SPACE,3,8);
-		mainTable.add(printButton,3,8);
 		
 		form.add(mainTable);		
 	}
@@ -286,11 +352,15 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				//go through the groupIDs to see if the user is in the ledgerGroup
 				while(groupIter.hasNext()) {
 					Group g = (Group) groupIter.next();
-					Integer groupID = (Integer) g.getPrimaryKey();
-					if(groupID.intValue() == ledger.getGroupID()) {
-						isInGroup = true;
-					}
+					if(g != null) {
+						Integer groupID = (Integer) g.getPrimaryKey();
+						if(groupID.intValue() == ledger.getGroupID()) {
+							isInGroup = true;
+						}
+					}					
 				}
+		
+				
 				Link aLink = new Link(text);
 				if(isInGroup == false) {
 					aLink.setStyleClass("errorMessage");
@@ -327,23 +397,45 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				
 				CalendarEntry entry = null;
 				List entryList = null;
+				
+				int m = 0;
+				int y = 0;
+
+				String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+				String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+				if(year != null && !year.equals("") &&
+						month != null && !month.equals("")) {
+					y = Integer.parseInt(year);
+					m = Integer.parseInt(month);
+				}
+				
 
 				try {
-					entryList = (List) getCalendarBusiness(iwc).getPracticesByLedgerID(ledgerID.intValue());
+					entryList = (List) getCalendarBusiness(iwc).getPracticesByLedIDandMonth(ledgerID.intValue(),m,y);
 				}
 				catch (Exception ex) {
 					ex.printStackTrace(System.err);
 				}
 				
+				List timeList = new ArrayList();
+
 				Iterator entryIter = entryList.iterator();
-				int column = 2;
+				
+				
 				while(entryIter.hasNext()) {					
 					entry = (CalendarEntry) entryIter.next();
-						IWTimestamp date = new IWTimestamp(entry.getDate());						
-						String dateString = date.getDateString("dd/MM");
-						attendanceDateTable.setWidth(column,1,40);
-						attendanceDateTable.add(dateString,column,1);					
-						column++;
+						IWTimestamp date = new IWTimestamp(entry.getDate());	
+						timeList.add(date);						
+				}				
+				Collections.sort(timeList);
+				int column = 2;
+				Iterator timeIter = timeList.iterator();
+				while(timeIter.hasNext()) {
+					IWTimestamp date = (IWTimestamp) timeIter.next();
+					String dateString = date.getDateString("dd/MM");
+					attendanceDateTable.setWidth(column,1,40);
+					attendanceDateTable.add(dateString,column,1);					
+					column++;					
 				}
 				return attendanceDateTable;
 			}
@@ -353,8 +445,19 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				User user = (User) entity;
 				List entryList = null;
 				
+				int m = 0;
+				int y = 0;
+
+				String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+				String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+				if(year != null && !year.equals("") &&
+						month != null && !month.equals("")) {
+					y = Integer.parseInt(year);
+					m = Integer.parseInt(month);
+				}
+				
 				try {
-					entryList = (List) getCalendarBusiness(iwc).getPracticesByLedgerID(ledgerID.intValue());
+					entryList = (List) getCalendarBusiness(iwc).getPracticesByLedIDandMonth(ledgerID.intValue(),m,y);
 				}catch(Exception ex) {
 					ex.printStackTrace(System.err);
 				}
@@ -369,17 +472,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					input.setMaxlength(1);
 
 					input.setWidth("20");
-					input.setStyleClass("borderAllWhite");					
+					input.setStyleClass("borderAllWhite");	
 					Integer userID = (Integer) user.getPrimaryKey();
+					AttendanceEntity attendance = null;
 					try {
-						AttendanceEntity attendance = getCalendarBusiness(iwc).getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entryList.get(h++));
-						mark = attendance.getAttendanceMark();//iwc.getParameter(user.getPrimaryKey().toString() + "_" + i);
-						
+						attendance = getCalendarBusiness(iwc).getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entryList.get(h++));
+						if(attendance != null) {
+							mark = attendance.getAttendanceMark();
+						}							
 					}catch(Exception e) {
 						e.printStackTrace();
-					}						
-					
-					
+					}	
 					if(mark != null && !mark.equals("")) {
 						input.setValue(mark);
 					}	
@@ -391,6 +494,102 @@ public class LedgerWindow extends StyledIWAdminWindow{
 
 			}
 		};
+		EntityToPresentationObjectConverter converterCompleteAddress = new EntityToPresentationObjectConverter() {
+			private List values;
+			
+			public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
+				return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+			}
+			
+			public PresentationObject getPresentationObject(Object genericEntity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+				// entity is a user, try to get the corresponding address
+				User user = (User) genericEntity;
+				Address address = null;
+				try {
+					address = getUserBusiness(iwc).getUsersCoAddress(user);
+				}
+				catch (RemoteException ex) {
+					System.err.println("[LedgerWindow]: Address could not be retrieved.Message was :" + ex.getMessage());
+					ex.printStackTrace(System.err);
+				}
+				StringBuffer displayValues = new StringBuffer();
+				values = path.getValues((EntityRepresentation) address);
+				// com.idega.core.data.Address.STREET_NUMBER plus
+				// com.idega.core.data.Address.STREET_NUMBER
+				displayValues.append(getValue(0)).append(' ').append(getValue(1));
+				// com.idega.core.data.Address.P_O_BOX
+				String displayValue = getValue(2);
+				if (displayValue.length() != 0)
+					displayValues.append(", P.O. Box ").append(displayValue).append(", ");
+				// com.idega.core.data.PostalCode.POSTAL_CODE_ID|POSTAL_CODE
+				// plus com.idega.core.data.Address.CITY
+				displayValue = getValue(3);
+				if (displayValue.length() != 0)
+					displayValues.append(", ").append(getValue(3)).append(' ').append(getValue(4));
+				// com.idega.core.data.Country.IC_COUNTRY_ID|COUNTRY_NAME
+				displayValue = getValue(5);
+				if (displayValue.length() != 0)
+					displayValues.append(", ").append(displayValue);
+				return new Text(displayValues.toString());
+			}
+			private String getValue(int i) {
+				Object object = values.get(i);
+				return ((object == null) ? "" : object.toString());
+			}
+		};
+		
+		EntityToPresentationObjectConverter converterPhone = new EntityToPresentationObjectConverter() {
+			public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
+				return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+			}
+			
+			public PresentationObject getPresentationObject(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+				// entity is a user, try to get the corresponding address
+				User user = (User) entity;
+				Phone[] phone = null;
+				try {
+					phone = getUserBusiness(iwc).getUserPhones(user);
+				}
+				catch (RemoteException ex) {
+					System.err.println("[LedgerWindow]: Phone could not be retrieved.Message was :" + ex.getMessage());
+					ex.printStackTrace(System.err);
+				}
+				// now the corresponding address was found, now just use the
+				// default converter
+				int i;
+				Table table = new Table();
+				for (i = 0; i < phone.length; i++) {
+					if(phone[i].getPhoneTypeId() == 3) {
+						table.add(browser.getDefaultConverter().getPresentationObject((GenericEntity) phone[i], path, browser, iwc));
+					}
+				}
+				return table;
+			}
+		};
+		EntityToPresentationObjectConverter converterParent = new EntityToPresentationObjectConverter() {
+			public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
+				return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+			}
+			
+			public PresentationObject getPresentationObject(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+				User user = (User) entity;
+				Collection parents = null;
+				try {
+					parents = user.getReverseRelatedBy("FAM_PARENT"); //getLedgerVariationsHandler(iwc).getParentGroupRelation(iwc, user);
+				}
+				catch (Exception ex) {
+					System.err.println("[LedgerWindow]: Parents could not be retrieved.Message was :" + ex.getMessage());
+					ex.printStackTrace(System.err);
+				}
+//				int i = 1;
+				Table table = new Table();
+					table.add(parents.toString(),1,1);
+				return table;
+			}
+		};
+		
+		
+		
 		Collection users = null;
 		
 		try {
@@ -400,7 +599,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		}
 
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
-		EntityBrowser entityBrowser = new EntityBrowser();
+		entityBrowser = new EntityBrowser();
 
 		entityBrowser.setEntities("havanna",users);
 		entityBrowser.setDefaultNumberOfRows(Math.min(users.size(), 30));
@@ -409,7 +608,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		String nameKey = User.class.getName() + ".FIRST_NAME:" + User.class.getName() + ".MIDDLE_NAME:" + User.class.getName() + ".LAST_NAME";
 		String entryKey = CalendarEntry.class.getName() + ".CAL_ENTRY_DATE";
 		String ssnKey = User.class.getName() + ".PERSONAL_ID";
-		String completeAddressKey =
+		
+		String completeAddressKey = 
 			Address.class.getName()
 			+ ".STREET_NAME:"
 			+ Address.class.getName()
@@ -431,14 +631,19 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		entityBrowser.setOptionColumn(0,ssnKey);
 		entityBrowser.setOptionColumn(1,completeAddressKey);
-		entityBrowser.setOptionColumn(2,phoneKey); 
+		entityBrowser.setOptionColumn(2,phoneKey);
+//		entityBrowser.setOptionColumn(3,User.class.getName());
 		
 		entityBrowser.setEntityToPresentationConverter("Delete", converterToDeleteButton);
 		entityBrowser.setEntityToPresentationConverter(nameKey, converterLink);
 		entityBrowser.setEntityToPresentationConverter(entryKey,converterAttendance);
 		
+		entityBrowser.setEntityToPresentationConverter(completeAddressKey, converterCompleteAddress);
+		entityBrowser.setEntityToPresentationConverter(Phone.class.getName(), converterPhone);
+				
 		entityBrowser.addEntity(CalendarEntry.class.getName());
-		
+		entityBrowser.addEntity(Address.class.getName());
+		entityBrowser.addEntity(Phone.class.getName());
 		
 		String confirmDeleting = resourceBundle.getLocalizedString("delete_selected_users", "Delete selected users");
 		confirmDeleting += " ?";
@@ -454,7 +659,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		addUserLink.setStyleClass(styledLink);
 		addUserLink.setParameter(LEDGER,ledgerString);
 		addUserLink.setWindowToOpen(CreateUserInLedger.class);
-		Link statisticsLink = new Link("Statistics");
+		Link statisticsLink = new Link(iwrb.getLocalizedString("ledgerwindow.statistics","Statistics"));
 		statisticsLink.setStyleClass(styledLink);
 		statisticsLink.addParameter(LEDGER,ledgerString);
 		statisticsLink.setWindowToOpen(UserStatisticsWindow.class);
@@ -469,48 +674,85 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		return entityBrowser;
 	}
+	
+	public void removeUsersFromLedger(Collection userIds, int ledID, IWContext iwc) {
+		ArrayList notRemovedUsers = new ArrayList();
+		Iterator iterator = userIds.iterator();
+		while (iterator.hasNext()) {
+			String userIDString = (String) iterator.next();
+			int userID = Integer.parseInt(userIDString);
+		
+			try {
+				getCalendarBusiness(iwc).deleteUserFromLedger(userID,ledID,iwc);
+			}
+			catch (Exception e) {
+				System.err.println("[BasicUserOverview] user with id " + userID + " could not be removed" + e.getMessage());
+				e.printStackTrace(System.err);
+				notRemovedUsers.add(userIDString);
+			}		
+		}
+//		return notRemovedUsers;
+	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
 		form = new Form();
 		initializeTexts();
 		initializeFields();
-				
+		
 		ledgerString = iwc.getParameter(LEDGER);		
 		ledgerID =new Integer(ledgerString);
-		
+
 		CalendarLedger ledger = getCalendarBusiness(iwc).getLedger(ledgerID.intValue());
 		
 		int i = ledger.getGroupID();
 		groupID = new Integer(i);
 				
-		HiddenInput hi = new HiddenInput(LEDGER,ledgerString);
-		form.add(hi);
-
 		Collection users = null;
-		Collection entries = null;
+		List entries = null;
 		List marks = null;
+		
+		int mon = 0;
+		int ye = 0;
+
+		String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+		String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+		if(year != null && !year.equals("") &&
+				month != null && !month.equals("")) {
+			ye = Integer.parseInt(year);
+			mon = Integer.parseInt(month);
+		}
+		
+		form.maintainParameter(LEDGER);
+		form.maintainParameter(CalendarParameters.PARAMETER_YEAR);
+		form.maintainParameter(CalendarParameters.PARAMETER_MONTH);
+		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
 		
 		try {
 			users = getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
-			entries = getCalendarBusiness(iwc).getEntriesByLedgerID(ledgerID.intValue());
+			entries = (List) getCalendarBusiness(iwc).getPracticesByLedIDandMonth(ledgerID.intValue(),mon,ye);
 			marks = getCalendarBusiness(iwc).getAllMarks();
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 		
+		String close = iwc.getParameter(ConfirmDeleteWindow.PRM_DELETED);
+		if(close != null) {
+			close();
+		}
+		
 		lineUp(iwc,marks);
 		
-		//put the entries for the current ledger to a list of CalendarEntries
-		//to make them accessible through the List get(int i) method
+		String deleteUsers = iwc.getParameter(DELETE_USERS_KEY);
+		if(deleteUsers != null) {
+			String[] userIds;
+			userIds = iwc.getParameterValues(SELECTED_USERS_KEY);
+			removeUsersFromLedger(Arrays.asList(userIds),ledgerID.intValue(),iwc);
+		}
 
-		List entryList = new ArrayList(entries);
-		
-		System.out.println("users: " + users.toString());
-		
-		
 		String save = iwc.getParameter(saveButtonParameterName);
 		if(save != null) {
-			int userColumns = entryList.size();
+			int userColumns = entries.size();
 			CalBusiness biz = getCalendarBusiness(iwc);
 			User user = null;
 			Iterator userIter = users.iterator();
@@ -543,14 +785,14 @@ public class LedgerWindow extends StyledIWAdminWindow{
 						boolean match = Pattern.matches(b.toString(), mark);
 						if(match) {
 							//if the attendance mark exists in the database the marking is updated
-							if(biz.getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entryList.get(h)) != null) {
-								AttendanceEntity attendance = biz.getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entryList.get(h));
+							if(biz.getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entries.get(h)) != null) {
+								AttendanceEntity attendance = biz.getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entries.get(h));
 								Integer attendanceID = (Integer) attendance.getPrimaryKey();
-								getCalendarBusiness(iwc).updateAttendance(attendanceID.intValue(),userID.intValue(),ledgerID.intValue(),(CalendarEntry) entryList.get(h++),mark);
+								biz.updateAttendance(attendanceID.intValue(),userID.intValue(),ledgerID.intValue(),(CalendarEntry) entries.get(h++),mark);
 							}
 							//if no attendance mark exists, a new one is created
 							else {
-								getCalendarBusiness(iwc).saveAttendance(userID.intValue(),ledgerID.intValue(),(CalendarEntry) entryList.get(h++),mark);
+								biz.saveAttendance(userID.intValue(),ledgerID.intValue(),(CalendarEntry) entries.get(h++),mark);
 							}							
 						}
 						else {
@@ -565,6 +807,60 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	public void addNextMonthPrm(Link L, IWTimestamp idts, IWContext iwc) {
+		L.addParameter(LEDGER,iwc.getParameter(LEDGER));
+		if (idts.getMonth() == 12) {
+			L.addParameter(CalendarParameters.PARAMETER_DAY, idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() + 1));
+		}
+		else {
+			L.addParameter(CalendarParameters.PARAMETER_DAY, idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth() + 1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear()));
+		}
+	}
+
+	public void addLastMonthPrm(Link L, IWTimestamp idts, IWContext iwc) {
+		L.addParameter(LEDGER,iwc.getParameter(LEDGER));
+		if (idts.getMonth() == 1) {
+			L.addParameter(CalendarParameters.PARAMETER_DAY,idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(12));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() - 1));
+		}
+		else {
+			L.addParameter(CalendarParameters.PARAMETER_DAY,idts.getDay());
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth() - 1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear()));
+		}
+	}
+	
+	public LedgerVariationsHandler getLedgerVariationsHandler(IWContext iwc) {
+		// the class used to handle ledgerVariations is an applicationProperty... 
+		String bClass = null;
+		try {
+			bClass = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS);
+		} catch(Exception e) {
+			// just user default LedgerVariationHandler class
+		}
+		LedgerVariationsHandler ledgerVariationsHandler;
+		if(bClass!=null && bClass.trim().length()>0) {
+			Class classDef;
+			try {
+				classDef = Class.forName(bClass);
+				ledgerVariationsHandler = (LedgerVariationsHandler) classDef.newInstance();
+			} catch (Exception e) {
+				System.out.println("Couldn't instantiate class for ledgerVariationsHandler, using default: " + bClass);
+				e.printStackTrace();
+				ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+			}
+		} else {
+			ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+		}
+		return ledgerVariationsHandler;
+		
 	}
 	
 

@@ -30,6 +30,8 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
   public final static String PRM_DELETE = "iw_delete";
   public final static String PRM_DELETE_ID = "iw_del_id";
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+  public final static String PRM_ENTRY_OR_LEDGER = "ent_led";
+  public final static String PRM_DELETED = "deleted";
   
   
   private Form f;
@@ -42,26 +44,25 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     setHeight(250);
   }
 
- 
-
   public void main(IWContext iwc){
       setTitle("Confirm delete");
-
-
-      //this.setParentToReload();
-
-      //this.debugParameters(iwc);
-
-
+      
+      String entryOrLedger = iwc.getParameter(PRM_ENTRY_OR_LEDGER);
+      
       boolean doConfirm = !(iwc.getParameter(PRM_CONFIRM)!=null || iwc.getParameter(PRM_CONFIRM+".x")!=null);
       if(doConfirm){
         add(getConfirmBox(iwc),iwc);
       }
       else{
-        String _entryID = iwc.getParameter(PRM_DELETE_ID);
+        String id = iwc.getParameter(PRM_DELETE_ID);
         try {
-          getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(_entryID));
-          
+        	if(entryOrLedger.equals(CalendarEntryCreator.ENTRY)) {
+        		getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(id));
+        	}
+        	else if(entryOrLedger.equals(LedgerWindow.LEDGER)) {
+        		getCalendarBusiness(iwc).deleteLedger(Integer.parseInt(id));
+        	}
+                    
         }
         catch (Exception ex) {
           ex.printStackTrace();
@@ -69,12 +70,13 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
         Link l = new Link();
         l.setWindowToOpen(CalendarWindow.class);
         l.addParameter(PRM_DELETE_ID, "");
+        l.addParameter(PRM_DELETED,"yes");
+        close();
+//        setOnLoad("window.opener.parent.location.reload()");
+        
         String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
         setOnLoad(script);
-        close();
-        
-//        this.setOnLoad("window.opener.parent.location.reload()");//frames['iwb_main'].
-//        this.close();        
+                
       }
   }
 
@@ -87,13 +89,13 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     
     f.maintainParameter(PRM_DELETE);
     f.maintainParameter(PRM_DELETE_ID);
+    f.maintainParameter(PRM_ENTRY_OR_LEDGER);
     
     
     f.add(t);
     t.setWidth("100%");
     t.setAlignment(1,1,IWConstants.CENTER_ALIGNMENT);
     t.setVerticalAlignment(1,1,IWConstants.MIDDLE_ALIGNMENT);
-    //t.setHeight("100");
     t.setHeight(1,"70");
     t.setHeight(2,"20");
 
@@ -113,9 +115,6 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     innerTable.setCellspacing(0);
     t.setAlignment(1, 2, IWConstants.CENTER_ALIGNMENT);
     t.add(innerTable,1,2);
-
-//    t.setBorder(1);
-//    innerTable.setBorder(1);
 
     return f;
   }
