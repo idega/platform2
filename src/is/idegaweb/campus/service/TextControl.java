@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.5 2001/08/21 13:53:32 laddi Exp $
+ * $Id: TextControl.java,v 1.6 2001/08/27 19:52:22 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -89,8 +89,12 @@ public class TextControl extends JModuleObject {
 
     try {
       for ( int a = 5; a < 13; a++ ) {
-        TextModule text = new TextModule(a);
-        if ( text.getTextHeadline() == null || text.getIncludeImage() == null ) {
+        try {
+          TextModule text = new TextModule(a);
+        }
+        catch (SQLException e) {
+          TextModule text = new TextModule();
+            text.setID(a);
             text.setDefaultValues();
             text.insert();
         }
@@ -127,14 +131,17 @@ public class TextControl extends JModuleObject {
         T.setVerticalAlignment(1,1,"top");
         T.setVerticalAlignment(2,1,"top");
 
-      TextModule text = new TextModule(action);
-
       Image textImage = new Image("/pics/text_pictures/picture"+Integer.toString(action)+".jpg");
         textImage.setVerticalSpacing(12);
 
-      if ( text.getTextHeadline() == null || text.getIncludeImage() == null ) {
-        text.setDefaultValues();
-        text.insert();
+      try {
+        TextModule text = new TextModule(action);
+      }
+      catch (SQLException e) {
+        TextModule text = new TextModule();
+          text.setID(action);
+          text.setDefaultValues();
+          text.insert();
       }
 
       TextReader textReader = new TextReader(action);
