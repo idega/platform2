@@ -59,6 +59,22 @@ public class QuerySQL {
     }
   }
   
+  public boolean isDynamic()	{
+  	return ((DynamicExpression) query).isDynamic();
+  }
+  
+  public Map getIdentifierValueMap()	{
+  	return ((DynamicExpression) query).getIdentifierValueMap();
+  }
+  
+  public Map getIdentifierDescriptionValueMap()	{
+  	return ((DynamicExpression) query).getIdentifierDescriptionMap();
+  }
+  
+  public void setIdentifierValueMap(Map identifierValueMap) {
+  	((DynamicExpression) query).setIdentifierValueMap(identifierValueMap);
+  }
+  
   public String getSQLStatement() {
     if (query == null)  {
       return "";
@@ -155,10 +171,13 @@ public class QuerySQL {
    		}
     }
     // set conditions (where clause)
+    int i = 0;
     Iterator conditionsIterator = conditions.iterator();
     while (conditionsIterator.hasNext())  {
       QueryConditionPart condition = (QueryConditionPart) conditionsIterator.next();
-      CriterionExpression criterion = new CriterionExpression(condition, this);
+      // use the counter as identifier
+      String identifier = Integer.toString(i++);
+      CriterionExpression criterion = new CriterionExpression(condition, identifier, this);
       if (criterion.isValid()) {
       	// mark used entities
       	String fieldName = condition.getField();
@@ -273,5 +292,10 @@ public class QuerySQL {
 	protected String getEntityForField(String fieldName)	{
 		QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(fieldName);
 		return field.getEntity();
+	}
+	
+	protected String getTypeClassForField(String fieldName)	{
+		QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(fieldName);
+		return field.getTypeClass();
 	}
 }

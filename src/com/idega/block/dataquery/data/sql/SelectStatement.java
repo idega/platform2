@@ -1,9 +1,10 @@
 package com.idega.block.dataquery.data.sql;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
  * @version 1.0
  * Created on Jun 4, 2003
  */
-public class SelectStatement {
+public class SelectStatement implements DynamicExpression {
   
   private final String SELECT = "SELECT";
   private final String FROM = "FROM";
@@ -28,6 +29,9 @@ public class SelectStatement {
   private List outerClauses = new ArrayList();
   private List selectClauses = new ArrayList();
   private List whereClauses = new ArrayList();
+  
+  private Map identifierValueMap = new HashMap();
+  private Map identifierDescriptionMap = new HashMap(); 
 
   public void addInnerJoin(Expression join) {
     innerClauses.add(join);
@@ -41,12 +45,34 @@ public class SelectStatement {
     selectClauses.add(clause);
   }
 
-  public void addWhereClause(Expression criterion) {
+  public void addWhereClause(DynamicExpression criterion) {
+  	if (criterion.isDynamic())	{
+  		Map identifierValueMap = criterion.getIdentifierValueMap();
+  		Map identifierDescriptionMap = criterion.getIdentifierDescriptionMap();
+  		this.identifierValueMap.putAll(identifierValueMap);
+  		this.identifierDescriptionMap.putAll(identifierDescriptionMap);
+  	}
     whereClauses.add(criterion);
   }
   
-  public void addWhereClauses(Collection criteria)  {
-    whereClauses.add(criteria);
+  public boolean isDynamic() {
+  	return ! identifierValueMap.isEmpty();
+  }
+  
+  public Map getIdentifierValueMap()	{
+  	return identifierValueMap;
+  }
+  
+  public Map getIdentifierDescriptionMap() {
+  	return identifierDescriptionMap;
+  }
+  
+  public void setIdentifierValueMap(Map identifierValueMap)	{
+  	this.identifierValueMap = identifierValueMap;
+  }
+  
+  public boolean isValid() {
+  	return true;
   }
   
   public String toSQLString() {
@@ -81,7 +107,8 @@ public class SelectStatement {
     StringBuffer and = new StringBuffer().append(WHITE_SPACE).append(AND).append(WHITE_SPACE);
     Iterator where = whereClauses.iterator();
     while (where.hasNext()) {
-      Expression clause = (Expression) where.next();
+      DynamicExpression clause = (DynamicExpression) where.next();
+      clause.setIdentifierValueMap(identifierValueMap);
       expression.append(spacing).append(clause.toSQLString());
       spacing = and;
     }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import com.idega.block.dataquery.business.QueryEntityPart;
 import com.idega.data.EntityControl;
 import com.idega.data.GenericEntity;
@@ -22,7 +24,7 @@ import com.idega.data.IDORelationshipException;
  * @version 1.0
  * Created on Oct 8, 2003
  */
-public class PathCriterionExpression implements Expression {
+public class PathCriterionExpression implements DynamicExpression {
   
   protected QueryEntityPart queryEntityPart = null;
   protected QuerySQL querySQL = null;
@@ -208,7 +210,7 @@ public class PathCriterionExpression implements Expression {
 	}
 	
 	public boolean hasCriteria()	{
-		return !(criteriaList.isEmpty());
+		return !(criteriaList == null || criteriaList.isEmpty());
 	}
 		    
   
@@ -230,8 +232,34 @@ public class PathCriterionExpression implements Expression {
   }
   
   public boolean isValid()  {
-  	return  (criteriaList != null && innerJoins != null);
+  	return true;
+  	// think about that
+  	//return  (criteriaList != null && innerJoins != null);
   }
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#isDynamic()
+	 */
+	public boolean isDynamic() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#getIdentifier()
+	 */
+	public Map getIdentifierValueMap() {
+		// never used because isDynamic returns always false
+		return null;
+	}
+	
+	public Map getIdentifierDescriptionMap()	{
+		// never used because isDynamic returns always false
+		return null;
+	}
+
+	public void setIdentifierValueMap(Map identifierValueMap)	{
+		// never used because isDynamic returns always false
+	}	
      
 
 }
