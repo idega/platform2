@@ -23,8 +23,8 @@ public class SystemProperties extends GenericEntity {
     addAttribute(getColumnNameContractYears(),"Contract Years",true,true,java.lang.Integer.class);
     addAttribute(getColumnNameContractDate(),"Contract Date",true,true,java.sql.Date.class);
     addAttribute(getColumnNameCypherKey(),"Cypher Key",true,true,java.lang.String.class,4000);
-    addAttribute(getColumnNameCypherKey(),"Admin email",true,true,java.lang.String.class,1000);
-    addAttribute(getColumnNameCypherKey(),"email host",true,true,java.lang.String.class,1000);
+    addAttribute(getColumnNameAdminEmail(),"Admin email",true,true,java.lang.String.class,1000);
+    addAttribute(getColumnNameEmailHost(),"email host",true,true,java.lang.String.class,1000);
     addAttribute(getColumnNameDefaultGroup(),"default group",true,true,java.lang.Integer.class);
   }
   public String getEntityName() {

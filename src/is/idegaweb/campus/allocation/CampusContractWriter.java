@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.5 2001/08/13 09:58:00 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.6 2001/08/16 01:44:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,8 @@ import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 import com.idega.util.text.TextSoap;
 import com.idega.util.idegaTimestamp;
+import is.idegaweb.campus.entity.TariffIndex;
+import java.text.DateFormat;
 /**
  *
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -41,24 +43,39 @@ public class CampusContractWriter{
 
   public final static String apartment_name = "[apartment_name]";
   public final static String apartment_address = "[apartment_address]";
+  public final static String apartment_campus = "[apartment_campus]";
   public final static String apartment_area = "[apartment_area]";
   public final static String apartment_floor = "[apartment_floor]";
   public final static String apartment_info = "[apartment_info]";
+  public final static String apartment_rent = "[apartment_rent]";
 
   public final static String apartment_roomcount = "[apartment_roomcount]";
   public final static String contract_starts = "[contract_starts]";
   public final static String contract_ends = "[contract_ends]";
 
+  public final static String renting_index = "[renting_index]";
+  public final static String today = "[today]";
+
+
   public  static String[] TAGS = {renter_name,renter_address,renter_id,
                             tenant_name,tenant_address,tenant_id,
-                            apartment_name,apartment_floor,apartment_address,apartment_area,
+                            apartment_name,apartment_floor,apartment_address,
+                            apartment_campus,apartment_area,
                             apartment_roomcount,apartment_info,
-                            contract_starts,contract_ends};
+                            apartment_rent,
+                            contract_starts,contract_ends,renting_index,today};
 
   public final static String IS ="IS";
   public final static String EN ="EN";
+  public final static String TIIS = "TIS";
+  public final static String TIEN = "T EN";
+
   public static boolean writePDF(int id,IWResourceBundle iwrb,String realpath){
     boolean returner = false;
+    boolean bEntity = false;
+    if(id > 0){
+      bEntity = true;
+    }
     try {
 
         String file = realpath;
@@ -74,8 +91,11 @@ public class CampusContractWriter{
         Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
         Font filledFont = new Font(Font.HELVETICA,8,Font.BOLD);
         filledFont.setStyle("underline");
-
-        Paragraph cTitle = new Paragraph("Húsaleigusamningur Stúdentagarða " , chapterFont);
+        ContractText ct = getHeader();
+        String title = "";
+        if(ct != null)
+          title = ct.getText()+" \n\n";
+        Paragraph cTitle = new Paragraph(title , chapterFont);
         Chapter chapter = new Chapter(cTitle, 1);
         chapter.setNumberDepth(0);
         List L = listOfTexts();
@@ -86,7 +106,7 @@ public class CampusContractWriter{
             Paragraph name = new Paragraph(CT.getName(),nameFont);
             name.setAlignment(Element.ALIGN_LEFT);
             String sText = CT.getText();
-            if(CT.getUseTags()){
+            if(bEntity &&CT.getUseTags()){
               sText = getDeTaggedParagraph(sText,iwrb,id);
             }
             Paragraph text = new Paragraph(sText,textFont);
@@ -103,80 +123,28 @@ public class CampusContractWriter{
         catch (Exception ex) {
           ex.printStackTrace();
         }
-
         returner = true;
-
     }
     catch (Exception ex) {
       ex.printStackTrace();
       returner = false;
     }
-    try {
-      Contract C = new Contract(id);
-      C.setStatusPrinted();
-      C.update();
-    }
-    catch (SQLException ex) {
-      returner = false;
+    if(bEntity){
+      try {
+        Contract C = new Contract(id);
+        C.setStatusPrinted();
+        C.update();
+      }
+      catch (SQLException ex) {
+        returner = false;
+      }
     }
     return returner;
   }
 
-   public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath){
-    boolean returner = false;
-    try {
-
-        String file = realpath;
-        FileOutputStream fos = new FileOutputStream(file);
-        Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-        PdfWriter.getInstance(document, fos);
-        document.addAuthor("Idegaweb Campus");
-        document.addSubject("");
-        document.open();
-
-        Font chapterFont = new Font(Font.HELVETICA, 16, Font.BOLD);
-        Font nameFont = new Font(Font.HELVETICA, 10, Font.BOLD);
-        Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
-        Font filledFont = new Font(Font.HELVETICA,8,Font.BOLD);
-        filledFont.setStyle("underline");
-
-        Paragraph cTitle = new Paragraph("Húsaleigusamningur Stúdentagarða " , chapterFont);
-        Chapter chapter = new Chapter(cTitle, 1);
-        chapter.setNumberDepth(0);
-        List L = listOfTexts();
-        if(L!=null){
-          int len = L.size();
-          for (int i = 0; i < len; i++) {
-            ContractText CT = (ContractText) L.get(i);
-            Paragraph name = new Paragraph(CT.getName(),nameFont);
-            name.setAlignment(Element.ALIGN_LEFT);
-            String sText = CT.getText();
-            Paragraph text = new Paragraph(sText,textFont);
-            text.setAlignment(Element.ALIGN_LEFT);
-            chapter.add(name);
-            chapter.add(text);
-          }
-        }
-        document.add(chapter);
-        document.close();
-        try {
-          fos.close();
-        }
-        catch (Exception ex) {
-          ex.printStackTrace();
-        }
-
-        returner = true;
-
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-      returner = false;
-    }
-
-    return returner;
+  public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath){
+    return writePDF(-1,iwrb,realpath);
   }
-
   private static List listOfTexts(){
     List L = null;
 
@@ -188,6 +156,39 @@ public class CampusContractWriter{
 
     }
     return L;
+  }
+
+  private static ContractText getHeader(){
+    try {
+      ContractText CT = new ContractText();
+      List L = EntityFinder.findAllByColumn(CT,CT.getLanguageColumnName(),TIIS);
+      if(L!= null){
+        return (ContractText)L.get(0);
+      }
+      else{
+        return null;
+      }
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  private static float getTariffIndex(){
+    TariffIndex ti = new TariffIndex();
+    try {
+      List L = EntityFinder.findAllDescendingOrdered(ti,TariffIndex.getDateColumnName());
+      if(L!= null){
+        ti = (TariffIndex)L.get(0);
+        return ti.getIndex();
+      }
+      else{
+        return 1;
+      }
+    }
+    catch (Exception ex) {
+      return 1;
+    }
   }
 
   private static String getDeTaggedParagraph(String sParagraph,IWResourceBundle iwrb,int contractId){
@@ -217,6 +218,7 @@ public class CampusContractWriter{
       Floor eFloor = new Floor(eApartment.getFloorId());
       Building eBuilding = new Building(eFloor.getBuildingId());
       Complex eComplex = new Complex(eBuilding.getComplexId());
+      DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwrb.getLocale());
       if(tag.equalsIgnoreCase(renter_name)){
 
       }
@@ -226,9 +228,11 @@ public class CampusContractWriter{
       else if(tag.equalsIgnoreCase(renter_id)){
 
       }
+      else if(tag.equalsIgnoreCase(today)){
+        s = dfLong.format(new java.util.Date());
+      }
       else if(tag.equalsIgnoreCase(tenant_name)){
         s = eApplicant.getFullName();
-
       }
       else if(tag.equalsIgnoreCase(tenant_address)){
         s = eApplicant.getLegalResidence();
@@ -243,7 +247,10 @@ public class CampusContractWriter{
         s = eFloor.getName();
       }
       else if(tag.equalsIgnoreCase(apartment_address)){
-        s = eComplex.getName()+" "+eBuilding.getStreet();
+        s = eBuilding.getStreet();
+      }
+      else if(tag.equalsIgnoreCase(apartment_campus)){
+        s = eComplex.getName();
       }
       else if(tag.equalsIgnoreCase(apartment_area)){
         s = String.valueOf(eApartmentType.getArea());
@@ -255,10 +262,16 @@ public class CampusContractWriter{
         s = (eApartmentType.getExtraInfo());
       }
       else if(tag.equalsIgnoreCase(contract_starts)){
-        s = new idegaTimestamp(eContract.getValidFrom()).getISLDate("/",true);
+        s = dfLong.format(eContract.getValidFrom());
       }
       else if(tag.equalsIgnoreCase(contract_ends)){
-        s = new idegaTimestamp(eContract.getValidTo()).getISLDate("/",true);
+        s = dfLong.format(eContract.getValidTo());
+      }
+      else if(tag.equalsIgnoreCase(apartment_rent)){
+        s = String.valueOf(eApartmentType.getRent());
+      }
+      else if(tag.equalsIgnoreCase(renting_index)){
+        s = String.valueOf( getTariffIndex());
       }
 
     }

@@ -170,7 +170,7 @@ public class CampusContracts extends KeyEditor{
           Ap = new Applicant(C.getApplicantId().intValue());
           A = new Apartment(C.getApartmentId().intValue());
           if(C.getStatus().equalsIgnoreCase(Contract.statusCreated))
-            T.add(getPDFLink(printImage,C.getID()),1,row);
+            T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),1,row);
           else if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted))
             T.add(getSignedLink(registerImage,C.getID()),1,row);
           T.add(formatText(Ap.getFullName()),2,row);
@@ -297,6 +297,16 @@ public class CampusContracts extends KeyEditor{
     W.setMenubar(true);
     Link L = new Link(MO,W);
     L.addParameter("contract_id",contractId);
+    return L;
+  }
+
+  public Link getPDFLink(ModuleObject MO,int contractId,String filename){
+    Window W = new Window("PDF","/allocation/contractfile.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
+    L.addParameter("contract_id",contractId);
+    L.addParameter("fname",filename);
     return L;
   }
    public Link getPDFLink(ModuleObject MO,String status){

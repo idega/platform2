@@ -418,14 +418,16 @@ public class CampusAllocator extends KeyEditor{
       idegaTimestamp contractDateTo = new idegaTimestamp();
       if(hasContract){
         contractDateTo = new idegaTimestamp(C.getValidTo());
-          contractDateFrom = new idegaTimestamp(C.getValidFrom());
+        contractDateFrom = new idegaTimestamp(C.getValidFrom());
       }
       else if(ATP!=null){
+        System.err.println("ATP exists");
         boolean first = ATP.hasFirstPeriod();
         boolean second = ATP.hasSecondPeriod();
+         idegaTimestamp today = new idegaTimestamp();
         // One Period
         if(first && second){
-          idegaTimestamp today = new idegaTimestamp();
+
           if(today.getMonth() <= ATP.getFirstDateMonth()){
             contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
             contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
@@ -441,8 +443,12 @@ public class CampusAllocator extends KeyEditor{
         }
         // Two Periods
         else if(first && !second){
-          contractDateTo = new idegaTimestamp();
-          contractDateFrom = new idegaTimestamp();
+          contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
+          contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+        }
+        else if(!first && second){
+          contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+          contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
         }
       }
       // are the System Properties set
