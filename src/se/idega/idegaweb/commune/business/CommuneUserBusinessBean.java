@@ -1062,6 +1062,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				deceasedGroup.addGroup(deceasedUser);
 				deceasedUser.setPrimaryGroup(deceasedGroup);
 			}
+			catch (NullPointerException e2) {
+				logError("RootDeceasedCitizensGroup not found");
+			}
 			catch (CreateException e2) {
 				e2.printStackTrace();
 			}
