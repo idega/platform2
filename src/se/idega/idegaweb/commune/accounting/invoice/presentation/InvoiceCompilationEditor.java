@@ -33,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/10 16:17:43 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/10 18:16:47 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -124,7 +124,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
     private static final String PLACMENT_DEFAULT = "Placering";
     private static final String PLACMENT_KEY = PREFIX + "placment";
-    private static final String POSTING_KEY = PREFIX + "posting";
+    //private static final String POSTING_KEY = PREFIX + "posting";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
@@ -584,7 +584,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addOperationFieldDropdown (table, row++);
         addUserSearcherForm (table, row++, context, searcher);
         table.mergeCells (2, row, table.getColumns () - 1, row);
-        addPeriodForm (table, row, context);
+        addPeriodForm (table, row);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
                                     SEARCH_KEY, SEARCH_DEFAULT),
                    table.getColumns (), row++);
@@ -1070,7 +1070,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final PostingField [] fields = getCurrentPostingFields (context);
 		final ListTable postingInputs = new ListTable (this, fields.length);
         for (int i = 0; i < fields.length; i++) {
-            final PostingField field = (PostingField) fields [i];
+            final PostingField field = fields [i];
             final int j = i + 1;
             postingInputs.setHeader (field.getFieldTitle(), j);
             postingInputs.add (getTextInput (key + j, "", 80, field.getLen()));
@@ -1085,7 +1085,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final ListTable result = new ListTable (this, fields.length);
         int offset = 0;
         for (int i = 0; i < fields.length; i++) {
-            final PostingField field = (PostingField) fields [i];
+            final PostingField field = fields [i];
             result.setHeader (field.getFieldTitle(), i + 1);
             result.add (getSmallText (postingString.substring
                                       (offset, offset + field.getLen ())));
@@ -1113,7 +1113,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final StringBuffer result = new StringBuffer ();
         final PostingField [] fields = getCurrentPostingFields (context);
         for (int i = 0; i < fields.length; i++) {
-            final PostingField field = (PostingField) fields [i];
+            final PostingField field = fields [i];
             final String key = postingKey + (i + 1);
             final String parameter = context.isParameterSet (key)
                     ? context.getParameter (key) : "";
@@ -1186,8 +1186,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                    col++, row);
     }
 
-    private void addPeriodForm (final Table table, final int row,
-                        final IWContext context) {
+    private void addPeriodForm (final Table table, final int row) {
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         final Date now = new Date ();
