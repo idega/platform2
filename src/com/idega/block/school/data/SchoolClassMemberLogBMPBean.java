@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogBMPBean.java,v 1.3 2005/01/19 09:39:51 anders Exp $
+ * $Id: SchoolClassMemberLogBMPBean.java,v 1.4 2005/02/14 16:32:31 anders Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/19 09:39:51 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/14 16:32:31 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SchoolClassMemberLogBMPBean extends GenericEntity  implements SchoolClassMemberLog{
 
@@ -193,7 +193,7 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
 		query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.LESSEQUAL, date));	
-		Criteria a = new MatchCriteria(table, END_DATE, MatchCriteria.GREATER, date);
+		Criteria a = new MatchCriteria(table, END_DATE, MatchCriteria.GREATEREQUAL, date);
 		Criteria b = new MatchCriteria(table, END_DATE, MatchCriteria.IS, MatchCriteria.NULL);
 		query.addCriteria(new OR(a, b));
 		query.addOrder(new Order(new Column(table, START_DATE), true));
