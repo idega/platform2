@@ -88,8 +88,10 @@ public class ClientManager implements PacketManager{
       }
 
       //userlist stuff
-      if( !getUserListVersion().equals(packetUserListVersion) ){
+      if( !getUserListVersion().equalsIgnoreCase(packetUserListVersion) ){
        //list changed update it..without self
+        /**@todo make a removeProperty method in packet*/
+        packet.clearProperties();
         packet.addProperty(new Property(USER_LIST, getConnectedClients()));
       }
 

@@ -314,12 +314,13 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
           }
         }
 
-        if( (userlist!=null) && (userListVersion.equalsIgnoreCase(listVersion)) ){
+       if( (userlist!=null) && (!userListVersion.equalsIgnoreCase(listVersion)) ){
+         userListVersion = listVersion;
          int length2 = userlist.size();
          for (int k = 0; k < length2; k++) {
-          Property user = (Property)userlist.elementAt(k);
+           Property user = (Property)userlist.elementAt(k);
            addToUserList( user.getKey() , (String)user.getValue() );
-         }
+          }
 
          System.out.println("MessengerApplet: userListVersion : "+userListVersion);
 
