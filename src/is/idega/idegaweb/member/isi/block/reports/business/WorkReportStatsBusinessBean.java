@@ -3106,7 +3106,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 
-		ReportableData regData = new ReportableData();
+		/*ReportableData regData = new ReportableData();
 		regData.addData(regionalUnionName, _iwrb.getLocalizedString(LOCALIZED_TOTAL, "TOTAL"));
 		regData.addData(clubCountDone, new Integer(totalDone));
 		regData.addData(clubCountNotDone, new Integer(totalNotDone));
@@ -3133,8 +3133,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				   * (((totalPlayersThisYear!=0 && totalPlayersLastYear!=0) && (totalPlayersThisYear>=totalPlayersLastYear))?1.0:-1.0);
 		regData.addData(playersAnnualChangePercent, format.format(change));
 		
-		reportCollection.add(regData);
+		reportCollection.add(regData);*/
 		
+		double change = (totalDone+totalNotDone)==0?1.0:(totalDone/(totalDone+totalNotDone));
+		reportCollection.addExtraHeaderParameter(
+				"percentReportsDoneAll",
+				_iwrb.getLocalizedString(LOCALIZED_PERCENT_REPORTS_DONE, "Percent reports done"),
+				"label",
+				format.format(change));
 		
 		//finished return the collection
 		return reportCollection;
@@ -3298,12 +3304,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		while(rData.hasNext()) {
 			ReportableData rd = (ReportableData) rData.next();
 			int mc = ((Integer)rd.getFieldValue(membersAnnualChange)).intValue();
-			double mwn = ((double)mc)/((double)mChangeTotal);
+			double mwn = 100.0*((double)mc)/((double)mChangeTotal);
 			String value = format.format(mwn);
 			rd.addData(membersAnnualChangePercentOfTotal, value);
 			
 			int pc = ((Integer)rd.getFieldValue(playersAnnualChange)).intValue();
-			double pwn = ((double)pc)/((double)pChangeTotal);
+			double pwn = 100.0*((double)pc)/((double)pChangeTotal);
 			value = format.format(pwn);
 			rd.addData(playersAnnualChangePercentOfTotal, value);
 			macptTotal += mwn;
@@ -3311,13 +3317,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 		
 		reportCollection.addExtraHeaderParameter(
-				FIELD_NAME_MEMBERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL,
+				"annualMemberChangePercentOfTotalAll",
 				_iwrb.getLocalizedString(LOCALIZED_MEMBERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL, "Members Annual Change of Total"),
 				"label",
 				format.format(macptTotal));
 		
 		reportCollection.addExtraHeaderParameter(
-				FIELD_NAME_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL,
+				"annualPlayerChangePercentOfTotalAll",
 				_iwrb.getLocalizedString(LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL, "Players Annual Change of Total"),
 				"label",
 				format.format(pacptTotal));
