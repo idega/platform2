@@ -46,11 +46,6 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 		try {
 			handleAction(iwc);
 		
-			add(form);
-			
-			add(opFields);
-			
-			
 			DropdownMenu providerDropdown = new DropdownMenu();
 			providerDropdown.addMenuElementFirst("",localize(PARAM_NAME,"Name"));
 			String schoolCategory = getSession().getOperationalField();
@@ -72,15 +67,15 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 
 			GenericButton search = new GenericButton(PARAM_SEARCH,localize(PARAM_SEARCH,"Search"));
 			
-			table.add(search,2,1);
+			table.add(search,2,2);
 
 			form.add(table);
 
-//			GenericButton cancelButton = this.getCancelButton();
-//			form.add(cancelButton);
+			add(form);
 			
 			//Middle section with the payment list
 			try{
+				
 				Table paymentTable = new Table();
 
 				int row = 2;
@@ -102,10 +97,10 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 					}
 					add(paymentTable);
 				} else {
-					add(getLocalizedLabel(PREFIX+"no_payment_records_found","No payment records found."));
+					add(getLocalizedSmallHeader(PREFIX+"no_payment_records_found","No payment records found."));
 				}
 			}catch(FinderException e){
-				add(getLocalizedLabel(PREFIX+"no_payment_records_found","No payment records found."));
+				add(getLocalizedSmallHeader(PREFIX+"no_payment_records_found","No payment records found."));
 			}
 			
 		} catch (Exception e) {
