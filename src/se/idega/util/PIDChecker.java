@@ -186,7 +186,7 @@ public class PIDChecker {
 	public  String getRandomValidPID(){
 		String tryString = "";
 		while(true){
-			tryString = getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+"-"+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString();
+			tryString = getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomMonthString()+getRandomMonthDayString()+"-"+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString();
 			//System.out.println("Trying: "+tryString);
 			if(isValid(tryString)){
 				return tryString;
@@ -214,4 +214,46 @@ public class PIDChecker {
 		}
 		return theReturn;
 	}
+	
+	
+	/**
+	 * Gets a random int on the range from 1-12 as a String
+	 * @return
+	 */
+	public String getRandomMonthString(){
+		return Integer.toString(getRandomMonth());
+	}
+
+	/**
+	 * Gets a random int on the range from 1-12
+	 * @return
+	 */
+	public  int getRandomMonth(){
+		int theReturn = (int)Math.round(12*Math.random()+1);
+		while(theReturn>12){
+			theReturn = (int)Math.round(12*Math.random()+1);
+		}
+		return theReturn;
+	}
+	
+	/**
+	 * Gets a random int on the range from 1-28 as a String
+	 * @return
+	 */
+	public String getRandomMonthDayString(){
+		return Integer.toString(getRandomMonthDay());
+	}
+
+	/**
+	 * Gets a random int on the range from 1-12
+	 * @return
+	 */
+	public  int getRandomMonthDay(){
+		int theReturn = (int)Math.round(28*Math.random()+1);
+		while(theReturn>28){
+			theReturn = theReturn = (int)Math.round(28*Math.random()+1);
+		}
+		return theReturn;
+	}
+	
 }
