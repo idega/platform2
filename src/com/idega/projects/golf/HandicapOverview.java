@@ -48,6 +48,7 @@ private Table myTable;
 private Form myForm = new Form();
 
 private String headerColor = "#336660";
+private String headerTextColor = "#FFFFFF";
 
   public HandicapOverview() {
   }
@@ -105,40 +106,40 @@ private String headerColor = "#336660";
 			myTable.setRowVerticalAlignment(1,"bottom");
 
 			Text dags = new Text("Dags");
-				dags.setFontColor("FFFFFF");
+				dags.setFontColor(headerTextColor);
 				dags.setFontSize("1");
 			Text vollur = new Text("Völlur");
-				vollur.setFontColor("FFFFFF");
+				vollur.setFontColor(headerTextColor);
 				vollur.setFontSize("1");
 			Text mot = new Text("Mót");
-				mot.setFontColor("FFFFFF");
+				mot.setFontColor(headerTextColor);
 				mot.setFontSize("1");
 			Text teigar = new Text("Teigar");
-				teigar.setFontColor("FFFFFF");
+				teigar.setFontColor(headerTextColor);
 				teigar.setFontSize("1");
 			Text vaegi = new Text("Slope/CR");
-				vaegi.setFontColor("FFFFFF");
+				vaegi.setFontColor(headerTextColor);
 				vaegi.setFontSize("1");
 			Text leikforgjof = new Text("Leik-<br>forgjöf");
-				leikforgjof.setFontColor("FFFFFF");
+				leikforgjof.setFontColor(headerTextColor);
 				leikforgjof.setFontSize("1");
 			Text punktar = new Text("Punktar");
-				punktar.setFontColor("FFFFFF");
+				punktar.setFontColor(headerTextColor);
 				punktar.setFontSize("1");
 			Text grunnpunktar = new Text("Grunn-<br>punktar");
-				grunnpunktar.setFontColor("FFFFFF");
+				grunnpunktar.setFontColor(headerTextColor);
 				grunnpunktar.setFontSize("1");
 			Text mismunur = new Text("Mis-<br>munur");
-				mismunur.setFontColor("FFFFFF");
+				mismunur.setFontColor(headerTextColor);
 				mismunur.setFontSize("1");
 			Text grunnforgjof = new Text("Grunn-<br>forgjöf");
-				grunnforgjof.setFontColor("FFFFFF");
+				grunnforgjof.setFontColor(headerTextColor);
 				grunnforgjof.setFontSize("1");
 			Text ny_grunnforgjof = new Text("Ný&nbsp;grunn-<br>forgjöf");
-				ny_grunnforgjof.setFontColor("FFFFFF");
+				ny_grunnforgjof.setFontColor(headerTextColor);
 				ny_grunnforgjof.setFontSize("1");
 			Text skor = new Text("Skorkort");
-				skor.setFontColor("FFFFFF");
+				skor.setFontColor(headerTextColor);
 				skor.setFontSize("1");
 
 			myTable.add(dags,1,2);
@@ -396,10 +397,10 @@ private String headerColor = "#336660";
 
 				Text fra = new Text("Frá: ");
 					fra.setBold();
-					fra.setFontColor("FFFFFF");
+					fra.setFontColor(headerTextColor);
 				Text til = new Text("Til: ");
 					til.setBold();
-					til.setFontColor("FFFFFF");
+					til.setFontColor(headerTextColor);
 				Text strik = new Text("&nbsp;");
 				Text bil = new Text("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 
@@ -675,6 +676,10 @@ private String headerColor = "#336660";
 
     public void setHeaderColor(String headerColor) {
       this.headerColor=headerColor;
+    }
+
+    public void setHeaderTextColor(String headerTextColor) {
+      this.headerTextColor=headerTextColor;
     }
 
 }
