@@ -616,13 +616,23 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(textInput, 1, row++);
 		}
 
-		
+		Table dropdownTable = new Table(2, 2);
+		int dropRow = 1;
 		DropdownMenu groups = getGroups(-1, -1);
 		groups.addMenuElementFirst("-1","");
 		groups.setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
 		
-		table.add(getSmallText(localize("child_care.group", "Group")+":"), 1, row);
-		table.add(groups, 1, row++);
+		dropdownTable.add(getSmallText(localize("child_care.group", "Group")+":"), 1, dropRow);
+		dropdownTable.add(groups, 2, dropRow++);
+
+		DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
+		schoolTypes.addMenuElementFirst("-1","");
+		schoolTypes.setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
+		
+		dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
+		dropdownTable.add(schoolTypes, 2, dropRow);
+		
+		table.add(dropdownTable, 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.place_in_group", "Place in group"), PARAMETER_ACTION, String.valueOf(ACTION_PLACE_IN_GROUP)));
 		table.add(placeInGroup, 1, row);
@@ -1348,7 +1358,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int careTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), iwc.getCurrentLocale(), iwc.getCurrentUser());
-		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
 		
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
@@ -1440,10 +1450,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void placeInGroup(IWContext iwc) throws RemoteException {
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
+		String typeParam = getSession().getParameterSchoolTypeID();
+		int typeID = Integer.parseInt(iwc.getParameter(getSession().getParameterSchoolTypeID()));
 		
 		String subject = localize("child_care.placing_subject","Your child placed in child care.");
 		String body = localize("child_care.placing_body","{0} has been placed in a group at {1}.");
-		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, typeID, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		close();
 	}
