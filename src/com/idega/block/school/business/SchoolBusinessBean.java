@@ -1835,10 +1835,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolSeasonID, int schoolYearID, int teacherID) {
 		try {
 			SchoolClass schoolClass;
-			if (schoolClassID != -1)
+			if (schoolClassID != -1) {
 				schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
-			else
+			} else {
 				schoolClass = getSchoolClassHome().create();
+				schoolClass.store(); // so it gets a primary key, otherwise an exception is thrown when school year is added
+			}
 
 			schoolClass.setSchoolClassName(className);
 			schoolClass.setSchoolId(schoolID);
