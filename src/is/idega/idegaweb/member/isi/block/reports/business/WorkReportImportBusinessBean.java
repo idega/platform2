@@ -645,7 +645,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					Iterator it = members.iterator();
 					while (it.hasNext()) {
 						WorkReportMember memb = (WorkReportMember) it.next();
-						HSSFRow row = memberSheet.createRow(rowNr++);
+						HSSFRow row = memberSheet.createRow((short)rowNr++);
 						HSSFCell name = row.createCell(COLUMN_MEMBER_NAME);
 						HSSFCell ssn = row.createCell(COLUMN_MEMBER_SSN);
 						name.setCellValue(memb.getName());
