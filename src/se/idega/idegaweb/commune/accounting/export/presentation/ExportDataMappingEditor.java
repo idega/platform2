@@ -11,6 +11,7 @@ import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -53,13 +54,23 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	
 	private void drawForm() throws RemoteException {
 		Form form = new Form();
+		form.setOnSubmit("return validateForm();");
 		
-		Table table = new Table(3, 23);
+		Script script = new Script();
+		script.addFunction("validateForm", getValidateFormScript());
+
+		Table table = new Table(3, 25);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, 12);
 		int row = 1;
 		
+		table.add(getHeader(localize("export.export_data_mapping_editor", "Export data mapping editor")), 1, row);
+		table.setRowColor(1, getHeaderColor());
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+		table.mergeCells(1, row, table.getColumns(), row++);
+		table.setHeight(row++, 6);
+
 		DropdownMenu operationalField = this.getDropdownMenuLocalized(PARAMETER_OPERATIONAL_FIELD, getBusiness().getExportBusiness().getAllOperationalFields(), "getLocalizedKey");
 		operationalField.addMenuElementFirst("", localize("export.select_operational_field", "Select operational field"));
 		operationalField.setToSubmit();
@@ -153,7 +164,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		if (_mapping != null)
 			providerAuthorization.setChecked(_mapping.getProviderAuthorization());
 		
-		table.setHeight(row++, 3);
+		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 3, row);
 		table.add(providerAuthorization, 1, row);
 		table.add(getSmallHeader(Text.NON_BREAKING_SPACE + localize("export.provider_authorization", "Provider authorization")), 1, row++);
@@ -166,7 +177,22 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.add(save, 1, row);
 		
 		form.add(table);
+		form.add(script);
 		add(form);
+	}
+	
+	private String getValidateFormScript() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("function validateForm() {").append("\n\t\t");
+		buffer.append("var inChecked = findObj('"+this.PARAMETER_CASH_FLOW_IN+"').checked;").append("\n\t\t");
+		buffer.append("var outChecked = findObj('"+this.PARAMETER_CASH_FLOW_OUT+"').checked;").append("\n\t\t");
+		buffer.append("if (!inChecked && !outChecked) {").append("\n\t\t\t");
+		buffer.append("alert('"+localize("export.must_check_one", "You must check at least IN or OUT.")+"');").append("\n\t\t\t");
+		buffer.append("return false;").append("\n\t\t");
+		buffer.append("}").append("\n\t\t");
+		buffer.append("return true;").append("\n").append("}");
+			
+		return buffer.toString();
 	}
 	
 	private void parseAction(IWContext iwc) {
