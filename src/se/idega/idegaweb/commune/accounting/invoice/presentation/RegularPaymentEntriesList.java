@@ -439,7 +439,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				entry.setSchoolTypeId(Integer.parseInt(iwc.getParameter(PAR_SCH_TYPE)));
 			}
 			entry.setPlacing(iwc.getParameter(PAR_PLACING));
-			entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+			float vat = new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue();
+			entry.setVAT(vat);
 			if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
 				entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
 			}
@@ -861,7 +862,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		addIntField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getAmount()), 1, row++);
 		//Vat is currently set to 0
-		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
+		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getVAT()), 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
