@@ -13,7 +13,7 @@ public interface SchoolHome extends com.idega.data.IDOHome
  public java.util.Collection findAllBySchoolName(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolType(java.util.Collection p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException;
- public School findAllCentralizedAdministrated()throws javax.ejb.FinderException;
+ public java.util.Collection findAllCentralizedAdministrated()throws javax.ejb.FinderException;
  public java.util.Collection findAllSchools()throws javax.ejb.FinderException;
  public School findBySchoolName(java.lang.String p0)throws javax.ejb.FinderException;
 

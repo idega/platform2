@@ -294,11 +294,11 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		return (Integer)super.idoFindOnePKByQuery(sql);
 	}
 
-	public Integer ejbFindAllCentralizedAdministrated() throws javax.ejb.FinderException {
+	public Collection ejbFindAllCentralizedAdministrated() throws javax.ejb.FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(this.CENTRALIZED_ADMINISTRATION, "Y");
 		
-		return (Integer)super.idoFindOnePKByQuery(sql);
+		return super.idoFindPKsByQuery(sql);
 	}
 
 	public Collection ejbFindAllBySchoolArea(int areaId) throws javax.ejb.FinderException {
