@@ -26,6 +26,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -57,11 +58,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/05 13:56:46 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/06 11:11:04 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.96 $
+ * @version $Revision: 1.97 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -377,47 +378,64 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	public InvoiceHeader[] getInvoiceHeadersByCustodianOrChild
 		(final String schoolCategory, final User user,
 		 final CalendarMonth fromPeriod, final CalendarMonth toPeriod) {
-		final Collection headers = new ArrayList ();
-		final Collection custodians = new ArrayList ();
+		final Collection custodians = new HashSet ();
 		custodians.add (user);		
-
-		// find custodians for user
-		try {
-			if (null != schoolCategory && schoolCategory.equals ("CHILD_CARE")) {
-				Collection contracts
-						= getChildCareContractHome ().findByChildAndDateRange
-						(user, fromPeriod.getFirstDateOfMonth (),
-						 toPeriod.getLastDateOfMonth ());
-				for (Iterator i = contracts.iterator (); i.hasNext ();) {
-					final ChildCareContract contract = (ChildCareContract) i.next ();
-					custodians.add (contract.getInvoiceReceiver ());
-				}
-			} else {
-				custodians.addAll (getMemberFamilyLogic ().getCustodiansFor (user));
-			}
-		} catch (RemoteException exception) {
-			exception.printStackTrace();
-		} catch (Exception e) {
-			// no problem, no custodians found
-		}
-		
-		// find invoice headers related to custodian or user
-		try {
-			final Collection temp
-					= getInvoiceHeaderHome ().findByCustodianOrChild
-					(schoolCategory, custodians, fromPeriod, toPeriod);
-			if (null != temp) {
-				headers.addAll (temp);
-			}
-		} catch (RemoteException exception) {
-			exception.printStackTrace();
-		} catch (FinderException exception) {
-			// no problem, return empty array
-		}
-		
+		custodians.addAll (getInvoiceReceivers (user, fromPeriod, toPeriod));
+		custodians.addAll (getCustodians (user));
+		final Collection headers = getInvoiceHeaders
+				(custodians, schoolCategory, fromPeriod, toPeriod);
 		return (InvoiceHeader []) headers.toArray (new InvoiceHeader [0]);
 	}
 	
+	private Collection getInvoiceHeaders
+		(final Collection custodians, final String schoolCategory,
+		 final CalendarMonth fromPeriod, final CalendarMonth toPeriod) {
+		final Collection headers = new HashSet ();
+		try {
+			headers.addAll (getInvoiceHeaderHome ()
+											.findByCategoryAndCustodiansAndPeriods
+											(schoolCategory, custodians, fromPeriod, toPeriod));
+		} catch (FinderException exception) {
+			// no problem, return empty array
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		return headers;
+	}
+
+	private Collection getCustodians (final User child) {
+		final Collection custodians = new ArrayList ();
+		try {
+			custodians.addAll	(getMemberFamilyLogic ().getCustodiansFor (child));
+		} catch (FinderException e) {
+			// no problem, no custodians found
+		} catch (Exception exception) {
+			exception.printStackTrace ();
+		}
+		return custodians;
+	}
+
+	private Collection getInvoiceReceivers
+		(final User child, final CalendarMonth fromPeriod,
+		 final CalendarMonth toPeriod) {
+		final Collection custodians = new ArrayList ();
+		try {
+			Collection contracts = getChildCareContractHome ().findByChildAndDateRange
+					(child, fromPeriod.getFirstDateOfMonth (),
+					 toPeriod.getLastDateOfMonth ());
+			for (Iterator i = contracts.iterator (); i.hasNext ();) {
+				final ChildCareContract contract = (ChildCareContract) i.next ();
+				final User custodian = contract.getInvoiceReceiver ();
+				if (null != custodian) { custodians.add (custodian); }
+			}
+		} catch (FinderException e) {
+			// no problem, no custodians could be found from child care contracts
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		return custodians;
+	}
+
 	/**
 	 * Retreives an array of all InvoiceRecords connected to this InvoiceHeader
 	 * An empty list is returned if no invoice header was found.

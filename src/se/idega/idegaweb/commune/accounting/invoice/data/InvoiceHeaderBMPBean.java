@@ -320,7 +320,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		return idoFindPKsBySQL (sql.toString ());
 	}
 	
-	public Collection ejbFindByCustodianOrChild
+	public Collection ejbFindByCategoryAndCustodiansAndPeriods
 		(final String schoolCategoryName, final Collection custodians,
 		 final CalendarMonth startPeriod, final CalendarMonth endPeriod)
 		throws FinderException {

@@ -8,7 +8,7 @@ public interface InvoiceHeaderHome extends com.idega.data.IDOHome
  public InvoiceHeader findByCustodian(com.idega.user.data.User p0)throws javax.ejb.FinderException;
  public InvoiceHeader findByCustodianAndMonth(com.idega.user.data.User p0,com.idega.util.CalendarMonth p1)throws javax.ejb.FinderException;
  public InvoiceHeader findByCustodianID(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findByCustodianOrChild(java.lang.String p0,java.util.Collection p2,com.idega.util.CalendarMonth p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException;
+ public java.util.Collection findByCategoryAndCustodiansAndPeriods(java.lang.String p0,java.util.Collection p2,com.idega.util.CalendarMonth p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException;
  public java.util.Collection findByCustodianOrChild(java.lang.String p0,com.idega.user.data.User p1,java.util.Collection p2,java.util.Date p3,java.util.Date p4)throws javax.ejb.FinderException;
  public java.util.Collection findByMonth(com.idega.util.CalendarMonth p0)throws javax.ejb.FinderException;
  public java.util.Collection findByMonthAndSchoolCategory(com.idega.util.CalendarMonth p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException;
