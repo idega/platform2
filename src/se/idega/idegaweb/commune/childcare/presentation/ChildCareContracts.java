@@ -165,9 +165,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					
 					//contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
 					
-					application = getBusiness().getApplicationForChildAndProvider(((Integer)child.getPrimaryKey()).intValue(), getSession().getChildCareID());
-					//if (contract == null)
-					//	contract = getBusiness().getLatestContract(((Integer)child.getPrimaryKey()).intValue());
+					application = getBusiness().getApplicationForChildAndProviderinStatus(((Integer)child.getPrimaryKey()).intValue(), getSession().getChildCareID());
 					if (application != null)
 						contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 
