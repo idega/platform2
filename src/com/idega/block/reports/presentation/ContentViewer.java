@@ -31,6 +31,7 @@ public class ContentViewer extends PresentationObjectContainer{
   private int listStart = 1;
   private String[] sTitles = null;
   private boolean allowOrder = true;
+	private boolean clear = false;
   private final String prmContent = "ctv.content";
   private final String prmStart = "ctv.start";
   private final String prmListStart = "ctv.liststart";
@@ -56,6 +57,7 @@ public class ContentViewer extends PresentationObjectContainer{
 	private int iInstId = -1;
 
   public ContentViewer(){
+		clear = true;
     vContent = null;
     sTitles = null;
     LightColor = "#D7DADF";
@@ -106,6 +108,7 @@ public class ContentViewer extends PresentationObjectContainer{
     this.styleAttribute = style;
   }
   public void setContent(Vector Content){
+		clear = true;
     vContent = Content;
   }
   public void setTitles(String[] Titles){
@@ -159,6 +162,9 @@ public class ContentViewer extends PresentationObjectContainer{
   }
 
   private void doMain(IWContext iwc){
+		if(clear && iwc.getSessionAttribute(prmContent+iInstId) != null)
+			iwc.removeSessionAttribute(prmContent+iInstId);
+
     if(iwc.getSessionAttribute(prmContent+iInstId) == null){
       String[] headers = sTitles;
       Vector v = vContent;

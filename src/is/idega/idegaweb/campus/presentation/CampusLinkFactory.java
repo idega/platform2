@@ -9,11 +9,11 @@ import is.idega.idegaweb.campus.templates.CampusPage;
 import is.idega.idegaweb.campus.presentation.Title;
 
 /**
- * Title:
+ * Title:        idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
- * Company:
- * @author
+ * Company:      idega
+ * @author <a href="aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
 
