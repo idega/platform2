@@ -14,42 +14,40 @@ import com.idega.block.text.data.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.util.text.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 
 public class TextEditor extends JModuleObject{
 
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 private boolean isAdmin = false;
 private boolean update = false;
 private boolean save = false;
 private Table outerTable;
-private String color = "FFFFFF";
-private String textColor = "000000";
-private String headlineColor = "000000";
-private String headlineBgColor = "FFFFFF";
+private Form myForm;
+
+private IWBundle iwb;
+private IWResourceBundle iwrb;
 
 public TextEditor(){
-  outerTable = new Table(1,2);
+  myForm = new Form();
+  outerTable = new Table(2,2);
   outerTable.setBorder(0);
-  add(outerTable);
-}
-
-/**
- * @deprecated replaced with the default constructor
- */
-public TextEditor(boolean isAdmin){
-  this();
-	this.isAdmin=isAdmin;
+  add(myForm);
 }
 
 	public void main(ModuleInfo modinfo) throws Exception {
-
     isAdmin = AccessControl.hasEditPermission(new TextReader(),modinfo);
+    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(modinfo);
 
 		if ( isAdmin ) {
       this.getParentPage().setAllMargins(0);
       this.getParentPage().setTitle("Text Editor");
 
-			String mode = modinfo.getRequest().getParameter("mode");
-			String action = modinfo.getRequest().getParameter("action");
+			String mode = modinfo.getParameter("mode");
+			String action = modinfo.getParameter("action");
 				if ( action == null ) { action = "none"; }
 
 			if ( mode == null ) {
@@ -102,7 +100,7 @@ public TextEditor(boolean isAdmin){
 		int text_id = -1;
 
 		if ( update ) {
-			String text_id2 = modinfo.getRequest().getParameter("text_id");
+			String text_id2 = modinfo.getParameter("text_id");
 				if ( text_id2 == null ) { text_id2 = "-1"; }
 
 			text_id = Integer.parseInt(text_id2);
@@ -114,106 +112,125 @@ public TextEditor(boolean isAdmin){
 			text = new TextModule(text_id);
 		}
 
-		HttpSession Session = modinfo.getSession();
+    outerTable.setWidth("100%");
+    outerTable.setCellpadding(0);
+    outerTable.setCellspacing(0);
+    outerTable.mergeCells(1,1,2,1);
+    outerTable.setColor(1,1,"#0E2456");
+    outerTable.setColor(1,2,"#FFFFFF");
+    outerTable.setColor(2,2,"#EFEFEF");
+    outerTable.setHeight("100%");
+    outerTable.setWidth(1,2,"392");
+    outerTable.setWidth(2,2,"178");
+    outerTable.setVerticalAlignment(1,2,"top");
+    outerTable.setVerticalAlignment(2,2,"top");
 
-		//outerTable = new Table(1,2);
-			outerTable.setCellpadding(2);
-			outerTable.setCellspacing(2);
-			outerTable.setColor(color);
+		Table topTable = new Table(2,1);
+      topTable.setCellpadding(0);
+      topTable.setCellspacing(0);
+      topTable.setWidth("100%");
+      topTable.setAlignment(2,1,"right");
 
-		Form myForm = new Form();
+    Table myTable = new Table(1,2);
+			myTable.setAlignment("center");
+			myTable.setCellpadding(8);
 
-		Table myTable = new Table(2,5);
-			myTable.setBorder(0);
-			myTable.setWidth("100%");
-			myTable.setCellpadding(6);
-			myTable.setCellspacing(6);
-			myTable.mergeCells(1,2,1,5);
-			myTable.setAlignment(2,5,"right");
-			myTable.setVerticalAlignment(2,5,"bottom");
+    Table rightTable = new Table(1,2);
+			rightTable.setAlignment("center");
+			rightTable.setCellpadding(8);
+      rightTable.setHeight("100%");
+      rightTable.setHeight(1,"100%");
+      rightTable.setAlignment(1,2,"center");
+      rightTable.setVerticalAlignment(1,1,"top");
 
-			TextInput text_headline = new TextInput("text_headline");
-				text_headline.setLength(40);
-				text_headline.setMaxlength(255);
+    Image idegaweb = iwb.getImage("shared/idegaweb.gif","idegaWeb",90,25);
+      topTable.add(idegaweb,1,1);
+    Text tEditor = new Text(iwrb.getLocalizedString("text_editor","Text Editor")+"&nbsp;&nbsp;");
+      tEditor.setBold();
+      tEditor.setFontColor("#FFFFFF");
+      tEditor.setFontSize("3");
+      topTable.add(tEditor,2,1);
+
+    TextInput text_headline = new TextInput("text_headline");
+      text_headline.setLength(40);
+      text_headline.setMaxlength(255);
+      text_headline.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
 
 
-			TextArea text_body = new TextArea("text_body",40,22);
-				if ( update ) {
+    TextArea text_body = new TextArea("text_body",65,22);
+      text_body.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
+      if ( update ) {
+        if ( text.getTextHeadline() != null ) {
+          text_headline.setContent(text.getTextHeadline());
+        }
+        if ( text.getTextBody() != null ) {
+          text_body.setContent(text.getTextBody());
+        }
+        myForm.add(new HiddenInput("action","update"));
+        myForm.add(new HiddenInput("text_id",String.valueOf(text_id)));
+      }
 
-					if ( text.getTextHeadline() != null ) {
-						text_headline.setContent(text.getTextHeadline());
-					}
-					if ( text.getTextBody() != null ) {
-						text_body.setContent(text.getTextBody());
-					}
+    SubmitButton vista = new SubmitButton(iwrb.getImage("save.gif"));
+    rightTable.add(vista,1,2);
 
-					myForm.add(new HiddenInput("action","update"));
-					myForm.add(new HiddenInput("text_id",String.valueOf(text_id)));
-				}
+    Text name_text = new Text(iwrb.getLocalizedString("title","Title"));
+      name_text.setFontSize(Text.FONT_SIZE_7_HTML_1);
+      name_text.setBold();
+      name_text.setFontFace(Text.FONT_FACE_VERDANA);
+    Text body_text = new Text(iwrb.getLocalizedString("body","Text"));
+      body_text.setFontSize(Text.FONT_SIZE_7_HTML_1);
+      body_text.setBold();
+      body_text.setFontFace(Text.FONT_FACE_VERDANA);
+    Text image_text = new Text(iwrb.getLocalizedString("image","Image"));
+      image_text.setFontSize(Text.FONT_SIZE_7_HTML_1);
+      image_text.setBold();
+      image_text.setFontFace(Text.FONT_FACE_VERDANA);
 
-			SubmitButton vista = new SubmitButton("mode","Vista");
+    myTable.add(name_text,1,1);
+    myTable.add(Text.getBreak(),1,1);
+    myTable.add(text_headline,1,1);
 
-			Text name_text = new Text("Titill:");
-				name_text.setFontColor(textColor);
-			Text body_text = new Text("Innihald:");
-				body_text.setFontColor(textColor);
+    myTable.add(body_text,1,2);
+    myTable.add(Text.getBreak(),1,2);
+    myTable.add(text_body,1,2);
 
-			myTable.add(name_text,1,1);
-			myTable.addBreak(1,1);
-			myTable.add(text_headline,1,1);
+    ImageInserter imageInsert = new ImageInserter();
+      imageInsert.setSelected(false);
+      if ( update ) {
+        if ( text.getIncludeImage().equalsIgnoreCase("y") ) {
+          imageInsert.setImageId(text.getImageId());
+          imageInsert.setSelected(true);
+        }
+      }
+			rightTable.add(image_text,1,1);
+			rightTable.add(Text.getBreak(),1,1);
+      rightTable.add(imageInsert,1,1);
 
-			myTable.add(body_text,1,2);
-			myTable.addBreak(1,2);
-			myTable.add(text_body,1,2);
+		outerTable.add(topTable,1,1);
+		outerTable.add(myTable,1,2);
+		outerTable.add(rightTable,2,2);
 
-			myTable.add(vista,2,5);
-
-                        ImageInserter imageInsert = new ImageInserter();
-                          imageInsert.setSelected(false);
-                          if ( update ) {
-                            if ( text.getIncludeImage().equalsIgnoreCase("y") ) {
-                              imageInsert.setImageId(text.getImageId());
-                              imageInsert.setSelected(true);
-                            }
-                          }
-
-                        myTable.add(imageInsert,2,4);
-
-		myForm.add(myTable);
-
-		outerTable.setRowColor(1,headlineBgColor);
-
-		Text headline_text = new Text("Textastjórinn");
-			headline_text.setBold();
-			headline_text.setFontSize(3);
-			headline_text.setFontColor(headlineColor);
-
-		outerTable.add(headline_text,1,1);
-		outerTable.add(myForm,1,2);
-
+    myForm.add(outerTable);
 	}
 
 	public void saveText(ModuleInfo modinfo) throws IOException,SQLException {
 
 		boolean check = true;
 
-		HttpServletRequest request = modinfo.getRequest();
-		HttpSession Session = modinfo.getSession();
+		modinfo.getSession().removeAttribute("image_id");
 
-			Session.removeAttribute("image_id");
+		String text_id = modinfo.getParameter("text_id");
 
-		String text_id = modinfo.getRequest().getParameter("text_id");
-
-		String text_headline = request.getParameter("text_headline");
+		String text_headline = modinfo.getParameter("text_headline");
 			if ( text_headline == null ) { check = false; }
 
-		String text_body = request.getParameter("text_body");
+		String text_body = modinfo.getParameter("text_body");
 			if ( text_body == null ) { check = false; }
 
-		String include_image = request.getParameter("insertImage");
+		String include_image = modinfo.getParameter("insertImage");
 			if ( include_image == null ) { include_image = "N"; }
 
-		String image_id = request.getParameter("image_id");
+		String image_id = modinfo.getParameter("image_id");
 
 		idegaTimestamp date = new idegaTimestamp();
 
@@ -227,8 +244,12 @@ public TextEditor(boolean isAdmin){
 		text.setImageId( Integer.parseInt(image_id) );
     text.setTextDate( date.getTimestampRightNow());
 
-		if ( update ) { text.update(); }
-		else { text.insert(); }
+		if ( update ) {
+      text.update();
+    }
+		else {
+      text.insert();
+    }
 
     this.getParentPage().setParentToReload();
     this.getParentPage().close();
@@ -236,11 +257,11 @@ public TextEditor(boolean isAdmin){
 
 	public void deleteText(ModuleInfo modinfo) throws IOException,SQLException {
 
-		String text_id = modinfo.getRequest().getParameter("text_id");
+		String text_id = modinfo.getParameter("text_id");
 
 		TextModule text = new TextModule(Integer.parseInt(text_id));
 
-		//outerTable = new Table(1,2);
+		outerTable = new Table(1,2);
 			outerTable.setCellpadding(3);
 			outerTable.setCellspacing(3);
 
@@ -263,37 +284,17 @@ public TextEditor(boolean isAdmin){
 	}
 
 	public void confirmDelete(ModuleInfo modinfo) throws IOException,SQLException {
-
-		String text_id = modinfo.getRequest().getParameter("text_id");
+		String text_id = modinfo.getParameter("text_id");
 
 		TextModule text = new TextModule(Integer.parseInt(text_id));
-
 		text.delete();
 
-                //setParentToReload();
-                //close();
-                outerTable.addText("Textanum hefur verið eytt",1,1);
-                outerTable.add(new CloseButton("Loka"),1,2);
+    this.getParentPage().setParentToReload();
+    this.getParentPage().close();
 	}
 
-	public void setColor(String color){
-		this.color=color;
-	}
-
-	public void setTextColor(String color){
-		this.textColor=color;
-	}
-
-	public void setHeadlineColor(String headlineColor){
-		this.headlineColor=headlineColor;
-	}
-
-	public void setHeadlineBgColor(String headlineBgColor){
-		this.headlineBgColor=headlineBgColor;
-	}
-
-	public void setAdmin(boolean isAdmin){
-		this.isAdmin=isAdmin;
-	}
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 }
 

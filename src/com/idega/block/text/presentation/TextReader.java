@@ -11,10 +11,14 @@ import com.idega.block.text.data.*;
 import com.idega.data.*;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.util.text.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 
 
 public class TextReader extends JModuleObject{
 
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 private String text_id = null;
 private boolean isAdmin=false;
 private TextModule text;
@@ -36,6 +40,8 @@ private String textStyle = "";
 private String headlineStyle = "";
 private boolean reverse = false;
 private boolean crazy = false;
+private IWBundle iwb;
+private IWResourceBundle iwrb;
 
 public TextReader(){
 }
@@ -62,27 +68,15 @@ public TextReader(int text_id){
   }
 
 }
-/**
- * @deprecated replaced with the default constructor
- */
-public TextReader(boolean isAdmin){
-	this.isAdmin=isAdmin;
-}
-
-/**
- * @deprecated replaced with the String text_id constructor
- */
-public TextReader(String text_id, boolean isAdmin){
-	this.text_id=text_id;
-	this.isAdmin=isAdmin;
-}
 
 public void main(ModuleInfo modinfo) throws Exception {
+  isAdmin = AccessControl.hasEditPermission(this,modinfo);
+  iwb = getBundle(modinfo);
+  iwrb = getResourceBundle(modinfo);
 
-  String text_id2 = modinfo.getRequest().getParameter("text_id");
+  String text_id2 = modinfo.getParameter("text_id");
         if( text_id2 != null ) text_id = text_id2;
 
-  isAdmin = AccessControl.hasEditPermission(this,modinfo);
 
 		if ( this.text_id == null ) {
 			noTextID();
@@ -105,31 +99,31 @@ public void main(ModuleInfo modinfo) throws Exception {
 			myTable.mergeCells(1,2,2,2);
 			myTable.setRowColor(1,headlineBgColor);
 			myTable.setRowColor(2,textBgColor);
-                        myTable.setWidth(textWidth);
+      myTable.setWidth(textWidth);
 
 		Text headline = new Text(text.getTextHeadline());
 			headline.setFontSize(headlineSize);
 			headline.setFontColor(headlineColor);
 			headline.setBold();
-                        headline.setAttribute("class","headlinetext");
-                        headline.setFontStyle(headlineStyle);
+      headline.setAttribute("class","headlinetext");
+      headline.setFontStyle(headlineStyle);
 
 		String text_body = text.getTextBody();
 
-                if ( reverse ) {
-                  text_body = textReverse(text_body);
-                }
-                if ( crazy ) {
-                  text_body = textCrazy(text_body);
-                }
+    if ( reverse ) {
+      text_body = textReverse(text_body);
+    }
+    if ( crazy ) {
+      text_body = textCrazy(text_body);
+    }
 
                 text_body = formatText(text_body);
 
 		Text body = new Text(text_body);
 			body.setFontSize(textSize);
 			body.setFontColor(textColor);
-                        body.setAttribute("class","bodytext");
-                        body.setFontStyle(textStyle);
+      body.setAttribute("class","bodytext");
+      body.setFontStyle(textStyle);
 
 		Image body_image;
 
@@ -164,13 +158,13 @@ public void main(ModuleInfo modinfo) throws Exception {
 
 			Window adminWindow = new Window("AdminWindow",TextEditor.class,com.idega.jmodule.object.Page.class);
         adminWindow.setWidth(570);
-        adminWindow.setHeight(550);
+        adminWindow.setHeight(430);
 
-      Link breyta = new Link(new Image("/pics/breyta_medium.gif"),adminWindow);
+      Link breyta = new Link(iwrb.getImage("change.gif"),adminWindow);
 				breyta.addParameter("mode","update");
 				breyta.addParameter("text_id",text_id);
 
-      Link delete = new Link(new Image("/pics/eyda_medium.gif"),adminWindow);
+      Link delete = new Link(iwrb.getImage("delete.gif"),adminWindow);
 				delete.addParameter("mode","delete");
 				delete.addParameter("text_id",text_id);
 
@@ -439,27 +433,32 @@ public void main(ModuleInfo modinfo) throws Exception {
 		this.enableDelete=enableDelete;
 	}
 
-        /**
-         * Sets alignment for the table around the text - added by gimmi@idega.is
-         */
-        public void setAlignment(String alignment) {
-                this.myTable.setAlignment(alignment);
-        }
+  /**
+   * Sets alignment for the table around the text - added by gimmi@idega.is
+   */
+  public void setAlignment(String alignment) {
+          this.myTable.setAlignment(alignment);
+  }
 
-        public void setWidth(String textWidth) {
-                this.textWidth=textWidth;
-        }
+  public void setWidth(String textWidth) {
+          this.textWidth=textWidth;
+  }
 
-        public void setReverse() {
-                this.reverse=true;
-        }
+  public void setReverse() {
+          this.reverse=true;
+  }
 
-        public void setCrazy() {
-                this.crazy=true;
-        }
+  public void setCrazy() {
+          this.crazy=true;
+  }
 
-        public String getAnchorName(){
-          return text.getTextHeadline();
-        }
+  public String getAnchorName(){
+    return text.getTextHeadline();
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
 
 }
