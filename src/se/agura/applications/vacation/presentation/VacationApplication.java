@@ -293,7 +293,7 @@ public class VacationApplication extends VacationBlock {
 
 	private Table getReasonTable(IWContext iwc) throws RemoteException {
 		Table reasonTable = new Table();
-		TextArea text = new TextArea(PARAMETER_VACATION_EXTRA_TEXT);
+		TextArea text = (TextArea) getInput(new TextArea(PARAMETER_VACATION_EXTRA_TEXT));
 		text.setWidth(Table.HUNDRED_PERCENT);
 		text.setRows(4);
 		reasonTable.setWidth(iWidth);
