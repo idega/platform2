@@ -1,14 +1,25 @@
 package is.idega.idegaweb.member.business;
 
-import java.util.*;
-
-import javax.ejb.*;
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserStatusBusiness;
-import com.idega.user.data.*;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
+import com.idega.user.data.GroupRelation;
+import com.idega.user.data.GroupRelationHome;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 /**
  * Title:        idegaWeb Member User Subsystem
