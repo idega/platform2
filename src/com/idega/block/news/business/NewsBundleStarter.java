@@ -32,18 +32,20 @@ public class NewsBundleStarter implements IWBundleStartable{
 
   public void start(){
     System.err.println("News bundle starter: starting");
+    boolean hasField = false;
     if(!testNews()){
+      System.err.println("News bundle starter: Adding category reference to news ");
+      hasField = addICCategoryField(new NwNews());
+    }
+
+    if(!testCategories()){
       System.err.println("News bundle starter: Making categories");
       Map map = makeICCategories();
       if(map !=null){
-        System.err.println("News bundle starter: Adding category reference to news ");
-        if(addICCategoryField(new NwNews()))
-          System.err.println("News bundle starter: Moving news to new categories ");
-          moveDataToCategory(map);
+        System.err.println("News bundle starter: Moving news to new categories ");
+        moveDataToCategory(map);
       }
     }
-    else
-      System.err.println("did not need to do anything ");
   }
 
   private Map makeICCategories(){
@@ -156,6 +158,20 @@ public class NewsBundleStarter implements IWBundleStartable{
         return !(s!=null && s.length > 0);
       }
 */
+    }
+    catch (Exception ex) {
+
+      //ex.printStackTrace();
+    }
+    return false;
+  }
+
+  // true if news have categories
+   public boolean testCategories(){
+    String sql = "select ic_category_id from nw_news where ic_category_id is null";
+    try {
+      String[] s = SimpleQuerier.executeStringQuery(sql);
+      return (s!=null && s.length > 0 );
     }
     catch (Exception ex) {
 
