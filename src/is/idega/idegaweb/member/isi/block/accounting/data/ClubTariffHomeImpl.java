@@ -27,6 +27,13 @@ public java.util.Collection findAllByClubAndDivision(com.idega.user.data.Group p
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllValidByGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ClubTariffBMPBean)entity).ejbFindAllValidByGroup(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findByGroupAndTariffType(com.idega.user.data.Group p0,is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ClubTariffBMPBean)entity).ejbFindByGroupAndTariffType(p0,p1,p2);

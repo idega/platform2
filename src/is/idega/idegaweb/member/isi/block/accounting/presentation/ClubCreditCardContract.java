@@ -187,6 +187,9 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	}
 
 	private void getClubDivisions(Collection divisions, Group group) {
+		if (divisions == null)
+			divisions = new ArrayList();
+		
 		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
 			divisions.add(group);
 		}

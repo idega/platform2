@@ -111,8 +111,10 @@ public class AssessmentRoundThread extends Thread {
 							entry.setGroup(group);
 							entry.setAmount(tariff.getAmount());
 							entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
+							entry.setInfo(tariff.getText());
 							entry.setStatusCreated();
 							entry.setTypeAssessment();
+							entry.setInsertedByUser(_round.getExecutedBy());
 							entry.store();
 						}
 					}

@@ -28,12 +28,12 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String COLUMN_CLUB_ID = "club_id";
 	protected final static String COLUMN_DIVISION_ID = "division_id";
 	protected final static String COLUMN_GROUP_ID = "group_id";
-	protected final static String COLUMN_TARIFF = "tariff";
 	protected final static String COLUMN_AMOUNT = "amount";
 	protected final static String COLUMN_STATUS = "status";
 	protected final static String COLUMN_TYPE = "entry_type";
 	protected final static String COLUMN_DATE_OF_ENTRY = "date_of_entry";
 	protected final static String COLUMN_INFO = "text_info";
+	protected final static String COLUMN_INSERTED_BY = "inserted_by";
 	
 	protected final static String STATUS_CREATED = "C";
 	protected final static String STATUS_READY = "R";
@@ -61,12 +61,12 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
 		addManyToOneRelationship(COLUMN_DIVISION_ID, Group.class);
 		addManyToOneRelationship(COLUMN_GROUP_ID, Group.class);
-		addManyToOneRelationship(COLUMN_TARIFF, ClubTariff.class);
 		addAttribute(COLUMN_AMOUNT, "Amount", true, true, Double.class);
 		addAttribute(COLUMN_STATUS, "Status", true, true, String.class, 1);
 		addAttribute(COLUMN_TYPE, "Type", true, true, String.class, 1);
 		addAttribute(COLUMN_DATE_OF_ENTRY, "Timestamp", true, true, Timestamp.class);
 		addAttribute(COLUMN_INFO, "Text info", true, true, String.class, 255);
+		addManyToOneRelationship(COLUMN_INSERTED_BY, User.class);
 		
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -202,20 +202,20 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		setColumn(COLUMN_INFO, info);
 	}
 	
-	public int getTariffID() {
-		return getIntColumnValue(COLUMN_TARIFF);
+	public int getInsertedByUserID() {
+		return getIntColumnValue(COLUMN_INSERTED_BY);
 	}
 
-	public void setTariffID(int id) {
-		setColumn(COLUMN_TARIFF ,id);
-	}
-
-	public ClubTariff getTariff() {
-		return (ClubTariff) getColumnValue(COLUMN_TARIFF);
+	public void setInsertedByUserID(int id) {
+		setColumn(COLUMN_INSERTED_BY ,id);
 	}
 	
-	public void setTariff(ClubTariff tariff) {
-		setColumn(COLUMN_TARIFF, tariff);
+	public User getInsertedByUser() {
+		return (User) getColumnValue(COLUMN_INSERTED_BY);
+	}
+	
+	public void setInsertedByUser(User user) {
+		setColumn(COLUMN_INSERTED_BY, user);
 	}
 	
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {

@@ -10,11 +10,12 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffHome;
-import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.FinderException;
 
@@ -51,6 +52,10 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	
 	private final static String ERROR_NO_SELECTED_USER = "isi_acc_no_user_selected";
 	
+	private final static String ERROR_NO_GROUP_SELECTED = "isi_acc_ma_no_group_selected";
+	private final static String ERROR_NO_TARIFF_SELECTED = "isi_acc_ma_no_tariff_selected";
+	private final static String ERROR_NO_AMOUNT_ENTERED = "isi_acc_ma_no_amount_entered";
+	
 	/**
 	 * 
 	 */
@@ -58,25 +63,42 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		super();
 	}
 
-	public void main(IWContext iwc) {
-		float defaultAmount = -1;
-		if (iwc.isParameterSet(ACTION_SUBMIT)) {
-			
-		}
-		else if (iwc.isParameterSet(LABEL_TARIFF)) {
-			String id = iwc.getParameter(LABEL_TARIFF);
-			try {
-				ClubTariff tariff = getClubTariffHome().findByPrimaryKey(new Integer(id));
-				defaultAmount = tariff.getAmount();
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-			catch (FinderException e) {
-				e.printStackTrace();
-			} 
+	private boolean saveAssessment(IWContext iwc) {
+		_errorList = new ArrayList();
+		String group = iwc.getParameter(LABEL_USERS_GROUPS);
+		String tariff = iwc.getParameter(LABEL_TARIFF);
+		String amount = iwc.getParameter(LABEL_AMOUNT);
+		String info = iwc.getParameter(LABEL_INFO);
+
+		if (group == null || "".equals(group)) {
+			_errorList.add(ERROR_NO_GROUP_SELECTED);
 		}
 		
+		if (tariff == null || "".equals(tariff)) {
+			_errorList.add(ERROR_NO_TARIFF_SELECTED);
+		}
+		
+		if (amount == null || "".equals(amount)) {
+			_errorList.add(ERROR_NO_AMOUNT_ENTERED);
+		}
+		
+		if (!_errorList.isEmpty()) {
+			return false;
+		}
+		
+		boolean insert = false;
+		
+		try {
+			insert = getAccountingBusiness(iwc).insertManualAssessment(getClub(), getDivision(), getUser(), group, tariff, amount, info, iwc.getCurrentUser());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+		return insert;
+	}
+	
+	public void main(IWContext iwc) {
 		Form f = new Form();
 		Table t = new Table();
 		Table inputTable = new Table();
@@ -85,10 +107,40 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		inputTable.setCellpadding(5);
 		dataTable.setCellpadding(5);
 
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
+		float defaultAmount = -1;
+		if (iwc.isParameterSet(ACTION_SUBMIT)) {
+			if (!saveAssessment(iwc)) {
+				Table error = new Table();
+				Text labelError = new Text(iwrb.getLocalizedString(ERROR_COULD_NOT_SAVE, "Could not save") + ":");
+				labelError.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+				
+				int r = 1;
+				error.add(labelError, 1, r++);
+				if (_errorList != null && !_errorList.isEmpty()) {
+					Iterator it = _errorList.iterator();
+					while (it.hasNext()) {
+						String loc = (String) it.next();
+						Text errorText = new Text(iwrb.getLocalizedString(loc, ""));
+						errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+						
+						error.add(errorText, 1, r++);
+					}
+				}
+				
+				f.add(error);
+			}
+			else {
+				Text labelOK = new Text(iwrb.getLocalizedString(ENTRY_ENTERED, "Entry entered"));
+				labelOK.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+				
+				f.add(labelOK);
+			}
+		}
+		
 		f.add(t);
 		f.add(inputTable);
-		
-		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user:"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -97,6 +149,21 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		t.add(labelUser, 1, row);
 		t.add(Text.getNonBrakingSpace(), 1, row);
 		if (getUser() != null) {
+			String selectedGroup = iwc.getParameter(LABEL_USERS_GROUPS);
+			String selectedTariff = iwc.getParameter(LABEL_TARIFF);
+			if (selectedTariff != null) {
+				try {
+					ClubTariff tariff = getClubTariffHome().findByPrimaryKey(new Integer(selectedTariff));
+					defaultAmount = tariff.getAmount();
+				}
+				catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				} 
+			}
+			
 			t.add(getUser().getName(), 1, row);
 			
 			row = 1;
@@ -115,11 +182,26 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			inputTable.add(labelInfo, 4, row++);
 			
 			DropdownMenu usersGroupsInput = new DropdownMenu(LABEL_USERS_GROUPS);
+			Collection groups = getGroupsForUser(iwc);
+			if (groups != null) {
+				Iterator it = groups.iterator();
+				while (it.hasNext()) {
+					Group userGroup = (Group) it.next();
+					usersGroupsInput.addMenuElement(userGroup.getPrimaryKey().toString(), userGroup.getName());
+					if (selectedGroup == null) {
+						selectedGroup = userGroup.getPrimaryKey().toString();
+					}
+				}
+			}
+			usersGroupsInput.setToSubmit();
+			if (selectedGroup != null) {
+				usersGroupsInput.setSelectedElement(selectedGroup);
+			}
 			
 			Collection tariff = null;
 			try {
 				if (getClub() != null) {
-					tariff = getAccountingBusiness(iwc).findAllTariffByClub(getClub());
+					tariff = getAccountingBusiness(iwc).findAllValidTariffByGroup(selectedGroup);
 				}
 			}
 			catch (RemoteException e) {
@@ -131,10 +213,26 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 				Iterator it = tariff.iterator();
 				while (it.hasNext()) {
 					ClubTariff entry = (ClubTariff) it.next();
-					tariffInput.addMenuElement(((Integer) entry.getPrimaryKey()).intValue(), entry.getText());
+					tariffInput.addMenuElement(entry.getPrimaryKey().toString(), entry.getText());
+					if (selectedTariff == null) {
+						selectedTariff = entry.getPrimaryKey().toString();
+						try {
+							ClubTariff selTariff = getClubTariffHome().findByPrimaryKey(new Integer(selectedTariff));
+							defaultAmount = selTariff.getAmount();
+						}
+						catch (NumberFormatException e) {
+							e.printStackTrace();
+						}
+						catch (FinderException e) {
+							e.printStackTrace();
+						} 
+					}
 				}
 			}
 			tariffInput.setToSubmit();
+			if (selectedTariff != null) {
+				tariffInput.setSelectedElement(selectedTariff);
+			}
 			
 			FloatInput amountInput = new FloatInput(LABEL_AMOUNT);
 			amountInput.setLength(10);
@@ -150,8 +248,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			inputTable.add(infoInput, 4, row);
 			
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
-			inputTable.add(submit, 4, row++);
-			
+			inputTable.add(submit, 4, row++);	
 		}
 		else {
 			t.add(iwrb.getLocalizedString(ERROR_NO_SELECTED_USER, "No user selected. Please select a user in the Select user tab."), 1, row);
@@ -187,20 +284,56 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		return null;
 	}
 	
-	private void getGroupsForUser(IWContext iwc, Collection divisions, Group group) {
-		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
-			divisions.add(group);
-		}
-
-//		getUserBusiness(iwc).£
+	private Collection getGroupsForUser(IWContext iwc) {
+		ArrayList userGroupsInClub = new ArrayList();
+		try {
+			Collection allUserGroups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(getUser());
+			
+			if (allUserGroups != null && !allUserGroups.isEmpty()) {
+				Group parent = null;
+				if (getDivision() != null) {
+					parent = getDivision();
+				}
+				else {
+					parent = getClub();
+				}
 		
-/*		Iterator it = group.getChildren();
-		if (it != null) {
-			while (it.hasNext()) {
-				Group child = (Group) it.next();
-				getClubDivisions(iwc, divisions, child);
+				Iterator it = allUserGroups.iterator();
+				while (it.hasNext()) {
+					Group group = (Group) it.next();
+					
+					if (isGroupInClubAndDivision(group, parent)) {
+						userGroupsInClub.add(group);
+					}
+				}
 			}
-		}*/
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}		
+		
+		return userGroupsInClub;
+	}
+	
+	private boolean isGroupInClubAndDivision(Group group, Group parent) {
+		if (group.equals(parent))
+			return true;
+		
+		List parentGroups = group.getParentGroups();
+		Iterator it = parentGroups.iterator();
+		while (it.hasNext()) {
+			Group parentGroup = (Group) it.next();
+			
+			if (parent.equals(parentGroup)) {
+				return true;
+			}
+
+			if (isGroupInClubAndDivision(parentGroup, parent)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private UserBusiness getUserBusiness(IWApplicationContext iwc) {
@@ -213,5 +346,4 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		
 		return null;
 	}	
-	
 }

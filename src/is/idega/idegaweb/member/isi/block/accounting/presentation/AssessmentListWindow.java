@@ -25,6 +25,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.util.IWTimestamp;
 
@@ -138,8 +139,8 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 						t.add(entry.getDivision().getName(), 1, row);
 					t.add(entry.getGroup().getName(), 2, row);
 					t.add(entry.getUser().getName(), 3, row);
-					if (entry.getTariff() != null)
-						t.add(entry.getTariff().getText(), 4, row);
+					if (entry.getInfo() != null)
+						t.add(entry.getInfo(), 4, row);
 					t.add(nf.format(entry.getAmount()), 5, row);
 					t.setAlignment(5, row, "RIGHT");
 					sum += entry.getAmount();
@@ -162,8 +163,7 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 		backTable.add(heading,2,2);
 		backTable.add(t,2,3);
 		add(backTable);
-//		add(heading);
-//		add(t);
+		add(new PrintButton("Prenta"));
 	}
 	
 	/* (non-Javadoc)

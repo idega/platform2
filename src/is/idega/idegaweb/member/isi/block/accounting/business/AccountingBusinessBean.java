@@ -17,6 +17,8 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContract;
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContractHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType;
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeHome;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -37,6 +39,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -80,6 +83,41 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
+	public Collection findAllValidTariffByGroup(Group group) {
+		try {
+			return getClubTariffHome().findAllValidByGroup(group);
+		}
+		catch (FinderException e) {
+		}
+
+		return null;
+	}
+	
+	public Collection findAllValidTariffByGroup(String groupId) {
+		Group group = null;
+		if (groupId != null) {
+			try {
+				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
+				group = gHome.findByPrimaryKey(new Integer(groupId));
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (group != null) {
+			return findAllValidTariffByGroup(group);
+		}
+		
+		return null;
+	}
+	
 	public boolean insertTariff(Group club, String groupId, String typeId, String text, String amount, Date from, Date to, boolean applyToChildren, String skip) {
 		Group group = null;
 		if (groupId != null) {
@@ -410,6 +448,74 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
+	public boolean insertManualAssessment(Group club, Group div, User user, String groupId, String tariffId, String amount, String info, User currentUser) {
+		Group group = null;
+		if (groupId != null) {
+			try {
+				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
+				group = gHome.findByPrimaryKey(new Integer(groupId));
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		ClubTariff tariff = null;
+		if (tariffId != null) {
+			try {
+				tariff = getClubTariffHome().findByPrimaryKey(new Integer(tariffId));
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+
+		float am = 0;
+		try {
+			am = Float.parseFloat(amount);
+		}
+		catch (Exception e) {
+		}
+
+		return insertManualAssessment(club, div, user, group, tariff, am, info, currentUser);
+	}
+
+	public boolean insertManualAssessment(Group club, Group div, User user, Group group, ClubTariff tariff, float amount, String info, User currentUser) {
+		try {
+			FinanceEntry entry = getFinanceEntryHome().create();
+			entry.setUser(user);
+			entry.setClub(club);
+			entry.setDivision(div);
+			entry.setGroup(group);
+			entry.setAmount(amount);
+			entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
+			if (info != null)
+				entry.setInfo(info);
+			else
+				entry.setInfo(tariff.getText());
+			entry.setStatusCreated();
+			entry.setTypeManual();
+			entry.setInsertedByUser(currentUser);
+			entry.store();
+			
+			return true;
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
 	private ClubTariffHome getClubTariffHome() {
 		try {
 			return (ClubTariffHome) IDOLookup.getHome(ClubTariff.class);
@@ -421,6 +527,17 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
+	private FinanceEntryHome getFinanceEntryHome() {
+		try {
+			return (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
 	private CreditCardContractHome getCreditCardContractHome() {
 		try {
 			return (CreditCardContractHome) IDOLookup.getHome(CreditCardContract.class);

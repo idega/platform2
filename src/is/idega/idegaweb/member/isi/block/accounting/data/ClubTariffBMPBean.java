@@ -190,12 +190,37 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		sql.append(", ");
 		sql.append(COLUMN_TARIFF_TYPE);
 		
-		System.out.println("sql = " + sql.toString());
-
 		return idoFindPKsByQuery(sql);
 	}
 
-
+	public Collection ejbFindAllValidByGroup(Group group) throws FinderException {
+		IWTimestamp date = IWTimestamp.RightNow();
+		
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_GROUP, group);
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.appendEquals(COLUMN_DELETED, false);
+		sql.appendOr();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null");
+		sql.appendRightParenthesis();
+		sql.appendAnd();
+		sql.append(COLUMN_PERIOD_FROM);
+		sql.appendLessThanOrEqualsSign();
+		sql.append(date.getDate());
+		sql.appendAnd();
+		sql.append(date.getDate());
+		sql.appendLessThanOrEqualsSign();
+		sql.append(COLUMN_PERIOD_TO);
+		
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+	
+	
 	public Collection ejbFindByGroupAndTariffType(Group group, ClubTariffType type) throws FinderException {
 		return ejbFindByGroupAndTariffType(group, type, null);
 	}

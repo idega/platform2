@@ -84,7 +84,6 @@ public class EditTariffType extends CashierSubWindowTemplate {
 				
 				f.add(error);
 			}
-			
 		}
 		else if (iwc.isParameterSet(ACTION_DELETE)) {
 			deleteTariffType(iwc);

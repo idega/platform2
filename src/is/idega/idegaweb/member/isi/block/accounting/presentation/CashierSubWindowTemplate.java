@@ -7,6 +7,8 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
+import java.util.ArrayList;
+
 import com.idega.presentation.Block;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -18,10 +20,13 @@ public class CashierSubWindowTemplate extends Block {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 	
 	protected static final String ERROR_COULD_NOT_SAVE = "isi_acc_could_not_save";
+	protected static final String ENTRY_ENTERED = "isi_acc_entry_entered";
 	
 	protected Group _club = null;
 	protected Group _division = null;
 	protected User _user = null;
+	
+	protected ArrayList _errorList = null;
 	
 	/**
 	 * 
