@@ -409,7 +409,9 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			if (inv != null){	
 				inv.store();		
 			}
-			iwc.forwardToIBPage(getParentPage(), _returnPage);
+			if (_returnPage != null){
+				iwc.forwardToIBPage(getParentPage(), _returnPage);
+			}
 		}
 	}
 
