@@ -2445,7 +2445,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 				
 				addContractToArchive(-1, application, contractID, fromDate.getDate());
-				getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), toDate.getTimestamp(), ((Integer)admin.getPrimaryKey()).intValue(), null);
+				Timestamp removedDate = null;
+				if (toDate != null)
+					removedDate = toDate.getTimestamp();
+				getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), null);
 			}
 			t.commit();
 		}
