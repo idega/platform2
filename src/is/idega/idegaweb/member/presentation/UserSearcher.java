@@ -226,7 +226,7 @@ public class UserSearcher extends Block {
 				last = TextSoap.capitalize(last);
 		}
 		usersFound = home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true);
-		System.out.println("users found " + usersFound.size());
+		//System.out.println("users found " + usersFound.size());
 		if (user == null && usersFound != null) {
 			// if some users found
 			if (!usersFound.isEmpty()) {
