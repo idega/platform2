@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.12 2002/12/11 12:50:49 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.13 2002/12/12 13:06:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,11 +30,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -212,6 +212,21 @@ public class CitizenAccountAdmin extends CommuneBlock {
                     table.add(getSmallHeader(localize(CitizenAccountApplication.CURRENT_KOMMUN_KEY, CitizenAccountApplication.CURRENT_KOMMUN_DEFAULT)), 1, row);
                     final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
                     table.add(getSmallText(capc.getCurrentKommun ()), 3, row++);
+                } else if (applicant.getApplicationReason().equals
+                           (CitizenAccountApplication.MOVING_TO_NACKA_KEY)) {
+                    final CitizenApplicantMovingTo camt
+                            = business.findCitizenApplicantMovingTo (id);
+                    table.add(getSmallHeader(localize(CitizenAccountApplication.MOVING_IN_ADDRESS_KEY, CitizenAccountApplication.MOVING_IN_ADDRESS_DEFAULT)), 1, row);
+                    table.add(getSmallText(camt.getAddress ()), 3, row++);
+                    table.add(getSmallHeader(localize(CitizenAccountApplication.MOVING_IN_DATE_KEY, CitizenAccountApplication.MOVING_IN_DATE_DEFAULT)), 1, row);
+                    table.add(getSmallText(camt.getMovingInDate ()), 3, row++);
+                    if (camt.getHousingType ().equals (CitizenAccountApplication.TENANCY_AGREEMENT_KEY)) {
+                        table.add(getSmallHeader(localize(CitizenAccountApplication.LANDLORD_KEY, CitizenAccountApplication.LANDLORD_DEFAULT)), 1, row);
+                        table.add(getSmallText(camt.getLandlord ()), 3, row++);
+                    } else if (camt.getHousingType ().equals (CitizenAccountApplication.DETACHED_HOUSE_KEY)) {
+                        table.add(getSmallHeader(localize(CitizenAccountApplication.PROPERTY_TYPE_KEY, CitizenAccountApplication.PROPERTY_TYPE_DEFAULT)), 1, row);
+                        table.add(getSmallText(camt.getPropertyType ()), 3, row++);
+                    }
                 }
 			}
 			

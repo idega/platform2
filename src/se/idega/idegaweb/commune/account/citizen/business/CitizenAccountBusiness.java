@@ -54,12 +54,21 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
         throws RemoteException, CreateException;
 
     Integer insertMovingTo (Integer applicationId, String address, String date,
-                            String housingType, String propertyType)
+                            String housingType, String propertyType, String landlordName, String landlordPhone, String landlordAddress)
         throws RemoteException, CreateException;
 
     Integer insertPutChildren (Integer applicationId, String currentKommun)
         throws RemoteException, CreateException;
 
     CitizenApplicantPutChildren findCitizenApplicantPutChildren
+        (int applicationId) throws RemoteException, FinderException;
+
+    CitizenApplicantMovingTo findCitizenApplicantMovingTo
+        (int applicationId) throws RemoteException, FinderException;
+
+    CitizenApplicantCohabitant findCitizenApplicantCohabitant
+        (int applicationId) throws RemoteException, FinderException;
+
+    CitizenApplicantChildren [] findCitizenApplicantChildren
         (int applicationId) throws RemoteException, FinderException;
 }

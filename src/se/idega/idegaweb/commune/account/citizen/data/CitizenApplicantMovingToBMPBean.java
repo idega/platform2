@@ -1,12 +1,14 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.data.GenericEntity;
+import java.util.Collection;
+import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/11/15 14:05:44 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CitizenApplicantMovingToBMPBean extends GenericEntity
     implements CitizenApplicantMovingTo {
@@ -17,6 +19,7 @@ public class CitizenApplicantMovingToBMPBean extends GenericEntity
     private final static String COLUMN_MOVING_IN_DATE = "moving_in_date";
     private final static String COLUMN_HOUSING_TYPE = "housing_type";
     private final static String COLUMN_PROPERTY_TYPE = "property_type";
+    private final static String COLUMN_LANDLORD = "landlord";
 
 	public void initializeAttributes() {
 		addAttribute (getIDColumnName());
@@ -29,6 +32,7 @@ public class CitizenApplicantMovingToBMPBean extends GenericEntity
                       String.class, 30);
 		addAttribute (COLUMN_PROPERTY_TYPE, "Property type", true, true,
                       String.class, 30);
+		addAttribute (COLUMN_LANDLORD, "Landlord", true, true, String.class, 60);
 	}
 
 	public String getEntityName() {
@@ -62,6 +66,12 @@ public class CitizenApplicantMovingToBMPBean extends GenericEntity
         return getStringColumnValue (COLUMN_PROPERTY_TYPE);
     }
     
+    public String getLandlord () {
+        final String landlord = getStringColumnValue (COLUMN_LANDLORD);
+        return landlord == null ? "" : landlord;
+    }
+    
+
     public void setApplicationId (final int applicationId) {
         setColumn (COLUMN_APPLICATION_ID, applicationId);
     }
@@ -80,5 +90,17 @@ public class CitizenApplicantMovingToBMPBean extends GenericEntity
     
     public void setPropertyType (final String propertyType) {
         setColumn (COLUMN_PROPERTY_TYPE, propertyType);
+    }
+    
+    public void setLandlord (final String name, final String phone,
+                             final String address) {
+        setColumn (COLUMN_LANDLORD, name + ", " + phone + ", " + address);
+    }
+
+    public Collection ejbFindByApplicationId (final int applicationId)
+        throws FinderException {
+        final String sql = "select * from " + ENTITY_NAME
+                + " where " + COLUMN_APPLICATION_ID + " = " + applicationId;
+        return idoFindIDsBySQL (sql);
     }
 }

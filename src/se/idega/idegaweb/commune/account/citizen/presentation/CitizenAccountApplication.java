@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.39 2002/12/11 12:50:49 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.40 2002/12/12 13:06:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,11 +29,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -55,39 +55,47 @@ public class CitizenAccountApplication extends CommuneBlock {
 	final static String COHABITANT_KEY = "caa_cohabitant";
 	final static String CURRENT_KOMMUN_DEFAULT = "Nuvarande kommun";
 	final static String CURRENT_KOMMUN_KEY = "caa_current_kommun";
-	private final static String DETACHED_HOUSE_DEFAULT = "Villa";
-	private final static String DETACHED_HOUSE_KEY = "caa_detached_house";
+	final static String DETACHED_HOUSE_DEFAULT = "Villa";
+	final static String DETACHED_HOUSE_KEY = "caa_detached_house";
 	final static String EMAIL_DEFAULT = "E-post";
 	final static String EMAIL_KEY = "caa_email";
 	private final static String FIRST_NAME_DEFAULT = "Förnamn";
 	private final static String FIRST_NAME_KEY = "caa_first_name";
 	private final static String HAS_COHABITANT_DEFAULT = "Är du sammanboende?";
 	private final static String HAS_COHABITANT_KEY = "caa_has_cohabitant";
-	private final static String HOUSING_TYPE_KEY = "caa_housing_type";
+	final static String HOUSING_TYPE_KEY = "caa_housing_type";
+	final static String LANDLORD_DEFAULT = "Hyresvärd (endast hyreskontrakt)";
+	final static String LANDLORD_KEY = "caa_landlord";
+	final static String LANDLORD_NAME_DEFAULT = "Namn";
+	final static String LANDLORD_NAME_KEY = "caa_landlord_name";
+	final static String LANDLORD_PHONE_DEFAULT = "Telefon";
+	final static String LANDLORD_PHONE_KEY = "caa_landlord_phone";
+	final static String LANDLORD_ADDRESS_DEFAULT = "Adress";
+	final static String LANDLORD_ADDRESS_KEY = "caa_landlord_address";
 	private final static String LAST_NAME_DEFAULT = "Efternamn";
 	private final static String LAST_NAME_KEY = "caa_last_name";
-	private final static String MOVING_IN_ADDRESS_DEFAULT = "Inflyttningsadress";
-	private final static String MOVING_IN_ADDRESS_KEY = "caa_moving_in_address";
-	private final static String MOVING_IN_DATE_DEFAULT = "Inflyttningsdatum";
-	private final static String MOVING_IN_DATE_KEY = "caa_moving_in_date";
-	private final static String MOVING_TO_NACKA_DEFAULT = "Jag flyttar till Nacka kommun";
-	private final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
+	final static String MOVING_IN_ADDRESS_DEFAULT = "Inflyttningsadress";
+	final static String MOVING_IN_ADDRESS_KEY = "caa_moving_in_address";
+	final static String MOVING_IN_DATE_DEFAULT = "Inflyttningsdatum";
+	final static String MOVING_IN_DATE_KEY = "caa_moving_in_date";
+	final static String MOVING_TO_NACKA_DEFAULT = "Jag flyttar till Nacka kommun";
+	final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
 	final static String NO_DEFAULT = "Nej";
 	final static String NO_KEY = "caa_no";
 	final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
 	final static String PHONE_HOME_KEY = "caa_phone_home";
 	final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
 	final static String PHONE_WORK_KEY = "caa_phone_work";
-	private final static String PROPERTY_TYPE_DEFAULT = "Fastighetsbeteckning (endast villa)";
-	private final static String PROPERTY_TYPE_KEY = "caa_property_type";
+	final static String PROPERTY_TYPE_DEFAULT = "Fastighetsbeteckning (endast villa)";
+	final static String PROPERTY_TYPE_KEY = "caa_property_type";
 	private final static String PUT_CHILDREN_IN_NACKA_DEFAULT = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
 	final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";
 	final static String SSN_DEFAULT = "Personnummer";
 	final static String SSN_KEY = "caa_ssn";
 	private final static String STREET_DEFAULT = "Gatuadress";
 	private final static String STREET_KEY = "caa_street";
-	private final static String TENANCY_AGREEMENT_DEFAULT = "Hyreskontrakt";
-	private final static String TENANCY_AGREEMENT_KEY = "caa_tenancy_agreement";
+	final static String TENANCY_AGREEMENT_DEFAULT = "Hyreskontrakt";
+	final static String TENANCY_AGREEMENT_KEY = "caa_tenancy_agreement";
 	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT = "Ansökan är skickad.";
 	private final static String TEXT_APPLICATION_SUBMITTED_KEY = "caa_app_submitted";
 	private final static String UNKNOWN_CITIZEN_DEFAULT = "Du finns inte registrerad som medborgare i Nacka. Du har ändå" + " möjlighet att registrera dig för ett användarkonto om du har" + " planerat att flytta till Nacka eller vill att ditt barn ska gå i" + " skolan i kommunen. Följ instruktionerna nedan.";
@@ -357,6 +365,16 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.add(getRadioButton(HOUSING_TYPE_KEY, DETACHED_HOUSE_KEY, DETACHED_HOUSE_DEFAULT, true), 1, row++);
 			table.add(getHeader(PROPERTY_TYPE_KEY, PROPERTY_TYPE_DEFAULT), 1, row);
 			table.add(getSingleInput(iwc, PROPERTY_TYPE_KEY, 20, false), 3, row++);
+			final Text landlord = getLocalizedHeader(LANDLORD_KEY, LANDLORD_DEFAULT);
+			table.setHeight(row++, 6);
+			table.mergeCells(1, row, 3, row);
+			table.add(landlord, 1, row++);
+			table.add(getHeader(LANDLORD_NAME_KEY, LANDLORD_NAME_DEFAULT), 1, row);
+			table.add(getSingleInput(iwc, LANDLORD_NAME_KEY, 20, false), 3, row++);
+			table.add(getHeader(LANDLORD_PHONE_KEY, LANDLORD_PHONE_DEFAULT), 1, row);
+			table.add(getSingleInput(iwc, LANDLORD_PHONE_KEY, 20, false), 3, row++);
+			table.add(getHeader(LANDLORD_ADDRESS_KEY, LANDLORD_ADDRESS_DEFAULT), 1, row);
+			table.add(getSingleInput(iwc, LANDLORD_ADDRESS_KEY, 20, false), 3, row++);
 		}
 		else if (applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
 			// applicant wants to put children in Nacka
@@ -419,7 +437,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		final String applicationReason = iwc.getParameter(APPLICATION_REASON_KEY);
 		if (applicationReason.equals(MOVING_TO_NACKA_KEY)) {
 			mandatoryParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY }));
-			stringParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY, PROPERTY_TYPE_KEY }));
+			stringParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY, PROPERTY_TYPE_KEY, LANDLORD_NAME_KEY, LANDLORD_PHONE_KEY, LANDLORD_ADDRESS_KEY }));
 		} else if (applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
 			mandatoryParameterNames.add(CURRENT_KOMMUN_KEY);
 			stringParameterNames.add(CURRENT_KOMMUN_KEY);
@@ -498,9 +516,16 @@ public class CitizenAccountApplication extends CommuneBlock {
                         = parameters.get (HOUSING_TYPE_KEY).toString ();
                 final String propertyType
                         = parameters.get (PROPERTY_TYPE_KEY).toString ();
+                final String landlordName
+                        = parameters.get (LANDLORD_NAME_KEY).toString ();
+                final String landlordPhone
+                        = parameters.get (LANDLORD_PHONE_KEY).toString ();
+                final String landlordAddress
+                        = parameters.get (LANDLORD_ADDRESS_KEY).toString ();
                 business.insertMovingTo
                         (applicationId, movingInAddress, movingInDate,
-                         housingType, propertyType);                    
+                         housingType, propertyType, landlordName, landlordPhone,
+                         landlordAddress);                    
             } else if (null != applicationId
                        && applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
                 business.insertPutChildren (applicationId, parameters.get

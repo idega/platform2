@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.35 2002/12/11 12:50:49 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.36 2002/12/12 13:06:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -27,11 +27,11 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
     implements CitizenAccountBusiness, AccountBusiness {
@@ -180,7 +180,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 
     public Integer insertMovingTo
         (final Integer applicationId, final String address, final String date,
-         final String housingType, final String propertyType)
+         final String housingType, final String propertyType,
+         final String landlordName, final String landlordPhone,
+         final String landlordAddress)
         throws RemoteException, CreateException {
 		CitizenApplicantMovingTo movingTo = null;
         try {
@@ -193,6 +195,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
             movingTo.setMovingInDate (date);
             movingTo.setHousingType (housingType);
             movingTo.setPropertyType (propertyType);
+            movingTo.setLandlord (landlordName, landlordPhone, landlordAddress);
 			movingTo.store ();
 		}
 		catch (Exception e) {
@@ -232,6 +235,32 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                 = (CitizenApplicantPutChildrenHome) IDOLookup.getHome
                 (CitizenApplicantPutChildren.class);
 		return (CitizenApplicantPutChildren) home.findByApplicationId
+                (applicationId).toArray () [0];
+    }
+
+    public CitizenApplicantChildren [] findCitizenApplicantChildren
+        (final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantChildrenHome home
+                = (CitizenApplicantChildrenHome) IDOLookup.getHome
+                (CitizenApplicantChildren.class);
+		return  home.findByApplicationId (applicationId);
+    }
+
+    public CitizenApplicantCohabitant findCitizenApplicantCohabitant
+        (final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantCohabitantHome home
+                = (CitizenApplicantCohabitantHome) IDOLookup.getHome
+                (CitizenApplicantCohabitant.class);
+		return (CitizenApplicantCohabitant) home.findByApplicationId
+                (applicationId);
+    }
+
+    public CitizenApplicantMovingTo findCitizenApplicantMovingTo
+        (final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantMovingToHome home
+                = (CitizenApplicantMovingToHome) IDOLookup.getHome
+                (CitizenApplicantMovingTo.class);
+		return (CitizenApplicantMovingTo) home.findByApplicationId
                 (applicationId).toArray () [0];
     }
 
