@@ -44,6 +44,7 @@ public class Reporter extends Editor{
   private int iMainCategoryAttributeId = 0, iViewCategoryAttributeId= 0;
 
   public Reporter(){
+
   }
   public Reporter(int iMainCategory){
     iCategory = iMainCategory;
@@ -239,6 +240,11 @@ public class Reporter extends Editor{
     }
     this.setTextFontColor("#FFFFFF");
     int a = 2;
+    if(bEdit){
+      Link edit =  new Link(new Image("/reports/pics/new.gif"),"/reports/reportedit.jsp");
+      edit.addParameter("category_id",iCategoryId);
+      T.add(edit,1,2);
+    }
 
     T.add(formatText("Name"),2,2);
     T.add(formatText("Info"),3,2);
