@@ -48,6 +48,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
+	private static final String USR_STAT_PREFIX = "usr_stat_";
 
 	private static final String LOCALIZED_CURRENT_DATE = "UserStatsBusiness.current_date";
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
@@ -190,11 +191,11 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			         else {
 			             UserStatus userStatus =(UserStatus)userStatuses.iterator().next();
 			             String userStatusKey = userStatus.getStatus().getStatusKey();
-			             if (!userStatusesFilter.contains(userStatusKey)) {			                 
+			             if (!userStatusesFilter.isEmpty() && !userStatusesFilter.contains(userStatusKey)) {			                 
 			                 continue;
 			             }
 			             else {
-			                 userStatusString = _iwrb.getLocalizedString(userStatusKey);
+			                 userStatusString = _iwrb.getLocalizedString(USR_STAT_PREFIX+userStatusKey, userStatusKey);
 			             }
 			             
 			         }
