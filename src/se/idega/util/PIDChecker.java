@@ -22,27 +22,26 @@ import com.idega.util.IWTimestamp;
  */
 public class PIDChecker {
 	private static PIDChecker _instance = null;
-	
+
 	/**
 	 * Does very little today.....
 	 */
 	private PIDChecker() {
-		
+
 	}
 
 	/**
 	 * A method to get an instance of this class.
 	 * 
 	 * @return An instance of the SSNChecker class.
-	 */	
+	 */
 	public static PIDChecker getInstance() {
 		if (_instance == null)
 			_instance = new PIDChecker();
-			
+
 		return _instance;
 	}
-	
-	
+
 	/**
 	 * A method to check if a Swedish social security number is valid.
 	 * 
@@ -52,30 +51,30 @@ public class PIDChecker {
 	 */
 	public boolean isValid(String personalID) {
 		personalID = trimSSN(personalID);
-		
+
 		if (personalID.length() != 10)
 			return false;
-	
-		int values[] = {0,0,0,0,0,0,0,0,0,0};
+
+		int values[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		int sum = 0;
 		for (int i = 0; i < 10; i++) {
 			values[i] = personalID.charAt(i) - '0';
-			
+
 			if (i % 2 == 0) {
 				values[i] *= 2;
 				if (values[i] > 9)
 					values[i] -= 9;
 			}
-			
+
 			sum += values[i];
 		}
-		
-		if (sum % 10 == 0)			
+
+		if (sum % 10 == 0)
 			return true;
 		else
 			return false;
 	}
-	
+
 	/**
 	 * A method that removes all minus signs from the ssn, and also removes the 
 	 * first two digits if the ssn length equals 12.
@@ -88,15 +87,15 @@ public class PIDChecker {
 		if (i != -1) {
 			localSSN.deleteCharAt(i);
 		}
-		
+
 		if (localSSN.length() == 12)
 			personalID = localSSN.substring(2);
 		else
 			personalID = localSSN.toString();
-		
+
 		return personalID;
-	}	
-	
+	}
+
 	/**
 	 * A method that checks if the owner of a ssn is female.
 	 * 
@@ -106,17 +105,17 @@ public class PIDChecker {
 	 */
 	public boolean isFemale(String personalID) {
 		personalID = trimSSN(personalID);
-		if (personalID.length() != 10) 
+		if (personalID.length() != 10)
 			return false;
-	
+
 		int sex = personalID.charAt(8) - '0';
-			
+
 		if (sex % 2 == 0)
 			return true;
 		else
 			return false;
 	}
-	
+
 	/**
 	 * A method that checks if the owner of a ssn is male.
 	 * 
@@ -127,66 +126,86 @@ public class PIDChecker {
 	public boolean isMale(String personalID) {
 		return !isFemale(personalID);
 	}
-	
+
 	public static void main(String blabla[]) {
 		PIDChecker checker = PIDChecker.getInstance();
-		if(blabla.length>0){
-		System.out.println("Checking ssn = " + blabla[0]);
-		if (checker.isValid(blabla[0])) {
-			System.out.println(blabla[0] + " is valid");
-			if (checker.isFemale(blabla[0]))
-				System.out.println(blabla[0] + " belongs to a female");
-			else
-				System.out.println(blabla[0] + " belongs to a male");
-		}
-		else
-			System.out.println(blabla[0] + " is not valid");
-		}
-		else
-		{
+		if (blabla.length > 0) {
+			String value = blabla[0];
+			if (value.length() == 4 || value.length() == 2) {
+				int year = Integer.parseInt(value);
+				System.out.println("Generating a random PersonalID born in year: " + year);
+				String pid = checker.getRandomValidPID(Integer.toString(year));
+				System.out.println("Random valid PID : " + pid);
+			} else {
+				System.out.println("Checking ssn = " + value);
+				if (checker.isValid(blabla[0])) {
+					System.out.println(blabla[0] + " is valid");
+					if (checker.isFemale(blabla[0]))
+						System.out.println(blabla[0] + " belongs to a female");
+					else
+						System.out.println(blabla[0] + " belongs to a male");
+				} else
+					System.out.println(blabla[0] + " is not valid");
+			}
+		} else {
 			System.out.println("Generating a random PersonalID:");
 			String pid = checker.getRandomValidPID();
-			System.out.println("Random valid PID : "+pid);
+			System.out.println("Random valid PID : " + pid);
+
 		}
+
 	}
-	
+
+
+
 	/**
 	 * A method to convert a personal ID string to <code>Date</code>.
 	 * @param personalID	The personal ID to convert to date.
 	 * @return Date	Returns null if personal ID is not valid.
 	 */
 	public Date getDateFromPersonalID(String personalID) {
-  	if ( isValid(personalID) ) {
-  		int year = 0;
-  		int month = 0;
-  		int day = 0;
-  		
-  		if (personalID.length() == 10) {
+		if (isValid(personalID)) {
+			int year = 0;
+			int month = 0;
+			int day = 0;
+
+			if (personalID.length() == 10) {
 				year = Integer.parseInt(personalID.substring(0, 2)) + 1900;
 				month = Integer.parseInt(personalID.substring(2, 4));
 				day = Integer.parseInt(personalID.substring(4, 6));
-  		}
-			else if (personalID.length() == 12) {
+			} else if (personalID.length() == 12) {
 				year = Integer.parseInt(personalID.substring(0, 4));
 				month = Integer.parseInt(personalID.substring(4, 6));
 				day = Integer.parseInt(personalID.substring(6, 8));
 			}
-				
-			IWTimestamp stamp = new IWTimestamp(day,month,year);
+
+			IWTimestamp stamp = new IWTimestamp(day, month, year);
 			return stamp.getDate();
-  	}
-  	return null;
+		}
+		return null;
+	}
+	/**
+	 * @param year
+	 * @return
+	 */
+	private String getRandomValidPID() {
+		String randomYearString = getRandomIntDecimalString() + getRandomIntDecimalString();
+		return getRandomValidPID(randomYearString);
 	}
 	
 	/** 
 	 * Get a random valid PersonalID as string representation of in the form XXXXXX-XXXX
 	 */
-	public  String getRandomValidPID(){
+	public String getRandomValidPID(String yearString) {
 		String tryString = "";
-		while(true){
-			tryString = getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomMonthString()+getRandomMonthDayString()+"-"+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString()+getRandomIntDecimalString();
+		while (true) {
+			String shortYearString = yearString;
+			if(yearString.length()== 4){
+				shortYearString = yearString.substring(2);
+			}
+			tryString = shortYearString + getRandomMonthString() + getRandomMonthDayString() + "-" + getRandomIntDecimalString() + getRandomIntDecimalString() + getRandomIntDecimalString() + getRandomIntDecimalString();
 			//System.out.println("Trying: "+tryString);
-			if(isValid(tryString)){
+			if (isValid(tryString)) {
 				return tryString;
 			}
 		}
@@ -197,7 +216,7 @@ public class PIDChecker {
 	 * Gets a random int on the range from 0-9 as a String
 	 * @return
 	 */
-	public String getRandomIntDecimalString(){
+	public String getRandomIntDecimalString() {
 		return Integer.toString(getRandomIntDecimal());
 	}
 
@@ -205,25 +224,23 @@ public class PIDChecker {
 	 * Gets a random int on the range from 0-9
 	 * @return
 	 */
-	public  int getRandomIntDecimal(){
-		int theReturn = (int)Math.round(10*Math.random()-1);
-		while(theReturn>9 || theReturn < 0){
-			theReturn = theReturn = (int)Math.round(10*Math.random()-1);
+	public int getRandomIntDecimal() {
+		int theReturn = (int)Math.round(10 * Math.random() - 1);
+		while (theReturn > 9 || theReturn < 0) {
+			theReturn = theReturn = (int)Math.round(10 * Math.random() - 1);
 		}
 		return theReturn;
 	}
-	
-	
+
 	/**
 	 * Gets a random int on the range from 1-12 as a double digit String (0 in front i number is lower than 10)
 	 * @return
 	 */
-	public String getRandomMonthString(){
+	public String getRandomMonthString() {
 		int month = getRandomMonth();
-		if(month<10){
-			return "0"+month;
-		}
-		else{
+		if (month < 10) {
+			return "0" + month;
+		} else {
 			return Integer.toString(month);
 		}
 	}
@@ -232,24 +249,23 @@ public class PIDChecker {
 	 * Gets a random int on the range from 1-12
 	 * @return
 	 */
-	public  int getRandomMonth(){
-		int theReturn = (int)Math.round(12*Math.random())+1;
-		while(theReturn>12){
-			theReturn = (int)Math.round(12*Math.random())+1;
+	public int getRandomMonth() {
+		int theReturn = (int)Math.round(12 * Math.random()) + 1;
+		while (theReturn > 12) {
+			theReturn = (int)Math.round(12 * Math.random()) + 1;
 		}
 		return theReturn;
 	}
-	
+
 	/**
 	 * Gets a random int on the range from 1-28 as a double digit String (0 in front i number is lower than 10)
 	 * @return
 	 */
-	public String getRandomMonthDayString(){
+	public String getRandomMonthDayString() {
 		int monthday = getRandomMonthDay();
-		if(monthday<10){
-			return "0"+monthday;
-		}
-		else{
+		if (monthday < 10) {
+			return "0" + monthday;
+		} else {
 			return Integer.toString(monthday);
 		}
 	}
@@ -258,12 +274,12 @@ public class PIDChecker {
 	 * Gets a random int on the range from 1-28 
 	 * @return
 	 */
-	public  int getRandomMonthDay(){
-		int theReturn = (int)Math.round(28*Math.random())+1;
-		while(theReturn>28){
-			theReturn = theReturn = (int)Math.round(28*Math.random())+1;
+	public int getRandomMonthDay() {
+		int theReturn = (int)Math.round(28 * Math.random()) + 1;
+		while (theReturn > 28) {
+			theReturn = theReturn = (int)Math.round(28 * Math.random()) + 1;
 		}
 		return theReturn;
 	}
-	
+
 }
