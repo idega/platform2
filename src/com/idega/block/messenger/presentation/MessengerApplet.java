@@ -105,7 +105,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       //message checking is done in another thread
      try {//keep the wait insync with the performance of the machine it is on
-        t.sleep(checkTimer);
+        t.sleep(threadSleep);
         update(getGraphics());
       }
       catch (InterruptedException e) {
