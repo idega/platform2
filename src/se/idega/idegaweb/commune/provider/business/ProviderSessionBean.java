@@ -25,12 +25,14 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 
 	private final String PARAMETER_SEASON_ID = "pr_season_id";
 	private final String PARAMETER_YEAR_ID = "pr_year_id";
+	private final String PARAMETER_STUDY_PATH_ID = "pr_study_path_id";
 	
 	protected int _providerID = -1;
 	protected School _provider;
 	protected int _userID = -1;
 	protected int _seasonID = -1;
 	protected int _yearID = -1;
+	protected int _studyPathID = -1;
 
 	/**
 	 * Returns the schoolID.
@@ -109,6 +111,10 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 		return PARAMETER_YEAR_ID;
 	}
 	
+	public String getParameterStudyPathID() {
+		return PARAMETER_STUDY_PATH_ID;
+	}
+	
 	/**
 	 * @return Returns the seasonID.
 	 */
@@ -135,5 +141,17 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 	 */
 	public void setYearID(int yearID) {
 		this._yearID = yearID;
+	}
+	/**
+	 * @return Returns the _studyPathID.
+	 */
+	public int getStudyPathID() {
+		return this._studyPathID;
+	}
+	/**
+	 * @param pathID The _studyPathID to set.
+	 */
+	public void setStudyPathID(int pathID) {
+		this._studyPathID = pathID;
 	}
 }

@@ -31,6 +31,8 @@ public class ProviderEventListener implements IWPageEventListener {
 				session.setSeasonID(Integer.parseInt(iwc.getParameter(session.getParameterSeasonID())));
 			if (iwc.isParameterSet(session.getParameterYearID()))
 				session.setYearID(Integer.parseInt(iwc.getParameter(session.getParameterYearID())));
+			if (iwc.isParameterSet(session.getParameterStudyPathID()))
+				session.setStudyPathID(Integer.parseInt(iwc.getParameter(session.getParameterStudyPathID())));
 		}
 		catch (RemoteException e) {
 			return false;

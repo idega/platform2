@@ -102,7 +102,7 @@ public class SchoolGroupEditorAdmin extends SchoolGroupEditor {
 		form.add(getNavigationTable(_iwc, true, true));
 		
 		try{
-			Form form2 = super.getNavigationForm();
+			Form form2 = super.getNavigationForm(false);
 			form2.maintainParameter(SchoolCommuneSessionBean.PARAMETER_SCHOOL_ID);
 			form2.maintainParameter(PARAMETER_TYPE_ID);
 			form.add(form2);

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.provider.business.ProviderSession;
@@ -106,11 +108,11 @@ public abstract class ProviderBlock extends CommuneBlock {
 		return getSession().getProviderID();
 	}	
 	
-	protected Form getNavigationForm() throws RemoteException {
+	protected Form getNavigationForm(boolean showStudyPaths) throws RemoteException {
 		Form form = new Form();
 		form.setEventListener(ProviderEventListener.class);
 		
-		Table table = new Table(5,1);
+		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(3, 8);
@@ -136,6 +138,23 @@ public abstract class ProviderBlock extends CommuneBlock {
 		if (getSession().getYearID() != -1)
 			years.setSelectedElement(getSession().getYearID());
 		table.add(years,5,row);
+		
+		if (showStudyPaths) {
+			table.setWidth(6, 8);
+			table.add(getSmallHeader(localize("school.study_path","Study path")+":"+Text.NON_BREAKING_SPACE),6,row);
+			try {
+				List studyPaths = new ArrayList(getSchoolBusiness().getSchoolStudyPathHome().findBySchool(getSession().getProvider()));
+				DropdownMenu paths = (DropdownMenu) getStyledInterface(selector.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterStudyPathID()), studyPaths, "getCode", getResourceBundle()));
+				paths.addMenuElementFirst("-1","");
+				paths.setToSubmit();
+				if (getSession().getStudyPathID() != -1)
+					paths.setSelectedElement(getSession().getStudyPathID());
+				table.add(paths,8,row);
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
+		}
 		
 		return form;
 	}

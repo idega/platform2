@@ -23,6 +23,7 @@ import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDORelationshipException;
@@ -53,6 +54,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private final String PARAMETER_GROUP_NAME ="sge_group_name";
 	private final String PARAMETER_SCHOOL_YEARS ="sge_school_years";
 	private final String PARAMETER_TEACHERS ="sge_teachers";
+	private final String PARAMETER_STUDY_PATHS ="sge_study_paths";
 	protected final String PARAMETER_SEASON_ID ="sge_season_id";
 	public final static String PARAMETER_TYPE_ID ="sge_type_id";
 	private final String PARAMETER_IS_SUBGROUP = "sge_is_subgroup";
@@ -66,6 +68,8 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private int _groupID = -1;
 	private SchoolClass _group;
 	protected School _provider;
+	
+	private boolean showStudyPaths = false;
 
 	//public final String PARAMETER_PROVIDER_ID = "Goran please fix this, ACTION_VIEW and PARAMETER_ACTION";
 	
@@ -118,7 +122,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setHeight(2, 12);
 		table.setHeight(4, 12);
 		
-		table.add(getNavigationForm(), 1, 1);
+		table.add(getNavigationForm(showStudyPaths), 1, 1);
 		
 		if (_provider != null){
 			table.add(getGroupTable(), 1, 3);
@@ -363,6 +367,44 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		table.setHeight(row++, 15);
 		
+		//Study paths
+		List paths = null;
+		try {
+			paths = new ArrayList(_provider.findRelatedStudyPaths());
+		}
+		catch (IDORelationshipException e1) {
+			paths = new ArrayList();
+		}
+		
+		Collection studyPaths = new ArrayList();
+		if (_group != null) {
+			try {
+				studyPaths = _group.findRelatedStudyPaths();
+			}
+			catch (IDORelationshipException e2) {
+				studyPaths = new ArrayList();
+			}
+		}
+				
+		table.setHeight(row++, 15);
+		table.add(getSmallHeader(localize("study_paths", "Study paths") + ":"), 1, row);
+		table.setNoWrap(1, row);
+		
+		iter = paths.iterator();
+		while (iter.hasNext()) {
+			SchoolStudyPath path = (SchoolStudyPath) iter.next();
+			CheckBox box = getCheckBox(PARAMETER_STUDY_PATHS, path.getPrimaryKey().toString());
+			if (studyPaths.contains(path))
+				box.setChecked(true);
+			
+			table.setCellpadding(3, row, 2);
+			table.add(box, 3, row);
+			table.add(Text.getNonBrakingSpace(), 3, row);
+			table.add(getSmallText(localize(path.getCode(), path.getDescription())), 3, row++);
+		}
+		table.setHeight(row++, 15);
+		//study paths...
+		
 		List groupTeachers = new ArrayList();
 		if (_group != null) {
 			try {
@@ -430,6 +472,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private void saveGroup(IWContext iwc) {
 		String name = iwc.getParameter(PARAMETER_GROUP_NAME);
 		String[] years = iwc.getParameterValues(PARAMETER_SCHOOL_YEARS);
+		String[] studyPaths = iwc.getParameterValues(PARAMETER_STUDY_PATHS);
 		String[] teachers = new String[4];
 		int typeID = -1;
 		if (iwc.isParameterSet(PARAMETER_TYPE_ID))
@@ -447,7 +490,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		
 		try {
-			SchoolClass schoolClass = getSchoolBusiness().storeSchoolClass(_groupID, name, getProviderID(), typeID, seasonID, years, teachers);
+			SchoolClass schoolClass = getSchoolBusiness().storeSchoolClass(_groupID, name, getProviderID(), typeID, seasonID, years, teachers, studyPaths);
 			schoolClass.setIsSubGroup(isSubGroup);
 			schoolClass.store();
 		}
@@ -458,14 +501,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	
 	private Collection getSchoolGroups() {
 		try {
-			if (getSession().getSeasonID() != -1 && getSession().getYearID() != -1)
-				return getSchoolBusiness().findSchoolClassesBySchoolAndSeasonAndYear(getProviderID(), getSession().getSeasonID(), getSession().getYearID());
-			else if (getSession().getSeasonID() != -1 && getSession().getYearID() == -1)
-				return getSchoolBusiness().findSchoolClassesBySchoolAndSeason(getProviderID(), getSession().getSeasonID());
-			else if (getSession().getSeasonID() == -1 && getSession().getYearID() != -1)
-				return getSchoolBusiness().findSchoolClassesBySchoolAndYear(getProviderID(), getSession().getYearID());
-			else
-				return getSchoolBusiness().findSchoolClassesBySchool(getProviderID());
+			return getSchoolBusiness().findSchoolClassesBySchoolAndSeasonAndYearAndStudyPath(getProviderID(), getSession().getSeasonID(), getSession().getYearID(), getSession().getStudyPathID());
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -499,5 +535,11 @@ public class SchoolGroupEditor extends ProviderBlock {
 				_group = null;
 			}
 		}
+	}
+	/**
+	 * @param showStudyPaths The showStudyPaths to set.
+	 */
+	public void setShowStudyPaths(boolean showStudyPaths) {
+		this.showStudyPaths = showStudyPaths;
 	}
 }
