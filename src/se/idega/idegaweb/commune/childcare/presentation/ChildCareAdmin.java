@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
@@ -15,6 +17,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
@@ -26,6 +29,8 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareAdmin extends ChildCareBlock {
 
+	private static final String PARAMETER_CLEAN_QUEUE = "cc_clean_queue";
+	
 	private int _numberPerPage = 15;
 	private int _start = 0;
 	private int _applicantsSize = 0;
@@ -34,13 +39,16 @@ public class ChildCareAdmin extends ChildCareBlock {
 	protected final int SORT_QUEUE_DATE = 2;
 	protected final int SORT_PLACEMENT_DATE = 3;
 	public static final int SORT_ALL = 4;
+	
+	public Boolean _queueCleaned = null;
 
 	/*
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		if (getSession().hasPrognosis()) {
-		
+			parseAction(iwc);
+			
 			Table table = new Table(1,7);
 			table.setWidth(getWidth());
 			table.setHeight(2, 12);
@@ -53,10 +61,21 @@ public class ChildCareAdmin extends ChildCareBlock {
 			table.add(getSortTable(), 1, 1);
 			table.add(getNavigator(iwc), 1, 3);
 			table.add(getApplicationTable(iwc), 1, 5);
-			table.add(getLegendTable(), 1, 7);
+			table.add(getLegendTable(true), 1, 7);
 		}
 		else {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
+		}
+	}
+	
+	private void parseAction(IWContext iwc) throws RemoteException {
+		if (iwc.isParameterSet(PARAMETER_CLEAN_QUEUE)) {
+			try {
+				_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser()));
+			}
+			catch (FinderException fe) {
+				//Nothing found and everyone is happy about that :D
+			}
 		}
 	}
 	
@@ -149,7 +168,10 @@ public class ChildCareAdmin extends ChildCareBlock {
 					applicationTable.setRowColor(row, CONTRACT_COLOR);
 				}
 				else {
-					if (row % 2 == 0)
+					if (application.getCaseStatus().equals(getBusiness().getCaseStatusPending())) {
+						
+					}
+					else if (row % 2 == 0)
 						applicationTable.setRowColor(row, getZebraColor1());
 					else
 						applicationTable.setRowColor(row, getZebraColor2());
@@ -215,6 +237,29 @@ public class ChildCareAdmin extends ChildCareBlock {
 				applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row++);
 			}
 		}
+		
+		Form form = new Form();
+		form.maintainParameter(CollectionNavigator.PARAMETER_CURRENT_PAGE);
+		form.setEventListener(ChildCareEventListener.class);
+		form.add(new HiddenInput(PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
+		
+		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue")));
+		form.setToDisableOnSubmit(button, true);
+		form.add(button);
+		
+		if (_queueCleaned != null) {
+			button.setDisabled(true);
+			form.add(Text.getNonBrakingSpace());
+			if (_queueCleaned.booleanValue()) {
+				form.add(getSmallText(localize("child_care.clean_queue_successful", "Cleaning of queue ran successfully!")));
+			}
+			else {
+				form.add(getSmallErrorText(localize("child_care.clean_queue_failed", "Cleaning of queue failed!")));
+			}
+		}
+		
+		applicationTable.setHeight(row++, 12);
+		applicationTable.add(form, 1, row);
 		
 		return applicationTable;
 	}
