@@ -90,10 +90,10 @@ import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/11/03 10:07:13 $ by $Author: gimmi $
+ * Last modified: $Date: 2004/12/02 12:55:02 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.136 $
+ * @version $Revision: 1.137 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1183,7 +1183,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				invoiceText1.append ("Check ");
 				invoiceText1.append (provider.getSchool ().getName ());
 				invoiceText2.append (studentName);
-				invoiceText2.append (", " + contract.getCareTime() + "t/v, ");
+				invoiceText2.append (", " + contract.getCareTime());
+				try {
+					Integer.parseInt(contract.getCareTime()); 
+					invoiceText2.append("t/v, ");
+				}
+				catch (NumberFormatException nfe) {
+					//Not a number...
+					invoiceText2.append(", ");
+				}
 				invoiceText2.append (days + " dagar");
 			} catch (Exception e) {
 				e.printStackTrace ();
