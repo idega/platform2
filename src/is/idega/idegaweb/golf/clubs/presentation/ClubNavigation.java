@@ -154,7 +154,7 @@ public class ClubNavigation extends ClubBlock {
 				table.setVerticalAlignment(1, i + 1, "top");
 				table.setVerticalAlignment(2, i + 1, "top");
 	
-				table.add(grUnion.getAbbrevation(), 1, i + 1);
+				table.add(getHeader(grUnion.getAbbrevation()), 1, i + 1);
 				table.add(getText(" - "), 1, i + 1);
 				table.add(link, 1, i + 1);
 				if ((i + 1) < unions.size()) {
