@@ -21,6 +21,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
@@ -40,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.56 2003/12/08 13:21:35 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.57 2003/12/11 15:06:51 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -67,6 +68,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	private boolean _showOnlyChildcare = false;
 	private boolean _showOnlyAfterSchoolCare = false;
+	
+	private String _caseCode = null;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -94,7 +97,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				boolean forwardToEndPage = handleAcceptStatus(iwc, getAcceptedStatus(iwc));
 				applications = findApplications(iwc);
 				
-				if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc))) {
+				if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc), _caseCode)) {
 					form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 				}
 				else {
@@ -184,6 +187,19 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		}
 		else if (iwc.isParameterSet(ChildCarePlaceOfferTable1.REQUEST_INFO[0])) {
 			return CCConstants.ACTION_REQUEST_INFO;
+		}
+
+		_caseCode = null;
+		try {
+			if (_showOnlyChildcare) {
+				_caseCode = getChildCareBusiness(iwc).getChildCareCaseCode();
+			}
+			else if (_showOnlyAfterSchoolCare) {
+				_caseCode = getChildCareBusiness(iwc).getAfterSchoolCareCaseCode();
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
 		}
 
 		return CCConstants.NO_ACTION;
@@ -456,7 +472,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(getChildId(iwc));
 			Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
 
-			boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc));
+			boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc), _caseCode);
 
 			Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication);
 
@@ -635,15 +651,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				childId = (String) iwc.getSessionAttribute(CHILD_ID);
 			}
 			
-			String caseCode = null;
-			if (_showOnlyChildcare) {
-				caseCode = getChildCareBusiness(iwc).getChildCareCaseCode();
-			}
-			else if (_showOnlyAfterSchoolCare) {
-				caseCode = getChildCareBusiness(iwc).getAfterSchoolCareCaseCode();
-			}
-
-			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(Integer.parseInt(childId), caseCode);
+			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(Integer.parseInt(childId), _caseCode);
 
 			//Add canceled and removed applications from this session	
 			/*Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);

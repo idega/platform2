@@ -78,6 +78,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public int getNumberOfApplicationsByProvider(int p0) throws java.rmi.RemoteException;
  public int getNumberOfApplicationsForChild(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfApplicationsForChildByStatus(int p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getNumberOfApplicationsForChildByStatus(int p0,java.lang.String p1, String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfApplicationsForChildNotInactive(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfContractsForApplication(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfFirstHandChoicesByProvider(int p0) throws java.rmi.RemoteException;
@@ -131,9 +132,9 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean hasApplications(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasBeenPlacedWithOtherProvider(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasFutureContracts(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean hasOutstandingOffers(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean hasOutstandingOffers(int p0, String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasTerminationInFutureNotWithProvider(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean hasUnansweredOffers(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean hasUnansweredOffers(int p0, String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,int p5,java.lang.String p6,java.lang.String p7,boolean p8,boolean p9,java.sql.Date[] p10,boolean[] p11) throws java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,java.sql.Date[] p5,boolean[] p6) throws java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,int p5,java.lang.String p6,java.lang.String p7,boolean p8) throws java.rmi.RemoteException;

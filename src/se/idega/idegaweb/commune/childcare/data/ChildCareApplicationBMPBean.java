@@ -721,13 +721,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 	
-	public int ejbHomeGetNumberOfApplicationsForChild(int childID, String caseStatus) throws IDOException {
+	public int ejbHomeGetNumberOfApplicationsForChild(int childID, String caseStatus, String caseCode) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		}
 
 		return idoGetNumberOfRecords(sql);
 	}

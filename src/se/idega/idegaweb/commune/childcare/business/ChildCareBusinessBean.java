@@ -1878,16 +1878,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}		
 
-	public int getNumberOfApplicationsForChildByStatus(int childID, String caseStatus) throws RemoteException {
+	public int getNumberOfApplicationsForChildByStatus(int childID, String caseStatus) {
+		return getNumberOfApplicationsForChildByStatus(childID, caseStatus, null);
+	}
+	
+	public int getNumberOfApplicationsForChildByStatus(int childID, String caseStatus, String caseCode) {
 		try {
-			return getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, caseStatus);
+			return getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, caseStatus, caseCode);
 		} 
 		catch (IDOException ie) {
 			return 0;
 		}
 	}
 	
-	public int getNumberOfApplicationsForChild(int childID) throws RemoteException {
+	public int getNumberOfApplicationsForChild(int childID) {
 		try {
 			return getChildCareApplicationHome().getNumberOfApplicationsForChild(childID);
 		} 
@@ -1906,8 +1910,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean hasOutstandingOffers(int childID) throws RemoteException {
-		int numberOfOffers = getNumberOfApplicationsForChildByStatus(childID, getCaseStatusGranted().getStatus());
+	public boolean hasOutstandingOffers(int childID, String caseCode) throws RemoteException {
+		int numberOfOffers = getNumberOfApplicationsForChildByStatus(childID, getCaseStatusGranted().getStatus(), caseCode);
 		if (numberOfOffers > 0)
 			return true;
 		return false;
@@ -2885,9 +2889,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean hasUnansweredOffers(int childID) throws RemoteException {
+	public boolean hasUnansweredOffers(int childID, String caseCode) throws RemoteException {
 		try {
-			int numberOfOffers = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, getCaseStatusGranted().getStatus());
+			int numberOfOffers = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, getCaseStatusGranted().getStatus(), caseCode);
 			if (numberOfOffers > 0)
 				return true;
 			return false;

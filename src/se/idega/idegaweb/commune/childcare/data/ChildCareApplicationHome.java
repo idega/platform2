@@ -21,8 +21,8 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public java.util.Collection findAllCasesByUserAndStatus(com.idega.user.data.User p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllChildCasesByProvider(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationByChild(int p0)throws javax.ejb.FinderException;
- public ChildCareApplication findApplicationByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException;
  public ChildCareApplication findApplicationByChildAndChoiceNumber(int p0,int p1)throws javax.ejb.FinderException;
+ public ChildCareApplication findApplicationByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException;
  public ChildCareApplication findApplicationByChildAndChoiceNumberInStatus(int p0,int p1,java.lang.String[] p2)throws javax.ejb.FinderException;
  public ChildCareApplication findApplicationByChildAndChoiceNumberNotInStatus(int p0,int p1,java.lang.String[] p2)throws javax.ejb.FinderException;
  public ChildCareApplication findApplicationByChildAndChoiceNumberWithStatus(int p0,int p1,java.lang.String p2)throws javax.ejb.FinderException;
@@ -31,9 +31,9 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public ChildCareApplication findApplicationByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException;
  public ChildCareApplication findApplicationByChildAndProviderAndStatus(int p0,int p1,java.lang.String[] p2)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndDate(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException;
+ public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException;
@@ -47,7 +47,7 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public int getNumberOfApplications(int p0,java.lang.String p1)throws com.idega.data.IDOException;
  public int getNumberOfApplicationsByProviderAndChoiceNumber(int p0,int p1)throws com.idega.data.IDOException;
  public int getNumberOfApplicationsForChild(int p0)throws com.idega.data.IDOException;
- public int getNumberOfApplicationsForChild(int p0,java.lang.String p1)throws com.idega.data.IDOException;
+ public int getNumberOfApplicationsForChild(int p0,java.lang.String p1,java.lang.String p2)throws com.idega.data.IDOException;
  public int getNumberOfApplicationsForChildNotInStatus(int p0,java.lang.String[] p1)throws com.idega.data.IDOException;
  public int getNumberOfPlacedApplications(int p0,int p1,java.lang.String[] p2)throws com.idega.data.IDOException;
  public int getPositionInQueue(java.sql.Date p0,int p1,java.lang.String[] p2)throws com.idega.data.IDOException;
