@@ -4,7 +4,7 @@ import javax.ejb.*;
 
 public interface SchoolBusiness extends com.idega.business.IBOService
 {
- public void addHeadmaster(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void addHeadmaster(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException, FinderException;
  public void addSchoolAdministrator(com.idega.user.data.User p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5,int[] p6)throws java.rmi.RemoteException, java.rmi.RemoteException;
