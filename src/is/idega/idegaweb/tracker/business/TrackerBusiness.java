@@ -157,12 +157,13 @@ public class TrackerBusiness {
   public static int getCurrentPageId(IWContext iwc){
     int returner = -1;
     String pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
-    if(pageId==null) pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+      if(pageId==null) pageId = BuilderLogic.getStartPageId(iwc);
+        if(pageId==null) pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+
     try {
      if(pageId!=null){
       returner = Integer.parseInt(pageId);
      }
-
     }
     catch (Exception ex) {
     //do nothing

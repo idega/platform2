@@ -15,6 +15,11 @@ import is.idega.idegaweb.tracker.business.TrackerBusiness;
  */
 
 public class PageCounter extends PresentationObjectContainer {
+  private boolean cph = true;
+  private boolean cps = false;
+  private boolean tph = false;
+  private boolean tps = false;
+  private boolean update = true;
 
   public PageCounter() {
   }
@@ -26,31 +31,55 @@ public class PageCounter extends PresentationObjectContainer {
   public void main(IWContext iwc) throws Exception{
     TrackerBusiness.runThroughTheStatsMachine(iwc);
 
-    Text hits = new Text("Current page hits: "+TrackerBusiness.getCurrentPageHits(iwc));
-    hits.setBold(true);
-    add(hits);
+    if(cph){
+      Text hits = new Text("Current page hits: "+TrackerBusiness.getCurrentPageHits(iwc));
+      hits.setBold(true);
+      add(hits);
+      addBreak();
+    }
 
-    addBreak();
+    if(cps){
+      Text hits2 = new Text("Current page sessions: "+TrackerBusiness.getCurrentPageSessions(iwc));
+      hits2.setBold(true);
+      add(hits2);
+      addBreak();
+    }
 
-    Text hits2 = new Text("Current page sessions: "+TrackerBusiness.getCurrentPageSessions(iwc));
-    hits2.setBold(true);
-    add(hits2);
+    if(tph){
+      Text hits4 = new Text("Total website sessions: "+TrackerBusiness.getTotalSessions());
+      hits4.setBold(true);
+      add(hits4);
+      addBreak();
+    }
 
-    addBreak();
-
-    Text hits4 = new Text("Total website sessions: "+TrackerBusiness.getTotalSessions());
-    hits4.setBold(true);
-    add(hits4);
-
-    addBreak();
-
-    Text hits3 = new Text("Total website hits: "+TrackerBusiness.getTotalHits());
-    hits3.setBold(true);
-    add(hits3);
-
+    if(tps){
+      Text hits3 = new Text("Total website hits: "+TrackerBusiness.getTotalHits());
+      hits3.setBold(true);
+      add(hits3);
+    }
 
   }
 
+
+  public void setShowCurrentPageHits(boolean show){
+    this.cph = show;
+  }
+
+  public void setShowCurrentPageSessions(boolean show){
+    this.cps = show;
+  }
+
+  public void setShowTotalHits(boolean show){
+    this.tph = show;
+  }
+
+  public void setShowTotalSessions(boolean show){
+    this.tps = show;
+  }
+
+  public void setUpdateStats(boolean update){
+    this.update = update;
+  }
 
 
 }
