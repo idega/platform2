@@ -875,7 +875,7 @@ public class TournamentController {
 			playingHandicap = (float) handicapper.getLeikHandicap((double) slope, (double) CR, (double) tournament.getField().getFieldPar());
 
 			if (playingHandicap > maxHandicap) {
-				handicap = Handicap.getHandicapForScorecard(tournament.getID(), tTGroup.getTeeColorId(), maxHandicap);
+				handicap = Handicap.getInstance().getHandicapForScorecard(tournament.getID(), tTGroup.getTeeColorId(), maxHandicap);
 				playingHandicap = maxHandicap;
 			}
 		}
@@ -892,7 +892,7 @@ public class TournamentController {
 				if (playingHandicap != -100) {
 					float modified = (float) playingHandicap * tType.getModifier();
 					playingHandicap = Math.round(modified);
-					handicap = Handicap.getHandicapForScorecard(tournament.getID(), tTGroup.getTeeColorId(), playingHandicap);
+					handicap = Handicap.getInstance().getHandicapForScorecard(tournament.getID(), tTGroup.getTeeColorId(), playingHandicap);
 				}
 			}
 		}
