@@ -47,13 +47,11 @@ public class RunDistanceDropdownDouble extends SelectDropdownDouble{
     String yearString = y.toString();
     
     Map dis = new LinkedHashMap();
-    dis.put("-1",iwrb.getLocalizedString("run_year_ddd.select_distance","Select distance..."));
-    
+
     Iterator runIter = runs.iterator();
     while(runIter.hasNext()) {
       Group run = (Group) runIter.next();
-      dis.putAll(runBiz.getDistancesMap(run,yearString));
-      addMenuElement(run.getPrimaryKey().toString(),run.getName(),dis);
+      addMenuElement(run.getPrimaryKey().toString(),run.getName(),runBiz.getDistancesMap(run,yearString));
     }
     
     super.main(iwc);

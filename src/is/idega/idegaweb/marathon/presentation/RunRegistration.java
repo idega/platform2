@@ -273,10 +273,10 @@ public class RunRegistration extends Block {
 			nationalityField = (DropdownMenu) util.getSelectorFromIDOEntities(nationalityField, countries, "getName");
 			countryField = (DropdownMenu) util.getSelectorFromIDOEntities(countryField, countries, "getName");
 		}
-		if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
+//		if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
 			nationalityField.setSelectedElement("104");
 			countryField.setSelectedElement("104");
-		}
+//		}
 		nationalityField.setWidth(Table.HUNDRED_PERCENT);
 		countryField.setWidth(Table.HUNDRED_PERCENT);
 
