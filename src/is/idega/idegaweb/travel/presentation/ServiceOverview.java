@@ -235,9 +235,11 @@ public class ServiceOverview extends TravelManager {
           try {
             product = (Product) products.get(i);
             contentTable = getProductInfoTable(iwc,iwrb,product);
+            /*
             ServiceViewer sv = new ServiceViewer();
               sv.setService(new Service(product.getID()));
             table.add(sv);
+            */
 
             ++row;
             table.mergeCells(1,row,5,row);

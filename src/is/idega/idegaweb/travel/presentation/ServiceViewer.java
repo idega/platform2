@@ -446,7 +446,6 @@ public class ServiceViewer extends Window {
 
   private Table getServicePrice(IWContext iwc, Service service, boolean cutOff){
     Table pTable = new Table();
-      pTable.setColor("#FFFFFF");
     int pRow = 1;
 
     try {
