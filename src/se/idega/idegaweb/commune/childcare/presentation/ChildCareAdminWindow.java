@@ -1195,7 +1195,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						table.add(getText(localize("school.deadline_msg_for_passedby_date", "Chosen period has been invoiced. Earliest possible date is the first day of next month.")), 1, row++);
 
 					SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
-					if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
+					if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated() || application.getApplicationStatus() == getBusiness().getStatusReady()) {
 						form.addParameter(PARAMETER_METHOD, METHOD_CANCEL_CONTRACT);
 					}
 					form.setToDisableOnSubmit(cancelContract, true);
@@ -2197,7 +2197,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void cancelContract(IWContext iwc) throws RemoteException {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
 		if (application != null) {
-			if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
+			//if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
+			if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
 				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
 
 				if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
@@ -2214,8 +2215,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
 				isEndDateSet = true;
-				getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
-				getParentPage().close();
+				//getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+				//getParentPage().close();
+			}
+			else if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
+				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
+				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
+				//getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+				//getParentPage().close();
+				isEndDateSet = true;
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
 				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
