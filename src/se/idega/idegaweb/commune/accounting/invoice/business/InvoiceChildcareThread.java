@@ -65,7 +65,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	private static final String HOURS_PER_WEEK = "hours/week";		//Localize this text in the user interface
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
-	private int childcare;
+	//private int childcare;
 	private Map siblingOrders = new HashMap();
 //	private String ownPosting, doublePosting;
 
@@ -159,7 +159,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					//Get all the parameters needed to select the correct contract
 					SchoolClassMember schoolClassMember = contract.getSchoolClassMmeber();
 					String childcareType = schoolClassMember.getSchoolType().getName();
-					childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
+					//childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
 					age = new Age(contract.getChild().getDateOfBirth());
 					ArrayList conditions = new ArrayList();
