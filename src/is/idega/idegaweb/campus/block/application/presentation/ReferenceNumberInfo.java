@@ -1,6 +1,6 @@
 /*
 
- * $Id: ReferenceNumberInfo.java,v 1.9 2002/03/01 14:05:51 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.10 2002/03/01 14:30:48 aron Exp $
 
  *
 
@@ -679,7 +679,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
    */
 
   public void main(IWContext iwc) {
-    debugParameters(iwc);
+    //debugParameters(iwc);
     _iwrb = getResourceBundle(iwc);
     control(iwc);
   }
