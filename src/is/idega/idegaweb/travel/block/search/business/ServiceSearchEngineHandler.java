@@ -34,6 +34,9 @@ public class ServiceSearchEngineHandler implements PropertyHandler {
 					menu.addMenuElement(engine.getPrimaryKey().toString(), engine.getName());
 				}
 			}
+			if (stringValue != null) {
+				menu.setSelectedElement(stringValue);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
