@@ -58,12 +58,8 @@ public class UserFamilyTab extends UserTab {
   public boolean store(IWContext iwc) { return true; }
   
   public void initFieldContents() {
-    try {
-    	user = this.getUserBusiness(getIWApplicationContext()).getUser(getUserId());
-     }
-    catch (RemoteException re) {
-    	user = null;
-    }
+    	user = getUser();
+
 
     this.empty();
     

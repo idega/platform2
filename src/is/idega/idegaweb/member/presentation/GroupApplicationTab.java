@@ -94,7 +94,7 @@ public class GroupApplicationTab extends UserTab {
 	  	groupBiz = getGroupBusiness();
 	  	appBiz = getGroupApplicationBusiness();
 	  	groupSelection = new GroupSelectionDoubleBox();
-	  	if( user == null ) user = userBiz.getUser(this.getUserId());
+	  	if( user == null ) user = getUser();
 	  	
 	  	
 	
