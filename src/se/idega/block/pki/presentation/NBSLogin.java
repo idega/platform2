@@ -23,6 +23,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Parameter;
 
 /**
  * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
@@ -32,9 +33,9 @@ import com.idega.presentation.text.Text;
  */
 public class NBSLogin extends Login {
 
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";
+	
 
-	private String _pkiServletUrl = "/pki";
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";
 
 	private String _loginHandlerClass = NBSLoginBusinessBean.class.getName();
 
@@ -47,6 +48,17 @@ public class NBSLogin extends Login {
 	
 	private static IBPage _applicationPage;
 	private boolean _showErrorCode = false;
+	
+	
+	
+	private String[] _colorPanel=null;
+	private String[] _colorButton=null;
+	private String[] _colorField=null;
+	private String[] _colorMessage=null;
+	private String[] _colorUser=null;
+	
+	private String _appletHeight=null;
+	private String _appletWidth=null;
 
 	/**
 	 * 
@@ -54,6 +66,28 @@ public class NBSLogin extends Login {
 	public NBSLogin() {
 		super();
 		// TODO Auto-generated constructor stub
+		
+//		setPanelColor("#052F59","#386CB7");
+//		setButtonColor("#052F59","#386CB7");
+//		setFieldColor("#052F59","#386CB7");
+//		setMessageColor("#052F59","#386CB7");
+//		setUserColor("#052F59","#386CB7");
+				
+//		setPanelColor("#052F59","#6EA9FF");
+//		setButtonColor("#052F59","#6699CC");
+//		setFieldColor("#052F59","#FFFFFF");
+//		setMessageColor("#052F59","#FFFFFF");
+//		setUserColor("#052F59","#6EA9FF");
+		
+		
+		//Default values
+//		setPanelColor("#000000","#FFFFFF");
+//		setButtonColor("#052F59","#6EA9FF");
+//		setFieldColor("#000000","#FFFFFF");
+//		setMessageColor("#000000","#FFFFFF");
+//		setUserColor("#000000","#FFFFFF");
+//		setAppletHeight("100");
+//		setAppletWidth("350");
 	}
 
 	public void main(IWContext iwc) {
@@ -61,7 +95,7 @@ public class NBSLogin extends Login {
 			IWBundle iwb = this.getBundle(iwc);
 			IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 			
-			String action = iwc.getParameter("nbs_login_action");
+			//String action = iwc.getParameter("nbs_login_action");
 
 //			if(action != null && action.equals("try_again")){
 //				NBSLoginBusinessBean.removeNBSException(iwc);
@@ -89,14 +123,14 @@ public class NBSLogin extends Login {
 				// is not logged on
 				NBSException nbsEX = NBSLoginBusinessBean.getNBSException(iwc);
 				Exception ex = NBSLoginBusinessBean.getException(iwc);
+				String errorMessage = iwc.getParameter(NBSSigningApplet.PARM_ERROR_MESSAGE);
 				
 				if (nbsEX != null ) {
-					// hanle Exception
+					// handle Exception
 					showLoginApplet = false;
 					
 					Link tryAgain = new Link(iwrb.getLocalizedString("try_again","Try again"));
 					tryAgain.addParameter("nbs_login_action","try_again");
-					
 					
 					String message = iwrb.getLocalizedString("NBSException_code_"+nbsEX.getCode(),"NBSException - Code:"+nbsEX.getCode());
 					
@@ -130,17 +164,9 @@ public class NBSLogin extends Login {
 						message = iwrb.getLocalizedString(NBSLoginBusinessBean.IWEX_PKI_USR_NOT_REGISTERED,"User has no account");
 					}
 					
-					
-					
-					
 					Link tryAgain = new Link(iwrb.getLocalizedString("try_again","Try again"));
 					tryAgain.addParameter("nbs_login_action","try_again");
 
-					
-					
-					
-										
-					
 					
 					this.add(message);
 					this.addBreak();
@@ -158,6 +184,19 @@ public class NBSLogin extends Login {
 										
 					NBSLoginBusinessBean.removeException(iwc);
 					
+				} else if(errorMessage!= null){
+					
+					showLoginApplet = false;
+					
+					Link tryAgain = new Link(iwrb.getLocalizedString("try_again","Try again"));
+					tryAgain.addParameter("nbs_login_action","try_again");
+
+
+					this.add(errorMessage);
+					this.addBreak();
+					this.addBreak();
+					this.add(tryAgain);
+					
 				} else {
 					showLoginApplet = true;
 				}
@@ -171,6 +210,40 @@ public class NBSLogin extends Login {
 
 				//applet.setAction(IWMainApplication.getIWMainApplication(iwc.getServletContext()).getTranslatedURIWithContext(_pkiServletUrl));
 				applet.setEventListenerClassName(this._loginHandlerClass);
+				applet.addParameter(new Parameter(LoginBusinessBean.LoginStateParameter, "login"));
+				
+
+				if(_colorPanel!=null){
+					applet.setPanelColor(_colorPanel[0],_colorPanel[1]);
+				}
+				if(_colorButton!=null){
+					applet.setButtonColor(_colorButton[0],_colorButton[1]);
+				}
+				if(_colorField!=null){
+					applet.setFieldColor(_colorField[0],_colorField[1]);
+				}
+				if(_colorMessage!=null){
+					applet.setMessageColor(_colorMessage[0],_colorMessage[1]);
+				}
+				if(_colorUser!=null){
+					applet.setUserColor(_colorUser[0],_colorUser[1]);
+				}
+				
+				if(_appletWidth!=null){
+					applet.setAppletWidth(_appletWidth);
+				}
+								
+				if(_appletHeight!=null){
+					applet.setHeight(_appletHeight);
+				}
+				
+				
+				
+				
+				
+				applet.setErrorPageID(iwc.getCurrentIBPageID());
+				
+				
 				add(applet);
 
 				//iwc.setSessionAttribute(INIT_DONE, new Object());			
@@ -188,48 +261,70 @@ public class NBSLogin extends Login {
 			/*
 			add(
 				"<br>NBSException codes:<br>"
+					+ "NBSException.ERROR_CLNT_ALG_NOT_SUPP : "	
 					+ NBSException.ERROR_CLNT_ALG_NOT_SUPP
 					+ "<br>"
+			+ "NBSException.ERROR_CLNT_CANCEL : "
 					+ NBSException.ERROR_CLNT_CANCEL
 					+ "<br>"
+			+ "NBSException.ERROR_CLNT_INTERNAL : "
 					+ NBSException.ERROR_CLNT_INTERNAL
 					+ "<br>"
+			+ "NBSException.ERROR_CLNT_MSG_VERSION : "
 					+ NBSException.ERROR_CLNT_MSG_VERSION
 					+ "<br>"
+			+ "NBSException.ERROR_CLNT_NO_CHAIN : "
 					+ NBSException.ERROR_CLNT_NO_CHAIN
 					+ "<br>"
+			+ "NBSException.ERROR_CLNT_NO_KEY : "
 					+ NBSException.ERROR_CLNT_NO_KEY
 					+ "<br>"
+			+ "NBSException.ERROR_CLNT_NO_RECEIPT : "
 					+ NBSException.ERROR_CLNT_NO_RECEIPT
 					+ "<br>"
+			+ "NBSException.ERROR_CLNT_RECEIPT_NOT_SUPP : "
 					+ NBSException.ERROR_CLNT_RECEIPT_NOT_SUPP
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_BAD_TBS : "
 					+ NBSException.ERROR_SRV_BAD_TBS
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_BROWSER : "
 					+ NBSException.ERROR_SRV_BROWSER
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CERT_EXPIRED : "
 					+ NBSException.ERROR_SRV_CERT_EXPIRED
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CERT_NOT_YET_VALID : "
 					+ NBSException.ERROR_SRV_CERT_NOT_YET_VALID
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CERT_POLICY : "
 					+ NBSException.ERROR_SRV_CERT_POLICY
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CERT_REVOKED : "
 					+ NBSException.ERROR_SRV_CERT_REVOKED
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CERT_SIG_INVALID : "
 					+ NBSException.ERROR_SRV_CERT_SIG_INVALID
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CMS_COMM : "
 					+ NBSException.ERROR_SRV_CMS_COMM
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CMS_CONTINUE - "
 					+ NBSException.ERROR_SRV_CMS_CONTINUE
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CMS_ISSUE : "
 					+ NBSException.ERROR_SRV_CMS_ISSUE
 					+ "<br>"
+			+ "NBSException.ERROR_SRV_CONFIG : "
 					+ NBSException.ERROR_SRV_CONFIG
 					+ "<br>"
+			+ "NBSException.ERROR_SRVCLNT_INTERNAL : "
 					+ NBSException.ERROR_SRVCLNT_INTERNAL
 					+ "<br>"
+			+ "NBSException.ERROR_SRVCLNT_SERVER_UNAVAILABLE : "
 					+ NBSException.ERROR_SRVCLNT_SERVER_UNAVAILABLE
 					+ "<br>"
+			+ "NBSException.ERROR_UNKNOWN : "
 					+ NBSException.ERROR_UNKNOWN
 					+ "<br>");
 */
@@ -286,9 +381,58 @@ public class NBSLogin extends Login {
 	}
 	
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return IW_BUNDLE_IDENTIFIER;
 	}
 	
 
+
+
+	public void setButtonColor(String color1, String color2) {
+		String colors[] = new String[2];
+		colors[0]=color1;
+		colors[1]=color2;
+		_colorButton = colors;
+	}
+
+
+	public void setFieldColor(String color1, String color2) {
+		String colors[] = new String[2];
+		colors[0]=color1;
+		colors[1]=color2;
+		_colorField = colors;
+	}
+
+
+	public void setMessageColor(String color1, String color2) {
+		String colors[] = new String[2];
+		colors[0]=color1;
+		colors[1]=color2;
+		_colorMessage = colors;
+	}
+
+
+	public void setPanelColor(String color1, String color2) {
+		String colors[] = new String[2];
+		colors[0]=color1;
+		colors[1]=color2;
+		_colorPanel = colors;
+	}
+
+
+	public void setUserColor(String color1, String color2) {
+		String colors[] = new String[2];
+		colors[0]=color1;
+		colors[1]=color2;
+		_colorUser = colors;
+	}
+
+
+	public void setAppletHeight(String height) {
+		_appletHeight = height;
+	}
+
+	public void setAppletWidth(String width) {
+		_appletWidth = width;
+	}
 
 }
