@@ -64,7 +64,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	}
 
 	public Collection findUnhandledChecks() throws FinderException,RemoteException  {
-		return getCheckHome().findAllCasesByStatus(getCaseStatusOpen());
+		return getCheckHome().findNonApprovedChecks();
 	}
 
 	public boolean allRulesVerified(Check check) throws RemoteException {
@@ -73,7 +73,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		boolean rule3 = check.getRule3();
 		boolean rule4 = check.getRule4();
 		boolean rule5 = check.getRule5();
-		return ( rule1 && rule2 && rule3 && rule4 ) || rule5;
+		return ( rule3 && rule4 ) || rule5;
 	}
 
 	public void createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws CreateException,RemoteException {
@@ -96,6 +96,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.setRule3(checkRule3);
 		check.setRule4(checkRule4);
 		check.setRule5(checkRule5);
+		check.setUserNotes("");
 		check.setCaseStatus(this.getCaseStatusOpen());
 
 		check.store();
@@ -116,13 +117,11 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return check;
 	}
 
-	public void sendMessageToCitizen(Check check, int userID, String subject, String body) throws Exception {
-		try {
-			Message message = getMessageBusiness().createUserMessage(userID, subject, body);
+	public void sendMessageToCitizen(Check check, int userID, String subject, String body) throws CreateException,RemoteException {
+		Message message = getMessageBusiness().createUserMessage(userID, subject, body);
+		if ( message != null ) {
 			message.setParentCase(check);
 			message.store();
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
 		}
 	}
 
@@ -154,12 +153,12 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return userID;
 	}
 	
-	public Check saveCheckRules(int checkID, String[] selectedRules, String notes, int managerId) throws Exception {
+	public Check saveCheckRules(int checkID, String[] selectedRules, String notes, String userNotes, int managerId) throws Exception {
 		Check check = getCheck(checkID);
-		return saveCheckRules(check,selectedRules,notes,managerId);
+		return saveCheckRules(check,selectedRules,notes,userNotes,managerId);
 	}
 	
-	public Check saveCheckRules(Check check, String[] selectedRules, String notes, int managerId) throws Exception {
+	public Check saveCheckRules(Check check, String[] selectedRules, String notes, String userNotes, int managerId) throws Exception {
 		boolean rule1 = false,rule2 = false,rule3 = false,rule4 = false,rule5 = false;
 		check.setManagerId(managerId);
 		if ( selectedRules != null ) {
@@ -186,6 +185,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 
 		check.setNotes(notes);
+		check.setUserNotes(userNotes);
 		check.setRule1(rule1);
 		check.setRule2(rule2);
 		check.setRule3(rule3);
@@ -207,7 +207,6 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		try {
 			return getUserBusiness().getUser(userId);
 		} catch (EJBException e) {
-			e.printStackTrace(System.err);
 			return null;
 		}
 	}
@@ -251,21 +250,21 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	}
 
 	public void approveCheck(Check check,String subject,String body) throws Exception {
+		check.setCaseStatus(this.getCaseStatusGranted());
+		commit(check);
 		sendMessageToCitizen(check,getUserID(check),subject,body);
 		sendMessageToArchive(check,getUserID(check),subject,body);
 		sendMessageToPrinter(check,getUserID(check),subject,body);
-		check.setCaseStatus(this.getCaseStatusGranted());
-		commit(check);
 	}
 
 	public void retrialCheck(Check check,String subject,String body) throws Exception {
-		sendMessageToCitizen(check,getUserID(check),subject,body);
 		check.setCaseStatus(this.getCaseStatusReview());
 		commit(check);
+		sendMessageToCitizen(check,getUserID(check),subject,body+"\n\n"+check.getUserNotes());
 	}
 
 	public void saveCheck(Check check) throws Exception {
-		check.setCaseStatus(this.getCaseStatusOpen());
+		//check.setCaseStatus(this.getCaseStatusOpen());
 		commit(check);
 	}
 

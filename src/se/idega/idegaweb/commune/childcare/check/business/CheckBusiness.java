@@ -30,9 +30,9 @@ public interface CheckBusiness extends com.idega.business.IBOService
  public void sendMessageToArchive(se.idega.idegaweb.commune.childcare.check.data.Check p0,int p1,java.lang.String p2,java.lang.String p3)throws java.lang.Exception, java.rmi.RemoteException;
  public int getUserID(se.idega.idegaweb.commune.childcare.check.data.Check p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void retrialCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0,java.lang.String p1,java.lang.String p2)throws java.lang.Exception, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.childcare.check.data.Check saveCheckRules(int p0,java.lang.String[] p1,java.lang.String p2,int p3)throws java.lang.Exception, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.check.data.Check saveCheckRules(int p0,java.lang.String[] p1,java.lang.String p2,java.lang.String p3,int p4)throws java.lang.Exception, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolType getSchoolType(int p0)throws java.lang.Exception, java.rmi.RemoteException;
  public com.idega.user.data.User getUserByPersonalId(java.lang.String p0)throws java.lang.Exception, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.childcare.check.data.Check saveCheckRules(se.idega.idegaweb.commune.childcare.check.data.Check p0,java.lang.String[] p1,java.lang.String p2,int p3)throws java.lang.Exception, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.check.data.Check saveCheckRules(se.idega.idegaweb.commune.childcare.check.data.Check p0,java.lang.String[] p1,java.lang.String p2,java.lang.String p3,int p4)throws java.lang.Exception, java.rmi.RemoteException;
  public void sendMessageToCitizen(se.idega.idegaweb.commune.childcare.check.data.Check p0,int p1,java.lang.String p2,java.lang.String p3)throws java.lang.Exception, java.rmi.RemoteException;
 }
