@@ -1535,6 +1535,7 @@ public abstract class BookingForm extends TravelManager{
 			e1.printStackTrace();
 		}
 		TravelAddress address;
+		float price = -1;
 		for (int i = 0; i < tFrames.length; i++) {
 			if (addresses != null && !addresses.isEmpty()) {
 				Iterator addrIter = addresses.iterator();
@@ -1554,7 +1555,19 @@ public abstract class BookingForm extends TravelManager{
 						headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 						headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 						headerTable.add(getSmallText(prices[j].getPriceCategory().getName()+ " : "), headerColumn, hRow);
-						headerTable.add(getOrangeText(Float.toString(prices[j].getPrice())), headerColumn, hRow++);
+						try {
+							price = getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), tFrames[i].getID(), address.getID() );
+						} catch (SQLException e) {
+							System.out.println("Caught Exception");
+							e.printStackTrace();
+							price = -1;
+						}
+
+						headerTable.add(getOrangeText(Float.toString(price)), headerColumn, hRow);
+            if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
+            	headerTable.add(getOrangeText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)"), headerColumn, hRow);
+						}
+            ++hRow;
 					}
 				}
 			}
@@ -1569,7 +1582,18 @@ public abstract class BookingForm extends TravelManager{
 					headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 					headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 					headerTable.add(getSmallText(prices[j].getPriceCategory().getName()+ " : "), headerColumn, hRow);
-					headerTable.add(getOrangeText(Float.toString(prices[j].getPrice())), headerColumn, hRow++);
+					try {
+						price = getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), tFrames[i].getID(), -1 );
+					} catch (SQLException e) {
+						System.out.println("Caught Exception");
+						e.printStackTrace();
+						price = -1;
+					}
+					headerTable.add(getOrangeText(Float.toString(price)), headerColumn, hRow);
+          if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
+          	headerTable.add(getOrangeText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)"), headerColumn, hRow);
+					}
+          ++hRow;
 				}
 			}
 		}
