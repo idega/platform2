@@ -64,7 +64,7 @@ private String _alphabetName;
 private boolean _styles = true;
 
 private boolean _showAge;
-private boolean _showGender;
+//private boolean _showGender;
 private boolean _showEducation;
 private boolean _showTitle;
 private boolean _showListTitle;
@@ -652,7 +652,7 @@ private Table _myTable;
     _headlineStyle = "font-face: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
 
     _showAge = true;
-    _showGender = true;
+    //_showGender = true;
     _showEducation = true;
     _showTitle = true;
     _showBeganWork = true;
@@ -685,9 +685,9 @@ private Table _myTable;
     _showMobilePhone = showMobilePhone;
   }
 
-  public void setShowGender(boolean showGender) {
+  /*public void setShowGender(boolean showGender) {
     _showGender = showGender;
-  }
+  }*/
 
   public void setShowEducation(boolean showEducation) {
     _showEducation = showEducation;
