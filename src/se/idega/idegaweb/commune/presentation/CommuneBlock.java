@@ -12,6 +12,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWResourceMessage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -259,6 +260,10 @@ public class CommuneBlock extends com.idega.presentation.Block {
 			return defaultText;
 		}
 		return iwrb.getLocalizedString(textKey, defaultText);
+	}
+	
+	public String localize(IWResourceMessage message){
+	    return localize(message.getKey(),message.getMessage());
 	}
 	
 	/**
