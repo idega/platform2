@@ -66,7 +66,7 @@ public class ChildCareBlock extends CommuneBlock {
 		careBusiness = getCareBusiness(iwc);
 		checkRequired = getBundle(iwc).getBooleanProperty(PROPERTY_CHECK_REQUIRED, true);
 		usePredefinedCareTimeValues = getBundle(iwc).getBooleanProperty(PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, false);
-		allowChangeGroupFromToday = getBundle(iwc).getBooleanProperty(PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, false);
+		allowChangeGroupFromToday = getBundle(iwc).getBooleanProperty(PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, true);
 		initialize();
 		
 		ACCEPTED_COLOR = getBundle(iwc).getProperty(PROPERTY_ACCEPTED_COLOR, "#FFE0E0");
