@@ -24,7 +24,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.Edit;
 import com.idega.util.IWTimestamp;
 
 
@@ -72,14 +71,11 @@ public class TariffIndexEditor extends Finance {
             default: MO = getMainTable(iwc,iCategoryId);           break;
           }
         }
-        Table T = new Table(1,3);
-          T.setCellpadding(0);
-          T.setCellspacing(0);
-          add(Edit.headerText(iwrb.getLocalizedString("tariff_index_editor","Tariff index editor"),3));
-          T.add(makeLinkTable(1,iCategoryId));
-          T.add(MO);
-          T.setWidth("100%");
-          add(T);
+        
+          setLocalizedTitle("tariff_index_editor","Tariff index editor");
+          setSearchPanel(makeLinkTable(1,iCategoryId));
+          setMainPanel(MO);
+          
       }
       catch(Exception S){
         S.printStackTrace();
@@ -95,18 +91,16 @@ public class TariffIndexEditor extends Finance {
     LinkTable.setWidth("100%");
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(Edit.colorDark);
+    
     LinkTable.setWidth(last,"100%");
-    Link Link1 = new Link(iwrb.getLocalizedString("view","View"));
-    Link1.setFontColor(Edit.colorLight);
-    Link1.setBold();
+    Link Link1 = new Link(getHeader(iwrb.getLocalizedString("view","View")));
     Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
-    Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
-    Link Link2 = new Link(iwrb.getLocalizedString("change","Change"));
-    Link2.setFontColor(Edit.colorLight);
-    Link2.setBold();
+    //Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
+    Link Link2 = new Link(getHeader(iwrb.getLocalizedString("change","Change")));
+   
+   
     Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
-    Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
+    //Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
@@ -122,29 +116,29 @@ public class TariffIndexEditor extends Finance {
       count = L.size();
     Table keyTable = new Table(6,count+1);
     keyTable.setWidth("100%");
-    keyTable.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
-    keyTable.setRowColor(1,Edit.colorMiddle);
+    keyTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
+    keyTable.setRowColor(1,getHeaderColor());
     keyTable.setCellpadding(2);
     keyTable.setCellspacing(1) ;
     //keyTable.setColumnAlignment(3, "right");
-    keyTable.add(Edit.formatText("Nr"),1,1);
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("index","Index")),4,1);
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("date","date")),5,1);
-    keyTable.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),6,1);
+    keyTable.add(getHeader("Nr"),1,1);
+    keyTable.add(getHeader(iwrb.getLocalizedString("name","Name")),2,1);
+    keyTable.add(getHeader(iwrb.getLocalizedString("info","Info")),3,1);
+    keyTable.add(getHeader(iwrb.getLocalizedString("index","Index")),4,1);
+    keyTable.add(getHeader(iwrb.getLocalizedString("date","date")),5,1);
+    keyTable.add(getHeader(iwrb.getLocalizedString("type","Type")),6,1);
     if(isAdmin){
       if(count > 0){
       	int row = 2;
       	int rowcount = 1;
         for (Iterator iter = L.iterator(); iter.hasNext();) {
         	 TariffIndex ti = (TariffIndex) iter.next();
-          keyTable.add(Edit.formatText( String.valueOf(rowcount++)),1,row);
-          keyTable.add(Edit.formatText(ti.getName()),2,row);
-          keyTable.add(Edit.formatText(ti.getInfo()),3,row);
-          keyTable.add(Edit.formatText(Float.toString(ti.getIndex())),4,row);
-          keyTable.add(Edit.formatText(dfLong.format(ti.getDate())),5,row);
-          keyTable.add(Edit.formatText(ti.getType()),6,row);
+          keyTable.add(getText( String.valueOf(rowcount++)),1,row);
+          keyTable.add(getText(ti.getName()),2,row);
+          keyTable.add(getText(ti.getInfo()),3,row);
+          keyTable.add(getText(Float.toString(ti.getIndex())),4,row);
+          keyTable.add(getText(dfLong.format(ti.getDate())),5,row);
+          keyTable.add(getText(ti.getType()),6,row);
           row++;
         }
       }
@@ -166,14 +160,14 @@ public class TariffIndexEditor extends Finance {
     inputTable.setCellpadding(2);
     inputTable.setCellspacing(1);
     inputTable.setColumnAlignment(1,"left");
-    inputTable.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
-    inputTable.setRowColor(1,Edit.colorMiddle);
-    inputTable.add(Edit.formatText("Nr"),1,1);
-    inputTable.add(Edit.formatText("Auðkenni"),2,1);
-    inputTable.add(Edit.formatText("Lýsing"),3,1);
-    inputTable.add(Edit.formatText("Stuðull"),4,1);
-    inputTable.add(Edit.formatText("Týpa"),5,1);
-    inputTable.add(Edit.formatText("Eyða"),6,1);
+    inputTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
+    inputTable.setRowColor(1,getHeaderColor());
+    inputTable.add(getHeader("Nr"),1,1);
+    inputTable.add(getHeader("Auðkenni"),2,1);
+    inputTable.add(getHeader("Lýsing"),3,1);
+    inputTable.add(getHeader("Stuðull"),4,1);
+    inputTable.add(getHeader("Týpa"),5,1);
+    inputTable.add(getHeader("Eyða"),6,1);
     Iterator iter = L.iterator();
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
@@ -185,32 +179,31 @@ public class TariffIndexEditor extends Finance {
       if(i <= count && iter.hasNext() ){
         pos = i-1;
         TariffIndex ti = (TariffIndex) iter.next();
-        nameInput  = new TextInput("ti_nameinput"+i,(ti.getName()));
-        infoInput = new TextInput("ti_infoinput"+i,(ti.getInfo()));
-        indexInput = new TextInput("ti_indexinput"+i,(String.valueOf(ti.getIndex())));
+        nameInput  = getTextInput("ti_nameinput"+i,(ti.getName()));
+        infoInput = getTextInput("ti_infoinput"+i,(ti.getInfo()));
+        indexInput = getTextInput("ti_indexinput"+i,(String.valueOf(ti.getIndex())));
         typeDrp = typeDrop("ti_typedrp"+i,ti.getType());
         idInput = new HiddenInput("ti_idinput"+i,ti.getPrimaryKey().toString());
-        delCheck = new CheckBox("ti_delcheck"+i,"true");
-        Edit.setStyle(delCheck);
+        delCheck = getCheckBox("ti_delcheck"+i,"true");
+        
         inputTable.add(delCheck,6,i+1);
       }
       else{
-        nameInput  = new TextInput("ti_nameinput"+i);
-        infoInput = new TextInput("ti_infoinput"+i);
-        indexInput = new TextInput("ti_indexinput"+i);
+        nameInput  = getTextInput("ti_nameinput"+i);
+        infoInput = getTextInput("ti_infoinput"+i);
+        indexInput = getTextInput("ti_indexinput"+i);
         typeDrp = typeDrop("ti_typedrp"+i,String.valueOf(t.charAt(i-1)));
+      
         idInput = new HiddenInput("ti_idinput"+i,"-1");
       }
+      typeDrp = (DropdownMenu)setStyle(typeDrp,STYLENAME_INTERFACE);
       nameInput.setSize(20);
       infoInput.setSize(40);
       indexInput.setSize(10);
 
-      Edit.setStyle(nameInput);
-      Edit.setStyle(infoInput);
-      Edit.setStyle(indexInput);
-      Edit.setStyle(typeDrp);
+      
 
-      inputTable.add(Edit.formatText(rownum),1,i+1);
+      inputTable.add(getText(rownum),1,i+1);
       inputTable.add(nameInput,2,i+1);
       inputTable.add(infoInput,3,i+1);
       inputTable.add(indexInput,4,i+1);

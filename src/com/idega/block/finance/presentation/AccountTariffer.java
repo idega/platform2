@@ -9,7 +9,6 @@ import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.block.finance.business.AccountBusiness;
 import com.idega.block.finance.business.AssessmentBusiness;
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.AccountKey;
@@ -43,8 +42,8 @@ public class AccountTariffer extends Finance {
 	private static String prmGroup = "at_grp";
 	private FinanceAccount account;
 	private Integer accountId = null;
-	private int searchPage = -1, viewPage = -1;
-	private AccountBusiness accBuiz;
+	private int viewPage = -1;
+	
 	private String prmNewTariff = "fin_ati_nwta";
 	private String prmQuantity = "fin_trf_qty";
 	private String prmTariffIds = "fin_trf_ids";
@@ -63,7 +62,7 @@ public class AccountTariffer extends Finance {
 	}
 	protected void control(IWContext iwc) throws java.rmi.RemoteException {
 		if (isAdmin) {
-			accBuiz = (AccountBusiness) IBOLookup.getServiceInstance(iwc, AccountBusiness.class);
+			
 			//      iCategoryId = Finance.parseCategoryId(iwc);
 			Collection groups = null;
 			try {
@@ -110,9 +109,7 @@ public class AccountTariffer extends Finance {
 			Table T = new Table(1, 6);
 			T.setCellpadding(0);
 			T.setCellspacing(0);
-			T.add(
-					textFormat.format(iwrb.getLocalizedString("account_tariffer", "Account tariffer"),
-							textFormat.HEADER), 1, 1);
+			T.add(getHeader(localize("account_tariffer", "Account tariffer")), 1, 1);
 			T.setHeight(2, "15");
 			T.add(getAccountInfo(iwc), 1, 3);
 			T.add(getGroupLinks(groups), 1, 4);
@@ -194,29 +191,27 @@ public class AccountTariffer extends Finance {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setTitlesVertical(true);
 		if (account != null) {
-			T.add(textFormat.format(iwrb.getLocalizedString("account_number", "Account number"), textFormat.HEADER), 1,
+			T.add(getHeader(localize("account_number", "Account number")), 1,
 					1);
 			if (viewPage > 0) {
-				Link viewLink = new Link(textFormat.format(account.getAccountName()));
-				viewLink.addParameter(prmAccountId, account.getAccountId());
+				Link viewLink = getLink((account.getAccountName()));
+				viewLink.addParameter(prmAccountId, account.getAccountId().toString());
 				viewLink.addParameter(getCategoryParameter(iCategoryId));
 				viewLink.setPage(viewPage);
 				T.add(viewLink, 2, 1);
 			} else {
-				T.add(textFormat.format(account.getAccountName()), 2, 1);
+				T.add(getText(account.getAccountName()), 2, 1);
 			}
 			UserBusiness uBuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 			User user = uBuiz.getUser(account.getUserId());
-			T
-					.add(textFormat
-							.format(iwrb.getLocalizedString("account_owner", "Account owner"), textFormat.HEADER), 1, 2);
-			T.add(textFormat.format(user.getName()), 2, 2);
-			T.add(textFormat.format(iwrb.getLocalizedString("account_balance", "Account balance"), textFormat.HEADER),
+			T	.add(getHeader(localize("account_owner", "Account owner")), 1, 2);
+			T.add(getText(user.getName()), 2, 2);
+			T.add(getHeader(localize("account_balance", "Account balance")),
 					1, 3);
 			DecimalFormat Dformat = (DecimalFormat) DecimalFormat.getCurrencyInstance(iwc.getCurrentLocale());
-			T.add(textFormat.format(Dformat.format(account.getBalance())), 2, 3);
-			T.add(textFormat.format(iwrb.getLocalizedString("last_updated", "Last updated"), textFormat.HEADER), 1, 4);
-			T.add(textFormat.format(account.getLastUpdated().toString()), 2, 4);
+			T.add(getAmountText(account.getBalance()), 2, 3);
+			T.add(getHeader(localize("last_updated", "Last updated")), 1, 4);
+			T.add(getText(account.getLastUpdated().toString()), 2, 4);
 		}
 		return T;
 	}
@@ -235,14 +230,14 @@ public class AccountTariffer extends Finance {
 				tab.addParameter(Finance.getCategoryParameter(iCategoryId));
 				tab.addParameter(prmGroup, group.getPrimaryKey().toString());
 				if (account != null)
-					tab.addParameter(prmAccountId, account.getAccountId());
+					tab.addParameter(prmAccountId, account.getAccountId().toString());
 				T.add(tab, col++, 1);
 			}
 		}
 		Link newTariff = new Link(iwrb.getLocalizedImageTab("new", "New", false));
 		newTariff.addParameter(getCategoryParameter(iCategoryId));
 		if (account != null)
-			newTariff.addParameter(prmAccountId, account.getAccountId());
+			newTariff.addParameter(prmAccountId, account.getAccountId().toString());
 		newTariff.addParameter(prmNewTariff, "true");
 		//Link edit = new
 		// Link(iwrb.getLocalizedImageTab("edit","textFormat",false));
@@ -279,17 +274,17 @@ public class AccountTariffer extends Finance {
 		//Table T = new Table();
 		DataTable T = new DataTable();
 		T.setUseBottom(false);
-		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("tariffs", "Tariffs") + "  " + group.getName());
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.addTitle(localize("tariffs", "Tariffs") + "  " + group.getName());
 		T.setTitlesVertical(false);
 		int col = 1;
 		int row = 1;
-		T.add(textFormat.format(iwrb.getLocalizedString("use", "Use")), col++, row);
+		T.add(getHeader(localize("use", "Use")), col++, row);
 		if (hasMap)
-			T.add(textFormat.format(iwrb.getLocalizedString("attribute", "Attribute")), col++, row);
-		T.add(textFormat.format(iwrb.getLocalizedString("name", "Name")), col++, row);
-		T.add(textFormat.format(iwrb.getLocalizedString("price", "Price")), col++, row);
-		T.add(textFormat.format(iwrb.getLocalizedString("quantity", "Qty.")), col++, row);
+			T.add(getHeader(localize("attribute", "Attribute")), col++, row);
+		T.add(getHeader(localize("name", "Name")), col++, row);
+		T.add(getHeader(localize("price", "Price")), col++, row);
+		T.add(getHeader(localize("quantity", "Qty.")), col++, row);
 		row++;
 		if (listOfTariffs != null) {
 			java.util.Iterator I = listOfTariffs.iterator();
@@ -300,9 +295,9 @@ public class AccountTariffer extends Finance {
 				CheckBox chk = new CheckBox(prmTariffCheck, tariff.getPrimaryKey().toString());
 				T.add(chk, col++, row);
 				if (hasMap)
-					T.add(textFormat.format((String) map.get(tariff.getTariffAttribute())), col++, row);
-				T.add(textFormat.format(tariff.getName()), col++, row);
-				T.add(textFormat.format(Float.toString(tariff.getPrice())), col++, row);
+					T.add(getText((String) map.get(tariff.getTariffAttribute())), col++, row);
+				T.add(getText(tariff.getName()), col++, row);
+				T.add(getAmountText(tariff.getPrice()), col++, row);
 				IntegerInput QtyInput = new IntegerInput(prmQuantity);
 				QtyInput.setLength(5);
 				T.add(QtyInput, col, row);
@@ -317,18 +312,18 @@ public class AccountTariffer extends Finance {
 	private PresentationObject getTariffPropertiesTable() throws java.rmi.RemoteException {
 		DataTable T = new DataTable();
 		T.setUseBottom(false);
-		T.setWidth("100%");
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setTitlesHorizontal(true);
-		//T.addTitle(iwrb.getLocalizedString("properties","Properties"));
+		//T.addTitle(localize("properties","Properties"));
 		int row = 1;
 		int col = 1;
-		T.add(textFormat.format(iwrb.getLocalizedString("paydate", "Paydate")), col, row++);
+		T.add(getHeader(localize("paydate", "Paydate")), col, row++);
 		DateInput payDate = new DateInput(prmPayDate, true);
 		payDate.setDate(IWTimestamp.RightNow().getSQLDate());
 		T.add(payDate, col, row);
 		col++;
 		row = 1;
-		T.add(textFormat.format(iwrb.getLocalizedString("discount", "Discount") + " (%)"), col, row++);
+		T.add(getHeader(localize("discount", "Discount") + " (%)"), col, row++);
 		//DropdownMenu dr = getIntDrop("discount",0,100,"");
 		TextInput discount = new TextInput(prmDiscount);
 		discount.setContent("0");
@@ -344,7 +339,7 @@ public class AccountTariffer extends Finance {
 	}
 	private PresentationObject getNewTariffTable(IWContext iwc) throws java.rmi.RemoteException {
 		DataTable T = new DataTable();
-		T.setWidth("100%");
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setUseBottom(false);
 		T.setTitlesVertical(true);
 		TextInput tariffName = new TextInput(prmTariffName);
@@ -352,11 +347,11 @@ public class AccountTariffer extends Finance {
 		DropdownMenu tariffGroups = getTariffGroupsDrop(prmTariffGroupId);
 		CheckBox saveTariff = new CheckBox(prmSaveTariff);
 		TextInput amount = new TextInput(prmAmount);
-		T.add(textFormat.format(iwrb.getLocalizedString("tariff.name", "Tariff name")), 1, 1);
-		T.add(textFormat.format(iwrb.getLocalizedString("tariff.account_key", "Account key")), 1, 2);
-		T.add(textFormat.format(iwrb.getLocalizedString("tariff.save_under", "Save under")), 1, 3);
-		T.add(textFormat.format(iwrb.getLocalizedString("tariff.amount", "Amount")), 1, 4);
-		T.add(textFormat.format(iwrb.getLocalizedString("tariff.save_tariff", "Save tariff")), 1, 5);
+		T.add(getHeader(localize("tariff.name", "Tariff name")), 1, 1);
+		T.add(getHeader(localize("tariff.account_key", "Account key")), 1, 2);
+		T.add(getHeader(localize("tariff.save_under", "Save under")), 1, 3);
+		T.add(getHeader(localize("tariff.amount", "Amount")), 1, 4);
+		T.add(getHeader(localize("tariff.save_tariff", "Save tariff")), 1, 5);
 		T.add(tariffName, 2, 1);
 		T.add(accountKeys, 2, 2);
 		T.add(tariffGroups, 2, 3);
@@ -402,20 +397,11 @@ public class AccountTariffer extends Finance {
 		}
 		return drp;
 	}
-	private DropdownMenu getIntDrop(String name, int start, int end, String selected) {
-		DropdownMenu drp = new DropdownMenu(name);
-		for (int i = start; i <= end; i++) {
-			drp.addMenuElement(String.valueOf(i));
-		}
-		drp.setSelectedElement(selected);
-		return drp;
-	}
+	
 	public void setAccountViewPage(int pageId) {
 		this.viewPage = pageId;
 	}
-	public void setAccountSearchPage(int pageId) {
-		this.searchPage = pageId;
-	}
+	
 	public void main(IWContext iwc) throws java.rmi.RemoteException {
 		control(iwc);
 	}

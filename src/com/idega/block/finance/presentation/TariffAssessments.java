@@ -4,15 +4,14 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
 import com.idega.block.finance.business.AssessmentBusiness;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.business.FinanceHandler;
-import com.idega.block.finance.business.FinanceService;
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryHome;
@@ -20,14 +19,9 @@ import com.idega.block.finance.data.AccountInfo;
 import com.idega.block.finance.data.AccountUser;
 import com.idega.block.finance.data.AccountUserHome;
 import com.idega.block.finance.data.AssessmentRound;
-import com.idega.block.finance.data.AssessmentRoundHome;
-import com.idega.block.finance.data.RoundInfo;
 import com.idega.block.finance.data.TariffGroup;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOException;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.presentation.BusyBar;
 import com.idega.idegaweb.presentation.StatusBar;
 import com.idega.presentation.CollectionNavigator;
@@ -59,7 +53,6 @@ public class TariffAssessments extends Finance {
 	protected static final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5, ACT6 = 6, ACT7 = 7;
 	public static final String PRM_ACTION = "tt_action";
 	protected boolean isAdmin = false;
-	private int iCashierId = 1;
 	private Integer groupID = null;
 	
 	private FinanceHandler handler = null;
@@ -69,7 +62,7 @@ public class TariffAssessments extends Finance {
 	
 	private Integer accountID = null;
 	private Integer roundID = null;
-	private java.text.NumberFormat nf=null;
+	
 	
 	private Collection accountEntries = null;
 	private Collection accounts = null;
@@ -79,7 +72,7 @@ public class TariffAssessments extends Finance {
 	private CollectionNavigator collectionNavigator =null;
 	
 	//  private int iCategoryId = -1;
-	private StatusBar status;
+	//private StatusBar status;
 	public TariffAssessments() {
 	}
 	public String getLocalizedNameKey() {
@@ -94,10 +87,10 @@ public class TariffAssessments extends Finance {
 			initDates(iwc);
 			initGroups(iwc);
 			initCollections(iwc);
-			nf = java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+		
 			setTabPanel(getGroupLinks(iwc));
 			setNavigationPanel(collectionNavigator);
-			setButtonPanel(getActionButtonsTable(iwc));
+			setSearchPanel(getActionButtonsTable(iwc));
 			//setButtonPanel(makeLinkTable(1));
 			
 			try {
@@ -272,7 +265,10 @@ public class TariffAssessments extends Finance {
 	private void initDates(IWContext iwc){
 		IWCalendar cal = new IWCalendar();
 		IWTimestamp Today = IWTimestamp.RightNow();
-		fromDate = new IWTimestamp(1, Today.getMonth(), Today.getYear()).getDate();
+	
+		IWTimestamp from = IWTimestamp.RightNow();
+		from.addMonths(-6);
+		fromDate = from.getDate();
 		toDate = new IWTimestamp(cal.getLengthOfMonth(Today.getMonth(), Today.getYear()), Today.getMonth(), Today
 				.getYear()).getDate();
 	}
@@ -353,13 +349,14 @@ public class TariffAssessments extends Finance {
 					rb = assBuiz.rollBackAssessment(iRoundId);
 				}
 				//AssessmentBusiness.rollBackAssessment(iRoundId);
-				if (rb)
+				/*if (rb)
 					status.setMessage(localize("rollback_success", "Rollback was successfull"));
 				else
 					status.setMessage(localize("rollback_unsuccess", "Rollback was unsuccessfull"));
+					*/
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				status.setMessage(localize("rollback_illegal", "Rollback was illegal"));
+				//status.setMessage(localize("rollback_illegal", "Rollback was illegal"));
 			}
 		}
 	}
@@ -385,11 +382,11 @@ public class TariffAssessments extends Finance {
 					boolean assessed = handler.executeAssessment(iCategoryId, groupID.intValue(), roundName, 1,
 							iAccountKeyId, paydate, startdate, enddate);
 					debug("Ending Execution " + IWTimestamp.RightNow().toString());
-					if (assessed) {
+					/*if (assessed) {
 						status.setMessage(localize("assessment_sucess", "Assessment succeded"));
 					} else {
 						status.setMessage(localize("assessment_failure", "Assessment failed"));
-					}
+					}*/
 					MO = getTableOfAssessments(iwc);
 				} else {
 					add(localize("no_name_error", "No name entered"));
@@ -403,33 +400,34 @@ public class TariffAssessments extends Finance {
 		return MO;
 	}
 	protected PresentationObject getActionButtonsTable(IWContext iwc) {
-		Table LinkTable = new Table(3, 1);
+		Table LinkTable = new Table(4, 1);
 		if (isAdmin) {
-			int last = 3;
+			int last = 4;
 			LinkTable.setWidth("100%");
+			LinkTable.setWidth(4,"100%");
 			LinkTable.setCellpadding(getCellpadding());
 			LinkTable.setCellspacing(getCellspacing());
 			
 			
-			Link Link1 = getLocalizedLink("view", "View");
-			Link1.setFontColor(Edit.colorLight);
+			Link Link1 =new Link(getHeader(localize("view", "View")));
+			
 			Link1.addParameter(this.PRM_ACTION, String.valueOf(this.ACT1));
 			Link1.addParameter(PRM_GROUP_ID, groupID.toString());
 			
-			Link Link2 = new Link(localize("new", "New"));
-			Link2.setFontColor(Edit.colorLight);
+			Link Link2 = new Link(getHeader(localize("new", "New")));
+			
 			Link2.addParameter(this.PRM_ACTION, String.valueOf(this.ACT2));
 			Link2.addParameter(PRM_GROUP_ID, groupID.toString());
 			
-			Link Link3 = new Link(localize("preview", "Preview"));
-			Link3.setFontColor(Edit.colorLight);
+			Link Link3 = new Link(getHeader(localize("preview", "Preview")));
+			
 			Link3.addParameter(this.PRM_ACTION, String.valueOf(this.ACT6));
 			Link3.addParameter(PRM_GROUP_ID, groupID.toString());
 		
 		
-			status.setMessageCaller(Link1, localize("view_assessments", "View assessments"));
-			status.setMessageCaller(Link2, localize("make_new_assessment", "Create new assessment"));
-			status.setMessageCaller(Link3, localize("preview_assessment", "Preview assessment"));
+			//status.setMessageCaller(Link1, localize("view_assessments", "View assessments"));
+			//status.setMessageCaller(Link2, localize("make_new_assessment", "Create new assessment"));
+			//status.setMessageCaller(Link3, localize("preview_assessment", "Preview assessment"));
 			LinkTable.add(Link1, 1, 1);
 			LinkTable.add(Link2, 2, 1);
 			LinkTable.add(Link3, 3, 1);
@@ -472,7 +470,7 @@ public class TariffAssessments extends Finance {
 				}
 				
 				Link R = getRollbackLink(AR);
-				status.setMessageCaller(R, localize("rollback", "Rolls back this assessment"));
+				//status.setMessageCaller(R, localize("rollback", "Rolls back this assessment"));
 				busy.setLinkObject(R);
 				T.add(R,4, row);
 				
@@ -581,7 +579,7 @@ public class TariffAssessments extends Finance {
 					Integer accID;
 					for (Iterator iter = accounts.iterator(); iter.hasNext();) {
 						A = (Account) iter.next();
-						accID = new Integer(A.getAccountId());
+						accID = (A.getAccountId());
 						T.add(getAccountEntryLink(A.getAccountName(), roundID, accID,count++), 1, row);
 						try {
 							User user = uHome.findByPrimaryKey(new Integer(A.getUserId()));
@@ -835,7 +833,7 @@ public class TariffAssessments extends Finance {
 		row++;
 		T.add(sb, 2, row);
 		//sb.setOnClick("this.disabled = true");
-		status.setMessageCaller(sb, localize("assessment_time", "Assessment takes time"));
+		//status.setMessageCaller(sb, localize("assessment_time", "Assessment takes time"));
 		sb.setOnClick("this.form.submit()");
 		BusyBar bb = new BusyBar("busyguy");
 		bb.setInterfaceObject(sb);
@@ -867,10 +865,11 @@ public class TariffAssessments extends Finance {
 		return L;
 	}
 	public void main(IWContext iwc) {
-		if (status == null)
+		/*if (status == null)
 			status = new StatusBar("ass_status");
 		status
 				.setStyle("color: #ff0000;  font-style: normal; font-family: verdana; font-weight: normal; font-size:14px;");
+				*/
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
 		isAdmin = iwc.hasEditPermission(this);
 		control(iwc);

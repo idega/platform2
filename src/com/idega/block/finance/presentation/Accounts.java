@@ -1,6 +1,7 @@
 package com.idega.block.finance.presentation;
 
 import java.rmi.RemoteException;
+import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -20,7 +21,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.TextFormat;
 
 /**
  * Title:
@@ -36,16 +36,13 @@ public class Accounts extends Finance {
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
 	public String strAction = "tt_action";
 
-	private int iCashierId = 1;
-	private static String prmGroup = "taccs_grp";
+	private DateFormat df;
 	private static String prmNewAccount = "taccs_newaccount";
-	private static String prmAccountUserId = "taccs_accuser_id";
 	private Collection accountUsers = null;
 	private Collection accounts = null;
 
 	private int viewerPageId = -1;
 	private int tarifferPageId = -1;
-	private TextFormat Edit;
 
 	public Accounts() {
 
@@ -68,52 +65,44 @@ public class Accounts extends Finance {
 	}
 
 	protected void control(IWContext iwc) throws java.rmi.RemoteException {
-		Edit = TextFormat.getInstance();
+		
 		if (isAdmin) {
-			Table T = new Table();
-			T.setCellpadding(0);
-			T.setCellspacing(0);
-			T.setWidth("100%");
-			/*
-			if(iwc.isParameterSet(AccountViewer.prmAccountId)){
-			  add(new AccountViewer());
-			}
-			else
-			*/
+			 df = getDateTimeFormat(iwc.getCurrentLocale());
 			if (iwc.isParameterSet(prmNewAccount)) {
 				int iUserId = Integer.parseInt(iwc.getParameter(prmNewAccount));
-				T.add(getNewAccountForm(iUserId, iCategoryId), 1, 1);
+				setMainPanel(getNewAccountForm(iUserId, iCategoryId));
 			}
 			else if (iwc.isParameterSet("sf_search")) {
 				performSearch(iwc, iCategoryId);
-				T.add(getSearchForm(iwc, iCategoryId), 1, 1);
+				setSearchPanel(getSearchForm(iwc, iCategoryId));
 				//T.add(new HorizontalRule(),1,2);
 				Map MapOfUsers = getMapOfUsers(accountUsers);
-				T.add(getAccountListTable(MapOfUsers, iCategoryId), 1, 3);
+				setMainPanel(getAccountListTable(MapOfUsers, iCategoryId));
 				if (MapOfUsers != null && !MapOfUsers.isEmpty())
-					T.add(getUsersWithoutAccounts(MapOfUsers, iCategoryId), 1, 4);
+					setMainPanel(getUsersWithoutAccounts(MapOfUsers, iCategoryId));
 			}
 			else {
-				T.add(getSearchForm(iwc, iCategoryId), 1, 1);
+				setSearchPanel(getSearchForm(iwc, iCategoryId));
 				//T.add(new HorizontalRule(),1,2);
 			}
-			add(T);
+			
 
 		}
 		else
-			add(iwrb.getLocalizedString("access_denied", "Access denies"));
+			add(localize("access_denied", "Access denies"));
 	}
 
 	private PresentationObject getSearchForm(IWContext iwc, int iCategoryId) {
 		Form F = new Form();
 		DataTable T = new DataTable();
-		T.setWidth("100%");
-		T.addTitle(iwrb.getLocalizedString("account_search", "Account Search"));
+		T.setUseBottom(false);
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.addTitle(localize("account_search", "Account Search"));
 		// T.addBottom(false);
-		T.add(Edit.format(iwrb.getLocalizedString("account_id", "Account id")), 1, 1);
-		T.add(Edit.format(iwrb.getLocalizedString("first_name", "First name")), 1, 2);
-		T.add(Edit.format(iwrb.getLocalizedString("middle_name", "Middle name")), 1, 3);
-		T.add(Edit.format(iwrb.getLocalizedString("last_name", "Last name")), 1, 4);
+		T.add(getHeader(localize("account_id", "Account id")), 1, 1);
+		T.add(getHeader(localize("first_name", "First name")), 1, 2);
+		T.add(getHeader(localize("middle_name", "Middle name")), 1, 3);
+		T.add(getHeader(localize("last_name", "Last name")), 1, 4);
 
 		String id = iwc.getParameter("sf_id");
 		String first = iwc.getParameter("sf_firstname");
@@ -163,10 +152,10 @@ public class Accounts extends Finance {
 	private PresentationObject getNewAccountForm(int iUserId, int iCategoryId) {
 		Form F = new Form();
 		Table T = new Table(3, 4);
-		T.add(Edit.format(iwrb.getLocalizedString("account_id", "Account id")), 1, 1);
-		T.add(Edit.format(iwrb.getLocalizedString("first_name", "First name")), 1, 3);
-		T.add(Edit.format(iwrb.getLocalizedString("middle_name", "Middle name")), 2, 3);
-		T.add(Edit.format(iwrb.getLocalizedString("last_name", "Last name")), 3, 3);
+		T.add(getHeader(localize("account_id", "Account id")), 1, 1);
+		T.add(getHeader(localize("first_name", "First name")), 1, 3);
+		T.add(getHeader(localize("middle_name", "Middle name")), 2, 3);
+		T.add(getHeader(localize("last_name", "Last name")), 3, 3);
 
 		TextInput accountid = new TextInput("sf_id");
 		TextInput firstname = new TextInput("sf_firstname");
@@ -186,7 +175,7 @@ public class Accounts extends Finance {
 		T.add(lastname, 3, 4);
 
 		T.add(Finance.getCategoryParameter(iCategoryId));
-		SubmitButton search = new SubmitButton("sf_search", iwrb.getLocalizedString("search", "Search"));
+		SubmitButton search = new SubmitButton("sf_search", localize("search", "Search"));
 		T.add(search, 3, 2);
 
 		F.add(T);
@@ -258,7 +247,7 @@ public class Accounts extends Finance {
 
 	private PresentationObject getAccountListTable(Map mapOfUsers, int iCategoryId) throws java.rmi.RemoteException {
 		DataTable T = new DataTable();
-		T.setWidth("100%");
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setUseBottom(false);
 		T.setTitlesHorizontal(true);
 		int row = 1;
@@ -267,18 +256,18 @@ public class Accounts extends Finance {
 		User U = null;
 		if (accounts != null) {
 
-			T.addTitle(iwrb.getLocalizedString("users_with_accounts", "Users with accounts"));
+			T.addTitle(localize("users_with_accounts", "Users with accounts"));
 
 			col = 1;
-			T.add(Edit.format(iwrb.getLocalizedString("account_assessment", "Assessment")), col++, row);
-			T.add(Edit.format(iwrb.getLocalizedString("account_id", "Account id")), col++, row);
-			T.add(Edit.format(iwrb.getLocalizedString("user_name", "User name")), col++, row);
-			T.add(Edit.format(iwrb.getLocalizedString("balance", "Balance")), col++, row);
-			T.add(Edit.format(iwrb.getLocalizedString("last_updated", "Last updated")), col++, row);
+			T.add(getHeader(localize("account_assessment", "Assessment")), 1, row);
+			T.add(getHeader(localize("account_id", "Account id")), 2, row);
+			T.add(getHeader(localize("user_name", "User name")), 3, row);
+			T.add(getHeader(localize("balance", "Balance")), 4, row);
+			T.add(getHeader(localize("last_updated", "Last updated")), 5, row);
 			row++;
 			Iterator I = accounts.iterator();
 			Account A;
-
+			
 			Integer uid;
 			Link accountLink, tariffLink;
 			while (I.hasNext()) {
@@ -298,43 +287,47 @@ public class Accounts extends Finance {
 					}
 			}
 				if (tarifferPageId > 0) {
-					tariffLink = new Link(Edit.format(A.getAccountId()));
-					tariffLink.addParameter(prmAccountId, A.getAccountId());
+					tariffLink = getLink((A.getAccountId().toString()));
+					tariffLink.addParameter(prmAccountId, A.getAccountId().toString());
 					tariffLink.addParameter(getCategoryParameter(iCategoryId));
 					tariffLink.setPage(tarifferPageId);
 					T.add(tariffLink, col, row);
 				}
 				col++;
 				if (viewerPageId > 0) {
-					accountLink = new Link(Edit.format(A.getName()));
-					accountLink.addParameter(AccountViewer.prmAccountId, A.getPrimaryKey().toString());
+					accountLink = new Link(getText(A.getName()));
+					accountLink.addParameter(AccountViewer.prmAccountId, A.getAccountId().toString());
 					accountLink.setPage(viewerPageId);
 					T.add(accountLink, col, row);
 				}
 				col++;
 
-				T.add(Edit.format(U.getName()), col++, row);
-				T.add(Edit.format(Float.toString(A.getBalance())), col++, row);
-				T.add(Edit.format(A.getLastUpdated().toString()), col++, row);
+				T.add(getText(U.getName()), col++, row);
+				
+				T.add(getAmountText((getFinanceService().getAccountBalance(A.getAccountId()))), col++, row);
+				T.add(getText(df.format(A.getLastUpdated())), col++, row);
 				row++;
 			}
+			T.getContentTable().setColumnAlignment(4,Table.HORIZONTAL_ALIGN_RIGHT);
+			T.getContentTable().setColumnAlignment(5,Table.HORIZONTAL_ALIGN_RIGHT);
+			
 		}
 		return T;
 	}
 
 	public PresentationObject getUsersWithoutAccounts(Map mapOfUsers, int iCategoryId) {
 		DataTable T = new DataTable();
-		T.setWidth("100%");
+		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setTitlesHorizontal(true);
 		T.setUseBottom(false);
-		T.addTitle(iwrb.getLocalizedString("users_without_accounts", "Users without accounts"));
+		T.addTitle(localize("users_without_accounts", "Users without accounts"));
 		int row = 1;
 		Iterator I2 = mapOfUsers.values().iterator();
 		Image newImage = core.getImage("/shared/create.gif");
 		User U;
 		while (I2.hasNext()) {
 			U = (User)I2.next();
-			T.add(Edit.format(U.getName()), 1, row);
+			T.add(getText(U.getName()), 1, row);
 			T.add(getNewAccountLink(newImage, U.getID(), iCategoryId), 2, row);
 			row++;
 		}
@@ -358,12 +351,6 @@ public class Accounts extends Finance {
 		L.addParameter(Finance.getCategoryParameter(iCategoryId));
 		L.addParameter(prmNewAccount, iUserId);
 		return L;
-	}
-
-	private PresentationObject doMainTable(IWContext iwc) {
-		Form F = new Form();
-
-		return F;
 	}
 
 	public void main(IWContext iwc) throws java.rmi.RemoteException {

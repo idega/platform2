@@ -8,6 +8,7 @@ public interface FinanceService extends com.idega.business.IBOService
  public com.idega.block.finance.data.TariffGroup createOrUpdateTariffGroup(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3,boolean p4,java.lang.Integer p5)throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.finance.data.TariffIndex createOrUpdateTariffIndex(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,float p4,float p5,java.sql.Timestamp p6,java.lang.Integer p7)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
  public com.idega.block.finance.data.TariffKey createOrUpdateTariffKey(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public double getAccountBalance(java.lang.Integer p0) throws java.rmi.RemoteException;
  public com.idega.block.finance.business.AccountBusiness getAccountBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.finance.data.AccountEntryHome getAccountEntryHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.finance.data.AccountHome getAccountHome()throws java.rmi.RemoteException, java.rmi.RemoteException;

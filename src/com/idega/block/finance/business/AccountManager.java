@@ -1,21 +1,10 @@
 package com.idega.block.finance.business;
 
 import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import com.idega.block.finance.data.Account;
-import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountHome;
-import com.idega.block.finance.data.AccountKey;
-import com.idega.block.finance.data.AccountPhoneEntry;
-import com.idega.block.finance.data.Entry;
-import com.idega.block.finance.data.TariffKey;
-import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
-import com.idega.data.genericentity.Member;
 import com.idega.util.IWTimestamp;
 /**
  * Title:        AccountManager
@@ -28,8 +17,7 @@ import com.idega.util.IWTimestamp;
 
 public class AccountManager {
 
-  private Account eAccount;
-  private Member eMember;
+
 
   public AccountManager() {
 

@@ -37,6 +37,9 @@ public class AssessmentRoundBMPBean extends com.idega.data.CategoryEntityBMPBean
     addAttribute(getColumnTariffGroupId(),"Tariff group",true,true,Integer.class,"",TariffGroup.class);
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getRoundStampColumnName(),"Round stamp",true,true,java.sql.Timestamp.class);
+    addAttribute(getPeriodFromColumnName(),"Period from date",true,true,java.sql.Date.class);
+    addAttribute(getPeriodToColumnName(),"Period to date",true,true,java.sql.Date.class);
+    addAttribute(getDueDateColumnName(),"Due date",true,true,java.sql.Date.class);
     addAttribute(getTotalsColumnName(), "Totals", true, true, java.lang.Float.class);
     addAttribute(getStatusColumnName(),"Status",true,true,java.lang.String.class,1);
     addAttribute(getAccountCountColumnName(),"Account count",true,true,java.lang.Integer.class);
@@ -56,6 +59,9 @@ public class AssessmentRoundBMPBean extends com.idega.data.CategoryEntityBMPBean
   public static String getStatusColumnName(){return "STATUS";}
   public static String getTypeColumnName(){return "ENTRY_TYPE";}
   public static String getAccountCountColumnName(){return "ACC_COUNT";}
+  public static String getPeriodFromColumnName(){return "PERIOD_FROM";}
+  public static String getPeriodToColumnName(){return "PERIOD_TO";}
+  public static String getDueDateColumnName(){return "DUE_DATE";}
 
   public String getEntityName(){
     return getEntityTableName();
@@ -84,6 +90,31 @@ public class AssessmentRoundBMPBean extends com.idega.data.CategoryEntityBMPBean
   public void setRoundStamp(Timestamp round_stamp){
     setColumn(getRoundStampColumnName(), round_stamp);
   }
+  
+  public Date getDueDate(){
+  	return (Date) getColumnValue(getDueDateColumnName());
+  }
+  
+  public void setDueDate(Date date){
+  	setColumn(getDueDateColumnName(),date);
+  }
+  
+  public Date getPeriodToDate(){
+  	return (Date) getColumnValue(getPeriodToColumnName());
+  }
+  
+  public void setPeriodToDate(Date date){
+  	setColumn(getPeriodToColumnName(),date);
+  }
+  public Date getPeriodFromDate(){
+  	return (Date) getColumnValue(getPeriodFromColumnName());
+  }
+  
+  public void setPeriodFromDate(Date date){
+  	setColumn(getPeriodFromColumnName(),date);
+  }
+  
+  
 
   public float getTotals(){
     return getFloatColumnValue(getTotalsColumnName());

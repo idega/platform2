@@ -1,17 +1,5 @@
 package com.idega.block.finance.business;
 
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import com.idega.block.finance.data.AccountEntry;
-import com.idega.block.finance.data.AssessmentRound;
-import com.idega.block.finance.data.EntryGroup;
-import com.idega.block.finance.data.TariffIndex;
-import com.idega.data.EntityFinder;
-import com.idega.util.IWTimestamp;
 
 /**
  * Title:

@@ -8,8 +8,9 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
+
+
 
 /**
  * AccountUserBMPBean

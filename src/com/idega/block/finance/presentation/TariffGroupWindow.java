@@ -1,9 +1,7 @@
 package com.idega.block.finance.presentation;
 
 
-import java.io.IOException;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.ejb.CreateException;
@@ -12,7 +10,6 @@ import javax.ejb.FinderException;
 import com.idega.block.finance.business.FinanceService;
 import com.idega.block.finance.data.TariffGroup;
 import com.idega.business.IBOLookup;
-import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -21,7 +18,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -39,11 +35,6 @@ import com.idega.presentation.ui.TextInput;
 public class TariffGroupWindow extends IWAdminWindow{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
-private boolean isAdmin=false;
-private int iUserId = -1;
-private User eUser = null;
-private int iObjInsId = -1;
-private int SAVECATEGORY = 1,SAVECONTENT = 2;
 
 private static final String prefix ="tgrp_";
 public static final String prmCategory = prefix+"cat";
@@ -51,7 +42,6 @@ public static final String prmGroup = prefix+"group";
 private static final String actSave = prefix+"save";
 private FinanceService finServ = null;
 
-private IWBundle iwb;
 private IWBundle core;
 private IWResourceBundle iwrb;
 
@@ -173,18 +163,9 @@ private IWResourceBundle iwrb;
 
   }
 
-  private void noAccess() throws IOException,SQLException {
-    addLeft(iwrb.getLocalizedString("no_access","Login first!"));
-    this.addSubmitButton(new CloseButton(iwrb.getLocalizedString("close","Close")));
-  }
-
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
-    isAdmin = iwc.hasEditPermission(this);
-    eUser = com.idega.core.accesscontrol.business.LoginBusinessBean.getUser(iwc);
-    iUserId = eUser != null?eUser.getID():-1;
-    isAdmin = true;
-    iwb = getBundle(iwc);
+   
     core = iwc.getIWMainApplication().getBundle(iwc.getIWMainApplication().CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("tariff_group_editor","Tariffgroup Editor"));

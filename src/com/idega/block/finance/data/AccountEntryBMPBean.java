@@ -218,6 +218,15 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   	return (super.getDoubleTableValue(sql.toString()));
   }
   
+  public double ejbHomeGetTotalSumByAccount(Integer accountID)throws SQLException{
+  	StringBuffer sql = new StringBuffer();
+  	sql.append("select sum(").append(getColumnTotal()).append(") from ");
+  	sql.append(getEntityTableName()).append( " where ").append(getAccountIdColumnName()).append("=").append(accountID);
+  	
+  	//select sum(total) from fin_acc_entry where fin_account_id = 165 and fin_assessment_round_id = 3187
+  	return (super.getDoubleTableValue(sql.toString()));
+  }
+  
   public double ejbHomeGetTotalSumByAssessmentRound(Integer roundID)throws SQLException{
   	StringBuffer sql = new StringBuffer();
   	sql.append("select sum(").append(getColumnTotal()).append(") from ");
@@ -258,6 +267,18 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   
   public Collection ejbFindByEntryGroup(Integer groupID)throws FinderException{
   		return super.idoFindPKsByQuery(super.idoQueryGetSelectCount().appendWhereEquals(getEntryGroupIdColumnName(),groupID));
+  }
+  
+  public Date ejbHomeGetMaxDateByAccount(Integer accountID)throws IDOException{
+  		IDOQuery query = super.idoQuery().appendSelect()
+		.append( "max(").append(getLastUpdatedColumnName()).append(")");
+  		query.appendFrom().append(getEntityName());
+		query.appendWhereEquals(getAccountIdColumnName(),accountID);
+  		try {
+			return getDateTableValue(query.toString());
+		} catch (SQLException e) {
+			throw new IDOException(e.getMessage());
+		}
   }
 
 }

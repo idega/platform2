@@ -4,6 +4,7 @@
  */
 package com.idega.block.finance.business;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -149,7 +150,7 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		key.store();
 		return key;
 	}
-	public Tariff createOrUpdateTariff(Integer ID, String info, String name, String attribute, String index,
+	public Tariff createOrUpdateTariff(Integer ID, String name, String info, String attribute, String index,
 			boolean useIndex, Timestamp indexStamp, float Price, Integer accountKeyID, Integer tariffGroupID)
 			throws FinderException, RemoteException, CreateException {
 		Tariff tariff = getTariffHome().create();
@@ -313,5 +314,16 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 			return T;
 		} else
 			return null;
+	}
+	  
+	public double getAccountBalance(Integer accountID){
+		try {
+			return getAccountEntryHome().getTotalSumByAccount(accountID);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 }

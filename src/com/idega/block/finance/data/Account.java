@@ -9,7 +9,7 @@ public interface Account extends com.idega.data.CategoryEntity,com.idega.block.f
  public void addDebet(java.lang.Float p0);
  public void addKredit(float p0);
  public void addKredit(java.lang.Float p0);
- public int getAccountId();
+ public Integer getAccountId();
  public java.lang.String getAccountName();
  public java.lang.String getAccountType();
  public int getAccountTypeId();

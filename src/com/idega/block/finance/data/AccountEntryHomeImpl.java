@@ -60,6 +60,20 @@ public int countByGroup(java.lang.Integer p0)throws com.idega.data.IDOException{
 	return theReturn;
 }
 
+public java.sql.Date getMaxDateByAccount(java.lang.Integer p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.sql.Date theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetMaxDateByAccount(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public double getTotalSumByAccount(java.lang.Integer p0)throws java.sql.SQLException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAccount(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public double getTotalSumByAccountAndAssessmentRound(java.lang.Integer p0,java.lang.Integer p1)throws java.sql.SQLException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAccountAndAssessmentRound(p0,p1);

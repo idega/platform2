@@ -33,7 +33,7 @@ public interface FinanceAccount {
      *
      * @return    The account id value
      */
-    public int getAccountId()throws java.rmi.RemoteException;
+    public Integer getAccountId()throws java.rmi.RemoteException;
 
 
     /**

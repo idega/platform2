@@ -1,9 +1,22 @@
 package is.idega.idegaweb.campus.block.finance.business;
 
-import com.idega.block.building.business.BuildingCacher;
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
+import is.idega.idegaweb.campus.data.ContractAccountApartment;
+import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
 
+import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.finance.business.AssessmentTariffPreview;
-import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryBMPBean;
@@ -16,23 +29,6 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.IWTimestamp;
-
-import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
-import is.idega.idegaweb.campus.data.ContractAccountApartment;
-import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
-
-import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -122,7 +118,10 @@ public class CampusFinanceHandler implements FinanceHandler {
 					//AR.setCategoryId(iCategoryId);
 					AR.setTariffGroupId(iTariffGroupId);
 					AR.setType(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
-					AR.insert();
+					AR.setDueDate(paydate.getDate());
+					AR.setPeriodFromDate(start.getDate());
+					AR.setPeriodToDate(end.getDate());
+					AR.store();
 					iRoundId = AR.getID();
 					//iRoundId++; // is this quickfix of death
 			/*	}

@@ -22,7 +22,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.Edit;
 
 /**
  * Title:   idegaclasses
@@ -67,20 +66,18 @@ public class AccountKeyEditor extends Finance {
             default: MO = getMain(iwc);           break;
           }
         }
-        Table T = new Table(1,3);
-        add(Edit.headerText(iwrb.getLocalizedString("account_key_editor","Account key editor"),3));
-        T.add(makeLinkTable(1,iCategoryId));
-        T.add(MO);
-        T.setWidth("100%");
-        add(T);
-
+       
+        setLocalizedTitle("account_key_editor","Account key editor");
+        setSearchPanel(makeLinkTable(1,iCategoryId));
+        setMainPanel(MO);
+        
       }
       catch(Exception S){
         S.printStackTrace();
       }
     }
     else
-      add(iwrb.getLocalizedString("access_denied","Access denies"));
+      add(getErrorText(localize("access_denied","Access denies")));
   }
 
   protected PresentationObject makeLinkTable(int menuNr,int iCategoryId){
@@ -89,16 +86,16 @@ public class AccountKeyEditor extends Finance {
     LinkTable.setWidth("100%");
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(Edit.colorDark);
+   
     LinkTable.setWidth(last,"100%");
-    Link Link1 = new Link(iwrb.getLocalizedString("view","View"));
-    Link1.setFontColor(Edit.colorLight);
+    Link Link1 = new Link(getHeader(localize("view","View")));
+   
     Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
-    Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
-    Link Link2 = new Link(iwrb.getLocalizedString("change","Change"));
-    Link2.setFontColor(Edit.colorLight);
+   // Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
+    Link Link2 = new Link(getHeader(localize("change","Change")));
+    
     Link2.addParameter(strAction,String.valueOf(this.ACT2));
-    Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
+    //Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
@@ -123,14 +120,14 @@ public class AccountKeyEditor extends Finance {
       int count = keys.size();
       keyTable = new Table(4,count+1);
       keyTable.setWidth("100%");
-      keyTable.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
-      keyTable.setRowColor(1,Edit.colorMiddle);
+      keyTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
+      keyTable.setRowColor(1,getHeaderColor());
       keyTable.setCellpadding(2);
       keyTable.setCellspacing(1) ;
-      keyTable.add(Edit.formatText("Nr"),1,1);
-      keyTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
-      keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
-      keyTable.add(Edit.formatText(iwrb.getLocalizedString("tariff_key","Tariff key")),4,1);
+      keyTable.add(getHeader("Nr"),1,1);
+      keyTable.add(getHeader(localize("name","Name")),2,1);
+      keyTable.add(getHeader(localize("info","Info")),3,1);
+      keyTable.add(getHeader(localize("tariff_key","Tariff key")),4,1);
 
       //java.util.Map hk = FinanceFinder.getInstance().mapOfTariffKeys(iCategoryId);
      
@@ -141,12 +138,12 @@ public class AccountKeyEditor extends Finance {
           int rowcount = 1;
           for (Iterator iter = keys.iterator(); iter.hasNext();) {
           	key = (AccountKey) iter.next();
-            keyTable.add(Edit.formatText(String.valueOf(rowcount++)),1,row);
-            keyTable.add(Edit.formatText(key.getName()),2,row);
-            keyTable.add(Edit.formatText(key.getInfo()),3,row);
+            keyTable.add(getText(String.valueOf(rowcount++)),1,row);
+            keyTable.add(getText(key.getName()),2,row);
+            keyTable.add(getText(key.getInfo()),3,row);
             Integer tkid = new Integer(key.getTariffKeyId());
             if(hk.containsKey(tkid))
-              keyTable.add( Edit.formatText( ((TariffKey)hk.get( tkid)).getName() ),4,row);
+              keyTable.add( getText( ((TariffKey)hk.get( tkid)).getName() ),4,row);
             row++;
           }
         }
@@ -173,18 +170,18 @@ public class AccountKeyEditor extends Finance {
        count = keys.size();
     int inputcount = count+5;
     Table inputTable =  new Table(5,inputcount+1);
-    inputTable.setWidth("100%");
+    inputTable.setWidth(Table.HUNDRED_PERCENT);
     //inputTable.setWidth(1,"15");
     inputTable.setCellpadding(2);
     inputTable.setCellspacing(1);
     //inputTable.setColumnAlignment(1,"right");
-    inputTable.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
-    inputTable.setRowColor(1,Edit.colorMiddle);
-    inputTable.add(Edit.formatText("Nr"),1,1);
-    inputTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
-    inputTable.add(Edit.formatText(iwrb.getLocalizedString("info","Inro")),3,1);
-    inputTable.add(Edit.formatText(iwrb.getLocalizedString("tariff_key","Tariff key")),4,1);
-    inputTable.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),5,1);
+    inputTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
+    inputTable.setRowColor(1,getHeaderColor());
+    inputTable.add(getHeader("Nr"),1,1);
+    inputTable.add(getHeader(localize("name","Name")),2,1);
+    inputTable.add(getHeader(localize("info","Inro")),3,1);
+    inputTable.add(getHeader(localize("tariff_key","Tariff key")),4,1);
+    inputTable.add(getHeader(localize("delete","Delete")),5,1);
     AccountKey key;
     Iterator iter = keys.iterator();
     for (int i = 1; i <= inputcount ;i++){
@@ -194,32 +191,29 @@ public class AccountKeyEditor extends Finance {
       CheckBox delCheck;
       DropdownMenu iDrp =  keyDrp(Tkeys);
       iDrp.setName("ake_keydrp"+i);
-      Edit.setStyle(iDrp);
+      iDrp = (DropdownMenu) setStyle(iDrp,STYLENAME_INTERFACE);
       int pos;
       if(i <= count && iter.hasNext()){
         pos = i-1;
         key  = (AccountKey) iter.next();
-        nameInput  = new TextInput("ake_nameinput"+i,(key.getName()));
-        infoInput = new TextInput("ake_infoinput"+i,(key.getInfo()));
+        nameInput  = getTextInput("ake_nameinput"+i,(key.getName()));
+        infoInput = getTextInput("ake_infoinput"+i,(key.getInfo()));
         String sId = key.getPrimaryKey().toString();
         idInput = new HiddenInput("ake_idinput"+i,sId);
-        delCheck = new CheckBox("ake_delcheck"+i,"true");
+        delCheck = getCheckBox("ake_delcheck"+i,"true");
         iDrp.setSelectedElement(String.valueOf(key.getTariffKeyId()));
-        Edit.setStyle(delCheck);
+        
         inputTable.add(delCheck,5,i+1);
       }
       else{
-        nameInput  = new TextInput("ake_nameinput"+i);
-        infoInput = new TextInput("ake_infoinput"+i);
+        nameInput  = getTextInput("ake_nameinput"+i);
+        infoInput = getTextInput("ake_infoinput"+i);
         idInput = new HiddenInput("ake_idinput"+i,"-1");
       }
       nameInput.setSize(20);
       infoInput.setSize(40);
 
-      Edit.setStyle(nameInput);
-      Edit.setStyle(infoInput);
-
-      inputTable.add(Edit.formatText(rownum),1,i+1);
+      inputTable.add(getText(rownum),1,i+1);
       inputTable.add(nameInput,2,i+1);
       inputTable.add(infoInput,3,i+1);
       inputTable.add(iDrp,4,i+1);
@@ -229,8 +223,8 @@ public class AccountKeyEditor extends Finance {
     myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     myForm.add(inputTable);
-    SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save","Save"));
-    Edit.setStyle(save);
+    SubmitButton save = new SubmitButton(localize("save","Save"));
+    save = (SubmitButton) setStyle(save,STYLENAME_INTERFACE_BUTTON);
     myForm.add(save);
 
     return (myForm);

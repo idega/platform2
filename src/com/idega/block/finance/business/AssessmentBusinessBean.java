@@ -306,7 +306,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 
 		try {
 			transaction.begin();
-			AssessmentRound AR = createAssessmentRound(iAccountId, tariffGroupId, financeCategory);
+			AssessmentRound AR = createAssessmentRound(iAccountId, tariffGroupId, financeCategory,(java.sql.Date)paydate);
 			int RoundID = ((Integer) AR.getPrimaryKey()).intValue();
 			createAccountEntries(tariffs,multiplyFactors,iAccountId, paydate, discount, RoundID);
 			transaction.commit();
@@ -349,7 +349,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 				storeAccountEntry(	iAccountId,tariff.getAccountKeyId(),	1,	RoundID,price,0,	price,paydate,tariff.getName(),info,"C");
 		}
 	}
-	private AssessmentRound createAssessmentRound(int iAccountId, int tariffGroupId, int financeCategory)
+	private AssessmentRound createAssessmentRound(int iAccountId, int tariffGroupId, int financeCategory,java.sql.Date duedate)
 		throws IDOLookupException, CreateException {
 		AssessmentRoundHome arh = (AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class);
 		AssessmentRound AR = arh.create();
@@ -357,6 +357,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		AR.setTariffGroupId(tariffGroupId);
 		AR.setCategoryId(financeCategory);
 		AR.setAsNew(name);
+		AR.setDueDate(duedate);
 		AR.store();
 		return AR;
 	}

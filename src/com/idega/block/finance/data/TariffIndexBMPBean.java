@@ -111,7 +111,7 @@ public class TariffIndexBMPBean extends com.idega.data.CategoryEntityBMPBean imp
 			try {
 				coll.add(ejbFindLastByType(String.valueOf(indexType.charAt(i))));
 			} catch (FinderException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		if(!coll.isEmpty())

@@ -34,8 +34,7 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.Edit;
-import com.idega.presentation.util.TextFormat;
+
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company:
  * 
@@ -140,7 +139,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 	public static final String prmFinanceClass = "fin_clss";
 	public static final String prmAccountId = "fin_acc_id";
 	public int iCategoryId = -1;
-	protected TextFormat textFormat;
+	
 	private FinanceService financeService = null;
 	private int collectionIndex = 0;
 	private int collectionSize = 0;
@@ -175,6 +174,12 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 */
 	public void setLocalizedTitle(String textKey, String defaultText) {
 		table.add(getHeader(localize(textKey, defaultText)), 1, 2);
+		table.setRowColor(2, getHeaderColor());
+		table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
+	}
+	
+	public void setTitle(String text) {
+		table.add(getHeader(text), 1, 2);
 		table.setRowColor(2, getHeaderColor());
 		table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
 	}
@@ -629,6 +634,17 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return (TextInput) getStyledInterface(new TextInput(parameter, text));
 	}
 	/**
+	 * Returns a formatted text input.
+	 * 
+	 * @param parameter
+	 *                    the form parameter
+	 * 
+	 *  
+	 */
+	protected TextInput getTextInput(String parameter) {
+		return (TextInput) getStyledInterface(new TextInput(parameter));
+	}
+	/**
 	 * Returns a formatted text input with the specified width.
 	 * 
 	 * @param parameter
@@ -772,7 +788,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 		iwb = getBundle(iwc);
 		core = iwc.getIWMainApplication().getCoreBundle();
 		isAdmin = this.hasEditPermission();
-		textFormat = TextFormat.getInstance();
+		
 		initCategoryId(iwc);
 		try {
 			getFinanceService(iwc);
@@ -844,11 +860,11 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return new Integer(iCategoryId);
 	}
 	public Link getLink(Class cl, String name) {
-		Link L = new Link(name);
+		Link L = getLink(name);
 		L.addParameter(Finance.getCategoryParameter(getCategoryId()));
 		L.addParameter(getFinanceObjectParameter(cl));
 		L.setFontSize(1);
-		L.setFontColor(Edit.colorDark);
+		
 		return L;
 	}
 	public Parameter getFinanceObjectParameter(Class financeClass) {

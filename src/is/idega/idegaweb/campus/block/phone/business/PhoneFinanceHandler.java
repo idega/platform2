@@ -1,10 +1,8 @@
 package is.idega.idegaweb.campus.block.phone.business;
 
-import is.idega.idegaweb.campus.block.finance.business.CampusAccountFinder;
 import is.idega.idegaweb.campus.data.ContractAccounts;
 import is.idega.idegaweb.campus.data.ContractAccountsHome;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -16,7 +14,6 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.transaction.TransactionManager;
 
-import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryHome;

@@ -5,7 +5,7 @@ import com.idega.data.CategoryEntity;
 
 public interface AccountInfo extends CategoryEntity,FinanceAccount
 {
- public int getAccountId();
+ public Integer getAccountId();
  public java.lang.String getAccountName();
  public java.lang.String getAccountType();
  public float getBalance();

@@ -1,20 +1,13 @@
 package is.idega.idegaweb.campus.block.finance.business;
 
 
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
+import is.idega.idegaweb.campus.data.BuildingAccountEntry;
+
 import java.util.List;
-import java.util.Vector;
+
+import com.idega.block.finance.data.Account;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
-
-import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
-import is.idega.idegaweb.campus.data.*;
-
-import com.idega.block.finance.data.TariffIndex;
-import com.idega.block.finance.data.Account;
 
 /**
  *

@@ -85,8 +85,8 @@ ac.account_type
     return getEntityTableName();
   }
 
-  public int getAccountId(){
-    return getIntColumnValue( getColumnAccountId() );
+  public Integer getAccountId(){
+    return getIntegerColumnValue( getColumnAccountId() );
   }
   public int getCategoryId(){
     return getIntColumnValue( getColumnCategoryId() );

@@ -27,11 +27,10 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
+
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.Edit;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -50,9 +49,7 @@ public class TariffEditor extends Finance {
 	protected final int ACT5 = 5, ACT6 = 6, ACT7 = 7, ACT8 = 8;
 	public String strAction = "te_action";
 	public final int YEAR = 1, MONTH = 2, WEEK = 3, DAY = 4;
-	private IWTimestamp workingPeriod;
-	private int period = MONTH;
-	private int iPeriod;
+	
 	private int iNumberOfDecimals = 0;
 	private boolean bRoundAmounts = true;
 	private boolean hasUpdatedIndices = false;
@@ -135,49 +132,41 @@ public class TariffEditor extends Finance {
 				} else {
 					MO = getMain(iwc, group);
 				}
-				Table T = new Table(1, 4);
-				T.setCellpadding(0);
-				T.setCellspacing(0);
+				
 				String groupName = group != null ? group.getName() : "";
-				T.add(
-					Edit.headerText(
-						iwrb.getLocalizedString("tariffs", "Tariffs") + "  " + groupName,
-						3),
-					1,
-					1);
-				T.add(getGroupLinks( groups), 1, 2);
-				T.add(makeLinkTable(1, group), 1, 3);
-				T.add(MO, 1, 4);
-				T.setWidth("100%");
-				add(T);
+				setTitle(localize("tariffs", "Tariffs") + "  " + groupName);
+				setTabPanel(getGroupLinks( groups));
+				setSearchPanel(makeLinkTable(1, group));
+				setMainPanel(MO);
+				
 			} catch (Exception S) {
 				S.printStackTrace();
 			}
 		} else
-			add(iwrb.getLocalizedString("access_denied", "Access denies"));
+			add(localize("access_denied", "Access denies"));
 	}
 	protected PresentationObject makeLinkTable(int menuNr, TariffGroup group) {
 		Table LinkTable = new Table(4, 1);
 		int last = 4;
 
-		LinkTable.setWidth("100%");
+		LinkTable.setWidth(Table.HUNDRED_PERCENT);
 		LinkTable.setCellpadding(2);
 		LinkTable.setCellspacing(1);
-		LinkTable.setColor(Edit.colorDark);
+		//LinkTable.setColor(Edit.colorDark);
 		LinkTable.setWidth(last, "100%");
 		if (group != null) {
-			Link Link1 = new Link(iwrb.getLocalizedString("view", "View"));
-			Link1.setFontColor(Edit.colorLight);
+			Link Link1 = new Link(getHeader(localize("view", "View")));
+			//Link1.setFontColor(Edit.colorLight);
 			Link1.addParameter(this.strAction, String.valueOf(this.ACT1));
 			Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
 			Link1.addParameter(prmGroup, group.getPrimaryKey().toString());
-			Link Link2 = new Link(iwrb.getLocalizedString("change", "Change"));
-			Link2.setFontColor(Edit.colorLight);
+			Link Link2 = new Link(getHeader(localize("change", "Change")));
+			//Link2.setFontColor(Edit.colorLight);
 			Link2.addParameter(this.strAction, String.valueOf(this.ACT2));
 			Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
 			Link2.addParameter(prmGroup, group.getPrimaryKey().toString());
 			/*
-			Link Link3 = new Link(iwrb.getLocalizedString("new","New"));
+			Link Link3 = new Link(localize("new","New"));
 			Link3.setFontColor(Edit.colorLight);
 			Link3.addParameter(this.strAction,String.valueOf(this.ACT4));
 			*/
@@ -189,10 +178,7 @@ public class TariffEditor extends Finance {
 		}
 		return LinkTable;
 	}
-	protected void setPeriod(int period) {
-		this.period = period;
-	}
-
+	
 	private PresentationObject getGroupLinks(Collection groups) {
 		Table T = new Table();
 		T.setCellpadding(0);
@@ -257,22 +243,22 @@ public class TariffEditor extends Finance {
 		Table T2 = new Table(1, 2);
 		T2.setCellpadding(0);
 		T2.setCellspacing(0);
-		T2.setWidth("100%");
+		T2.setWidth(Table.HUNDRED_PERCENT);
 		Table T = new Table(6, count + 1);
 		T.setWidth("100%");
-		T.setHorizontalZebraColored(Edit.colorLight, Edit.colorWhite);
-		T.setRowColor(1, Edit.colorMiddle);
+		T.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+		T.setRowColor(1, getHeaderColor());
 		T.setCellpadding(2);
 		T.setCellspacing(1);
 		int col = 1;
-		T.add(Edit.formatText("Nr"), col++, 1);
+		T.add(getHeader("Nr"), col++, 1);
 		if (ifAttributes) {
-			T.add(Edit.formatText(iwrb.getLocalizedString("connection", "Connection")), col++, 1);
+			T.add(getHeader(localize("connection", "Connection")), col++, 1);
 		}
-		T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), col++, 1);
-		T.add(Edit.formatText(iwrb.getLocalizedString("amount", "Amount")), col++, 1);
-		//T.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),5,1);
-		T.add(Edit.formatText(iwrb.getLocalizedString("account_key", "Account key")), col++, 1);
+		T.add(getHeader(localize("name", "Name")), col++, 1);
+		T.add(getHeader(localize("amount", "Amount")), col++, 1);
+		//T.add(getHeader(localize("info","Info")),5,1);
+		T.add(getHeader(localize("account_key", "Account key")), col++, 1);
 
 		if (isAdmin) {
 			if (count != 0) {
@@ -283,26 +269,29 @@ public class TariffEditor extends Finance {
 				while (iter.hasNext()) {
 					col = 1;
 					tariff = (Tariff) iter.next();
-					T.add(Edit.formatText(String.valueOf(i + 1)), col++, row);
+					T.add(getText(String.valueOf(i + 1)), col++, row);
 					if (ifAttributes) {
 						String tatt = tariff.getTariffAttribute();
 						String val = "";
 						if (tatt != null && attributeMap.containsKey(tatt))
 							val = (String) attributeMap.get(tatt);
-						T.add(Edit.formatText(val), col++, row);
+						T.add(getText(val), col++, row);
 					}
 
-					//  T.add(Edit.formatText(((IDOLegacyEntity)hLodgings.get(tatt)).getName()),col++,i+2);
-					T.add(Edit.formatText(tariff.getName()), col++, row);
-					T.add(Edit.formatText(String.valueOf(tariff.getPrice())), col++, row);
-					//T.add(Edit.formatText(tariffs[i].getInfo()),col++,i+2);
+					//  T.add(getText(((IDOLegacyEntity)hLodgings.get(tatt)).getName()),col++,i+2);
+					T.add(getText(tariff.getName()), col++, row);
+					T.add(getAmountText((tariff.getPrice())), col++, row);
+					//T.add(getText(tariffs[i].getInfo()),col++,i+2);
 					Integer I = new Integer(tariff.getAccountKeyId());
 					if (hAK.containsKey(I))
-						T.add(Edit.formatText((String) hAK.get(I)), col++, row);
+						T.add(getText((String) hAK.get(I)), col++, row);
 					row++;
 					i++;
 				}
 			}
+			int r = ifAttributes?4:3;
+			T.setColumnAlignment(r,Table.HORIZONTAL_ALIGN_RIGHT);
+			
 		}
 
 		T2.add(T, 1, 1);
@@ -329,8 +318,8 @@ public class TariffEditor extends Finance {
 		String sEditID = iwc.getParameter("the_edit_id");
 		if(sEditID!=null)
 			iEditID = Integer.parseInt(sEditID);
-		Form myForm = new Form();
-		myForm.add(Finance.getCategoryParameter(iCategoryId));
+
+		
 		boolean updateIndex = factor;
 		Collection listOfTariffs = null ;
 		//FinanceFinder.getInstance().listOfTariffs(group.getID());
@@ -351,7 +340,7 @@ public class TariffEditor extends Finance {
 		} catch (EJBException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
-			e.printStackTrace();
+			
 		}
 		FinanceHandler financeHandler = null;
 		Map attributeMap = null;
@@ -375,32 +364,32 @@ public class TariffEditor extends Finance {
 		DataTable T = new DataTable();
 		T.setWidth("100%");
 		T.setTitlesHorizontal(true);
-		SubmitButton save = new SubmitButton("savetariffs", iwrb.getLocalizedString("save", "Save"));
+		SubmitButton save = new SubmitButton("savetariffs", localize("save", "Save"));
 		T.addButton(save);
 		
 		
 		int row = 1;
 		int col = 1;
 		
-		T.add(Edit.formatText("Nr"), col++, row);
+		T.add(getHeader("Nr"), col++, row);
 		if (ifAttributes) {
-			T.add(Edit.formatText(iwrb.getLocalizedString("connection", "Connection")), col++, row);
+			T.add(getHeader(localize("connection", "Connection")), col++, row);
 		}
-		T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), col++, row);
-		T.add(Edit.formatText(iwrb.getLocalizedString("amount", "Amount")), col++, row);
-		T.add(Edit.formatText(iwrb.getLocalizedString("account_key", "Account key")), col++, row);
+		T.add(getHeader(localize("name", "Name")), col++, row);
+		T.add(getHeader(localize("amount", "Amount")), col++, row);
+		T.add(getHeader(localize("account_key", "Account key")), col++, row);
 		if (ifIndices) {
-			T.add(Edit.formatText(iwrb.getLocalizedString("index", "Index")), col++, row);
-			T.add(Edit.formatText(iwrb.getLocalizedString("updated", "Updated")), col++, row);
+			T.add(getHeader(localize("index", "Index")), col++, row);
+			T.add(getHeader(localize("updated", "Updated")), col++, row);
 		}
-		T.add(Edit.formatText(iwrb.getLocalizedString("delete", "Delete")), col++, row);
+		T.add(getHeader(localize("delete", "Delete")), col++, row);
 		row++;
 
 		////////////////////////////
 
-		TextInput nameInput = new TextInput("te_nameinput");
-		TextInput priceInput = new TextInput("te_priceinput");
-		TextInput infoInput = new TextInput("te_infoinput");
+		TextInput nameInput = getTextInput("te_nameinput");
+		TextInput priceInput = getTextInput("te_priceinput");
+		TextInput infoInput = getTextInput("te_infoinput");
 		DropdownMenu drpAK = null;
 		DropdownMenu drpAtt = null, drpIx = null;
 /*
@@ -411,15 +400,13 @@ public class TariffEditor extends Finance {
 			drpAtt.setName("te_attdrp");
 		}
 */
-		CheckBox delCheck = new CheckBox("te_delcheck");
-		Edit.setStyle(delCheck);
+		CheckBox delCheck = getCheckBox("te_delcheck","true");
+		
 		nameInput.setSize(20);
 		priceInput.setSize(8);
 		infoInput.setSize(30);
 
-		Edit.setStyle(nameInput);
-		Edit.setStyle(priceInput);
-		Edit.setStyle(infoInput);
+		
 		
 
 		Tariff tariff;
@@ -437,7 +424,7 @@ public class TariffEditor extends Finance {
 				float oldPrice = iPrice;
 				// form part:
 				T.add(new Anchor("row"+i),col,row);
-				T.add((Edit.formatText(++i)), col++, row);
+				T.add((getText(String.valueOf(++i))), col++, row);
 				
 				String ixType = tariff.getIndexType();
 				IWTimestamp ixdate = null;
@@ -470,10 +457,8 @@ public class TariffEditor extends Finance {
 					oldPrice = Math.round((double)oldPrice);
 				}
 				T.add(new HiddenInput("te_oldprice"+i,Float.toString(oldPrice)),1,row);
-				priceInput = new TextInput("te_priceinput" + i);
-				priceInput.setContent(String.valueOf(iPrice));
-				Edit.setStyle(priceInput);
-				
+				priceInput = getTextInput("te_priceinput" + i,String.valueOf(iPrice));
+								
 				delCheck = new CheckBox("te_delcheck" + i, "true");
 				delCheck.setValue(tariffID.intValue());
 				
@@ -484,11 +469,9 @@ public class TariffEditor extends Finance {
 				// SINGLE EDIT LINE
 				if (iEditID == tariffID.intValue()) {
 					drpAK = drpAccountKeys(listOfAccountKeys, ("te_akdrp"+i));
-					nameInput = new TextInput("te_nameinput" + i);
-					infoInput = new TextInput("te_infoinput" + i);
-					Edit.setStyle(drpAK);
-					Edit.setStyle(nameInput);
-					Edit.setStyle(infoInput);
+					nameInput = getTextInput("te_nameinput" + i,"");
+					infoInput = getTextInput("te_infoinput" + i,"");
+					
 					if (ifAttributes){
 						drpAtt = (DropdownMenu) attDrp.clone();
 						drpAtt.setName("te_attdrp" + i);
@@ -503,8 +486,9 @@ public class TariffEditor extends Finance {
 					drpAK.setSelectedElement(String.valueOf(tariff.getAccountKeyId()));
 					
 					if (ifAttributes) {
+						drpAtt = (DropdownMenu)setStyle(drpAtt,STYLENAME_INTERFACE);
 						T.add(drpAtt, col++, row);
-						Edit.setStyle(drpAtt);
+						
 					}
 					T.add(nameInput, col++, row);
 					T.add(priceInput, col++, row);
@@ -512,13 +496,14 @@ public class TariffEditor extends Finance {
 					T.add(drpAK, col++, row);
 					if (ifIndices) {
 						drpIx = drpIndicesByType(mapOfIndices.values(), "te_ixdrp" + i);
+						drpIx = (DropdownMenu) setStyle(drpIx,STYLENAME_INTERFACE);
 						drpIx.setSelectedElement(ixType);
-						Edit.setStyle(drpIx);
+						
 						T.add(drpIx, col++, row);
 						if(ixdate!=null)
-							T.add(Edit.formatText(ixdate.toString()),col++,row);
+							T.add(getText(ixdate.toString()),col++,row);
 						else
-							T.add(Edit.formatText(""),col++,row);
+							T.add(getText(""),col++,row);
 					}
 					
 				}
@@ -529,9 +514,9 @@ public class TariffEditor extends Finance {
 						String val = "";
 						if (tatt != null && attributeMap.containsKey(tatt))
 							val = (String) attributeMap.get(tatt);
-						T.add(Edit.formatText(val), col++, row);
+						T.add(getText(val), col++, row);
 					}
-					AnchorLink lineChangeLink = new AnchorLink(Edit.formatText(tariff.getName()),"row"+i);
+					Link lineChangeLink = new Link(getText(tariff.getName()));
 					lineChangeLink.addParameter("the_edit_id",tariffID.intValue());
 					lineChangeLink.addParameter(this.strAction, String.valueOf(this.ACT2));
 					lineChangeLink.addParameter(Finance.getCategoryParameter(iCategoryId));
@@ -540,22 +525,22 @@ public class TariffEditor extends Finance {
 					
 					T.add(lineChangeLink, col++, row);
 					T.add(priceInput, col++, row);
-					//T.add(Edit.formatText(String.valueOf(iPrice)), col++, row);
+					//T.add(getText(String.valueOf(iPrice)), col++, row);
 
 					Integer I = new Integer(tariff.getAccountKeyId());
 					if (mapOfAccountKeys.containsKey(I))
-						T.add(Edit.formatText((String) mapOfAccountKeys.get(I)), col++, row);
+						T.add(getText((String) mapOfAccountKeys.get(I)), col++, row);
 					
 					if (ifIndices) {
 						if (mapOfIndices.containsKey(tariff.getIndexType()))
-							T.add(	Edit.formatText(((TariffIndex) mapOfIndices.get(tariff.getIndexType())).getName() ),	col++,	row);
+							T.add(	getText(((TariffIndex) mapOfIndices.get(tariff.getIndexType())).getName() ),	col++,	row);
 						else
-							T.add(Edit.formatText(""),col++,row);
+							T.add(getText(""),col++,row);
 							
 						if(ixdate!=null)
-							T.add(Edit.formatText(ixdate.toString()),col++,row);
+							T.add(getText(ixdate.toString()),col++,row);
 						else
-							T.add(Edit.formatText(""),col++,row);
+							T.add(getText(""),col++,row);
 					}
 					
 					T.add(new HiddenInput("te_ixdrp"+i,ixType),1,row);
@@ -571,31 +556,30 @@ public class TariffEditor extends Finance {
 			for(int k = 0 ; k < 5 ; k++){
 			
 				col = 1;
-				T.add(Edit.formatText(++i), col++, row);
+				T.add(getText(String.valueOf(++i)), col++, row);
 	
 				
 				T.add(new HiddenInput("te_idinput"+i,"-1"),1,row);
 				if (ifAttributes) {
 					drpAtt = (DropdownMenu) attDrp.clone();
 					drpAtt.setName("te_attdrp" + i);
+					drpAtt = (DropdownMenu) setStyle(drpAtt,STYLENAME_INTERFACE);
 					T.add(drpAtt, col++, row);
-					Edit.setStyle(drpAtt);
+					
 				}
-				nameInput = new TextInput("te_nameinput" + i);
-				priceInput = new TextInput("te_priceinput" + i);
-				infoInput = new TextInput("te_infoinput" + i);
-				Edit.setStyle(nameInput);
-				//Edit.setStyle(infoInput);
-				Edit.setStyle(priceInput);
+				nameInput = getTextInput("te_nameinput" + i);
+				priceInput = getTextInput("te_priceinput" + i);
+				infoInput = getTextInput("te_infoinput" + i);
+				
 				T.add(nameInput, col++, row);
 				//T.add(infoInput, col++, row);
 				T.add(priceInput, col++, row);
 				drpAK = drpAccountKeys(listOfAccountKeys, ("te_akdrp"+i));
-				Edit.setStyle(drpAK);
+				drpAK = (DropdownMenu) setStyle(drpAK,STYLENAME_INTERFACE);
 				T.add(drpAK, col++, row);
 				if (ifIndices) {
 					drpIx = drpIndicesByType(mapOfIndices.values(), "te_ixdrp" + i);
-					Edit.setStyle(drpIx);
+					drpIx = (DropdownMenu)setStyle(drpIx,STYLENAME_INTERFACE_BUTTON);
 					T.add(drpIx, col++, row);
 				}
 				row++;
@@ -610,11 +594,11 @@ public class TariffEditor extends Finance {
 		T3.setColumnAlignment(7, "right");
 		
 		if (ifIndices) {
-			SubmitButton update = new SubmitButton("updateindex", iwrb.getLocalizedString("update_indexes", "Update indexes"));
+			SubmitButton update = new SubmitButton("updateindex", localize("update_indexes", "Update indexes"));
 			//Edit.setStyle(update);
 			T3.add(update, 8, 1);
 			if(hasUpdatedIndices){
-				T3.add( Edit.formatText(iwrb.getLocalizedString("unsaved_data","You have unsaved data !!"),"#FF0000"),6,1);
+				T3.add( getErrorText(localize("unsaved_data","You have unsaved data !!")),6,1);
 				
 				T3.add(save, 7, 1);
 			}
@@ -627,11 +611,11 @@ public class TariffEditor extends Finance {
 		T4.add(T3,1,1);
 		T4.add(T,1,2);
 
-		myForm.add(new HiddenInput(prmGroup,group.getPrimaryKey().toString()));
-		myForm.add(new HiddenInput("te_count", String.valueOf( i )));
-		myForm.add(T4);
-
-		return (myForm);
+		T4.add(new HiddenInput(prmGroup,group.getPrimaryKey().toString()));
+		T4.add(new HiddenInput("te_count", String.valueOf( i )));
+		T4.add(Finance.getCategoryParameter(iCategoryId));
+		
+		return (T4);
 	}
 
 	private PresentationObject getChange(
@@ -640,9 +624,8 @@ public class TariffEditor extends Finance {
 		boolean factor,
 		TariffGroup group)
 		throws java.rmi.RemoteException {
-		Form myForm = new Form();
-		myForm.add(Finance.getCategoryParameter(iCategoryId));
-		myForm.maintainAllParameters();
+		
+		
 		boolean updateIndex = factor;
 		//FinanceFinder.getInstance().listOfTariffs((Integer)group.getPrimaryKey());
 		Collection tariffs = null;
@@ -688,10 +671,10 @@ public class TariffEditor extends Finance {
 		Table BorderTable = new Table();
 		BorderTable.setCellpadding(1);
 		BorderTable.setCellspacing(0);
-		BorderTable.setColor(Edit.colorDark);
+		//BorderTable.setColor(Edit.colorDark);
 		BorderTable.setWidth("100%");
 		Table T2 = new Table(1, 3);
-		T2.setColor(Edit.colorWhite);
+		//T2.setColor(Edit.colorWhite);
 		T2.setCellpadding(0);
 		T2.setCellpadding(0);
 		T2.setWidth("100%");
@@ -700,22 +683,22 @@ public class TariffEditor extends Finance {
 		T.setCellpadding(2);
 		T.setCellspacing(1);
 		T.setColumnAlignment(1, "right");
-		T.setHorizontalZebraColored(Edit.colorLight, Edit.colorWhite);
-		T.setRowColor(1, Edit.colorMiddle);
+		T.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+		T.setRowColor(1, getHeaderColor());
 		int col = 1;
-		T.add(Edit.formatText("Nr"), col++, 1);
+		T.add(getHeader("Nr"), col++, 1);
 		if (ifAttributes) {
-			T.add(Edit.formatText(iwrb.getLocalizedString("connection", "Connection")), col++, 1);
+			T.add(getHeader(localize("connection", "Connection")), col++, 1);
 		}
-		T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), col++, 1);
-		T.add(Edit.formatText(iwrb.getLocalizedString("amount", "Amount")), col++, 1);
-		//T.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),5,1);
-		T.add(Edit.formatText(iwrb.getLocalizedString("account_key", "Account key")), col++, 1);
+		T.add(getHeader(localize("name", "Name")), col++, 1);
+		T.add(getHeader(localize("amount", "Amount")), col++, 1);
+		//T.add(getHeader(localize("info","Info")),5,1);
+		T.add(getHeader(localize("account_key", "Account key")), col++, 1);
 		if (ifIndices) {
-			T.add(Edit.formatText(iwrb.getLocalizedString("index", "Index")), col++, 1);
-			T.add(Edit.formatText(iwrb.getLocalizedString("updated", "Updated")), col++, 1);
+			T.add(getHeader(localize("index", "Index")), col++, 1);
+			T.add(getHeader(localize("updated", "Updated")), col++, 1);
 		}
-		T.add(Edit.formatText(iwrb.getLocalizedString("delete", "Delete")), col++, 1);
+		T.add(getHeader(localize("delete", "Delete")), col++, 1);
 
 		Tariff tariff;
 		Iterator iter = tariffs.iterator();
@@ -737,9 +720,9 @@ public class TariffEditor extends Finance {
 				drpAtt.setName("te_attdrp" + i);
 			}
 
-			nameInput = new TextInput("te_nameinput" + i);
-			priceInput = new TextInput("te_priceinput" + i);
-			infoInput = new TextInput("te_infoinput" + i);
+			nameInput = getTextInput("te_nameinput" + i);
+			priceInput = getTextInput("te_priceinput" + i);
+			infoInput = getTextInput("te_infoinput" + i);
 
 			//drpAtt = this.drpLodgings("te_attdrp"+i,"",XL,BL,FL,CL,TL);
 			//drpAK = this.drpAccountKeys(AK,"te_akdrp"+i,"");
@@ -799,9 +782,9 @@ public class TariffEditor extends Finance {
 
 				drpAK.setSelectedElement(String.valueOf(tariff.getAccountKeyId()));
 
-				delCheck = new CheckBox("te_delcheck" + i, "true");
+				delCheck = getCheckBox("te_delcheck" + i, "true");
 				hid = tariff.getPrimaryKey().toString();
-				Edit.setStyle(delCheck);
+				
 
 				T.add(delCheck, 8, i + 1);
 			}
@@ -812,43 +795,39 @@ public class TariffEditor extends Finance {
 			priceInput.setSize(8);
 			infoInput.setSize(30);
 
-			Edit.setStyle(nameInput);
-			Edit.setStyle(priceInput);
-			Edit.setStyle(infoInput);
-			// Edit.setStyle(drpAtt);
-			Edit.setStyle(drpAK);
+			
 
-			T.add(Edit.formatText(rownum), col++, i + 1);
+			T.add(getHeader(rownum), col++, i + 1);
 			if (ifAttributes) {
 				T.add(drpAtt, col++, i + 1);
-				Edit.setStyle(drpAtt);
+				drpAtt = (DropdownMenu) setStyle(drpAtt,STYLENAME_INTERFACE);
 			}
 			T.add(nameInput, col++, i + 1);
 			T.add(priceInput, col++, i + 1);
 			//T.add(infoInput,col++,i+1);
 			T.add(drpAK, col++, i + 1);
 			if (ifIndices) {
-				Edit.setStyle(drpIx);
+				
 				T.add(drpIx, col++, i + 1);
 			}
 			//T.add(indexCheck,col++,i+1);
 			T.add(idInput);
 		}
 		Table T3 = new Table(8, 1);
-		T3.setWidth("100%");
+		T3.setWidth(Table.HUNDRED_PERCENT);
 		T3.setWidth(5, 1, "100%");
 		T3.setColumnAlignment(6, "right");
 		T3.setColumnAlignment(7, "right");
 
 		if (ifIndices) {
 			SubmitButton update =
-				new SubmitButton("updateindex", iwrb.getLocalizedString("update", "Update"));
-			Edit.setStyle(update);
+				new SubmitButton("updateindex", localize("update", "Update"));
+			update = (SubmitButton)setStyle(update,STYLENAME_INTERFACE_BUTTON);
 			T3.add(update, 8, 1);
 		}
 		SubmitButton save =
-			new SubmitButton("savetariffs", iwrb.getLocalizedString("save", "Save"));
-		Edit.setStyle(save);
+			new SubmitButton("savetariffs", localize("save", "Save"));
+		save = (SubmitButton) setStyle(save,STYLENAME_INTERFACE_BUTTON);
 		Table T4 = new Table();
 		T4.add(save);
 		T2.add(T3, 1, 1);
@@ -856,12 +835,13 @@ public class TariffEditor extends Finance {
 		T2.setAlignment(1,3,"right");
 		T2.add(T4, 1, 3);
 		BorderTable.add(T2);
-		myForm.add(new HiddenInput(prmGroup,group.getPrimaryKey().toString()));
-		myForm.add(new HiddenInput("te_count", String.valueOf(inputcount)));
+		BorderTable.add(new HiddenInput(prmGroup,group.getPrimaryKey().toString()));
+		BorderTable.add(new HiddenInput("te_count", String.valueOf(inputcount)));
 		//myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
-		myForm.add(BorderTable);
-
-		return (myForm);
+		BorderTable.add(BorderTable);
+		BorderTable.add(Finance.getCategoryParameter(iCategoryId));
+		//myForm.maintainAllParameters();
+		return (BorderTable);
 	}
 
 	private PresentationObject doUpdate(IWContext iwc, TariffGroup group)
@@ -878,7 +858,7 @@ public class TariffEditor extends Finance {
 		for (int i = 1; i < tariffCount + 1; i++) {
 			
 			ID = Integer.valueOf(iwc.getParameter("te_idinput" + i));
-			System.out.println("processing "+ID);
+			//System.out.println("processing "+ID);
 			sName = iwc.getParameter("te_nameinput" + i);
 			sPrice = (iwc.getParameter("te_priceinput" + i));
 			sOldPrice = (iwc.getParameter("te_oldprice"+i));
@@ -892,7 +872,7 @@ public class TariffEditor extends Finance {
 			}
 			// SHALL WE DELETE ?
 			if (sDel != null ) {
-				System.err.println("deletion");
+				//System.err.println("deletion");
 				try {
 					getFinanceService().removeTariff(ID);
 				} catch (RemoteException e) {
@@ -906,7 +886,7 @@ public class TariffEditor extends Finance {
 			}
 			// IF SINGLE EDIT LINE, THEN UPDATE
 			else if(sName !=null && !"".equals(sName)){
-				System.err.println("full form save");
+				//System.err.println("full form save");
 				sInfo = iwc.getParameter("te_infoinput" + i);
 				sAtt = iwc.getParameter("te_attdrp" + i);
 				sAK = (iwc.getParameter("te_akdrp" + i));
@@ -989,7 +969,7 @@ public class TariffEditor extends Finance {
 
 	private DropdownMenu drpIndicesByType(Collection L, String name) {
 		DropdownMenu drp = new DropdownMenu(name);
-		drp.addMenuElementFirst("-1", "--"); //iwrb.getLocalizedString("index","Index"));
+		drp.addMenuElementFirst("-1", "--"); //localize("index","Index"));
 		if (L != null) {
 			for (Iterator iter = L.iterator(); iter.hasNext();) {
 				TariffIndex ti = (TariffIndex) iter.next();

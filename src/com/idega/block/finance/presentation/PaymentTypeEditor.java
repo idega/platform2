@@ -3,16 +3,12 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.finance.business.FinanceBusiness;
-import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.PaymentType;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;

@@ -173,8 +173,8 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account,Fin
   public String getAccountName(){
     return getName();
   }
-  public int getAccountId(){
-    return ((Integer)getPrimaryKey()).intValue();
+  public Integer getAccountId(){
+    return ((Integer)getPrimaryKey());
   }
 
   // Finders
