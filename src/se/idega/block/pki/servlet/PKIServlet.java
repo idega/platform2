@@ -42,7 +42,6 @@ public class PKIServlet extends HttpServlet
 	public PKIServlet()
 	{
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/** Names for objects stored in the servlet context or session. */

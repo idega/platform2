@@ -52,7 +52,6 @@ public class SimpleContractCreator extends Block {
 				createContract(iwc,categoryID,iwc.getCurrentUser());
 			}
 			catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

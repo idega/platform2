@@ -17,7 +17,6 @@ public class QueryCategoryEntityBMPBean extends CategoryEntityBMPBean {
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
 	public String getEntityName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -25,8 +24,6 @@ public class QueryCategoryEntityBMPBean extends CategoryEntityBMPBean {
 	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

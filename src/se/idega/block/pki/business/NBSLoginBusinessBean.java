@@ -58,7 +58,6 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	 */
 	public NBSLoginBusinessBean() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
