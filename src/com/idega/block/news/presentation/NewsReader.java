@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.64 2002/01/04 14:20:24 aron Exp $
+ * $Id: NewsReader.java,v 1.65 2002/01/11 13:00:21 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -261,7 +261,7 @@ public class NewsReader extends Block implements IWBlock {
       ne.setWindowToOpen(NewsEditorWindow.class);
       ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       T.add(ne,1,1);
-      T.add(T.getTransparentCell(iwc),1,1);
+      //T.add(T.getTransparentCell(iwc),1,1);
       Link list = new Link(iwb.getImage("/shared/info.gif"));
       checkFromPage(list);
       if(!info)
@@ -269,7 +269,7 @@ public class NewsReader extends Block implements IWBlock {
       else
         list.addParameter(prmListCategory+getInstanceIDString(iwc),"false");
       T.add(list,1,1);
-      T.add(T.getTransparentCell(iwc),1,1);
+      //T.add(T.getTransparentCell(iwc),1,1);
       Link change = new Link(core.getImage("/shared/edit.gif"));
       change.setWindowToOpen(NewsEditorWindow.class);
       change.addParameter(NewsEditorWindow.prmCategory,iCategoryId);

@@ -181,9 +181,9 @@ private IWResourceBundle iwrb;
       else if(saveInfo == SAVECATEGORY)
         processCategoryForm(iwc,sCategoryId,iObjInsId);
 
-			if(iObjInsId > 0){
-			  addCategoryFields(NewsFinder.getNewsCategory(iCategoryId),iObjInsId  );
-			}
+      if(iObjInsId > 0){
+        addCategoryFields(NewsFinder.getNewsCategory(iCategoryId),iObjInsId  );
+      }
       //doView = false;
 
       if(doView)
@@ -194,24 +194,24 @@ private IWResourceBundle iwrb;
     }}
   }
 
-	private int getSaveInfo(IWContext iwc){
-	  if(iwc.getParameter(prmFormProcess)!=null){
+  private int getSaveInfo(IWContext iwc){
+    if(iwc.getParameter(prmFormProcess)!=null){
       if(iwc.getParameter(prmFormProcess).equals("Y"))
         return SAVENEWS;
       else if(iwc.getParameter(prmFormProcess).equals("C"))
         return SAVECATEGORY;
-        //doView = false;
-    }
-		return 0;
-	}
+  //doView = false;
+  }
+    return 0;
+  }
 
-	private Parameter getParameterSaveNews(){
-	  return new Parameter(prmFormProcess,"Y");
-	}
+  private Parameter getParameterSaveNews(){
+    return new Parameter(prmFormProcess,"Y");
+  }
 
-	private Parameter getParameterSaveCategory(){
-	  return new Parameter(prmFormProcess,"C");
-	}
+  private Parameter getParameterSaveCategory(){
+    return new Parameter(prmFormProcess,"C");
+  }
 
 
   // Form Processing :
@@ -232,19 +232,18 @@ private IWResourceBundle iwrb;
         ex.printStackTrace();
       }
     }
-		else if(iwc.getParameter(prmDeleteFile)!=null){
-
-		  if(sNewsId!=null){
-		    String sFileId = iwc.getParameter(prmDeleteFile);
-				deleteFile(sNewsId,sFileId);
-			}
-		}
-		else if(iwc.getParameter(prmSaveFile)!= null || iwc.getParameter(prmSaveFile+".x")!=null){
-		   if(sNewsId!=null){
-		    String sFileId = iwc.getParameter(prmImageId);
-				saveFile(sNewsId,sFileId);
-			}
-		}
+    else if(iwc.getParameter(prmDeleteFile)!=null){
+      if(sNewsId!=null){
+        String sFileId = iwc.getParameter(prmDeleteFile);
+        deleteFile(sNewsId,sFileId);
+      }
+    }
+    else if(iwc.getParameter(prmSaveFile)!= null || iwc.getParameter(prmSaveFile+".x")!=null){
+      if(sNewsId!=null){
+        String sFileId = iwc.getParameter(prmImageId);
+        saveFile(sNewsId,sFileId);
+      }
+    }
     // New:
      /** @todo make possible */
    /*else if(iwc.getParameter( actNew ) != null || iwc.getParameter(actNew+".x")!= null){
@@ -258,28 +257,26 @@ private IWResourceBundle iwrb;
 
     String sName = iwc.getParameter(prmCatName);
     String sDesc = iwc.getParameter(prmCatDesc);
-		String sMoveCat = iwc.getParameter(prmMoveToCat);
-		int iMoveCat = sMoveCat !=null ? Integer.parseInt(sMoveCat):-1;
-		int iCatId = sCategoryId != null ? Integer.parseInt(sCategoryId):-1;
-			if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
-				if(sName!=null){
-
-					//System.err.println("saving CATId = "+iCatId +" ObjInstId = "+iObjInsId);
-					NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
-					if(iMoveCat > 0){
-					  NewsBusiness.moveNewsBetweenCategories(iCatId,iMoveCat);
-					}
-					else{
-					  setParentToReload();
-					  close();
-					}
-				}
-			}
-			else if(iwc.getParameter(actDelete)!=null || iwc.getParameter(actDelete+".x")!=null ){
-				//System.err.println("deleteing CATId = "+iCatId +" ObjInstId = "+iObjInsId);
-				NewsBusiness.deleteNewsCategory(iCatId);
-			}
-
+    String sMoveCat = iwc.getParameter(prmMoveToCat);
+    int iMoveCat = sMoveCat !=null ? Integer.parseInt(sMoveCat):-1;
+    int iCatId = sCategoryId != null ? Integer.parseInt(sCategoryId):-1;
+    if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
+      if(sName!=null){
+        //System.err.println("saving CATId = "+iCatId +" ObjInstId = "+iObjInsId);
+        NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
+        if(iMoveCat > 0){
+          NewsBusiness.moveNewsBetweenCategories(iCatId,iMoveCat);
+        }
+        else{
+          setParentToReload();
+          close();
+        }
+      }
+    }
+    else if(iwc.getParameter(actDelete)!=null || iwc.getParameter(actDelete+".x")!=null ){
+            //System.err.println("deleteing CATId = "+iCatId +" ObjInstId = "+iObjInsId);
+            NewsBusiness.deleteNewsCategory(iCatId);
+    }
   }
 
   private void doViewNews(String sNewsId,String sAttribute,Locale locale,int iLocaleId,int iCategoryId){
@@ -334,7 +331,7 @@ private IWResourceBundle iwrb;
       //System.err.println(pubFrom.toSQLString());
       //System.err.println(pubTo.toString());
       NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,"",sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
-			sNewsId = String.valueOf(news.getID());
+      sNewsId = String.valueOf(news.getID());
     }
   }
 
