@@ -50,6 +50,8 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 
 	protected static final String UPDATE_INFO = "updatecdiv_info";
 
+	protected static final String UPDATE_RUNNING = "updatecdiv_running";
+
 	protected static final String ACTION = "updatecdiv_action";
 
 	protected static final String ACTION_CANCEL = "updatecdiv_cancel";
@@ -115,6 +117,46 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 		add(form, iwc);
 	}
 
+	private void addInfo(IWContext iwc) {
+		Form form = new Form();
+		form.maintainParameter(PARAMETER_GROUP_ID);
+		
+		Table mainTable = new Table();
+		mainTable.setWidth(660);
+		mainTable.setHeight(200);
+		mainTable.setCellpadding(0);
+		mainTable.setCellspacing(0);
+		form.add(mainTable);
+		
+		Table topTable = new Table(1, 1);
+		topTable.setStyleClass(MAIN_STYLECLASS);
+		topTable.setWidth(Table.HUNDRED_PERCENT);
+		topTable.setHeight(160);
+		
+		topTable.add(iwrb.getLocalizedString(UPDATE_RUNNING, "The update process is now running in the background. You cannot start another one while this one is running."),
+				1, 1);
+		
+		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("updateclubdivisiontemplate.close", "Close"));
+		Help help = getHelp(HELP_TEXT_KEY);
+
+		Table bottomTable = new Table();
+		bottomTable.setCellpadding(0);
+		bottomTable.setCellspacing(5);
+		bottomTable.setWidth(Table.HUNDRED_PERCENT);
+		bottomTable.setHeight(39);
+		bottomTable.setStyleClass(MAIN_STYLECLASS);
+		bottomTable.add(help, 1, 1);
+		bottomTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		bottomTable.add(close, 2, 1);
+		
+		mainTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+		mainTable.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_TOP);
+		mainTable.add(topTable, 1, 1);
+		mainTable.add(bottomTable, 1, 3);
+		
+		add(form, iwc);
+	}
+
 	private void init(IWContext iwc) {
 		String sGroupId = iwc.getParameter(PARAMETER_GROUP_ID);
 		if (sGroupId != null) {
@@ -161,9 +203,8 @@ public class UpdateClubDivisionTemplate extends StyledIWAdminWindow {
 					close();
 				}
 				else if (action.equals(ACTION_UPDATE)) {
+					addInfo(iwc);
 					updateChildren(iwc);
-					setOnLoad("window.opener.parent.frames['iwb_main'].location.reload()");
-					close();
 				}
 			}
 			else {

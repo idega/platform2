@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialConnectionUpdateThread.java,v 1.2 2005/01/13 11:36:25 palli Exp $ Created
+ * $Id: SpecialConnectionUpdateThread.java,v 1.3 2005/01/13 12:52:26 palli Exp $ Created
  * on Jan 4, 2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,13 +19,14 @@ import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2005/01/13 11:36:25 $ by $Author: palli $
+ * Last modified: $Date: 2005/01/13 12:52:26 $ by $Author: palli $
  * 
  * @author <a href="mailto:palli@idega.com">palli </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SpecialConnectionUpdateThread extends Thread {
 
@@ -44,6 +45,7 @@ public class SpecialConnectionUpdateThread extends Thread {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		System.out.println("Starting SpecialConnectionUpdateThread : " + IWTimestamp.getTimestampRightNow());
 		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
 			Group child = null;
 			boolean foundIt = false;
@@ -70,6 +72,7 @@ public class SpecialConnectionUpdateThread extends Thread {
 				}
 			}
 		}
+		System.out.println("SpecialConnectionUpdateThread done : " + IWTimestamp.getTimestampRightNow());
 	}
 
 	private void updatePlayerGroupsConnectedTo(Group parent) {
