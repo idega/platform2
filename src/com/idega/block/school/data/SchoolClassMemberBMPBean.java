@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/02/23 14:23:14 $ by $Author: laddi $
- * @version $Revision: 1.95 $
+ * Last modified: $Date: 2004/03/01 14:11:11 $ by $Author: goranb $
+ * @version $Revision: 1.96 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -717,6 +717,72 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
+
+	/**
+	 * Gets latest placement for user and season in school_categories elementary and high school.
+	 * Checks that removed_date is after register_date, otherwise the placement is invalid.
+	 * @param user
+	 * @return
+	 * @throws FinderException
+	 */
+	public Integer ejbFindLatestFromElemAndHighSchoolByUserAndSeason(User user, SchoolSeason season) 
+			throws FinderException {
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " 
+				+ SchoolClassBMPBean.SCHOOLCLASS + " cl, "
+				+ SchoolTypeBMPBean.SCHOOLTYPE + " tp, "
+				+ SchoolSeasonBMPBean.SCHOOLSEASON + " ss ")
+		
+		.appendWhere()
+		.append(" mb." + MEMBER)
+		.appendEqualSign()
+		.append(user.getPrimaryKey())
+		
+		.appendAnd()
+		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.appendEqualSign()
+		.appendWithinSingleQuotes("Y")
+		
+		.appendOr()
+		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.append(" is null)")
+		
+		.appendAnd()
+		.append(" mb." + SCHOOLCLASS)
+		.appendEqualSign()
+		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+		
+		.appendAnd()
+		.append("cl." + SchoolClassBMPBean.SEASON)
+		.appendEqualSign()
+		.append("ss." + SchoolSeasonBMPBean.SCHOOLSEASON + "_id")
+		
+		.appendAnd()
+		.append("ss." + SchoolSeasonBMPBean.SCHOOLSEASON + "_id")
+		.appendEqualSign()
+		.append(season)
+
+		.appendAnd()
+		.append("mb." + SCHOOL_TYPE)
+		.appendEqualSign()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
+		
+		.appendAnd()
+		.append("(tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
+		.appendEqualSign()
+		.append("'" + SchoolCategoryBMPBean.CATEGORY_ELEMENTARY_SCHOOL + "'")
+		.appendOr()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
+		.appendEqualSign()
+		.append("'" + SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL + "')")
+		
+		.appendOrderBy(REGISTER_DATE + " desc");
+		
+		System.out.println("*** latestPl *** " + sql.toString());
+		
+		return (Integer)this.idoFindOnePKBySQL(sql.toString());
+	}
 	
 	public Collection ejbFindByStudentAndSchool(int userID, int schoolID) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -776,8 +842,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		sql.append (M_ + SCHOOLCLASSMEMBERID).append (" in ");
 		sql.appendLeftParenthesis ();
-		final String C_ = "c."; // sql alias for school class
-		final String M2_ = "m2."; // sql alias for school class member
+		final String C_ = "c."; // sql alias for school Class
+		final String M2_ = "m2."; // sql alias for school Class member
 		sql.appendSelect ().append (M2_ + SCHOOLCLASSMEMBERID);
 		sql.appendFrom ( new String [] {getTableName(),
 																		SchoolClassBMPBean.SCHOOLCLASS},
