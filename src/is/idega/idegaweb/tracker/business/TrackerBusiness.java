@@ -31,6 +31,9 @@ import java.util.Vector;
  */
 
 public class TrackerBusiness {
+
+  public static final String IW_BUNDLE_IDENTIFIER = "is.idega.tracker";
+
   private static IWCacheManager cm;
   private static IBDomain domainEntity;
   private static String TR_USER_AGENT_KEY = "tr.ua";
