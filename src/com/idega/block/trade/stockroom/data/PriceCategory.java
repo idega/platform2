@@ -10,6 +10,7 @@ public interface PriceCategory extends com.idega.data.IDOLegacyEntity
  public java.lang.String getName();
  public int getParentId();
  public int getSupplierId();
+ public boolean getCountAsPerson();
  public java.lang.String getType();
  public boolean isNetbookingCategory();
  public void isNetbookingCategory(boolean p0);
@@ -20,4 +21,5 @@ public interface PriceCategory extends com.idega.data.IDOLegacyEntity
  public void setParentId(int p0);
  public void setSupplierId(int p0);
  public void setType(java.lang.String p0);
+ public void setCountAsPerson(boolean countAsPerson);
 }

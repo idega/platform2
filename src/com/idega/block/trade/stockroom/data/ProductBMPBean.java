@@ -70,7 +70,6 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     this.addManyToManyRelationShip( com.idega.block.text.data.LocalizedText.class, "SR_PRODUCT_LOCALIZED_TEXT" );
     this.addManyToManyRelationShip( Address.class, "SR_PRODUCT_IC_ADDRESS" );
     this.addManyToManyRelationShip( TxText.class );
-
     this.addManyToManyRelationShip( ICFile.class );
   }
 
