@@ -1,5 +1,7 @@
 package com.idega.block.beanshell.business;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
 
@@ -8,9 +10,12 @@ import bsh.Interpreter;
 import bsh.TargetError;
 import bsh.servlet.BshServlet;
 
-import com.idega.business.IBOService;
+import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.file.data.ICFile;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
+import com.idega.util.caching.Cache;
 
 /**
  * 
@@ -29,73 +34,161 @@ public class BSHEngineBean extends IBOServiceBean implements BSHEngine{
 	/**
 	 * A method that gets an Interpreter and runs the supplied bsh script.
 	 * 
-	 * @param theScript
-	 *            a string containing a bsh script to run
-	 * @return
+	 * @param theScript a string containing a bsh script to run
+	 * @return the object result, might be null
 	 */
-	public Object runScript(String theScript) {
+	public Object runScript(String theScript) throws EvalError {
 		Object obj = null;
-		try {
-			Interpreter engine = new bsh.Interpreter();
-			engine.eval("print(\"[IdegaWeb Beanshell engine] - Beanshell version is : "+getBshVersion()+"\"");
-			obj = engine.eval(theScript);
-		}
-		catch (TargetError e) {
-			System.out.println("The script or code called by the script threw an exception: " + e.getTarget());
-		}
-		catch (EvalError e2) {
-			System.out.println("There was an error in evaluating the script:" + e2);
 
-		}
+		Interpreter engine = getBSHInterpreter();
+		printBSHVersionNumber(engine);
+		obj = engine.eval(theScript);
+
 		return obj;
 	}
+
+	protected void printBSHVersionNumber(Interpreter engine) throws EvalError {
+		engine.eval("print(\"[IdegaWeb Beanshell engine] - Beanshell version is : "+getBshVersion()+"\")");
+	}
+
 
 	/**
 	 * A method that gets an Interpreter and runs the supplied bsh script WITH all request parameters initialized as String variables
 	 * 
-	 * @param theScript
+	 * @param theScript a string containing a bsh script to run
 	 * @param iwc
-	 * @return
+	 * @return the object result, might be null
 	 */
-	public Object runScript(String theScript, IWContext iwc) {
+	public Object runScript(String theScript, IWContext iwc) throws EvalError,TargetError {
 		Object obj = null;
-		try {
-			Enumeration enum = iwc.getParameterNames();
-			Interpreter engine = new bsh.Interpreter();
 
-			if (enum != null) {
-				while (enum.hasMoreElements()) {
-					String key = (String) enum.nextElement();
+		Interpreter engine = getInterpreterWithRequestParametersAndContextSet(iwc);
+		//run the script
+		printBSHVersionNumber(engine);
+		obj = engine.eval(theScript);
 
-					String[] values = iwc.getParameterValues(key);
 
-					if (values != null && values.length > 1) {
-						engine.set(key, values); //an array
-					}
-					else {
-						engine.set(key, values[0]); //a string
-					}
+		return obj;
+	}
+	
+	/**
+	 * A method that gets an Interpreter and runs the supplied bsh script WITH all request parameters initialized as String variables
+	 * 
+	 * @param bundle The bundle the script file is in
+	 * @param scriptFileName The name of the bsh script file to run
+	 * @param iwc
+	 * @return the object result, might be null
+	 */
+	public Object runScriptFromBundle(IWBundle bundle, String scriptFileName, IWContext iwc) throws FileNotFoundException, EvalError {
+		Object obj = null;		
+		obj = runScriptFromFileWithPath(bundle.getRealPathWithFileNameString(scriptFileName),iwc);
+		return obj;
+	}
+	
+	/**
+	 * A method that gets an Interpreter and runs the supplied bsh script
+	 * 
+	 * @param bundle The bundle the script file is in
+	 * @param scriptFileName The name of the bsh script file to run
+	 * @param iwc
+	 * @return the object result, might be null
+	 */
+	public Object runScriptFromBundle(IWBundle bundle, String scriptFileName) throws FileNotFoundException, EvalError {
+		Object obj = null;		
+		obj = runScriptFromFileWithPath(bundle.getRealPathWithFileNameString(scriptFileName));
+		return obj;
+	}
+	
+	/**
+	 * A method that gets an Interpreter and runs the supplied bsh script
+	 * 
+	 * @param scriptFileNameWithPath The name of the bsh script file to run with its path PREFIXED
+	 * @param iwc
+	 * @return the object result, might be null
+	 */
+	public Object runScriptFromFileWithPath(String scriptFileNameWithPath) throws FileNotFoundException, EvalError {
+		Object obj = null;
 
+		Interpreter engine = getBSHInterpreter();
+		//run the script
+		printBSHVersionNumber(engine);
+		
+		obj = engine.eval(new FileReader(scriptFileNameWithPath));
+
+		return obj;
+	}
+	
+	/**
+	 * A method that gets an Interpreter and runs the supplied bsh script WITH all request parameters initialized as String variables
+	 * 
+	 * @param scriptFileNameWithPath The name of the bsh script file to run with its path PREFIXED
+	 * @param iwc
+	 * @return the object result, might be null
+	 */
+	public Object runScriptFromFileWithPath(String scriptFileNameWithPath, IWContext iwc) throws FileNotFoundException, EvalError {
+		Object obj = null;
+
+		Interpreter engine = getInterpreterWithRequestParametersAndContextSet(iwc);
+		//run the script
+		printBSHVersionNumber(engine);
+		
+		obj = engine.eval(new FileReader(scriptFileNameWithPath));
+
+		return obj;
+	}
+	
+	/**
+	 * A method that gets an Interpreter and runs the supplied bsh script WITH all request parameters initialized as String variables
+	 * 
+	 * @param ICFile The bsh script file in the database to run
+	 * @param iwc
+	 * @return the object result, might be null
+	 */
+	public Object runScriptFromICFile(ICFile file, IWContext iwc) throws FileNotFoundException, EvalError {
+		Object obj = null;
+
+		Interpreter engine = getInterpreterWithRequestParametersAndContextSet(iwc);
+		//run the script
+		printBSHVersionNumber(engine);
+		
+		Cache fileInfo =  MediaBusiness.getCachedFileInfo( ((Integer)file.getPrimaryKey()).intValue(),iwc.getApplication());
+		obj = engine.eval(new FileReader(fileInfo.getRealPathToFile()));
+
+		return obj;
+	}
+	
+
+	private Interpreter getInterpreterWithRequestParametersAndContextSet(IWContext iwc) throws EvalError {
+		Enumeration enum = iwc.getParameterNames();
+		Interpreter engine = getBSHInterpreter();
+
+		if (enum != null) {
+			while (enum.hasMoreElements()) {
+				String key = (String) enum.nextElement();
+
+				String[] values = iwc.getParameterValues(key);
+
+				if (values != null && values.length > 1) {
+					engine.set(key, values); //an array
+				}
+				else {
+					engine.set(key, values[0]); //a string
 				}
 
 			}
 
-			engine.set("iwc", iwc);
-			//run the script
-			engine.eval("System.out.println(\"[IdegaWeb Beanshell engine] - Beanshell version is : "+getBshVersion()+"\")");
-			obj = engine.eval(theScript);
-
-		}
-		catch (TargetError e) {
-			System.out.println("The script or code called by the script threw an exception: " + e.getTarget());
-		}
-		catch (EvalError e2) {
-			System.out.println("There was an error in evaluating the script:" + e2);
-
 		}
 
-		return obj;
+		engine.set("iwc", iwc);
+		return engine;
 	}
+
+
+	public Interpreter getBSHInterpreter() {
+		Interpreter engine = new bsh.Interpreter();
+		return engine;
+	}
+
 
 	public String getBshVersion() {
 		if (bshVersion != null)

@@ -6,15 +6,22 @@
  */
 package com.idega.block.beanshell.presentation;
 
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
+
+import bsh.EvalError;
+import bsh.TargetError;
 
 import com.idega.block.beanshell.business.BSHEngine;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.file.data.ICFile;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -45,6 +52,11 @@ public class BeanShellScript extends Block {
 	private boolean showEditor = false;
 	private String scriptString;
 	private static final String PARAM_SCRIPT_STRING = "bsh_scr_str";
+	private ICFile icFileScript;
+	private IWBundle bundle;
+	private String scriptInBundleFileName;
+	private String fileNameWithPath;
+	
 	
 	public BeanShellScript() {
 		super();
@@ -55,7 +67,6 @@ public class BeanShellScript extends Block {
 		//TODO Eiki make safe to execute from parameter
 		//TODO Eiki allow multiple scripts per page and support ordering scripts
 		//TODO Eiki Put editor in a window and support syntax coloring
-		//TODO Eiki script from an icfile, filesystem and bundle
 		BSHEngine engine;
 		try {
 			engine = (BSHEngine) IBOLookup.getServiceInstance(iwc,BSHEngine.class);
@@ -65,31 +76,16 @@ public class BeanShellScript extends Block {
 			}
 			
 			if(showEditor){
-				Form editorForm = new Form();
-				Table table = new Table(1,3);
-				
-				TextArea scriptArea = new TextArea(PARAM_SCRIPT_STRING,( (scriptString!=null)? scriptString : ""));
-				scriptArea.setWidth("640");
-				scriptArea.setHeight("480");
-				
-				table.add(scriptArea ,1,2);
-				table.add(new SubmitButton(),1,3);
-				
-				if(scriptString!=null){
-					BeanShellScript script = new BeanShellScript();
-					script.setScriptString(scriptString);
-					table.add(script,1,1);
-				}
-				
-				editorForm.add(table);
-				add(editorForm);
-				
+				addEditorAndRunScript(iwc,engine);
 			}
 			else{
-				if(scriptString!=null){
-					Object obj = engine.runScript(scriptString,iwc);
+				Object obj = runScript(iwc,engine);
+				if(obj!=null){
 					if(obj instanceof PresentationObject){
-						add(obj);
+						add((PresentationObject)obj);
+					}
+					else{
+						System.out.println("[IW BeanShellScript result (obj.toString()): +"+obj.toString());
 					}
 				}
 			}
@@ -100,6 +96,81 @@ public class BeanShellScript extends Block {
 		}
 	}
 	
+
+	private Object runScript(IWContext iwc, BSHEngine engine) throws RemoteException {
+		Object obj = null;
+		
+		try{
+			if(scriptString!=null){
+				//run script from scriptstring
+				obj = engine.runScript(scriptString,iwc);
+			}
+			else if(scriptInBundleFileName!=null){
+				//run from a file within a bundle
+				if(bundle==null){
+					bundle = this.getBundle(iwc);
+				}
+				
+				obj = engine.runScriptFromBundle(bundle,scriptInBundleFileName,iwc);
+			}
+			else if(icFileScript!=null){
+				//run from a script file in the db
+				obj = engine.runScriptFromICFile(icFileScript,iwc);
+			}
+			else if(fileNameWithPath!=null){
+				//run from a script file from anywhere on the server
+				obj = engine.runScriptFromFileWithPath(fileNameWithPath);
+			}
+		}
+		catch (TargetError e) {
+			System.err.println("[IW BeanShellScript] - The script or code called by the script threw an exception: " + e.getTarget());
+			obj = new Text("The script or code called by the script threw an exception: " + e.getTarget());
+			
+		}
+		catch (EvalError e2) {
+			System.err.println("[IW BeanShellScript] - There was an error in evaluating the script:" + e2);
+			obj = new Text("There was an error in evaluating the script:" + e2);
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			
+			if(scriptInBundleFileName!=null){
+				obj = new Text("Script file was not found: "+bundle.getRealPathWithFileNameString(scriptInBundleFileName));
+			}
+			else if(fileNameWithPath!=null){
+				obj = new Text("Script file was not found: "+fileNameWithPath);
+			}
+		}
+		
+		return obj;
+	}
+
+
+	private void addEditorAndRunScript(IWContext iwc, BSHEngine engine) throws RemoteException {
+		Form editorForm = new Form();
+		Table table = new Table(1,3);
+		
+		TextArea scriptArea = new TextArea(PARAM_SCRIPT_STRING,( (scriptString!=null)? scriptString : ""));
+		scriptArea.setWidth("640");
+		scriptArea.setHeight("480");
+		
+		table.add(scriptArea ,1,2);
+		table.add(new SubmitButton(),1,3);
+		
+		Object obj = runScript(iwc,engine);
+		if(obj!=null){
+			if(obj instanceof PresentationObject){
+				table.add((PresentationObject)obj,1,1);
+			}
+			else{
+				System.out.println("[IW BeanShellScript result (obj.toString()): +"+obj.toString());
+			}
+		}
+		
+		editorForm.add(table);
+		add(editorForm);
+	}
+
 
 	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
@@ -121,7 +192,22 @@ public class BeanShellScript extends Block {
 		return scriptString;
 	}
 	
+	public void setScriptFromICFile(ICFile script){
+		this.icFileScript = script;
+	}
 	
+	public void setScriptFileNameWithPath(String fileNameWithPath){
+		this.fileNameWithPath = fileNameWithPath;
+	}
+	
+	public void setBundleAndScriptFileName(IWBundle bundle, String fileName){
+		scriptInBundleFileName = fileName;
+		this.bundle = bundle;
+	}
+	
+	public void setScriptFileNameAndUseDefaultBundle(String fileName){
+		setBundleAndScriptFileName(null,fileName);
+	}
 	
 	
 
