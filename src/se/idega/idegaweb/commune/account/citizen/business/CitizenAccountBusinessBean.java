@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.66 2004/04/13 08:06:00 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.67 2004/05/18 13:54:11 malin Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -71,11 +71,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2004/04/13 08:06:00 $ by $Author: staffan $
+ * Last modified: $Date: 2004/05/18 13:54:11 $ by $Author: malin $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -85,6 +85,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
 	}
 
+	
 	/**
 	 * Creates an application for CitizenAccount for a user with a personalId
 	 * that is in the system.
@@ -103,7 +104,12 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	 * @throws UserHasLoginException
 	 *           If A User already has a login in the system.
 	 */
+	
 	public Integer insertApplication(IWContext iwc, User user, String ssn, String email, String phoneHome, String phoneWork) throws UserHasLoginException {
+		return insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, false);
+	}
+	
+	public Integer insertApplication(IWContext iwc, User user, String ssn, String email, String phoneHome, String phoneWork, boolean sendEmail) throws UserHasLoginException {
 		CitizenAccount application = null;
 		UserTransaction transaction = null;
 		NBSLoginBusinessBean loginBusiness = new NBSLoginBusinessBean();
@@ -134,7 +140,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 					acceptApplication(applicationID, user, false);
 				}
 				else {
-					acceptApplication(applicationID, user);
+					acceptApplication(applicationID, user, sendEmail, "");
 				}
 			}
 			transaction.commit();
@@ -345,6 +351,40 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return user;
 	}
 
+	public User getUserIcelandic(String ssn) {
+		User user = null;
+		try {
+			StringBuffer userSsn = new StringBuffer(ssn);
+			int i = ssn.indexOf('-');
+			if (i != -1) {
+				userSsn.deleteCharAt(i);
+				ssn = userSsn.toString();
+			}
+			
+			user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userSsn.toString());
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+		catch (FinderException e) {
+			if (ssn.length() == 10) {
+				StringBuffer userSsn = new StringBuffer("20");
+				userSsn.append(ssn);
+				try {
+					user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userSsn.toString());
+				}
+				catch (Exception ex) {
+					return null;
+				}
+			}
+		}
+
+		return user;
+	}
+	
+	
+	
+	
 	/**
 	 * Method getListOfUnapprovedApplications.
 	 * 
@@ -419,7 +459,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return CitizenAccount.class;
 	}
 
-	public void acceptApplication(final int applicationID, final User performer, boolean createUserMessage, boolean createPasswordMessage) throws CreateException {
+	public void acceptApplication(final int applicationID, final User performer, boolean createUserMessage, boolean createPasswordMessage, boolean sendEmail) throws CreateException {
 		UserTransaction transaction = null;
 		try {
 			transaction = getSessionContext().getUserTransaction();
@@ -485,7 +525,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			applicant.setOwner(user);
 			applicant.store();
 			super.acceptApplication(applicationID, performer, createUserMessage,
-															createPasswordMessage);
+															createPasswordMessage, sendEmail);
 			transaction.commit();
 		}
 		catch (Exception e) {
