@@ -84,7 +84,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private final static String DEFAULT_BACKGROUND_COLOR = "#ffffff";
 	private final static String DEFAULT_HEADER_COLOR = "#d0daea";
 	private final static String DEFAULT_ZEBRA_COLOR_1 = "#ffffff";
-	private final static String DEFAULT_ZEBRA_COLOR_2 = "#f4f4f4";
+	private final static String DEFAULT_ZEBRA_COLOR_2 = "#cecece";
 	private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
 	private final static String DEFAULT_SMALL_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
 	private final static String DEFAULT_HEADER_FONT_STYLE = "font-weight:bold;";
