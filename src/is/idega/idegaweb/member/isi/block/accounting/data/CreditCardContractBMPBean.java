@@ -25,6 +25,7 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 	protected final static String COLUMN_DIVISION = "div_id";
 	protected final static String COLUMN_CONTRACT_NR = "contract_number";
 	protected final static String COLUMN_CARD_TYPE = "card_type_id";
+	protected final static String COLUMN_DELETED = "deleted";
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -42,6 +43,7 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 		addManyToOneRelationship(COLUMN_DIVISION,Group.class);
 		addAttribute(COLUMN_CONTRACT_NR,"Contract number",true,true,String.class);
 		addManyToOneRelationship(COLUMN_CARD_TYPE,CreditCardType.class);
+		addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
 	}
 
 	public void setClubID(int id) {
@@ -72,6 +74,10 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 		setColumn(COLUMN_CARD_TYPE,type);
 	}
 	
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED, deleted);
+	}
+	
 	public int getClubID() {
 		return getIntColumnValue(COLUMN_CLUB);
 	}
@@ -83,7 +89,6 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 	public int getDivisionId() {
 		return getIntColumnValue(COLUMN_DIVISION);
 	}
-	
 	
 	public Group getDivision() {
 		return (Group)getColumnValue(COLUMN_DIVISION);
@@ -101,10 +106,21 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 		return (CreditCardType) getColumnValue(COLUMN_CARD_TYPE);
 	}
 	
+	public boolean getDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED, false);
+	}
+	
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_CLUB, ((Integer)club.getPrimaryKey()).intValue());
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.appendEquals(COLUMN_DELETED,false);
+		sql.appendOr();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null");
+		sql.appendRightParenthesis();
 		
 		return idoFindPKsByQuery(sql);
 	}	

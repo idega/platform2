@@ -93,6 +93,10 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		setColumn(COLUMN_PERIOD_TO,to);
 	}
 	
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED, deleted);
+	}
+	
 	public int getClubID() {
 		return getIntColumnValue(COLUMN_CLUB);
 	}
@@ -131,10 +135,6 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 	
 	public Date getPeriodTo() {
 		return getDateColumnValue(COLUMN_PERIOD_TO);
-	}
-	
-	public void setDeleted(boolean deleted) {
-		setColumn(COLUMN_DELETED,deleted);
 	}
 	
 	public boolean getDeleted() {

@@ -33,6 +33,7 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	protected final static String COLUMN_END_TIME = "end_time";
 	protected final static String COLUMN_USE_PARENT_TARIFF = "use_parent";
 	protected final static String COLUMN_INCLUDE_CHILDREN = "include_children";
+	protected final static String COLUMN_DELETED = "deleted";
 
 	/*
 	 * (non-Javadoc)
@@ -60,6 +61,7 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		addAttribute(COLUMN_END_TIME, "The end time of the thread", true, true, Timestamp.class);
 		addAttribute(COLUMN_USE_PARENT_TARIFF, "Use the tariff of the parent", true, true, Boolean.class);
 		addAttribute(COLUMN_INCLUDE_CHILDREN, "Include children", true, true, Boolean.class);
+		addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
 	}
 
 	public void setName(String name) {
@@ -117,6 +119,10 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	public void setIncludeChildren(boolean include) {
 		setColumn(COLUMN_INCLUDE_CHILDREN, include);
 	}
+	
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED, deleted);
+	}
 
 	public String getName() {
 		return getStringColumnValue(COLUMN_NAME);
@@ -173,6 +179,10 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	public boolean getIncludeChildren() {
 		return getBooleanColumnValue(COLUMN_INCLUDE_CHILDREN, false);
 	}
+	
+	public boolean getDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED, false);
+	}
 
 	public Collection ejbFindAllByClubAndDivision(Group club, Group div) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -181,8 +191,14 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		if (div != null) {
 			sql.appendAndEquals(COLUMN_DIVISION, div);
 		}
-
-		System.out.println("sql =" + sql.toString());
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.appendEquals(COLUMN_DELETED,false);
+		sql.appendOr();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null");
+		sql.appendRightParenthesis();
+		
 
 		return idoFindPKsByQuery(sql);
 	}

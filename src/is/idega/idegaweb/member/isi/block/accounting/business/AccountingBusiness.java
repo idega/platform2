@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.accounting.business;
 
 public interface AccountingBusiness extends com.idega.business.IBOService
 {
+ public boolean deleteTariffType(java.lang.String[] p0) throws java.rmi.RemoteException;
  public boolean doAssessment(java.lang.String p0,com.idega.user.data.Group p1,com.idega.user.data.Group p2,java.lang.String p3,com.idega.user.data.User p4,boolean p5,boolean p6) throws java.rmi.RemoteException;
  public java.util.Collection findAllAssessmentRoundByClubAndDivision(com.idega.user.data.Group p0,com.idega.user.data.Group p1) throws java.rmi.RemoteException;
  public java.util.Collection findAllCreditCardContractByClub(com.idega.user.data.Group p0) throws java.rmi.RemoteException;

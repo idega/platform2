@@ -26,10 +26,11 @@ public class ClubTariffTypeBMPBean extends GenericEntity implements ClubTariffTy
 	protected final static String COLUMN_NAME = "tariff_type_name";
 	protected final static String COLUMN_LOCALIZED_KEY = "localized_key";
 	protected final static String COLUMN_CLUB = "club_id";
+	protected final static String COLUMN_DELETED = "deleted";
 
-	protected final static String TYPE_MEMBER_FEE = "MEMBER_FEE";
-	protected final static String TYPE_PRACTISE_FEE = "PRACTISE_FEE";
-	protected final static String TYPE_TOURNAMENT_FEE = "TOURNAMENT_FEE";
+//	protected final static String TYPE_MEMBER_FEE = "MEMBER_FEE";
+//	protected final static String TYPE_PRACTISE_FEE = "PRACTISE_FEE";
+//	protected final static String TYPE_TOURNAMENT_FEE = "TOURNAMENT_FEE";
 
 	/*
 	 * (non-Javadoc)
@@ -51,6 +52,7 @@ public class ClubTariffTypeBMPBean extends GenericEntity implements ClubTariffTy
 		addAttribute(COLUMN_NAME, "Tariff name", true, true, java.lang.String.class, 255);
 		addAttribute(COLUMN_LOCALIZED_KEY, "Tariff localized key", true, true, java.lang.String.class, 255);
 		addManyToOneRelationship(COLUMN_CLUB, Group.class);
+		addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
 		setNullable(COLUMN_CLUB, true);
 	}
 
@@ -95,6 +97,10 @@ public class ClubTariffTypeBMPBean extends GenericEntity implements ClubTariffTy
 		setColumn(COLUMN_CLUB, clubId);
 	}
 
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED, deleted);
+	}
+	
 	public String getTariffType() {
 		return getStringColumnValue(COLUMN_TARIFF_TYPE);
 	}
@@ -114,15 +120,21 @@ public class ClubTariffTypeBMPBean extends GenericEntity implements ClubTariffTy
 	public int getClubId() {
 		return getIntColumnValue(COLUMN_CLUB);
 	}
+	
+	public boolean getDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED, false);
+	}
 
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere();
-		sql.appendLeftParenthesis();
 		sql.appendEquals(COLUMN_CLUB, ((Integer)club.getPrimaryKey()).intValue());
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.appendEquals(COLUMN_DELETED,false);
 		sql.appendOr();
-		sql.append(COLUMN_CLUB);
+		sql.append(COLUMN_DELETED);
 		sql.append(" is null");
 		sql.appendRightParenthesis();
 		

@@ -48,6 +48,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String LABEL_FROM = "isi_acc_etl_from";
 	protected static final String LABEL_TO = "isi_acc_etl_to";
 	protected static final String LABEL_CHILDREN = "isi_acc_etl_appl_children";
+	protected static final String LABEL_DELETE = "isi_acc_etl_delete";
 	
 	/**
 	 *  
@@ -92,10 +93,24 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 	}
-
+	
+	private void deleteTariffEntry(IWContext iwc) {
+		String delete[] = iwc.getParameterValues(LABEL_DELETE);
+		
+		try {
+			getAccountingBusiness(iwc).deleteTariffType(delete);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
 			saveTariffEntry(iwc);
+		}
+		else if (iwc.isParameterSet(ACTION_DELETE)) {
+			deleteTariffEntry(iwc);
 		}
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -180,7 +195,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				ClubTariff tariff = (ClubTariff) it.next();
-				CheckBox delete = new CheckBox(ACTION_DELETE, tariff.getPrimaryKey().toString());
+				CheckBox delete = new CheckBox(LABEL_DELETE, tariff.getPrimaryKey().toString());
 				t.add(delete, 1, row);
 				
 				Group group = tariff.getGroup();
@@ -194,6 +209,11 @@ public class EditTariffList extends CashierSubWindowTemplate {
 				t.add(tariff.getPeriodFrom().toString(), 6, row);
 				t.add(tariff.getPeriodTo().toString(), 7, row++);
 			}
+			
+			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
+			delete.setToEnableWhenChecked(LABEL_DELETE);
+			t.add(delete, 7, row);
+			t.setAlignment(7, row, "RIGHT");
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);

@@ -5,6 +5,7 @@ public interface AssessmentRound extends com.idega.data.IDOEntity
 {
  public com.idega.user.data.Group getClub();
  public int getClubId();
+ public boolean getDeleted();
  public com.idega.user.data.Group getDivision();
  public int getDivisionId();
  public java.sql.Timestamp getEndTime();
@@ -19,6 +20,7 @@ public interface AssessmentRound extends com.idega.data.IDOEntity
  public boolean getUseParentTariff();
  public void setClub(com.idega.user.data.Group p0);
  public void setClubId(int p0);
+ public void setDeleted(boolean p0);
  public void setDivision(com.idega.user.data.Group p0);
  public void setDivisionId(int p0);
  public void setEndTime(java.sql.Timestamp p0);

@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2003 Idega software. All Rights Reserved.
- *
- * This software is the proprietary information of Idega software.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega software. Use is
+ * subject to license terms.
+ *  
  */
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
@@ -23,7 +23,9 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
@@ -54,7 +56,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				e.printStackTrace();
 			}
 		}
-		
+
 		IWTimestamp now = IWTimestamp.RightNow();
 		AssessmentRound round = null;
 		try {
@@ -67,7 +69,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			round.setExecutedBy(user);
 			round.setUseParentTariff(useParent);
 			round.setIncludeChildren(includeChildren);
-			
+
 			round.store();
 		}
 		catch (IDOLookupException e) {
@@ -76,23 +78,23 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		
-		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext());		
+
+		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext());
 		assRoundThread.start();
-		
+
 		return true;
 	}
-	
+
 	public Collection findAllTariffByClub(Group club) {
 		try {
 			return getClubTariffHome().findAllByClub(club);
 		}
 		catch (FinderException e) {
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean insertTariff(Group club, String groupId, String typeId, String text, String amount, Date from, Date to) {
 		Group group = null;
 		if (groupId != null) {
@@ -110,7 +112,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				e.printStackTrace();
 			}
 		}
-		
+
 		ClubTariffType type = null;
 		if (typeId != null) {
 			try {
@@ -123,17 +125,17 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				e.printStackTrace();
 			}
 		}
-		
+
 		float am = 0;
 		try {
 			am = Float.parseFloat(amount);
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 		}
-		
-		return insertTariff(club,group,type,text,am,from,to);
+
+		return insertTariff(club, group, type, text, am, from, to);
 	}
-	
+
 	public boolean insertTariff(Group club, Group group, ClubTariffType type, String text, float amount, Date from, Date to) {
 		ClubTariff eTariff;
 		try {
@@ -145,15 +147,36 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			eTariff.setAmount(amount);
 			eTariff.setPeriodFrom(from);
 			eTariff.setPeriodTo(to);
-			
+
 			eTariff.store();
-			
+
 			return true;
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		
+
+		return false;
+	}
+	
+	public boolean deleteTariff(String ids[]) {
+		try {
+			for (int i = 0; i < ids.length; i++) {
+				Integer id = new Integer(ids[i]);
+				ClubTariff eTariff = getClubTariffHome().findByPrimaryKey(id);
+				eTariff.setDeleted(true);
+				eTariff.store();
+			}
+
+			return true;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 	
@@ -163,10 +186,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		}
 		catch (FinderException e) {
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean insertTariffType(String type, String name, String locKey, Group club) {
 		try {
 			ClubTariffType eType = getClubTariffTypeHome().create();
@@ -176,16 +199,37 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			eType.setLocalizedKey(locKey);
 
 			eType.store();
-			
+
 			return true;
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
-	
+
+	public boolean deleteTariffType(String ids[]) {
+		try {
+			for (int i = 0; i < ids.length; i++) {
+				Integer id = new Integer(ids[i]);
+				ClubTariffType eType = getClubTariffTypeHome().findByPrimaryKey(id);
+				eType.setDeleted(true);
+				eType.store();
+			}
+
+			return true;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
 	public Collection findAllCreditCardType() {
 		try {
 			return getCreditCardTypeHome().findAll();
@@ -193,10 +237,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public Collection findAllCreditCardContractByClub(Group club) {
 		try {
 			return getCreditCardContractHome().findAllByClub(club);
@@ -204,10 +248,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean insertCreditCardContract(Group club, String division, String contractNumber, String type) {
 		Group div = null;
 		if (division != null) {
@@ -222,7 +266,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			catch (FinderException e) {
 			}
 		}
-		
+
 		CreditCardType cType = null;
 		if (type != null) {
 			try {
@@ -235,10 +279,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				e.printStackTrace();
 			}
 		}
-		
-		return insertCreditCardContract(club,div,contractNumber,cType);
+
+		return insertCreditCardContract(club, div, contractNumber, cType);
 	}
-	
+
 	public boolean insertCreditCardContract(Group club, Group division, String contractNumber, CreditCardType type) {
 		try {
 			CreditCardContract eCont = getCreditCardContractHome().create();
@@ -248,13 +292,13 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			eCont.setCardType(type);
 
 			eCont.store();
-			
+
 			return true;
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 
@@ -265,10 +309,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean insertAssessmentRound(String name, Group club, Group division, Group group, User user, Timestamp start, Timestamp end, boolean useParent, boolean includeChildren) {
 		try {
 			AssessmentRound round = getAssessmentRoundHome().create();
@@ -276,7 +320,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			round.setClub(club);
 			if (division != null)
 				round.setDivision(division);
-			if (group != null) 
+			if (group != null)
 				round.setGroup(group);
 			round.setExecutedBy(user);
 			round.setStartTime(start);
@@ -284,18 +328,18 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				round.setEndTime(end);
 			round.setUseParentTariff(useParent);
 			round.setIncludeChildren(includeChildren);
-			
+
 			round.store();
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
-			
+
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	private ClubTariffTypeHome getClubTariffTypeHome() {
 		try {
 			return (ClubTariffTypeHome) IDOLookup.getHome(ClubTariffType.class);
@@ -303,10 +347,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	private ClubTariffHome getClubTariffHome() {
 		try {
 			return (ClubTariffHome) IDOLookup.getHome(ClubTariff.class);
@@ -314,7 +358,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -325,10 +369,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	private CreditCardTypeHome getCreditCardTypeHome() {
 		try {
 			return (CreditCardTypeHome) IDOLookup.getHome(CreditCardType.class);
@@ -336,10 +380,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	private AssessmentRoundHome getAssessmentRoundHome() {
 		try {
 			return (AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class);
@@ -347,7 +391,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
-	}	
+	}
 }
