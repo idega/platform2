@@ -48,6 +48,8 @@ import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolType;
@@ -69,11 +71,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/16 13:38:39 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/26 15:39:08 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.109 $
+ * @version $Revision: 1.110 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -116,6 +118,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	 */
 	protected void contracts() throws NotEmptyException {
 		School school;
+		int validSchoolSeasonId = -1;
 
 		try {
 			//Set the category parameter to ElementarySchool
@@ -125,6 +128,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			if (hasPlacements()) {
 				throw new NotEmptyException("invoice.must_first_empty_old_data");
 			}
+  			validSchoolSeasonId = ((Integer)getSchoolSeasonHome().findCurrentSeason().getPrimaryKey()).intValue();
 
 			int privateType = ((Integer) providerType.getPrimaryKey()).intValue();
 
@@ -164,7 +168,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							try {
 								errorRelated = new ErrorLogger(tmpErrorRelated);
 								SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
-								createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
+								if(schoolClassMember.getSchoolClass().getSchoolSeasonId() == validSchoolSeasonId){
+									createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
+								}
 							}
 							catch (NullPointerException e) {
 								e.printStackTrace();
@@ -777,6 +783,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 	private SchoolHome getSchoolHome() throws RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);
+	}
+
+	private SchoolSeasonHome getSchoolSeasonHome() throws RemoteException {
+		return (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
 	}
 
 	protected SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
