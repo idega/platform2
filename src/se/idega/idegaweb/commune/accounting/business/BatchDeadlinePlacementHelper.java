@@ -1,5 +1,5 @@
 /*
- * $Id: BatchDeadlinePlacementHelper.java,v 1.2 2005/02/17 12:16:30 anders Exp $
+ * $Id: BatchDeadlinePlacementHelper.java,v 1.3 2005/03/09 20:16:39 laddi Exp $
  * Created on 26.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import se.idega.idegaweb.commune.care.business.PlacementHelper;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/17 12:16:30 $ by $Author: anders $
+ *  Last modified: $Date: 2005/03/09 20:16:39 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BatchDeadlinePlacementHelper extends DefaultPlacementHelper implements PlacementHelper {
     
@@ -38,11 +38,15 @@ public class BatchDeadlinePlacementHelper extends DefaultPlacementHelper impleme
     private BatchDeadline deadline = null;
     
     public Date getEarliestPlacementDate() {
-       TimePeriod period = getValidPeriod();
+      IWTimestamp stamp = new IWTimestamp(super.getEarliestPlacementDate()); 
+			TimePeriod period = getValidPeriod();
        if(period!=null){
-           return period.getFirstTimestamp().getDate();
+				 IWTimestamp firstTimestamp = period.getFirstTimestamp();
+				 if (stamp.isEarlierThan(firstTimestamp)) {
+					 return firstTimestamp.getDate();
+				 }
        }
-       return null;
+       return stamp.getDate();
     }
     public IWResourceMessage getEarliestPlacementMessage() {
         // TODO Auto-generated method stub
