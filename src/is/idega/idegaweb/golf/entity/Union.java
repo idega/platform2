@@ -1,13 +1,10 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
-import com.idega.data.IDOLegacyEntity;
-
-public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com.idega.util.datastructures.idegaTreeNode,com.idega.core.data.ICTreeNode
+public interface Union extends com.idega.data.IDOLegacyEntity,com.idega.util.datastructures.idegaTreeNode,com.idega.core.data.ICTreeNode
 {
+ public void addChild(com.idega.data.TreeableEntity p0)throws java.sql.SQLException;
  public java.util.Enumeration children();
- public void delete()throws java.sql.SQLException;
  public is.idega.idegaweb.golf.entity.Union[] findAllGolfClubs()throws java.sql.SQLException;
  public java.lang.String getAbbrevation();
  public java.util.List getActiveMembers();
@@ -19,23 +16,29 @@ public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com
  public com.idega.util.datastructures.idegaTreeNode getChildAt(int p0);
  public com.idega.core.data.ICTreeNode getChildAtIndex(int p0);
  public int getChildCount();
+ public java.util.Iterator getChildren(java.lang.String p0);
  public java.util.Iterator getChildren();
  public java.util.List getGroups(java.lang.String p0);
- public java.lang.String getIDColumnName();
  public java.util.List getInActiveMembers();
- public int getIndex(com.idega.core.data.ICTreeNode p0);
  public int getIndex(com.idega.util.datastructures.idegaTreeNode p0);
+ public int getIndex(com.idega.core.data.ICTreeNode p0);
  public java.util.List getMembersInUnion();
  public java.lang.String getName();
  public int getNodeID();
  public java.lang.String getNodeName();
+ public java.lang.String getNodeName(java.util.Locale p0);
+ public java.lang.String getNodeName(java.util.Locale p0,com.idega.idegaweb.IWApplicationContext p1);
  public int getNumber();
  public java.util.List getOwningFields()throws java.sql.SQLException;
  public com.idega.util.datastructures.idegaTreeNode getParent();
+ public com.idega.data.TreeableEntity getParentEntity();
  public com.idega.core.data.ICTreeNode getParentNode();
  public int getSiblingCount();
  public java.util.List getTournamentGroups();
  public java.util.List getTournamentGroupsRecursive();
+ public java.lang.String getTreeRelationshipChildColumnName(com.idega.data.TreeableEntity p0);
+ public java.lang.String getTreeRelationshipTableName(com.idega.data.TreeableEntity p0);
+ public com.idega.user.data.Group getUnionFromIWMemberSystem();
  public java.util.List getUnionGroups();
  public java.util.List getUnionGroupsRecursive();
  public java.lang.String getUnionType();
@@ -45,9 +48,16 @@ public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com
  public java.util.List getUnionsBetweenZipcodes(is.idega.idegaweb.golf.entity.Union p0,int p1,int p2,int p3,int p4,int p5,int p6)throws java.sql.SQLException;
  public java.util.List getUnionsBetweenZipcodesOrderBy(is.idega.idegaweb.golf.entity.Union p0,int p1,int p2,int p3,int p4,int p5,int p6,java.lang.String p7)throws java.sql.SQLException;
  public boolean isLeaf();
+ public boolean leafsFirst();
+ public void moveChildrenFrom(com.idega.data.TreeableEntity p0)throws java.sql.SQLException;
+ public void removeChild(com.idega.data.TreeableEntity p0)throws java.sql.SQLException;
  public void setAbbrevation(java.lang.String p0);
+ public void setICGroup(com.idega.user.data.Group p0);
+ public void setLeafsFirst(boolean p0);
  public void setName(java.lang.String p0);
  public void setNumber(java.lang.Integer p0);
  public void setNumber(int p0);
+ public void setToSortLeafs(boolean p0);
  public void setUnionType(java.lang.String p0);
+ public boolean sortLeafs();
 }

@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +35,8 @@ import com.idega.util.datastructures.idegaTreeNode;
 public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,ICTreeNode{
 
         public static String sClassName = "is.idega.idegaweb.golf.entity.Union";
-
+        
+        private static final String COLUMNNAME_IC_GROUP_ID = "IC_GROUP_ID";
 
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
@@ -43,10 +45,10 @@ public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,I
 		addAttribute("number", "Númer", true, true, "java.lang.Integer");
 		addAttribute("union_type", "Tegund", true, true, "java.lang.String");
 
-                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Address.class,"union_address");
-                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Phone.class,"union_phone");
-                      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Group.class,"union_group");
-
+	      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Address.class,"union_address");
+	      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Phone.class,"union_phone");
+	      addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Group.class,"union_group");
+	      addOneToOneRelationship(COLUMNNAME_IC_GROUP_ID,com.idega.user.data.Group.class);
 	}
 
 	public String getEntityName(){
@@ -95,6 +97,10 @@ public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,I
 
 	public Union[] findAllGolfClubs()throws SQLException{
 		return (Union[]) findAll("select * from "+this.getEntityName()+" where union_type='golf_club'");
+	}
+	
+	public Collection ejbFindAllUnions() throws FinderException {
+		return idoFindAllIDsBySQL();
 	}
 
         /**
@@ -817,4 +823,18 @@ public List getTournamentGroupsRecursive(){
 	public boolean sortLeafs() {
 		return false;
 	}
+	
+	public void setICGroup(com.idega.user.data.Group group) {
+		setColumn(COLUMNNAME_IC_GROUP_ID,group);
+	}
+	
+	public com.idega.user.data.Group getUnionFromIWMemberSystem() {
+		return (com.idega.user.data.Group)getColumnValue(COLUMNNAME_IC_GROUP_ID);
+	}
+	
+	public Object ejbFindUnionByIWMemberSystemGroup(Group union) throws FinderException {
+		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(COLUMNNAME_IC_GROUP_ID,union));
+	}
+	
+	
 }

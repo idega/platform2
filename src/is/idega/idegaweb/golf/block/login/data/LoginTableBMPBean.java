@@ -5,13 +5,14 @@
 
 package is.idega.idegaweb.golf.block.login.data;
 
-//import java.util.*;
-import java.sql.*;
-import com.idega.data.*;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
+import is.idega.idegaweb.golf.entity.Member;
+
+import com.idega.data.GenericEntity;
 
 public class LoginTableBMPBean extends GenericEntity implements LoginTable{
-
-	public static String className = "is.idega.idegaweb.golf.block.login.data.LoginTable";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
@@ -61,6 +62,14 @@ public class LoginTableBMPBean extends GenericEntity implements LoginTable{
 
 	public void setMemberId(int memberId) {
 		setMemberId((new Integer(memberId)));
+	}
+	
+	public Member getMember() {
+		return (Member)getColumnValue(getMemberIdColumnName());
+	}
+	
+	public Object ejbFindByMember(Member member) throws EJBException, FinderException {
+		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(getMemberIdColumnName(),member.getPrimaryKey()));
 	}
 
 }

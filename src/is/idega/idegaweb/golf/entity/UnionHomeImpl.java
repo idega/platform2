@@ -7,9 +7,11 @@ public class UnionHomeImpl extends com.idega.data.IDOFactory implements UnionHom
   return Union.class;
  }
 
+
  public Union create() throws javax.ejb.CreateException{
-  return (Union) super.idoCreate();
+  return (Union) super.createIDO();
  }
+
 
  public Union createLegacy(){
 	try{
@@ -21,13 +23,30 @@ public class UnionHomeImpl extends com.idega.data.IDOFactory implements UnionHom
 
  }
 
- public Union findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Union) super.idoFindByPrimaryKey(id);
- }
+
+public java.util.Collection findAllUnions()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((UnionBMPBean)entity).ejbFindAllUnions();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public Union findUnionByIWMemberSystemGroup(is.idega.idegaweb.golf.entity.Group p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((UnionBMPBean)entity).ejbFindUnionByIWMemberSystemGroup(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
 
  public Union findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Union) super.idoFindByPrimaryKey(pk);
+  return (Union) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public Union findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (Union) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public Union findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +57,7 @@ public class UnionHomeImpl extends com.idega.data.IDOFactory implements UnionHom
 	}
 
  }
+
 
 
 }

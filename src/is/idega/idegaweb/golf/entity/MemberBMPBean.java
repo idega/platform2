@@ -16,10 +16,12 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
+import com.idega.user.data.User;
 
 public class MemberBMPBean extends GenericEntity implements Member {
 
   public boolean debug = true;
+  private final static String COLUMNNAME_IC_USER_ID = "IC_USER_ID";
 
   public void initializeAttributes(){
     //super.initializeAttributes();
@@ -41,6 +43,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Card.class,"member_card");
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Phone.class,"member_phone");
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Group.class,"group_member");
+    addOneToOneRelationship(COLUMNNAME_IC_USER_ID,User.class);
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_member");
 
 
@@ -600,4 +603,17 @@ public class MemberBMPBean extends GenericEntity implements Member {
 
 
   }
+    
+	public void setICUser(com.idega.user.data.User user) {
+		setColumn(COLUMNNAME_IC_USER_ID,user);
+	}
+    
+	public User getICUser() {
+		return (User)getColumnValue(COLUMNNAME_IC_USER_ID);
+	}
+	
+	public Object ejbFindMemberByIWMemberSystemUser(User user) throws FinderException {
+		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(COLUMNNAME_IC_USER_ID,user));
+	}
+	
 }

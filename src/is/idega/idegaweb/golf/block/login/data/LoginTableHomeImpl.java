@@ -24,6 +24,13 @@ public class LoginTableHomeImpl extends com.idega.data.IDOFactory implements Log
  }
 
 
+public LoginTable findByMember(is.idega.idegaweb.golf.entity.Member p0)throws javax.ejb.EJBException,javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((LoginTableBMPBean)entity).ejbFindByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public LoginTable findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (LoginTable) super.findByPrimaryKeyIDO(pk);
  }
