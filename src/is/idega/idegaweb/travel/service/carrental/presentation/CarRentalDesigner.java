@@ -1,6 +1,8 @@
 package is.idega.idegaweb.travel.service.carrental.presentation;
 
 import java.rmi.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.*;
 
@@ -17,6 +19,8 @@ import com.idega.util.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.presentation.*;
 import is.idega.idegaweb.travel.service.carrental.business.*;
+import is.idega.idegaweb.travel.service.carrental.data.CarRental;
+import is.idega.idegaweb.travel.service.carrental.data.CarRentalHome;
 import is.idega.idegaweb.travel.service.presentation.*;
 
 /**
@@ -34,6 +38,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
   private Supplier _supplier;
   private Service _service;
   private Product _product;
+  private CarRental _carRental;
   private Timeframe _timeframe;
 
   String NAME_OF_FORM = ServiceDesigner.NAME_OF_FORM;
@@ -55,10 +60,8 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
   private String PARAMETER_FRIDAYS         = "hd_par_fri";
   private String PARAMETER_SATURDAYS       = "hd_par_sat";
   private String PARAMETER_SUNDAYS         = "hd_par_sun";
-  private String PARAMETER_DEPARTURE_FROM  = "hd_par_dep_from";
-  private String PARAMETER_DEPARTURE_TIME  = "hd_par_dep_time";
-  private String PARAMETER_ARRIVAL_AT      = "hd_par_arr_at";
-  private String PARAMETER_ARRIVAL_TIME    = "hd_par_arr_time";
+  private String PARAMETER_PICKUP_PLACE    = "hd_par_pp";
+  private String PARAMETER_DROPOFF_PLACE    = "hd_par_dp";
   private String PARAMETER_DISCOUNT_TYPE   = "hd_par_disc";
   private String PARAMETER_DESIGN_IMAGE_ID = "hd_par_des_img_id";
   private String PARAMETER_USE_IMAGE_ID    = "hd_par_use_img_id";
@@ -76,8 +79,10 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
 
   private boolean setupData(int serviceId) {
     try {
+    	CarRentalHome cHome = (CarRentalHome) IDOLookup.getHome(CarRental.class);
       ServiceHome sHome = (ServiceHome) IDOLookup.getHome(Service.class);
       ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+      _carRental = cHome.findByPrimaryKey(new Integer(serviceId));
       _service = sHome.findByPrimaryKey(new Integer(serviceId));
       _product = pHome.findByPrimaryKey(new Integer(serviceId));
       _timeframe = _product.getTimeframe();
@@ -88,152 +93,151 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
   }
 
   public int handleInsert(IWContext iwc) throws RemoteException {
-    String sServiceId = iwc.getParameter( PARAMETER_IS_UPDATE );
-    int serviceId = -1;
-    if ( sServiceId != null ) {
-      serviceId = Integer.parseInt( sServiceId );
-    }
-    setupData(serviceId);
-
-    String name = iwc.getParameter( PARAMETER_NAME );
-    String number = iwc.getParameter( PARAMETER_NUMBER );
-    String description = iwc.getParameter( PARAMETER_DESCRIPTION );
-    if ( description == null ) {
-      description = "";
-    }
-    String imageId = iwc.getParameter( PARAMETER_DESIGN_IMAGE_ID );
-    String activeFrom = iwc.getParameter( PARAMETER_ACTIVE_FROM );
-    String activeTo = iwc.getParameter( PARAMETER_ACTIVE_TO );
-    String activeYearly = iwc.getParameter( PARAMETER_ACTIVE_YEARLY );
-
-    String allDays = iwc.getParameter( PARAMETER_ALL_DAYS );
-    String mondays = iwc.getParameter( PARAMETER_MONDAYS );
-    String tuesdays = iwc.getParameter( PARAMETER_TUESDAYS );
-    String wednesdays = iwc.getParameter( PARAMETER_WEDNESDAYS );
-    String thursdays = iwc.getParameter( PARAMETER_THURSDAYS );
-    String fridays = iwc.getParameter( PARAMETER_FRIDAYS );
-    String saturdays = iwc.getParameter( PARAMETER_SATURDAYS );
-    String sundays = iwc.getParameter( PARAMETER_SUNDAYS );
-    String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
-
-    String departureFrom = iwc.getParameter( PARAMETER_DEPARTURE_FROM );
-    String departureTime = iwc.getParameter( PARAMETER_DEPARTURE_TIME );
-    String arrivalAt = iwc.getParameter( PARAMETER_ARRIVAL_AT );
-    String arrivalTime = iwc.getParameter( PARAMETER_ARRIVAL_TIME );
-
-    String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
-
-
-    boolean yearly = false;
-    if ( activeYearly != null ) {
-      if ( activeYearly.equals( "Y" ) ) {
-        yearly = true;
-      }
-    }
-
-    int iDiscountType = com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT;
-    if ( discountType != null ) {
-      iDiscountType = Integer.parseInt( discountType );
-    }
-
-    Integer iImageId = null;
-    if ( imageId != null ) {
-      if ( !imageId.equals( "-1" ) ) {
-        iImageId = new Integer( imageId );
-      }
-    }
-
-
-    IWTimestamp activeFromStamp = null;
-    if ( activeFrom != null ) {
-      activeFromStamp = new IWTimestamp( activeFrom );
-    }
-
-    IWTimestamp activeToStamp = null;
-    if ( activeTo != null ) {
-      activeToStamp = new IWTimestamp( activeTo );
-    }
-
-    IWTimestamp departureStamp = null;
-    if ( departureTime != null ) {
-      departureStamp = new IWTimestamp( "2001-01-01 " + departureTime );
-    }
-
-    IWTimestamp arrivalStamp = null;
-    if ( arrivalTime != null ) {
-      arrivalStamp = new IWTimestamp( "2001-01-01 " + arrivalTime );
-    }
-
-
-    int[] tempDays = new int[7];
-    int counter = 0;
-    if ( allDays != null ) {
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY;
-    } else {
-      if ( sundays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
-      }
-      if ( mondays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.MONDAY;
-      }
-      if ( tuesdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.TUESDAY;
-      }
-      if ( wednesdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.WEDNESDAY;
-      }
-      if ( thursdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.THURSDAY;
-      }
-      if ( fridays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.FRIDAY;
-      }
-      if ( saturdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.SATURDAY;
-      }
-    }
-
-    int[] activeDays = new int[counter];
-    System.arraycopy( tempDays, 0, activeDays, 0, counter );
-
-
-    int returner = -1;
-
-    CarRentalBusiness hb = (CarRentalBusiness) IBOLookup.getServiceInstance(iwc, CarRentalBusiness.class);
-
-    try {
-      if ( serviceId == -1 ) {
-        hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
-        returner = hb.createCar(_supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp,true, iDiscountType);
-      } else {
-        String timeframeId = iwc.getParameter( PARAMETER_TIMEFRAME_ID );
-        if ( timeframeId == null ) {
-          timeframeId = "-1";
-        }
-        hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
-        returner = hb.updateCar(serviceId, _supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp, true, iDiscountType);
-        if ( useImageId == null ) {
-          ProductEditorBusiness.getInstance().dropImage( _product, true );
-        }
-
-      }
-
-
-
-    } catch ( Exception e ) {
-      e.printStackTrace( System.err );
-      //add("TEMP - Service EKKI smíðuð");
-    }
-
-    return returner;
+		String sServiceId = iwc.getParameter( PARAMETER_IS_UPDATE );
+		int serviceId = -1;
+		if ( sServiceId != null ) {
+		  serviceId = Integer.parseInt( sServiceId );
+		}
+		setupData(serviceId);
+	
+		String name = iwc.getParameter( PARAMETER_NAME );
+		String number = iwc.getParameter( PARAMETER_NUMBER );
+		String description = iwc.getParameter( PARAMETER_DESCRIPTION );
+		if ( description == null ) {
+		  description = "";
+		}
+		String imageId = iwc.getParameter( PARAMETER_DESIGN_IMAGE_ID );
+		String activeFrom = iwc.getParameter( PARAMETER_ACTIVE_FROM );
+		String activeTo = iwc.getParameter( PARAMETER_ACTIVE_TO );
+		String activeYearly = iwc.getParameter( PARAMETER_ACTIVE_YEARLY );
+	
+		String allDays = iwc.getParameter( PARAMETER_ALL_DAYS );
+		String mondays = iwc.getParameter( PARAMETER_MONDAYS );
+		String tuesdays = iwc.getParameter( PARAMETER_TUESDAYS );
+		String wednesdays = iwc.getParameter( PARAMETER_WEDNESDAYS );
+		String thursdays = iwc.getParameter( PARAMETER_THURSDAYS );
+		String fridays = iwc.getParameter( PARAMETER_FRIDAYS );
+		String saturdays = iwc.getParameter( PARAMETER_SATURDAYS );
+		String sundays = iwc.getParameter( PARAMETER_SUNDAYS );
+		String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
+	/*
+		String departureFrom = iwc.getParameter( PARAMETER_DEPARTURE_FROM );
+		String departureTime = iwc.getParameter( PARAMETER_DEPARTURE_TIME );
+		String arrivalAt = iwc.getParameter( PARAMETER_ARRIVAL_AT );
+		String arrivalTime = iwc.getParameter( PARAMETER_ARRIVAL_TIME );
+	*/
+		String[] pickupPlaceIds = iwc.getParameterValues( PARAMETER_PICKUP_PLACE );
+		String[] dropoffPlaceIds = iwc.getParameterValues( PARAMETER_DROPOFF_PLACE );
+	
+		String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
+	
+	
+		boolean yearly = false;
+		if ( activeYearly != null ) {
+		  if ( activeYearly.equals( "Y" ) ) {
+			yearly = true;
+		  }
+		}
+	
+		int iDiscountType = com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT;
+		if ( discountType != null ) {
+		  iDiscountType = Integer.parseInt( discountType );
+		}
+	
+		Integer iImageId = null;
+		if ( imageId != null ) {
+		  if ( !imageId.equals( "-1" ) ) {
+			iImageId = new Integer( imageId );
+		  }
+		}
+	
+	
+		IWTimestamp activeFromStamp = null;
+		if ( activeFrom != null ) {
+		  activeFromStamp = new IWTimestamp( activeFrom );
+		}
+	
+		IWTimestamp activeToStamp = null;
+		if ( activeTo != null ) {
+		  activeToStamp = new IWTimestamp( activeTo );
+		}
+	/*
+		IWTimestamp departureStamp = null;
+		if ( departureTime != null ) {
+		  departureStamp = new IWTimestamp( "2001-01-01 " + departureTime );
+		}
+	
+		IWTimestamp arrivalStamp = null;
+		if ( arrivalTime != null ) {
+		  arrivalStamp = new IWTimestamp( "2001-01-01 " + arrivalTime );
+		}
+	*/
+	
+		int[] tempDays = new int[7];
+		int counter = 0;
+		if ( allDays != null ) {
+		  tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY;
+		  tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY;
+		  tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY;
+		  tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY;
+		  tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY;
+		  tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY;
+		  tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY;
+		} else {
+		  if ( sundays != null ) {
+			tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
+		  }
+		  if ( mondays != null ) {
+			tempDays[counter++] = java.util.GregorianCalendar.MONDAY;
+		  }
+		  if ( tuesdays != null ) {
+			tempDays[counter++] = java.util.GregorianCalendar.TUESDAY;
+		  }
+		  if ( wednesdays != null ) {
+			tempDays[counter++] = java.util.GregorianCalendar.WEDNESDAY;
+		  }
+		  if ( thursdays != null ) {
+			tempDays[counter++] = java.util.GregorianCalendar.THURSDAY;
+		  }
+		  if ( fridays != null ) {
+			tempDays[counter++] = java.util.GregorianCalendar.FRIDAY;
+		  }
+		  if ( saturdays != null ) {
+			tempDays[counter++] = java.util.GregorianCalendar.SATURDAY;
+		  }
+		}
+	
+		int[] activeDays = new int[counter];
+		System.arraycopy( tempDays, 0, activeDays, 0, counter );
+	
+	
+		int returner = -1;
+	
+		CarRentalBusiness hb = (CarRentalBusiness) IBOLookup.getServiceInstance(iwc, CarRentalBusiness.class);
+	
+		try {
+		  if ( serviceId == -1 ) {
+				hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
+				returner = hb.createCar(_supplier.getID(), iImageId, name, number, description, activeDays,pickupPlaceIds, dropoffPlaceIds, true, iDiscountType);
+		  } else {
+				String timeframeId = iwc.getParameter( PARAMETER_TIMEFRAME_ID );
+				if ( timeframeId == null ) {
+				  timeframeId = "-1";
+				}
+				hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
+				returner = hb.updateCar(serviceId, _supplier.getID(), iImageId, name, number, description, activeDays, pickupPlaceIds, dropoffPlaceIds, true, iDiscountType);
+				if ( useImageId == null ) {
+				  ProductEditorBusiness.getInstance().dropImage( _product, true );
+				}
+		  }
+	
+		} catch ( Exception e ) {
+		  e.printStackTrace( System.err );
+		  //add("TEMP - Service EKKI smíðuð");
+		}
+	
+		return returner;
   }
-
   public void finalizeCreation(IWContext iwc, Product product) throws RemoteException, FinderException {
   }
 
@@ -243,6 +247,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
 
   public Form getDesignerForm( IWContext iwc, int serviceId ) throws RemoteException, FinderException {
     boolean isDataValid = true;
+
 
     if ( serviceId != -1 ) {
       isDataValid = setupData( serviceId );
@@ -263,11 +268,11 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
 
       TextInput name = new TextInput( PARAMETER_NAME );
       name.setSize( 40 );
-      //name.keepStatusOnAction();
+
       TextArea description = new TextArea( PARAMETER_DESCRIPTION );
       description.setWidth( "50" );
       description.setHeight( "12" );
-      //description.keepStatusOnAction();
+
       TextInput number = new TextInput( PARAMETER_NUMBER );
       number.setSize( 20 );
       number.keepStatusOnAction();
@@ -305,22 +310,27 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
       saturdays.keepStatusOnAction();
       sundays.keepStatusOnAction();
 
-      TextInput departure_from = new TextInput( PARAMETER_DEPARTURE_FROM );
-      departure_from.setSize( 40 );
-      departure_from.keepStatusOnAction();
-      TimeInput departure_time = new TimeInput( PARAMETER_DEPARTURE_TIME );
-      departure_time.setHour( 8 );
-      departure_time.setMinute( 0 );
-      departure_time.keepStatusOnAction();
-      TextInput arrival_at = new TextInput( PARAMETER_ARRIVAL_AT );
-      arrival_at.setSize( 40 );
-      arrival_at.keepStatusOnAction();
-      TimeInput arrival_time = new TimeInput( PARAMETER_ARRIVAL_TIME );
-      arrival_time.setHour( 8 );
-      arrival_time.setMinute( 0 );
-      arrival_time.keepStatusOnAction();
-
-
+			PickupPlaceHome ppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
+			SelectionBox pickupPlaces = new SelectionBox( PARAMETER_PICKUP_PLACE );
+			Collection coll = ppHome.findHotelPickupPlaces(_supplier);
+			if (coll != null && !coll.isEmpty()) {
+				Iterator iter = coll.iterator();
+				PickupPlace p;
+				while (iter.hasNext()) {
+					p = ppHome.findByPrimaryKey(iter.next());
+					pickupPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
+				}	
+			}
+			SelectionBox dropoffPlaces = new SelectionBox( PARAMETER_DROPOFF_PLACE );
+			coll = ppHome.findDropoffPlaces(_supplier);
+			if (coll != null && !coll.isEmpty()) {
+				Iterator iter = coll.iterator();
+				PickupPlace p;
+				while (iter.hasNext()) {
+					p = ppHome.findByPrimaryKey(iter.next());
+					dropoffPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
+				}	
+			}
       DropdownMenu discountType = new DropdownMenu( PARAMETER_DISCOUNT_TYPE );
       discountType.addMenuElement( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT, _iwrb.getLocalizedString( "travel.amount", "Amount" ) );
       discountType.addMenuElement( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT, _iwrb.getLocalizedString( "travel.percent", "Percent" ) );
@@ -345,13 +355,9 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
       Text imgText = ( Text ) theBoldText.clone();
       imgText.setText( _iwrb.getLocalizedString( "travel.image", "Image" ) );
 
-//      table.add(descText,1,row);
-//      table.add(description, 2,row);
       table.setVerticalAlignment( 1, row, "top" );
       table.setVerticalAlignment( 2, row, "top" );
 
-//      ++row;
-//      table.add(locales, 2, row);
       ++row;
 
       ImageInserter imageInserter = new ImageInserter( PARAMETER_DESIGN_IMAGE_ID );
@@ -362,14 +368,11 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
         if ( imageId != null ) {
           imageInserter.setImageId( Integer.parseInt( imageId ) );
           imageInserter.setSelected( true );
-          //imageInserter = new ImageInserter(Integer.parseInt(imageId), "design_image_id");
         } else if ( _product.getFileId() != -1 ) {
           imageInserter.setImageId( _product.getFileId() );
           imageInserter.setSelected( true );
-          //imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
         }
       }
-      //imageInserter.setWindowToReload(true);
 
 
       table.setVerticalAlignment( 1, row, "top" );
@@ -458,29 +461,19 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
       table.add( weekdaysText, 1, row );
       table.add( weekdayFixTable, 2, row );
 
-      ++row;
-      Text arrivalAtText = ( Text ) theBoldText.clone();
-      arrivalAtText.setText( _iwrb.getLocalizedString( "travel.arrival_at", "Arrival at" ) );
-      table.add( arrivalAtText, 1, row );
-      table.add( arrival_at, 2, row );
+			++row;
+			Text pickupPlacesText = (Text) theBoldText.clone();
+			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+			pickupPlacesText.setText( _iwrb.getLocalizedString("travel.pickup_places","Pickup places"));
+			table.add( pickupPlacesText, 1, row);
+			table.add( pickupPlaces, 2, row);
 
-      ++row;
-      Text arrivalTimeText = ( Text ) theBoldText.clone();
-      arrivalTimeText.setText( _iwrb.getLocalizedString( "travel.arrival_time", "Arrival time" ) );
-      table.add( arrivalTimeText, 1, row );
-      table.add( arrival_time, 2, row );
-
-      ++row;
-      Text departureFromText = ( Text ) theBoldText.clone();
-      departureFromText.setText( _iwrb.getLocalizedString( "travel.departure_from", "Departure from" ) );
-      table.add( departureFromText, 1, row );
-      table.add( departure_from, 2, row );
-
-      ++row;
-      Text departureTimeText = ( Text ) theBoldText.clone();
-      departureTimeText.setText( _iwrb.getLocalizedString( "travel.departure_time", "Departure time" ) );
-      table.add( departureTimeText, 1, row );
-      table.add( departure_time, 2, row );
+			++row;
+			Text dropoffPlacesText = (Text) theBoldText.clone();
+			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+			dropoffPlacesText.setText( _iwrb.getLocalizedString("travel.dropoff_places","Dropoff places"));
+			table.add( dropoffPlacesText, 1, row);
+			table.add( dropoffPlaces, 2, row);
 
       ++row;
       Text discountTypeText = ( Text ) theBoldText.clone();
@@ -497,7 +490,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
       table.setColumnAlignment( 1, "right" );
       table.setColumnAlignment( 2, "left" );
 
-      if ( _service != null ) {
+      if ( _carRental != null ) {
         Parameter par1 = new Parameter( PARAMETER_IS_UPDATE, Integer.toString( serviceId ) );
         par1.keepStatusOnAction();
         table.add( par1 );
@@ -513,6 +506,29 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
         name.setContent( _product.getProductName( super.getLocaleId() ) );
         number.setContent( _product.getNumber() );
         description.setContent( _product.getProductDescription( super.getLocaleId() ) );
+        try {
+					coll = _carRental.getPickupPlaces();
+	        if (coll != null && !coll.isEmpty() ) {
+	        	String[] temp = new String[coll.size()];
+	        	Iterator iter = coll.iterator();
+	        	for (int i = 0; i < temp.length ; i++ ) {
+	        		temp[i] = (iter.next()).toString();	
+	        	}
+						pickupPlaces.setSelectedElements(temp);
+	        }
+					coll = _carRental.getDropoffPlaces();
+					if (coll != null && !coll.isEmpty() ) {
+						String[] temp = new String[coll.size()];
+						Iterator iter = coll.iterator();
+						for (int i = 0; i < temp.length ; i++ ) {
+							temp[i] = (iter.next()).toString();	
+						}
+						dropoffPlaces.setSelectedElements(temp);
+					}
+				} catch (IDORelationshipException e1) {
+					e1.printStackTrace(System.err);
+				}
+        
 
         int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
         try {
