@@ -80,11 +80,17 @@ public class ResultsViewer extends GolfBlock {
 			iwrb = getResourceBundle(modinfo);
 			tournament = getTournamentSession(modinfo).getTournament();
 			tournamentID = getTournamentSession(modinfo).getTournamentID();
-			if (tournament.getNumberOfRounds() >= 4) {
-				championship = true;
+			
+			if (tournament != null) {
+				if (tournament.getNumberOfRounds() >= 4) {
+					championship = true;
+				}
+	
+				add(getResult(modinfo));
 			}
-
-			add(getResult(modinfo));
+			else {
+				log("[ResultViewer] No tournament in session");
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
