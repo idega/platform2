@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -43,12 +44,14 @@ public class HandicapMemberInfo extends GolfBlock {
 	private Table table;
 	
 	private IWResourceBundle iwrb;
+	private IWBundle iwb;
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext modinfo) throws Exception {
-		iwrb = getResourceBundle(modinfo);
+		iwrb = getResourceBundle();
+		iwb = getBundle();
 		isAdmin = isAdministrator(modinfo);
 
 		if (!isAdmin) {
@@ -125,14 +128,16 @@ public class HandicapMemberInfo extends GolfBlock {
 
 		Image memberImage = null;
 		if (member.getImageId() == 1) {
-			memberImage = iwrb.getImage("/member/noimage.gif");
+			memberImage = iwb.getImage("/shared/user/user.jpg");
+			memberImage.setAlt(localize("handicap.no_image_found", "No image found from user"));
+			memberImage.setToolTip(localize("handicap.no_image_found", "No image found from user"));
 		}
 		else {
 			memberImage = new GolfImage(member.getImageId());
+			memberImage.setAlt(member.getName());
+			memberImage.setToolTip(member.getName());
 		}
 		memberImage.setMaxImageWidth(100);
-		memberImage.setAlt(member.getName());
-		memberImage.setToolTip(member.getName());
 		memberImage.setBorder(1);
 		memberImage.setBorderColor(getHeaderColor());
 		memberImage.setBorderStyle("solid");
