@@ -555,6 +555,17 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public boolean hasCitizenAccount(int userID) throws RemoteException {
 		return hasUserLogin(userID);
 	}
+	
+	public boolean hasBankLogin(int userID) {
+		if (userID != -1)
+			return false;
+		return false;
+	}
+	
+	public boolean hasBankLogin(User user) {
+		return hasBankLogin(((Integer)user.getPrimaryKey()).intValue());
+	}
+
 	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
 	}

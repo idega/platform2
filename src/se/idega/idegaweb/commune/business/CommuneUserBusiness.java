@@ -82,4 +82,6 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	public Email getEmail(User user);
 	public Phone getHomePhone(User user);
 	public boolean isRootCommuneAdministrator(User user) throws RemoteException;
+	public boolean hasBankLogin(int userID) throws RemoteException;
+	public boolean hasBankLogin(User user) throws RemoteException;
 }
