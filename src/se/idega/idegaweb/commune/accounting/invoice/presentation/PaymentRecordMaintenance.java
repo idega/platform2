@@ -73,11 +73,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/02 10:24:21 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 14:52:02 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.53 $
+ * @version $Revision: 1.54 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -859,6 +859,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 						: System.currentTimeMillis ()));
 			table.setHeight (row++, 12);
 			table.mergeCells (1, row, columnCount, row);
+			final ButtonPanel buttonPanel = new ButtonPanel (this);
 			if (0 < records.length) {
 				table.setAlignment (columnCount, 2,
 														Table.HORIZONTAL_ALIGN_RIGHT);
@@ -870,28 +871,27 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				table.mergeCells (1, row, columnCount, row);
 				table.add (getPaymentSummaryTable (context, records, business),
 									 1, row++);
-				table.setHeight (row++, 12);
-				table.mergeCells (1, row, columnCount, row);
-				final ButtonPanel buttonPanel = new ButtonPanel (this);
-				table.add (buttonPanel, 1, row);
 				if (null != providerAuthorizationPage) {
 					buttonPanel.addLocalizedButton
 							("no_param", PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
 							 providerAuthorizationPage);
 				}
-				if (null != createPaymentPage) {
-					final GenericButton button = new GenericButton
-							("no_param", localize(NEW_KEY, NEW_DEFAULT));
-					button.setPageToOpen(createPaymentPage);
-					button.addParameterToPage
-							(ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER,
-							 providerId + "");
-					buttonPanel.addButton(button);
-				}
 				//table.add (getSubmitButton (0, REMOVE_KEY, REMOVE_DEFAULT), 1, row);
 			} else {
 				addSmallText (table, 1, row++, NO_PAYMENT_RECORDS_FOUND_KEY,
 											NO_PAYMENT_RECORDS_FOUND_DEFAULT);
+			}
+			table.setHeight (row++, 12);
+			table.mergeCells (1, row, columnCount, row);
+			table.add (buttonPanel, 1, row);
+			if (null != createPaymentPage) {
+				final GenericButton button = new GenericButton
+						("no_param", localize(NEW_KEY, NEW_DEFAULT));
+				button.setPageToOpen(createPaymentPage);
+				button.addParameterToPage
+						(ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER,
+						 providerId + "");
+				buttonPanel.addButton(button);
 			}
 		}
 		final Form form = new Form ();
