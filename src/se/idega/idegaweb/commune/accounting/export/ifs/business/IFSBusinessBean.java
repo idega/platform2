@@ -239,9 +239,9 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName2.append("N24IFS_BOM_LEV_");
 				StringBuffer fileName3 = new StringBuffer(folder);
 				fileName3.append("N24IFS_BOM_KND_");
-				fileName1.append(now.getDateString("YYYYMMDD_HHMM"));
-				fileName2.append(now.getDateString("YYYYMMDD_HHMM"));
-				fileName3.append(now.getDateString("YYYYMMDD_HHMM"));
+				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
+				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
+				fileName3.append(now.getDateString("yyyyMMdd_hhmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate);
 				createInvoiceFiles(fileName3.toString(), schoolCategory);
@@ -251,8 +251,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName1.append("N24IFS_GSK_HVD_");
 				StringBuffer fileName2 = new StringBuffer(folder);
 				fileName2.append("N24IFS_GSK_LEV_");
-				fileName1.append(now.getDateString("YYYYMMDD_HHMM"));
-				fileName2.append(now.getDateString("YYYYMMDD_HHMM"));
+				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
+				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate);
 			}
@@ -261,8 +261,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName1.append("N24IFS_GYM_HVD_");
 				StringBuffer fileName2 = new StringBuffer(folder);
 				fileName2.append("N24IFS_GYM_LEV_");
-				fileName1.append(now.getDateString("YYYYMMDD_HHMM"));
-				fileName2.append(now.getDateString("YYYYMMDD_HHMM"));
+				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
+				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate);
 			}
@@ -302,7 +302,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				PaymentRecord pRec = (PaymentRecord) it.next();
 				if (pRec.getTotalAmount() != 0.0f) {
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYYY"));
+					bWriter.write(executionDate.getDateString("yyyy"));
 					bWriter.write(";");
 					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Konto"));
 					bWriter.write(";");
@@ -346,7 +346,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYMM") + " " + pRec.getPaymentText());
+					bWriter.write(executionDate.getDateString("yyMM") + " " + pRec.getPaymentText());
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -360,7 +360,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYYY-MM-DD"));
+					bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -369,7 +369,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.newLine();
 
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYYY"));
+					bWriter.write(executionDate.getDateString("yyyy"));
 					bWriter.write(";");
 					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(), "Konto"));
 					bWriter.write(";");
@@ -413,7 +413,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYMM") + " " + pRec.getPaymentText());
+					bWriter.write(executionDate.getDateString("yyMM") + " " + pRec.getPaymentText());
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -427,7 +427,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYYY-MM-DD"));
+					bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -489,15 +489,15 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					bWriter.write(((Integer) pHead.getPrimaryKey()).toString());
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYYY-MM-DD"));
+					bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
 					bWriter.write("SUPPEXT");
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYYY-MM-DD"));
+					bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("YYYY-MM-DD"));
+					bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
-					bWriter.write(paymentDate.getDateString("YYYY-MM-DD"));
+					bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
 					bWriter.write(IWTimestamp.getDaysBetween(executionDate, paymentDate));
 					//				bWriter.write("7");
