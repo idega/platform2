@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
+import com.idega.user.data.UserBMPBean;
 
 
 /**
@@ -68,7 +69,11 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   }
   
   public Collection ejbFindBySchoolClass(int schoolClassID) throws FinderException,RemoteException {
-  	return super.idoFindPKsBySQL("select * from "+this.getEntityName()+" where "+SCHOOLCLASS+" = "+schoolClassID);	
+  	IDOQuery sql = new IDOQuery();
+  	sql.appendSelectAllFrom(getEntityName()).appendWhere();
+  	sql.append(this.SCHOOLCLASS).appendEqualSign().append(schoolClassID);
+  	
+  	return super.idoFindPKsBySQL(sql.toString());	
   }
   
   public Collection ejbFindByStudent(User student) throws FinderException,RemoteException {
