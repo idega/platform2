@@ -11,6 +11,9 @@ import com.idega.business.IBOServiceBean;
 /**
  * @author aron
  */
-public class ReportQueryServiceBean extends IBOServiceBean {
+public class QueryServiceBean extends IBOServiceBean {
+
+	
 
 }
+
