@@ -1330,7 +1330,7 @@ public class IFSFileCreationThread extends Thread {
 					totalAmount += amount;
 					numberOfRecords++;
 					row = sheet.createRow(rowNumber++);
-					row.createCell(cellNumber++).setCellValue(_paymentDate.toString());
+					row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));
 					short loopTillEndOfPostingFields = (short) (cellNumber + 8);
 					for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
 						row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
@@ -1342,7 +1342,7 @@ public class IFSFileCreationThread extends Thread {
 						cellNumber = 0;
 						numberOfRecords++;
 						row = sheet.createRow(rowNumber++);
-						row.createCell(cellNumber++).setCellValue(_paymentDate.toString());				
+						row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));				
 						for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
 							row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getDoublePosting(), columnNames[i]));
 						cell = row.createCell(cellNumber++);
