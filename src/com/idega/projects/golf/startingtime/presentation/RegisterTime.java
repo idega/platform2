@@ -484,23 +484,6 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
     frameTable.add(AlignmentTable);
   }
 
-  public void lineUpTournamentDay(ModuleInfo modinfo, List Tournaments){
-    Text dayReserved = new Text(this.iwrb.getLocalizedString("start.day_reserved_for_tournament","Day reserved for tournament"));
-    dayReserved.setFontSize(4);
-    Table AlignmentTable = new Table();
-    AlignmentTable.setBorder(0);
-    AlignmentTable.add(Text.getBreak());
-    AlignmentTable.add(dayReserved);
-    for (int i = 0; i < Tournaments.size(); i++) {
-      AlignmentTable.add("<p>" + ((Tournament)Tournaments.get(i)).getName());
-    }
-    AlignmentTable.setAlignment("center");
-    AlignmentTable.add(Text.getBreak());
-    AlignmentTable.add(Text.getBreak());
-    AlignmentTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
-    frameTable.empty();
-    frameTable.add(AlignmentTable);
-  }
 
 
 
@@ -537,19 +520,6 @@ public void main(ModuleInfo modinfo) throws Exception {
   //    }
 
       if(keepOn){
-        TournamentDay tempTD = new TournamentDay();
-  //      List Tournaments = EntityFinder.findAll(new Tournament(),"select tournament.* from tournament,tournament_day where tournament_day.tournament_id=tournament.tournament_id and tournament_day.day_date = '"+currentDay.toSQLDateString()+"' and tournament.field_id = " + currentField );
-        List TournamentRounds = EntityFinder.findAll(new TournamentRound(),"select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '"+currentDay.toSQLDateString()+" 00:00' and tournament_round.round_date <= '"+currentDay.toSQLDateString()+" 23:59' and tournament.field_id = " + currentField );
-
-        if(TournamentRounds != null ){
-            List Tournaments = new Vector();
-            for (int i = 0; i < TournamentRounds.size(); i++) {
-              Tournaments.add(i,((TournamentRound)TournamentRounds.get(i)).getTournament());
-            }
-
-            fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
-            lineUpTournamentDay(modinfo, Tournaments );
-        }else{
           myForm.maintainParameter("secure_num");
           myForm.maintainParameter("line");
           int skraMargaInt = 0;
@@ -570,10 +540,10 @@ public void main(ModuleInfo modinfo) throws Exception {
               lineUpTable(skraMargaInt, modinfo);
             }
           }
-        }
-      }else{
-        this.noPermission();
-      }
+
+       }else{
+         this.noPermission();
+       }
     }
   } // method main() ends
 

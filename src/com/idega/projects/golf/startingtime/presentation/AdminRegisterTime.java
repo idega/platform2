@@ -16,7 +16,7 @@ import com.idega.jmodule.object.Image;
 import com.idega.projects.golf.GolfField;
 import com.idega.data.GenericEntity;
 import com.idega.util.idegaTimestamp;
-import com.idega.projects.golf.entity.TournamentDay;
+import com.idega.projects.golf.entity.TournamentRound;
 import com.idega.projects.golf.entity.Tournament;
 import com.idega.data.EntityFinder;
 import com.idega.jmodule.object.textObject.Text;
@@ -93,6 +93,54 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     hadycapFormat = new DecimalFormat("###.0");
   }
 
+
+  public List getTournamentRoundList() throws SQLException {
+
+    int interval = fieldInfo.getMinutesBetweenStart();
+    Vector tournamentGroups = new Vector(0);
+    int tournamentGroupsIndex = 0;
+    List TournamentRounds = EntityFinder.findAll(new TournamentRound(),"select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '"+currentDay.toSQLDateString()+" 00:00' and tournament_round.round_date <= '"+currentDay.toSQLDateString()+" 23:59' and tournament.field_id = " + this.currentField );
+
+    if(TournamentRounds != null){
+      for (int i = 0; i < TournamentRounds.size(); i++) {
+        TournamentRound tempRound = (TournamentRound)TournamentRounds.get(i);
+
+        idegaTimestamp begin = new idegaTimestamp(tempRound.getRoundDate());
+        begin.setAsTime();
+        idegaTimestamp End_ = new idegaTimestamp(tempRound.getRoundEndDate());
+        End_.setAsTime();
+        idegaTimestamp begintime = new idegaTimestamp(fieldInfo.getOpenTime());
+        begintime.setAsTime();
+
+        int firstGroup = idegaTimestamp.getMinutesBetween(begintime, begin)/interval;
+        int groupCount = idegaTimestamp.getMinutesBetween(begin,End_)/interval;
+        int[] tempBeginGroupAndEnd = new int[2];
+
+        tempBeginGroupAndEnd[0] = firstGroup+1;
+        tempBeginGroupAndEnd[1] = firstGroup+groupCount;
+
+        String tournamentName = tempRound.getTournament().getName();
+
+        tournamentGroups.add(tournamentGroupsIndex++,tournamentName);
+        tournamentGroups.add(tournamentGroupsIndex++,tempBeginGroupAndEnd);
+
+      }
+    }
+    return tournamentGroups;
+  }
+
+
+   public String getTournamentName(List rounds, int groupNumber){
+
+        for(int c = 0 ; c < rounds.size(); c+=2){
+          int[] temp = (int[])rounds.get(c+1);
+          if(groupNumber >= temp[0] && groupNumber <= temp[1]){
+            return (String)rounds.get(c);
+          }
+        }
+        return null;
+  }
+
   public void lineUpTable(ModuleInfo modinfo) throws SQLException {
 
     Vector illegalTimes = new Vector(0);
@@ -133,6 +181,8 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
 
 
 //    int groupCount = idegaTimestamp.getMinutesBetween(openTime,new idegaTimestamp(fieldInfo.getCloseTime()))/minBetween;
+
+    List tournamentGroups = getTournamentRoundList();
 
     int countInGroups = 4;
     int lines = groupCount*countInGroups;
@@ -238,7 +288,9 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
         TeeTime tempStart = (TeeTime)takenTimes.get(i);
         int tempGroupNum = tempStart.getGroupNum();
 
-        if(tempGroupNum < 1){
+        String tName = getTournamentName(tournamentGroups,tempGroupNum);
+
+        if(tempGroupNum < 1 || tName != null){
           insert = false;
         }else{
           if(lastGroup == tempGroupNum){
@@ -296,8 +348,8 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
       for (int i = 0; i < allTakenTimes.size(); i++) {
         TeeTime tempStart = (TeeTime)allTakenTimes.get(i);
         int tempGroupNum = tempStart.getGroupNum();
-
-        if(tempGroupNum < 1){
+        String tName = getTournamentName(tournamentGroups,tempGroupNum);
+        if(tempGroupNum < 1 || tName != null){
           illegalTimes.insertElementAt(tempStart,illegalTimesIndex++);
         }else{
           if(lastGroup == tempGroupNum){
@@ -316,6 +368,14 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
       }
     }
 
+    // takes TournamentTimes out of timeDropdownMenu
+    for(int c = 0 ; c < tournamentGroups.size(); c+=2){
+      int[] temp = (int[])tournamentGroups.get(c+1);
+      for (int g = temp[0]-1; g < temp[1]; g++) {
+        if( g > -1 && g < freeGroups.length )
+          freeGroups[g] = 1;
+      }
+    }
 
 
     DropdownMenu timeMenu = new DropdownMenu(this.timeParameterString);
@@ -343,18 +403,31 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     boolean firstColor = true;
     int count = 0;
     int min = 0;
+    Text templ = new Text("");
     for (int i = 1; i < loop; i++) {
-      if(startTable.isEmpty(5,i)){
-        min = ((i-2)/countInGroups)*minBetween;
-        firstTime.addMinutes(min);
-        startTable.add("<b>"+TextSoap.addZero(firstTime.getHour()) + ":" + TextSoap.addZero(firstTime.getMinute())+"</b>",1,i);
-        firstTime.addMinutes(-min);
-        startTable.add(nameInput,2,i);
-        startTable.add(unionMenu,3,i);
-        startTable.add(handycapInput,4,i);
 
-        startTable.add(new HiddenInput(groupNumParameterString, Integer.toString((int)(((firstGroup-1)*countInGroups+i-2)/countInGroups+1))));
-      }else if(i>1){
+      String tName = getTournamentName(tournamentGroups, (int)(((firstGroup-1)*countInGroups+i-2)/countInGroups+1) );
+
+      if(startTable.isEmpty(5,i)){
+        if(tName == null){
+          min = ((i-2)/countInGroups)*minBetween;
+          firstTime.addMinutes(min);
+          startTable.add("<b>"+TextSoap.addZero(firstTime.getHour()) + ":" + TextSoap.addZero(firstTime.getMinute())+"</b>",1,i);
+          firstTime.addMinutes(-min);
+          startTable.add(nameInput,2,i);
+          startTable.add(unionMenu,3,i);
+          startTable.add(handycapInput,4,i);
+          startTable.add(new HiddenInput(groupNumParameterString, Integer.toString((int)(((firstGroup-1)*countInGroups+i-2)/countInGroups+1))));
+        }else{
+          min = ((i-2)/countInGroups)*minBetween;
+          firstTime.addMinutes(min);
+          startTable.add("<b>"+TextSoap.addZero(firstTime.getHour()) + ":" + TextSoap.addZero(firstTime.getMinute())+"</b>",1,i);
+          firstTime.addMinutes(-min);
+          Text temp = (Text)templ.clone();
+          temp.setText(tName);
+          startTable.add(temp,2,i);
+        }
+      }else if(i>1 && tName == null){
         DropdownMenu tempTimeMenu = (DropdownMenu)timeMenu.clone();
         min = ((i-2)/countInGroups)*minBetween;
         firstTime.addMinutes(min);
@@ -500,25 +573,6 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     submSave.setWidth(width);
     frameTable.add(submSave);
   }
-
-  public void lineUpTournamentDay(ModuleInfo modinfo, List Tournaments){
-    Text dayReserved = new Text(this.iwrb.getLocalizedString("start.day_reserved_for_tournament","Day reserved for tournament"));
-    dayReserved.setFontSize(4);
-    Table AlignmentTable = new Table();
-    AlignmentTable.setBorder(0);
-    AlignmentTable.add(Text.getBreak());
-    AlignmentTable.add(dayReserved);
-    for (int i = 0; i < Tournaments.size(); i++) {
-      AlignmentTable.add("<p>" + ((Tournament)Tournaments.get(i)).getName());
-    }
-    AlignmentTable.setAlignment("center");
-    AlignmentTable.add(Text.getBreak());
-    AlignmentTable.add(Text.getBreak());
-    AlignmentTable.add(new CloseButton(iwrb.getLocalizedString("start.close_window","Close Window")));
-    frameTable.empty();
-    frameTable.add(AlignmentTable);
-  }
-
 
 
   public void handleFormInfo(ModuleInfo modinfo) throws SQLException {
@@ -727,18 +781,6 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     }
 
     if(keepOn){
-
-      TournamentDay tempTD = new TournamentDay();
-      List Tournaments = EntityFinder.findAll(new Tournament(),"select tournament.* from tournament,tournament_day where tournament_day.tournament_id=tournament.tournament_id and tournament_day.day_date = '"+currentDay.toSQLDateString()+"' and tournament.field_id = " + currentField );
-      if(Tournaments != null ){
-  //      if("true".equals(modinfo.getParameter(closeParameterString))){
-          //this.close();
-          //this.print(modinfo);
-  //      }else{
-          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
-          lineUpTournamentDay(modinfo, Tournaments );
-  //      }
-      }else{
         String hasPermission = modinfo.getParameter("golf");
         if( hasPermission != null || AccessControl.isAdmin(modinfo) || (AccessControl.isClubAdmin(modinfo) && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (AccessControl.isClubWorker(modinfo) && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) ){
           if(hasPermission == null){
@@ -771,7 +813,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
         }else{
           noPermission();
         }
-      }
+
     }
   } // method main() ends
 
