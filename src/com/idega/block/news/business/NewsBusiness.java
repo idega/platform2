@@ -100,6 +100,30 @@ public class NewsBusiness{
     }
   }
 
+	public static void moveNewsBetweenCategories(int fromCategoryId,int toCategoryId){
+	  if(fromCategoryId > 0 && toCategoryId > 0){
+			NwNews news = (NwNews) NwNews.getStaticInstance(NwNews.class);
+		  StringBuffer sql = new StringBuffer("update ");
+			sql.append(news.getEntityName());
+			sql.append(" set ");
+			sql.append(news.getColumnNameNewsCategoryId());
+			sql.append(" = ");
+			sql.append(toCategoryId);
+			sql.append(" where ");
+			sql.append(news.getColumnNameNewsCategoryId());
+			sql.append(" = ");
+			sql.append(fromCategoryId);
+			//System.err.println(sql.toString());
+			try {
+
+				com.idega.data.SimpleQuerier.execute(sql.toString());
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
   public static void deleteNewsCategory(int iCategoryId ,int iObjectInstanceId) {
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {

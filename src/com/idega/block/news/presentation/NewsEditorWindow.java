@@ -73,6 +73,7 @@ private static String prmCatName= "nwep_categoryname";
 private static String prmCatDesc = "nwep_categorydesc";
 private static String prmPubFrom = "nwep_publishfrom";
 private static String prmPubTo = "nwep_publishto";
+private static String prmMoveToCat = "nwep_movtocat";
 public static final  String imageAttributeKey = "newsimage";
 
 
@@ -111,6 +112,14 @@ private IWResourceBundle iwrb;
     init();
     boolean doView = true;
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+
+		/*  debug:
+		java.util.Enumeration E = iwc.getParameterNames();
+		while(E.hasMoreElements()){
+			String key = (String) E.nextElement();
+		  System.err.println(key+" "+iwc.getParameter(key));
+		}
+		*/
 
     String sLocaleId = iwc.getParameter(prmLocale);
     String sCategoryId = iwc.getParameter(prmCategory);
@@ -154,7 +163,6 @@ private IWResourceBundle iwrb;
         doView = false;
         if(iObjInsId > 0 && saveInfo != SAVECATEGORY)
           iCategoryId = NewsFinder.getObjectInstanceCategoryId(iObjInsId );
-        addCategoryFields(NewsFinder.getNewsCategory(iCategoryId),iObjInsId  );
       }
 			//add("category id "+iCategoryId);
 			//add(" instance id "+iObjInsId);
@@ -166,6 +174,9 @@ private IWResourceBundle iwrb;
       else if(saveInfo == SAVECATEGORY)
         processCategoryForm(iwc,sCategoryId,iObjInsId);
 
+			if(iObjInsId > 0){
+			  addCategoryFields(NewsFinder.getNewsCategory(iCategoryId),iObjInsId  );
+			}
       //doView = false;
 
       if(doView)
@@ -215,17 +226,30 @@ private IWResourceBundle iwrb;
   }
 
   private void processCategoryForm(IWContext iwc,String sCategoryId,int iObjInsId){
+
     String sName = iwc.getParameter(prmCatName);
     String sDesc = iwc.getParameter(prmCatDesc);
-    if(sName!=null){
-      int iCatId = sCategoryId != null ? Integer.parseInt(sCategoryId):-1;
+		String sMoveCat = iwc.getParameter(prmMoveToCat);
+		int iMoveCat = sMoveCat !=null ? Integer.parseInt(sMoveCat):-1;
+		int iCatId = sCategoryId != null ? Integer.parseInt(sCategoryId):-1;
 			if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
-				//System.err.println("saving CATId = "+iCatId +" ObjInstId = "+iObjInsId);
-        NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
-				setParentToReload();
-				close();
+				if(sName!=null){
+
+					//System.err.println("saving CATId = "+iCatId +" ObjInstId = "+iObjInsId);
+					NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
+					if(iMoveCat > 0){
+					  NewsBusiness.moveNewsBetweenCategories(iCatId,iMoveCat);
+					}
+					else{
+					  setParentToReload();
+					  close();
+					}
+				}
 			}
-    }
+			else if(iwc.getParameter(actDelete)!=null || iwc.getParameter(actDelete+".x")!=null ){
+				//System.err.println("deleteing CATId = "+iCatId +" ObjInstId = "+iObjInsId);
+				NewsBusiness.deleteNewsCategory(iCatId);
+			}
 
   }
 
@@ -314,22 +338,36 @@ private IWResourceBundle iwrb;
 	  String sCategory= iwrb.getLocalizedString("category","Category");
     String sName = iwrb.getLocalizedString("name","Name");
     String sDesc = iwrb.getLocalizedString("description","Description");
+		String sMoveCat = iwrb.getLocalizedString("movenews","Move news to");
 
 		List L = NewsFinder.listOfNewsCategories();
 		DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
+		catDrop.addMenuElementFirst("-1",sCategory);
+		catDrop.setToSubmit();
+		DropdownMenu MoveCatDrop = new DropdownMenu(L,prmMoveToCat);
+		MoveCatDrop.addMenuElementFirst("-1",sCategory);
 
 		Link newLink = new Link(iwb.getImage("/shared/create.gif"));
 		newLink.addParameter(prmCategory,-1);
 		newLink.addParameter(prmObjInstId,iObjInst);
 		newLink.addParameter(prmFormProcess,"C");
 
-		catDrop.addMenuElementFirst("-1",sCategory);
-		catDrop.setToSubmit();
+
 
 		boolean hasCategory = newsCategory !=null ? true:false;
     TextInput tiName = new TextInput(prmCatName);
     tiName.setLength(40);
     tiName.setMaxlength(255);
+
+
+		Table catTable = new Table(5,1);
+		catTable.setCellpadding(0);
+		catTable.setCellspacing(0);
+		setStyle(catDrop);
+		catTable.add(catDrop,1,1);
+		catTable.add(newLink,3,1);
+		catTable.setWidth(2,1,"20");
+		catTable.setWidth(4,1,"20");
 
     TextArea taDesc = new TextArea(prmCatDesc,65,5);
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
@@ -352,34 +390,40 @@ private IWResourceBundle iwrb;
 			String sPublishingCount = iwrb.getLocalizedString("publishing","In publish");
 			String sPublishedCount = iwrb.getLocalizedString("published","Published");
 
-			Table table = new Table(2,4);
-			table.add(formatText(sNewsCount),1,1);
-			table.add(String.valueOf(iNewsCount),2,1);
-			table.add(formatText(sUnPublishedCount),1,2);
-			table.add(String.valueOf(iUnPublishedCount),2,2);
-			table.add(formatText(sPublishingCount),1,3);
-			table.add(String.valueOf(iPublishingCount),2,3);
-			table.add(formatText(sPublishedCount),1,4);
-			table.add(String.valueOf(iPublishedCount),2,4);
+			Table table = new Table(3,4);
+			table.setCellpadding(2);
+			table.setCellspacing(1);
+			table.setWidth(2,"10");
+			String colon = " : ";
+			table.add(formatText(sNewsCount+colon),1,1);
+			table.add(String.valueOf(iNewsCount),3,1);
+			table.add(formatText(sUnPublishedCount+colon),1,2);
+			table.add(String.valueOf(iUnPublishedCount),3,2);
+			table.add(formatText(sPublishingCount+colon),1,3);
+			table.add(String.valueOf(iPublishingCount),3,3);
+			table.add(formatText(sPublishedCount+colon),1,4);
+			table.add(String.valueOf(iPublishedCount),3,4);
 
 			String sInfo = iwrb.getLocalizedString("info","Info");
-
 			addRight(sInfo,table,false,false);
 
+			if(iNewsCount == 0){
+			Link deleteLink = new Link(iwb.getImage("/shared/delete.gif"));
+			deleteLink.addParameter(actDelete,"true");
+			deleteLink.addParameter(prmCategory,newsCategory.getID());
+			deleteLink.addParameter(prmObjInstId,iObjInst);
+			deleteLink.addParameter(prmFormProcess,"C");
+
+			catTable.add(deleteLink,5,1);
+			}
+
     }
-
-		Table catTable = new Table(3,1);
-		catTable.setCellpadding(0);
-		catTable.setCellspacing(0);
-		setStyle(catDrop);
-		catTable.add(catDrop,1,1);
-		catTable.add(newLink,3,1);
-		catTable.setWidth(2,1,"30");
-
 
 		addLeft(sCategory,catTable,true,false);
     addLeft(sName,tiName,true);
     addLeft(sDesc,taDesc,true);
+		if(hasCategory)
+		  addLeft(sMoveCat,MoveCatDrop,true);
 
     addSubmitButton(save);
     addHiddenInput( new HiddenInput (prmObjInstId,String.valueOf(iObjInst)));
@@ -498,6 +542,10 @@ private IWResourceBundle iwrb;
 
     addHiddenInput( new HiddenInput (prmFormProcess,"Y"));
   }
+
+	private void deleteCat(int iCatId){
+
+	}
 
   private void confirmDelete(String sNewsId,int iObjInsId ) throws IOException,SQLException {
     int iNewsId = Integer.parseInt(sNewsId);
