@@ -15,6 +15,7 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
@@ -67,6 +68,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private String _placingErrorMessage = null;
 	private String _dateFormatErrorMessage = null;
 	private PostingException _postingException = null;
+	private boolean _outFlowOnly = false;
 	
 		
 	//Force the request to be processed at once.
@@ -244,23 +246,27 @@ public class RegulationSearchPanel extends AccountingBlock {
 							
 			while(i.hasNext()){
 				Regulation reg = (Regulation) i.next();
-				Link link = new Link(reg.getName() /* + " ("+formatDate(reg.getPeriodFrom(), 4) + "-" + formatDate(reg.getPeriodTo(), 4)+")"*/ );
-				link.addParameter(new Parameter(PAR_ENTRY_PK, reg.getPrimaryKey().toString()));
-				maintainParameters(iwc, link);
-				setParameters(link);
-				
-	//THIS doean't work for opera... but it should be neccessary to submit the form anyway...				
-	//			link.setOnClick("getElementById('"+ pkId +"').value='"+ reg.getPrimaryKey() +"'");			
-	//			link.setToFormSubmit(form);
-						
-				if (col >= 3){
-					col = 1;
-					row++;
-				} else{
-					col++;
+				if (_outFlowOnly && reg.getPaymentFlowType().getLocalizationKey().equals(PaymentFlowConstant.OUT)) {
+					continue;
+				}else{
+					Link link = new Link(reg.getName() /* + " ("+formatDate(reg.getPeriodFrom(), 4) + "-" + formatDate(reg.getPeriodTo(), 4)+")"*/ );
+					link.addParameter(new Parameter(PAR_ENTRY_PK, reg.getPrimaryKey().toString()));
+					maintainParameters(iwc, link);
+					setParameters(link);
+					
+		//THIS doean't work for opera... but it should be neccessary to submit the form anyway...				
+		//			link.setOnClick("getElementById('"+ pkId +"').value='"+ reg.getPrimaryKey() +"'");			
+		//			link.setToFormSubmit(form);
+							
+					if (col >= 3){
+						col = 1;
+						row++;
+					} else{
+						col++;
+					}
+					
+					table.add(link, col, row);
 				}
-				
-				table.add(link, col, row);
 			}
 		}
 		return table;
@@ -385,7 +391,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 		
 
 		
-		addField(table, PAR_PLACING, KEY_PLACING, _currentPlacing, 1, row, 200);		
+		addField(table, PAR_PLACING, KEY_PLACING, _currentPlacing, 1, row, 300);		
 		String date = iwc.getParameter(PAR_VALID_DATE) != null ? iwc.getParameter(PAR_VALID_DATE) :
 			formatDate(new Date(System.currentTimeMillis()), 4); 
 		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, date, 3, row, 35);	
@@ -420,6 +426,9 @@ public class RegulationSearchPanel extends AccountingBlock {
 	
 	}
 	
+	public void setOutFlowOnly(boolean b){
+		_outFlowOnly = b;
+	}
 
 	public void setPlacingIfNull(String placing) {
 		if (_currentPlacing == null){
