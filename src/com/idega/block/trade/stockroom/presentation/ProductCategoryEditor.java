@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.block.presentation.CategoryWindow;
 import java.rmi.RemoteException;
 import com.idega.business.IBOLookup;
 import javax.transaction.*;
@@ -24,7 +25,7 @@ import com.idega.presentation.*;
  * @version 1.0
  */
 
-public class ProductCategoryEditor extends IWAdminWindow {
+public class ProductCategoryEditor extends CategoryWindow {
   private IWBundle bundle = null;
   private IWResourceBundle iwrb = null;
   public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
@@ -44,6 +45,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
   int _selectedCategory = -1;
   ProductCategory _productCategory = null;
   List _categories = null;
+  private int localeId = 1;
 
   public ProductCategoryEditor() {
     super.setWidth(600);
@@ -70,6 +72,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
   private void init(IWContext iwc) {
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc);
+    localeId = iwc.getCurrentLocaleId();
 
     try {
       String sSelCat = iwc.getParameter(SELECTED_CATEGORY);
@@ -82,6 +85,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
       e.printStackTrace(System.err);
       _categories = new Vector();
     }
+
   }
 
   public String getBundleIdentifier(){
@@ -102,32 +106,19 @@ public class ProductCategoryEditor extends IWAdminWindow {
 
       SelectionDoubleBox sdb = new SelectionDoubleBox(this._parameterProductOut, this._parameterProductIn);
 
-/*      if (maxWidth > 0) {
-        String name = "";
-        Product prod;
-
-        for (int i = 0; i < allProducts.size(); i++) {
-          prod = (Product) allProducts.get(i);
-          name = ProductBusiness.getProductName(prod);
-          if (name.length() > maxWidth) {
-            name = name.substring(0, maxWidth)+"...";
-          }
-          sdb.getLeftBox().addMenuElement(prod.getID(), name);
-        }
-
-        for (int i = 0; i < products.size(); i++) {
-          prod = (Product) allProducts.get(i);
-          name = ProductBusiness.getProductName(prod);
-          if (name.length() > maxWidth) {
-            name = name.substring(0, maxWidth)+"...";
-          }
-          sdb.getRightBox().addMenuElement(prod.getID(), name);
-        }
-
-      }else {
-*/        sdb.getLeftBox().addMenuElements(allProducts);
-        sdb.getRightBox().addMenuElements(products);
-//      }
+      Product product;
+      Iterator iter = allProducts.iterator();
+      while (iter.hasNext()) {
+        product = (Product) iter.next();
+        sdb.getLeftBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), product.getProductName(localeId));
+      }
+      iter = products.iterator();
+      while (iter.hasNext()) {
+        product = (Product) iter.next();
+        sdb.getRightBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), product.getProductName(localeId));
+      }
+      //sdb.getLeftBox().addMenuElements(allProducts);
+      //sdb.getRightBox().addMenuElements(products);
 
       sdb.getRightBox().selectAllOnSubmit();
       sdb.getLeftBox().setHeight(height);
@@ -138,31 +129,17 @@ public class ProductCategoryEditor extends IWAdminWindow {
       SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), this._action, this._parameterSaveCategory);
       SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"), this._action, this._parameterClose);
 
-//      Form form = new Form();
       Table table = new Table();
-//        form.add(table);
-//        table.setBorder(1);
 
-      super.addHiddenInput(new HiddenInput(this.SELECTED_CATEGORY, Integer.toString(this._selectedCategory)));
-//        form.maintainParameter(this.SELECTED_CATEGORY);
+      this.addHiddenInput(new HiddenInput(this.SELECTED_CATEGORY, Integer.toString(this._selectedCategory)));
+      super.maintainClearCacheKeyInForm(iwc);
 
       sdb.addToScripts(this.getParentPage().getAssociatedScript());
-
 
       super.addLeft(iwrb.getLocalizedString("available_products","Available products"), sdb.getLeftBox(), true);
       super.addLeft(iwrb.getLocalizedString("add_selected","Add selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, sdb.getRightButton(), false);
       super.addLeft(iwrb.getLocalizedString("remove_selected","Remove selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, sdb.getLeftButton(), false);
       super.addLeft(iwrb.getLocalizedString("selected_products","Selected products"), sdb.getRightBox(), true);
-
-      /*
-      Table intTable = new Table();
-      Text remSelected = new Text(iwrb.getLocalizedString("remove_selected","Remove selected"));
-      Text addSelected = new Text(iwrb.getLocalizedString("add_selected","Add selected"));
-      GenericButton  rightBtn = sdb.getRightButton();
-      GenericButton  leftBtn = sdb.getLeftButton();
-        remSelected.setStyle(super.STYLE);
-        addSelected.setStyle(super.STYLE);
-      */
 
       super.addSubmitButton(close);
       super.addSubmitButton(save);
@@ -181,8 +158,6 @@ public class ProductCategoryEditor extends IWAdminWindow {
       tm.begin();
       List products = EntityFinder.getInstance().findRelated(_productCategory, Product.class);
       _productCategory.removeProducts(products);
-//      _productCategory.removeFrom((Product[]) products.toArray(new Product[]{}));
-
 
       if (in != null) {
         for (int i = 0; i < in.length; i++) {
@@ -200,6 +175,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
         se.printStackTrace(System.err);
       }
     }
+    super.clearCache(iwc);
     viewCategory(iwc);
   }
 

@@ -43,7 +43,7 @@ public class CategoryWindow extends IWAdminWindow {
   private int iObjectInstanceId = -1;
   private ICObjectInstance objectInstance;
   private String sType = "no_type";
-  private String sCacheKey = null;
+  protected String sCacheKey = null;
   private boolean multi = false;
   private boolean allowOrdering = false;
 
@@ -73,6 +73,29 @@ public class CategoryWindow extends IWAdminWindow {
     setScrollbar(true);
   }
 
+  protected void clearCache(IWContext iwc) {
+    if( getCacheKey(iwc) != null){
+      if(iwc.getApplication().getIWCacheManager().isCacheValid(getCacheKey(iwc))) {
+        iwc.getApplication().getIWCacheManager().invalidateCache(getCacheKey(iwc));
+      }
+    }
+  }
+
+  protected String getCacheKey(IWContext iwc) {
+    if (sCacheKey == null) {
+      sCacheKey = iwc.getParameter(prmCacheClearKey);
+    }
+    return sCacheKey;
+  }
+
+
+  protected void maintainClearCacheKeyInForm(IWContext iwc) {
+    if (getCacheKey(iwc) != null) {
+      this.addHiddenInput(new HiddenInput(prmCacheClearKey, getCacheKey(iwc)));
+    }else {
+    }
+  }
+
   protected void control(IWContext iwc) throws Exception{
     //debugParameters(iwc);
     Table T = new Table();
@@ -92,14 +115,7 @@ public class CategoryWindow extends IWAdminWindow {
 			sType = iwc.getParameter(prmCategoryType );
 		}
 
-    if( iwc.isParameterSet(prmCacheClearKey)){
-      sCacheKey = iwc.getParameter(prmCacheClearKey );
-      if(iwc.getApplication().getIWCacheManager().isCacheValid(sCacheKey)) {
-        iwc.getApplication().getIWCacheManager().invalidateCache(sCacheKey);
-      }
-    }
-
-
+    clearCache(iwc);
 
     multi = iwc.isParameterSet(prmMulti);
     allowOrdering = iwc.isParameterSet(prmOrder);
@@ -113,7 +129,7 @@ public class CategoryWindow extends IWAdminWindow {
 	      processCategoryForm(iwc);
       }
       //addCategoryFields(CategoryFinder.getCategory(iCategoryId));
-      getCategoryFields(CategoryFinder.getInstance().getCategory(iCategoryId));
+      getCategoryFields(iwc, CategoryFinder.getInstance().getCategory(iCategoryId));
     }
     else{
       add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -169,7 +185,7 @@ public class CategoryWindow extends IWAdminWindow {
 			}
   }
 
-   private void getCategoryFields(Category eCategory){
+   private void getCategoryFields(IWContext iwc, Category eCategory){
 
     String sCategory= iwrb.getLocalizedString("category","Category");
     String sName = iwrb.getLocalizedString("name","Name");
@@ -314,9 +330,11 @@ public class CategoryWindow extends IWAdminWindow {
     if (allowOrdering) {
       addHiddenInput( new HiddenInput(prmOrder, "true"));
     }
+    this.maintainClearCacheKeyInForm(iwc);
+    /*
     if (this.sCacheKey != null) {
       addHiddenInput( new HiddenInput(this.prmCacheClearKey, this.sCacheKey));
-    }
+    }*/
 
   }
 

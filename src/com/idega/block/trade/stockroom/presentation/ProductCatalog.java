@@ -519,6 +519,7 @@ public class ProductCatalog extends CategoryBlock{
   Link getProductCategoryEditorLink(ICCategory productCategory) {
     Link link = new Link(this.iDetach);
       link.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, productCategory.getID());
+      link.addParameter(ProductCategoryEditor.prmCacheClearKey, super.getDerivedCacheKey());
       link.setWindowToOpen(ProductCategoryEditor.class);
     return link;
   }
