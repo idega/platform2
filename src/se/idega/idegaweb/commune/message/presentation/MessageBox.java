@@ -93,11 +93,10 @@ public class MessageBox extends CommuneBlock {
 		boolean hasMessages = false;
 
 		if (iwc.isLoggedOn()) {
-			MessageBusiness messageBusiness = getMessageBusiness(iwc);
 			MessageSession messageSession = getMessageSession(iwc);
 			
 			User user = iwc.getCurrentUser();
-			Collection messages = getMessages(iwc, user, messageBusiness); 
+			Collection messages = getMessages(iwc, user); 
 						
 //			Link subject = null;
 //			Text date = null;
@@ -191,8 +190,8 @@ public class MessageBox extends CommuneBlock {
 	 * @return
 	 * @throws Exception
 	 */
-	Collection getMessages(IWContext iwc, User user, MessageBusiness messageBusiness) throws Exception{
-		return messageBusiness.findMessages(user);		
+	Collection getMessages(IWContext iwc, User user) throws Exception{
+		return getMessageBusiness(iwc).findMessages(user);		
 	}
 	
 	/**
@@ -241,7 +240,7 @@ public class MessageBox extends CommuneBlock {
 	}
 	
 
-	private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
+	protected MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
 		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
 	}
 
