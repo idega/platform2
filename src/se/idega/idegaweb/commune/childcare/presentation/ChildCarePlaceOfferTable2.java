@@ -6,6 +6,7 @@ import java.util.SortedSet;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
+import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.HiddenInput;
@@ -16,46 +17,45 @@ class ChildCarePlaceOfferTable2 extends Table{
 	private static Text HEADER_YOUR_CHOICE;
 	private static Text HEADER_OFFER;
 	private static Text HEADER_PROGNOSE;
-	//private static Text HEADER_QUEUE_INFO;
 	private static Text HEADER_YES;
-	//private static Text HEADER_YES_BUT;
 	private static Text HEADER_NO;
 
 	private static String GRANTED;
-	//private static String REQUEST_INFO;
 
 	private static boolean _initializeStatics = false;
 	
-	private static ChildCareCustomerApplicationTable _localizer;
+	private static ChildCareCustomerApplicationTable _page;
 	
 
-	private void initConstants(ChildCareCustomerApplicationTable localizer){
+	private void initConstants(ChildCareCustomerApplicationTable page){
 		if (!_initializeStatics) {
-			_localizer = localizer;
-			HEADER_YOUR_CHOICE = localizer.getLocalHeader("ccatp2_your_choice", "Your Choice");
-			HEADER_OFFER = localizer.getLocalHeader("ccatp2_offer", "Offer");
-			HEADER_PROGNOSE = localizer.getLocalHeader("ccatp2_prognose", "Prognoses");
-			HEADER_YES = localizer.getLocalHeader("ccatp2_yes", "Yes, keep application");
-			HEADER_NO = localizer.getLocalHeader("ccatp2_no", "No, remove application");
+			_page = page;
+			HEADER_YOUR_CHOICE = page.getLocalHeader("ccatp2_your_choice", "Your Choice");
+			HEADER_OFFER = page.getLocalHeader("ccatp2_offer", "Offer");
+			HEADER_PROGNOSE = page.getLocalHeader("ccatp2_prognose", "Prognoses");
+			HEADER_YES = page.getLocalHeader("ccatp2_yes", "Yes, keep application");
+			HEADER_NO = page.getLocalHeader("ccatp2_no", "No, remove application");
 	
-			GRANTED = localizer.localize("ccatp2_granted", "You have received an offer from ").toString();
+			GRANTED = page.localize("ccatp2_granted", "You have received an offer from ").toString();
 
 			_initializeStatics = true;
 		}
 	}
 	
-	public ChildCarePlaceOfferTable2(ChildCareCustomerApplicationTable localizer, SortedSet applications) throws RemoteException {
+	public ChildCarePlaceOfferTable2(ChildCareCustomerApplicationTable page, SortedSet applications) throws RemoteException {
 		super(5, applications.size() + 1); //Heading
-		initConstants(localizer);
+		initConstants(page);
 	
 		initTable();
+		String resetOtherScript = "function resetRadio(id) {";
 					
 		System.out.println("Applications: " + applications);
 		Iterator i = applications.iterator();
 		int row = 2;
+		int offerChoiceNr = -1;
+		
 		while (i.hasNext()) {
 			ChildCareApplication app = ((ComparableApp) i.next()).getApplication();
-			app.getChoiceNumber();
 				
 			String id = ((Integer) app.getPrimaryKey()).toString();
 							
@@ -63,19 +63,30 @@ class ChildCarePlaceOfferTable2 extends Table{
 				
 			String offerText = "";
 			boolean offer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_UBEH); /**@TODO: is this correct status?*/
+			//The granted application (offer) is the first in the iterati
 			if (offer) {
+					//The granted application (offer) is the first in the iteratin.
+					//offerChoiceNr will therefore be set when the other applications are handled.
 					offerText = GRANTED + app.getFromDate(); 
+					offerChoiceNr = app.getChoiceNumber();
 			}
+			
+			//No row is disabled if the first choice on the list is offered
+			boolean disable = app.getChoiceNumber() > offerChoiceNr && offerChoiceNr != 1;
+			boolean selectOne = offerChoiceNr == 1;
 					
 			String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
 	
-			addToTable(row, id, app.getChoiceNumber() + ": " + name 
+			resetOtherScript += addToTable(row, id, app.getChoiceNumber() + ": " + name 
 			//+ " (nodeId:" + app.getNodeID() + ")"
-			, offerText, prognosis, offer);
+				, offerText, prognosis, offer, disable, selectOne);
 	
 			row++;
 		}
-
+		
+		Script script = new Script("javascript");
+		script.setFunction("resetOther", resetOtherScript += "\n}");
+		add(script);
 	}
 	
 	/**
@@ -85,16 +96,37 @@ class ChildCarePlaceOfferTable2 extends Table{
 	 * @param name
 	 * @param status
 	 * @param prognosis
+	 * @return Javascript for resetting this rows radiobutton
 	 */
-	private void addToTable(int row, String id, String name, String status, String prognosis, boolean offer) {
+	private String addToTable(int row, String id, String name, String status, String prognosis, boolean offer, boolean disable, boolean selectOne) {
 		int index = row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id)); 
-		add(new Text(name), 1, row);
-		add(new Text(status), 2, row);
-		add(new Text(prognosis), 3, row);
+		String textColor = disable ? "red":"black";		
+		
+		if (name != null){
+			Text t = _page.getSmallText(name);
+			if (offer){
+				t.setBold(true);
+			}	
+			t.setStyleAttribute("color:" + textColor);
+			add(t, 1, row);
+		}
+				
+		if (status != null){
+			Text t = _page.getSmallText(status);
+			t.setStyleAttribute("color:" + textColor);
+			add(t, 2, row);
+		}
+				
+		if (prognosis != null){
+			Text t = _page.getSmallText(prognosis);
+			t.setStyleAttribute("color:" + textColor);
+			add(t, 3, row);
+		}
 			
 		RadioButton rb1 = new RadioButton(CCConstants.KEEP_IN_QUEUE + index, CCConstants.YES);
 		RadioButton rb2 = new RadioButton(CCConstants.KEEP_IN_QUEUE + index, CCConstants.NO);
+		
 			
 		if (offer){
 			rb1.setAttribute("disabled");
@@ -102,9 +134,24 @@ class ChildCarePlaceOfferTable2 extends Table{
 		} else {
 			rb1.setAttribute("checked");
 		}
+		
+		String partlyResetRadioScript = "";	
+		if (!disable && !offer){
+			add(rb1, 4, row);
+			add(rb2, 5, row);
+			partlyResetRadioScript = "\nif (id != '" + rb1.getID() + "') { document.getElementById('" + rb1.getID() + "').checked = true; }";
+		}
+		
+		if (selectOne){
+			rb2.setOnClick("resetRadio('" + rb1.getID() + "')");
+		}
+
+		if (row % 2 == 0)
+			setRowColor(row++, _page.getZebraColor1());
+		else
+			setRowColor(row++, _page.getZebraColor2());
 			
-		add(rb1, 4, row);
-		add(rb2, 5, row);
+		return partlyResetRadioScript;			
 	}
 	
 	/**
@@ -115,9 +162,15 @@ class ChildCarePlaceOfferTable2 extends Table{
 
 //		setBorder(1);
 //		setBorderColor("RED");
+
+		setRowColor(1, _page.getHeaderColor());
+		
+//		setCellspacing(_page.getCellspacing());
+//		setCellpadding(_page.getCellpadding());
+		
 		setCellspacing(2);
 		setCellpadding(4);
-		setHorizontalZebraColored("WHITE", _localizer.getBackgroundColor());
+
 	
 		//Heading
 		add(HEADER_YOUR_CHOICE, 1, 1);
