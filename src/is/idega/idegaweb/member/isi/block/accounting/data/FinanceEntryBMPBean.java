@@ -7,22 +7,25 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.sql.Date;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.basket.data.BasketItem;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOPrimaryKey;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOUtil;
+import com.idega.data.PrimaryKey;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
  * @author palli
  */
-public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
+public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, BasketItem {
 	protected final static String ENTITY_NAME = "isi_ass_entry"; //:)
 	
 	protected final static String COLUMN_USER_ID = "user_id";
@@ -46,7 +49,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String TYPE_ASSESSMENT = "A";
 	protected final static String TYPE_MANUAL = "M";
 	protected final static String TYPE_PAYMENT = "P";
-//	protected final static String TYPE_
 	
 	protected static final String STRING_TYPE_MANUAL = "isi_acc_fin_entry_manual_type";
 	protected static final String STRING_TYPE_AUTOMATIC = "isi_acc_fin_entry_auto_type";
@@ -318,4 +320,36 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		sql.appendOrderBy(ordering);
 		return idoFindIDsBySQL(sql.toString());
 	}
+	
+	//The methods needed to be implemented to be a BasketItem
+	
+    /* (non-Javadoc)
+     * @see com.idega.block.basket.data.BasketItem#getDescription()
+     */
+    public String getItemDescription() {
+        return getInfo();
+    }
+    /* (non-Javadoc)
+     * @see com.idega.block.basket.data.BasketItem#getItemID()
+     */
+    public IDOPrimaryKey getItemID() {
+        PrimaryKey key = new PrimaryKey();
+        key.setPrimaryKeyValue(getIDColumnName(), getPrimaryKeyValue());
+
+        return key;
+    }
+    /* (non-Javadoc)
+     * @see com.idega.block.basket.data.BasketItem#getPrice()
+     */
+    public Double getItemPrice() {
+        double remaining = getAmount() - getAmountEqualized();
+        
+        return new Double(remaining);
+    }
+    /* (non-Javadoc)
+     * @see com.idega.block.basket.data.BasketItem#getItemName()
+     */
+    public String getItemName() {
+        return getInfo();
+    }
 }

@@ -1,7 +1,7 @@
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
 
-public interface FinanceEntry extends com.idega.data.IDOEntity
+public interface FinanceEntry extends com.idega.data.IDOEntity,com.idega.block.basket.data.BasketItem
 {
  public double getAmount();
  public double getAmountEqualized();
@@ -18,6 +18,10 @@ public interface FinanceEntry extends com.idega.data.IDOEntity
  public java.lang.String getInfo();
  public com.idega.user.data.User getInsertedByUser();
  public int getInsertedByUserID();
+ public java.lang.String getItemDescription();
+ public com.idega.data.IDOPrimaryKey getItemID();
+ public java.lang.String getItemName();
+ public java.lang.Double getItemPrice();
  public java.lang.String getTypeLocalizationKey();
  public com.idega.user.data.User getUser();
  public int getUserID();
