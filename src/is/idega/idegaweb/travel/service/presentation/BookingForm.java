@@ -64,8 +64,8 @@ public abstract class BookingForm extends TravelManager{
   protected int[] _multipleBookingNumber = new  int[] {0, 0, 0};
   protected boolean _multipleBookings = false;
 
-	private String PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION = "error_email";
-	private String PARAMETER_CC_EMAIL_FOR_ERROR_NOTIFICATION = "error_email_cc";
+	public static final String PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION = "error_email";
+	public static final String PARAMETER_CC_EMAIL_FOR_ERROR_NOTIFICATION = "error_email_cc";
   protected int available = is.idega.idegaweb.travel.presentation.Booking.available;
   protected int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
   protected DecimalFormat df = new DecimalFormat("0.00");
