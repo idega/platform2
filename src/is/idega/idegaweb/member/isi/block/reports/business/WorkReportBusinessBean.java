@@ -1320,6 +1320,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					shortName = (index != -1) ? leagueName.substring(0, index) : leagueName;
 					name = (index != -1) ? leagueName.substring(index, leagueName.length()) : leagueName;
 
+					shortName = shortName.toUpperCase();
+					name = name.toUpperCase(); 
+
 					WorkReportGroup group = null;
 
 					try {
