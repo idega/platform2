@@ -1411,7 +1411,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				Iterator iter = pending.iterator();
 				while (iter.hasNext()) {
 					ChildCareApplication app = (ChildCareApplication) iter.next();
-					changeCaseStatus(app, getCaseStatusOpen().getStatus(), user);
+					changeCaseStatus(app, getCaseStatusOpen().getStatus(), user, null);
 				}
 			}
 
