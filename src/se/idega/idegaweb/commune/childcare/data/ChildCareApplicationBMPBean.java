@@ -24,6 +24,10 @@ import com.idega.block.school.data.School;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
 import com.idega.user.data.User;
 
 /**
@@ -881,14 +885,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public int ejbHomeGetNumberOfApplicationsByStatus(int providerID, String[] caseStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
-		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
+		Table table = new Table(this,"c");
+		Table caseTable = new Table(Case.class,"p");
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table,CHILD_ID);
+		query.setAsCountQuery(true);
+		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
+		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus));
+		return idoGetNumberOfRecords(query);
 	}
 	
 	public int ejbHomeGetNumberOfApplicationsForChild(int childID) throws IDOException {
@@ -942,15 +947,16 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public int ejbHomeGetNumberOfPlacedApplications(int childID, int providerID, String[] caseStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
-		sql.appendAnd().append("c."+PROVIDER_ID).appendNOTEqual().append(providerID);
-		sql.appendAndEquals(CHILD_ID, childID);
-		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
+		Table table = new Table(this,"c");
+		Table caseTable = new Table(Case.class,"p");
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table,CHILD_ID);
+		query.setAsCountQuery(true);
+		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
+		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.NOTEQUALS,providerID));
+		query.addCriteria(new MatchCriteria(table,CHILD_ID,MatchCriteria.EQUALS,childID));
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
+		return idoGetNumberOfRecords(query);
 	}
 	
 	public int ejbHomeGetNumberOfApplications(int providerID, String[] caseStatus, int sortBy, Date fromDate, Date toDate) throws IDOException {
@@ -982,45 +988,55 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String[] caseStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
-		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
-		return idoGetNumberOfRecords(sql);
+		
+		Table table = new Table(this);
+		Table caseTable = new Table(Case.class);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table,CHILD_ID);
+		query.setAsCountQuery(true);
+		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
+		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS, providerID));
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
+		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
+		return idoGetNumberOfRecords(query);
 	}
 
 	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String applicationStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count("+CHILD_ID+") from ").append(ENTITY_NAME);
-		sql.appendWhereEquals(PROVIDER_ID,providerID);
-		sql.appendAndEqualsQuoted(APPLICATION_STATUS,applicationStatus);
-		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
-		return idoGetNumberOfRecords(sql);
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table,CHILD_ID);
+		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
+		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));
+		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.LESS,queueDate));
+		query.setAsCountQuery(true);
+		return idoGetNumberOfRecords(query);
 	}
 	
 	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String[] caseStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
-		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		sql.appendAndEquals(QUEUE_DATE, queueDate);
-		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
-		return idoGetNumberOfRecords(sql);
+		Table table = new Table(this,"c");
+		Table caseTable = new Table(Case.class,"p");
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table,CHILD_ID);
+		query.addJoin(table,getIDColumnName(),caseTable,"proc_case_id");
+		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
+		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
+		query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
+		query.addCriteria(new InCriteria(caseTable,"case_status",caseStatus,true));
+		query.setAsCountQuery(true);
+		return idoGetNumberOfRecords(query);
 	}
 
 	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String applicationStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count("+CHILD_ID+") from ").append(ENTITY_NAME);
-		sql.appendWhereEquals(PROVIDER_ID,providerID);
-		sql.appendAndEqualsQuoted(APPLICATION_STATUS,applicationStatus);
-		sql.appendAndEquals(QUEUE_DATE, queueDate);
-		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
-		return idoGetNumberOfRecords(sql);
+		Table table = new Table(this,"c");
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table,CHILD_ID);
+		query.addCriteria(new MatchCriteria(table,PROVIDER_ID,MatchCriteria.EQUALS,providerID));
+		query.addCriteria(new MatchCriteria(table,APPLICATION_STATUS,MatchCriteria.EQUALS,applicationStatus,true));
+		query.addCriteria(new MatchCriteria(table,QUEUE_DATE,MatchCriteria.EQUALS,queueDate));
+		query.addCriteria(new MatchCriteria(table,QUEUE_ORDER,MatchCriteria.LESSEQUAL,queueOrder));
+		query.setAsCountQuery(true);
+		
+		return idoGetNumberOfRecords(query);
 	}
 	
 	public int ejbHomeGetQueueSizeNotInStatus(int providerID, String caseStatus[]) throws IDOException {
