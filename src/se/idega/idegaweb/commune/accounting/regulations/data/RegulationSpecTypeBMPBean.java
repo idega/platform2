@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecTypeBMPBean.java,v 1.1 2003/08/18 12:38:21 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.2 2003/08/18 12:59:41 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -56,7 +56,7 @@ public class RegulationSpecTypeBMPBean extends GenericEntity implements Regulati
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-	public Object ejbRegulationSpecType(int id) throws FinderException {
+	public Object ejbFindRegulationSpecType(int id) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
 		return idoFindOnePKByQuery(sql);
