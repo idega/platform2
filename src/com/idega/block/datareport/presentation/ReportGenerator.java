@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-
 import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.data.Query;
@@ -28,7 +26,6 @@ import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.FolderBlock;
 import com.idega.presentation.IWContext;
