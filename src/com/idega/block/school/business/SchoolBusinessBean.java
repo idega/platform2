@@ -1670,6 +1670,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findSchoolClassesBySchoolAndSeasonAndYear(int schoolID, int schoolSeasonID, int schoolYearID, boolean showSubGroups) {
+		try {
+			return getSchoolClassHome().findBySchoolAndSeasonAndYear(schoolID, schoolSeasonID, schoolYearID, showSubGroups);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+
 	public Collection findSchoolClassesBySchoolAndSeasonAndYear(int schoolID, int schoolSeasonID, int schoolYearID) {
 		try {
 			return getSchoolClassHome().findBySchoolAndSeasonAndYear(schoolID, schoolSeasonID, schoolYearID);
@@ -1719,9 +1729,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public int getNumberOfStudentsInClass(int schoolClassID) {
 		try {
 			return getSchoolClassHome().getNumberOfStudentsInClass(schoolClassID);
-		}
-		catch (FinderException fe) {
-			return 0;
 		}
 		catch (IDOException ie) {
 			return 0;
