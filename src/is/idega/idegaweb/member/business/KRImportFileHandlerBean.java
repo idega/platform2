@@ -1,17 +1,13 @@
 package is.idega.idegaweb.member.business;
-import java.io.LineNumberReader;
-import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import javax.ejb.FinderException;
+import javax.ejb.CreateException;
 import javax.transaction.UserTransaction;
 
-import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.business.AddressBusiness;
@@ -20,7 +16,10 @@ import com.idega.core.data.AddressHome;
 import com.idega.core.data.AddressType;
 import com.idega.core.data.Country;
 import com.idega.core.data.CountryHome;
+import com.idega.core.data.Email;
+import com.idega.core.data.*;
 import com.idega.core.data.PostalCode;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
@@ -57,6 +56,8 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
   private ImportFile file;
   private UserTransaction transaction;
   private UserTransaction transaction2;
+  private PhoneHome phoneHome;
+  private EmailHome eHome;
 
   
   private ArrayList userValues;
@@ -67,7 +68,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
   private final int COLUMN_NAME = 1;  
   private final int COLUMN_ADDRESS = 2;
   private final int COLUMN_POSTAL_CODE = 3;
-  private final int COLUMN_PHONE_NUMBER = 4;
+  private final int COLUMN_PHONE = 4;
   private final int COLUMN_EMAIL = 5;
   private final int COLUMN_FAMILY= 6;
   private final int COLUMN_GROUP = 7;
@@ -92,6 +93,9 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
       home = biz.getUserHome();
       addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
       groupBiz = biz.getGroupBusiness();
+      phoneHome = biz.getPhoneHome();
+      eHome = biz.getEmailHome();
+      
 
       //if the transaction failes all the users and their relations are removed
       //transaction.begin();
@@ -178,25 +182,26 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     //variables
     
     String PIN = getUserProperty(this.COLUMN_PERSONAL_ID);
-    
+    String email = getUserProperty(this.COLUMN_EMAIL);
+    String phone = getUserProperty(this.COLUMN_PHONE);
+    String familyInfo = getUserProperty(this.COLUMN_FAMILY);
+    String groupId = getUserProperty(this.COLUMN_GROUP);
+    String name = getUserProperty(this.COLUMN_NAME);
+    String addressLine =  getUserProperty(this.COLUMN_ADDRESS);
+    String postalCode =  getUserProperty(this.COLUMN_POSTAL_CODE);
+          
     if(PIN==null) return false;
     else{
     	PIN = TextSoap.findAndCut(PIN,"-");
     	if( PIN.length()!=10 ) return false;
     }
-    
-    
-    String name = getUserProperty(this.COLUMN_NAME);
+       
     if(name == null ) return false;
-
+	if(groupId==null && rootGroup==null) return false;
+    
     Gender gender = guessGenderFromName(name);
     IWTimestamp dateOfBirth = getBirthDateFromPin(PIN);
     
-    String familyInfo = getUserProperty(this.COLUMN_FAMILY);
-    String groupId = getUserProperty(this.COLUMN_GROUP);
-	if(groupId==null && rootGroup==null) return false;
-	
-
     /**
     * basic user info
     */
@@ -213,62 +218,113 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
      * addresses
      */
     //main address
-
-      String addressLine =  getUserProperty(this.COLUMN_ADDRESS);
       if( (addressLine!=null) ){
         try{
 
-        String streetName = addressBiz.getStreetNameFromAddressString(addressLine);
-        String streetNumber = addressBiz.getStreetNumberFromAddressString(addressLine);
+	        String streetName = addressBiz.getStreetNameFromAddressString(addressLine);
+	        String streetNumber = addressBiz.getStreetNumberFromAddressString(addressLine);
+	        
+	       
+	        Address address = biz.getUsersMainAddress(user);
+	        Country iceland = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
+	        PostalCode code = addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)iceland.getPrimaryKey()).intValue());
+	
+	        boolean addAddress = false;/**@todo is this necessary?**/
+	
+	        if( address == null ){
+	          AddressHome addressHome = addressBiz.getAddressHome();
+	          address = addressHome.create();
+	          AddressType mainAddressType = addressHome.getAddressType1();
+	          address.setAddressType(mainAddressType);
+	          addAddress = true;
+	        }
+	
+	        address.setCountry(iceland);
+	        address.setPostalCode(code);
+	        address.setStreetName(streetName);
+	        address.setStreetNumber(streetNumber);
+	
+	        address.store();
+	
+	        if(addAddress){
+	          user.addAddress(address);
+	        }
+       
+        }
+	     catch(Exception e){
+	      e.printStackTrace();
+	      return false;
+	    }
+
+    }
+    
+      
+        //phone
+		//@todo look for the phone first to avoid duplicated
+		try {
+			
+			if( phone!=null){
+				Collection phones = user.getPhones();						
+				boolean addPhone1 = true;
+						
+				Iterator iter = phones.iterator();
+				//@todo do this with an equals method in a comparator?
+				while (iter.hasNext()) {
+					Phone tempPhone = (Phone) iter.next();
+					String temp = tempPhone.getNumber();
+					
+					if( temp.equals(phone) ) addPhone1 = false;	
+			
+				}
+			
+				if( addPhone1 && phone != null){
+					Phone uPhone = phoneHome.create();
+					uPhone.setNumber(phone);
+					uPhone.setPhoneTypeId(1);//weeeeee...svindl
+					uPhone.store();
+					user.addPhone(uPhone);
+				}
+					
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Phone : "+phone);
+		}
+   
         
-        String postalCode = getUserProperty(this.COLUMN_POSTAL_CODE);
-        String postalName = "Reykjavik";//temporary need to create the correct postalcode table for Iceland
-
-        Address address = biz.getUsersMainAddress(user);
-        Country iceland = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
-        PostalCode code = addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,iceland);
-
-        boolean addAddress = false;/**@todo is this necessary?**/
-
-        if( address == null ){
-          AddressHome addressHome = addressBiz.getAddressHome();
-          address = addressHome.create();
-          AddressType mainAddressType = addressHome.getAddressType1();
-          address.setAddressType(mainAddressType);
-          addAddress = true;
-        }
-
-        address.setCountry(iceland);
-        address.setPostalCode(code);
-        //address.setProvince("Nacka");
-        //address.setCity("Reykjavik");
-        address.setStreetName(streetName);
-        address.setStreetNumber(streetNumber);
-
-        address.store();
-
-        if(addAddress){
-          user.addAddress(address);
-        }
-        
-        /*
-         * Need to add a cashier which should be the admin of the club. and a categoryid
-         * com.idega.block.finance.business.AccountManager
-        public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{       
-        */
-        if( rootGroup!=null){ 
-        	rootGroup.addGroup(user);
-        	System.err.println("Adding to group: "+rootGroup.getName());	
-        }
-        else System.err.println(" ROOT GROUP IS NULL");
-
-    }
-     catch(Exception e){
-      e.printStackTrace();
-      return false;
-    }
-
-    }
+        try{
+	        //email      
+			//both this and phones is very much a stupid hack in my part. I should have used findMethods etc. or make a useful getOrCreateIfNonExisting...bleh! -Eiki
+			if( email!=null){
+				Collection emails = user.getEmails();		
+				boolean addEmail1 = true;
+		
+						
+				Iterator iter = emails.iterator();
+				//@todo do this with an equals method in a comparator?
+				while (iter.hasNext()) {
+					Email mail = (Email) iter.next();
+					String tempAddress = mail.getEmailAddress();
+					
+					if( tempAddress.equals(email) ) addEmail1 = false;	
+						
+					
+				}
+				
+				if( addEmail1 && email != null){
+					Email uEmail = eHome.create();
+					uEmail.setEmailAddress(email);
+					uEmail.store();
+					user.addEmail(uEmail);
+				}
+	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Phone : "+phone);
+		}
 
     /**
      * Save the user to the database
@@ -278,6 +334,15 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 		user.store();
     }
     
+    
+     /*
+     * Need to add a cashier which should be the admin of the club. and a categoryid
+     * com.idega.block.finance.business.AccountManager
+    public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{       
+    */
+    if( rootGroup!=null){ 
+    	rootGroup.addGroup(user);
+    }
     
     if( groupId!=null ){
 	    int group = Integer.parseInt(groupId);
