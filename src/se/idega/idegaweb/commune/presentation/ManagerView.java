@@ -1,4 +1,13 @@
 package se.idega.idegaweb.commune.presentation;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolUserBusiness;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolUser;
+import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.idegaweb.IWResourceBundle;
@@ -40,6 +49,7 @@ public class ManagerView extends CommuneBlock {
 					break;
 			}
 			super.add(mainTable);
+			
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
@@ -52,6 +62,7 @@ public class ManagerView extends CommuneBlock {
 			mainTable.setWidth(2, "20");
 			mainTable.setWidth(400);
 			mainTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+			
 		}
 		mainTable.add(po);
 	}
@@ -61,7 +72,7 @@ public class ManagerView extends CommuneBlock {
 	}
 	private void viewManagerInfo(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
-		add(new Break(2));
+		add(new Break());
 		User manager = null;
 			boolean managerSelected= false;
 			try{
@@ -71,10 +82,30 @@ public class ManagerView extends CommuneBlock {
 			catch(Exception e){
 			}
 			if (managerSelected) {
-				Table leftTable = new Table(1,7);
+				Table leftTable = new Table(1,8);
+				
 				mainTable.add(leftTable,1,1);
 				
 				int userImageID = manager.getSystemImageID();
+				Collection schUsers = getSchoolUserBusiness(iwc).getSchoolUserHome().findByUser(manager);
+				SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
+				School school = null;
+				String schName = null;
+				
+				Iterator iterSchUsers = schUsers.iterator();
+				
+				while (iterSchUsers.hasNext()){
+					SchoolUser schUser = (SchoolUser) iterSchUsers.next();
+					school = sb.getSchool(new Integer (schUser.getSchoolId()));
+					if (school != null){
+						if (schName != null)
+							schName = schName + ", " + school.getSchoolName();
+						else
+							schName = school.getSchoolName();
+					}
+				}
+				
+				
 				PresentationObject picture=null;
 				
 				if(userImageID==-1){
@@ -100,22 +131,29 @@ public class ManagerView extends CommuneBlock {
 				}
 				mainTable.add(picture,3,1);
 				
+				if (schName != null){
+					Text tManagerSchool = getSmallHeader(schName);
+					leftTable.add(tManagerSchool,1,1);	
+				}
+				
+				
 				Name name = new Name(manager.getFirstName(), manager.getMiddleName(), manager.getLastName());
-				String sManagerName = name.getName(iwc.getApplicationSettings().getDefaultLocale(), true);
+				//String sManagerName = name.getName(iwc.getApplicationSettings().getDefaultLocale(), true);
+				String sManagerName = name.getName();
 				Text tManagerName = getSmallHeader(sManagerName);
-				leftTable.add(tManagerName,1,1);
+				leftTable.add(tManagerName,1,2);
 				
 				String sWorkGroup = getWorkGroupName(manager);
 				Text tWorkGroup = getSmallText(sWorkGroup);
-				leftTable.add(tWorkGroup,1,2);
+				leftTable.add(tWorkGroup,1,3);
 				
 				String sWorkGroupArea = "";
 				Text tWorkGroupArea = getSmallText(sWorkGroupArea);
-				leftTable.add(tWorkGroupArea,1,3);
+				leftTable.add(tWorkGroupArea,1,4);
 				
 				String sManagerDescription = getManagerDescription(manager);
 				Text tManagerDescription = getSmallText(sManagerDescription);
-				leftTable.add(tManagerDescription,1,4);
+				leftTable.add(tManagerDescription,1,5);
 				
 				String sManagerEmail = getManagerEmail(manager,iwc);
 				Text tManagerEmail=null;
@@ -128,11 +166,11 @@ public class ManagerView extends CommuneBlock {
 					lManagerEmail.setURL("mailto:"+sManagerEmail);
 				}
 			
-				leftTable.add(tManagerEmail,1,6);
+				leftTable.add(tManagerEmail,1,7);
 				
 				String sManagerTelephone = getManagerTelephone(manager,iwc);
 				Text tManagerTelephone = getSmallText(localize("managerview.tel","Tel")+": "+sManagerTelephone);
-				leftTable.add(tManagerTelephone,1,7);
+				leftTable.add(tManagerTelephone,1,8);
 				
 				
 			} else {
@@ -285,6 +323,10 @@ public class ManagerView extends CommuneBlock {
 		return (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
 	}*/
 
+	protected SchoolUserBusiness getSchoolUserBusiness(IWContext iwc) throws RemoteException {
+		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
+	}
+	
 	public void setManager(User manager) {
 		try{
 			manager_id = ((Integer)manager.getPrimaryKey()).intValue();
