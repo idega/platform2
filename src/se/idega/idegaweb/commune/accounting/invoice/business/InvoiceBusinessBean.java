@@ -9,6 +9,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
@@ -62,27 +63,28 @@ public class InvoiceBusinessBean implements Runnable{
 		new Thread(this).start();
 	}
 	
+	private ChildCareContract contract;
+	private PostingDetail postingDetail;
+	private int days;
+	private Date currentDate = new Date( new java.util.Date().getTime());
+	private IWTimestamp time, startTime, endTime;
+	private ExportDataMapping categoryPosting;
+	private int childcare = 0;
+	private int check = 0;
+	private School provider;
 	/**
 	 * Does the acctual work on the batch process
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {		
-		
-		ChildCareContract contract;
+	public void run() {
 		Collection contractArray = new ArrayList();
 		Collection regulationArray = new ArrayList();
 		User custodian;
-		School provider;
-		Date currentDate = new Date( new java.util.Date().getTime());
 		Age age;
 		float months;
-		int days;
 		int hours;
 		float totalSum;
-		int childcare = 0;
-		int check = 0;
 
-		IWTimestamp time, startTime, endTime;
 
 		try {
 			//TODO (JJ) Probably need to remove the ref to KeyMappingBMPBean. But to what???
@@ -96,6 +98,8 @@ public class InvoiceBusinessBean implements Runnable{
 			// **Flag all contracts as 'not processed'
 
 			SchoolCategory childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategoryHome.class)).findChildcareCategory();
+			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
+			
 			
 			contractArray = getChildCareContractHome().findByDateRange(startPeriod.getDate(), endPeriod.getDate());
 			
@@ -122,37 +126,29 @@ public class InvoiceBusinessBean implements Runnable{
 					invoiceHeader.setSchoolCagtegoryID(childcareCategory);
 					invoiceHeader.setPeriod(startPeriod.getDate());
 					invoiceHeader.setCustodianId(custodian);
-					invoiceHeader.setReference(provider);//TODO (JJ) Check if this is right. Supposed to be "Responcible person cenrally = BUN"...
 					invoiceHeader.setDateCreated(currentDate);
 					invoiceHeader.setCreatedBy(BATCH_TEXT);
-					//TODO (JJ) invoiceHeader.setOwnPosting();
-					//TODO (JJ) invoiceHeader.setDoublePosting();
+					invoiceHeader.setOwnPosting(categoryPosting.getAccount());
+					invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 				}
 				
 				// **Calculate how big part of time period this contract is valid for
-//				if(contract.getValidFromDate().before(startPeriod) && 
-//						(contract.getTerminatedDate()==null || contract.getTerminatedDate().after(endPeriod))){
-//					months = 1;
-//					days = IWTimestamp.getDaysBetween(startPeriod, endPeriod);
-//				} else {
-					//first get the start date
-					startTime = new IWTimestamp(contract.getValidFromDate());
-					time = new IWTimestamp(startPeriod);
-					startTime = startTime.isLater(startTime,time);
-					//Then get end date
-					endTime = new IWTimestamp(endPeriod);
-					if(contract.getTerminatedDate()!=null){
-						time = new IWTimestamp(contract.getTerminatedDate());
-						endTime = endTime.isEarlier(endTime, time);
-					}
-					//calc the how many months are in the given time.
-					months = endTime.getMonth() - startTime.getMonth() + (endTime.getYear()-startTime.getYear())*12;
-					months += 1.0;
-					months -= percentOfMonthDone(startTime);
-					months -= 1.0 - percentOfMonthDone(endTime);
-					days = IWTimestamp.getDaysBetween(startTime, endTime);
-//				}
-
+				//first get the start date
+				startTime = new IWTimestamp(contract.getValidFromDate());
+				time = new IWTimestamp(startPeriod);
+				startTime = startTime.isLater(startTime,time);
+				//Then get end date
+				endTime = new IWTimestamp(endPeriod);
+				if(contract.getTerminatedDate()!=null){
+					time = new IWTimestamp(contract.getTerminatedDate());
+					endTime = endTime.isEarlier(endTime, time);
+				}
+				//calc the how many months are in the given time.
+				months = endTime.getMonth() - startTime.getMonth() + (endTime.getYear()-startTime.getYear())*12;
+				months += 1.0;
+				months -= percentOfMonthDone(startTime);
+				months -= 1.0 - percentOfMonthDone(endTime);
+				days = IWTimestamp.getDaysBetween(startTime, endTime);
 
 				totalSum = 0;
 				//
@@ -171,7 +167,7 @@ public class InvoiceBusinessBean implements Runnable{
 				conditions.add(new ConditionParameter(IntervalConstant.AGE,new Integer(age.getYears())));
 
 				//Select a specific row from the regulation, given the following restrictions
-				PostingDetail postingDetail = regBus.
+				postingDetail = regBus.
 				getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
 					childcareCategory.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
 					PaymentFlowConstant.OUT, 		//The payment flow is out
@@ -182,28 +178,10 @@ public class InvoiceBusinessBean implements Runnable{
 					totalSum,						//Sent in to be used for "Specialutrakning
 					contract);						//Sent in to be used for "Specialutrakning
 			
-				float checkAmount = postingDetail.getAmount();
-				totalSum += checkAmount;
-
 				// **Create the invoice record
-				InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
+				createInvoiceRecord(invoiceHeader, HOURS_PER_WEEK);
+				
 				totalSum = postingDetail.getAmount();
-				invoiceRecord.setInvoiceHeader(invoiceHeader);
-				//TODO (JJ) Create a "utbetalningspost" waiting for description from Lotta
-				invoiceRecord.setAmount(totalSum);
-				invoiceRecord.setInvoiceText(provider.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK);
-				invoiceRecord.setRuleText(postingDetail.getTerm());
-				//TODO (JJ) get the "huvudverksamhet" object that laddi will create.
-				invoiceRecord.setDateCreated(currentDate);
-				invoiceRecord.setCreatedBy(BATCH_TEXT);
-				//TODO (JJ) set the reference to utbetalningsposten
-				//TODO (JJ) Some VAT stuff needed here...
-
-				PostingBusiness postingBusiness = getPostingBusinessHome().create();
-				PostingParameters parameters = postingBusiness.getPostingParameter(
-					new Date(new java.util.Date().getTime()), childcare, check, 0, 0);
-				invoiceRecord.setOwnPosting(parameters.getPostingString());
-				invoiceRecord.store();
 
 				//Get all the rules for this contract
 				//TODO (JJ) This is a func that Thomas will provide.
@@ -223,28 +201,17 @@ public class InvoiceBusinessBean implements Runnable{
 						totalSum,
 						contract);
 
+					// **Create the invoice record
+					createInvoiceRecord(invoiceHeader, null);
+					
+					//TODO (JJ) Have to set the status of the invoiceHeader as well
+
 					totalSum += postingDetail.getAmount();
 
-					// **Create the invoice record
-					invoiceRecord = getInvoiceRecordHome().create();
-					invoiceRecord.setInvoiceHeader(invoiceHeader);
-					//TODO (JJ) set the reference to utbetalningsposten
-					invoiceRecord.setContractId(contract.getContractID());
-					invoiceRecord.setInvoiceText(postingDetail.getTerm());
-					invoiceRecord.setRuleText(postingDetail.getTerm());
-					invoiceRecord.setDays(days);
-					//TODO (JJ) get the "huvudverksamhet" object that laddi will create.
-					invoiceRecord.setDateCreated(currentDate);
-					invoiceRecord.setCreatedBy(BATCH_TEXT);
-					invoiceRecord.setAmount(postingDetail.getAmount());
-					//TODO (JJ) Create a "utbetalningspost" waiting for description from Lotta
-					//TODO (JJ) Some VAT stuff needed here...
-
-					invoiceRecord.store();
 				}
 				//Make sure that the sum is not less than 0
 				if(totalSum<0){
-//					subvention -= totalSum;
+//					subvention += totalSum;
 					//TODO (JJ) have to create some sort of record reference to the subvention row.
 				}
 
@@ -265,6 +232,55 @@ public class InvoiceBusinessBean implements Runnable{
 			e.printStackTrace();
 		}
 
+	}
+	
+	private float createInvoiceRecord(InvoiceHeader invoiceHeader, String header) throws CreateException, PostingParametersException, RemoteException{
+		String ownPosting, doublePosting, providerOwnPosting, providerDoublePosting;
+
+		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
+		invoiceRecord.setInvoiceHeader(invoiceHeader);
+		//TODO (JJ) set the reference to utbetalningsposten
+		invoiceRecord.setProviderId(provider);
+		invoiceRecord.setContractId(contract.getContractID());
+		if(header != null){
+			invoiceRecord.setInvoiceText(header);
+		} else {
+			invoiceRecord.setInvoiceText(postingDetail.getTerm());
+		}
+		invoiceRecord.setRuleText(postingDetail.getTerm());
+		invoiceRecord.setDays(days);
+		invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
+		invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
+		invoiceRecord.setPeriodStartPlacement(startTime.getDate());
+		invoiceRecord.setPeriodEndPlacement(endTime.getDate());
+		invoiceRecord.setDateCreated(currentDate);
+		invoiceRecord.setCreatedBy(BATCH_TEXT);
+		invoiceRecord.setAmount(postingDetail.getAmount());
+		invoiceRecord.setAmountVAT(postingDetail.getVat());
+		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
+		invoiceRecord.setRuleSpecType(postingDetail.getRuleSpecType());
+		//TODO (JJ) get the posting strings
+		//Set the posting strings
+		PostingBusiness postingBusiness = getPostingBusinessHome().create();
+		PostingParameters parameters = postingBusiness.getPostingParameter(
+			new Date(new java.util.Date().getTime()), childcare, check, 0, 0);
+
+		ownPosting = parameters.getPostingString();
+		//TODO (JJ) providerOwnPosting = contract.getApplication().getProvider().getPrimaryKey();
+		providerOwnPosting = "";
+		ownPosting = postingBusiness.generateString(ownPosting,providerOwnPosting,currentDate);
+		ownPosting = postingBusiness.generateString(ownPosting,categoryPosting.getAccount(),currentDate);
+				
+		invoiceRecord.setOwnPosting(ownPosting);
+		doublePosting = parameters.getDoublePostingString();
+		//TODO (JJ) providerDoublePosting = contract.getApplication().getProvider().getPrimaryKey();
+		providerDoublePosting = "";
+		doublePosting = postingBusiness.generateString(doublePosting,providerDoublePosting,currentDate);
+		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
+		invoiceRecord.setOwnPosting(doublePosting);
+		invoiceRecord.store();
+		
+		return postingDetail.getAmount();
 	}
 	
 	private float percentOfMonthDone(IWTimestamp date){
