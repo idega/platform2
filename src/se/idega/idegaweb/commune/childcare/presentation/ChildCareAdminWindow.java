@@ -21,6 +21,7 @@ import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
@@ -578,9 +579,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp stamp = new IWTimestamp();
 		
 
-		TimePeriod deadlinePeriod = null;
-		deadlinePeriod = helper.getValidPeriod();
+		TimePeriod deadlinePeriod = helper.getValidPeriod();
 
+		ChildCareContract archive = getBusiness().getLatestContract(_userID);
+		IWTimestamp oldTerminationDate = null;
+		if (archive != null && archive.getTerminatedDate() != null) {
+			oldTerminationDate = new IWTimestamp(archive.getTerminatedDate());
+		}
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		if(deadlinePeriod!=null && deadlinePeriod.getFirstTimestamp()!=null) {
@@ -597,10 +602,23 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 		    }
 		    
+		    if (oldTerminationDate != null) {
+		    		if (oldTerminationDate.isLaterThan(deadlinePeriod.getFirstTimestamp())) {
+			        dateInput.setEarliestPossibleDate(oldTerminationDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+			        dateInput.setDate(oldTerminationDate.getDate());
+		    		}
+		    }
 		}
 		else{
 		    dateInput.setDate(stamp.getDate());
 		    dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
+
+		    if (oldTerminationDate != null) {
+	    		if (oldTerminationDate.isLaterThan(stamp)) {
+		        dateInput.setEarliestPossibleDate(oldTerminationDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+		        dateInput.setDate(oldTerminationDate.getDate());
+	    		}
+	    }
 		}
 		/*
 		if(helper.hasEarliestPlacementDate()){
