@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.school.data;
+package se.idega.idegaweb.commune.care.data;
 
 import com.idega.data.*;
 import com.idega.block.school.data.SchoolSeason;
