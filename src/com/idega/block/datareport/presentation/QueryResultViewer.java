@@ -265,9 +265,9 @@ public class QueryResultViewer extends Block {
   }
   	
 	  
-	private void showInputFields(SQLQuery query, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
-  	String name = query.getName();
-  	String description = query.getQueryDescription();
+	private void showInputFields(SQLQuery sqlQuery, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
+  	String name = sqlQuery.getName();
+  	String description = sqlQuery.getQueryDescription();
   	PresentationObject presentationObject = getInputFields(name, description, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
   	Form form = new Form();
   	form.addParameter(QUERY_ID_KEY, Integer.toString(queryId));
@@ -389,8 +389,8 @@ public class QueryResultViewer extends Block {
   	return goBack;
 	}
 		
-	private String executeQueries(SQLQuery query, int numberOfRows, QueryToSQLBridge bridge, List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
-		QueryResult queryResult = bridge.executeQueries(query, numberOfRows, executedSQLStatements);
+	private String executeQueries(SQLQuery sqlQuery, int numberOfRows, QueryToSQLBridge sqlBridge, List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
+		QueryResult queryResult = sqlBridge.executeQueries(sqlQuery, numberOfRows, executedSQLStatements);
 		// check if everything is fine
 		if (queryResult == null || queryResult.isEmpty())	{
 			// nothing to do
@@ -406,55 +406,54 @@ public class QueryResultViewer extends Block {
 			buffer.append(": ").append(resultNumberOfRows).append(" ").append(rows);
 			return buffer.toString();
 		}
-		else {
-			resultNumberOfRows = -1;
-		}
+		resultNumberOfRows = -1;
+
 			
 		// get design
 		JasperReportBusiness reportBusiness = getReportBusiness();
-		DesignBox designBox = getDesignBox(query, reportBusiness, resourceBundle, iwc);
-    // synchronize design and result
-    Map designParameters = new HashMap();
-    designParameters.put(REPORT_HEADLINE_KEY, query.getName());
-    JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, designBox);
-    if (print == null) {
-    	return resourceBundle.getLocalizedString("ro_could_not_use_layout", "Layout can't be used");
-    }
-    // create html report
-    String uri;
-    if (PDF_KEY.equals(outputFormat)) {
-    	uri = reportBusiness.getPdfReport(print, "report");
-    }
-    else if (EXCEL_KEY.equals(outputFormat))	{
-    	uri = reportBusiness.getExcelReport(print, "report");
-    }
-    else {
-    	uri = reportBusiness.getHtmlReport(print, "report");
-    }
-    Page parentPage = getParentPage();
-    if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
-    	addExecutedSQLQueries(executedSQLStatements);
-    	add(new Text("ADD_QUERY_SQL_FOR_DEBUG is true, result is shown in pop up window!"));
-    	parentPage.setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
-	  }
-    else {
-    	parentPage.setToRedirect(uri);
-    }
-    // open an extra window with scrollbars
-    //getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=600,height=400,scrollbars=yes')");
-	//openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
-    //getParentPage().setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
-    return null;
+		DesignBox designBox = getDesignBox(sqlQuery, reportBusiness, resourceBundle, iwc);
+	    // synchronize design and result
+	    Map designParameters = new HashMap();
+	    designParameters.put(REPORT_HEADLINE_KEY, sqlQuery.getName());
+	    JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, designBox);
+	    if (print == null) {
+	    	return resourceBundle.getLocalizedString("ro_could_not_use_layout", "Layout can't be used");
+	    }
+	    // create html report
+	    String uri;
+	    if (PDF_KEY.equals(outputFormat)) {
+	    	uri = reportBusiness.getPdfReport(print, "report");
+	    }
+	    else if (EXCEL_KEY.equals(outputFormat))	{
+	    	uri = reportBusiness.getExcelReport(print, "report");
+	    }
+	    else {
+	    	uri = reportBusiness.getHtmlReport(print, "report");
+	    }
+	    Page parentPage = getParentPage();
+	    if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
+	    	addExecutedSQLQueries(executedSQLStatements);
+	    	add(new Text("ADD_QUERY_SQL_FOR_DEBUG is true, result is shown in pop up window!"));
+	    	parentPage.setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
+		  }
+	    else {
+	    	parentPage.setToRedirect(uri);
+	    }
+	    // open an extra window with scrollbars
+	    //getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=600,height=400,scrollbars=yes')");
+		//openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
+	    //getParentPage().setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
+	    return null;
 	}
 	
-	private DesignBox getDesignBox(SQLQuery query, JasperReportBusiness reportBusiness, IWResourceBundle resourceBundle, IWContext iwc) {
+	private DesignBox getDesignBox(SQLQuery sqlQuery, JasperReportBusiness reportBusiness, IWResourceBundle resourceBundle, IWContext iwc) {
     DesignBox design = null;
     try {
     	if (designId > 0) {  
     		design = reportBusiness.getDesignBox(designId);
     	}
     	else {
-    		design = reportBusiness.getDynamicDesignBox(query, resourceBundle, iwc);
+    		design = reportBusiness.getDynamicDesignBox(sqlQuery, resourceBundle, iwc);
     	}
     }
     catch (IOException ioEx) {
@@ -542,9 +541,14 @@ public class QueryResultViewer extends Block {
 		while (iterator.hasNext()) {
 			String key = (String) iterator.next();
 			if (iwc.isParameterSet(key))	{
-				String[] value = iwc.getParameterValues(key);
-				// change to collection-based API
-				result.put(key, Arrays.asList(value));
+				String[] values = iwc.getParameterValues(key);
+				if (values.length > 1) {
+					// change to collection-based API
+					result.put(key, Arrays.asList(values));
+				}
+				else {
+					result.put(key, values[0]);
+				}
 			}
 			else {
 				result.put(key, "");
