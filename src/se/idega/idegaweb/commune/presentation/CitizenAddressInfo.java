@@ -27,8 +27,8 @@ public class CitizenAddressInfo extends PresentationObjectContainer
 		String postalCodeString = null;
 		String addressHeader = iwrb.getLocalizedString("citizen_addr_info.addr_header","Delivery address");
 		String postalCodeHeader = iwrb.getLocalizedString("citizen_addr_info.postal_code_header","Postal code and area");
-		User user = iwc.getCurrentUser();
-		if (user == null)
+		
+		if (!iwc.isLoggedOn())
 		{
 			addressString = "-";
 			postalCodeString = "-";
@@ -39,6 +39,7 @@ public class CitizenAddressInfo extends PresentationObjectContainer
 			//System.out.println("User!=null");
 			try
 			{
+				User user = iwc.getCurrentUser();
 				//int userID = ((Integer) user.getPrimaryKey()).intValue();
 				Address addr = getUserBusiness(iwc).getUsersMainAddress(user);
 				PostalCode code = null;

@@ -15,12 +15,13 @@ public class CitizenPageHeader extends Text
 	public void main(IWContext iwc){
 	
 		String userString;
-		User user = iwc.getCurrentUser();
-		if(user==null){
-			userString = "";
+		
+		if(iwc.isLoggedOn()){
+			User user = iwc.getCurrentUser();
+			userString = user.getName();
 		}
 		else{
-			userString = user.getName();	
+			userString = "";
 		}
 		this.setBold();
 		String beginning = getResourceBundle(iwc).getLocalizedString("citizen_page_header.header","Citizen Account");
