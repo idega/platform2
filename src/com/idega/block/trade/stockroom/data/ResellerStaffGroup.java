@@ -15,6 +15,7 @@ import java.sql.SQLException;
 public class ResellerStaffGroup extends GenericGroup {
 
   public ResellerStaffGroup() {
+    super();
   }
 
   public ResellerStaffGroup(int id) throws SQLException {
@@ -30,4 +31,9 @@ public class ResellerStaffGroup extends GenericGroup {
   public static String getClassName(){
     return ResellerStaffGroup.class.getName();
   }
-}
+
+  protected boolean identicalGroupExistsInDatabase() throws Exception {
+    return false;
+  }
+
+  }

@@ -31,4 +31,9 @@ public class SupplierStaffGroup extends GenericGroup {
   public static String getClassName(){
     return SupplierStaffGroup.class.getName();
   }
-} // Class SupplierStaffGroup
+
+  protected boolean identicalGroupExistsInDatabase() throws Exception {
+    return false;
+  }
+
+  } // Class SupplierStaffGroup
