@@ -169,7 +169,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	
 	public Integer ejbFindWorkReportByClubIdAndYearOfReport(int clubId, int yearOfReport) throws FinderException{
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
+		sql.appendSelectAllFrom(this.getEntityName());
 		sql.appendWhereEquals(COLUMN_NAME_CLUB_ID,clubId);
 		sql.appendAndEquals(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport);
 		

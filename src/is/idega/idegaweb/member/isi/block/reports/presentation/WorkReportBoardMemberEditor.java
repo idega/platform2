@@ -9,8 +9,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -78,25 +80,29 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   
   private EntityBrowser getEntityBrowser(Collection entities)  {
     // define converter
-    TextEditorConverter converter = new TextEditorConverter();
-    converter.maintainParameters(this.getParametersToMaintain());
-    // define path short keys 
-    String[] columns = {
-      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.NAME",
-      "is.is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.PERSONAL_ID",
-      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.STREET_NAME",
-      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.POSTAL_CODE_ID",
-      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.HOME_PHONE",
-      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.WORK_PHONE",
-      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.FAX",
-      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.EMAIL"};
+    TextEditorConverter textEditorConverter = new TextEditorConverter();
+    DropDownMenuConverter dropdownMenuConverter = new DropDownMenuConverter();
+    dropdownMenuConverter.maintainParameters(this.getParametersToMaintain());
+    textEditorConverter.maintainParameters(this.getParametersToMaintain());
+    // define path short keys and map corresponding converters
+    Object[] columns = {
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.STATUS", dropdownMenuConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.NAME", textEditorConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.PERSONAL_ID", textEditorConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.STREET_NAME", textEditorConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.POSTAL_CODE_ID", textEditorConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.HOME_PHONE", textEditorConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.WORK_PHONE", textEditorConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.FAX", textEditorConverter,
+      "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.EMAIL", textEditorConverter};
     EntityBrowser browser = new EntityBrowser();
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
     // switch off the internal form of the browser
     browser.setUseExternalForm(true);
-    for (int i = 0; i < columns.length; i++) {
-      String column = columns[i];
+    for (int i = 0; i < columns.length; i+=2) {
+      String column = (String) columns[i];
+      EntityToPresentationObjectConverter converter = (EntityToPresentationObjectConverter) columns[i+1];
       browser.setMandatoryColumn(i, column);
       browser.setEntityToPresentationConverter(column, converter);
     }
