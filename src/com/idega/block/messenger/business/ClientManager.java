@@ -46,26 +46,31 @@ public class ClientManager implements PacketManager{
 
   public void processPacket(Packet packet){
   System.out.println("ClientManager : process packet");
+
     if( packet!=null ){
       Vector props = packet.getProperties();
       if( props!=null ){
         int length = props.size();
-        System.out.println("ClientManager : PropSize is: "+length);
+        //System.out.println("ClientManager : PropSize is: "+length);
+
         for (int i = 0; i < length; i++) {
           Property prop = (Property) props.elementAt(i);
           String key = prop.getKey();
           String value = prop.getValue();
-          System.out.println("ClientManager : Property key: "+key+" ; value: "+value);
+          //System.out.println("ClientManager : Property key: "+key+" ; value: "+value);
 
           User clientId = (User) ClientManager.clients.get(key);
-          System.out.println("ClientManager : After clients.get(key)");
-          if( clientId == null ) clientCheckIn(key,value);
-          else System.out.println("ClientManager : clientId != null "+clientId);
+          //System.out.println("ClientManager : After clients.get(key)");
+
+          if( clientId == null ) clientCheckIn(key,value);//register this client
+
+         // else System.out.println("ClientManager : clientId != null "+clientId);
 
         }
       }
     }
-    else   System.out.println("ClientManager : Packet is NULL!");
+    else  System.out.println("ClientManager : client sending. no packet");
+
   }
 
 
