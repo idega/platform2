@@ -20,7 +20,7 @@ import java.sql.*;
 public class ForumList{
 
   private Forum thisForum;
-  private ForumService service;
+  private static ForumService service;
   private Link enterForum;
   private boolean FListParametersAdded;
   private TextInput myEmailInput;

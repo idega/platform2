@@ -23,6 +23,7 @@ public class ForumService{
   private GenericEntity[] Forums_ByName;
   private static Object[][] ThreadTree;
   private static Vector TopLevelThreads;
+  private static ForumService staticService;
 
   private Forum myForum;
   private ForumAdminAttributes myForumAdminAttributes;
@@ -34,6 +35,12 @@ public class ForumService{
 
   }
 
+  public static ForumService getStaticInstance(){
+    if(staticService == null){
+      staticService = new ForumService();
+    }
+    return staticService;
+  }
 
   //   ###  Private - Föll  ###
 
