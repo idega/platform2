@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.25 2002/05/17 14:09:48 palli Exp $
+ * $Id: CampusApprover.java,v 1.26 2002/05/21 11:20:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -325,6 +325,7 @@ public class CampusApprover extends Block {
         else{
           eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
           eApplicant.insert();
+          eApplicant.addChild(eApplicant);
           eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
           eApplication.setApplicantId(eApplicant.getID());
           eApplication.setSubmitted(idegaTimestamp.getTimestampRightNow());
