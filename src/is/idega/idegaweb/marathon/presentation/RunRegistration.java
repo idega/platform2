@@ -5,16 +5,15 @@ package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -28,6 +27,7 @@ import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
 /**
@@ -118,6 +118,12 @@ public class RunRegistration extends Block {
 	private Text bestTimeText;
 
 	private Text goalTimeText;
+	
+	private Text agreementText;
+	
+	private Text agreeText;
+	
+	private Text disagreeText;
 
 	//fields step one
 	private RunDistanceDropdownDouble runDisDropdownField;
@@ -190,6 +196,10 @@ public class RunRegistration extends Block {
 	private IWResourceBundle iwrb;
 
 	private boolean showPayment = false;
+	
+	private RadioButton agreeField;
+	
+	private RadioButton disagreeField;
 
 	public RunRegistration() {
 		super();
@@ -242,6 +252,9 @@ public class RunRegistration extends Block {
 		groupNameText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_GROUP_NAME, "Group Name"));
 		bestTimeText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_BEST_TIME, "Your best time running this distance"));
 		goalTimeText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_GOAL_TIME, "Your goal in running this distance now"));
+		agreementText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_AGREEMENT, "Agreement"));
+		agreeText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_AGREE, "I agree"));
+		disagreeText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_DISAGREE, "I disagree"));
 		//step two texts end
 	}
 
@@ -291,8 +304,8 @@ public class RunRegistration extends Block {
 		ssnField.setAsNotEmpty("Date of birth can not be empty");
 
 		genderField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_GENDER), STYLENAME_INTERFACE);
-		genderField.addMenuElement(IWMarathonConstants.PARAMETER_MALE, iwrb.getLocalizedString(IWMarathonConstants.RR_MALE, "Male"));
 		genderField.addMenuElement(IWMarathonConstants.PARAMETER_FEMALE, iwrb.getLocalizedString(IWMarathonConstants.RR_FEMALE, "Female"));
+		genderField.addMenuElement(IWMarathonConstants.PARAMETER_MALE, iwrb.getLocalizedString(IWMarathonConstants.RR_MALE, "Male"));
 
 		addressField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_ADDRESS), STYLENAME_INTERFACE);
 		addressField.setWidth(Table.HUNDRED_PERCENT);
@@ -350,6 +363,10 @@ public class RunRegistration extends Block {
 
 		goalTimeField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_GOAL_TIME), STYLENAME_INTERFACE);
 		goalTimeField.setWidth("50%");
+		
+		agreeField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_AGREEMENT, IWMarathonConstants.PARAMETER_AGREE), STYLENAME_CHECKBOX);
+		
+		disagreeField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_AGREEMENT, IWMarathonConstants.PARAMETER_DISAGREE), STYLENAME_CHECKBOX);
 
 		//step two fields end
 
@@ -536,6 +553,13 @@ public class RunRegistration extends Block {
 		t.add(goalTimeText, column, row++);
 		t.setHeight(row++, 3);
 		t.add(goalTimeField, column, row++);
+		
+		t.add(agreementText,column,row++);
+		t.setHeight(row++, 3);
+		t.add(agreeField,column,row);
+		t.add(agreeText,column,row);
+		t.add(disagreeField,column,row);
+		t.add(disagreeText,column,row++);
 
 		t.setHeight(row++, 18);
 
@@ -583,7 +607,9 @@ public class RunRegistration extends Block {
 		//run info
 		String run = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN);
 		String distance = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
-		String year = "2004";//iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_YEAR);
+		IWTimestamp now = IWTimestamp.RightNow();
+		Integer y = new Integer(now.getYear());
+		String year = y.toString();
 
 		String tshirt = iwc.getParameter(IWMarathonConstants.PARAMETER_TSHIRT);
 		String chip = iwc.getParameter(IWMarathonConstants.PARAMETER_CHIP);
@@ -592,11 +618,13 @@ public class RunRegistration extends Block {
 		String groupName = iwc.getParameter(IWMarathonConstants.PARAMETER_GROUP_NAME);
 		String bestTime = iwc.getParameter(IWMarathonConstants.PARAMETER_BEST_TIME);
 		String goalTime = iwc.getParameter(IWMarathonConstants.PARAMETER_GOAL_TIME);
+		String agreement = iwc.getParameter(IWMarathonConstants.PARAMETER_AGREEMENT);
 
 		int userID = -1;
-
+		
 		if (ssnIS != null && !ssnIS.equals("")) {
 			userID = runBiz.saveUser(name, ssnIS, gender, address, postal, city, country, tel, mobile, email);
+			
 		}
 		else if (ssn != null && !ssn.equals("")) {
 			userID = runBiz.saveUser(name, ssn, gender, address, postal, city, country, tel, mobile, email);

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -30,6 +31,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
@@ -546,16 +548,16 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 
 	/**
-	 * Gets a Map of distances for a specific run and year. Distances are groups
+	 * Gets a Collection of distances for a specific run and year. Distances are groups
 	 * with the group type "iwma_distance".
 	 * 
 	 * @param Group
 	 *            run - the supersupergroup of the specific run
 	 * @param year -
 	 *            the year of the run
-	 * @return Map of all distances for a specific run on a specific year
+	 * @return Collection of all distances for a specific run on a specific year
 	 */
-	public Map getDistancesMap(Group run, String year) {
+	public Collection getDistancesMap(Group run, String year) {
 		IWContext iwc = IWContext.getInstance();
 		Map disMap = new LinkedHashMap();
 		Collection distances = null;
@@ -572,18 +574,8 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					distances = null;
 				}
 			}
-			else {
-				distances = null;
-			}
 		}
-		if (distances != null) {
-			Iterator disIter = distances.iterator();
-			while (disIter.hasNext()) {
-				Group dis = (Group) disIter.next();
-				disMap.put(dis.getPrimaryKey().toString(), dis.getName());
-			}
-		}
-		return disMap;
+		return distances;
 	}
 
 	/**

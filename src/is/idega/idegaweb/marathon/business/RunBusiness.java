@@ -14,6 +14,6 @@ public interface RunBusiness extends com.idega.business.IBOService{
     public Collection getRuns();
     public Collection getYears(Group run);
     public Map getYearsMap(Group run);
-    public Map getDistancesMap(Group run, String year);
+    public Collection getDistancesMap(Group run, String year);
     public Collection getCountries();
 }

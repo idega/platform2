@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.marathon.util;
 
+import com.idega.presentation.text.Text;
+
 /**
  * Description: <br>
  * Copyright: Idega Software 2004 <br>
@@ -54,6 +56,9 @@ public class IWMarathonConstants {
   public static final String PARAMETER_TOTAL = "prm_total";
   public static final String PARAMETER_GROUPS = "prm_groups";
   public static final String PARAMETER_GROUPS_COMPETITION = "prm_groups_competition";
+  public static final String PARAMETER_AGREEMENT = "prm_agreement";
+  public static final String PARAMETER_AGREE = "prm_agree";
+  public static final String PARAMETER_DISAGREE = "prm_disagree";
   
   //localized strings
   public static final String RR_INFO_RED_STAR = "run_reg.info_red_star";
@@ -82,9 +87,13 @@ public class IWMarathonConstants {
   public static final String RR_GROUP_NAME = "run_reg.group_name";
   public static final String RR_BEST_TIME = "run_reg.best_time";
   public static final String RR_GOAL_TIME = "run_reg.goal_time";
+  public static final String RR_AGREEMENT = "run_reg.agreement";
+	public static final String RR_AGREE = "run_reg.agree";
+	public static final String RR_DISAGREE = "run_reg.disagree";
   public static final String RYSDD_TOTAL = "run_year_sort.total";
   public static final String RYSDD_GROUPS = "run_year_sort.groups";
   public static final String RYSDD_GROUPS_COMP = "run_year_sort.groups_comp";
+  
   
   public static final String DISTANCE_55 = "55_km";
   public static final String DISTANCE_42 = "42_km";
