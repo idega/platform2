@@ -292,6 +292,21 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		return apps;
 	
 	}
+	
+	public Collection getGroupApplicationsByStatusAndUserOrderedByCreationDate(String status, User user){
+		Collection apps = null;
+		try {
+			GroupApplicationHome grHome = getGroupApplicationHome();
+			apps =  grHome.findAllApplicationsByStatusAndUserOrderedByCreationDate(status, user);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return apps;
+	
+	}
 
 	public UserBusiness getUserBusiness() throws RemoteException {
 		return (UserBusiness) getServiceInstance(UserBusiness.class);	

@@ -192,7 +192,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
    	.append("='").append(status).append("' and ").append(COLUMN_APPLICATION_GROUP_ID)
    	.append("=").append( ((Integer)applicationGroup.getPrimaryKey()).intValue() );
   	
-  	return this.idoFindIDsBySQL(sql.toString());
+  	return this.idoFindIDsBySQL(sql.toString()); 
   }
   
   public Collection ejbFindAllApplicationsByStatusAndApplicationGroupOrderedByCreationDate(String status, Group applicationGroup) throws FinderException,RemoteException{
@@ -200,6 +200,16 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
    	sql.append("select * from ").append(getEntityName()).append(" where ").append(COLUMN_STATUS)
    	.append("='").append(status).append("' and ").append(COLUMN_APPLICATION_GROUP_ID)
    	.append("=").append( ((Integer)applicationGroup.getPrimaryKey()).intValue() )
+   	.append(" order by ").append(COLUMN_CREATED);
+  	
+  	return this.idoFindIDsBySQL(sql.toString());
+  }
+  
+  public Collection ejbFindAllApplicationsByStatusAndUserOrderedByCreationDate(String status, User user) throws FinderException,RemoteException{
+	StringBuffer sql = new StringBuffer();
+   	sql.append("select * from ").append(getEntityName()).append(" where ").append(COLUMN_STATUS)
+   	.append("='").append(status).append("' and ").append(COLUMN_USER_ID)
+   	.append("=").append( ((Integer)user.getPrimaryKey()).intValue() )
    	.append(" order by ").append(COLUMN_CREATED);
   	
   	return this.idoFindIDsBySQL(sql.toString());
