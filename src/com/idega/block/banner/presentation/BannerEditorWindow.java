@@ -251,7 +251,6 @@ public BannerEditorWindow(){
           filesTable.setWidth("100%");
           filesTable.setCellpadding(2);
           filesTable.setCellspacing(0);
-          filesTable.setAlignment("center");
 
         Image fileImage;
         Link deleteFile;

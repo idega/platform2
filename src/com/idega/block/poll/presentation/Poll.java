@@ -292,13 +292,13 @@ private int _layout = RADIO_BUTTON_VIEW;
       Table questionTable = new Table(3,1);
 	questionTable.setCellpadding(0);
 	questionTable.setCellspacing(0);
-	questionTable.setAlignment(_questionAlignment);
 	questionTable.setVerticalAlignment(1,1,"top");
       _questionImage.setVerticalSpacing(2);
       questionTable.add(_questionImage,1,1);
       questionTable.setWidth(2,1,"4");
       questionTable.add(question,3,1);
 
+      pollTable.setAlignment(1,pollRow,_questionAlignment);
       pollTable.add(questionTable,1,pollRow);
     }
     else {

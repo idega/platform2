@@ -198,8 +198,6 @@ public BoxCategoryChooser(){
 
     Table formTable = new Table(1,2);
 
-      formTable.setAlignment("center");
-
       formTable.setAlignment(1,2,"right");
 
 

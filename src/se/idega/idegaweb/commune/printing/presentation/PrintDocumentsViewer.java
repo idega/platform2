@@ -503,7 +503,6 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	private PresentationObject getPrintButton() {
 		Table T = new Table();
-		T.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 		T.setCellpadding(2);
 		SubmitButton print =
 			new SubmitButton(
@@ -557,7 +556,6 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		String cursorPrm,
 		int step) {
 		Table T = new Table();
-		T.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 		T.setCellpadding(2);
 		if (cursor > 0) {
 			Link prev = new Link(localize("printdoc.last", "last") + "  " + step);
@@ -1073,7 +1071,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		T.add(getLocalizedHeader("printdoc.unprinted_letters", "Unprinted letters"), 1, row++);
 		T.add(getUnPrintedDatesForm(true), 1, row++);
 		T.add(letterList, 1, row++);
+		T.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		T.add(getPrintButton(), 1, row++);
+		T.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		T.add(getCursorLinks(letters.size(), cursor_u, PRM_CURSOR_U, count_u), 1, row++);
 
 		letterList.setWidth(Table.HUNDRED_PERCENT);

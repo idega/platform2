@@ -143,7 +143,6 @@ public class CurrencyCalculator extends PresentationObjectContainer {
   private Table getDisclamer(IWContext iwc) {
     Table table = new Table();
       table.setAlignment(1,1,"center");
-      table.setAlignment("center");
       /*table.add("Gögnin eru fengin frá heimasiðu Seðlabankans");
       try {
         CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(CurrencyBusiness.defaultCurrency);

@@ -78,7 +78,6 @@ public class AlbumDetails extends Block {
 		frameTable.setColor(AlbumCollection._COLOR_BRIGHTEST);
 		frameTable.setColor(1, 1, AlbumCollection._COLOR_BRIGHT);
 		frameTable.setWidth("550");
-		frameTable.setAlignment("center");
 
 		Table contentTable = new Table(1, 6);
 		contentTable.setCellpadding(0);
