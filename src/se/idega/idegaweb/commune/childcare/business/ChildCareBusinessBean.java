@@ -4,6 +4,7 @@
  */
 package se.idega.idegaweb.commune.childcare.business;
 
+
 import is.idega.block.family.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
@@ -1961,8 +1962,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			if (validFrom == null) validFrom = new IWTimestamp(application.getFromDate());
 			int oldArchiveID = archiveID;
-			if(oldArchiveID<=0)
-				oldArchiveID = application.getContractFileId();
+			if(oldArchiveID<=0){
+				ChildCareContract con = getValidContractByChild(application.getChildId());//getLatestContract(application.getChildId());
+			    oldArchiveID = con!=null?((Integer)con.getPrimaryKey()).intValue():-1;
+				
+			}	
 		
 
 			ContractTagHome contractHome = (ContractTagHome) IDOLookup.getHome(ContractTag.class);
@@ -2025,12 +2029,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 				int invoiceReceiverId = -1;
 				SchoolClassMember oldStudent = null;
-				if(application!=null ){//&& application.getContractFileId()>0){
-					ChildCareContract con = getContractFile(oldArchiveID);
-					if(con!=null){
-						invoiceReceiverId = con.getInvoiceReceiverID();
-						oldStudent = con.getSchoolClassMember();
-					}
+				if(oldArchiveID>0 ){//&& application.getContractFileId()>0){
+					
+                    ChildCareContract con = getChildCareContractArchiveHome().findByPrimaryKey(new Integer(oldArchiveID));
+                    if(con!=null){
+                    	invoiceReceiverId = con.getInvoiceReceiverID();
+                    	oldStudent = con.getSchoolClassMember();
+                    }
+                   
 				}
 				addContractToArchive(-1,oldArchiveID,true, application,contractID, validFrom.getDate(), employmentTypeID,invoiceReceiverId,user,createNewStudent,schoolTypeId,schoolClassId, oldStudent);
 				
