@@ -331,7 +331,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
   private void noAccess() throws IOException,SQLException {
     addLeft(iwrb.getLocalizedString("no_access","Login first!"));
-    this.addSubmitButton(new CloseButton(iwrb.getLocalizedString("close","Closee")));
+    this.addSubmitButton(new CloseButton());
   }
 
 	private void saveFile(String sTextId,String sFileId){
@@ -352,12 +352,13 @@ public class TextEditorWindow extends AbstractChooserWindow{
     if ( txText != null ) {
       addLeft(iwrb.getLocalizedString("text_to_delete","Text to delete"));
       addLeft(iwrb.getLocalizedString("confirm_delete","Are you sure?"));
-      addSubmitButton(new SubmitButton(iwrb.getImage("delete.gif"),actDelete));
+      addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),actDelete));
+      //addSubmitButton(new SubmitButton(iwrb.getImage("delete.gif"),actDelete));
       addHiddenInput(new HiddenInput(modeDelete,String.valueOf(txText.getID())));
     }
     else {
       addLeft(iwrb.getLocalizedString("not_exists","Text already deleted or not available."));
-      addSubmitButton(new CloseButton(iwrb.getImage("close.gif")));
+      addSubmitButton(new CloseButton());
     }
   }
 

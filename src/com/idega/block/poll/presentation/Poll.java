@@ -196,8 +196,10 @@ private int _layout = RADIO_BUTTON_VIEW;
   }
 
   private Form getRadioButtonView(LocalizedText locText,PollQuestion pollQuestion) {
-    Image submitImage = _iwrb.getImage("vote.gif");
-    Image olderPollsImage = _iwrb.getImage("older_polls.gif");
+    Image submitImage = _iwrb.getLocalizedImageButton("vote","Vote");
+    //Image submitImage = _iwrb.getImage("vote.gif");
+    Image olderPollsImage = _iwrb.getLocalizedImageButton("older_polls","Older polls");
+    //Image olderPollsImage = _iwrb.getImage("older_polls.gif");
 
       Form form = new Form();
 	form.setWindowToOpen(PollResult.class);

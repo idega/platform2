@@ -329,7 +329,7 @@ public PollAdminWindow(){
 
   private void noAccess() throws IOException,SQLException {
     addLeft(iwrb.getLocalizedString("no_access","Login first!"));
-    addSubmitButton(new CloseButton(iwrb.getImage("close.gif")));
+    addSubmitButton(new CloseButton());
   }
 
   public String getBundleIdentifier(){

@@ -90,7 +90,7 @@ public QuoteEditor(){
     addLeft(_iwrb.getLocalizedString("author","Author")+":",quoteAuthor,true);
     addHiddenInput(new HiddenInput(QuoteBusiness.PARAMETER_QUOTE_ID,Integer.toString(_quoteID)));
 
-    addSubmitButton(new CloseButton(_iwrb.getLocalizedImageButton("close","CLOSE")));
+    addSubmitButton(new CloseButton());
     addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_SAVE));
   }
 

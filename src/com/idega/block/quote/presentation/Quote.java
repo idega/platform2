@@ -55,8 +55,8 @@ protected IWBundle _iwb;
   }
 
   public void main(IWContext iwc) throws Exception {
-    _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
+    _iwrb = _iwb.getResourceBundle(iwc.getCurrentLocale());
 
     _hasEditPermission = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
@@ -65,8 +65,8 @@ protected IWBundle _iwb;
 
     if ( _hasEditPermission )
       _myTable.add(getAdminTable(iwc),1,_row++);
-    _myTable.add(getQuoteTable(iwc),1,_row);
 
+    _myTable.add(getQuoteTable(iwc),1,_row);
     add(_myTable);
   }
 
@@ -226,9 +226,8 @@ protected IWBundle _iwb;
     Quote obj = null;
     try {
       obj = (Quote) super.clone();
-
       if ( this._myTable != null ) {
-	obj._myTable = (Table) this._myTable.clone();
+	  obj._myTable = (Table) this._myTable.clone();
       }
     }
     catch (Exception ex) {
