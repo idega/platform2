@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 public class Property implements Serializable{
   private String key;
-  private String value;
+  private Object value;
 
-  public Property (String key, String value){
+  public Property (String key, Object value){
     this.key = key;
     this.value = value;
   }
 
-  public void setProperty(String key, String value){
+  public void setProperty(String key, Object value){
     this.key = key;
     this.value = value;
   }
@@ -20,7 +20,7 @@ public class Property implements Serializable{
    return this.key;
   }
 
-  public String getValue(){
+  public Object getValue(){
    return this.value;
   }
 

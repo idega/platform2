@@ -87,4 +87,8 @@ public class Packet implements Serializable{
   public void clearMessages(){
     messages=null;
   }
+
+  public void clearProperties(){
+    properties=null;
+  }
 }
