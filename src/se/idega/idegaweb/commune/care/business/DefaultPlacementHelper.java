@@ -1,5 +1,5 @@
 /*
- * $Id: DefaultPlacementHelper.java,v 1.3 2005/02/18 16:07:03 laddi Exp $
+ * $Id: DefaultPlacementHelper.java,v 1.4 2005/03/09 19:53:56 laddi Exp $
  * Created on 5.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- * Last modified: $Date: 2005/02/18 16:07:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/09 19:53:56 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DefaultPlacementHelper implements PlacementHelper {
 
@@ -84,18 +84,22 @@ public class DefaultPlacementHelper implements PlacementHelper {
 
 	public Date getEarliestPlacementDate() {
 		if (contract != null) {
+			IWTimestamp contractDate = new IWTimestamp(contract.getValidFromDate());
 			if (iLog != null) {
 				if (contract.getTerminatedDate() == null && iLog.getEndDate() != null) {
-					return iLog.getEndDate();
+					IWTimestamp logEndDate = new IWTimestamp(iLog.getEndDate());
+					logEndDate.addDays(1);
+					return logEndDate.getDate();
 				}
 				
 				IWTimestamp logDate = new IWTimestamp(iLog.getStartDate());
-				IWTimestamp contractDate = new IWTimestamp(contract.getValidFromDate());
 				if (logDate.isLaterThan(contractDate)) {
+					logDate.addDays(1);
 					return logDate.getDate();
 				}
 			}
-			return contract.getValidFromDate();
+			contractDate.addDays(1);
+			return contractDate.getDate();
 		}
 		else {
 			return application.getFromDate();
