@@ -28,6 +28,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
@@ -67,6 +68,7 @@ import com.idega.util.IWTimestamp;
 public class InvoiceThread extends Thread{
 
 	private static final String BATCH_TEXT = "invoice.batchrun";		//Localize this text in the user interface
+//	private static final String MANUALLY_TEXT = "invoice.manually";		//Localize this text in the user interface
 	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
 	private IWTimestamp startPeriod;
 	private IWTimestamp endPeriod;
@@ -101,6 +103,28 @@ public class InvoiceThread extends Thread{
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run(){
+		try {
+			childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
+			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
+		
+			contracts();
+			regularPayments();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(postingDetail != null){
+				createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
+			}else{
+				createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+			}
+		}
+	}
+
+	/**
+	 * Creates all the invoice headers, invoice records, payment headers and payment records
+	 * for the childcare contracts
+	 */
+	private void contracts(){
 		Collection contractArray = new ArrayList();
 		Collection regulationArray = new ArrayList();
 		User custodian;
@@ -111,9 +135,6 @@ public class InvoiceThread extends Thread{
 
 
 		try {
-			childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
-			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
-		
 			contractArray = getChildCareContractHome().findByDateRange(startPeriod.getDate(), endPeriod.getDate());
 		
 			Iterator contractIter = contractArray.iterator();
@@ -144,9 +165,12 @@ public class InvoiceThread extends Thread{
 					invoiceHeader.setOwnPosting(categoryPosting.getAccount());
 					invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 					invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
+					invoiceHeader.store();
 				}
 			
 				// **Calculate how big part of time period this contract is valid for
+				calculateTime(contract.getValidFromDate(), contract.getTerminatedDate());
+/*
 				//first get the start date
 				startTime = new IWTimestamp(contract.getValidFromDate());
 				startTime.setAsDate();
@@ -166,7 +190,7 @@ public class InvoiceThread extends Thread{
 				months -= percentOfMonthDone(startTime);
 				months -= 1.0 - percentOfMonthDone(endTime);
 				days = IWTimestamp.getDaysBetween(startTime, endTime);
-
+*/
 				totalSum = 0;
 				subvention = null;
 				//
@@ -246,7 +270,104 @@ public class InvoiceThread extends Thread{
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			e.printStackTrace();
+			if(postingDetail != null){
+				createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
+			}else{
+				createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+			}
+		}
+	}
+	
+	/**
+	 * calculatest the number of days andmonths between the start and end date 
+	 * and sets the local variables monts and days
+	 * 
+	 * @param start
+	 * @param end
+	 */
+	private void calculateTime(Date start, Date end){
+		startTime = new IWTimestamp(start);
+		startTime.setAsDate();
+		time = new IWTimestamp(startPeriod);
+		time.setAsDate();
+		startTime = startTime.isLater(startTime,time);
+		//Then get end date
+		endTime = new IWTimestamp(endPeriod);
+		endTime.setAsDate();
+		if(contract.getTerminatedDate()!=null){
+			time = new IWTimestamp(end);
+			endTime = endTime.isEarlier(endTime, time);
+		}
+		//calc the how many months are in the given time.
+		months = endTime.getMonth() - startTime.getMonth() + (endTime.getYear()-startTime.getYear())*12;
+		months += 1.0;
+		months -= percentOfMonthDone(startTime);
+		months -= 1.0 - percentOfMonthDone(endTime);
+		days = IWTimestamp.getDaysBetween(startTime, endTime);
+	}
+
+	/**
+	 * Creates all the invoice headers, invoice records, payment headers and payment records
+	 * for the Regular payments
+	 */
+	private void regularPayments(){
+		User custodian;
+		try {
+			RegularPaymentBusiness regularPaymentBusiness = getRegularPaymentBusiness();
+			Iterator regularPaymentIter = regularPaymentBusiness.findRegularPaymentsForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
+			//Go through all the regular payments
+			while(regularPaymentIter.hasNext()){
+				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry)regularPaymentIter.next();
+				custodian = regularPaymentEntry.getUser();
+				InvoiceHeader invoiceHeader;
+				try{
+					invoiceHeader = getInvoiceHeaderHome().findByCustodian(custodian);
+				} catch (FinderException e) {
+					//No header was found so we have to create it
+					invoiceHeader = getInvoiceHeaderHome().create();
+					//Fill in all the field available at this times
+					invoiceHeader.setSchoolCagtegoryID(childcareCategory);
+					invoiceHeader.setPeriod(startPeriod.getDate());
+					invoiceHeader.setCustodianId(custodian);
+					invoiceHeader.setDateCreated(currentDate);
+					invoiceHeader.setCreatedBy(BATCH_TEXT);
+					invoiceHeader.setOwnPosting(categoryPosting.getAccount());
+					invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
+					invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
+					invoiceHeader.store();
+				}
+				if(regularPaymentEntry.getRegSpecType().equals(RegSpecConstant.CHECK)){
+					
+				}else{
+				}
+				
+				calculateTime(new Date(regularPaymentEntry.getFrom().getTime()),
+						new Date(regularPaymentEntry.getTo().getTime()));
+
+				InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
+				invoiceRecord.setInvoiceHeader(invoiceHeader);
+				invoiceRecord.setInvoiceText(regularPaymentEntry.getNote());
+
+				invoiceRecord.setProviderId(regularPaymentEntry.getProvider());
+				invoiceRecord.setRuleText(regularPaymentEntry.getNote());
+				invoiceRecord.setDays(days);
+				invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
+				invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
+				invoiceRecord.setPeriodStartPlacement(startTime.getDate());
+				invoiceRecord.setPeriodEndPlacement(endTime.getDate());
+				invoiceRecord.setDateCreated(currentDate);
+				invoiceRecord.setCreatedBy(BATCH_TEXT);
+				invoiceRecord.setAmount(regularPaymentEntry.getAmount()*months);
+				invoiceRecord.setAmountVAT(regularPaymentEntry.getVAT()*months);
+				invoiceRecord.setVATType(regularPaymentEntry.getVatRegulationID());
+				invoiceRecord.setRuleSpecType(regularPaymentEntry.getRegSpecType());
+
+				invoiceRecord.setOwnPosting(regularPaymentEntry.getOwnPosting());
+				invoiceRecord.setDoublePosting(regularPaymentEntry.getDoublePostin());
+				invoiceRecord.store();
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 			if(postingDetail != null){
 				createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
@@ -481,7 +602,7 @@ public class InvoiceThread extends Thread{
 	}
 
 	/**
-	 * Creates a new error message (to be used according to fonster 33 in C&P Req.Spec.)
+	 * Creates a new error log message (to be used according to fonster 33 in C&P Req.Spec.)
 	 *  
 	 * @param related Description of related objects
 	 * @param desc Description possible errors
@@ -497,7 +618,6 @@ public class InvoiceThread extends Thread{
 			System.out.println("Exception so complicated that it wasn't even possible to create an error message in the log!");
 			e.printStackTrace();
 		}
-	
 	}
 
 	/**
@@ -505,7 +625,7 @@ public class InvoiceThread extends Thread{
 	 * @param invoiceHeader
 	 * @param header
 	 * @param paymentRecord
-	 * @return InvoiceRecord
+	 * @return the created invoice record
 	 * @throws PostingParametersException
 	 * @throws PostingException
 	 * @throws RemoteException
@@ -524,7 +644,7 @@ public class InvoiceThread extends Thread{
 	/**
 	 * Creates an invoice record
 	 * @param invoiceHeader
-	 * @return
+	 * @return the created invoice record
 	 * @throws PostingParametersException
 	 * @throws PostingException
 	 * @throws RemoteException
@@ -538,6 +658,18 @@ public class InvoiceThread extends Thread{
 		return createInvoiceRecordSub(invoiceRecord);
 	}
 
+	/**
+	 * Does all the work of creating an invoice record that is the same for both check 
+	 * and non-check invoice records
+	 * 
+	 * @param invoiceRecord
+	 * @return the created invoice record
+	 * @throws CreateException
+	 * @throws PostingParametersException
+	 * @throws PostingException
+	 * @throws RemoteException
+	 * @throws MissingMandatoryFieldException
+	 */
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		invoiceRecord.setProviderId(school);
 		invoiceRecord.setContractId(contract.getContractID());
@@ -630,5 +762,9 @@ public class InvoiceThread extends Thread{
 
 	private RegulationsBusiness getRegulationsBusiness() throws RemoteException {
 		return (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
+	}
+
+	private RegularPaymentBusiness getRegularPaymentBusiness() throws RemoteException {
+		return (RegularPaymentBusiness) IBOLookup.getServiceInstance(iwc, RegularPaymentBusiness.class);
 	}
 }
