@@ -4,15 +4,13 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
 import com.idega.presentation.IWContext;
-import is.idega.idegaweb.golf.templates.TournamentAdmin;
 
 /**
  * @author gimmi
  */
 public class TournamentAdministrator extends TournamentBlock {
-
 	protected boolean tournamentMustBeSet() {
-		return false;
+		return true;
 	}
 
 	public void main(IWContext modinfo) throws Exception {
@@ -22,7 +20,7 @@ public class TournamentAdministrator extends TournamentBlock {
 		modinfo.removeSessionAttribute("tournament_id");
 
 	  if (isAdmin() || isClubAdmin()) {
-	    add(getResourceBundle().getImage("tournament/adminlogo.gif"));
+	    //add(getResourceBundle().getImage("tournament/adminlogo.gif"));
 	  }
 	  else {
 	    add("Engin réttindi");

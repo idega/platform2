@@ -471,7 +471,7 @@ public class TournamentList extends GolfBlock {
 			tournaments = (Tournament[]) ((Tournament) IDOLookup.instanciateEntity(Tournament.class)).findAll(SQLString);
 		}
 		catch (java.sql.SQLException sql) {
-			System.err.println("/tournament/index.jsp : finnst ekki golfvollur fyrir union ");
+			System.err.println("/tournament/: finnst ekki golfvollur fyrir union ");
 			tournaments = new Tournament[] {};
 		}
 

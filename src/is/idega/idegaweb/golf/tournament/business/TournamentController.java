@@ -49,6 +49,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -599,18 +600,13 @@ public class TournamentController {
 
 	}
 
-	public static Link getBackLink(IWContext modinfo, int backUpHowManyPages) {
-		IWMainApplication iwma = modinfo.getIWMainApplication();
-		IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
-		IWResourceBundle iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
-
-		Link backLink = new Link(iwrb.getImage("buttons/back.gif"), "#");
-		backLink.setOnClick("history.go(-" + backUpHowManyPages + ")");
-
+	public static BackButton getBackLink(IWContext modinfo, int backUpHowManyPages) {
+		BackButton backLink = new BackButton();
+		backLink.setHistoryMove(backUpHowManyPages);
 		return backLink;
 	}
 
-	public static Link getBackLink(IWContext modinfo) {
+	public static BackButton getBackLink(IWContext modinfo) {
 		return getBackLink(modinfo, 1);
 	}
 

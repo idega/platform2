@@ -299,8 +299,8 @@ public class TournamentCreator extends TournamentBlock {
 	                HiddenInput hiddenAction = new HiddenInput("tournament_admin_createtournament_action","create_two");
 
 //	                Window myWindow = new Window("M葉sh用ar",400,500,TournamentGroups.class);
-	                Window myWindow = new Window("M葉sh用ar",400,500,"/tournament/tournamentgroups.jsp");
-	                Link tournamentGroupButton = new Link(iwrb.getImage("buttons/tournament_groups.gif"), myWindow);
+	                Link tournamentGroupButton = getLink(iwrb.getLocalizedString("tournament.tournament_groups","Tournament Groups"));
+	                tournamentGroupButton.setWindowToOpen(TournamentGroupsWindow.class);
 //	                tournamentGroupButton.setWindowToOpen(TournamentGroups.class);
 
 
@@ -410,7 +410,8 @@ public class TournamentCreator extends TournamentBlock {
 
 	            if (bIsUpdate && AccessControl.isAdmin(modinfo)) {
 	                if(AccessControl.isAdmin(modinfo) || AccessControl.isClubAdmin(modinfo)){
-	                    Link deleteLink = new Link(iwrb.getImage("buttons/delete_tournament.gif"),new Window(iwrb.getLocalizedString("tournament.tournament_editor","Tournament editor") ,"/tournament/deletetournament.jsp"));
+	                    Link deleteLink = getLink(localize("tournament.delete_tournament","Delete Tournament"));
+	                      deleteLink.setWindowToOpen(TournamentDeleteWindow.class);
 	                      deleteLink.addParameter("tournament_id",sTournamentIdToUpdate);
 	                    table.add(deleteLink,5,row);
 	                }
@@ -1119,7 +1120,7 @@ public class TournamentCreator extends TournamentBlock {
 	                      }
 	                  }
 	              }catch (Exception e) {
-	                  System.err.println("/tournament/createtournament.jsp : saveTournament : updateHandicapForRegisteredMembers");
+	                  System.err.println(this.getClassName()+" : saveTournament : updateHandicapForRegisteredMembers");
 	                  e.printStackTrace(System.err);
 	              }
 	          }

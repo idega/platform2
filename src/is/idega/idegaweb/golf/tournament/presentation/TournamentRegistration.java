@@ -4,6 +4,9 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.clubs.presentation.MemberCorrectWindow;
+import is.idega.idegaweb.golf.clubs.presentation.UnionCorrect;
+import is.idega.idegaweb.golf.clubs.presentation.UnionCorrectWindow;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.MemberHome;
@@ -367,20 +370,16 @@ public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourc
           table.setCellspacing(0);
 
         if (AccessControl.isAdmin(modinfo) || AccessControl.isClubAdmin(modinfo) ) {
-            Window popUp1 = new Window(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament") ,"/tournament/tournamentchecker.jsp");
-                popUp1.setWidth(700);
-                popUp1.setHeight(500);
-            Link theChecker = new Link(iwrb.getImage("buttons/verify_tournament.gif"),popUp1);
+            Link theChecker = new Link(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament"));
+            	theChecker.setClassToInstanciate(TournamentCheckerWindow.class);
                 theChecker.addParameter("tournament_id",tournament.getID());
                 theChecker.addParameter("action","doCheck");
             table.add(theChecker,1,1);
 
         }
 
-        Window popUp = new Window("Leit aÝ meÝlimi","/tournament/memberSearch.jsp");
-            popUp.setWidth(600);
-            popUp.setHeight(500);
-        Link theSearch = new Link(iwrb.getImage("buttons/search_for_member.gif"),popUp);
+        Link theSearch = new Link(iwrb.getImage("buttons/search_for_member.gif"));
+        		theSearch.setWindowToOpen(MemberSearchWindow.class);
             theSearch.addParameter("action","getSearch");
         table.add(theSearch,2,1);
 
@@ -574,15 +573,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
         String[] numbers;
         Member member = null;
 
-        Window popUp = new Window(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament"),"/clubs/unioncorrect.jsp");
-            popUp.setWidth(300);
-            popUp.setHeight(250);
-
         Link unionCorrect = null;
-
-        Window popUpMember = new Window(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament"),"/clubs/membercorrect.jsp");
-            popUpMember.setWidth(300);
-            popUpMember.setHeight(300);
 
         Link memberCorrect = null;
         String[] socials = null;
@@ -729,14 +720,16 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 rejects.add(member.getName(),1,rejectsRow);
 
                                 if ( errors[0] == 1) {
-                                        memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"),popUpMember);
+                                        memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"));
+                                        memberCorrect.setWindowToOpen(MemberCorrectWindow.class); 
                                         memberCorrect.addParameter("member_id",member.getID());
                                     rejects.add(memberCorrect,2,rejectsRow);
                                     rejects.add(" ",2,rejectsRow);
                                 }
 
                                 if ( errors[1] == 1) {
-                                        unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"),popUp);
+                                        unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"));
+                                        unionCorrect.setWindowToOpen(UnionCorrectWindow.class);
                                         unionCorrect.addParameter("member_id",member.getID());
                                     rejects.add(unionCorrect,2,rejectsRow);
                                 }
@@ -746,7 +739,8 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 }
 
                                 if ( errors[3] == 1) {
-                                        Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"),"createtournament.jsp");
+                                        Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"));
+                                          tournamentFix.setWindowToOpen(TournamentCreatorWindow.class);
                                           tournamentFix.addParameter("tournament",tournament.getID());
                                           tournamentFix.addParameter("tournament_control_mode","edit");
 
@@ -840,14 +834,16 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 rejects.add(member.getName(),1,rejectsRow);
 
                                 if ( errors[0] == 1) {
-                                        memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"),popUpMember);
+                                        memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"));
+                                        memberCorrect.setWindowToOpen(MemberCorrectWindow.class); 
                                         memberCorrect.addParameter("member_id",member.getID());
                                     rejects.add(memberCorrect,2,rejectsRow);
                                     rejects.add(" ",2,rejectsRow);
                                 }
 
                                 if ( errors[1] == 1) {
-                                        unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"),popUp);
+                                        unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"));
+                                        unionCorrect.setWindowToOpen(UnionCorrectWindow.class);
                                         unionCorrect.addParameter("member_id",member.getID());
                                     rejects.add(unionCorrect,2,rejectsRow);
                                 }
@@ -857,7 +853,8 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
                                 }
 
                                 if ( errors[3] == 1) {
-                                        Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"),"createtournament.jsp");
+                                        Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"));
+                                          tournamentFix.setWindowToOpen(TournamentCreatorWindow.class);
                                           tournamentFix.addParameter("tournament",tournament.getID());
                                           tournamentFix.addParameter("tournament_control_mode","edit");
 
@@ -1506,16 +1503,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
         TextInput correction;
         int[] errors = new int[4];
 
-        Window popUp = new Window(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament"),"/clubs/unioncorrect.jsp");
-            popUp.setWidth(300);
-            popUp.setHeight(250);
-
         Link unionCorrect = null;
-
-        Window popUpMember = new Window(iwrb.getLocalizedString("tournament.verify_tournament","Verify tournament"),"/clubs/membercorrect.jsp");
-            popUpMember.setWidth(300);
-            popUpMember.setHeight(300);
-
         Link memberCorrect = null;
 
         Table otherG = new Table();
@@ -1588,14 +1576,16 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
                         other.add(member.getName(),1,otherRow);
 
                         if ( errors[0] == 1) {
-                                memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"),popUpMember);
+                                memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"));
+                                memberCorrect.setWindowToOpen(MemberCorrectWindow.class);
                                 memberCorrect.addParameter("member_id",member.getID());
                             other.add(memberCorrect,2,otherRow);
                             other.add(" ",2,otherRow);
                         }
 
                         if ( errors[1] == 1) {
-                                unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"),popUp);
+                                unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"));
+                                	unionCorrect.setWindowToOpen(UnionCorrectWindow.class);
                                 unionCorrect.addParameter("member_id",member.getID());
                             other.add(unionCorrect,2,otherRow);
                         }
@@ -1605,7 +1595,8 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
                         }
 
                         if ( errors[3] == 1) {
-                                Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"),"createtournament.jsp");
+                                Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"));
+                                  tournamentFix.setWindowToOpen(TournamentCreatorWindow.class);
                                   tournamentFix.addParameter("tournament",tournament.getID());
                                   tournamentFix.addParameter("tournament_control_mode","edit");
 
@@ -1944,7 +1935,7 @@ public Member[] findMembersByName(IWContext modinfo, Vector name) throws SQLExce
     if (numberInserted != 0) {
         SQLString += " order by first_name, last_name, middle_name";
         members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll(SQLString);
-        System.out.println("Búinn að smíða array : "+IWTimestamp.RightNow().toSQLTimeString() );
+        System.out.println("Buinn ad smida array : "+IWTimestamp.RightNow().toSQLTimeString() );
     }
 
     return members;

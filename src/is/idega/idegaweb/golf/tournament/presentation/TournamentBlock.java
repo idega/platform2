@@ -65,7 +65,7 @@ public abstract class TournamentBlock extends GolfBlock {
 
 		if (tID < 1 && tournamentMustBeSet()) {
 			System.out.println("ClassCalling is " + getClassName());
-			getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentSelectorWindow.class) + "&" + PARAMETER_CLASS_NAME + "=" + getClassName());
+			getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentSelectorWindow.class) + "&" + PARAMETER_CLASS_NAME + "=" + getClassName()+"Window");
 		} else {
 			super.add(getDialog());
 			super._main(modinfo);

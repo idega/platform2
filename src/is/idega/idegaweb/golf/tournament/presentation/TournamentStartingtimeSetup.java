@@ -214,11 +214,9 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			else {
 				add(iwrb.getLocalizedString("tournament.tee_times_are_chosen_in_tee_times_registration", "Tee times  in this tournament are arrangerd in Register player"));
 				add("<br><br>");
-				Window editer1 = new Window(iwrb.getLocalizedString("tournament.edit_tee_times", "Edit tee times"), "/tournament/modifystartingtime.jsp");
-				editer1.setWidth(700);
-				editer1.setHeight(600);
-				editer1.setResizable(true);
-				Link theEdit1 = new Link(iwrb.getImage("buttons/edit_tee_times.gif"), editer1);
+
+				Link theEdit1 = new Link(iwrb.getImage("buttons/edit_tee_times.gif"));
+				theEdit1.setWindowToOpen(ModifyStartingtimeWindow.class);
 				theEdit1.addParameter("tournament_id", tournament.getID());
 				theEdit1.addParameter("action", "getSearch");
 				add(theEdit1);
@@ -290,11 +288,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		//   table.setAlignment(1,row,"center");
 		table.add(iwrb.getLocalizedString("tournament.to_edit_tee_times", "To edit tee times push the button below"), 1, 4);
 
-		Window editer = new Window(iwrb.getLocalizedString("tournament.edit_tee_times", "Edit tee times"), "/tournament/modifystartingtime.jsp");
-		editer.setWidth(700);
-		editer.setHeight(600);
-		editer.setResizable(true);
-		Link theEdit = new Link(iwrb.getImage("buttons/edit_tee_times.gif"), editer);
+		Link theEdit = new Link(iwrb.getImage("buttons/edit_tee_times.gif"));
+		theEdit.setWindowToOpen(ModifyStartingtimeWindow.class);
 		theEdit.addParameter("tournament_id", tournament.getID());
 		theEdit.addParameter("action", "getSearch");
 		table.add(theEdit, 1, 5);
@@ -1351,8 +1346,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 	private Form getBlockForm(Tournament tournament, IWContext modinfo) throws SQLException {
 		IWBundle bundle = getBundle(modinfo);
 		IWResourceBundle iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
-		Window window = new Window(iwrb.getLocalizedString("tournament.block_startingtimes", "Block startingtimes"), 350, 350, "/tournament/blockStartingtime.jsp");
-		Form form = new Form(window);
+		Form form = new Form();
+		form.setWindowToOpen(BlockStartingtimeWindow.class);
 
 		Table table = new Table(2, 1);
 		DropdownMenu menu = new DropdownMenu("tournament_round_id");

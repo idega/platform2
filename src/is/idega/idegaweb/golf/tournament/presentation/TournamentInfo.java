@@ -139,7 +139,8 @@ public class TournamentInfo extends GolfBlock {
 
 		if (AccessControl.isAdmin(modinfo) || AccessControl.isClubAdmin(modinfo)) {
 			if ((!ongoing) && (!finished)) {
-				Form form4 = new Form(new Window(iwrb.getLocalizedString("tournament.tournament_editor", "Tournament editor"), "/tournament/deletetournament.jsp"));
+				Form form4 = new Form();
+				form4.setWindowToOpen(TournamentDeleteWindow.class);
 				form4.add(new Parameter("tournament_id", tournament.getID() + ""));
 				form4.add(new SubmitButton(getResourceBundle().getImage("buttons/delete_tournament.gif")));
 				table.add(form4, 1, row);
@@ -150,9 +151,8 @@ public class TournamentInfo extends GolfBlock {
 		if (TournamentController.isOnlineRegistration(tournament)) {
 			Image registerImage = getResourceBundle().getImage("shared/tournament/register.gif");
 			registerImage.setName(iwrb.getLocalizedString("tournament.register_me", "Register me"));
-			Window window = new Window("Skraning", 700, 600, "registrationForMembers.jsp");
-			window.setResizable(true);
-			Link register = new Link(registerImage, window);
+			Link register = getLocalizedLink("tournament_register","Register");
+			register.setWindowToOpen(RegistrationForMembersWindow.class);
 			register.addParameter("action", "open");
 			register.addParameter("tournament_id", Integer.toString(tournament.getID()));
 			register.setFontSize(1);

@@ -3,13 +3,17 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import is.idega.idegaweb.golf.UpdateHandicap;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentParticipants;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundParticipants;
 import is.idega.idegaweb.golf.entity.TournamentType;
+import is.idega.idegaweb.golf.handicap.presentation.HandicapRegister;
+import is.idega.idegaweb.golf.handicap.presentation.HandicapRegisterWindow;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapUtility;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.data.IDOLookup;
@@ -175,7 +179,8 @@ public class ScorecardSelect extends TournamentBlock {
 		orderTable.addText(" ");
 		orderTable.add(orderButton, 1, 1);
 
-		Window myWindow = new Window(iwrb.getLocalizedString("tournament.groupregistration", "Group registration"), 900, 600, "/tournament/group_scorecard.jsp");
+		GolfWindow myWindow = new GolfWindow(iwrb.getLocalizedString("tournament.groupregistration", "Group registration"), 900, 600);
+		myWindow.setGolfClassToInstanciate(GroupScorecard.class);
 		myWindow.setResizable(true);
 		Form myForm = new Form(myWindow);
 		myForm.add(new HiddenInput("tournament_id", tournament_id));
@@ -237,11 +242,11 @@ public class ScorecardSelect extends TournamentBlock {
 
 				CheckBox check = (CheckBox) checkProxy.clone();
 				check.setContent(Integer.toString(members[a].getMemberID()));
-				Window memberWindow = new Window(iwrb.getLocalizedString("tournament.register", "Register"), 600, 600, "/handicap/handicap.jsp");
 
 				Text tournamentMember = (Text) proxyText.clone();
 				tournamentMember.setText(members[a].getName());
-				Link memberLink = new Link(tournamentMember, memberWindow);
+				Link memberLink = new Link(tournamentMember);
+				memberLink.setWindowToOpen(HandicapRegisterWindow.class);
 				if (members[a].getScorecardID() > 0) {
 					memberLink.addParameter("scorecard_id", members[a].getScorecardID());
 				}
@@ -311,14 +316,16 @@ public class ScorecardSelect extends TournamentBlock {
 					myTable.addText(out_differ + "", 10, a + 2);
 				}
 
-				Window changeWindow = new Window(iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 350, 200, "/handicap/changeTees.jsp");
+				GolfWindow changeWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 350, 200);
+				changeWindow.setGolfClassToInstanciate(HandicapUtility.class);
 				Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
 				changeImage.setAlignment("absmiddle");
 				Link changeLink = new Link(changeImage, changeWindow);
 				changeLink.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, scorecard_id);
 				changeLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_CHANGE_TEES);
 
-				Window changeWindow2 = new Window(iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 350, 200, "/handicap/update_handicap2.jsp");
+				GolfWindow changeWindow2 = new GolfWindow(iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 350, 200);
+				changeWindow2.setGolfClassToInstanciate(HandicapUtility.class);
 				Image changeImage2 = iwb.getImage("shared/correct_handicap.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 11, 13);
 				changeImage2.setAlignment("absmiddle");
 				Link changeLink2 = new Link(changeImage2, changeWindow2);
@@ -326,21 +333,24 @@ public class ScorecardSelect extends TournamentBlock {
 				changeLink2.addParameter(HandicapUtility.PARAMETER_TOURNAMENT_ID, members[a].getTournamentID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_UPDATE_HANDICAP);
 
-				Window positionWindow = new Window(iwrb.getLocalizedString("tournament.change_position", "Change position"), 350, 200, "/tournament/change_position.jsp");
+				GolfWindow positionWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_position", "Change position"), 350, 200);
+				positionWindow.setGolfClassToInstanciate(ChangePosition.class);
 				Image positionImage = iwb.getImage("shared/updown.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"), 9, 13);
 				positionImage.setAlignment("absmiddle");
 				Link positionLink = new Link(positionImage, positionWindow);
 				positionLink.addParameter("member_id", members[a].getMemberID());
 				positionLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				Window groupWindow = new Window(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200, "/tournament/change_group.jsp");
+				GolfWindow groupWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
+				groupWindow.setGolfClassToInstanciate(ChangeGroup.class);
 				Image groupImage = iwb.getImage("shared/change_group.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"), 11, 13);
 				groupImage.setAlignment("absmiddle");
 				Link groupLink = new Link(groupImage, groupWindow);
 				groupLink.addParameter("member_id", members[a].getMemberID());
 				groupLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				Window dismissWindow = new Window(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200, "/tournament/dismiss.jsp");
+				GolfWindow dismissWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
+				dismissWindow.setGolfClassToInstanciate(Dismiss.class);
 				Image dismissImage = iwb.getImage("shared/red.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"), 10, 10);
 				dismissImage.setAlignment("absmiddle");
 				Link dismissLink = new Link(dismissImage, dismissWindow);
@@ -376,7 +386,8 @@ public class ScorecardSelect extends TournamentBlock {
 
 				CheckBox check = (CheckBox) checkProxy.clone();
 				check.setContent(Integer.toString(members[a].getMemberID()));
-				Window memberWindow = new Window(iwrb.getLocalizedString("tournament.registerscore", "Register score"), 600, 600, "/handicap/handicap.jsp");
+				GolfWindow memberWindow = new GolfWindow(iwrb.getLocalizedString("tournament.registerscore", "Register score"), 600, 600);
+				memberWindow.setGolfClassToInstanciate(HandicapRegister.class);
 
 				Text tournamentMember = (Text) proxyText.clone();
 				tournamentMember.setText(members[a].getName());
@@ -450,14 +461,15 @@ public class ScorecardSelect extends TournamentBlock {
 					myTable.addText(out_differ + "", 10, a + 2);
 				}
 
-				Window changeWindow = new Window(iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 350, 200, "/handicap/changeTees.jsp");
-				Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
+				GolfWindow changeWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 350, 200);
+				changeWindow.setGolfClassToInstanciate(HandicapUtility.class);Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
 				changeImage.setAlignment("absmiddle");
 				Link changeLink = new Link(changeImage, changeWindow);
 				changeLink.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, scorecard_id);
 				changeLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_CHANGE_TEES);
 
-				Window changeWindow2 = new Window(iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 350, 200, "/handicap/update_handicap2.jsp");
+				GolfWindow changeWindow2 = new GolfWindow(iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 350, 200);
+				changeWindow2.setGolfClassToInstanciate(HandicapUtility.class);
 				Image changeImage2 = iwb.getImage("shared/correct_handicap.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 11, 13);
 				changeImage2.setAlignment("absmiddle");
 				Link changeLink2 = new Link(changeImage2, changeWindow2);
@@ -465,21 +477,24 @@ public class ScorecardSelect extends TournamentBlock {
 				changeLink2.addParameter(HandicapUtility.PARAMETER_TOURNAMENT_ID, members[a].getTournamentID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_UPDATE_HANDICAP);
 
-				Window positionWindow = new Window(iwrb.getLocalizedString("tournament.change_position", "Change position"), 350, 200, "/tournament/change_position.jsp");
+				GolfWindow positionWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_position", "Change position"), 350, 200);
+				positionWindow.setGolfClassToInstanciate(ChangePosition.class);
 				Image positionImage = iwb.getImage("shared/updown.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"), 9, 13);
 				positionImage.setAlignment("absmiddle");
 				Link positionLink = new Link(positionImage, positionWindow);
 				positionLink.addParameter("member_id", members[a].getMemberID());
 				positionLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				Window groupWindow = new Window(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200, "/tournament/change_group.jsp");
+				GolfWindow groupWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
+				groupWindow.setGolfClassToInstanciate(ChangeGroup.class);
 				Image groupImage = iwb.getImage("shared/change_group.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"), 11, 13);
 				groupImage.setAlignment("absmiddle");
 				Link groupLink = new Link(groupImage, groupWindow);
 				groupLink.addParameter("member_id", members[a].getMemberID());
 				groupLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				Window dismissWindow = new Window(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200, "/tournament/dismiss.jsp");
+				GolfWindow dismissWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
+				dismissWindow.setGolfClassToInstanciate(Dismiss.class);
 				Image dismissImage = iwb.getImage("shared/red.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"), 10, 10);
 				dismissImage.setAlignment("absmiddle");
 				Link dismissLink = new Link(dismissImage, dismissWindow);

@@ -184,8 +184,8 @@ public class TournamentResultsDetailed extends Block {
 			Text member = (Text) blackText.clone();
 			member.setText(r.getName());
 
-			Window scoreWindow = new Window(iwrb.getLocalizedString("tournament.scorecard", "Scorecard"), 650, 650, "/tournament/handicap_skor.jsp");
-			Link seeScores = new Link(member, scoreWindow);
+			Link seeScores = new Link(member);
+			seeScores.setWindowToOpen(HandicapScoreWindow.class);
 			seeScores.addParameter("member_id", r.getMemberId());
 			seeScores.addParameter("tournament_id", tournamentId_);
 			seeScores.addParameter("tournament_group_id", r.getTournamentGroupId());

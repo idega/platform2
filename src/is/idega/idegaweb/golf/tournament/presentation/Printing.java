@@ -104,13 +104,9 @@ public class Printing extends TournamentBlock {
 	      after.setBold();
 	      after.setUnderline();
 
-	    Window memberWindow = new Window(iwrb.getLocalizedString("tournament.members_by_group","Members in tournament (by group)"),"/tournament/member_window.jsp");
-	      memberWindow.setResizable(true);
-	      memberWindow.setMenubar(true);
-	      memberWindow.setHeight(600);
-	      memberWindow.setWidth(600);
-	    Link memberLink = new Link(memberWindow);
-	      memberLink.addParameter("tournament_id",tournament_id);
+	    Link memberLink =getLocalizedLink("tournament.members_by_group","Members in tournament (by group)");
+	    memberLink.setWindowToOpen(TournamentMembersWindow.class);  
+	    memberLink.addParameter("tournament_id",tournament_id);
 
 	      myTable.add(memberLink,1,2);
 
@@ -120,21 +116,20 @@ public class Printing extends TournamentBlock {
 
 	      Text roundText = new Text(iwrb.getLocalizedString("tournament.round","Round")+" "+(a+1));
 	        roundText.setBold();
-	      Window stickerWindow = new Window(iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards"),650,500,"/tournament/print_stickers.jsp");
-	        stickerWindow.setMenubar(true);
-	        stickerWindow.setResizable(true);
-	      Window startingWindow = new Window(iwrb.getLocalizedString("tournament.tee_times","Tee times"),650,500,"/tournament/print_startingtimes.jsp");
-	        startingWindow.setResizable(true);
+	      
 
-	      Link startingTime = new Link(startingWindow);
+	      Link startingTime = getLink(iwrb.getLocalizedString("tournament.tee_times","Tee times"));
+	        startingTime.setWindowToOpen(PrintStartingtimesWindow.class);
 	        startingTime.addParameter(PrintStartingtimes.PARAMETER_TOURNAMENT_ROUND_ID,tournamentRounds[a].getID());
-	      Link scorecards = new Link(stickerWindow);
+	      Link scorecards = getLink(iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards"));
+	        scorecards.setWindowToOpen(PrintStickersWindow.class);
 	        scorecards.addParameter("tournament_round_id",tournamentRounds[a].getID());
-	      Link scorecardsExcel = new Link(iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards")+" (Excel)","/tournament/print_stickers_excel.jsp");
+	      Link scorecardsExcel = getLink(iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards")+" (Excel)");
+	        scorecardsExcel.setWindowToOpen(PrintStickersExcelWindow.class);
 	        scorecardsExcel.addParameter("tournament_round_id",tournamentRounds[a].getID());
 	        scorecardsExcel.setTarget("_blank");
-	      Link excel = new Link(iwrb.getLocalizedString("tournament.unfilled_leaderboard","Unfilled leaderboard")+" (Excel)","/tournament/print_excel.jsp");
-	        excel.setTarget("_blank");
+	      Link excel = getLink(iwrb.getLocalizedString("tournament.unfilled_leaderboard","Unfilled leaderboard")+" (Excel)");
+	        excel.setWindowToOpen(PrintUnfilledLeaderBoardExcelWindow.class);
 	        excel.addParameter("tournament_round_id",tournamentRounds[a].getID());
 
 //			Link scorecardWindow = new Link(iwrb.getLocalizedString("tournament.scorecards","Scorecards"));
@@ -158,18 +153,19 @@ public class Printing extends TournamentBlock {
 	    Text statusExl = new Text(iwrb.getLocalizedString("tournament.leaderboard","Leaderboard")+" (Excel)");
 	    Text resultsExl = new Text(iwrb.getLocalizedString("tournament.tournament_results","Results")+" (Excel)");
 
-	    Window statusWindow = new Window(iwrb.getLocalizedString("tournament.leaderboard","Leaderboard"),650,500,"/tournament/print_status.jsp");
-	      statusWindow.setMenubar(true);
-	      statusWindow.setResizable(true);
-	    Link ranking = new Link(status,statusWindow);
+	    Link ranking = new Link(status);
+	      ranking.setWindowToOpen(PrintStatusWindow.class);
 	      ranking.addParameter("tournament_id",tournament.getID());
-	    Link ranking2 = new Link(results,statusWindow);
+	    Link ranking2 = new Link(results);
+	      ranking2.setWindowToOpen(PrintStatusWindow.class);
 	      ranking2.addParameter("tournament_id",tournament.getID());
 
-		Link excelRanking = new Link(statusExl, statusWindow);
+		Link excelRanking = new Link(statusExl);
+		  excelRanking.setWindowToOpen(PrintStatusWindow.class);
 	      excelRanking.addParameter("tournament_id",tournament.getID());
 	      excelRanking.addParameter("xls", "true");
-	    Link excelRanking2 = new Link(resultsExl,statusWindow);
+	    Link excelRanking2 = new Link(resultsExl);
+	      excelRanking2.setWindowToOpen(PrintStatusWindow.class);
 	      excelRanking2.addParameter("tournament_id",tournament.getID());
 	      excelRanking2.addParameter("xls", "true");
 

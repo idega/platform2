@@ -174,7 +174,7 @@ public class TournamentLists extends TournamentBlock{
 							throw new SQLException(fe.getMessage());
 						}
 						clubAdmin();
-						BackButton bb = new BackButton(iwrb.getImage("buttons/back.gif"));
+						BackButton bb = new BackButton();
 						add(bb);
 					}
 				}else if (union.getID() > 0) { 	

@@ -27,6 +27,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -224,7 +225,7 @@ public class TournamentGroups extends GolfBlock {
 
 	public Form getBackButtonForm(IWResourceBundle iwrb) {
 		Form form = new Form();
-		form.add(new SubmitButton(iwrb.getImage("buttons/back.gif")));
+		form.add(new BackButton());
 		return form;
 	}
 

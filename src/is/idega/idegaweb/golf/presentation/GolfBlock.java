@@ -444,6 +444,10 @@ public abstract class GolfBlock extends Block {
 		return getStyleLink(new Link(s), STYLENAME_LINK);
 	}
 	
+	public Link getTemplateHeaderLink(String s) {
+		return getStyleLink(new Link(s), STYLENAME_TEMPLATE_HEADER_LINK);
+	}
+	
 	public Link getSmallLink(String link) {
 		return getStyleLink(new Link(link), STYLENAME_SMALL_LINK);
 	}

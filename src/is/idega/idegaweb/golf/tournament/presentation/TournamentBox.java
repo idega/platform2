@@ -1,17 +1,20 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.idegaweb.*;
-import is.idega.idegaweb.golf.entity.*;
-import is.idega.idegaweb.golf.tournament.business.*;
-import is.idega.idegaweb.golf.business.*;
+import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
-public class TournamentBox extends Block{
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.HeaderTable;
+
+public class TournamentBox extends GolfBlock{
 
 private String header;
 private String headerT;
@@ -31,7 +34,7 @@ private IWResourceBundle iwrb;
         }
 
 	public TournamentBox(){
-		this("Mót");
+		this("M—t");
 	}
 
 	public TournamentBox(String header){
@@ -50,7 +53,6 @@ private IWResourceBundle iwrb;
          * Workaround so that this object doesn't call the main() function of HeaderTable
          */
         public void main(IWContext modinfo) throws Exception {
-        	super.main(modinfo);
           iwb = getBundle(modinfo);
           iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
 
@@ -122,21 +124,21 @@ private IWResourceBundle iwrb;
                 if(coming!= null){
                   for (int i = 0; i < coming.length; i++) {
                     ++row;
-                    Link link = new Link(coming[i].getName(),"/tournament/tournamentinfo.jsp");
-                      link.setFontSize(1);
+                    Link link = getLink(coming[i].getName());
+                    	  link.setWindowToOpen(TournamentInfoWindow.class);
                       link.addParameter("tournament_id",coming[i].getID());
                     innerTable.add(link,1,row);
                   }
                   if ( coming.length == 0 ) {
                       ++row;
-                     Text noCom = new Text(iwrb.getLocalizedString("tournament.no_tournaments_today","No tournaments today"));
+                     Text noCom = getText(iwrb.getLocalizedString("tournament.no_tournaments_today","No tournaments today"));
                       noCom.setFontSize(1);
                       innerTable.add(noCom,1,row);
                   }
 
                 }else{
                     ++row;
-                   Text noCom = new Text(iwrb.getLocalizedString("tournament.no_tournaments_today","No tournaments today"));
+                   Text noCom = getText(iwrb.getLocalizedString("tournament.no_tournaments_today","No tournaments today"));
                     noCom.setFontSize(1);
                     innerTable.add(noCom,1,row);
                 }
@@ -147,7 +149,7 @@ private IWResourceBundle iwrb;
                 innerTable.setHeight(row,"10");
 
                 ++row;
-                Text lastones=new Text(iwrb.getLocalizedString("tournament.latest_results","Latest results")+":");
+                Text lastones=getText(iwrb.getLocalizedString("tournament.latest_results","Latest results")+":");
                   lastones.setFontSize(1);
                   lastones.setBold();
                   lastones.setFontFace("Verdana,Arial,sans-serif");
@@ -155,22 +157,22 @@ private IWResourceBundle iwrb;
                 if(recent!= null){
                   for (int i = 0; i < recent.length; i++) {
                     ++row;
-                    Link link = new Link(recent[i].getName(),"/tournament/tournamentinfo.jsp");
-                      link.setFontSize(1);
+                    Link link = getLink(recent[i].getName());
+                      link.setWindowToOpen(TournamentInfoWindow.class);
                       link.addParameter("tournament_id",recent[i].getID());
                       link.addParameter("action","viewFinalScore");
                     innerTable.add(link,1,row);
                   }
                   if ( recent.length == 0 ) {
                       ++row;
-                     Text noLast = new Text(iwrb.getLocalizedString("tournament.no_tournaments_done","No tournaments done"));
+                     Text noLast = getText(iwrb.getLocalizedString("tournament.no_tournaments_done","No tournaments done"));
                       noLast.setFontSize(1);
                       innerTable.add(noLast,1,row);
                   }
                 }
                 else {
                 ++row;
-                 Text noLast = new Text(iwrb.getLocalizedString("tournament.no_tournaments_done","No tournaments done"));
+                 Text noLast = getText(iwrb.getLocalizedString("tournament.no_tournaments_done","No tournaments done"));
                   noLast.setFontSize(1);
                   innerTable.add(noLast,1,row);
                 }

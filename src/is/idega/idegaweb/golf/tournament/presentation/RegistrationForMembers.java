@@ -458,32 +458,6 @@ public class RegistrationForMembers extends GolfBlock {
                                 ++rejectsRow;
                                 rejects.setAlignment(1,rejectsRow,"left");
                                 rejects.add(member.getName(),1,rejectsRow);
-/*
-                                if ( errors[0] == 1) {
-                                        memberCorrect = new Link(iwrb.getImage("buttons/check_member.gif"),popUpMember);
-                                        memberCorrect.addParameter("member_id",member.getID());
-                                    rejects.add(memberCorrect,2,rejectsRow);
-                                    rejects.add(" ",2,rejectsRow);
-                                }
-
-                                if ( errors[1] == 1) {
-                                        unionCorrect = new Link(iwrb.getImage("buttons/check_club_membership.gif"),popUp);
-                                        unionCorrect.addParameter("member_id",member.getID());
-                                    rejects.add(unionCorrect,2,rejectsRow);
-                                }
-
-                                if ( errors[2] == 1) {
-                                    rejects.add(iwrb.getLocalizedString("tournament.groups","Groups"),2,otherRow);
-                                }
-
-                                if ( errors[3] == 1) {
-                                        Link tournamentFix = new Link(iwrb.getImage("buttons/check_tournament.gif"),"createtournament.jsp");
-                                          tournamentFix.addParameter("tournament",tournament.getID());
-                                          tournamentFix.addParameter("tournament_control_mode","edit");
-
-                                    rejects.add(tournamentFix,2,rejectsRow);
-                                }
-*/
                             }
                         }
                     }
