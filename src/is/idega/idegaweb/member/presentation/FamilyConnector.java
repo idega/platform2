@@ -62,9 +62,10 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		setTitle(iwrb.getLocalizedString(TAB_NAME, DEFAULT_NAME));
 		//		super("Family connections");
 		setAllMargins(0);
-		setWidth(250);
-		setHeight(200);
-//		setBackgroundColor("#cfd0d2");
+		setWidth(240);
+		setHeight(250);
+		setScrollbar(false);
+		setResizable(true);
 	}
 
 	public void main(IWContext iwc) throws Exception {
@@ -94,11 +95,12 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		form.add(new HiddenInput(_PARAM_USER_ID, user.getPrimaryKey().toString()));
 		form.add(new HiddenInput(_PARAM_METHOD, String.valueOf(_METHOD_ATTACH)));
 		form.add(new HiddenInput(_PARAM_ACTION, String.valueOf(_ACTION_SAVE)));
+		
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
 
-		Table frameTable = new Table(2, 3);
-		frameTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
-		frameTable.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_LEFT);
-		frameTable.setAlignment(2,3, Table.HORIZONTAL_ALIGN_RIGHT);
+		Table frameTable = new Table();
 		frameTable.setWidth(210);
 		frameTable.setHeight(130);
 		frameTable.setStyleClass(mainStyleClass);
@@ -106,24 +108,35 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_pin","Personal ID")), 1, 1);
-		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","Type")), 1, 2);
-		frameTable.add(new TextInput(_PARAM_RELATED_USER_ID), 2, 1);
-		frameTable.add(getRelationMenu(iwc), 2, 2);
+		frameTable.add(new TextInput(_PARAM_RELATED_USER_ID), 1, 2);
+		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","Type")), 1, 3);
+		frameTable.add(getRelationMenu(iwc), 1, 4);
+		
+		Table bottomTable = new Table();
+		bottomTable.setStyleClass(mainStyleClass);
+		bottomTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_LEFT);
+		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		bottomTable.setWidth("100%");
 		Help help = getHelp(HELP_TEXT_KEY_ATTATCH);
-		frameTable.add(help,1,3);
+		bottomTable.add(help,1,1);
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("usr_fam_win_save","Save"));
 		submit.setAsImageButton(true);
-		frameTable.add(submit, 2, 3);
-		frameTable.add(Text.NON_BREAKING_SPACE,2,3);
+		bottomTable.add(submit, 2, 1);
+		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
 		CloseButton close = new CloseButton(iwrb.getLocalizedString("usr_fam_win_cancel","Cancel"));
 		close.setAsImageButton(true);
-		frameTable.add(close, 2, 3);
+		bottomTable.add(close, 2, 1);
 
-		form.add(frameTable);
+		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
+		table.add(frameTable,1,1);
+		table.add(bottomTable,1,3);
+		form.add(table);
 		add(form,iwc);
 	}
 
 	private void getConfirmation(IWContext iwc) throws Exception {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Form form = new Form();
 		form.add(new HiddenInput(_PARAM_USER_ID, user.getPrimaryKey().toString()));
 		form.add(new HiddenInput(_PARAM_RELATED_USER_ID, iwc.getParameter(_PARAM_RELATED_USER_ID)));
@@ -131,26 +144,43 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		form.add(new HiddenInput(_PARAM_METHOD, String.valueOf(_METHOD_DETACH)));
 		form.add(new HiddenInput(_PARAM_ACTION, String.valueOf(_ACTION_SAVE)));
 
-		Table frameTable = new Table(2, 2);
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		
+		Table frameTable = new Table();
 		frameTable.setStyleClass(mainStyleClass);
 		frameTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		frameTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_LEFT);
 		frameTable.setAlignment(2,2, Table.HORIZONTAL_ALIGN_RIGHT);
 		frameTable.setWidth("100%");
-		frameTable.setHeight("100%");
-
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-		Help help = getHelp(HELP_TEXT_KEY_DETATCH);
-		frameTable.add(help,1,2);
 		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_sure","Are you sure ?")), 1, 1);
-		frameTable.add(new CloseButton(iwrb.getLocalizedImageButton("usr_fam_win_cancel","Cancel")), 2, 2);
-		frameTable.add(new SubmitButton(iwrb.getLocalizedImageButton("usr_fam_win_yes","Yes")), 2, 2);
 
-		form.add(frameTable);
+		Table bottomTable = new Table();
+		bottomTable.setCellpadding(0);
+		bottomTable.setCellspacing(0);
+		bottomTable.setStyleClass(mainStyleClass);
+		bottomTable.setWidth("100%");
+		
+		
+		Help help = getHelp(HELP_TEXT_KEY_DETATCH);
+		bottomTable.add(help,1,1);
+		bottomTable.setAlignment(1,2,Table.HORIZONTAL_ALIGN_RIGHT);
+		bottomTable.add(new CloseButton(iwrb.getLocalizedImageButton("usr_fam_win_cancel","Cancel")), 1, 2);
+		bottomTable.add(Text.NON_BREAKING_SPACE,1,2);
+		bottomTable.add(new SubmitButton(iwrb.getLocalizedImageButton("usr_fam_win_yes","Yes")), 1, 2);
+
+		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
+		table.add(frameTable,1,1);
+		table.add(bottomTable,1,3);
+		
+		form.add(table);
 		add(form,iwc);
 	}
 
 	private void save(IWContext iwc) throws RemoteException {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		MemberFamilyLogic logic = getMemberFamilyLogic(iwc);
 		String relationType = iwc.getParameter(_PARAM_TYPE);
 		String relatedPerson = iwc.getParameter(_PARAM_RELATED_USER_ID);
@@ -159,26 +189,41 @@ public class FamilyConnector extends StyledIWAdminWindow {
 				case _METHOD_ATTACH :
 					try {
 						User relatedUser = getUserBusiness(iwc).getUserHome().findByPersonalID(relatedPerson);
+						
+						if(!user.getPrimaryKey().equals(relatedUser.getPrimaryKey())) {
+							if (relationType.equals(logic.getChildRelationType())) {
+								logic.setAsChildFor(relatedUser, user);
+							}
+							else if (relationType.equals(logic.getParentRelationType())) {
+								logic.setAsParentFor(relatedUser, user);
+							}
+							else if (relationType.equals(logic.getSpouseRelationType())) {
+								logic.setAsSpouseFor(relatedUser, user);
+							}
+							else if (relationType.equals(logic.getSiblingRelationType())) {
+								logic.setAsSiblingFor(relatedUser, user);
+							}
+							else if (relationType.equals(logic.getCustodianRelationType())) {
+								logic.setAsCustodianFor(relatedUser, user);
+							}
+							else if( relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)){
+								logic.setAsParentFor(relatedUser, user);
+								logic.setAsCustodianFor(relatedUser, user);
+							}
+							close();
 
-						if (relationType.equals(logic.getChildRelationType())) {
-							logic.setAsChildFor(relatedUser, user);
 						}
-						else if (relationType.equals(logic.getParentRelationType())) {
-							logic.setAsParentFor(relatedUser, user);
+						else{
+							setAlertOnLoad(iwrb.getLocalizedString("fam_conn.same_user", "You cannot connect a user to himself"));
+							try {
+								getAttachForm(iwc);
+							}
+							catch(Exception e) {
+								
+							}
+							
 						}
-						else if (relationType.equals(logic.getSpouseRelationType())) {
-							logic.setAsSpouseFor(relatedUser, user);
-						}
-						else if (relationType.equals(logic.getSiblingRelationType())) {
-							logic.setAsSiblingFor(relatedUser, user);
-						}
-						else if (relationType.equals(logic.getCustodianRelationType())) {
-							logic.setAsCustodianFor(relatedUser, user);
-						}
-						else if( relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)){
-							logic.setAsParentFor(relatedUser, user);
-							logic.setAsCustodianFor(relatedUser, user);
-						}
+
 						
 					}
 					catch (FinderException fe) {
@@ -213,6 +258,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 							logic.removeAsParentFor(relatedUser, user);
 							logic.removeAsCustodianFor(relatedUser, user);
 						}
+						close();
 					}
 					catch (NumberFormatException nfe) {
 					}
@@ -225,7 +271,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 			}
 		}
 
-		close();
+		
 		iwc.setSessionAttribute(TabbedPropertyPanel.TAB_STORE_WINDOW, "TRUE");
 		setParentPageFormToSubmitOnUnLoad(TabbedPropertyPanel.TAB_FORM_NAME);
 	}
