@@ -153,18 +153,20 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		return null;
 	}
 	
-	public static void main(String[] args){
-		/*String page = "This   string\n"+
-			"\n"+
-			"is\n"+
-			"made just for the purpose of testing the breakString\n"+
-			"method. This method is supposed to break a looooooooong\n"+
-			"string into lines of max length specified by a parameter. If\n"+
-			"the String cotains linebreaks, this should be taken into\n"+
-			"account.";*/
-//		System.out.println(breakString(page, 60));
-		
-	}
+
+//	public static void main(String[] args){
+//		String page = "This   string\n"+
+//			"\n"+
+//			"is\n"+
+//			"made just for the purpose of testing the breakString\n"+
+//			"method. This method is supposed to break a looooooooong\n"+
+//			"string into lines of max length specified by a parameter. If\n"+
+//			"the String cotains linebreaks, this should be taken into\n"+
+//			"account.";
+////		System.out.println(breakString(page, 60));
+//		
+//	}
+
 	
 	private String breakString(String page, int maxLineLength) {
 		StringBuffer pageWrapped = new StringBuffer();
@@ -173,7 +175,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		while (stLine.hasMoreTokens())
 		{	
 			String readLine = stLine.nextToken();
-			System.out.println("Token: " + readLine);
+//			System.out.println("Token: " + readLine);
 			if (readLine.equals("\n")){
 				pageWrapped.append(line.toString().trim());
 				pageWrapped.append("\n");
