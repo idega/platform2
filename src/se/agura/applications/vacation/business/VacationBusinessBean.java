@@ -331,7 +331,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					MessageFormat.format(
 							getLocalizedString(
 									"vacation_application.accepted_body",
-									"A vacation application has been accepted for:\nName:\t\t {0},\nPersonal number:\t\t {1},\nParish:\t\t {5}.\n\nThe vacation period is:\t\tfrom\t {3}\n\t\t to \t{4}\n\nVacation type:\t{2}\n\nExtra information:\n{9}\n\nMotivation:\t{7}\nRequested for vacation:\t{8}\nComment to employee:\t{10}"),
+									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5}.\n\nThe vacation period is:\nfrom\t {3}\n\t to {4}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\nComment to employee:\t{10}"),
 							arguments), null);
 		}
 	}	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
