@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.24 2003/12/09 11:55:12 staffan Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.25 2003/12/13 17:21:07 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import com.idega.block.school.data.SchoolStudyPath;
  * It is used to match a posting and get its posting accounts etc
  * 
  * Other submodules will use this data to search for a match on 
- * Periode, Activity, Regulation sec, Company type and Commune belonging.
+ * Period, Activity, Regulation sec, Company type and Commune belonging.
  * When you have a hit you can retrive accounting data such as accounts, resources, activity codes 
  * etc. These values are always mirrored in "Own entries" and "Double entries". See Book-Keeping
  * terms.
@@ -40,17 +40,17 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.24 2003/12/09 11:55:12 staffan Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.25 2003/12/13 17:21:07 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
 	private static final String ENTITY_NAME = "cacc_posting_parameters";
 
-	private static final String COLUMN_PERIODE_FROM = "periode_from";
-	private static final String COLUMN_PERIODE_TO = "periode_to";
+	private static final String COLUMN_PERIOD_FROM = "periode_from";
+	private static final String COLUMN_PERIOD_TO = "periode_to";
 	private static final String COLUMN_CHANGED_DATE = "changed_date";
 	private static final String COLUMN_CHANGED_SIGN = "changed_sign";
 
@@ -71,8 +71,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_PERIODE_FROM, "Period from", true, true, Date.class);
-		addAttribute(COLUMN_PERIODE_TO, "Period  tom", true, true, Date.class);
+		addAttribute(COLUMN_PERIOD_FROM, "Period from", true, true, Date.class);
+		addAttribute(COLUMN_PERIOD_TO, "Period  tom", true, true, Date.class);
 		addAttribute(COLUMN_CHANGED_DATE, "Ändrings datum", true, true, java.sql.Timestamp.class);
 		addAttribute(COLUMN_CHANGED_SIGN, "Ändrings sign", true, true, String.class);
 		
@@ -132,12 +132,12 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		setColumn(COLUMN_CHANGED_SIGN, sign);
 	}
 
-	public void setPeriodeFrom(Date periode) { 
-		setColumn(COLUMN_PERIODE_FROM, periode); 
+	public void setPeriodFrom(Date period) { 
+		setColumn(COLUMN_PERIOD_FROM, period); 
 	}
 	
-	public void setPeriodeTo(Date periode) { 
-		setColumn(COLUMN_PERIODE_TO, periode); 
+	public void setPeriodTo(Date period) { 
+		setColumn(COLUMN_PERIOD_TO, period); 
 	}
 	
 	public void setActivity(int id) {
@@ -196,12 +196,12 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		}			 
 	}
 
-	public Date getPeriodeFrom() {
-		return (Date) getColumnValue(COLUMN_PERIODE_FROM);
+	public Date getPeriodFrom() {
+		return (Date) getColumnValue(COLUMN_PERIOD_FROM);
 	}
 
-	public Date getPeriodeTo() {
-		return (Date) getColumnValue(COLUMN_PERIODE_TO);
+	public Date getPeriodTo() {
+		return (Date) getColumnValue(COLUMN_PERIOD_TO);
 	}
 
 	public SchoolType getActivity() {
@@ -232,14 +232,14 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return (CommuneBelongingType) getColumnValue(COLUMN_COMMUNE_BELONGING_ID);
 	}
 	
-	public Collection ejbFindPostingParametersByPeriode(Date from, Date to) throws FinderException {
+	public Collection ejbFindPostingParametersByPeriod(Date from, Date to) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_PERIODE_FROM);
+		sql.appendWhere(COLUMN_PERIOD_FROM);
 		sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
-		sql.appendAnd().append(COLUMN_PERIODE_TO);
+		sql.appendAnd().append(COLUMN_PERIOD_TO);
 		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
-		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
+		sql.appendOrderByDescending(COLUMN_PERIOD_FROM);
 		sql.append(", ");
 		sql.append(COLUMN_ACTIVITY_ID);
 		sql.append(", ");
@@ -251,11 +251,11 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	public Collection ejbFindPostingParametersByDate(Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_PERIODE_FROM);
+		sql.appendWhere(COLUMN_PERIOD_FROM);
 		sql.appendLessThanOrEqualsSign().append("'"+date+"'");
-		sql.appendAnd().append(COLUMN_PERIODE_TO);
+		sql.appendAnd().append(COLUMN_PERIOD_TO);
 		sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
-		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
+		sql.appendOrderByDescending(COLUMN_PERIOD_FROM);
 		sql.append(", ");
 		sql.append(COLUMN_ACTIVITY_ID);
 		sql.append(", ");
@@ -268,7 +268,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	public Collection ejbFindAllPostingParameters() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
+		sql.appendOrderByDescending(COLUMN_PERIOD_FROM);
 		sql.append(", ");
 		sql.append(COLUMN_ACTIVITY_ID);
 		sql.append(", ");
@@ -290,9 +290,9 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.appendSelectAllFrom(this);
 
 		if (date != null) {
-			sql.appendWhere(COLUMN_PERIODE_FROM);
+			sql.appendWhere(COLUMN_PERIOD_FROM);
 			sql.appendLessThanOrEqualsSign().append("'"+date+"'");
-			sql.appendAnd().append(COLUMN_PERIODE_TO);
+			sql.appendAnd().append(COLUMN_PERIOD_TO);
 			sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
 		} else {
 			return null;
@@ -359,9 +359,9 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
                 sql.appendWhere ();
                 sqlHasWhere = true;
             }
-			sql.append(COLUMN_PERIODE_FROM);
+			sql.append(COLUMN_PERIOD_FROM);
 			sql.appendLessThanOrEqualsSign().append("'"+date+"'");
-			sql.appendAnd().append(COLUMN_PERIODE_TO);
+			sql.appendAnd().append(COLUMN_PERIOD_TO);
 			sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
 		} else {
             logDebug ("No date set in ejbFindPostingParameter (null"
@@ -453,8 +453,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 			int studyPath) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY_ID, activityType);
-		sql.appendAndEqualsQuoted(COLUMN_PERIODE_FROM, from.toString());
-		sql.appendAndEqualsQuoted(COLUMN_PERIODE_TO, to.toString());
+		sql.appendAndEqualsQuoted(COLUMN_PERIOD_FROM, from.toString());
+		sql.appendAndEqualsQuoted(COLUMN_PERIOD_TO, to.toString());
 		sql.appendAndEqualsQuoted(COLUMN_OWN_POSTING_STRING, ownPosting);
 		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING_STRING, doublePosting);
 		sql.appendAndEqualsQuoted(COLUMN_COMPANY_TYPE, companyType);

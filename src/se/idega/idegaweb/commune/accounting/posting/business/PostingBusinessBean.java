@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.49 2003/12/10 10:18:47 staffan Exp $
+ * $Id: PostingBusinessBean.java,v 1.50 2003/12/13 17:21:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -446,8 +446,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if (pp == null) {
 					pp = home.create();
 				}
-				pp.setPeriodeFrom(periodeFrom);
-				pp.setPeriodeTo(periodeTo);
+				pp.setPeriodFrom(periodeFrom);
+				pp.setPeriodTo(periodeTo);
 				pp.setChangedSign(changedSign);
 				pp.setChangedDate(IWTimestamp.getTimestampRightNow());
 				pp.setPostingString(ownPostingString);
@@ -620,7 +620,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	public Collection findPostingParametersByPeriode(Date from, Date to) {
 		try {
 			PostingParametersHome home = getPostingParametersHome();
-			return home.findPostingParametersByPeriode(from, to);				
+			return home.findPostingParametersByPeriod(from, to);				
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {
@@ -672,7 +672,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		// Move this
 		try {
 			PostingParametersHome home = getPostingParametersHome();
-			return home.findPostingParametersByPeriode(from, to);				
+			return home.findPostingParametersByPeriod(from, to);				
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {

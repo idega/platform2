@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.38 2003/11/26 13:24:52 roar Exp $
+ * $Id: PostingParameterListEditor.java,v 1.39 2003/12/13 17:21:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.38 2003/11/26 13:24:52 roar Exp $
+ * $Id: PostingParameterListEditor.java,v 1.39 2003/12/13 17:21:08 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -335,8 +335,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
 		Date dd = new Date(System.currentTimeMillis());
 
-		String from = formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4);
-		String to = formatDate(pp != null ? pp.getPeriodeTo() : dd, 4);
+		String from = formatDate(pp != null ? pp.getPeriodFrom() : dd, 4);
+		String to = formatDate(pp != null ? pp.getPeriodTo() : dd, 4);
 		if(hasError()) {
 			if (_errorText.length() != 0) {
 				table.add(getErrorText(_errorText), 1, row);
@@ -469,7 +469,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			if (pp == null) {
 				defaultDate = new Date(System.currentTimeMillis());
 			} else  {
-				defaultDate = pp.getPeriodeFrom();
+				defaultDate = pp.getPeriodFrom();
 			}
 			Collection fields = pBiz.getAllPostingFieldsByDate(defaultDate);
 			if (fields == null) {

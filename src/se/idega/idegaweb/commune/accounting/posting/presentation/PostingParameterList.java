@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.28 2003/11/26 16:21:06 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.29 2003/12/13 17:21:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.28 2003/11/26 16:21:06 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.29 2003/12/13 17:21:08 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -210,7 +210,7 @@ public class PostingParameterList extends AccountingBlock {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
 					PostingParameters p = (PostingParameters) iter.next();
-					Link link = getLink(formatDate(p.getPeriodeFrom(), 4) + "-" + formatDate(p.getPeriodeTo(), 4),
+					Link link = getLink(formatDate(p.getPeriodFrom(), 4) + "-" + formatDate(p.getPeriodTo(), 4),
 										 PARAM_EDIT_ID, p.getPrimaryKey().toString());
 					link.setPage(_editPage);
 					link.addParameter(PARAM_RETURN_FROM_DATE, fromd);
