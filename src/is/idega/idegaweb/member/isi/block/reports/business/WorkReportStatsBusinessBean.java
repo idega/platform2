@@ -907,6 +907,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				regData.addData(regionalUnionAbbreviation, ruAbbrev==null?"":ruAbbrev);
 				String ruName = report.getRegionalUnionName();
 				regData.addData(regionalUnionName, ruName==null?"":ruName);*/
+				regData.addData(bothGendersUnderAge, new Integer(0));
+				regData.addData(bothGendersEqualOverAge, new Integer(0));
 			}
 	
 			//add to counts
@@ -959,7 +961,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		regionalUnionNumber.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionNumber);*/
 		
-		ReportableField regionalUnionFiffName = new ReportableField("regional_union_name", String.class);
+		ReportableField regionalUnionFiffName = new ReportableField("regionalUnionName", String.class);
 		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionFiffName);
 
@@ -1000,7 +1002,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		while (iter.hasNext()) {
 			//the club
 			WorkReport report = (WorkReport) iter.next();
-	
+			
+			WorkReport lastYearReport=null;
+			try {
+				lastYearReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),year.intValue()-1);
+			} catch (FinderException e1) {
+				System.err.println("WorkReportStatsBusiness : No report for year before :"+year);
+			}
+				
 			//String cName = report.getGroupName();
 			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
 		
@@ -1015,7 +1024,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				regData.addData(regionalUnionNumber, ruNumber==null?"":ruNumber);*/
 				
 				// @TODO get the population somehow
-				regData.addData(regionalUnionPopulation, "10000");
+				//regData.addData(regionalUnionPopulation, "10000");
+				regData.addData(womenUnderAge, new Integer(0));
+				regData.addData(womenOverOrEqualAgeLimit, new Integer(0));
+				regData.addData(menUnderAge, new Integer(0));
+				regData.addData(menOverOrEqualAgeLimit, new Integer(0));
+				regData.addData(bothGendersLastYear, new Integer(0));
 			}
 	
 			//add to counts
@@ -1027,7 +1041,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData = addToIntegerCount(womenOverOrEqualAgeLimit, regData, womenMembersEqualOrOver);
 			regData = addToIntegerCount(menUnderAge, regData, menMembersUnder);
 			regData = addToIntegerCount(menOverOrEqualAgeLimit, regData, menMembersEqualOrOver);
-	
+			if(lastYearReport!=null) {
+				int lastYearMemberCount = getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
+				regData = addToIntegerCount(bothGendersLastYear, regData, lastYearMemberCount);
+			}
 			//put it back again
 			regionalUnionsStatsMap.put(regionalUnionIdentifier,regData);
 		}
