@@ -100,6 +100,8 @@ public class ProductCatalog extends CategoryBlock {
 	boolean _hasEditPermission = false;
 	boolean _allowMulitpleCategories = true;
 	boolean _useParameterCategory = false;
+	String _selectedCategoryColor = null;
+	int _selectedCategoryID = -1;
 	Image _iconImage;
 	Image _iconPhoto;
 	List productCategories;
@@ -173,6 +175,7 @@ public class ProductCatalog extends CategoryBlock {
 		String selCat = iwc.getParameter(CATEGORY_ID);
 		
 		if (selCat != null) {
+			_selectedCategoryID = Integer.parseInt(selCat);
 			addCategoryAsExpanded(selCat);
 		}
 	}
@@ -699,5 +702,9 @@ public class ProductCatalog extends CategoryBlock {
 	
 	public void setPhotoIcon(Image image) {
 		this._iconPhoto = image;
+	}
+	
+	public void setSelectedCategoryColor(String color) {
+		this._selectedCategoryColor = color;
 	}
 }

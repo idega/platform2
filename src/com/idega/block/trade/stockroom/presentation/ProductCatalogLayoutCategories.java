@@ -89,9 +89,13 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 					configCategory = productCatalog.getProductCategoryEditorLink(pCat);
 					table.add(configCategory, column, row);
 				}
-				String color = productCatalog.getColor(level);
-				if (color != null) {
-					table.setRowColor(row, color);
+				if (productCatalog._selectedCategoryColor != null && pCat.getID() == productCatalog._selectedCategoryID) {
+					table.setRowColor(row, productCatalog._selectedCategoryColor);
+				} else {
+					String color = productCatalog.getColor(level);
+					if (color != null) {
+						table.setRowColor(row, color);
+					}
 				}
 				table.setRowVerticalAlignment(row++, Table.VERTICAL_ALIGN_TOP);
 				column = 1;
