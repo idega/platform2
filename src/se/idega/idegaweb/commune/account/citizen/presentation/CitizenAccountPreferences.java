@@ -598,8 +598,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 //				email.setEmailAddress(sEmail);
 //				email.store();
 			}
-			ub.updateUserPhone(user.getID(), 0, phoneHome);
-			ub.updateUserPhone(user.getID(), 1, phoneWork);
+			ub.updateUserPhone(user.getID(), 1, phoneHome);
+			ub.updateUserPhone(user.getID(), 2, phoneWork);
 			if (updateCOAddress) {
 				Address coAddress = getCOAddress(iwc);
 				coAddress.setStreetName(coStreetAddress);
