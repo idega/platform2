@@ -62,9 +62,9 @@ public java.util.Collection findAllByUserAndSeason(int p0,int p1)throws javax.ej
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCurrentInvoiceCompensationBySchoolType(java.lang.String p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllCurrentInvoiceCompensationBySchoolTypeAndSchools(java.lang.String p0,java.util.Collection p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllCurrentInvoiceCompensationBySchoolType(p0);
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllCurrentInvoiceCompensationBySchoolTypeAndSchools(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

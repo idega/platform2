@@ -17,6 +17,12 @@ public class ProviderAccountingPropertiesHomeImpl extends com.idega.data.IDOFact
   return (ProviderAccountingProperties) super.findByPrimaryKeyIDO(pk);
  }
 
+public java.util.Collection findAllIdsByPaymentByInvoice (boolean p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ProviderAccountingPropertiesBMPBean)entity).ejbFindAllByPaymentByInvoice(p0);
+	this.idoCheckInPooledEntity(entity);
+	return ids;
+}
 
 
 }

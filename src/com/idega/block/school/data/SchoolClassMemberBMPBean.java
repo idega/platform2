@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/02/18 09:46:34 $ by $Author: anders $
- * @version $Revision: 1.89 $
+ * Last modified: $Date: 2004/02/18 10:46:40 $ by $Author: staffan $
+ * @version $Revision: 1.90 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -745,41 +745,50 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
-	public Collection ejbFindAllCurrentInvoiceCompensationBySchoolType
-        (final String operationalField) throws FinderException {
+	public Collection ejbFindAllCurrentInvoiceCompensationBySchoolTypeAndSchools
+        (final String operationalField,Collection schools) throws FinderException {
 		final IDOQuery sql = idoQuery ();
-        final String C_ = "c."; // sql alias for school Class
-        final String M_ = "m."; // sql alias for school Class member
-        final String T_ = "t."; // sql alias for school type
-        final String U_ = "u."; // sql alias for user
-        sql.appendSelectAllFrom (getTableName() + " m")
-                .append (',' + SchoolClassBMPBean.SCHOOLCLASS + " c")
-                .append (',' + SchoolTypeBMPBean.SCHOOLTYPE + " t")
-                .append (',' + com.idega.user.data.UserBMPBean.TABLE_NAME
-                         + " u")
-                .appendWhere ()
-                .appendEquals (M_ + SCHOOLCLASS,
-                               C_ + SchoolClassBMPBean.SCHOOLCLASS + "_id")
-                .appendAndEquals (C_ + SchoolClassBMPBean.SCHOOLTYPE,
-                                  T_ + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
-                .appendAndEqualsQuoted (T_ + SchoolTypeBMPBean.SCHOOLCATEGORY,
-                                        operationalField)
-                .appendAndEquals (M_ + MEMBER, U_ + User.FIELD_USER_ID)
-                .appendAndIsNull (M_ + REMOVED_DATE)
-                .appendAnd ()
-                .appendLeftParenthesis ();
-        
-        for (Iterator i = ejbHomeGetInvoiceIntervalTypes ().iterator ();
-             i.hasNext ();) {
-            sql.appendEqualsQuoted (M_ + INVOICE_INTERVAL,
-                                    i.next ().toString ());
-            if (i.hasNext ()) {
-                sql.appendOr ();
-            }
-        }
-        sql.appendRightParenthesis ();
-        sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
-
+		final String M_ = "m."; // sql alias for school Class member
+		final String T_ = "t."; // sql alias for school type
+		final String U_ = "u."; // sql alias for user
+		
+		sql.appendSelect ().append (M_ + SCHOOLCLASSMEMBERID);
+		sql.appendFrom ( new String [] {getTableName(),
+																		SchoolTypeBMPBean.SCHOOLTYPE,
+																		com.idega.user.data.UserBMPBean.TABLE_NAME},
+										 new String []	{"m", "t", "u"});
+		
+		sql.appendWhereEquals (M_ + MEMBER, U_ + User.FIELD_USER_ID);
+		sql.appendAndIsNull (M_ + REMOVED_DATE);
+		sql.appendAndEquals (M_ + SCHOOL_TYPE,
+												 T_ + SchoolTypeBMPBean.SCHOOLTYPE + "_id");
+		sql.appendAndEqualsQuoted (T_ + SchoolTypeBMPBean.SCHOOLCATEGORY,
+															 operationalField);
+		
+		sql.appendAnd ().appendLeftParenthesis ();
+		final Collection intervalTypes = ejbHomeGetInvoiceIntervalTypes ();		
+		sql.append (M_ + INVOICE_INTERVAL).append (" in ").appendLeftParenthesis ();
+		sql.appendCommaDelimitedWithinSingleQuotes (intervalTypes);
+		sql.appendRightParenthesis ();
+		
+		sql.appendOr ();
+		
+		sql.append (M_ + SCHOOLCLASSMEMBERID).append (" in ");
+		sql.appendLeftParenthesis ();
+		final String C_ = "c."; // sql alias for school class
+		final String M2_ = "m2."; // sql alias for school class member
+		sql.appendSelect ().append (M2_ + SCHOOLCLASSMEMBERID);
+		sql.appendFrom ( new String [] {getTableName(),
+																		SchoolClassBMPBean.SCHOOLCLASS},
+										 new String []	{"m2", "c"});
+		sql.appendWhereEquals (M2_ + SCHOOLCLASS,
+													 C_ + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAnd ();
+		sql.append(C_ + SchoolClassBMPBean.SCHOOL).append(" in ");
+		sql.appendLeftParenthesis().appendCommaDelimited (schools);
+		sql.appendRightParenthesis ();
+		sql.appendRightParenthesis ().appendRightParenthesis ();
+		sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
 		return idoFindPKsBySQL(sql.toString());		
 	}
 

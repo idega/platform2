@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/18 10:46:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -81,31 +81,29 @@ public class InvoiceByCompensationView extends AccountingBlock {
 	 */
 	public void init (final IWContext context) {
 		setResourceBundle (getResourceBundle(context));
-        
+		
 		try {
-            if (context.isParameterSet (ACTION_KEY)
-                && ACTION_SHOWUSER_KEY.equals (context.getParameter
-                                               (ACTION_KEY))) {
-                showStudent (context);
-            } else if (context.isParameterSet (ACTION_KEY)
-                       && ACTION_SAVE_KEY.equals (context.getParameter
-                                                  (ACTION_KEY))) {
-                updateStudent (context);
-            } else {
-                showInvoiceByCompensationList (context);
-            }
-        } catch (final Exception exception) {
-            logWarning ("Exception caught in " + getClass ().getName ()
-                                + " " + (new Date ()).toString ());
-            logWarning ("Parameters:");
-            final Enumeration enum = context.getParameterNames ();
-            while (enum.hasMoreElements ()) {
-                final String key = (String) enum.nextElement ();
-                logWarning ('\t' + key + "='"
-                                    + context.getParameter (key) + "'");
-            }
-            log (exception);
-            add ("Det inträffade ett fel. Försök igen senare.");
+			if (context.isParameterSet (ACTION_KEY)
+					&& ACTION_SHOWUSER_KEY.equals (context.getParameter (ACTION_KEY))) {
+				showStudent (context);
+			} else if (context.isParameterSet (ACTION_KEY)
+								 && ACTION_SAVE_KEY.equals (context.getParameter(ACTION_KEY))) {
+				updateStudent (context);
+			} else {
+				showInvoiceByCompensationList (context);
+			}
+		} catch (final Exception exception) {
+			exception.printStackTrace ();
+			logWarning ("Exception caught in " + getClass ().getName ()
+									+ " " + (new Date ()).toString ());
+			logWarning ("Parameters:");
+			final Enumeration enum = context.getParameterNames ();
+			while (enum.hasMoreElements ()) {
+				final String key = (String) enum.nextElement ();
+				logWarning ('\t' + key + "='"	+ context.getParameter (key) + "'");
+			}
+			log (exception);
+			add ("Det inträffade ett fel. Försök igen senare.");
 		}
 	}
     
@@ -189,8 +187,6 @@ public class InvoiceByCompensationView extends AccountingBlock {
 		        + user.getLastName ();
 		final String schoolName
 		        = getSchoolNameFromStudent (student, classHome, schoolHome);
-		final String intervalKey = student.getInvoiceInterval ();
-		final String intervalString = localize (intervalKey, intervalKey);
 		ssnLink.addParameter (ACTION_KEY, ACTION_SHOWUSER_KEY);
 		ssnLink.addParameter (MEMBERID_KEY, studentId.toString ());
 		ssnLink.addParameter (SSN_KEY, ssn);
@@ -199,14 +195,20 @@ public class InvoiceByCompensationView extends AccountingBlock {
 		studentTable.add (ssnLink, col++, row);
 		studentTable.add (new Text(userName), col++, row);
 		studentTable.add (new Text(schoolName), col++, row);
-		studentTable.add (new Text(intervalString), col++, row);
+		studentTable.add (new Text(getIntervalString (student)), col++, row);
 		final Date latestInvoiceDate = student.getLatestInvoiceDate ();
 		if (null != latestInvoiceDate) {
 		    studentTable.add (new Text(dateFormatter.format
                                        (latestInvoiceDate)), col++, row);
 		}
 	}
-    
+
+	private String getIntervalString (final SchoolClassMember student) {
+		final String intervalKey = student.getInvoiceInterval ();
+		return (intervalKey == null || intervalKey.equals ("-1"))
+				? "" : localize (intervalKey, intervalKey);
+	}
+
 	/**
 	 * Displays user info form, where latest invoice date can be modified
 	 *
@@ -234,13 +236,11 @@ public class InvoiceByCompensationView extends AccountingBlock {
         final String studentName = context.getParameter (NAME_KEY);
         final String schoolName = context.getParameter (SCHOOL_KEY);
         final Date latestInvoiceDate = student.getLatestInvoiceDate ();
-        final String intervalKey = student.getInvoiceInterval ();
-        final String intervalString = localize (intervalKey, intervalKey);
         
         // display student info
         final Table studentTable = getStudentInfoTable
                 (ssn,  studentName, schoolName, latestInvoiceDate,
-                 intervalString);
+                 getIntervalString (student));
         
         // display buttons
         final Table buttonTable = getSaveButtonTable ();

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.5 2003/10/15 13:10:27 anders Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.6 2004/02/18 10:46:24 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,19 +9,20 @@
  */
 package se.idega.idegaweb.commune.accounting.school.data;
 
-import com.idega.data.GenericEntity;
-
 import com.idega.block.school.data.School;
-
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
+import java.util.Collection;
+import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
 
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2003/10/15 13:10:27 $ by $Author: anders $
+ * Last modified: $Date: 2004/02/18 10:46:24 $ by $Author: staffan $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 
@@ -158,5 +159,14 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 
 	public void setDoublePosting(String s) { 
 		setColumn(COLUMN_DOUBLE_POSTING, s); 
+	}
+
+	public Collection ejbFindAllByPaymentByInvoice
+		(final boolean hasPaymentByInvoice)
+		throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (getTableName());
+		sql.appendWhereEquals (COLUMN_PAYMENT_BY_INVOICE, hasPaymentByInvoice);
+		return idoFindPKsBySQL (sql.toString());		
 	}
 }
