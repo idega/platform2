@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.24 2002/11/15 02:28:20 gimmi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.25 2002/11/15 09:53:57 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -46,15 +46,16 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	 * @param email Email of the user
 	 * @param phoneHome the Home phone of the user
 	 * @param phoneWork the Work phone of the user
-	 * @return boolean	If the Application is successfully created.
+	 * @return Integer appliaction id or null if insertion was unsuccessful
 	 * @throws UserHasLoginException If A User already has a login in the system.
 	 */
-	public boolean insertApplication (User user, String ssn, String email,
-                                      String phoneHome, String phoneWork) throws UserHasLoginException{
+	public Integer insertApplication (User user, String ssn, String email,
+                                      String phoneHome, String phoneWork)
+        throws UserHasLoginException, RemoteException {
+        CitizenAccount application = null;
 		try {
-			CitizenAccount application =
-                    ((CitizenAccountHome) IDOLookup.getHome
-                     (CitizenAccount.class)).create();
+			application = ((CitizenAccountHome) IDOLookup.getHome
+                           (CitizenAccount.class)).create();
 			application.setSsn (ssn);
 			if (user != null) {
 				application.setOwner(user);
@@ -83,24 +84,26 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			}
 			e.printStackTrace();
 
-			return false;
+			return null;
 		}
 
-		return true;
+		return (Integer) (application == null ? null
+                          : application.getPrimaryKey());
 	}
 
 
-    public boolean insertApplication
+    public Integer insertApplication
         (final String name, final String ssn, final String email,
          final String phoneHome, final String phoneWork, final Date date,
          final String street, final String zipCode, final String city,
          final int genderId, final String civilStatus,
          final boolean hasCohabitant, final int childrenCount,
          final String applicationReason) throws RemoteException {
-		try {
+		CitizenAccount application = null;
+        try {
             final CitizenAccountHome citizenAccountHome = (CitizenAccountHome)
                     IDOLookup.getHome(CitizenAccount.class);
-			final CitizenAccount application = citizenAccountHome.create ();
+			application = citizenAccountHome.create ();
 			application.setApplicantName (name != null ? name : "");
 			application.setSsn (ssn != null ? ssn : "");
             application.setEmail (email != null ? email : "");
@@ -121,10 +124,11 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
-
-		return true;
+        
+		return (Integer) (application == null ? null
+                          : application.getPrimaryKey());
     }
 
     public Gender [] getGenders () throws RemoteException {

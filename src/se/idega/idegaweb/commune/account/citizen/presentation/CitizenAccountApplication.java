@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.30 2002/11/15 09:24:46 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.31 2002/11/15 09:53:57 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/15 09:24:46 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/15 09:53:57 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -169,12 +169,12 @@ public class CitizenAccountApplication extends CommuneBlock {
 				text.setFontColor(COLOR_RED);
 				add(text);
 				viewUnknownCitizenApplicationForm1(iwc);
-			}
-			else if (!business.insertApplication(user, ssn, email, phoneHome, phoneWork)) {
+			} else if (null == business.insertApplication
+                       (user, ssn, email, phoneHome, phoneWork)) {
 				// known user applied, but couldn't be submitted
-				throw new Exception(localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
-			}
-			else {
+				throw new Exception (localize (ERROR_NO_INSERT_KEY,
+                                               ERROR_NO_INSERT_DEFAULT));
+			} else {
 				// known user applied and was submitted
 				if (getResponsePage() != null) {
 					iwc.forwardToIBPage(getParentPage(), getResponsePage());
@@ -411,57 +411,69 @@ public class CitizenAccountApplication extends CommuneBlock {
 			stringParameterNames.add(CURRENT_KOMMUN_KEY);
 		}
 
-		boolean isInserted = false;
+		Integer applicationId = null;
 		try {
-			final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParameterNames, stringParameterNames, ssnParameterNames, integerParameters);
+			final Map parameters = parseParameters
+                    (getResourceBundle(), iwc, mandatoryParameterNames,
+                     stringParameterNames, ssnParameterNames,
+                     integerParameters);
 			final String ssn = parameters.get(SSN_KEY).toString();
 			final String email = parameters.get(EMAIL_KEY).toString();
 			final String phoneHome = parameters.get(PHONE_HOME_KEY).toString();
 			final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
-			final String name = parameters.get(FIRST_NAME_KEY) + " " + parameters.get(LAST_NAME_KEY);
+			final String name = parameters.get(FIRST_NAME_KEY) + " "
+                    + parameters.get(LAST_NAME_KEY);
 			final int genderId = getIntParameter(iwc, GENDER_KEY);
 			final String street = parameters.get(STREET_KEY).toString();
 			final String zipCode = parameters.get(ZIP_CODE_KEY).toString();
 			final String city = parameters.get(CITY_KEY).toString();
-			final String civilStatus = parameters.get(CIVIL_STATUS_KEY).toString();
+			final String civilStatus
+                    = parameters.get(CIVIL_STATUS_KEY).toString();
 
-			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
+			final CitizenAccountBusiness business
+                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+                    (iwc, CitizenAccountBusiness.class);
 			final User user = business.getUser(ssn);
-			if (user != null) {
+			if (null != user) {
 				viewSimpleApplicationForm(iwc);
 				return;
 			}
 			final Calendar birth = Calendar.getInstance();
-			birth.set(new Integer(ssn.substring(0, 4)).intValue(), new Integer(ssn.substring(4, 6)).intValue() - 1, new Integer(ssn.substring(6, 8)).intValue());
-			isInserted = business.insertApplication(name, ssn, email, phoneHome, phoneWork, birth.getTime(), street, zipCode, city, genderId, civilStatus, hasCohabitant, childrenCount, applicationReason);
-		}
-		catch (final ParseException e) {
+			birth.set(new Integer(ssn.substring(0, 4)).intValue(),
+                      new Integer(ssn.substring(4, 6)).intValue() - 1,
+                      new Integer(ssn.substring(6, 8)).intValue());
+			applicationId = business.insertApplication
+                    (name, ssn, email, phoneHome, phoneWork, birth.getTime(),
+                     street, zipCode, city, genderId, civilStatus,
+                     hasCohabitant, childrenCount, applicationReason);
+		} catch (final ParseException e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
 			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
 			viewUnknownCitizenApplicationForm2(iwc);
 			return;
-		}
-		catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
-			isInserted = false;
+			applicationId = null;
 		}
 
-		if (!isInserted) {
-			final String message = localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT);
-			final Text text = new Text(message, true, false, false);
-			text.setFontColor(COLOR_RED);
-			add(text);
-			add(Text.getBreak());
+		if (null == applicationId) {
+			final String message = localize (ERROR_NO_INSERT_KEY,
+                                             ERROR_NO_INSERT_DEFAULT);
+			final Text text = new Text (message, true, false, false);
+			text.setFontColor (COLOR_RED);
+			add (text);
+			add (Text.getBreak ());
 			viewUnknownCitizenApplicationForm1(iwc);
 			return;
 		}
 
-		if (getResponsePage() != null)
-			iwc.forwardToIBPage(getParentPage(), getResponsePage());
+		if (null != getResponsePage())
+			iwc.forwardToIBPage (getParentPage(), getResponsePage());
 		else
-			add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, TEXT_APPLICATION_SUBMITTED_DEFAULT)));
+			add(new Text (localize(TEXT_APPLICATION_SUBMITTED_KEY,
+                                  TEXT_APPLICATION_SUBMITTED_DEFAULT)));
 	}
 
 	private Table createTable(final CommuneBlock communeblock) {

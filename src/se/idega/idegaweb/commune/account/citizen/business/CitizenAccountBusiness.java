@@ -25,13 +25,13 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
 	 * @param email Email of the user
 	 * @param phoneHome the Home phone of the user
 	 * @param phoneWork the Work phone of the user
-	 * @return boolean	If the Application is successfully created.
+	 * @return Integer appliaction id or null if insertion was unsuccessful
 	 * @throws UserHasLoginException If A User already has a login in the system.
 	 */
-    boolean insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) 
+    Integer insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) 
     		throws RemoteException, UserHasLoginException;
 
-    boolean insertApplication
+    Integer insertApplication
         (String name, String ssn, String email, String phoneHome,
          String phoneWork, Date birthDate, String street, String zipCode,
          String city, int genderId, String civilStatus, boolean hasCohabitant,
