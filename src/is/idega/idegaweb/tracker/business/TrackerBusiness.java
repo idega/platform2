@@ -42,6 +42,8 @@ public class TrackerBusiness {
   private static int totalHits = 0;
   private static int totalSessions = 0;
 
+  private static String domainName;
+
   public TrackerBusiness() {
   }
 
@@ -119,9 +121,11 @@ public class TrackerBusiness {
 
   public static void handleReferrerStats(IWContext iwc){
     String referer = iwc.getReferer();
+    if( domainName == null ) domainName = iwc.getServerName();
+
     if( referers == null ){ referers = new Hashtable();}
 
-    if(referer!=null){
+    if( (referer!=null) && (referer.indexOf(domainName)==-1) ){
       ReferrerStatistics stats = (ReferrerStatistics) referers.get(referer);
       if( stats == null ){
        stats = new ReferrerStatistics();
@@ -205,4 +209,11 @@ public class TrackerBusiness {
   public static Map getUserAgents(){
     return agents;
   }
+
+
+
+
+
+
+
 }
