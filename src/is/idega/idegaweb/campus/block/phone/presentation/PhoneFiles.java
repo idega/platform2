@@ -176,7 +176,7 @@ public class PhoneFiles extends Block {
         all.removeAll(unreadFiles);
         String name;
         PhoneFileInfo info;
-        java.text.NumberFormat NF = java.text.NumberFormat.getCurrencyInstance();
+        java.text.NumberFormat NF = java.text.NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
         int row = 2;
         Link V;
 
