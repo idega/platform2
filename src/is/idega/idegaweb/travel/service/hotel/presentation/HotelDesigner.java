@@ -2,6 +2,9 @@ package is.idega.idegaweb.travel.service.hotel.presentation;
 
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
+import is.idega.idegaweb.travel.service.hotel.data.RoomType;
+import is.idega.idegaweb.travel.service.hotel.data.RoomTypeHome;
+
 import java.rmi.*;
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,6 +43,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
   private Service _service;
   private Product _product;
   private Timeframe _timeframe;
+  private Collection _roomTypes;
 
   String NAME_OF_FORM = ServiceDesigner.NAME_OF_FORM;
   String ServiceAction = ServiceDesigner.ServiceAction;
@@ -55,6 +59,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
   private String PARAMETER_DESIGN_IMAGE_ID = "hd_par_des_img_id";
   private String PARAMETER_USE_IMAGE_ID    = "hd_par_use_img_id";
   private String PARAMETER_PICKUP_ID       = "hd_par_pick_id";
+  private String PARAMETER_ROOM_TYPE_ID    = "hd_par_rt_id";
 
 
   public HotelDesigner(IWContext iwc) throws Exception {
@@ -65,6 +70,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     super.main( iwc );
     _iwrb = super.getResourceBundle();
     _supplier = super.getSupplier();
+		RoomTypeHome rth = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
+		_roomTypes = rth.findAll();
   }
 
   private boolean setupData(int serviceId) {
@@ -74,6 +81,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       _service = sHome.findByPrimaryKey(new Integer(serviceId));
       _product = pHome.findByPrimaryKey(new Integer(serviceId));
       _timeframe = _product.getTimeframe();
+      
       return true;
     }catch (Exception e) {
       return false;
@@ -100,10 +108,17 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
     String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
 		String[] pickupIds = iwc.getParameterValues( PARAMETER_PICKUP_ID );
+		String roomTypeId = iwc.getParameter( PARAMETER_ROOM_TYPE_ID );
 
     int iDiscountType = com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT;
     if ( discountType != null ) {
       iDiscountType = Integer.parseInt( discountType );
+    }
+    
+    int iRoomTypeId = -1;
+    try {
+    	iRoomTypeId = Integer.parseInt(roomTypeId);
+    }catch (Exception e) {
     }
 
     Integer iImageId = null;
@@ -136,18 +151,19 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     try {
       if ( serviceId == -1 ) {
 //        hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
-        returner = hb.createHotel(_supplier.getID(), iImageId, name, number, description, iNumberOfUnits,iMaxPerUnit, true, iDiscountType);
+        returner = hb.createHotel(_supplier.getID(), iImageId, name, number, description, iNumberOfUnits,iMaxPerUnit, true, iDiscountType, iRoomTypeId);
       } else {
         String timeframeId = iwc.getParameter( PARAMETER_TIMEFRAME_ID );
         if ( timeframeId == null ) {
           timeframeId = "-1";
         }
 //        hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
-        returner = hb.updateHotel(serviceId, _supplier.getID(), iImageId, name, number, description, iNumberOfUnits, iMaxPerUnit, true, iDiscountType);
+        returner = hb.updateHotel(serviceId, _supplier.getID(), iImageId, name, number, description, iNumberOfUnits, iMaxPerUnit, true, iDiscountType, iRoomTypeId);
         if ( useImageId == null ) {
           ProductEditorBusiness.getInstance().dropImage( _product, true );
         }
       }
+
 
 	  	Service service = ((ServiceHome) IDOLookup.getHome(Service.class)).findByPrimaryKey(returner);
 		  service.removeAllHotelPickupPlaces();
@@ -187,7 +203,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
     if ( serviceId != -1 ) {
       isDataValid = setupData( serviceId );
-    }
+    } 
+
 
     Form form = new Form();
     form.setName( NAME_OF_FORM );
@@ -216,6 +233,13 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
       TextInput numberOfUnits = new TextInput( PARAMETER_NUMBER_OF_UNITS );
       TextInput maxPerUnit = new TextInput( PARAMETER_MAX_PER_UNIT );
+
+	  if (_roomTypes == null) {
+		  System.out.println("1 _roomTypes == null");
+	  } else {
+		  System.out.println("1 _roomTypes.size() = "+_roomTypes.size());
+	  }
+			DropdownMenu roomTypes = new DropdownMenu( _roomTypes, PARAMETER_ROOM_TYPE_ID );
 
       DropdownMenu discountType = new DropdownMenu( PARAMETER_DISCOUNT_TYPE );
       discountType.addMenuElement( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT, _iwrb.getLocalizedString( "travel.amount", "Amount" ) );
@@ -260,12 +284,16 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(_product.getPrimaryKey());
           int iNoUnits = hotel.getNumberOfUnits();
           int iMaxPerUnit = hotel.getMaxPerUnit();
+          int iRoomTypeId = hotel.getRoomTypeId();
           
           if (iNoUnits >= 0 ) {
 	          numberOfUnits.setContent(Integer.toString(iNoUnits));
           }
           if (iMaxPerUnit >= 0 ) {
 	          maxPerUnit.setContent( Integer.toString(iMaxPerUnit));
+          }
+          if (iRoomTypeId > 0) {
+          	roomTypes.setSelectedElement(iRoomTypeId);	
           }
         }catch (FinderException fe) {
           System.out.println("[HotelDesigner] HotelBean not available");
@@ -299,6 +327,14 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       tfToText.setText( _iwrb.getLocalizedString( "travel.to", "to" ) );
       Text tfYearlyText = ( Text ) smallText.clone();
       tfYearlyText.setText( _iwrb.getLocalizedString( "travel.yearly", "yearly" ) );
+
+		  ++row;
+		  Text roomTypeText = ( Text ) theBoldText.clone();
+			roomTypeText.setText( _iwrb.getLocalizedString( "travel.room_type", "Room type" ) );
+		//		HotelPickupPlace[] hpps = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+			table.add(roomTypeText, 1, row);
+		  table.add(roomTypes, 2, row);
+			roomTypes.keepStatusOnAction();
 
       ++row;
       Text pickupText = ( Text ) theBoldText.clone();
