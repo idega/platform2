@@ -236,7 +236,7 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
         }
 
         if (!orderBy.equals("")) {
-          buffer.append(" ORDER BY "+orderBy);
+          buffer.append(" ORDER BY i."+orderBy);
         }
 
       inqueries = this.idoFindPKsBySQL(buffer.toString());
