@@ -17,6 +17,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.user.presentation.UserTab;
 
 /**
@@ -158,7 +159,8 @@ public class UserFamilyTab extends UserTab {
 			table.add(spouseText, 1, 1);
 			table.mergeCells(1, 1, 2, 1);
 			table.add(getFamilyLink(spouse, getMemberFamilyLogic(getIWApplicationContext()).getSpouseRelationType()), 1, 2);
-			table.add(new Text(spouse.getName() + ", " + spouse.getPersonalID()), 2, 2);
+			table.add(getUserPropertyLink(user), 2, 2);
+//			table.add(new Text(spouse.getName() + ", " + spouse.getPersonalID()), 2, 2);
 			return table;
 		}
 
@@ -185,7 +187,8 @@ public class UserFamilyTab extends UserTab {
 			while (iter.hasNext()) {
 				User user = (User) iter.next();
 				table.add(getFamilyLink(user, getMemberFamilyLogic(getIWApplicationContext()).getParentRelationType()), 1, row);
-				table.add(new Text(user.getName() + ", " + user.getPersonalID()), 2, row++);
+				table.add(getUserPropertyLink(user), 2, row++);
+//				table.add(new Text(user.getName() + ", " + user.getPersonalID()), 2, row++);
 			}
 			return table;
 		}
@@ -213,7 +216,8 @@ public class UserFamilyTab extends UserTab {
 			while (iter.hasNext()) {
 				User user = (User) iter.next();
 				table.add(getFamilyLink(user, getMemberFamilyLogic(getIWApplicationContext()).getChildRelationType()), 1, row);
-				table.add(new Text(user.getName() + ", " + user.getPersonalID()), 2, row++);
+				table.add(getUserPropertyLink(user), 2, row++);
+//				table.add(new Text(user.getName() + ", " + user.getPersonalID()), 2, row++);
 			}
 			return table;
 		}
@@ -242,12 +246,21 @@ public class UserFamilyTab extends UserTab {
 			while (iter.hasNext()) {
 				User user = (User) iter.next();
 				table.add(getFamilyLink(user, getMemberFamilyLogic(getIWApplicationContext()).getSiblingRelationType()), 1, row);
-				table.add(new Text(user.getName() + ", " + user.getPersonalID()), 2, row++);
+				table.add(getUserPropertyLink(user), 2, row++);
+//				table.add(new Text(user.getName() + ", " + user.getPersonalID()), 2, row++);
 			}
 			return table;
 		}
 
 		return null;
+	}
+	
+	private Link getUserPropertyLink(User user) {
+		Link l = new Link(user.getName() + ", " + user.getPersonalID());
+		l.setWindowToOpen(UserPropertyWindow.class);
+		l.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID,user.getPrimaryKey().toString());
+		
+		return l;
 	}
 
 	private Link getFamilyLink(User user, String relationType) throws RemoteException {
