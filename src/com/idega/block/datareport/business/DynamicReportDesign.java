@@ -9,6 +9,8 @@ package com.idega.block.datareport.business;
 import java.io.IOException;
 import java.io.InputStream;
 
+import sun.security.action.GetBooleanAction;
+
 import com.idega.block.datareport.business.jasperdesignxml.ColumnFooter;
 import com.idega.block.datareport.business.jasperdesignxml.ColumnHeader;
 import com.idega.block.datareport.business.jasperdesignxml.DesignDocument;
@@ -27,6 +29,8 @@ import com.idega.block.datareport.business.jasperdesignxml.Title;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.UnavailableIWContext;
+import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
 
 import dori.jasper.engine.JRException;
@@ -75,6 +79,8 @@ public class DynamicReportDesign {
 	public static final String PRM_REPORT_NAME = "ReportTitle";
 	public static final String PRM_DATE = "internal_parameter_print_date";
 	public static final String PRM_USER = "internal_parameter_user";
+	
+	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	
 	
 	public static DynamicReportDesign getInstanceThatShowsDateAndUser(String name) {
@@ -235,8 +241,24 @@ public class DynamicReportDesign {
 				rElement.setIsPrintInFirstWholeBand(false);
 				rElement.setIsPrintWhenDetailOverflows(false);
 			sText.addContent(rElement);
-				Text text = new Text("Page:  ");
+			
+			IWContext iwc=null;
+			try {
+				iwc = IWContext.getInstance();
+			}
+			catch (UnavailableIWContext e) {
+				e.printStackTrace();
+			}
+			Text text = null;
+			if(iwc!=null){
+				text = new Text(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc).getLocalizedString("dynamicreportdesign.pagecountname","Page:"));
+			}
+			else{
+				text = new Text("Page:  ");
+			}
+			
 			sText.addContent(text);
+			
 		pFooter.addContent(sText);
 		
 		
