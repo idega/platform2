@@ -461,7 +461,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
         sDayTime =" - " + iwrb.getLocalizedString("start.evening","evening") + " - ";
         break;
       case 0:
-        sDayTime =" - " + iwrb.getLocalizedString("start.morining","morining") + " - ";
+        sDayTime =" - " + iwrb.getLocalizedString("start.morning","morning") + " - ";
         break;
       default:
         sDayTime =" - ";
@@ -758,7 +758,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
               sDayTimeString =" - " + iwrb.getLocalizedString("start.evening","evening") + " - ";
               break;
             case 0:
-              sDayTimeString =" - " + iwrb.getLocalizedString("start.morining","morining") + " - ";
+              sDayTimeString =" - " + iwrb.getLocalizedString("start.morning","morning") + " - ";
               break;
             default:
               sDayTimeString =" - ";
