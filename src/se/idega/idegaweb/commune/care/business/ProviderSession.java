@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderSession.java,v 1.2 2004/10/13 15:29:57 thomas Exp $
+ * $Id: ProviderSession.java,v 1.3 2004/10/13 17:53:17 thomas Exp $
  * Created on 28.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,21 +9,16 @@
  */
 package se.idega.idegaweb.commune.care.business;
 
-import java.rmi.RemoteException;
-
 import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
 import com.idega.block.school.data.School;
 import com.idega.business.IBOSession;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/13 15:29:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/13 17:53:17 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ProviderSession extends IBOSession {
     /**
