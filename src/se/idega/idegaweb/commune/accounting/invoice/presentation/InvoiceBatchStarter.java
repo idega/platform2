@@ -72,14 +72,14 @@ public class InvoiceBatchStarter extends AccountingBlock{
 				if(exportDataMapping.getAccountSettlementType() ==
 					exportBusiness.getAccountSettlementTypeSpecificDate())
 				{
-					readDateInput = (DateInput) iwc.getApplicationAttribute(PARAM_READ_DATE);
+					readDateInput = (DateInput) iwc.getApplicationAttribute(PARAM_READ_DATE+iwc.getCurrentUserId());
 					if (readDateInput == null){
 						readDateInput = new DateInput(PARAM_READ_DATE,true);
 						readDateInput.setToCurrentDate();	
 						readDateInput.setToDisplayDayLast(true);
 						int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
 						readDateInput.setYearRange(currentYear - 1, currentYear + 1);
-						
+						iwc.setApplicationAttribute(PARAM_READ_DATE+iwc.getCurrentUserId(), readDateInput);						
 					}
 					String date = iwc.getParameter(PARAM_READ_DATE);
 					if(date!=null){
@@ -89,14 +89,14 @@ public class InvoiceBatchStarter extends AccountingBlock{
 					InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
 					form.add(readDate);
 				}else{
-					monthInput = (DateInput) iwc.getApplicationAttribute(PARAM_MONTH);
+					monthInput = (DateInput) iwc.getApplicationAttribute(PARAM_MONTH+iwc.getCurrentUserId());
 					if (monthInput == null) {
 						monthInput = new DateInput(PARAM_MONTH,true);
 						monthInput.setToCurrentDate();	
 						monthInput.setToShowDay(false);
 						int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
 						monthInput.setYearRange(currentYear - 1, currentYear + 1);							
-						iwc.setApplicationAttribute(PARAM_MONTH, monthInput);						
+						iwc.setApplicationAttribute(PARAM_MONTH+iwc.getCurrentUserId(), monthInput);						
 					}
 					String date = iwc.getParameter(PARAM_MONTH);
 					if(date!=null){
