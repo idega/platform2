@@ -649,7 +649,13 @@ public void print(ModuleInfo modinfo)throws IOException{
     }
   }
 
+  public void setEventListener(Class eventListenerClass){
+    setEventListener(eventListenerClass.getName());
+  }
 
+  public void setEventListener(String eventListenerClassName){
+    this.addParameter(new Parameter(IWMainApplication.IdegaEventListenerClassParameter,IWMainApplication.getEncryptedClassName(eventListenerClassName)));
+  }
 
 }
 
