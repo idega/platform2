@@ -17,6 +17,8 @@ public class Script extends ModuleObject{
 
 private String scriptType;
 private Hashtable scriptCode;
+private Hashtable variables;
+private Hashtable methods;
 
 public Script(){
 	this("javascript");
@@ -116,6 +118,63 @@ public void addFunction(String functionName,String scriptString){
 	scriptCode.put(functionName,scriptString);
 }
 
+public void addVariable(String variableName, String variableValue){
+	if ( this.variables == null )
+    variables = new Hashtable();
+
+  variables.put(variableName,variableValue);
+}
+
+public void addVariable(String variableName){
+  addVariable(variableName,null);
+}
+
+public String getVariable(String variableName) {
+  return (String) variables.get(variableName);
+}
+
+public String getVariables(){
+	String returnString="";
+	for (Enumeration e = variables.keys(); e.hasMoreElements(); ) {
+		Object function=e.nextElement();
+		String variableName = (String) function;
+		String variableValue = (String) getVariable(variableName);
+
+		if ( variableValue != null )
+      returnString = "var " + variableName + " = " + variableValue + ";\n\n";
+    else
+      returnString = "var " + variableName + ";\n\n";
+	}
+
+	return returnString;
+
+}
+
+public void addMethod(String methodName, String methodValue){
+	if ( this.methods == null )
+    methods = new Hashtable();
+
+  methods.put(methodName,methodValue);
+}
+
+public String getMethod(String methodName) {
+  return (String) methods.get(methodName);
+}
+
+public String getMethods(){
+	String returnString="";
+	for (Enumeration e = methods.keys(); e.hasMoreElements(); ) {
+		Object function=e.nextElement();
+		String methodName = (String) function;
+		String methodValue = (String) getMethod(methodName);
+
+    returnString = methodName + " = " + methodValue + ";\n\n";
+	}
+
+	return returnString;
+
+}
+
 public String getFunction(String functionName){
 	return (String) scriptCode.get(functionName);
 }
@@ -131,7 +190,9 @@ public void print(ModuleInfo modinfo)throws Exception{
 				println("<script "+getAttributeString()+" >");
 				println("<!--//");
 				if (! isAttributeSet("src")){
-					println(getScriptCode(modinfo));
+					println(getVariables());
+					println(getMethods());
+          println(getScriptCode(modinfo));
 				}
 				println("//-->");
 				println("\n</script>");
