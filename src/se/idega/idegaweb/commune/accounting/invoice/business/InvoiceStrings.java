@@ -102,8 +102,6 @@ public interface InvoiceStrings {
 	String PROVIDER_KEY = PREFIX + "provider";
 	String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
 	String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
-	String REMOVE_DEFAULT = "Ta bort";
-	String REMOVE_KEY = PREFIX + "remove";
 	String SAVE_EDITS_DEFAULT = "Spara ändringar";
 	String SAVE_EDITS_KEY = PREFIX + "save_edits";
 	String SCHOOL_CLASS_DEFAULT = "Grupp";

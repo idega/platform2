@@ -34,6 +34,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.LocaleUtil;
+import com.lowagie.text.DocumentException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -79,11 +80,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/05 13:16:11 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/05 13:56:47 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.94 $
+ * @version $Revision: 1.95 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -99,8 +100,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			ACTION_SHOW_RECORD = 3,
 			ACTION_SAVE_RECORD = 4,
 			ACTION_REMOVE_RECORD = 5,
-			ACTION_REMOVE_PAYMENT = 6,
-			ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 7;
+			ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 6;
 	
 	private static final NumberFormat integerFormatter
 		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
@@ -160,10 +160,6 @@ public class PaymentRecordMaintenance extends AccountingBlock
 					removeRecord (context);
 					break;
 					
-				case ACTION_REMOVE_PAYMENT:
-					removePayment (context);
-					break;
-					
 				case ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF:
 					generateCheckAmountListPdf (context);
 					break;
@@ -178,43 +174,13 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		}
 	}
 	
-	private void generateCheckAmountListPdf (final IWContext context)
-		throws RemoteException, FinderException {
-		/*
-		final String schoolCategory = getSession().getOperationalField ();
-		final Integer providerId = getProviderIdParameter (context);
-		final Date startPeriod
-				= getPeriodParameter (context, START_PERIOD_KEY);
-		final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
-		final CheckAmountBusiness business = getCheckAmountBusiness ();
-		final int fileId = business.createInternalCheckAmountList
-				(schoolCategory, providerId, startPeriod, endPeriod);
-*/		
-		// create link		
-		CheckAmountListWriter.outerObject = this;
-		Link link1 = new Link
-				(localize (CHECK_AMOUNT_LIST_WITHOUT_POSTING_KEY,
-									 CHECK_AMOUNT_LIST_WITHOUT_POSTING_DEFAULT));
-		link1.setWindow(getFileWindow());
-		link1.addParameter (MediaWritable.PRM_WRITABLE_CLASS,
-													 IWMainApplication.getEncryptedClassName
-													 (CheckAmountListWriter.class));
-		link1.addParameter (PROVIDER_KEY, context.getParameter (PROVIDER_KEY));
-		link1.addParameter (START_PERIOD_KEY,
-													 context.getParameter (START_PERIOD_KEY));
-		link1.addParameter (END_PERIOD_KEY,
-													 context.getParameter (END_PERIOD_KEY));
-		Link link2 = new Link (localize (CHECK_AMOUNT_LIST_WITH_POSTING_KEY,
-																		 CHECK_AMOUNT_LIST_WITH_POSTING_DEFAULT));
-		link2.setWindow(getFileWindow());
-		link2.addParameter (MediaWritable.PRM_WRITABLE_CLASS,
-													 IWMainApplication.getEncryptedClassName
-													 (CheckAmountListWriter.class));
-		link2.addParameter (PROVIDER_KEY, context.getParameter (PROVIDER_KEY));
-		link2.addParameter (START_PERIOD_KEY,
-													 context.getParameter (START_PERIOD_KEY));
-		link2.addParameter (END_PERIOD_KEY,
-													 context.getParameter (END_PERIOD_KEY));
+	private void generateCheckAmountListPdf (final IWContext context) {
+		Link link1 = getCheckAmountListLink
+				(context, localize (CHECK_AMOUNT_LIST_WITHOUT_POSTING_KEY,
+														CHECK_AMOUNT_LIST_WITHOUT_POSTING_DEFAULT));
+		Link link2 = getCheckAmountListLink
+				(context, localize (CHECK_AMOUNT_LIST_WITH_POSTING_KEY,
+														CHECK_AMOUNT_LIST_WITH_POSTING_DEFAULT));
 		link2.addParameter (POSTING_KEY, true + "");
 		int row = 1;
 		final Table htmlTable = createTable (1);
@@ -235,26 +201,29 @@ public class PaymentRecordMaintenance extends AccountingBlock
 													formTable));
 	}
 
-	private Window getFileWindow() {
-		Window w = new Window
+	private Link getCheckAmountListLink (final IWContext context,
+																			 final String linkText) {
+		// create links		
+		CheckAmountListWriter.outerObject = this;
+		final Link link = new Link (linkText);
+		final Window w = new Window
 				(localize("school.class", "School class"),
 				 getIWApplicationContext ().getApplication ().getMediaServletURI ());
 		w.setResizable(true);
 		w.setMenubar(true);
 		w.setHeight(400);
 		w.setWidth(500);
-		return w;
+		link.setWindow(w);
+		link.addParameter (MediaWritable.PRM_WRITABLE_CLASS,
+											 IWMainApplication.getEncryptedClassName
+											 (CheckAmountListWriter.class));
+		link.addParameter (PROVIDER_KEY, context.getParameter (PROVIDER_KEY));
+		link.addParameter (START_PERIOD_KEY,
+											 context.getParameter (START_PERIOD_KEY));
+		link.addParameter (END_PERIOD_KEY, context.getParameter (END_PERIOD_KEY));
+		return link;
 	}
 
-	private void removePayment (final IWContext context)
-		throws RemoteException, FinderException, RemoveException {
-		// find payment header
-		final PaymentHeader header = getPaymentHeader (context);
-
-		// remove header
-		getInvoiceBusiness ().removePaymentHeader (header);
-	}
-	
 	private void removeRecord (final IWContext context)
 		throws RemoteException, FinderException, RemoveException {
 		// find payment record
@@ -555,7 +524,6 @@ public class PaymentRecordMaintenance extends AccountingBlock
 							("no_param", PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
 							 providerAuthorizationPage);
 				}
-				//table.add (getSubmitButton (0, REMOVE_KEY, REMOVE_DEFAULT), 1, row);
 			} else {
 				addSmallText (table, 1, row++, NO_PAYMENT_RECORDS_FOUND_KEY,
 											NO_PAYMENT_RECORDS_FOUND_DEFAULT);
@@ -1143,7 +1111,9 @@ public class PaymentRecordMaintenance extends AccountingBlock
 				final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
 				while (mis.available() > 0) {	baos.write(mis.read());	}
 				baos.writeTo (outputStream);
-			} catch (Exception e) {
+			} catch (DocumentException e) {
+				e.printStackTrace ();
+			} catch (FinderException e) {
 				e.printStackTrace ();
 			}
 		}

@@ -57,11 +57,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/04 13:41:04 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/05 13:56:46 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.95 $
+ * @version $Revision: 1.96 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -252,6 +252,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	
 	public void removePaymentRecord (final PaymentRecord paymentRecord)
 		throws RemoteException, RemoveException {
+
+		// remove detailed payment records if exists
 		try {
 			final Collection invoiceRecords
 					= getInvoiceRecordHome ().findByPaymentRecord (paymentRecord);
@@ -261,7 +263,22 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		} catch (FinderException e) {
 			// no invoice records connected to this payment record, it's ok
 		}
+
+		// remove payment record
+		final PaymentHeader paymentHeader = paymentRecord.getPaymentHeader ();
 		paymentRecord.remove ();
+
+		// see if payment header should be removed
+		final Collection paymentRecords = new ArrayList ();
+		try {
+			paymentRecords.addAll (getPaymentRecordHome ().findByPaymentHeader
+														 (paymentHeader));
+		} catch (FinderException e) {
+			// no problem handle after this scope
+		}
+		if (paymentRecords.isEmpty ()) {
+			paymentHeader.remove ();
+		}
 	}
 
 	public void removePaymentHeader (final PaymentHeader paymentHeader)
