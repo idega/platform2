@@ -195,6 +195,22 @@ public class ServiceViewer extends Window {
       Service serv = null;
 
       /** @todo header localized for the table**/
+  /*      Text dur = (Text) boldText.clone();
+        day.setText(iwrb.getLocalizedString("travel.serviceviewer.departures","Departures: "));
+        content.add(days,2,y);
+
+      //timeframe - trip length
+        Text dur = (Text) boldText.clone();
+        dur.setText(iwrb.getLocalizedString("travel.serviceviewer.duration","Duration: "));
+        content.add(days,2,y);
+
+      //Price
+        Text price = (Text) boldText.clone();
+        price.setText(iwrb.getLocalizedString("travel.serviceviewer.info.price","Price: "));
+        content.add(days,2,y);
+*/
+
+
 
        while( (iter!=null) && iter.hasNext() ) {
         Product prod = (Product) iter.next();
@@ -381,7 +397,7 @@ public class ServiceViewer extends Window {
 
     for (int j = 0; j < prices.length; j++) {
       try {
-        if (j<0) price.append(Text.BREAK);
+        if (j>0) price.append(Text.NON_BREAKING_SPACE);
         currency = new Currency(prices[j].getCurrencyId());
         price.append(prices[j].getPriceCategory().getName());
         price.append(Text.NON_BREAKING_SPACE);
@@ -390,7 +406,7 @@ public class ServiceViewer extends Window {
         price.append(currency.getCurrencyAbbreviation());
 
       }catch (Exception e) {
-        price.append("rangt upp sett");
+        price.append("An error occurred please contact gimmi@idega.is .");
         e.printStackTrace(System.err);
       }
 
