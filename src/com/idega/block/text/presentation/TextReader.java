@@ -155,7 +155,7 @@ public class TextReader extends Block implements IWBlock {
 
 		T.setWidth("100%");
 		String sHeadline = locText.getHeadline() != null ? locText.getHeadline() : "";
-		Text headline = new Text(sHeadline);
+		Text headline = getStyleText(sHeadline,headlineStyleName);
 		if (headlineSize > -1)
 			headline.setFontSize(headlineSize);
 		if (headlineColor != null)
@@ -164,7 +164,6 @@ public class TextReader extends Block implements IWBlock {
 		//headline.setAttribute("class","headlinetext");
 		if (headlineStyle != null)
 			headline.setFontStyle(headlineStyle);
-		headline.setStyleClass(headlineStyleName);
 
 		String textBody = locText.getBody() != null ? locText.getBody() : "";
 
@@ -190,7 +189,7 @@ public class TextReader extends Block implements IWBlock {
 			bodyRow = 1;
 		}
 
-		Text body = new Text(textBody);
+		Text body = getStyleText(textBody,textStyleName);
 		if (textSize > -1)
 			body.setFontSize(textSize);
 		if (textColor != null)
@@ -198,7 +197,6 @@ public class TextReader extends Block implements IWBlock {
 		//body.setAttribute("class","bodytext");
 		if (textStyle != null)
 			body.setFontStyle(textStyle);
-		body.setStyleClass(textStyleName);
 
 		Image bodyImage;
 
