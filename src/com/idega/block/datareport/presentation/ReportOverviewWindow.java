@@ -3,8 +3,8 @@ package com.idega.block.datareport.presentation;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
-import com.idega.user.presentation.StyledIWAdminWindow;
 
 /**
  * <p>Title: idegaWeb</p>

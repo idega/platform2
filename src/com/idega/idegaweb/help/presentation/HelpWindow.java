@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: HelpWindow.java,v 1.1 2004/01/22 22:45:34 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package com.idega.block.help.presentation;
+package com.idega.idegaweb.help.presentation;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,6 +17,8 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.help.presentation.*;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -28,7 +30,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.util.FileUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLCDATA;

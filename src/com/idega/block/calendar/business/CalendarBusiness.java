@@ -21,48 +21,11 @@ import com.idega.block.text.data.LocalizedText;
 import com.idega.core.category.business.CategoryFinder;
 import com.idega.core.category.data.ICCategory;
 import com.idega.data.EntityBulkUpdater;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.block.category.business.CategoryBusiness;
 import java.util.Locale;
 
 public class CalendarBusiness {
-
-	public static final int DAY = 1;
-	public static final int MONTH = 2;
-	public static final int YEAR = 3;
-	public static final int AHEAD_VIEW = 4;
-
-	public static final String PARAMETER_CALENDAR = "IWCalendar";
-	public static final String PARAMETER_DAY = PARAMETER_CALENDAR + "_day";
-	public static final String PARAMETER_MONTH = PARAMETER_CALENDAR + "_month";
-	public static final String PARAMETER_YEAR = PARAMETER_CALENDAR + "_year";
-	public static final String PARAMETER_DATE = PARAMETER_CALENDAR + "_date";
-
-	public static final String PARAMETER_DAY_VIEW = Integer.toString(DAY);
-	public static final String PARAMETER_MONTH_VIEW = Integer.toString(MONTH);
-	public static final String PARAMETER_YEAR_VIEW = Integer.toString(YEAR);
-
-	public static final String PARAMETER_ENTRY_ID = PARAMETER_CALENDAR + "_entryID";
-	public static final String PARAMETER_TYPE_ID = PARAMETER_CALENDAR + "_typeID";
-	public static final String PARAMETER_FILE_ID = "ic_file_id";
-	public static final String PARAMETER_LOCALE_DROP = "locale_drop";
-	public static final String PARAMETER_ENTRY_HEADLINE = "entry_headline";
-	public static final String PARAMETER_ENTRY_BODY = "entry_body";
-	public static final String PARAMETER_ENTRY_DATE = "entry_date";
-	public static final String PARAMETER_ENTRY_END_DATE = "entry_end_date";
-	public static final String PARAMETER_ENTRY_TIME = "entry_time";
-	public static final String PARAMETER_IC_CAT = "ic_cat_id";
-	public static final String PARAMETER_INSTANCE_ID = "ic_instance_id";
-
-	public static final String PARAMETER_MODE = PARAMETER_CALENDAR + "_mode";
-	public static final String PARAMETER_MODE_DELETE = PARAMETER_CALENDAR + "_delete";
-	public static final String PARAMETER_MODE_EDIT = "edit";
-	public static final String PARAMETER_MODE_CLOSE = "close";
-	public static final String PARAMETER_MODE_SAVE = "save";
-	public static final String PARAMETER_TRUE = "true";
-	public static final String PARAMETER_FALSE = "false";
-	public static final String PARAMETER_SHOW_CALENDAR = "show_calendar";
-
-	public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
 	public static IWTimestamp getTimestamp(String day, String month, String year) {
 		IWTimestamp stamp = new IWTimestamp();
@@ -90,9 +53,9 @@ public class CalendarBusiness {
 	}
 
 	public static boolean getIsSelectedDay(IWContext iwc) {
-		String day = iwc.getParameter(PARAMETER_DAY);
-		String month = iwc.getParameter(PARAMETER_MONTH);
-		String year = iwc.getParameter(PARAMETER_YEAR);
+		String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+		String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+		String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
 
 		if (month != null && year != null && day != null) {
 			return true;

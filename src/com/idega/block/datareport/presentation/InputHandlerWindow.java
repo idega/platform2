@@ -1,8 +1,8 @@
 package com.idega.block.datareport.presentation;
 
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.user.presentation.StyledIWAdminWindow;
 
 /**
  * <p>Title: idegaWeb</p>

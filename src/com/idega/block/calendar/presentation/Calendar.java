@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.idegaweb.presentation.*;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.calendar.business.CalendarFinder;
 import com.idega.block.calendar.data.CalendarCategory;
@@ -40,7 +41,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	private int _dateStyle = IWTimestamp.SHORT;
 	private boolean hasEdit = false, hasAdd = false, hasPref = false;
 	private int _iLocaleID;
-	private int _view = CalendarBusiness.MONTH;
+	private int _view = CalendarParameters.MONTH;
 
 	private IWTimestamp _stamp;
 	private String _width = "100%";
@@ -120,47 +121,47 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-		if (iwc.getParameter(CalendarBusiness.PARAMETER_VIEW) != null) {
-			_view = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_VIEW));
+		if (iwc.getParameter(CalendarParameters.PARAMETER_VIEW) != null) {
+			_view = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
 		}
 
 		if (_stamp == null) {
-			String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-			String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-			String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+			String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+			String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
 			_stamp = CalendarBusiness.getTimestamp(day, month, year);
 		}
 
 		_isSelectedDay = CalendarBusiness.getIsSelectedDay(iwc);
 
 		switch (_view) {
-			case CalendarBusiness.DAY :
+			case CalendarParameters.DAY :
 				drawDay(iwc);
 				break;
-			case CalendarBusiness.MONTH :
+			case CalendarParameters.MONTH :
 				drawMonth(iwc);
 				break;
-			case CalendarBusiness.YEAR :
+			case CalendarParameters.YEAR :
 				drawYear(iwc);
 				break;
-			case CalendarBusiness.AHEAD_VIEW :
+			case CalendarParameters.AHEAD_VIEW :
 				drawAheadView(iwc);
 				break;
 		}
 	}
 
 	private void getParameter(IWContext iwc) {
-		String string = iwc.getParameter(CalendarBusiness.PARAMETER_SHOW_CALENDAR);
-		if (string != null && string.equalsIgnoreCase(CalendarBusiness.PARAMETER_TRUE)) {
+		String string = iwc.getParameter(CalendarParameters.PARAMETER_SHOW_CALENDAR);
+		if (string != null && string.equalsIgnoreCase(CalendarParameters.PARAMETER_TRUE)) {
 			_showMonth = true;
-			iwc.setSessionAttribute(CalendarBusiness.PARAMETER_SHOW_CALENDAR, CalendarBusiness.PARAMETER_TRUE);
+			iwc.setSessionAttribute(CalendarParameters.PARAMETER_SHOW_CALENDAR, CalendarParameters.PARAMETER_TRUE);
 		} else
-			if (string != null && string.equalsIgnoreCase(CalendarBusiness.PARAMETER_FALSE)) {
+			if (string != null && string.equalsIgnoreCase(CalendarParameters.PARAMETER_FALSE)) {
 				_showMonth = false;
-				iwc.removeSessionAttribute(CalendarBusiness.PARAMETER_SHOW_CALENDAR);
+				iwc.removeSessionAttribute(CalendarParameters.PARAMETER_SHOW_CALENDAR);
 			} else
 				if (string == null) {
-					if (iwc.getSessionAttribute(CalendarBusiness.PARAMETER_SHOW_CALENDAR) != null)
+					if (iwc.getSessionAttribute(CalendarParameters.PARAMETER_SHOW_CALENDAR) != null)
 						_showMonth = true;
 				}
 	}
@@ -326,11 +327,11 @@ public class Calendar extends CategoryBlock implements Builderaware {
 			outerTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
 			if (_showMonth) {
 				Link link = new Link(_iwrb.getLocalizedImageButton("hide_month", "Hide month"));
-				link.addParameter(CalendarBusiness.PARAMETER_SHOW_CALENDAR, CalendarBusiness.PARAMETER_FALSE);
+				link.addParameter(CalendarParameters.PARAMETER_SHOW_CALENDAR, CalendarParameters.PARAMETER_FALSE);
 				outerTable.add(link, 1, 2);
 			} else {
 				Link link = new Link(_iwrb.getLocalizedImageButton("show_month", "Show month"));
-				link.addParameter(CalendarBusiness.PARAMETER_SHOW_CALENDAR, CalendarBusiness.PARAMETER_TRUE);
+				link.addParameter(CalendarParameters.PARAMETER_SHOW_CALENDAR, CalendarParameters.PARAMETER_TRUE);
 				outerTable.add(link, 1, 2);
 			}
 		}
@@ -558,10 +559,10 @@ public class Calendar extends CategoryBlock implements Builderaware {
 		Image image = _iwb.getImage("shared/create.gif");
 		Link link = new Link(image);
 		link.setWindowToOpen(CalendarEditor.class);
-		link.addParameter(CalendarBusiness.PARAMETER_IC_CAT, getCategoryId());
-		link.addParameter(CalendarBusiness.PARAMETER_INSTANCE_ID, getICObjectInstanceID());
+		link.addParameter(CalendarParameters.PARAMETER_IC_CAT, getCategoryId());
+		link.addParameter(CalendarParameters.PARAMETER_INSTANCE_ID, getICObjectInstanceID());
 		if (this._isSelectedDay)
-			link.addParameter(CalendarBusiness.PARAMETER_ENTRY_DATE, _stamp.toSQLString());
+			link.addParameter(CalendarParameters.PARAMETER_ENTRY_DATE, _stamp.toSQLString());
 		return link;
 	}
 
@@ -590,15 +591,15 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 		Link editLink = new Link(editImage);
 		editLink.setWindowToOpen(CalendarEditor.class);
-		editLink.addParameter(CalendarBusiness.PARAMETER_ENTRY_ID, entryID);
-		editLink.addParameter(CalendarBusiness.PARAMETER_MODE, CalendarBusiness.PARAMETER_MODE_EDIT);
-		editLink.addParameter(CalendarBusiness.PARAMETER_IC_CAT, getCategoryId());
-		editLink.addParameter(CalendarBusiness.PARAMETER_INSTANCE_ID, getICObjectInstanceID());
+		editLink.addParameter(CalendarParameters.PARAMETER_ENTRY_ID, entryID);
+		editLink.addParameter(CalendarParameters.PARAMETER_MODE, CalendarParameters.PARAMETER_MODE_EDIT);
+		editLink.addParameter(CalendarParameters.PARAMETER_IC_CAT, getCategoryId());
+		editLink.addParameter(CalendarParameters.PARAMETER_INSTANCE_ID, getICObjectInstanceID());
 		table.add(editLink, 1, 1);
 		Link deleteLink = new Link(deleteImage);
 		deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
 		deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryID);
-		deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarBusiness.PARAMETER_TRUE);
+		deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
 		table.add(deleteLink, 2, 1);
 
 		return table;

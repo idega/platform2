@@ -10,6 +10,7 @@
 package com.idega.block.help.presentation;
 
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.help.presentation.*;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;

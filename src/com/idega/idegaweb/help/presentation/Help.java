@@ -1,5 +1,5 @@
 /*
- * $Id:$
+ * $Id: Help.java,v 1.1 2004/01/22 22:45:34 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package com.idega.block.help.presentation;
+package com.idega.idegaweb.help.presentation;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

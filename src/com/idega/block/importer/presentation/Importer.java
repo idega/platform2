@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.help.presentation.Help;
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileClass;
 import com.idega.block.importer.data.ImportFileRecord;
@@ -22,6 +21,8 @@ import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.help.presentation.Help;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.io.UploadFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -36,7 +37,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
-import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.util.IWColor;
 import com.idega.util.IWTimestamp;
 /**

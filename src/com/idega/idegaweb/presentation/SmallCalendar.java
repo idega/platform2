@@ -1,4 +1,4 @@
-package com.idega.block.calendar.presentation;
+package com.idega.idegaweb.presentation;
 
 import java.text.DateFormat;
 import java.util.Enumeration;
@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -80,11 +79,11 @@ public class SmallCalendar extends Block {
 
 	public void main(IWContext iwc) {
 		if (stamp == null) {
-			String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-			String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-			String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+			String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+			String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
 			if (isTarget() || !useTarget) {
-				stamp = CalendarBusiness.getTimestamp(day, month, year);
+				stamp = getTimestamp(day, month, year);
 			}
 			else if (iwc.getSessionAttribute("smcal" + getICObjectInstanceID()) != null) {
 				stamp = (IWTimestamp) iwc.getSessionAttribute("smcal" + getICObjectInstanceID());
@@ -248,9 +247,9 @@ public class SmallCalendar extends Block {
 				if (_page != null) {
 					theLink.setPage(_page);
 				}
-				theLink.addParameter(CalendarBusiness.PARAMETER_DAY, n);
-				theLink.addParameter(CalendarBusiness.PARAMETER_MONTH, stamp.getMonth());
-				theLink.addParameter(CalendarBusiness.PARAMETER_YEAR, stamp.getYear());
+				theLink.addParameter(CalendarParameters.PARAMETER_DAY, n);
+				theLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
+				theLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
 				theLink.setFontColor(textColor);
 				theLink.setFontSize(1);
 				for (int i = 0; i < parameterName.size(); i++) {
@@ -304,24 +303,24 @@ public class SmallCalendar extends Block {
 
 	public void addNextMonthPrm(Link L, IWTimestamp idts) {
 		if (idts.getMonth() == 12) {
-			L.addParameter(CalendarBusiness.PARAMETER_MONTH, String.valueOf(1));
-			L.addParameter(CalendarBusiness.PARAMETER_YEAR, String.valueOf(idts.getYear() + 1));
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() + 1));
 		}
 		else {
-			L.addParameter(CalendarBusiness.PARAMETER_MONTH, String.valueOf(idts.getMonth() + 1));
-			L.addParameter(CalendarBusiness.PARAMETER_YEAR, String.valueOf(idts.getYear()));
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth() + 1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear()));
 		}
 		//L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
 	}
 
 	public void addLastMonthPrm(Link L, IWTimestamp idts) {
 		if (idts.getMonth() == 1) {
-			L.addParameter(CalendarBusiness.PARAMETER_MONTH, String.valueOf(12));
-			L.addParameter(CalendarBusiness.PARAMETER_YEAR, String.valueOf(idts.getYear() - 1));
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(12));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear() - 1));
 		}
 		else {
-			L.addParameter(CalendarBusiness.PARAMETER_MONTH, String.valueOf(idts.getMonth() - 1));
-			L.addParameter(CalendarBusiness.PARAMETER_YEAR, String.valueOf(idts.getYear()));
+			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(idts.getMonth() - 1));
+			L.addParameter(CalendarParameters.PARAMETER_YEAR, String.valueOf(idts.getYear()));
 		}
 		//L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
 	}
@@ -730,4 +729,34 @@ public class SmallCalendar extends Block {
 		buf.append(todayColor);
 		return buf.toString();
 	}
+
+	/*
+	 * This method is not a presentation but was moved here because of compilation issues
+	 */
+	 //TODO: Move away to a more appropriate class
+	public static IWTimestamp getTimestamp(String day, String month, String year) {
+		IWTimestamp stamp = new IWTimestamp();
+
+		if (day != null) {
+			stamp.setDay(Integer.parseInt(day));
+		}
+		// removed dubius behavior A
+		/*else {
+		 stamp.setDay(1);
+		 }
+		 */
+		if (month != null) {
+			stamp.setMonth(Integer.parseInt(month));
+		}
+		if (year != null) {
+			stamp.setYear(Integer.parseInt(year));
+		}
+
+		stamp.setHour(0);
+		stamp.setMinute(0);
+		stamp.setSecond(0);
+
+		return stamp;
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CalendarViewHandler.java,v 1.6 2003/04/03 07:21:44 laddi Exp $
+ * $Id: CalendarViewHandler.java,v 1.7 2004/01/22 22:45:34 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.block.calendar.business;
 import java.util.List;
 
 import com.idega.builder.handler.PropertyHandler;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -40,10 +41,10 @@ public class CalendarViewHandler implements PropertyHandler {
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
-    menu.addMenuElement(CalendarBusiness.DAY,"Day view");
-    menu.addMenuElement(CalendarBusiness.MONTH,"Month view");
-    menu.addMenuElement(CalendarBusiness.YEAR,"Year view");
-		menu.addMenuElement(CalendarBusiness.AHEAD_VIEW,"Ahead view");
+    menu.addMenuElement(CalendarParameters.DAY,"Day view");
+    menu.addMenuElement(CalendarParameters.MONTH,"Month view");
+    menu.addMenuElement(CalendarParameters.YEAR,"Year view");
+		menu.addMenuElement(CalendarParameters.AHEAD_VIEW,"Ahead view");
     menu.setSelectedElement(value);
     return(menu);
   }

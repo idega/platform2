@@ -18,6 +18,7 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -86,7 +87,7 @@ public CalendarTypeEditor(){
 
 
 
-    String sLocaleId = iwc.getParameter(CalendarBusiness.PARAMETER_LOCALE_DROP);
+    String sLocaleId = iwc.getParameter(CalendarParameters.PARAMETER_LOCALE_DROP);
 
 
 
@@ -128,11 +129,11 @@ public CalendarTypeEditor(){
 
   private void processForm(IWContext iwc, int iLocaleId) {
 
-    if ( iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID) != null ) {
+    if ( iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID) != null ) {
 
       try {
 
-        _typeID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID));
+        _typeID = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_TYPE_ID));
 
       }
 
@@ -146,15 +147,15 @@ public CalendarTypeEditor(){
 
 
 
-    if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE) != null ) {
+    if ( iwc.getParameter(CalendarParameters.PARAMETER_MODE) != null ) {
 
-      if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE).equalsIgnoreCase(CalendarBusiness.PARAMETER_MODE_CLOSE) ) {
+      if ( iwc.getParameter(CalendarParameters.PARAMETER_MODE).equalsIgnoreCase(CalendarParameters.PARAMETER_MODE_CLOSE) ) {
 
         closeEditor(iwc);
 
       }
 
-      else if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE).equalsIgnoreCase(CalendarBusiness.PARAMETER_MODE_SAVE) ) {
+      else if ( iwc.getParameter(CalendarParameters.PARAMETER_MODE).equalsIgnoreCase(CalendarParameters.PARAMETER_MODE_SAVE) ) {
 
         saveType(iwc,iLocaleId);
 
@@ -164,11 +165,11 @@ public CalendarTypeEditor(){
 
 
 
-    if ( _typeID == -1 && iwc.getSessionAttribute(CalendarBusiness.PARAMETER_TYPE_ID) != null ) {
+    if ( _typeID == -1 && iwc.getSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID) != null ) {
 
       try {
 
-        _typeID = Integer.parseInt((String)iwc.getSessionAttribute(CalendarBusiness.PARAMETER_TYPE_ID));
+        _typeID = Integer.parseInt((String)iwc.getSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID));
 
       }
 
@@ -178,7 +179,7 @@ public CalendarTypeEditor(){
 
       }
 
-      iwc.removeSessionAttribute(CalendarBusiness.PARAMETER_TYPE_ID);
+      iwc.removeSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID);
 
     }
 
@@ -186,7 +187,7 @@ public CalendarTypeEditor(){
 
     if ( _typeID != -1 ) {
 
-      if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE_DELETE) != null ) {
+      if ( iwc.getParameter(CalendarParameters.PARAMETER_MODE_DELETE) != null ) {
 
         deleteType(iwc);
 
@@ -226,7 +227,7 @@ public CalendarTypeEditor(){
 
 
 
-    DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(CalendarBusiness.PARAMETER_LOCALE_DROP);
+    DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(CalendarParameters.PARAMETER_LOCALE_DROP);
 
       localeDrop.setToSubmit();
 
@@ -244,7 +245,7 @@ public CalendarTypeEditor(){
 
 
 
-    DropdownMenu entryTypes = CalendarBusiness.getEntryTypes(CalendarBusiness.PARAMETER_TYPE_ID,iLocaleID);
+    DropdownMenu entryTypes = CalendarBusiness.getEntryTypes(CalendarParameters.PARAMETER_TYPE_ID,iLocaleID);
 
       entryTypes.addMenuElementFirst("-1","");
 
@@ -274,9 +275,9 @@ public CalendarTypeEditor(){
 
     Link deleteLink = new Link(deleteImage);
 
-      deleteLink.addParameter(CalendarBusiness.PARAMETER_MODE_DELETE,CalendarBusiness.PARAMETER_TRUE);
+      deleteLink.addParameter(CalendarParameters.PARAMETER_MODE_DELETE,CalendarParameters.PARAMETER_TRUE);
 
-      deleteLink.addParameter(CalendarBusiness.PARAMETER_TYPE_ID,_typeID);
+      deleteLink.addParameter(CalendarParameters.PARAMETER_TYPE_ID,_typeID);
 
     typesTable.add(deleteLink,3,1);
 
@@ -286,7 +287,7 @@ public CalendarTypeEditor(){
 
 
 
-    TextInput nameInput = new TextInput(CalendarBusiness.PARAMETER_ENTRY_HEADLINE);
+    TextInput nameInput = new TextInput(CalendarParameters.PARAMETER_ENTRY_HEADLINE);
 
       nameInput.setLength(24);
 
@@ -298,7 +299,7 @@ public CalendarTypeEditor(){
 
 
 
-    ImageInserter image = new ImageInserter(CalendarBusiness.PARAMETER_FILE_ID);
+    ImageInserter image = new ImageInserter(CalendarParameters.PARAMETER_FILE_ID);
 
       image.setHasUseBox(false);
 
@@ -310,11 +311,11 @@ public CalendarTypeEditor(){
 
 
 
-    addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_TYPE_ID,Integer.toString(_typeID)));
+    addHiddenInput(new HiddenInput(CalendarParameters.PARAMETER_TYPE_ID,Integer.toString(_typeID)));
 
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_CLOSE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),CalendarParameters.PARAMETER_MODE,CalendarParameters.PARAMETER_MODE_CLOSE));
 
-    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_SAVE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),CalendarParameters.PARAMETER_MODE,CalendarParameters.PARAMETER_MODE_SAVE));
 
   }
 
@@ -332,15 +333,15 @@ public CalendarTypeEditor(){
 
   private void saveType(IWContext iwc,int iLocaleID) {
 
-    String typeHeadline = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_HEADLINE);
+    String typeHeadline = iwc.getParameter(CalendarParameters.PARAMETER_ENTRY_HEADLINE);
 
-    String fileID = iwc.getParameter(CalendarBusiness.PARAMETER_FILE_ID);
+    String fileID = iwc.getParameter(CalendarParameters.PARAMETER_FILE_ID);
 
 
 
     int typeID = CalendarBusiness.saveEntryType(_typeID,iLocaleID,typeHeadline,fileID);
 
-    iwc.setSessionAttribute(CalendarBusiness.PARAMETER_TYPE_ID,Integer.toString(typeID));
+    iwc.setSessionAttribute(CalendarParameters.PARAMETER_TYPE_ID,Integer.toString(typeID));
 
   }
 
