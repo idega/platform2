@@ -44,8 +44,6 @@ public class LoginPage extends TravelManager {
   protected static Login getLoginObject(IWContext iwc, IWResourceBundle iwrb) {
 
     Login login = new Login();
-      login.setColor(GRAY);
-      login.setLoginAlignment("center");
       login.setUserTextColor(TravelManager.BLACK);
       login.setPasswordTextColor(TravelManager.BLACK);
       login.setTextStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; color: #000000");
@@ -53,10 +51,80 @@ public class LoginPage extends TravelManager {
         login.setPasswordText(iwrb.getLocalizedString("travel.password","Password "));
         login.setUserText(iwrb.getLocalizedString("travel.username","Username "));
       }
+      login.setLoginButton(iwrb.getImage("images/go.gif", 38, 38));
+//      login.setVertical();
+      login.setStacked();
     return login;
   }
 
   protected Table getLoginTable(IWContext iwc, IWBundle bundle, IWResourceBundle iwrb) {
+    Table table = new Table(3,4);
+      table.setWidth(543);
+      table.setCellpaddingAndCellspacing(0);
+      table.setColor(super.WHITE);
+      table.mergeCells(1,1,3,1);
+      table.mergeCells(1,4,3,4);
+
+      Image banner = iwrb.getImage("images/travel_banner.gif",543, 212);
+      Image welcome = iwrb.getImage("images/welcome.gif",215, 75);
+      Image language = iwrb.getImage("images/language.gif",154, 75);
+      Image login = iwrb.getImage("images/login.gif",174, 75);
+      Image disclaimer = iwrb.getImage("images/disclaimer.gif",547, 18);
+
+      table.add(banner, 1, 1);
+      table.add(welcome, 1, 2);
+      table.add(language, 2, 2);
+      table.add(login, 3, 2);
+
+      Text rightContent = (Text) theText.clone();
+        rightContent.setFontColor("#ABABAB");
+        rightContent.setText(iwrb.getLocalizedString("travel.usage_rules_1","Kerfi þetta er einungi heimilað aðilum innan ferðaþjónustu."));
+        String string = iwrb.getLocalizedString("travel.usage_rules_2","Misnotkun varðar lög blablabla");
+        if (string.length() > 1) {
+        rightContent.addToText(string);
+        rightContent.addBreak();
+        rightContent.addBreak();
+        }
+        string = iwrb.getLocalizedString("travel.usage_rules_3","hérna vantar eitthvað djúsi stuff til að skrifa og hafa töff. Kannski ég fái einhvern annan í það :)");
+        if (string.length() > 1) {
+        rightContent.addToText(string);
+        rightContent.addBreak();
+        rightContent.addBreak();
+        }
+        string = iwrb.getLocalizedString("travel.usage_rules_4","Hafir þú gleymt notandanafni og/eða lykilorði hafðu þá samband við fsdfjli");
+        if (string.length() > 1) {
+        rightContent.addToText(string);
+        }
+
+      Table leftTable = new Table(3, 1);
+        leftTable.setCellpaddingAndCellspacing(0);
+        leftTable.setWidth(1,1, "20");
+        leftTable.setWidth(3,1, "20");
+      Table centerTable = new Table(3, 1);
+        centerTable.setCellpaddingAndCellspacing(0);
+        centerTable.setWidth(1,1, "20");
+        centerTable.setWidth(3,1, "20");
+      Table rightTable = new Table(3, 1);
+        rightTable.setCellpaddingAndCellspacing(0);
+        rightTable.setWidth(1,1, "20");
+        rightTable.setWidth(3,1, "20");
+
+        leftTable.add(rightContent,2,1);
+        centerTable.add(getLocaleSwitcherForm(iwc),2,1);
+        rightTable.add(getLoginObject(iwc, iwrb),2,1);
+      table.add(leftTable, 1, 3);
+      table.add(centerTable, 2, 3);
+      table.add(rightTable, 3, 3);
+
+      table.setVerticalAlignment(1,3, "top");
+      table.setVerticalAlignment(2,3, "top");
+      table.setVerticalAlignment(3,3, "top");
+
+      table.add(disclaimer, 1, 4);
+    return table;
+  }
+
+  protected Table getLoginTableOld(IWContext iwc, IWBundle bundle, IWResourceBundle iwrb) {
     Table bigTable = new Table(1,1);
         bigTable.setCellspacing(40);
         bigTable.setCellpadding(0);

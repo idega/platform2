@@ -43,6 +43,7 @@ public class Voucher extends TravelManager {
   private Supplier _supplier;
   private Timeframe _timeframe;
   private TravelAddress _address;
+  private int _localeId = -1;
 
   private DecimalFormat df = new DecimalFormat("0.00");
 
@@ -55,6 +56,7 @@ public class Voucher extends TravelManager {
     _bundle = super.getBundle();
     _iwrb = super.getResourceBundle();
     _iwc = iwc;
+    _localeId = iwc.getCurrentLocaleId();
     try {
       _booking = booking;
       GeneralBooking gBooking = new GeneralBooking(_booking.getID());
@@ -100,6 +102,10 @@ public class Voucher extends TravelManager {
 
   private int getVoucherNumber() {
     return _booking.getID() + voucherNumberChanger;
+  }
+
+  public static int getVoucherNumber(int bookingId) {
+    return bookingId + voucherNumberChanger;
   }
 
   public Table getVoucher(IWContext iwc) {
@@ -202,7 +208,7 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
-        table.add(getText(ProductBusiness.getProductName(_product)),1,2);
+        table.add(getText(ProductBusiness.getProductName(_product, _localeId)),1,2);
         table.add(Text.BREAK,1,2);
         if (_bookings.size() > 0) {
           idegaTimestamp fromStamp = new idegaTimestamp(((Booking)_bookings.get(0)).getBookingDate());

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -707,9 +708,9 @@ public class Booking extends TravelManager {
       String month = iwc.getParameter("month");
       String day = iwc.getParameter("day");
 
-      String IWCalendar_year = iwc.getParameter("IWCalendar_year");
-      String IWCalendar_month = iwc.getParameter("IWCalendar_month");
-      String IWCalendar_day = iwc.getParameter("IWCalendar_day");
+      String IWCalendar_year = iwc.getParameter(CalendarBusiness.PARAMETER_VIEW);
+      String IWCalendar_month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+      String IWCalendar_day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
       if (IWCalendar_year != null) year = IWCalendar_year;
       if (IWCalendar_month != null) month = IWCalendar_month;
       if (IWCalendar_day != null) day = IWCalendar_day;
@@ -759,9 +760,11 @@ public class Booking extends TravelManager {
       int returner = tbf.handleInsert(iwc);
 
       if (returner < 1) {
-          displayForm(iwc, tbf.getErrorForm(iwc, returner));
+        displayForm(iwc, tbf.getErrorForm(iwc, returner));
       }else if (displayForm) {
-        displayForm(iwc);
+        add(Text.BREAK);
+        add(bookingInformation(iwc, returner));
+//        displayForm(iwc, );
       }
 
       return returner;
@@ -769,6 +772,73 @@ public class Booking extends TravelManager {
       e.printStackTrace(System.err);
 
       return -1;
+    }
+  }
+
+  private Table bookingInformation(IWContext iwc, int bookingId) {
+    try {
+      GeneralBooking booking = new GeneralBooking(bookingId);
+      int voucherNumber = Voucher.getVoucherNumber(bookingId);
+      String referenceNumber = booking.getReferenceNumber();
+
+      Text bookingSuccessful = (Text) super.theBoldText.clone();
+        bookingSuccessful.setText(iwrb.getLocalizedString("travel.booking_was_successful","Booking was successful"));
+
+      Text refNumTxt = (Text) super.theText.clone();
+        refNumTxt.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
+        refNumTxt.setFontColor(super.BLACK);
+      Text voucherNumTxt = (Text) super.theText.clone();
+        voucherNumTxt.setText(iwrb.getLocalizedString("travel.voucher_number","Voucher number"));
+        voucherNumTxt.setFontColor(super.BLACK);
+      Text voucher = (Text) super.theBoldText.clone();
+        voucher.setText(iwrb.getLocalizedString("travel.voucher","Voucher"));
+        voucher.setFontColor(super.BLACK);
+      Link voucherLink = new Link(voucher);
+        voucherLink.setWindowToOpen(VoucherWindow.class);
+        voucherLink.addParameter(VoucherWindow.parameterBookingId, bookingId);
+
+      Text refNum = (Text) super.theBoldText.clone();
+        refNum.setText(referenceNumber);
+        refNum.setFontColor(super.BLACK);
+      Text voucherNum = (Text) super.theBoldText.clone();
+        voucherNum.setText(Integer.toString(voucherNumber));
+        voucherNum.setFontColor(super.BLACK);
+
+      Link backLink = new Link(iwrb.getImage("buttons/back.gif"));
+        backLink.addParameter(this.parameterProductId, this.productId);
+        backLink.addParameter(CalendarBusiness.PARAMETER_DAY, stamp.getDay());
+        backLink.addParameter(CalendarBusiness.PARAMETER_MONTH, stamp.getMonth());
+        backLink.addParameter(CalendarBusiness.PARAMETER_YEAR, stamp.getYear());
+
+      Table table = new Table();
+        table.setColor(super.WHITE);
+        table.add(bookingSuccessful,1,1);
+        table.add(refNumTxt, 1, 2);
+        table.add(refNum, 2, 2);
+        table.add(voucherNumTxt, 1, 3);
+        table.add(voucherNum, 2, 3);
+        table.add(voucherLink, 1, 4);
+        table.add(Text.NON_BREAKING_SPACE, 1, 5);
+        table.add(backLink, 1, 6);
+
+        table.mergeCells(1,1,2,1);
+        table.mergeCells(1,4,2,4);
+        table.mergeCells(1,5,2,5);
+        table.mergeCells(1,6,2,6);
+
+        table.setRowColor(1, super.backgroundColor);
+        table.setRowColor(2, super.GRAY);
+        table.setRowColor(3, super.GRAY);
+        table.setRowColor(4, super.GRAY);
+        table.setRowColor(5, super.GRAY);
+        table.setRowColor(6, super.GRAY);
+
+        table.setAlignment(1, 6, "center");
+
+      return table;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return new Table();
     }
   }
 

@@ -964,9 +964,11 @@ public class TourBookingForm extends TravelManager {
 
             Text ccText = (Text) theText.clone();
               ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+              ccText.addToText(star);
 
             Text ccMY = (Text) theText.clone();
               ccMY.setText(iwrb.getLocalizedString("travel.valid","valid"));
+              ccMY.addToText(star);
 
             Text ccSlash = (Text) theText.clone();
               ccSlash.setText(" / ");
@@ -979,8 +981,12 @@ public class TourBookingForm extends TravelManager {
           subHeader = (Text) theBoldText.clone();
             subHeader.setFontColor(WHITE);
             subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
-            subHeader.addToText(star);
+            subHeader.addToText(Text.NON_BREAKING_SPACE);
+          Text starTextTwo = (Text) theText.clone();
+            starTextTwo.setFontColor(WHITE);
+            starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_only","Visa and Eurocard only.")+")");
           table.add(subHeader,1,row);
+          table.add(starTextTwo,1,row);
           table.setAlignment(1,row,"left");
           ++row;
 
@@ -1049,12 +1055,15 @@ public class TourBookingForm extends TravelManager {
             }
             table.add(new HiddenInput(this.BookingAction,this.BookingParameter),6,row);
 
-            Text starText = (Text) theText.clone();
-              starText.setFontColor(WHITE);
-              starText.setText(iwrb.getLocalizedString("travel.fields_marked_with_a_star","* Fields marked with a star must be filled."));
+            Text starTextOne = (Text) theText.clone();
+              starTextOne.setFontColor(WHITE);
+              starTextOne.setText(iwrb.getLocalizedString("travel.fields_marked_with_a_star","* Fields marked with a star must be filled."));
 
             table.mergeCells(1,row,5,row);
-            table.add(starText,1,row);
+            table.add(starTextOne,1,row);
+//            ++row;
+//            table.mergeCells(1,row,5,row);
+//            table.add(starTextTwo,1,row);
             table.setAlignment(6,row,"right");
 
 

@@ -580,9 +580,24 @@ public class ProductBusiness {
     return (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueDepartureAddressType))));
   }
 
+  /**
+   * @deprecated
+   */
   public static TravelAddress[] getDepartureAddresses(Product product) throws SQLException {
-    TravelAddress[] tempAddresses = (TravelAddress[]) (product.findRelated( (TravelAddress) TravelAddress.getStaticInstance(TravelAddress.class), TravelAddress.getColumnNameAddressTypeId(), Integer.toString(TravelAddress.ADDRESS_TYPE_DEPARTURE)));
-    return tempAddresses;
+    try {
+      List list = getDepartureAddresses(product, true);
+      return (TravelAddress[]) list.toArray(new TravelAddress[]{});
+    }catch (IDOFinderException ido) {
+      throw new SQLException(ido.getMessage());
+    }
+  }
+
+  public static List getDepartureAddresses(Product product, boolean ordered) throws IDOFinderException  {
+    List list = EntityFinder.getInstance().findRelated(product, TravelAddress.class, TravelAddress.getColumnNameAddressTypeId(), Integer.toString(TravelAddress.ADDRESS_TYPE_DEPARTURE) );
+    if (ordered) {
+      Collections.sort(list, new TravelAddressComparator(TravelAddressComparator.TIME));
+    }
+    return list;
   }
 
   public static TravelAddress getDepartureAddress(Product product) throws SQLException{
