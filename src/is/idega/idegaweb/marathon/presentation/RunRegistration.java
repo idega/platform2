@@ -271,6 +271,7 @@ public class RunRegistration extends Block {
 		if (iwc.isParameterSet(IWMarathonConstants.GROUP_TYPE_RUN)) {
 			runDisDropdownField.setSelectedValues(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN), "");
 		}
+		runDisDropdownField.getSecondaryDropdown().setAsNotEmpty(iwrb.getLocalizedString("run_reg.select_run_and_distance", "You have to select a run and distance"), "-1");
 
 		nameField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_NAME), STYLENAME_INTERFACE);
 		nameField.setAsAlphabeticText(iwrb.getLocalizedString("run_reg.name_err_msg", "Your name may only contain alphabetic characters"));
@@ -557,6 +558,7 @@ public class RunRegistration extends Block {
 		
 		t.setHeight(row++, 8);
 		
+		agreeField.setMustBeSelected(iwrb.getLocalizedString("run_reg.must_agree_registration", "You have to agree/disagree on being fit to participate."));
 		t.add(agreementText,column,row++);
 		t.setHeight(row++, 3);
 		t.add(agreeField,column,row);
