@@ -438,9 +438,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		String headline = quest.getLocalizedText()!=null?quest.getLocalizedText().getHeadline():"";
 		String body = quest.getLocalizedText()!=null?quest.getLocalizedText().getBody():"";
 		
-		if(showQuestionTitle && headline.length()>0)
+		if(showQuestionTitle && headline!=null && headline.length()>0)
 			T.add(getStyleText(headline,STYLENAME_Q_TITLE),2,row++);
-		if(showQuestionBody){
+		if(showQuestionBody && body!=null && body.length()>0){
 			T.add(getStyleText(body,STYLENAME_Q_BODY),2,row);
 		}
 		row++;
@@ -452,9 +452,9 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			ContentHelper ans = TextFinder.getContentHelper(question.getAnswerID(),currentLocale);
 			String aheadline = ans.getLocalizedText()!=null?ans.getLocalizedText().getHeadline():"";
 			String abody = ans.getLocalizedText()!=null?ans.getLocalizedText().getBody():"";
-			if(showQuestionTitle && aheadline.length()>0)
+			if(showQuestionTitle && aheadline!=null && aheadline.length()>0)
 				T.add(getStyleText(aheadline,STYLENAME_A_TITLE),2,row++);
-			if(showQuestionBody){
+			if(showQuestionBody && abody!=null && abody.length()>0){
 				T.add(getStyleText(abody,STYLENAME_A_BODY),2,row++);
 				if(showHomeButton && showAllCategories)
 				T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.getPrimaryKey().toString()),1,row);
