@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.9 2003/08/29 15:36:24 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.10 2003/08/29 15:37:23 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -367,7 +367,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public String replaceToDot(String s) {
 		
-		String replace = "";
+		String replace = s;
 		int dot = s.indexOf(".");
 		if (dot > 0) {
 			replace = s.substring(dot+1);
