@@ -21,6 +21,7 @@ public class ClubNavigationDropdown extends ClubBlock {
 		if (iwc.isParameterSet(PARAMETER_CLUB_LOCATION)) {
 			location = Integer.parseInt(iwc.getParameter(PARAMETER_CLUB_LOCATION));
 		}
+		
 		Form form = new Form();
 		
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu("i_golf_field_location"));
@@ -36,6 +37,7 @@ public class ClubNavigationDropdown extends ClubBlock {
 		menu.addMenuElement(12, localize(getLocationNameKey(12),"Others"));
 		menu.setToSubmit(true);
 		menu.setSelectedElement(location);
+		form.add(menu);
 
 		add(form);
 	}
