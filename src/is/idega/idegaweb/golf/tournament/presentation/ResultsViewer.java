@@ -71,6 +71,10 @@ public class ResultsViewer extends GolfBlock {
 
 	public void main(IWContext modinfo) throws Exception {
 		try {
+			if (tournamentID > 0) {
+				getTournamentSession(modinfo).setTournamentID(tournamentID);
+			}
+			
 			myForm = new Form();
 			myForm.setName("resultform");
 			iwrb = getResourceBundle(modinfo);
