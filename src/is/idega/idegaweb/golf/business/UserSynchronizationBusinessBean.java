@@ -65,6 +65,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	private static HashMap postalToAreaCode = new HashMap();
 	private static HashMap countries = new HashMap();
 	private boolean initDone = false;
+	private static String NO_CLUB_ABBR = "-";
 	
 	public UserSynchronizationBusinessBean() {
 		super();
@@ -233,12 +234,13 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
 		String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
-		mainUnion = ("".equals(mainUnion))?null:mainUnion;
+		mainUnion = ("".equals(mainUnion))?NO_CLUB_ABBR:mainUnion;
+		//todo remove the connection to the club
 		String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
 		subUnions = ("".equals(subUnions))?null:subUnions;
 		
 		//todo optimize this. it now always has to change every unionmemberinfo for each abbreviation!
-		if(subUnions!=null && mainUnion!=null){
+		if(subUnions!=null){
 			StringTokenizer tokens = new StringTokenizer(subUnions,",");
 			while (tokens.hasMoreTokens()) {
 				String subAbbr = tokens.nextToken();
