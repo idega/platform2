@@ -105,22 +105,29 @@ public class ContractEditor extends ChildCareBlock {
 			
 			try {
 				iCareTime = Integer.parseInt(careTime);
+			} catch (Exception e) {}
+			
+			try {
 				iEmpType = Integer.parseInt(empType);
+			} catch (Exception e) {}
+			
+			try {
 				dFromDate = (new IWTimestamp(fromDate)).getDate();
-				try {
-					dToDate = (new IWTimestamp(toDate)).getDate();
-				} catch (Exception ignore) {}
-				
-			} catch (Exception e) {
-				logError("Invalid input");
-			}
+			} catch (Exception e) {}
+
+			try {
+				dToDate = (new IWTimestamp(toDate)).getDate();
+			} catch (Exception ignore) {}
+			
+			
 			boolean success = false;
-			if ( dFromDate != null && iCareTime > 0) {
+			
+			if (dFromDate != null) {
 				success = getBusiness().alterContract(contract, iCareTime, dFromDate, dToDate, iwc.getCurrentLocale(), iwc.getCurrentUser());
-				//if (iEmpType > 0) {
+				if (iEmpType > 0) {
 					contract.setEmploymentType(iEmpType);
 					contract.store();
-				//}
+				}
 			}
 			
 			add(getLocalizedSmallHeader("child_care.update_success", "Update success"));
