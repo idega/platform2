@@ -1,9 +1,9 @@
 package com.idega.block.importer.presentation;
 import java.io.File;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
+
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileClass;
 import com.idega.block.importer.data.ImportFileRecord;
@@ -12,7 +12,6 @@ import com.idega.block.importer.data.ImportHandler;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.block.media.business.MediaConstants;
 import com.idega.block.media.presentation.MediaChooserWindow;
-import com.idega.block.media.presentation.SimpleFileChooser;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWResourceBundle;
