@@ -24,7 +24,7 @@ import java.util.*;
 *@version 1.0
 */
 
- public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContainer {
+public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContainer {
 
   private String union_id,unionName,unionAbbrev,member_id;
   private int un_id,mem_id,cashier_id;
@@ -113,9 +113,20 @@ import java.util.*;
       if(modinfo.getRequest().getParameter(prmString) == null){
         doMain(modinfo);
       }
-      if(modinfo.getRequest().getParameter(prmString) != null){
+      if(modinfo.getParameter("deleteall.x")!=null){
+        doDeleteAll(modinfo);
+      }
+      else if(modinfo.getParameter("payall.x")!=null){
+        this.doPayAll(modinfo);
+      }
+      else if(modinfo.getParameter("updatepay.x")!=null){
+        this.doUpdatePay(modinfo);
+      }
+      else if(modinfo.getParameter("makenew.x")!=null){
+        this.doMakeNew(modinfo);
+      }
+      else if(modinfo.getRequest().getParameter(prmString) != null){
         sAction = modinfo.getRequest().getParameter(prmString);
-
         if(sAction.equals("main"))	        { doMain(modinfo);      }
         else if(sAction.equals("change"))	{ doChange(modinfo); 	}
         else if(sAction.equals("clearaccount")) { doClearAccount(modinfo);}
@@ -126,11 +137,7 @@ import java.util.*;
         else if(sAction.equals("tariffs"))	{ doTariff(modinfo); 	}
         else if(sAction.equals("new"))	        { 	}
         else if(sAction.equals("updatenew"))	{ doUpdateNew(modinfo); }
-        else if(sAction.equals("makenew"))	{ doMakeNew(modinfo);   }
         else if(sAction.equals("paychange"))	{ doChange(modinfo);    }
-        else if(sAction.equals("updatepay"))	{ doUpdatePay(modinfo); }
-        else if(sAction.equals("deleteall"))    { doDeleteAll(modinfo); }
-
       }
     }
     catch(SQLException S){	S.printStackTrace();	}
@@ -594,10 +601,49 @@ import java.util.*;
           catch(SQLException sql){ePayment = null;}
           if(ePayment !=null){
             try{
-              totalprice += ePayment.getPrice();
+              if(!ePayment.getStatus())
+                totalprice += ePayment.getPrice();
               lastpaydate = ePayment.getPaymentDate();
               name = ePayment.getName();
               ePayment.delete();
+            }
+            catch(SQLException sql){sql.printStackTrace();}
+          }
+        }
+      }
+      if(totalprice > 0){
+        try {
+          TariffService.makeAccountEntry( this.eAccount.getID(),totalprice,name,
+                          sInfo,"","","",this.cashier_id,lastpaydate,today);
+        }
+        catch (SQLException ex) {        }
+
+      }
+      this.doTariff(modinfo);
+    }
+
+    private void doPayAll(ModuleInfo modinfo){
+      int pCount = Integer.parseInt(modinfo.getParameter("payment_totalpaydel"));
+      String sInfo = "Greiðsla";
+      int totalprice = 0;
+      Timestamp today = idegaTimestamp.getTimestampRightNow();
+      Timestamp lastpaydate = today;
+      String name = "";
+      for (int i = 0; i < pCount; i++) {
+        if(modinfo.getParameter("payment_delchk"+i)!=null){
+          int id = Integer.parseInt(modinfo.getParameter("payment_delchk"+i));
+           Payment ePayment = null;
+          try{
+            ePayment = new Payment(id);
+          }
+          catch(SQLException sql){ePayment = null;}
+          if(ePayment !=null){
+            try{
+              totalprice += ePayment.getPrice();
+              lastpaydate = ePayment.getPaymentDate();
+              name = ePayment.getName();
+              ePayment.setStatus(true);
+              ePayment.update();
             }
             catch(SQLException sql){sql.printStackTrace();}
           }
@@ -654,11 +700,7 @@ import java.util.*;
       T2.add(this.makeTariffEntriesTable(TariffService.getTariffEntrys(eAccount.getID())),1,1);
       T2.add(this.makePaymentsTable(TariffService.getMemberPayments(this.mem_id,this.un_id)),1,2);
 
-      Form myForm = new Form();
-      myForm.maintainAllParameters();
-      myForm.add(T2);
-      myForm.add(new HiddenInput( this.prmString, "deleteall"));
-      T.add(myForm);
+      T.add(T2);
       return T;
     }
 
@@ -679,13 +721,7 @@ import java.util.*;
       T2.setCellspacing(0);
       T2.add(this.makePayChangeTable(P),1,1);
       T2.add(this.makePaymentsTable(TariffService.getMemberPayments(this.mem_id,this.un_id)),1,2);
-
-      Form myForm = new Form();
-      myForm.maintainAllParameters();
-      myForm.add(T2);
-      myForm.add(new HiddenInput( this.prmString,"updatepay"));
-      myForm.add(new HiddenInput("account_oldpayid",String.valueOf(P.getID())));
-      T.add(myForm);
+      T.add(T2);
       return T;
     }
 
@@ -711,7 +747,7 @@ import java.util.*;
       Form myForm = new Form();
       myForm.maintainAllParameters();
       myForm.add(T2);
-      myForm.add(new HiddenInput( this.prmString,"makenew"));
+      //myForm.add(new HiddenInput( this.prmString,"makenew"));
       myForm.add(new HiddenInput( this.getIDsPrm(),this.storage));
       T.add(myForm);
       return T;
@@ -831,6 +867,10 @@ import java.util.*;
     }
 
      private Table makePayChangeTable(Payment P){
+      Form myForm = new Form();
+      myForm.maintainAllParameters();
+      //myForm.add(new HiddenInput( this.prmString,"updatepay"));
+      myForm.add(new HiddenInput("account_oldpayid",String.valueOf(P.getID())));
       Table T2 = new Table(1,3);
       T2.setCellspacing(1);
       T2.setCellpadding(2);
@@ -903,7 +943,7 @@ import java.util.*;
       CheckBox chkUpd = new CheckBox("payment_ichkupdate","true");
       CheckBox chkDel= new CheckBox("payment_ichkdel","true");
 
-      SubmitButton B = new SubmitButton(new Image("/pics/tarif/small/boka.gif"));
+      SubmitButton B = new SubmitButton(new Image("/pics/tarif/small/boka.gif"),"updatepay");
 
       Table T3 = new Table(8,1);
       T3.add(tPay,1,1);
@@ -921,7 +961,11 @@ import java.util.*;
       T.add(Price,5,2);
       T2.add(T,1,2);
       T2.add(T3,1,3);
-      return T2;
+      myForm.add(T2);
+      Table T4 = new Table();
+      T4.setWidth("100%");
+      T4.add(myForm);
+      return T4;
     }
 
 
@@ -1011,7 +1055,7 @@ import java.util.*;
       T.setWidth("100%");
       T.setCellspacing(0);
       T.setCellpadding(0);
-      T.add(new SubmitButton(new Image("/pics/tarif/small/leggjaa.gif")),1,1);
+      T.add(new SubmitButton(new Image("/pics/tarif/small/leggjaa.gif"),"makenew"),1,1);
       T2.add(T,1,1);
       return T2;
     }
@@ -1222,7 +1266,9 @@ import java.util.*;
   }
 
 
-
+  /**
+   *
+   */
   private Table makeEntryTable(AccountEntry[] entries){
     int tableDepth = entries.length+2;
     Table T = new Table(4,tableDepth);
@@ -1368,9 +1414,15 @@ import java.util.*;
     return T2;
   }
 
+
+  /** Shows payments
+   *
+   */
   private Table makePaymentsTable(Payment[] payments){
+    Form myForm = new Form();
+    myForm.maintainAllParameters();
     int tableDepth = payments.length+1;
-    Table T2 = new Table(1,2);
+    Table T2 = new Table(1,3);
     T2.setCellspacing(1);
     T2.setCellpadding(2);
     T2.setWidth("100%");
@@ -1426,22 +1478,29 @@ import java.util.*;
         TableTexts[i].setFontSize(fontSize);
         T.add(TableTexts[i],i+1,j+2);
       }
-      if(!paid){
+      if(true){
         CheckBox chkdel = new CheckBox("payment_delchk"+delcount,String.valueOf(payments[j].getID()));
         T.add(chkdel,6,j+2);
         Link L = new Link("B");
         L.addParameter(this.prmString,"paychange");
         L.addParameter("payid",payments[j].getID());
         L.setFontSize(fontSize);
-        T.add(L,7,j+2);
+        if(!paid)
+          T.add(L,7,j+2);
         delcount++;
       }
     }
     T.add(new HiddenInput("payment_totalpaydel",String.valueOf(delcount)));
     T2.add(T,1,1);
     T2.setAlignment(1,2,"right");
-    T2.add(new SubmitButton(new Image("/pics/tarif/small/eyda.gif")),1,2);
-    return T2;
+    T2.setAlignment(1,3,"right");
+    T2.add(new SubmitButton(new Image("/pics/tarif/small/eyda.gif"),"deleteall"),1,2);
+    T2.add(new SubmitButton(new Image("/pics/tarif/small/greida.gif"),"payall"),1,3);
+    myForm.add(T2);
+    Table T4 = new Table();
+    T4.setWidth("100%");
+    T4.add(myForm);
+    return T4;
   }
 
   private String getPaymentType(int id){
@@ -1461,8 +1520,6 @@ import java.util.*;
       LinkTable.setCellpadding(0);
       LinkTable.setCellspacing(0);
 
-      //LinkTable.setWidth(sTablewidth);
-
       Link BookLink = new Link(new Image(menuNr == 1?"/pics/tarif/boka.gif":"/pics/tarif/boka1.gif"),"/tarif/paymentbook.jsp");
       BookLink.addParameter(prmString,"view");
       BookLink.addParameter("union_id",union_id);
@@ -1472,16 +1529,11 @@ import java.util.*;
 
       Link TariffLink = new Link(new Image(menuNr == 3?"/pics/tarif/alagning.gif":"/pics/tarif/alagning1.gif"));
       TariffLink.addParameter(prmString,"tariffs");
-/*
-      Link MakeLink = new Link(new Image(menuNr == 4?"/pics/tarif/nytt.gif":"/pics/tarif/nytt1.gif"));
-      MakeLink.addParameter(prmString,"make");
-*/
 
       if(isAdmin){
         LinkTable.add(BookLink,1,1);
         LinkTable.add(EntryLink,1,1);
         LinkTable.add(TariffLink,1,1);
-        //LinkTable.add(MakeLink,1,1);
       }
       return LinkTable;
     }
