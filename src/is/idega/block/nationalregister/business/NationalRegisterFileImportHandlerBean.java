@@ -321,11 +321,14 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				rel1.setForUser(user);
 				
 				//Debug info
+				System.out.println("Relations from the beginning:");
 				rel1.dumpInfo();
 				coll2.remove(user);
+				System.out.println("# of relations to check:"+coll2.size());
 				iter2 = coll2.iterator();
 				while (iter2.hasNext()) {
 					user2 = (User) iter2.next();
+					System.out.println("Testing relation to "+user2.getName());
 					rel2.setForUser(user2);
 					try {
 						if (parents.contains(user)) {
@@ -414,6 +417,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			if (rel1.spouse.equals(user2)) {
 				rel1.spouse = null;
 				rel2.spouse = null;
+				System.out.println("User "+user1.getName()+" already set as spouse for "+user2.getName());
 				return;
 			}
 		}
@@ -427,6 +431,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (rel1.child.contains(user2)) {
 			rel1.child.remove(user2);
 			rel2.parent.remove(user1);
+			System.out.println("User "+user1.getName()+" already set as parent for "+user2.getName());
 			return;
 		}
 		System.out.println("new parent relation parent: "+user1.getName()+" ; Child :"+user2.getName());
@@ -437,6 +442,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if(rel1.isCustodianFor.contains(user2)){
 			rel1.isCustodianFor.remove(user2);
 			rel2.hasCustodian.remove(user1);
+			System.out.println("User "+user1.getName()+" already set as custodian for "+user2.getName());
 			return;
 		}
 		System.out.println("new custodian relation custodian: "+user1.getName()+" ; Child :"+user2.getName());
@@ -447,6 +453,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if(rel1.sibling.contains(user2)){
 			rel1.sibling.remove(user2);
 			rel2.sibling.remove(user1);
+			System.out.println("User "+user1.getName()+" already set as sibling to "+user2.getName());
 			return;
 		}
 		System.out.println("new sibling relation: "+user1.getName()+" ; "+user2.getName());
@@ -457,6 +464,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if(rel1.parent.contains(user2)){
 			rel1.parent.remove(user2);
 			rel2.child.remove(user1);
+			System.out.println("User "+user1.getName()+" already set as child of "+user2.getName());
 			return;
 		}
 		System.out.println("new child relation child: "+user1.getName()+" ; Parent :"+user2.getName());
