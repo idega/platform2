@@ -50,12 +50,12 @@ public class InvoiceBatchResult extends AccountingBlock{
 			InvoiceBusiness invoiceBusiness = getInvoiceBusiness(iwc);
 			String schoolCategory = getSession().getOperationalField();
 			
-			boolean isChildCare = invoiceBusiness.isChildCare(schoolCategory);
+			boolean categoryIsChildCare = invoiceBusiness.isChildCare(schoolCategory);
 			
 			table.add(getLocalizedLabel("invbr.period","Period"),1,1);
 			table.add(getLocalizedLabel("invbr.batchrun_starttime","Batchrun start-time"),1,2);
 			table.add(getLocalizedLabel("invbr.batchrun_endtime","Batchrun end-time"),1,3);
-			if (isChildCare) {
+			if (categoryIsChildCare) {
 				table.add(getLocalizedLabel("invbr.number_of_invoices","Number of invoices"),1,4);
 				table.add(getLocalizedLabel("invbr.number_of_billed_children","Number of handled children"),1,5);
 				table.add(getLocalizedLabel("invbr.totalAmount","Total amount"),1,6);
@@ -85,8 +85,14 @@ public class InvoiceBatchResult extends AccountingBlock{
 			}
 			
 			table.add(""+invoiceBusiness.getNoProviders(batchRun),2,4);
-			table.add(""+invoiceBusiness.getNoPlacements(batchRun),2,5);
-			table.add(""+invoiceBusiness.getTotAmountWithoutVAT(batchRun),2,6);
+			
+			if (categoryIsChildCare) {
+				table.add(Integer.toString(invoiceBusiness.getNumberOfHandledChildren(batchRun)),2,5);
+			}
+			else {
+				table.add(Integer.toString(invoiceBusiness.getNoPlacements(batchRun)),2,5);
+			}
+			table.add(Integer.toString(invoiceBusiness.getTotAmountWithoutVAT(batchRun)),2,6);
 		
 			form.add(table);
 			
