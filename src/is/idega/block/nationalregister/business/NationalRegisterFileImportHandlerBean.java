@@ -91,13 +91,14 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	
 	private final static String PROPERTY_NAME_RELATION_ONLY = "NAT_REG_RELATION_ONLY";
 	private final static String PROPERTY_NAME_POSTAL_CODE_FIX = "NAT_REG_POSTAL_CODE_FIX";
-	private final static String PROPERTY_NAME_GROUP_ID_FIX = "NAT_REG_GROUP_ID_FIX";
+	private final static String PROPERTY_NAME_GROUP_FIX = "NAT_REG_GROUP_ID_FIX";
 	private final static String FATE_DECEASED = "LÉST";
 	private final static String FATE_CHANGE_PERSONAL_ID = "BRFD";
 	private final static String FATE_REMOVED = "BRFL";
 	private final static String FATE_CHANGE_OLD_ID = "BRNN";
 	private boolean postalCodeFix = false;
 	private boolean relationsOnly = false;
+	private boolean citizenGroupFix = false;
 //	private Group citizenGroup = null;
 	private User performer = null;
 	private FamilyLogic famLog = null;
@@ -132,10 +133,11 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
 			String sRelationOnly = bundle.getProperty(PROPERTY_NAME_RELATION_ONLY);
 			String sPostal = bundle.getProperty(PROPERTY_NAME_POSTAL_CODE_FIX);
-			String sGroupID = bundle.getProperty(PROPERTY_NAME_GROUP_ID_FIX);
+			String sGroup = bundle.getProperty(PROPERTY_NAME_GROUP_FIX);
 			affectedFamilies = new HashSet();
 			postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
 			relationsOnly = (sRelationOnly != null && sRelationOnly.equalsIgnoreCase("yes"));
+			citizenGroupFix = (sGroup != null && sGroup.equalsIgnoreCase("yes"));
 //			if (sGroupID != null) {
 //				try {
 //					citizenGroup = ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(sGroupID));
@@ -152,6 +154,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			}
 			if (relationsOnly) {
 				System.out.println("NationalRegisterHandler relationsOnly variable set to TRUE");
+			}
+			if (citizenGroupFix) {
+				System.out.println("NationalRegisterHandler citizenGroupFix variable set to TRUE");
 			}
 			
 			long totalBytes = _file.getFile().length();
@@ -671,18 +676,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (ssn == null || ssn.equals(""))
 			return false;
 
-
+		group = getGroupForPostalCode(po);
+		
 		if (!relationsOnly) {
 			//initialize business beans and data homes
 			
-			group = getGroupForPostalCode(po);
-	
 			success = natBiz.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
 			    floor,sex,maritialStatus,empty,prohibitMarking,
 			    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
 					addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
 					agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, group);
-	
+
 	
 			if(FATE_DECEASED.equalsIgnoreCase(fate)){
 				User user;
@@ -742,6 +746,19 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					}
 					return true;
 				} catch (Exception e){
+					return false;
+				}
+			}
+		} else { // Handling thing otherwise not handled in relationsship only mode
+			if (citizenGroupFix) {
+				User user;
+				try {
+					user = uBiz.getUser(ssn);
+					user.setPrimaryGroup(group);
+					user.store();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
 					return false;
 				}
 			}
