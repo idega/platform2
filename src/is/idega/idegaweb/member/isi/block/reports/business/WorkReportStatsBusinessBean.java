@@ -9,7 +9,6 @@ import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.Work
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.YesNoDropDownMenu;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -24,9 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.datareport.util.FieldsComparator;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
@@ -3392,7 +3389,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		WorkReportGroup mainBoardGroup = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
 		Integer mbId = mainBoardGroup==null?(new Integer(-1)):mainBoardGroup.getGroupId();
 		
-		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, clubsFilter);
 		Iterator iter = clubs.iterator();
 		while (iter.hasNext()) {
 			//the club
