@@ -6,10 +6,12 @@ public interface Run extends com.idega.data.IDOEntity{
     		public int getRunTypeGroupID();
     	  public int getRunYearGroupID();
     	  public int getRunDistanceGroupID();
+    	  public int getRunGroupGroupID();
     	  public int getRunTime();
     	  public int getChipTime();
     	  public int getUserID();
     	  public String getChipNumber();
+    	  public String getUserNationality();
     	  public String getTShirtSize();
     	  public String getRunGroupName();
     	  public int getBestTime();
@@ -18,10 +20,12 @@ public interface Run extends com.idega.data.IDOEntity{
     	  public void setRunTypeGroupID(int runType);
     	  public void setRunYearGroupID(int runYear);
     	  public void setRunDistanceGroupID(int runDis);
+    	  public void setRunGroupGroupID(int runGroup);
     	  public void setRunTime(double runTime);
     	  public void setChipTime(double chipTime);
     	  public void setUserID(int userID);
     	  public void setChipNumber(String chipNumber);
+    	  public void setUserNationality(String nationality);
     	  public void setTShirtSize(String tShirtSize);
     	  public void setRunGroupName(String runGrName);
     	  public void setBestTime(double bestTime);

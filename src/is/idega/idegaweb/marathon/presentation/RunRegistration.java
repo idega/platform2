@@ -508,13 +508,13 @@ public class RunRegistration extends Page{
     int userID = -1;
     
     if(ssnIS!=null && !ssnIS.equals("")) {
-      userID = runBiz.saveUser(name,nationality,ssnIS,gender,address,postal,city,country,tel,mobile,email);
+      userID = runBiz.saveUser(name,ssnIS,gender,address,postal,city,country,tel,mobile,email);
     }else if(ssn!=null && !ssn.equals("")) {
-      userID = runBiz.saveUser(name,nationality,ssn,gender,address,postal,city,country,tel,mobile,email);
+      userID = runBiz.saveUser(name,ssn,gender,address,postal,city,country,tel,mobile,email);
     }
     
     if(userID>0) {
-      runBiz.saveRun(userID,run,distance,year,tshirt,chipNumber,groupName,bestTime,goalTime);
+      runBiz.saveRun(userID,run,distance,year,nationality,tshirt,chipNumber,groupName,bestTime,goalTime);
     }
   }
   

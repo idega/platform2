@@ -51,7 +51,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness{
   /**
    * saves information on the user - creates a new user if he doesn't exsist.. 
    */
-  public int saveUser(String name,String nationality,String ssn,String gender,String address,String postal,String city,String country,String tel,String mobile,String email) {
+  public int saveUser(String name,String ssn,String gender,String address,String postal,String city,String country,String tel,String mobile,String email) {
     User user = null;
     try {
       user = getUserBiz(IWContext.getInstance()).createUserByPersonalIDIfDoesNotExist(name,ssn,null,null);
@@ -164,7 +164,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness{
    * saves information on the run for the specific user
    * puts user in the right group
    */
-  public void saveRun(int userID,String run,String distance,String year,String tshirt,String chipNumber,String groupName,String bestTime,String goalTime) {
+  public void saveRun(int userID,String run,String distance,String year,String nationality,String tshirt,String chipNumber,String groupName,String bestTime,String goalTime) {
     Group groupRun = null;
     try {
       groupRun = getGroupBiz(IWContext.getInstance()).getGroupByGroupID(Integer.parseInt(run));
@@ -215,6 +215,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness{
       r.setTShirtSize(tshirt);
       r.setChipNumber(chipNumber);
       r.setRunGroupName(groupName);
+      r.setUserNationality(nationality);
       if(bestTime!=null && !bestTime.equals("")) {
         r.setBestTime(Integer.parseInt(bestTime));
       }

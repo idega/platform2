@@ -27,10 +27,12 @@ public class RunBMPBean extends GenericEntity implements Run{
   			addAttribute(getColumnNameRunTypeGroupID(),"Run Type",true,true,Integer.class);
   			addAttribute(getColumnNameRunYearGroupID(),"Run Year",true,true,Integer.class);
   			addAttribute(getColumnNameRunDistanceGroupID(),"Run Distance",true,true,Integer.class);
+  			addAttribute(getColumnNameRunGroupGroupID(),"Run Group",true,true,Integer.class);
   			addAttribute(getColumnNameRunTime(),"Run Time",true,true,Integer.class);
   			addAttribute(getColumnNameChipTime(),"Chip Time", true, true, Integer.class);
   			addAttribute(getColumnNameUserID(),"User ID",true,true,Integer.class);
   			addAttribute(getColumnNameChipNumber(),"Chip Number",true,true,String.class);
+  			addAttribute(getColumnNameUserNationality(),"User Nationality",true,true,String.class);
   			addAttribute(getColumnNameTShirtSize(),"TShirt Size",true,true,String.class);
   			addAttribute(getColumnNameRunGroupName(),"Run Group Name",true,true,String.class);
   			addAttribute(getColumnNameBestTime(),"Best Time",true,true,String.class);
@@ -42,9 +44,11 @@ public class RunBMPBean extends GenericEntity implements Run{
   		public static String getColumnNameRunTypeGroupID() { return com.idega.user.data.GroupBMPBean.getColumnNameGroupID() + "_run"; }
   		public static String getColumnNameRunYearGroupID() { return com.idega.user.data.GroupBMPBean.getColumnNameGroupID() + "_year"; }
   		public static String getColumnNameRunDistanceGroupID() { return com.idega.user.data.GroupBMPBean.getColumnNameGroupID() + "_distance"; }
+  		public static String getColumnNameRunGroupGroupID() { return com.idega.user.data.GroupBMPBean.getColumnNameGroupID() + "_group"; }
   		public static String getColumnNameRunTime() { return "run_time"; }
   		public static String getColumnNameChipTime() { return "chip_time"; }
   		public static String getColumnNameChipNumber() { return "run_chip_number"; }
+  		public static String getColumnNameUserNationality() { return "user_nationality"; }
   		public static String getColumnNameTShirtSize() { return "run_tShirt_size"; }
   		public static String getColumnNameRunGroupName() { return "run_group_name"; }
   		public static String getColumnNameBestTime() { return "run_best_time"; }
@@ -73,6 +77,9 @@ public class RunBMPBean extends GenericEntity implements Run{
   	  public int getRunDistanceGroupID() {
   	    return getIntColumnValue(getColumnNameRunDistanceGroupID());
   	  }
+  	  public int getRunGroupGroupID() {
+  	    return getIntColumnValue(getColumnNameRunGroupGroupID());
+  	  }
 
   	  public int getRunTime(){
   			return getIntColumnValue(getColumnNameRunTime());
@@ -85,6 +92,9 @@ public class RunBMPBean extends GenericEntity implements Run{
   	  }
   	  public String getChipNumber() {
   	      return getStringColumnValue(getColumnNameChipNumber());
+  	  }
+  	  public String getUserNationality() {
+  	    return getStringColumnValue(getColumnNameUserNationality());
   	  }
   	  public String getTShirtSize() {
   	      return getStringColumnValue(getColumnNameTShirtSize());
@@ -108,6 +118,9 @@ public class RunBMPBean extends GenericEntity implements Run{
   	  public void setRunDistanceGroupID(int runDisGroupID) {
   	      setColumn(getColumnNameRunDistanceGroupID(),runDisGroupID);
   	  }
+  	  public void setRunGroupGroupID(int runGroupGroupID) {
+  	    setColumn(getColumnNameRunGroupGroupID(),runGroupGroupID);
+  	  }
   	  public void setRunTime(double runTime) {
   	      setColumn(getColumnNameRunTime(),runTime);
   	  }
@@ -119,6 +132,9 @@ public class RunBMPBean extends GenericEntity implements Run{
   	  }
   	  public void setChipNumber(String chipNumber) {
   	      setColumn(getColumnNameChipNumber(),chipNumber);
+  	  }
+  	  public void setUserNationality(String nationality) {
+  	    setColumn(getColumnNameUserNationality(),nationality);
   	  }
   	  public void setTShirtSize(String tShirtSize) {
   	      setColumn(getColumnNameTShirtSize(),tShirtSize);
