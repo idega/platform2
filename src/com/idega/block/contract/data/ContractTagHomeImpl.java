@@ -1,7 +1,5 @@
 package com.idega.block.contract.data;
 
-import com.idega.data.IDOQuery;
-
 
 public class ContractTagHomeImpl extends com.idega.data.IDOFactory implements ContractTagHome
 {
