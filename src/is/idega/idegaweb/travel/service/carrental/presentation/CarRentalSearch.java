@@ -60,8 +60,8 @@ public class CarRentalSearch extends AbstractSearchForm {
 		
 		if (!defined) {
 			bf.addAreaCodeInput(null);
+			bf.addSupplierNameInput();
 		}
-		bf.addSupplierNameInput();
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		IWTimestamp tomorrow = new IWTimestamp(now);

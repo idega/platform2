@@ -165,8 +165,8 @@ public class HotelSearch extends AbstractSearchForm {
 
 		if (!defined) {
 			bf.addAreaCodeInput(null);
+			bf.addSupplierNameInput();
 		}
-		bf.addSupplierNameInput();
 		IWTimestamp now = IWTimestamp.RightNow();
 		
 		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE);

@@ -61,8 +61,8 @@ public abstract class TourSearch extends AbstractSearchForm {
 		
 		if (!defined) {
 			bf.addAreaCodeInput(null);
+			bf.addSupplierNameInput();
 		}
-		bf.addSupplierNameInput();
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		
