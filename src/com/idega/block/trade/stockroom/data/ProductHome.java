@@ -2,6 +2,7 @@ package com.idega.block.trade.stockroom.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOHome;
 import com.idega.data.IDORelationshipException;
 import com.idega.util.IWTimestamp;
@@ -73,5 +74,5 @@ public interface ProductHome extends IDOHome {
 	/**
 	 * @see com.idega.block.trade.stockroom.data.ProductBMPBean#ejbFindBySupplyPool
 	 */
-	public Collection findBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException;
+	public Collection findBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException, IDOCompositePrimaryKeyException;
 }

@@ -20,6 +20,7 @@ import com.idega.data.EntityControl;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLegacyEntity;
@@ -884,11 +885,12 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 		return getBooleanColumnValue(COLUMN_REFUNDABLE, true);
 	}
 	
-	public Collection ejbFindBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException {
+	public Collection ejbFindBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException, IDOCompositePrimaryKeyException {
 		
 		Table table = new Table(this);
 		Table poolTable = new Table(pool);
 		
+		Column poolID = new Column(poolTable, pool.getEntityDefinition().getPrimaryKeyDefinition().getField().getSQLFieldName());
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
@@ -896,7 +898,8 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 		query.addManyToManyJoin(table, poolTable);
 		
 		query.addCriteria(new MatchCriteria(new Column(table, getColumnNameIsValid()), MatchCriteria.EQUALS, true));
-		
+		query.addCriteria(new MatchCriteria(poolID, MatchCriteria.EQUALS, pool));
+
 		return idoFindPKsByQuery(query);
 	}
 }

@@ -2,6 +2,7 @@ package com.idega.block.trade.stockroom.data;
 
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOFactory;
 import com.idega.data.IDORelationshipException;
 import com.idega.util.IWTimestamp;
@@ -118,7 +119,7 @@ public class ProductHomeImpl extends IDOFactory implements ProductHome {
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException {
+	public Collection findBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException, IDOCompositePrimaryKeyException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ProductBMPBean) entity).ejbFindBySupplyPool(pool);
 		this.idoCheckInPooledEntity(entity);
