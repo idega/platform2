@@ -3,7 +3,6 @@
  *
  */
 package is.idega.idegaweb.member.presentation;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,15 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -31,43 +29,35 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.text.TextSoap;
-
 /**
  * UserSearcher small adjustable search block, used to search for users in database.
  * 
  * @author aron 
  * @version 1.0
  */
-
 public class UserSearcher extends Block {
-
 	private static final String SEARCH_PERSONAL_ID = "usrch_search_pid";
 	private static final String SEARCH_LAST_NAME = "usrch_search_lname";
 	private static final String SEARCH_MIDDLE_NAME = "usrch_search_mname";
 	private static final String SEARCH_FIRST_NAME = "usrch_search_fname";
 	private static final String SEARCH_COMMITTED = "mbe_act_search";
-
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_HEADER = "Header";
 	public final static String STYLENAME_BUTTON = "Button";
 	public final static String STYLENAME_WARNING = "Warning";
 	public final static String STYLENAME_INTERFACE = "Interface";
-
-
 	private String textFontStyleName = null;
 	private String headerFontStyleName = null;
 	private String buttonStyleName = null;
 	private String warningStyleName = null;
 	private String interfaceStyleName = null;
-
 	private String textFontStyle = "font-weight:plain;";
 	private String headerFontStyle = "font-weight:bold;";
 	private String warningFontStyle = "font-weight:bold;fon-color:#FF0000";
 	private String buttonStyle =
 		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
 	private String interfaceStyle =
-			"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
-
+		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
 	/** Parameter for user id */
 	private static final String PRM_USER_ID = "usrch_user_id_";
 	/** The userID is the handled users ID. */
@@ -102,7 +92,6 @@ public class UserSearcher extends Block {
 	private boolean processed = false;
 	/** list of maintainparameters */
 	private List maintainedParameters = new Vector();
-
 	/** personalID input length */
 	private int personalIDLength = 10;
 	/** firstname input length */
@@ -111,27 +100,24 @@ public class UserSearcher extends Block {
 	private int middleNameLength = 10;
 	/**lastname input length */
 	private int lastNameLength = 10;
-
 	/** stacked view flag : if stacked heading appears above inputs*/
 	private boolean stacked = true;
 	/** First letter in names case insensitive*/
 	private boolean firstLetterCaseInsensitive = true;
-
 	/** Skip results if only one found */
 	private boolean skipResultsForOneFound = true;
-
 	/** Contained in own form */
 	private boolean OwnFormContainer = true;
-
 	/** Flag for showing reset button */
 	private boolean showResetButton = true;
-
+	/** Flag for hiding buttons */
+	private boolean showButtons = true;
 	/** unique identifier */
 	private String uniqueIdentifier = "unique";
-
 	/** flag for showing result overflow */
 	private boolean showOverFlowMessage = true;
-
+	/**Collection of objects for the button area */
+	private Collection addedButtons = null;
 	private void initStyleNames() {
 		if (textFontStyleName == null)
 			textFontStyleName = getStyleName(STYLENAME_TEXT);
@@ -144,13 +130,11 @@ public class UserSearcher extends Block {
 		if (interfaceStyleName == null)
 			interfaceStyleName = getStyleName(STYLENAME_INTERFACE);
 	}
-
 	public void main(IWContext iwc) throws Exception {
 		//debugParameters(iwc);
 		initStyleNames();
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-
 		String message = null;
 		try {
 			process(iwc);
@@ -172,7 +156,6 @@ public class UserSearcher extends Block {
 			Text tMessage = new Text(message);
 			T.add(tMessage, 1, 3);
 		}
-
 		if (OwnFormContainer) {
 			Form form = new Form();
 			form.add(T);
@@ -181,9 +164,7 @@ public class UserSearcher extends Block {
 		else {
 			add(T);
 		}
-
 	}
-
 	/**
 	 * Main processing method, searches if search has ben committed, or looks up the user chosen
 	 * is called by main(),
@@ -205,12 +186,9 @@ public class UserSearcher extends Block {
 			catch (IDOLookupException e) {
 				throw new FinderException(e.getMessage());
 			}
-
 		}
-
 		processed = true;
 	}
-
 	private void processSearch(IWContext iwc) throws IDOLookupException, FinderException, RemoteException {
 		UserHome home = (UserHome) IDOLookup.getHome(User.class);
 		String first = iwc.getParameter(SEARCH_FIRST_NAME + uniqueIdentifier);
@@ -240,7 +218,6 @@ public class UserSearcher extends Block {
 			}
 		}
 	}
-
 	/**
 		 * Presentates the users personal info
 		 * @param iwc the current context
@@ -314,28 +291,36 @@ public class UserSearcher extends Block {
 				searchTable.add(input, ++col, row);
 			clearAction += "this.form." + SEARCH_FIRST_NAME + uniqueIdentifier + ".value ='' ;";
 		}
-		SubmitButton search =
-			new SubmitButton(
-				iwrb.getLocalizedString(SEARCH_COMMITTED, "Search"),
-				SEARCH_COMMITTED + uniqueIdentifier,
-				"true");
-		search.setStyleClass(buttonStyleName);
-		if (stacked) {
-			searchTable.add(search, col++, row + 1);
+		if (showButtons) {
+			SubmitButton search =
+				new SubmitButton(
+					iwrb.getLocalizedString(SEARCH_COMMITTED, "Search"),
+					SEARCH_COMMITTED + uniqueIdentifier,
+					"true");
+			search.setStyleClass(buttonStyleName);
+			if (stacked) {
+				searchTable.add(search, col++, row + 1);
+			}
+			else
+				searchTable.add(search, 1, row + 1);
+			if (showResetButton) {
+				SubmitButton reset = new SubmitButton(iwrb.getLocalizedString("clear", "Clear"));
+				reset.setStyleClass(buttonStyleName);
+				reset.setOnClick(clearAction + "return false;");
+				searchTable.add(reset, col++, row + 1);
+			}
+			if (addedButtons != null && !addedButtons.isEmpty()) {
+				for (Iterator iter = addedButtons.iterator(); iter.hasNext();) {
+					PresentationObject element = (PresentationObject) iter.next();
+					if (stacked)
+						searchTable.add(element, col++, row + 1);
+					else
+						searchTable.add(element, 1, row + 1);
+				}
+			}
 		}
-		else
-			searchTable.add(search, 1, row + 1);
-
-		if (showResetButton) {
-			SubmitButton reset = new SubmitButton(iwrb.getLocalizedString("clear", "Clear"));
-			reset.setStyleClass(buttonStyleName);
-			reset.setOnClick(clearAction + "return false;");
-			searchTable.add(reset, col++, row + 1);
-		}
-
 		return searchTable;
 	}
-
 	/**
 		 * Presentates the users found by search
 		 * @param iwc the context
@@ -344,7 +329,6 @@ public class UserSearcher extends Block {
 		Table T = new Table();
 		if (usersFound != null && !usersFound.isEmpty()) {
 			Iterator iter = usersFound.iterator();
-
 			T.setCellspacing(4);
 			Link userLink;
 			int row = 1;
@@ -367,24 +351,26 @@ public class UserSearcher extends Block {
 					break;
 				}
 			}
-			if(showOverFlowMessage && iter.hasNext()){
-				int lastRow = T.getRows()+1;
-				T.mergeCells(1,lastRow,maxFoundUserCols,lastRow);
-				Text tOverflowMessage = new Text(iwrb.getLocalizedString("usrch_overflow_message", "There are more hits in your search than shown, you have to narrow down your searchcriteria"));
+			if (showOverFlowMessage && iter.hasNext()) {
+				int lastRow = T.getRows() + 1;
+				T.mergeCells(1, lastRow, maxFoundUserCols, lastRow);
+				Text tOverflowMessage =
+					new Text(
+						iwrb.getLocalizedString(
+							"usrch_overflow_message",
+							"There are more hits in your search than shown, you have to narrow down your searchcriteria"));
 				tOverflowMessage.setStyleClass(warningStyleName);
-				T.add(tOverflowMessage,1,lastRow);
+				T.add(tOverflowMessage, 1, lastRow);
 			}
 		}
 		return T;
 	}
-
 	private void addParameters(Link link) {
 		for (Iterator iter = maintainedParameters.iterator(); iter.hasNext();) {
 			Parameter element = (Parameter) iter.next();
 			link.addParameter(element);
 		}
 	}
-
 	/**
 	 * Flags the first name field in the user search
 	 * @param b
@@ -392,7 +378,6 @@ public class UserSearcher extends Block {
 	public void setShowFirstNameInSearch(boolean b) {
 		showFirstNameInSearch = b;
 	}
-
 	/**
 	 * Flags the last name in the user search
 	 * @param b
@@ -400,7 +385,6 @@ public class UserSearcher extends Block {
 	public void setShowLastNameInSearch(boolean b) {
 		showLastNameInSearch = b;
 	}
-
 	/**
 	 * Flags the middle name in the user search
 	 * @param b
@@ -408,7 +392,6 @@ public class UserSearcher extends Block {
 	public void setShowMiddleNameInSearch(boolean b) {
 		showMiddleNameInSearch = b;
 	}
-
 	/**
 	 * Flags the personal id in the user search
 	 * @param b
@@ -416,7 +399,6 @@ public class UserSearcher extends Block {
 	public void setShowPersonalIDInSearch(boolean b) {
 		showPersonalIDInSearch = b;
 	}
-
 	/**
 	 * Flag telling if  the search found more than one user
 	 * @return
@@ -424,7 +406,6 @@ public class UserSearcher extends Block {
 	public boolean isHasManyUsers() {
 		return hasManyUsers;
 	}
-
 	/**
 	 * Gets the number of maximum allowed result columns 
 	 * @return
@@ -432,7 +413,6 @@ public class UserSearcher extends Block {
 	public int getMaxFoundUserCols() {
 		return maxFoundUserCols;
 	}
-
 	/**
 	 * Gets the number of maximum allowed result rows
 	 * @return
@@ -440,7 +420,6 @@ public class UserSearcher extends Block {
 	public int getMaxFoundUserRows() {
 		return maxFoundUserRows;
 	}
-
 	/**
 	 * Gets the selected user
 	 * @return User
@@ -448,7 +427,6 @@ public class UserSearcher extends Block {
 	public User getUser() {
 		return user;
 	}
-
 	/**
 	 * Gets the collection of users found by searc
 	 * @return
@@ -456,7 +434,6 @@ public class UserSearcher extends Block {
 	public Collection getUsersFound() {
 		return usersFound;
 	}
-
 	/**
 	 * Set the maximum number of columns showing search results
 	 * @param cols
@@ -464,7 +441,6 @@ public class UserSearcher extends Block {
 	public void setMaxFoundUserCols(int cols) {
 		maxFoundUserCols = cols;
 	}
-
 	/**
 	 * Sets the maximum number of rows showing search results
 	 * @param i
@@ -472,7 +448,6 @@ public class UserSearcher extends Block {
 	public void setMaxFoundUserRows(int rows) {
 		maxFoundUserRows = rows;
 	}
-
 	/**
 	 * Manually set the found user
 	 * @param user
@@ -480,7 +455,6 @@ public class UserSearcher extends Block {
 	public void setUser(User user) {
 		this.user = user;
 	}
-
 	/**
 	 * Manually set the found user collection
 	 * @param collection
@@ -488,7 +462,6 @@ public class UserSearcher extends Block {
 	public void setUsersFound(Collection collection) {
 		usersFound = collection;
 	}
-
 	/**
 	 * Add maintainedparameters
 	 * @param parameter
@@ -496,7 +469,6 @@ public class UserSearcher extends Block {
 	public void maintainParameter(Parameter parameter) {
 		maintainedParameters.add(parameter);
 	}
-
 	/* (non-Javadoc)
 		 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
 		 */
@@ -505,7 +477,6 @@ public class UserSearcher extends Block {
 			return bundleIdentifer;
 		return BUNDLE_IDENTIFIER;
 	}
-
 	/**
 	 * Sets the dynamic bundle identifier
 	 * @param string
@@ -513,7 +484,6 @@ public class UserSearcher extends Block {
 	public void setBundleIdentifer(String string) {
 		bundleIdentifer = string;
 	}
-
 	/**
 	 * Gets the unique user id parameter  to be used for chosen user
 	 * @param userID
@@ -522,7 +492,6 @@ public class UserSearcher extends Block {
 	public Parameter getUniqueUserParameter(Integer userID) {
 		return new Parameter(getUniqueUserParameterName(uniqueIdentifier), userID.toString());
 	}
-
 	/**
 	 * Gets the unique user id parameter name to be used for chosen user
 	 * @param uniqueIdentifier
@@ -531,7 +500,6 @@ public class UserSearcher extends Block {
 	public static String getUniqueUserParameterName(String uniqueIdentifier) {
 		return PRM_USER_ID + uniqueIdentifier;
 	}
-
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.Block#getStyleNames()
 	 */
@@ -540,11 +508,10 @@ public class UserSearcher extends Block {
 		map.put(STYLENAME_HEADER, headerFontStyle);
 		map.put(STYLENAME_TEXT, textFontStyle);
 		map.put(STYLENAME_BUTTON, buttonStyle);
-		map.put(STYLENAME_WARNING,warningFontStyle);
-		map.put(STYLENAME_INTERFACE,interfaceStyle);
+		map.put(STYLENAME_WARNING, warningFontStyle);
+		map.put(STYLENAME_INTERFACE, interfaceStyle);
 		return map;
 	}
-
 	/**
 	 * Gets the input length of the first name input
 	 * @return
@@ -552,7 +519,6 @@ public class UserSearcher extends Block {
 	public int getFirstNameLength() {
 		return firstNameLength;
 	}
-
 	/**
 	 * Gets the heading font style
 	 * @return font style
@@ -560,7 +526,6 @@ public class UserSearcher extends Block {
 	public String getHeaderFontStyle() {
 		return headerFontStyle;
 	}
-
 	/**
 	 * Gets the inputlength of the last name input
 	 * @return length
@@ -568,7 +533,6 @@ public class UserSearcher extends Block {
 	public int getLastNameLength() {
 		return lastNameLength;
 	}
-
 	/**
 	 * Gets the input length of the middle name input
 	 * @return length
@@ -576,7 +540,6 @@ public class UserSearcher extends Block {
 	public int getMiddleNameLength() {
 		return middleNameLength;
 	}
-
 	/**
 	 * Gets the inputlength of the personal id input
 	 * @return length
@@ -584,7 +547,6 @@ public class UserSearcher extends Block {
 	public int getPersonalIDLength() {
 		return personalIDLength;
 	}
-
 	/**
 	 * Gets flag for first name input appearance
 	 * @return flag
@@ -592,7 +554,6 @@ public class UserSearcher extends Block {
 	public boolean isShowFirstNameInSearch() {
 		return showFirstNameInSearch;
 	}
-
 	/**
 	 * Gets flag for last name input appearance
 	 * @return flag
@@ -600,7 +561,6 @@ public class UserSearcher extends Block {
 	public boolean isShowLastNameInSearch() {
 		return showLastNameInSearch;
 	}
-
 	/**
 	 * Gets flag for middle name input appearance
 	 * @return flag
@@ -608,7 +568,6 @@ public class UserSearcher extends Block {
 	public boolean isShowMiddleNameInSearch() {
 		return showMiddleNameInSearch;
 	}
-
 	/**
 	 * Gets flag for personal ID appearance
 	 * @return flag
@@ -616,7 +575,6 @@ public class UserSearcher extends Block {
 	public boolean isShowPersonalIDInSearch() {
 		return showPersonalIDInSearch;
 	}
-
 	/**
 	 * Gets status of stacked flag
 	 * @return flag <code>boolean</code>
@@ -624,7 +582,6 @@ public class UserSearcher extends Block {
 	public boolean isStacked() {
 		return stacked;
 	}
-
 	/**
 	 * Gets the normal text font style
 	 * @return font style
@@ -632,7 +589,6 @@ public class UserSearcher extends Block {
 	public String getTextFontStyle() {
 		return textFontStyle;
 	}
-
 	/**
 	 * Sets the length of the first name input
 	 * @param length
@@ -640,7 +596,6 @@ public class UserSearcher extends Block {
 	public void setFirstNameLength(int length) {
 		firstNameLength = length;
 	}
-
 	/**
 	 * Sets the heading font style
 	 * @param style
@@ -648,7 +603,6 @@ public class UserSearcher extends Block {
 	public void setHeaderFontStyle(String style) {
 		headerFontStyle = style;
 	}
-
 	/**
 	 * Sets the length of the last name input
 	 * @param length
@@ -656,7 +610,6 @@ public class UserSearcher extends Block {
 	public void setLastNameLength(int length) {
 		lastNameLength = length;
 	}
-
 	/**
 	 * Sets the length of the middle name input
 	 * @param length
@@ -664,7 +617,6 @@ public class UserSearcher extends Block {
 	public void setMiddleNameLength(int length) {
 		middleNameLength = length;
 	}
-
 	/**
 	 * Sets the  length of the personalID input
 	 * @param length
@@ -672,7 +624,6 @@ public class UserSearcher extends Block {
 	public void setPersonalIDLength(int length) {
 		personalIDLength = length;
 	}
-
 	/**
 	 * Flags if searcher should be presented with stacked headers and inputs
 	 * @param flag
@@ -680,7 +631,6 @@ public class UserSearcher extends Block {
 	public void setStacked(boolean flag) {
 		stacked = flag;
 	}
-
 	/**
 	 * Set normal text font style
 	 * @param style
@@ -688,7 +638,6 @@ public class UserSearcher extends Block {
 	public void setTextFontStyle(String style) {
 		textFontStyle = style;
 	}
-
 	/**
 	 * Returns the status of the flag , concerning the searcher own form
 	 * @return flag status
@@ -696,7 +645,6 @@ public class UserSearcher extends Block {
 	public boolean isOwnFormContainer() {
 		return OwnFormContainer;
 	}
-
 	/**
 	 * Flags if the searcher should provide its own form
 	 * @param flag
@@ -704,7 +652,6 @@ public class UserSearcher extends Block {
 	public void setOwnFormContainer(boolean flag) {
 		OwnFormContainer = flag;
 	}
-
 	/**
 	 * Gets the unique identifier for this searcher instance
 	 * @return unique identifier
@@ -712,7 +659,6 @@ public class UserSearcher extends Block {
 	public String getUniqueIdentifier() {
 		return uniqueIdentifier;
 	}
-
 	/**
 	 * Sets a unique identifier, convenient when using many instances on same page
 	 * @param identifier
@@ -720,28 +666,24 @@ public class UserSearcher extends Block {
 	public void setUniqueIdentifier(String identifier) {
 		uniqueIdentifier = identifier;
 	}
-
 	/**
 	 * @return
 	 */
 	public String getButtonStyle() {
 		return buttonStyle;
 	}
-
 	/**
 	 * @return
 	 */
 	public String getButtonStyleName() {
 		return buttonStyleName;
 	}
-
 	/**
 	 * @return
 	 */
 	public String getHeaderFontStyleName() {
 		return headerFontStyleName;
 	}
-
 	/**
 	 * Gets the button style
 	 * @return style
@@ -749,7 +691,6 @@ public class UserSearcher extends Block {
 	public String getTextFontStyleName() {
 		return textFontStyleName;
 	}
-
 	/**
 	 * Sets the button style
 	 * @param string
@@ -757,7 +698,6 @@ public class UserSearcher extends Block {
 	public void setButtonStyle(String string) {
 		buttonStyle = string;
 	}
-
 	/**
 	 * Sets the button style name to use
 	 * @param string
@@ -765,7 +705,6 @@ public class UserSearcher extends Block {
 	public void setButtonStyleName(String string) {
 		buttonStyleName = string;
 	}
-
 	/**
 	 * Sets the header font style name to use
 	 * @param string
@@ -773,7 +712,6 @@ public class UserSearcher extends Block {
 	public void setHeaderFontStyleName(String string) {
 		headerFontStyleName = string;
 	}
-
 	/**
 	 * Sets the normal font style name to use
 	 * @param string
@@ -781,7 +719,6 @@ public class UserSearcher extends Block {
 	public void setTextFontStyleName(String string) {
 		textFontStyleName = string;
 	}
-
 	/**
 	 * Flag status, skips result list if only one user found
 	 * @return
@@ -789,7 +726,6 @@ public class UserSearcher extends Block {
 	public boolean isSkipResultsForOneFound() {
 		return skipResultsForOneFound;
 	}
-
 	/**
 	 * Sets flag for skipping result list if only one user found
 	 * @param 
@@ -797,33 +733,45 @@ public class UserSearcher extends Block {
 	public void setSkipResultsForOneFound(boolean flag) {
 		skipResultsForOneFound = flag;
 	}
-
 	/**
 	 * @return
 	 */
 	public boolean isShowResetButton() {
 		return showResetButton;
 	}
-
 	/**
 	 * @param b
 	 */
 	public void setShowResetButton(boolean b) {
 		showResetButton = b;
 	}
-
 	/**
 	 * @return
 	 */
 	public boolean isShowOverFlowMessage() {
 		return showOverFlowMessage;
 	}
-
 	/**
 	 * @param b
 	 */
 	public void setShowOverFlowMessage(boolean b) {
 		showOverFlowMessage = b;
 	}
-
+	public void addButtonObject(PresentationObject obj) {
+		if (addedButtons == null)
+			addedButtons = new Vector();
+		addedButtons.add(obj);
+	}
+	/**
+	 * @return
+	 */
+	public boolean isShowButtons() {
+		return showButtons;
+	}
+	/**
+	 * @param b
+	 */
+	public void setShowButtons(boolean b) {
+		showButtons = b;
+	}
 }
