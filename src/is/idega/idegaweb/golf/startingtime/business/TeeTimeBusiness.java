@@ -1,5 +1,9 @@
 package is.idega.idegaweb.golf.startingtime.business;
 
+import javax.ejb.FinderException;
+
+import com.idega.util.IWTimestamp;
+
 
 public interface TeeTimeBusiness extends com.idega.business.IBOService
 {
@@ -15,9 +19,9 @@ public interface TeeTimeBusiness extends com.idega.business.IBOService
  public java.lang.String getFieldName(int p0)throws java.sql.SQLException,javax.ejb.FinderException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Field[] getFields(java.lang.String p0)throws java.sql.SQLException, java.rmi.RemoteException;
  public int getFirstField(java.lang.String p0)throws java.sql.SQLException, java.rmi.RemoteException;
- public com.idega.util.IWTimestamp getFirstOpentime()throws java.sql.SQLException, java.rmi.RemoteException;
- public com.idega.util.IWTimestamp getLastClosetime()throws java.sql.SQLException, java.rmi.RemoteException;
- public int getMaxDaysShown()throws java.sql.SQLException, java.rmi.RemoteException;
+ public com.idega.util.IWTimestamp getFirstOpentime(IWTimestamp date)throws java.sql.SQLException, java.rmi.RemoteException, FinderException;
+ public com.idega.util.IWTimestamp getLastClosetime(IWTimestamp date)throws java.sql.SQLException, java.rmi.RemoteException, FinderException;
+ public int getMaxDaysShown(IWTimestamp date)throws java.sql.SQLException, java.rmi.RemoteException, FinderException;
  public is.idega.idegaweb.golf.startingtime.data.TeeTime[] getPlayersStartingToDay(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.startingtime.data.TeeTime[] getPlayersStartingToDay(java.lang.String p0,java.lang.String p1)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Field[] getStartingEntryField()throws java.sql.SQLException, java.rmi.RemoteException;

@@ -3,11 +3,14 @@ package is.idega.idegaweb.golf.startingtime.business;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
+import is.idega.idegaweb.golf.entity.StartingtimeFieldConfigHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.FinderException;
@@ -112,7 +115,11 @@ public class TeeTimeBusinessBean extends IBOServiceBean implements TeeTimeBusine
 		date.setMinute(59);
 		date.setSecond(59);
 		StartingtimeFieldConfig[] temp = (StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " WHERE begin_date <= '" + date.toSQLString() + "' and field_id = " + field_id + " ORDER BY begin_date DESC");
-		return temp[0];
+		if(temp!=null&&temp.length>0){
+			return temp[0];
+		}else{
+			return null;
+		}
 	}
 
 	// innskraning1.jsp
@@ -232,20 +239,59 @@ public class TeeTimeBusinessBean extends IBOServiceBean implements TeeTimeBusine
 		return ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(field_id).getName();
 	}
 
-	public synchronized IWTimestamp getFirstOpentime() throws SQLException {
-		IWTimestamp toReturn = new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY open_time"))[0].getOpenTime());
-		toReturn.setAsTime();
-		return toReturn;
+	public synchronized IWTimestamp getFirstOpentime(IWTimestamp date) throws SQLException, FinderException {
+//		IWTimestamp toReturn = new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY open_time"))[0].getOpenTime());
+//		toReturn.setAsTime();
+//		return toReturn;
+		IWTimestamp t = null;
+		Collection fConfigs = ((StartingtimeFieldConfigHome) IDOLookup.getHomeLegacy(StartingtimeFieldConfig.class)).findAllActiveTeetimeFieldConfigurations(date);
+		for (Iterator iter = fConfigs.iterator(); iter.hasNext();) {
+			StartingtimeFieldConfig sfc = (StartingtimeFieldConfig) iter.next();
+			IWTimestamp tempTime = new IWTimestamp(sfc.getOpenTime());
+			if(t == null){
+				t=tempTime;
+			} else {
+				t=((t.isTimePartEarlierThan(tempTime))?t:tempTime);
+			}
+		}
+		if(t!=null){
+			t.setAsTime();
+		}
+		return t;
 	}
 
-	public synchronized int getMaxDaysShown() throws SQLException {
-		return ((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY days_shown"))[0].getDaysShown();
+	public synchronized int getMaxDaysShown(IWTimestamp date) throws SQLException, FinderException {
+//		return ((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY days_shown"))[0].getDaysShown();
+		int days = 1;
+		Collection fConfigs = ((StartingtimeFieldConfigHome) IDOLookup.getHomeLegacy(StartingtimeFieldConfig.class)).findAllActiveTeetimeFieldConfigurations(date);
+		for (Iterator iter = fConfigs.iterator(); iter.hasNext();) {
+			StartingtimeFieldConfig sfc = (StartingtimeFieldConfig) iter.next();
+			int tempDays = sfc.getDaysShownNonMember();
+			days=((days > tempDays)?days:tempDays);
+		}
+		return days;
 	}
 
-	public synchronized IWTimestamp getLastClosetime() throws SQLException {
-		IWTimestamp toReturn = new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY close_time"))[0].getCloseTime());
-		toReturn.setAsTime();
-		return toReturn;
+	public synchronized IWTimestamp getLastClosetime(IWTimestamp date) throws SQLException, FinderException {
+//		IWTimestamp toReturn = new IWTimestamp(((StartingtimeFieldConfig[]) fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY close_time desc"))[0].getCloseTime());
+//		toReturn.setAsTime();
+//		return toReturn;
+		
+		IWTimestamp t = null;
+		Collection fConfigs = ((StartingtimeFieldConfigHome) IDOLookup.getHomeLegacy(StartingtimeFieldConfig.class)).findAllActiveTeetimeFieldConfigurations(date);
+		for (Iterator iter = fConfigs.iterator(); iter.hasNext();) {
+			StartingtimeFieldConfig sfc = (StartingtimeFieldConfig) iter.next();
+			IWTimestamp tempTime = new IWTimestamp(sfc.getCloseTime());
+			if(t == null){
+				t=tempTime;
+			} else {
+				t=((t.isTimePartLaterThan(tempTime))?t:tempTime);
+			}
+		}
+		if(t!=null){
+			t.setAsTime();
+		}
+		return t;
 	}
 
 	public synchronized int getFieldUnion(int field_id) throws SQLException, FinderException {
