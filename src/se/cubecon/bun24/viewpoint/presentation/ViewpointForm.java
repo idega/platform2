@@ -246,8 +246,6 @@ public class ViewpointForm extends CommuneBlock {
 
     private void registerViewPoint (final IWContext iwc)
         throws RemoteException, CreateException, FinderException {
-        //final Category.SubCategory category
-        //        = (Category.SubCategory) getCategory (iwc);
         final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
         final int categoryId
                 = new Integer (iwc.getParameter (PARAM_CATEGORY)).intValue ();
@@ -278,9 +276,6 @@ public class ViewpointForm extends CommuneBlock {
 		form.add (new HiddenInput (PARAM_ACTION,
                                    REGISTERVIEWPOINT_ACTION + ""));
 		final DropdownMenu dropdown = new DropdownMenu (PARAM_CATEGORY);
-        //final Category.TopCategory topCategory
-        //        = (Category.TopCategory) getCategory (iwc);
-        //final Category [] categories = topCategory.getSubCategories ();
         final int topCategoryId
                 = new Integer (iwc.getParameter (PARAM_CATEGORY)).intValue ();
         final SubCategory [] categories
@@ -337,7 +332,6 @@ public class ViewpointForm extends CommuneBlock {
         final RadioGroup radioGroup = new RadioGroup (PARAM_CATEGORY);
         final TopCategory [] categories
                 = getViewpointBusiness (iwc).findAllTopCategories ();
-        //final Category [] categories = Category.getTopCategories ();
         for (int i = 0; i < categories.length; i++) {
             final String id = categories [i].getPrimaryKey ().toString ();
             radioGroup.addRadioButton (id,
@@ -366,16 +360,6 @@ public class ViewpointForm extends CommuneBlock {
 		form.add (table);
 		add (form);
 	}
-
-    private Category getCategory (final IWContext iwc) {
-        Category result = null;
-        final String categoryIdAsString = iwc.getParameter (PARAM_CATEGORY);
-        if (categoryIdAsString != null) {
-            final int categoryId = Integer.parseInt (categoryIdAsString);
-            result = Category.getCategory (categoryId);
-        }
-        return result;
-    }
 
 	private ViewpointBusiness getViewpointBusiness (IWContext iwc)
         throws RemoteException {
