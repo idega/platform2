@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBlock.java,v 1.5 2004/12/13 14:35:10 anna Exp $
+ * $Id: MeetingFeeBlock.java,v 1.6 2004/12/13 17:12:39 anna Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -42,7 +42,7 @@ import com.idega.user.data.User;
  * Last modified: 25.11.2004 09:11:42 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public abstract class MeetingFeeBlock extends Block {
 	
@@ -273,15 +273,14 @@ public abstract class MeetingFeeBlock extends Block {
 	
 	public SubmitButton getNextButton() {
 		SubmitButton nextButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.next", "OK"), PARAMETER_ACTION, ACTION_NEXT));
-		nextButton.setToolTip("Proceeds to next step");
-		nextButton.setSubmitConfirm("Are you sure you want to proceed?");
+		nextButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.next_step.tooltip","Proceeds to next step"));
 		return nextButton;
 	}
 	
 	public SubmitButton getSaveButton() {
 		SubmitButton saveButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.save", "Save"), PARAMETER_ACTION, ACTION_SAVE));
-		saveButton.setToolTip("Saves the application");
-		saveButton.setSubmitConfirm("Are you sure you want to save the application now?");
+		saveButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.save.tooltip","Saves the application"));
+		saveButton.setSubmitConfirm(getResourceBundle().getLocalizedString("meeting.fee.save.popup","Are you sure you want to save the application now?"));
 		return saveButton;
 	}
 
@@ -303,34 +302,33 @@ public abstract class MeetingFeeBlock extends Block {
 		if (parameter != null) {
 			editButton.addParameterToPage(parameter, value);
 		}
-		editButton.setToolTip("Allows you to make changes to the report.");
+		editButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.edit.tooltip","Allows you to make changes to the report."));
 		return editButton;
 	}
 
 	public SubmitButton getCalculateButton() {
 		SubmitButton calculateButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.calculate", "Calculate"), PARAMETER_ACTION, ACTION_NEXT));
-		calculateButton.setToolTip("Calculates the payment for this meeting.");
-		//calculateButton.setSubmitConfirm("Please insert new text!");
+		calculateButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.calculate.tooltip","Calculates the payment for this meeting."));
 		return calculateButton;
 	}
 	
 	public GenericButton getBackButton() {
 		GenericButton back = getButton(new GenericButton("back", getResourceBundle().getLocalizedString("meeting.fee.back", "Back")));
-		back.setToolTip("Please insert new text!");
+		back.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.back.tooltip","Moves back to previous page"));
 		return back;
 	} 
 	
 	public SubmitButton getRejectButton() {
 		SubmitButton rejectButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.reject", "Reject"), PARAMETER_ACTION, ACTION_REJECT));
-		rejectButton.setToolTip("Sends the report back to the assistent who wrote it.");
-		rejectButton.setSubmitConfirm("Are you sure you want to send this report back to the assistant?");
+		rejectButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.reject.tooltip","Sends the report back to the assistent who wrote it."));
+		rejectButton.setSubmitConfirm(getResourceBundle().getLocalizedString("meeting.fee.reject.popup","Are you sure you want to send this report back to the assistant?"));
 		return rejectButton;
 	}
 	
 	public SubmitButton getSendButton() {
 		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.send", "OK"), PARAMETER_ACTION, ACTION_SEND));
-		sendButton.setToolTip("Signes the report.");
-		sendButton.setSubmitConfirm("Are you sure you want to sign this report?");
+		sendButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.sign_send.tooltip","Signes and sends the report."));
+		sendButton.setSubmitConfirm(getResourceBundle().getLocalizedString("meeting.sign_send.popup","Are you sure you want to sign this report?"));
 		return sendButton;
 	}
 	
