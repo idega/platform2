@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.11 2001/07/10 17:03:29 palli Exp $
+ * $Id: DateInput.java,v 1.12 2001/07/24 15:35:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -330,14 +330,14 @@ public void main(ModuleInfo modinfo)throws Exception{
   IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
 
   if(inShort){
-    dayString = iwrb.getLocalizedString(DAY_KEY);
-    monthString = iwrb.getLocalizedString(MONTH_KEY);
-    yearString = iwrb.getLocalizedString(YEAR_KEY);
-  }
-  else{
     dayString = iwrb.getLocalizedString(DAY_KEY_S);
     monthString = iwrb.getLocalizedString(MONTH_KEY_S);
     yearString = iwrb.getLocalizedString(YEAR_KEY_S);
+  }
+  else{
+    dayString = iwrb.getLocalizedString(DAY_KEY);
+    monthString = iwrb.getLocalizedString(MONTH_KEY);
+    yearString = iwrb.getLocalizedString(YEAR_KEY);
   }
 
 
