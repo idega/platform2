@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplicationView.java,v 1.2 2002/07/29 23:28:32 tryggvil Exp $
+ * $Id: ProviderAccountApplicationView.java,v 1.3 2002/09/29 22:42:37 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.account.provider.presentation;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOUtil;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -54,6 +55,14 @@ public class ProviderAccountApplicationView extends ProviderAccountApplication
 			setAdditionalInfo(appl.getAdditionalInfo());
 			setPhone(appl.getPhone());
 			setEmail(appl.getEmail());
+			IDOUtil idoUtil = IDOUtil.getInstance();
+			int postalCodeID = idoUtil.getID(appl.getPostalCode());
+			setPostalCode(postalCodeID);
+			int schoolAreaID = idoUtil.getID(appl.getSchoolArea());
+			setSchoolArea(schoolAreaID);
+		
+			int[] schoolTypeIDs=idoUtil.getIDs(appl.getSchoolTypes());
+			setSchoolTypes(schoolTypeIDs);
 		}
 		catch(RemoteException e){
 			e.printStackTrace();

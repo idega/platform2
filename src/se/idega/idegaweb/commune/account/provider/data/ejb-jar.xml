@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar>
+  <enterprise-beans>
+    <entity>
+      <description />
+      <ejb-name>se.idega.idegaweb.commune.account.provider.data.ProviderApplicationBMPBean</ejb-name>
+      <ejb-class>se.idega.idegaweb.commune.account.provider.data.ProviderApplicationBMPBean</ejb-class>
+      <home>se.idega.idegaweb.commune.account.provider.data.ProviderApplicationHome</home>
+      <remote>se.idega.idegaweb.commune.account.provider.data.ProviderApplication</remote>
+      <prim-key-class>java.lang.Integer</prim-key-class>
+      <persistence-type>Bean</persistence-type>
+      <reentrant>false</reentrant>
+      
+    </entity>
+  </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>se.idega.idegaweb.commune.account.provider.data.ProviderApplicationBMPBean</ejb-name>
+        <method-name>*</method-name>
+        
+      </method>
+      <trans-attribute>NotSupported</trans-attribute>
+      
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>
+

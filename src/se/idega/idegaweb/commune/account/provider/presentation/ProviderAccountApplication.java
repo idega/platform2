@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.4 2002/09/16 04:18:19 tryggvil Exp $
+ * $Id: ProviderAccountApplication.java,v 1.5 2002/09/29 22:42:37 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -85,10 +85,16 @@ public class ProviderAccountApplication extends CommuneBlock {
 	protected String addressString;
 	protected String manNameString;
 	protected String addInfoString;
+	protected int postalCodeID = -1;
+	protected int schoolAreaID = -1;
+	protected int[] schoolTypeIDs;
+	
 	protected static final String PARAM_APPLICATION_ID = "paa_appl_id";
 	int mainTableRows = 14;
 	int mainTableColumns = 2;
 	private Table inputTable = new Table(mainTableColumns, mainTableRows);
+
+	private boolean bSubmissionSuccessful=true;
 
 	
 	public void main(IWContext iwc) {
@@ -471,13 +477,13 @@ public class ProviderAccountApplication extends CommuneBlock {
 			provName = provNameString;
 			numPlaces = Integer.parseInt(numPlacesString);
 			telephone = phoneString;
-			int postalCodeID = Integer.parseInt(postalCodeString);
-			int[] schoolTypeIDs = new int[providerTypesString.length];
+			postalCodeID = Integer.parseInt(postalCodeString);
+			schoolTypeIDs = new int[providerTypesString.length];
 			for (int i = 0; i < schoolTypeIDs.length; i++)
 			{
 				schoolTypeIDs[i]=Integer.parseInt(providerTypesString[i]);
 			}
-			int schoolAreaID = Integer.parseInt(schoolAreaString);
+			schoolAreaID = Integer.parseInt(schoolAreaString);
 
 			if (addInfoString != null) {
 				additionalInfo = addInfoString;
@@ -517,6 +523,16 @@ public class ProviderAccountApplication extends CommuneBlock {
 						TEXT_APPLICATION_SUBMITTED,
 						"Application submitted")));
 	}
+	
+	public void viewSubmission(IWContext iwc){
+		if(bSubmissionSuccessful){
+			
+		}
+		else{
+			
+		}
+	}
+	
 	protected void add(PresentationObject obj,int xpos,int ypos){
 		inputTable.add(obj,xpos,ypos);
 	}
@@ -656,6 +672,31 @@ public class ProviderAccountApplication extends CommuneBlock {
 	public void setProviderName(String provNameString) {
 		this.provNameString = provNameString;
 	}
+	
+	/**
+	 * Sets the School Area.
+	 * @param schAreaID The ID of the School Area to set
+	 */
+	public void setSchoolArea(int schAreaID) {
+		this.schoolAreaID=schAreaID;
+	}
+
+	/**
+	 * Sets the School Area.
+	 * @param schAreaID The ID of the School Area to set
+	 */
+	public void setPostalCode(int postalCodeID) {
+		this.postalCodeID=postalCodeID;
+	}
+
+	/**
+	 * Sets the School Types.
+	 * @param schTypesIDs The IDs of the SchoolTypes to set
+	 */
+	public void setSchoolTypes(int[] schTypesIDs) {
+		this.schoolTypeIDs=schTypesIDs;
+	}	
+	
 	protected void setApplicationID(Integer applicationID) {
 		setApplicationID(applicationID.intValue());
 	}
@@ -684,6 +725,9 @@ public class ProviderAccountApplication extends CommuneBlock {
 				System.err.println("ProviderAccountApplication: Error getting postal codes:");
 				e.printStackTrace();
 			}
+		}
+		if(this.postalCodeID!=-1){
+			drop.setSelectedElement(postalCodeID);
 		}
 		return drop;
 	}
@@ -734,6 +778,9 @@ public class ProviderAccountApplication extends CommuneBlock {
 				e.printStackTrace();
 			}
 		}
+		if(this.schoolTypeIDs!=null){
+			drop.setSelectedElements(schoolTypeIDs);
+		}
 		return drop;
 	}
 
@@ -776,6 +823,9 @@ public class ProviderAccountApplication extends CommuneBlock {
 				System.err.println("ProviderAccountApplication: Error getting school areas:");
 				e.printStackTrace();
 			}
+		}
+		if(this.schoolAreaID!=-1){
+			drop.setSelectedElement(this.schoolAreaID);
 		}
 		return drop;
 	}
