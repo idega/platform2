@@ -348,6 +348,8 @@ public class ServiceViewer extends Window {
 //        Text prices = new Text(getServicePrice(service, timeframe.getID()));
         Table prices = getServicePrice(iwc, service,false);
         content.add(price,1,++y);
+        content.setVerticalAlignment(1,y,"top");
+        content.setVerticalAlignment(2,y,"top");
         content.add(prices,2,y);
 
 
@@ -460,62 +462,68 @@ public class ServiceViewer extends Window {
     Address[] depAddresses = ProductBusiness.getDepartureAddresses(product);
     Timeframe[] timeframes = product.getTimeframes();
     ProductPrice[] prices = null;
-//    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), timeframeId, false);
-    Currency currency;
 
-    String stampTxt1 = "";
-    String stampTxt2 = "";
+    if (cutOff) {
+      prices = ProductPrice.getProductPrices(product.getID(), timeframes[0].getID(), depAddresses[0].getID(), true);
+      if (prices.length > 0) {
+        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+      }
+    }else {
+      Currency currency;
+
+      String stampTxt1 = "";
+      String stampTxt2 = "";
 
 
-      for (int l = 0; l < depAddresses.length; l++) {
-        departureFromTextBold = getBoldText(depAddresses[l].getStreetName());
-          departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-        pTable.add(departureFromTextBold, 1, pRow);
-        for (int i = 0; i < timeframes.length; i++) {
-          prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
-          stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
-          stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
-          if (timeframes[i].getIfYearly()) {
-            try {
-              stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
-              stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
-            }catch (NumberFormatException n) {}
-          }
-          timeframeTextBold = getText("");
-            timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-          pTable.add(timeframeTextBold,2,pRow);
+        for (int l = 0; l < depAddresses.length; l++) {
+          departureFromTextBold = getBoldText(depAddresses[l].getStreetName());
+            departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+          pTable.add(departureFromTextBold, 1, pRow);
+          for (int i = 0; i < timeframes.length; i++) {
+            prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
+            stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+            stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+            if (timeframes[i].getIfYearly()) {
+              try {
+                stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+                stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+              }catch (NumberFormatException n) {}
+            }
+            timeframeTextBold = getText("");
+              timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+            pTable.add(timeframeTextBold,2,pRow);
 
-          if (prices.length == 0) {
-            ++pRow;
-          }
-          for (int j = 0; j < prices.length; j++) {
-            currency = new Currency(prices[j].getCurrencyId());
-            nameOfCategory = getText(prices[j].getPriceCategory().getName());
-              nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-            try {
-              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
-              currencyText = getBoldText(currency.getCurrencyAbbreviation());
-              pTable.add(currencyText,5,pRow);
-            }catch (ProductPriceException p) {
-              priceText.setText("T - rangt upp sett");
+            if (prices.length == 0) {
+              ++pRow;
+            }
+            for (int j = 0; j < prices.length; j++) {
+              currency = new Currency(prices[j].getCurrencyId());
+              nameOfCategory = getText(prices[j].getPriceCategory().getName());
+                nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              try {
+                priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                currencyText = getBoldText(currency.getCurrencyAbbreviation());
+                pTable.add(currencyText,5,pRow);
+              }catch (ProductPriceException p) {
+                priceText.setText("T - rangt upp sett");
+              }
+
+              pTable.add(nameOfCategory,3,pRow);
+              pTable.add(priceText,4,pRow);
+              ++pRow;
             }
 
-            pTable.add(nameOfCategory,3,pRow);
-            pTable.add(priceText,4,pRow);
-            ++pRow;
           }
-
         }
-      }
 
-      pTable.setColumnAlignment(1,"left");
-      pTable.setColumnAlignment(2,"left");
-      pTable.setColumnAlignment(3,"left");
-      pTable.setColumnAlignment(4,"right");
-      pTable.setColumnAlignment(5,"left");
-      pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
+        pTable.setColumnAlignment(1,"left");
+        pTable.setColumnAlignment(2,"left");
+        pTable.setColumnAlignment(3,"left");
+        pTable.setColumnAlignment(4,"right");
+        pTable.setColumnAlignment(5,"left");
+        pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
 
-
+    }
 
     }catch (SQLException sql) {
 
