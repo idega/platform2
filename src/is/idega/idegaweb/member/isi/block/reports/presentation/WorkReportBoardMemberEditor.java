@@ -2,7 +2,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
@@ -83,7 +83,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     Collection coll;
     try {
       coll =
-        workReportBusiness.getAllWorkReportBoardMembersForWorkReportId(
+        workReportBusiness.getAllWorkReportMembersForWorkReportId(
           getWorkReportId());
     } catch (RemoteException e) {
       System.err.println("[WorkReportMemberDataEditor] Can't get members. Message was: "+ e.getMessage());
@@ -94,7 +94,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     List list = new ArrayList();
     Iterator iterator = coll.iterator();
     while (iterator.hasNext())  {
-      WorkReportBoardMember member = (WorkReportBoardMember) iterator.next();
+      WorkReportMember member = (WorkReportMember) iterator.next();
       Collection leagues = null;
       try {
         leagues = member.getLeaguesForMember();
@@ -288,12 +288,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   class WorkReportBoardMemberHelper {
     
     String league = null;
-    WorkReportBoardMember member = null;
+    WorkReportMember member = null;
     
     public WorkReportBoardMemberHelper()  {
     }
     
-    public WorkReportBoardMemberHelper(String league, WorkReportBoardMember member) {
+    public WorkReportBoardMemberHelper(String league, WorkReportMember member) {
       this.league = league;
       this.member = member;
     }
@@ -302,7 +302,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       this.league = league;
     }
     
-    public void setMember(WorkReportBoardMember member) {
+    public void setMember(WorkReportMember member) {
       this.member = member;
     }
     
@@ -310,7 +310,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       return league;
     }  
     
-    public WorkReportBoardMember getMember() {
+    public WorkReportMember getMember() {
       return member;
     }
   }
