@@ -23,7 +23,7 @@ public class TextChooser extends AbstractChooser {
 
 
   public TextChooser(String chooserName) {
-    //addForm(false);
+    addForm(false);
     addTextInput(false);
     setChooserParameter(chooserName);
     super.setParameterValue("","");
