@@ -659,7 +659,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_4_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_4_2_reportname", "Summary"), false));
 		b12_4_2.addParameter(ACTION, ACTION_STATISTICS);
 		b12_4_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.4.2.xml");
-		//b12_4_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.4.2.xml");
+		b12_4_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.4.2.xml");
 		b12_4_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_4_2_reportname");
 		b12_4_2.setStyleClass(styledLink);
 
