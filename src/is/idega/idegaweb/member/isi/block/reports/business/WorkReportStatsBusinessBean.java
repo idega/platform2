@@ -12,6 +12,7 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -4718,7 +4719,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								userSet.add(element.getPrimaryKey());
 								
 								if (birthYear != null && birthYear.intValue() > 0) {
-									if (birthYear.intValue() != element.getDateOfBirth().getYear()) {
+									Timestamp dateOfBirth = element.getDateOfBirth();
+									IWTimestamp birthThingie = new IWTimestamp(dateOfBirth);
+									if (birthYear.intValue() != birthThingie.getYear()) {
 										continue;
 									}
 								}
@@ -4876,7 +4879,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								userSet.add(element.getPrimaryKey());
 								if (birthYear != null && birthYear.intValue() > 0) {
 									
-									if (birthYear.intValue() != element.getDateOfBirth().getYear()) {
+										Timestamp dateOfBirth = element.getDateOfBirth();
+									IWTimestamp birthThingie = new IWTimestamp(dateOfBirth);
+									if (birthYear.intValue() != birthThingie.getYear()) {
 										continue;
 									}
 								}
