@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.39 2001/09/25 00:57:32 eiki Exp $
+ * $Id: Link.java,v 1.40 2001/09/25 02:15:24 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -174,6 +174,9 @@ public class Link extends Text {
    */
   public Link(ModuleObject mo, Class classToInstanciate) {
     this(mo,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+    //to avoid double ?
+    _parameterString = new StringBuffer();
+
   }
 
   /**
@@ -181,6 +184,8 @@ public class Link extends Text {
    */
   public Link(ModuleObject mo, String classToInstanciate, String template) {
     this(mo,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
+        //to avoid double ?
+    _parameterString = new StringBuffer();
   }
 
   /**
@@ -188,6 +193,8 @@ public class Link extends Text {
    */
   public Link(String displayText, Class classToInstanciate) {
     this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+        //to avoid double ?
+    _parameterString = new StringBuffer();
   }
 
   /**
@@ -195,6 +202,8 @@ public class Link extends Text {
    */
   public Link(String displayText, Class classToInstanciate, String target) {
     this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+        //to avoid double ?
+    _parameterString = new StringBuffer();
     setTarget(target);
   }
 
@@ -203,6 +212,8 @@ public class Link extends Text {
    */
   public Link(String displayText, String classToInstanciate, String template) {
     this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
+        //to avoid double ?
+    _parameterString = new StringBuffer();
   }
 
   /**
