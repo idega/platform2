@@ -3,12 +3,11 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation.inputhandler;
 
-import java.text.DateFormat;
-
 import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DatePicker;
+import com.idega.presentation.ui.DateInput;
+import com.idega.util.IWTimestamp;
 
 
 /**
@@ -29,9 +28,14 @@ public class DateInputHandler implements InputHandler {
 	 * @see com.idega.business.InputHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-		DatePicker picker = new DatePicker(name, iwc.getCurrentLocale());
-		picker.setDateFormatStyle(DateFormat.SHORT);
-		return picker;
+		DateInput input = new DateInput(name);
+		input.setToDisplayDayLast(true);
+		if (stringValue != null) {
+			input.setDate(new IWTimestamp(stringValue).getDate());
+		}
+		IWTimestamp stamp = new IWTimestamp();
+		input.setYearRange(stamp.getYear(), stamp.getYear() - 7);
+		return input;
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.business.InputHandler#getResultingObject(java.lang.String[], com.idega.presentation.IWContext)
