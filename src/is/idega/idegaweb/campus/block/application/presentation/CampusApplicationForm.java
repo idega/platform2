@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.14 2002/06/14 11:09:11 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.15 2002/06/20 15:42:52 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -746,7 +746,10 @@ public class CampusApplicationForm extends ApplicationForm {
       accReq.setText("  *  ");
     }
     t.add(accReq,1,row);
+    t.getContentTable().setWidth(2,row,"150");
+    t.getContentTable().setColor(2,row,"ff0000");
     t.add(disclaimer,2,row);
+
 
     t.addButton(ok);
 

@@ -275,23 +275,22 @@ public class MailingListBusiness {
     public static boolean sendMail(IWApplicationContext iwac,EmailLetter letter, EntityHolder holder) {
         try {
             String Body = letter.getBody();
-            List holderEmails = null;
+            List holderEmails = new Vector();
             if (holder != null && letter.getParse()) {
                 LetterParser parser = new LetterParser(holder);
                 Body = new ContentParser().parse(iwac,parser, Body);
+                if(!letter.getOnlyUser())
                 holderEmails = holder.getEmails();
             }
             String subject = letter.getSubject();
 
             List emails = new Vector();
 
-            if (holderEmails != null) {
-                emails.addAll(holderEmails);
-            }
 
-            List lists = EntityFinder.findRelated(letter, ((is.idega.idegaweb.campus.block.mailinglist.data.MailingListHome)com.idega.data.IDOLookup.getHomeLegacy(MailingList.class)).createLegacy());
             MailingList mlist;
-            if (!letter.getOnlyUser() && lists != null) {
+
+              List lists = EntityFinder.findRelated(letter, ((is.idega.idegaweb.campus.block.mailinglist.data.MailingListHome)com.idega.data.IDOLookup.getHomeLegacy(MailingList.class)).createLegacy());
+              if(lists != null) {
                 Iterator mIter = lists.iterator();
                 List temp;
                 while (mIter.hasNext()) {
@@ -301,16 +300,25 @@ public class MailingListBusiness {
                         emails.addAll(temp);
                     }
                 }
-            }
-            if (emails != null) {
+              }
+
+            if (emails != null && !emails.isEmpty()) {
                 Iterator eIter = emails.iterator();
                 Email email;
                 while (eIter.hasNext()) {
                     email = (Email) eIter.next();
-                    System.err.println("Sending letter to " + email.getEmailAddress());
-                    SendMail.send(letter.getFrom(), email.getEmailAddress(), "", "", letter.getHost(), subject, Body);
+                    holderEmails.add(email.getEmailAddress());
                 }
 
+            }
+            if (holderEmails != null && !holderEmails.isEmpty()) {
+                Iterator eIter = holderEmails.iterator();
+                String email;
+                while (eIter.hasNext()) {
+                    email = (String) eIter.next();
+                    System.err.println("Sending letter to " + email);
+                    SendMail.send(letter.getFrom(), email, "", "", letter.getHost(), subject, Body);
+                }
             }
             return true;
         } catch (Exception ex) {

@@ -103,7 +103,7 @@ public class LetterParser implements ContentParsable {
     public String getParsedString(IWApplicationContext iwac,String tag) {
         try {
             if (tag.equals(tenant_name)) {
-                return holder.getUser().getName();
+                return holder.getApplicant().getName();
             } else if (tag.equals(tenant_address)) {
                 return holder.getApplicant().getResidence();
             } else if (tag.equals(tenant_id)) {

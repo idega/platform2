@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.12 2002/05/23 10:47:51 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.13 2002/06/20 15:42:52 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,9 @@ package is.idega.idegaweb.campus.block.application.business;
 import com.idega.block.application.business.ApplicationFormHelper;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
 //import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.application.data.Application;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
@@ -147,6 +150,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       String e_mail = campusApplication.getEmail();
       if ( e_mail != null ) {
         if ( e_mail.length() > 0 ) {
+          MailingListBusiness.processMailEvent(iwc,new EntityHolder(applicant),LetterParser.SUBMISSION);
+          /*
           try {
             new javax.mail.internet.InternetAddress(e_mail);
             receiver = e_mail;
@@ -158,6 +163,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
           catch (Exception ex) {
             ex.printStackTrace();
           }
+          */
         }
       }
 
