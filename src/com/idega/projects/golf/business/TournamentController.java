@@ -645,7 +645,8 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
             CheckBox delete;
 
             com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
-            com.idega.jmodule.object.Image time;
+//            com.idega.jmodule.object.Image time;
+            Flash time;
 
             Link remove;
             Text tooMany = new Text(iwrb.getLocalizedString("tournament.no_room","No room"));
@@ -708,7 +709,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
                                         activeColor = darkColor;
                                     }
 
-                                    time = new com.idega.jmodule.object.Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()));
+                                    time = new Flash("http://jgenerator.sidan.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),50,30);
                                     table.add(time,1,row);
                                     table.setAlignment(1,row,"center");
                                     table.setVerticalAlignment(1,row,"middle");
