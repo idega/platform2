@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -44,7 +45,10 @@ import com.idega.util.IWTimestamp;
 public class CampusFinanceHandler implements FinanceHandler {
 	int count = 0;
 	NumberFormat nf = NumberFormat.getPercentInstance();
+	Logger logger = null;
+	
 	public CampusFinanceHandler() {
+		logger = Logger.getLogger("is.idega.idegaweb.campus.finance");
 	}
 	public String getAccountType() {
 		return com.idega.block.finance.data.AccountBMPBean.typeFinancial;
@@ -61,7 +65,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 	}
 	public boolean executeAssessment(IWApplicationContext iwac,Integer categoryId, Integer tariffGroupId, String roundName, Integer cashierId,
 			Integer accountKeyId, IWTimestamp paymentdate, IWTimestamp start, IWTimestamp end,Integer excessRoundID) {
-		System.out.println("Starting assessment for period " + start.toString() + "-" + end.toString());
+		logger.info("Starting assessment for period " + start.toString() + "-" + end.toString());
 		Collection tariffs = null;
 		Collection listOfUsers = null;
 		String[] statuses = {ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
@@ -391,7 +395,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 			}
 		} // listcheck
 		else
-			System.err.println("nothing to preview");
+			logger.info("nothing to preview");
 		return null;
 	}
 	private synchronized void addAmount(Map map, Tariff tariff, double factor) throws java.rmi.RemoteException {
@@ -418,8 +422,12 @@ public class CampusFinanceHandler implements FinanceHandler {
 			/** @todo skeptical precision cut */
 			BigDecimal price = new BigDecimal(-T.getPrice());
 			price = price.multiply(new BigDecimal(factor));
-			
-			AE.setTotal(price.toBigInteger().floatValue());
+			BigDecimal finalPrice = price.setScale(0,BigDecimal.ROUND_HALF_UP);
+			if(factor<1){
+				logger.fine("price="+price.doubleValue());
+				logger.fine(" finalprice="+finalPrice.doubleValue());
+			}
+			AE.setTotal(finalPrice.floatValue());
 			//AE.setTotal((int) (-T.getPrice() * factor));
 			AE.setRoundId(roundId);
 			AE.setName(T.getName());
