@@ -335,7 +335,7 @@ public class ChildCareContracts extends ChildCareBlock {
 									table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
 							}
 							
-							if (student.getRemovedDate() == null && (_alwaysShowDeleteContract || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) || application.getApplicationStatus() == getBusiness().getStatusWaiting())
+							if (student.getRemovedDate() == null && (_alwaysShowDeleteContract || parentCancelled || waiting))
 								table.add(delete, column++, row);
 							
 							if (parentCancelled) {
