@@ -5,7 +5,8 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
  *
  */
 public class RegSpecConstant {
-	public static final String CHECK ="regspec.check";
+//	public static final String CHECK ="regspec.check";
+	public static final String CHECK ="cacc_reg_spec_type.check";
 	public static final String MOTHER_TONGUE ="regspec.modersmal";
 	public static final String SWEDISH_2 ="regspec.svenska_2";
 	public static final String LOWINCOME_PROTECTION="regspec.laginkomstskydd";
