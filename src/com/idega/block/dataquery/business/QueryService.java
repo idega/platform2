@@ -8,7 +8,7 @@ public interface QueryService extends com.idega.business.IBOService
  public java.util.Collection getEntityAttributes(com.idega.block.dataquery.business.QueryEntityPart p0) throws java.rmi.RemoteException;
  public com.idega.block.dataquery.business.QueryEntityPart getEntityTree(com.idega.block.dataquery.business.QueryHelper p0,int p1) throws java.rmi.RemoteException;
  public java.util.Collection getListOfFieldParts(com.idega.idegaweb.IWResourceBundle p0,com.idega.block.dataquery.business.QueryEntityPart p1) throws java.rmi.RemoteException;
- public java.util.Collection getManyToManyEntities(com.idega.block.dataquery.business.QueryEntityPart p0) throws java.rmi.RemoteException;
+ public java.util.Collection getManyToManyEntityDefinitions(com.idega.block.dataquery.business.QueryEntityPart p0) throws java.rmi.RemoteException;
  public com.idega.block.dataquery.business.QueryHelper getQueryHelper(com.idega.util.xml.XMLFile p0) throws java.rmi.RemoteException;
  public com.idega.block.dataquery.business.QueryHelper getQueryHelper() throws java.rmi.RemoteException;
  public com.idega.block.dataquery.business.QueryHelper getQueryHelper(int p0) throws java.rmi.RemoteException;

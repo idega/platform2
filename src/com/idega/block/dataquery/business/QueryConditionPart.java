@@ -7,7 +7,6 @@
 package com.idega.block.dataquery.business;
 
 import java.util.StringTokenizer;
-
 import com.idega.xml.XMLElement;
 
 /**
@@ -24,6 +23,8 @@ public class QueryConditionPart implements QueryPart {
 	private String field = null;
 	private String type = null;
 	private String pattern = null;
+	private boolean lock = false;
+	private boolean dynamic = false;
 	
 	public static final String TYPE_LIKE = "like";
 	public static final String TYPE_EQ = "equal";
@@ -50,6 +51,10 @@ public class QueryConditionPart implements QueryPart {
 		if(xml.hasChildren()){
 			XMLElement xmlPattern = xml.getChild(QueryXMLConstants.PATTERN);
 			pattern = xmlPattern.getTextTrim();
+			XMLElement xmlLock = xml.getChild(QueryXMLConstants.LOCK);
+			lock = xmlLock!=null;
+			XMLElement xmlDyna = xml.getChild(QueryXMLConstants.DYNAMIC);
+			dynamic = xmlDyna!=null;
 		}
 	}
 	
@@ -60,6 +65,11 @@ public class QueryConditionPart implements QueryPart {
 		XMLElement xmlPattern = new XMLElement(QueryXMLConstants.PATTERN);
 		xmlPattern.addContent(pattern);
 		el.addContent(xmlPattern);
+		if(lock){
+			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
+		}
+		if(dynamic)
+			el.addContent(new XMLElement(QueryXMLConstants.DYNAMIC));
 		return el;
 	}
 
@@ -117,5 +127,34 @@ public class QueryConditionPart implements QueryPart {
 		return null;
 	}
 	
+
+	/* (non-Javadoc)
+	* @see com.idega.block.dataquery.business.QueryPart#isLocked()
+	*/
+	public boolean isLocked() {
+		return lock;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.dataquery.business.QueryPart#setLocked(boolean)
+	 */
+	public void setLocked(boolean locked) {
+		this.lock = locked;
+	}
+
+
+	/**
+	 * @return
+	 */
+	public boolean isDynamic() {
+		return dynamic;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setDynamic(boolean b) {
+		dynamic = b;
+	}
 
 }

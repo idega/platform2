@@ -21,4 +21,15 @@ public interface QueryPart {
 	
 	public XMLElement getQueryElement();
 	public String encode();
+	/**
+	 *  
+	 * @return true if element contains a lock element
+	 */
+	public boolean isLocked();
+	
+	/**
+	 * Defines if element is locked or not
+	 * @param locked
+	 */
+	public void setLocked(boolean locked);
 }

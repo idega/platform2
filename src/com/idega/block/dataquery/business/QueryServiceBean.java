@@ -7,18 +7,29 @@
 package com.idega.block.dataquery.business;
 
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.business.IBOServiceBean;
 import com.idega.core.IWTreeNode;
+import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectBMPBean;
+import com.idega.core.data.ICObjectHome;
 import com.idega.data.EntityAttribute;
-import com.idega.data.EntityControl;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOEntityDefinition;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.xml.XMLData;
 import com.idega.util.xml.XMLFile;
@@ -43,14 +54,27 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 	}
 	
 		
-	//TODO do properly
-	public Collection getSourceQueryEntityParts(){
-		Collection coll = new ArrayList(2);
-		GenericEntity ent1 = getEntity(com.idega.user.data.User.class);
-		GenericEntity ent2 = getEntity(com.idega.user.data.Group.class);
-		coll.add(new QueryEntityPart(ent1.getEntityName(),ent1.getClass().getName()));
-		coll.add(new QueryEntityPart(ent2.getEntityName(),ent2.getClass().getName()));
-		return coll;
+	/**
+	 * @return null if nothing found
+	 */
+	public Collection getSourceQueryEntityParts()throws RemoteException{
+		try {
+			ICObjectHome objectHome = (ICObjectHome)IDOLookup.getHome(ICObject.class);
+			Collection coll = objectHome.findAllByObjectType(ICObjectBMPBean.COMPONENT_TYPE_DATA);
+			ArrayList list = new ArrayList(coll.size());
+			for (Iterator iter = coll.iterator(); iter.hasNext();) {
+				ICObject ICObj = (ICObject) iter.next();
+				list.add(new QueryEntityPart(ICObj.getName(),ICObj.getClassName()));
+			}
+			return list;
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public Collection getRelatedQueryEntityParts(QueryEntityPart sourceEntityPart, int relationDepth)throws ClassNotFoundException{
@@ -61,11 +85,18 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 		return getRelatedQueryEntityParts(Class.forName(sourceEntity),relationDepth);	
 	}
 	
-	public Collection getManyToManyEntities(QueryEntityPart entityPart){
+	public Collection getManyToManyEntityDefinitions(QueryEntityPart entityPart){
 		try {
-			return EntityControl.getManyToManyRelationShipClasses(Class.forName(entityPart.getBeanClassName()));
+			IDOEntity entity = IDOLookup.create(Class.forName(entityPart.getBeanClassName()));
+			return Arrays.asList(entity.getEntityDefinition().getManyToManyRelatedEntities());
 		}
 		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
+		catch (IDOLookupException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -133,15 +164,15 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 	
 	private void generateEntityTree(QueryEntityPart node,int level){
 		if(node !=null){
-			// one-to-may entities
-			Collection manyToManyEntities = getManyToManyEntities(node); 
+			// many-to-may entities
+			Collection manyToManyEntities = getManyToManyEntityDefinitions(node); 
 			Iterator iter ;
 			if(manyToManyEntities!=null && !manyToManyEntities.isEmpty()){
 				iter = manyToManyEntities.iterator();
 				while (iter.hasNext()) {
-					Class entityClass = (Class) iter.next();
-					GenericEntity relatedEntity = getEntity(entityClass);
-					QueryEntityPart child2 = new QueryEntityPart (relatedEntity.getEntityName(),relatedEntity.getClass().getName());
+					IDOEntityDefinition entityDef = (IDOEntityDefinition) iter.next();
+					//GenericEntity relatedEntity = getEntity(entityClass);
+					QueryEntityPart child2 = new QueryEntityPart (entityDef.getUniqueEntityName(),entityDef.getInterfaceClass().getName());
 					node.addChild(child2);
 					if(level >0)
 						generateEntityTree(child2,level-1);

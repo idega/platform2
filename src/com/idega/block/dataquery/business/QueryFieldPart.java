@@ -28,6 +28,7 @@ public class QueryFieldPart implements QueryPart {
 	private String function = null;
 	private String display = null;
 	private String typeClass = null;
+	private boolean locked = false;
 	
 	public QueryFieldPart(String name, String entity,String[] columns,String function, String display,String typeClass){
 		this(name,entity,"",function,display,typeClass);
@@ -54,7 +55,10 @@ public class QueryFieldPart implements QueryPart {
 		if(xml.hasChildren()){
 			XMLElement xmlDisplay = xml.getChild(QueryXMLConstants.DISPLAY);
 			display = xmlDisplay.getTextTrim();
+			XMLElement xmlLock = xml.getChild(QueryXMLConstants.LOCK);
+			locked = xmlLock!=null;
 		}
+		
 		
 	}
 	
@@ -75,6 +79,9 @@ public class QueryFieldPart implements QueryPart {
 	  	XMLElement xmlDisplay = new XMLElement(QueryXMLConstants.DISPLAY);
 	  	xmlDisplay.addContent(this.display);
 	  	el.addContent(xmlDisplay);
+	  	if(locked)
+			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
+
 		return el;
 	}
 
@@ -192,6 +199,21 @@ public class QueryFieldPart implements QueryPart {
 	 */
 	public void setTypeClass(String string) {
 		typeClass = string;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.dataquery.business.QueryPart#isLocked()
+	 */
+	public boolean isLocked() {
+		return locked;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see com.idega.block.dataquery.business.QueryPart#setLocked(boolean)
+	 */
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 }

@@ -38,6 +38,7 @@ public class QueryHelper {
 	private List listOfConditions = null;
 	private int step = 0;
 	private boolean isTemplate = false;
+	private boolean entitiesLock = false,fieldsLock = false;
 	
 		
 	public QueryHelper(){
@@ -58,6 +59,7 @@ public class QueryHelper {
 		if(root!=null){
 		XMLAttribute template = root.getAttribute(QueryXMLConstants.TEMPLATE);
 		isTemplate = (template!=null && Boolean.getBoolean(template.getValue()));
+		System.out.println("is query a template "+isTemplate);
 		XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
 		if(source!=null){
 			// SOURCE ENTITY PART (STEP 1)
@@ -67,6 +69,10 @@ public class QueryHelper {
 				// RELATED PART ( STEP 2)
 				if(sourceEntity!=null){
 					XMLElement related= root.getChild(QueryXMLConstants.RELATED_ENTITIES);
+					if(related!=null){
+						XMLAttribute entLock  = related.getAttribute(QueryXMLConstants.LOCK);
+						entitiesLock = (entLock!=null && Boolean.getBoolean(entLock.getValue()));
+					}
 					if(related!=null && related.hasChildren()){
 						listOfRelatedEntities = new ArrayList();
 						Iterator entities = related.getChildren().iterator();
@@ -77,6 +83,8 @@ public class QueryHelper {
 						
 						// FIELD PART (STEP 3)
 						XMLElement fields = root.getChild(QueryXMLConstants.FIELDS);
+						XMLAttribute fieldLock  = related.getAttribute(QueryXMLConstants.LOCK);
+						fieldsLock = (fieldLock!=null && Boolean.getBoolean(fieldLock.getValue()));
 						if(fields!=null && fields.hasChildren()){
 							listOfFields = new ArrayList();
 							Iterator iter = fields.getChildren().iterator();
@@ -128,7 +136,7 @@ public class QueryHelper {
 		if(isTemplate()){
 			root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
 		}
-		//		SOURCE ENTITY PART (STEP 1)
+		//	SOURCE ENTITY PART (STEP 1)
 		if(sourceEntity!=null){
 			XMLElement sourceElement = getSourceEntityElement();
 			sourceElement.addContent(sourceEntity.getQueryElement());
@@ -137,6 +145,8 @@ public class QueryHelper {
 			if(listOfRelatedEntities!=null && !listOfRelatedEntities.isEmpty()){
 				Iterator iter = listOfRelatedEntities.iterator();
 				XMLElement related = new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
+				if(entitiesLock)
+					related.setAttribute(QueryXMLConstants.LOCK,Boolean.toString(entitiesLock));
 				while(iter.hasNext()){
 					related.addContent(((QueryPart)iter.next()).getQueryElement());
 				}
@@ -146,12 +156,14 @@ public class QueryHelper {
 				if(listOfFields!=null && !listOfFields.isEmpty()){
 					iter = listOfFields.iterator();
 					XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
+					if(fieldsLock)
+						fields.setAttribute(QueryXMLConstants.LOCK,Boolean.toString(entitiesLock));
 					while(iter.hasNext()){
 						fields.addContent(((QueryPart)iter.next()).getQueryElement());
 					}
 					root.addContent(fields);
 					
-					//					CONDITION PART (STEP 4)
+					//	CONDITION PART (STEP 4)
 					if(listOfConditions!=null && !listOfConditions.isEmpty()){
 						iter = listOfConditions.iterator();
 						XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
@@ -447,6 +459,34 @@ public class QueryHelper {
 	 */
 	public void setTemplate(boolean b) {
 		isTemplate = b;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isEntitiesLock() {
+		return entitiesLock;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isFieldsLock() {
+		return fieldsLock;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setEntitiesLock(boolean b) {
+		entitiesLock = b;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setFieldsLock(boolean b) {
+		fieldsLock = b;
 	}
 
 }

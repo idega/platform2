@@ -35,6 +35,8 @@ public final static String TYPE = "type";
 public final static String FUNC_CONCAT = "concat";
 public final static String PATH = "path";
 public final static String TEMPLATE = "template";
+public final static String LOCK = "lock";
+public final static String DYNAMIC = "dynamic";
 
 
 }
