@@ -350,6 +350,7 @@ private Table resultTable;
         else {
           resultTable.setAlignment(1,1,"center");
           resultTable.add(Text.getBreak());
+          resultTable.add(Text.getBreak());
           resultTable.add("Veldu hvern einstakan flokk úr listanum hér ağ ofan til ağ sjá stöğuna innan hans",1,1);
         }
       }
