@@ -81,22 +81,23 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, getCodeBase().getProtocol()+"://"+getCodeBase().getHost()));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
+    }
+    catch(MalformedURLException e) {
+      e.printStackTrace(System.err);
+    }
 
-      try {
+    try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
         logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_out.gif"));
-      }
-      catch (Exception ex) {
+    }
+    catch (Exception ex) {
         ex.printStackTrace(System.err);
-      }
+    }
 
-      userPanel = new Panel();
-      userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-      add(userPanel);
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
+    userPanel = new Panel();
+    userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+    add(userPanel);
+
   }
 
   public void run(){
