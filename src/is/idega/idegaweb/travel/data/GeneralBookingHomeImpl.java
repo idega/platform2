@@ -1,170 +1,209 @@
 package is.idega.idegaweb.travel.data;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.data.IDOFactory;
 import com.idega.util.IWTimestamp;
 
 
-public class GeneralBookingHomeImpl extends com.idega.data.IDOFactory implements GeneralBookingHome
-{
- protected Class getEntityInterfaceClass(){
-  return GeneralBooking.class;
- }
+/**
+ * @author gimmi
+ */
+public class GeneralBookingHomeImpl extends IDOFactory implements GeneralBookingHome {
 
+	protected Class getEntityInterfaceClass() {
+		return GeneralBooking.class;
+	}
 
- public GeneralBooking create() throws javax.ejb.CreateException{
-  return (GeneralBooking) super.createIDO();
- }
+	public GeneralBooking create() throws javax.ejb.CreateException {
+		return (GeneralBooking) super.createIDO();
+	}
 
+	public GeneralBooking findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+		return (GeneralBooking) super.findByPrimaryKeyIDO(pk);
+	}
 
-public java.util.Collection findAllByCode(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindAllByCode(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBookings(int resellerId, int serviceId, IWTimestamp stamp, TravelAddress travelAddress)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindBookings(resellerId, serviceId, stamp,
+				travelAddress);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findAllByReferenceNumber(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindAllByReferenceNumber(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, TravelAddress travelAddress)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindBookings(resellerIds, serviceId, stamp,
+				travelAddress);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3,java.lang.String p4,java.lang.String p5,com.idega.block.trade.stockroom.data.TravelAddress p6,java.lang.String p7,java.lang.String p8,boolean p9)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3,p4,p5,p6,p7,p8,p9);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public Collection findBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, String code,
+			TravelAddress travelAddress) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindBookings(resellerIds, serviceId, stamp,
+				code, travelAddress);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection findBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3,java.lang.String p4,java.lang.String p5,com.idega.block.trade.stockroom.data.TravelAddress p6,java.lang.String p7,boolean p8)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3,p4,p5,p6,p7,p8);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public int getBookingsTotalCount(int[] resellerIds, int serviceId, IWTimestamp stamp) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCount(resellerIds, serviceId, stamp);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3,java.lang.String p4,java.lang.String p5,com.idega.block.trade.stockroom.data.TravelAddress p6,java.lang.String p7,java.lang.String p8)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3,p4,p5,p6,p7,p8);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public int getNumberOfBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, Collection travelAddressIds) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetNumberOfBookings(resellerIds, serviceId, stamp,
+				travelAddressIds);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2,com.idega.block.trade.stockroom.data.TravelAddress p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public int getBookingsTotalCount(int[] resellerIds, int serviceId, IWTimestamp stamp, Collection travelAddressIds) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCount(resellerIds, serviceId, stamp,
+				travelAddressIds);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2,java.lang.String p3,com.idega.block.trade.stockroom.data.TravelAddress p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public int getBookingsTotalCount(int[] resellerIds, int serviceId, IWTimestamp stamp, Collection travelAddressIds,
+			boolean returnsTotalCountInsteadOfNumberOfBookings, String code) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCount(resellerIds, serviceId, stamp,
+				travelAddressIds, returnsTotalCountInsteadOfNumberOfBookings, code);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findBookings(int p0,int p1,com.idega.util.IWTimestamp p2,com.idega.block.trade.stockroom.data.TravelAddress p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public int getNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp,
+				bookingType);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public java.util.Collection findBookingsByDateOfBooking(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3,java.lang.String p4,java.lang.String p5,com.idega.block.trade.stockroom.data.TravelAddress p6,java.lang.String p7,boolean p8)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookingsByDateOfBooking(p0,p1,p2,p3,p4,p5,p6,p7,p8);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType,
+			int[] productPriceIds) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp,
+				bookingType, productPriceIds);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
- public GeneralBooking findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (GeneralBooking) super.findByPrimaryKeyIDO(pk);
- }
+	public int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType,
+			int[] productPriceIds, Collection travelAddressIds) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp,
+				bookingType, productPriceIds, travelAddressIds);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
+	public int getBookingsTotalCountByDateOfBooking(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp,
+			int bookingType, int[] productPriceIds, Collection travelAddressIds) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCountByDateOfBooking(serviceId,
+				fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,int[] p4,java.util.Collection p5,boolean p6,boolean p7,java.lang.String p8){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCount(p0,p1,p2,p3,p4,p5,p6,p7,p8);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType,
+			int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp,
+				bookingType, productPriceIds, travelAddressIds, useDateOfBookingColumn);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getBookingsTotalCount(int[] p0,int p1,com.idega.util.IWTimestamp p2){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCount(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public int getBookingsTotalCount(Collection serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,
+			int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn,
+			boolean returnTotalCountInsteadOfBookingCount, String code) {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetBookingsTotalCount(serviceIds, fromStamp, toStamp,
+				bookingType, productPriceIds, travelAddressIds, useDateOfBookingColumn,
+				returnTotalCountInsteadOfBookingCount, code);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getBookingsTotalCount(int[] p0,int p1,com.idega.util.IWTimestamp p2,java.util.Collection p3){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCount(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp, int[] bookingTypeIds,
+			String columnName, String columnValue, TravelAddress address, String code, boolean validOnly)
+			throws FinderException, RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindBookings(serviceIds, fromStamp, toStamp,
+				bookingTypeIds, columnName, columnValue, address, code, validOnly);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public int getBookingsTotalCount(int[] p0,int p1,com.idega.util.IWTimestamp p2,java.util.Collection p3,boolean p4,java.lang.String p5){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCount(p0,p1,p2,p3,p4,p5);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findBookingsByDateOfBooking(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,
+			int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String code,
+			boolean validOnly) throws FinderException, RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindBookingsByDateOfBooking(serviceIds,
+				fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address, code, validOnly);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,int[] p4){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCount(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp, int[] bookingTypeIds,
+			String columnName, String columnValue, TravelAddress address, String dateColumn, String code)
+			throws FinderException, RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindBookings(serviceIds, fromStamp, toStamp,
+				bookingTypeIds, columnName, columnValue, address, dateColumn, code);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,int[] p4,java.util.Collection p5){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCount(p0,p1,p2,p3,p4,p5);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp, int[] bookingTypeIds,
+			String columnName, String columnValue, TravelAddress address, String dateColumn, String code,
+			boolean validOnly) throws FinderException, RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindBookings(serviceIds, fromStamp, toStamp,
+				bookingTypeIds, columnName, columnValue, address, dateColumn, code, validOnly);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,int[] p4,java.util.Collection p5,boolean p6){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCount(p0,p1,p2,p3,p4,p5,p6);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection getMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Collection theReturn = ((GeneralBookingBMPBean) entity).ejbHomeGetMultibleBookings(booking);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
+	}
 
-public int getBookingsTotalCountByDateOfBooking(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,int[] p4,java.util.Collection p5){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetBookingsTotalCountByDateOfBooking(p0,p1,p2,p3,p4,p5);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findAllByCode(String code) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindAllByCode(code);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public java.util.Collection getMultibleBookings(is.idega.idegaweb.travel.data.GeneralBooking p0)throws java.rmi.RemoteException,javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetMultibleBookings(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
+	public Collection findAllByReferenceNumber(String refNum) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((GeneralBookingBMPBean) entity).ejbFindAllByReferenceNumber(refNum);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-public int getNumberOfBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2,java.util.Collection p3){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetNumberOfBookings(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfBookings(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3){
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((GeneralBookingBMPBean)entity).ejbHomeGetNumberOfBookings(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public GeneralBooking findByAuthorizationNumber(String number, IWTimestamp stamp) throws FinderException {
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((GeneralBookingBMPBean)entity).ejbFindByAuthorizationNumber(number, stamp);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public GeneralBooking findByAuthorizationNumber(String number, IWTimestamp stamp) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((GeneralBookingBMPBean) entity).ejbFindByAuthorizationNumber(number, stamp);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 }

@@ -1,67 +1,325 @@
 package is.idega.idegaweb.travel.data;
 
+import is.idega.idegaweb.travel.interfaces.Booking;
+import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 
-public interface GeneralBooking extends com.idega.data.IDOEntity,is.idega.idegaweb.travel.interfaces.Booking
-{
- public void addToReseller(com.idega.block.trade.stockroom.data.Reseller p0)throws com.idega.data.IDOAddRelationshipException;
- public void addTravelAddress(com.idega.block.trade.stockroom.data.TravelAddress p0)throws com.idega.data.IDOAddRelationshipException;
- public java.lang.String getAddress();
- public int getAttendance();
- public java.sql.Timestamp getBookingDate();
- public is.idega.idegaweb.travel.data.BookingEntry[] getBookingEntries()throws javax.ejb.FinderException,java.rmi.RemoteException;
- public int getBookingTypeID();
- public java.lang.String getCity();
- public java.lang.String getCode();
- public java.lang.String getComment();
- public java.lang.String getCountry();
- public java.lang.String getCreditcardAuthorizationNumber();
- public java.sql.Timestamp getDateOfBooking();
- public java.lang.String getEmail();
- public boolean getIsValid();
- public java.lang.String getName();
- public int getOwnerId();
- public int getPaymentTypeId();
- public java.lang.String getPickupExtraInfo();
- public is.idega.idegaweb.travel.data.PickupPlace getPickupPlace();
- public int getPickupPlaceID();
- public java.lang.String getPostalCode();
- public java.lang.String getReferenceNumber();
- public java.lang.String getRefererUrl();
- public com.idega.block.trade.stockroom.data.Reseller getReseller()throws java.rmi.RemoteException,com.idega.data.IDORelationshipException,javax.ejb.FinderException;
- public is.idega.idegaweb.travel.data.Service getService();
- public int getServiceID();
- public java.lang.String getTelephoneNumber();
- public int getTotalCount();
- public java.util.Collection getTravelAddresses()throws com.idega.data.IDORelationshipException;
- public int getUserId();
- public void removeAllTravelAddresses()throws com.idega.data.IDORemoveRelationshipException;
- public void removeFromAllResellers()throws com.idega.data.IDORemoveRelationshipException;
- public void removeFromReseller(com.idega.block.trade.stockroom.data.Reseller p0)throws com.idega.data.IDORemoveRelationshipException;
- public void setAddress(java.lang.String p0);
- public void setAttendance(int p0);
- public void setBookingDate(java.sql.Timestamp p0);
- public void setBookingTypeID(int p0);
- public void setCity(java.lang.String p0);
- public void setCode(java.lang.String p0);
- public void setComment(java.lang.String p0);
- public void setCountry(java.lang.String p0);
- public void setCreditcardAuthorizationNumber(java.lang.String p0);
- public void setDateOfBooking(java.sql.Timestamp p0);
- public void setEmail(java.lang.String p0);
- public void setIsValid(boolean p0);
- public void setName(java.lang.String p0);
- public void setOwnerId(int p0);
- public void setPaymentTypeId(int p0);
- public void setPickupExtraInfo(java.lang.String p0);
- public void setPickupPlace(is.idega.idegaweb.travel.data.PickupPlace p0)throws java.rmi.RemoteException;
- public void setPickupPlaceId(int p0);
- public void setPostalCode(java.lang.String p0);
- public void setPrimaryKey(java.lang.Object p0);
- public void setReferenceNumber(java.lang.String p0);
- public void setRefererUrl(java.lang.String p0);
- public void setServiceID(int p0);
- public void setTelephoneNumber(java.lang.String p0);
- public void setTotalCount(int p0);
- public void setUserId(int p0);
- public void store();
+
+/**
+ * @author gimmi
+ */
+public interface GeneralBooking extends IDOEntity, Booking {
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getBookingDate
+	 */
+	public Timestamp getBookingDate();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setBookingDate
+	 */
+	public void setBookingDate(Timestamp timestamp);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getService
+	 */
+	public Service getService();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getServiceID
+	 */
+	public int getServiceID();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setServiceID
+	 */
+	public void setServiceID(int id);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setCountry
+	 */
+	public void setCountry(String country);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getTelephoneNumber
+	 */
+	public String getTelephoneNumber();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setTelephoneNumber
+	 */
+	public void setTelephoneNumber(String number);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getEmail
+	 */
+	public String getEmail();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setEmail
+	 */
+	public void setEmail(String email);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getCity
+	 */
+	public String getCity();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setCity
+	 */
+	public void setCity(String city);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getAddress
+	 */
+	public String getAddress();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setAddress
+	 */
+	public void setAddress(String address);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getTotalCount
+	 */
+	public int getTotalCount();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setTotalCount
+	 */
+	public void setTotalCount(int totalCount);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getBookingTypeID
+	 */
+	public int getBookingTypeID();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setBookingTypeID
+	 */
+	public void setBookingTypeID(int id);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getDateOfBooking
+	 */
+	public Timestamp getDateOfBooking();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setDateOfBooking
+	 */
+	public void setDateOfBooking(Timestamp dateOfBooking);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getPostalCode
+	 */
+	public String getPostalCode();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setPostalCode
+	 */
+	public void setPostalCode(String code);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getCountry
+	 */
+	public String getCountry();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setAttendance
+	 */
+	public void setAttendance(int attendance);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getAttendance
+	 */
+	public int getAttendance();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setPaymentTypeId
+	 */
+	public void setPaymentTypeId(int id);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getPaymentTypeId
+	 */
+	public int getPaymentTypeId();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getIsValid
+	 */
+	public boolean getIsValid();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setIsValid
+	 */
+	public void setIsValid(boolean isValid);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getCode
+	 */
+	public String getCode();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setCode
+	 */
+	public void setCode(String code);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getBookingEntries
+	 */
+	public BookingEntry[] getBookingEntries() throws FinderException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setReferenceNumber
+	 */
+	public void setReferenceNumber(String number);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getReferenceNumber
+	 */
+	public String getReferenceNumber();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getUserId
+	 */
+	public int getUserId();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setUserId
+	 */
+	public void setUserId(int userId);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getOwnerId
+	 */
+	public int getOwnerId();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setOwnerId
+	 */
+	public void setOwnerId(int ownerId);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getComment
+	 */
+	public String getComment();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setComment
+	 */
+	public void setComment(String comment);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getCreditcardAuthorizationNumber
+	 */
+	public String getCreditcardAuthorizationNumber();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setCreditcardAuthorizationNumber
+	 */
+	public void setCreditcardAuthorizationNumber(String number);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getPickupPlaceID
+	 */
+	public int getPickupPlaceID();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getPickupPlace
+	 */
+	public PickupPlace getPickupPlace();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setPickupPlace
+	 */
+	public void setPickupPlace(PickupPlace pPlace) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setPickupPlaceId
+	 */
+	public void setPickupPlaceId(int pickupPlaceId);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getPickupExtraInfo
+	 */
+	public String getPickupExtraInfo();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setPickupExtraInfo
+	 */
+	public void setPickupExtraInfo(String info);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getRefererUrl
+	 */
+	public String getRefererUrl();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setRefererUrl
+	 */
+	public void setRefererUrl(String url);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#store
+	 */
+	public void store();
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#removeAllTravelAddresses
+	 */
+	public void removeAllTravelAddresses() throws IDORemoveRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#addTravelAddress
+	 */
+	public void addTravelAddress(TravelAddress tAddress) throws IDOAddRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getTravelAddresses
+	 */
+	public Collection getTravelAddresses() throws IDORelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#setPrimaryKey
+	 */
+	public void setPrimaryKey(Object primaryKey);
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#removeFromReseller
+	 */
+	public void removeFromReseller(Reseller reseller) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#removeFromAllResellers
+	 */
+	public void removeFromAllResellers() throws IDORemoveRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#addToReseller
+	 */
+	public void addToReseller(Reseller reseller) throws IDOAddRelationshipException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.data.GeneralBookingBMPBean#getReseller
+	 */
+	public Reseller getReseller() throws RemoteException, IDORelationshipException, FinderException;
 }

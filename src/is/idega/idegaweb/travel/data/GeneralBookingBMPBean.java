@@ -2,16 +2,14 @@ package is.idega.idegaweb.travel.data;
 
 
 import is.idega.idegaweb.travel.interfaces.Booking;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductBMPBean;
@@ -23,6 +21,7 @@ import com.idega.block.trade.stockroom.data.TravelAddressBMPBean;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityControl;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
@@ -30,9 +29,14 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.data.SimpleQuerier;
+import com.idega.data.query.AND;
 import com.idega.data.query.Column;
+import com.idega.data.query.Criteria;
+import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
 import com.idega.data.query.SelectQuery;
+import com.idega.data.query.SumColumn;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
 import com.idega.presentation.IWContext;
@@ -50,7 +54,7 @@ import com.idega.util.IWTimestamp;
  */
 
 
-public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.GeneralBooking, Booking {
+public class GeneralBookingBMPBean extends GenericEntity implements Booking , GeneralBooking{
 
   public GeneralBookingBMPBean(){
           super();
@@ -533,7 +537,9 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType){
-		return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[]{}, null, false, false, null );
+  	Vector ids = new Vector();
+  	ids.add(new Integer(serviceId));
+		return ejbHomeGetBookingsTotalCount(ids, fromStamp, toStamp, bookingType, new int[]{}, null, false, false, null );
   }
 
   public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds){
@@ -549,45 +555,70 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn){
-		return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, useDateOfBookingColumn, true , null);
+  	Vector ids = new Vector();
+  	ids.add(new Integer(serviceId));
+		return ejbHomeGetBookingsTotalCount(ids, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, useDateOfBookingColumn, true , null);
   }
   
-  public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn, boolean returnTotalCountInsteadOfBookingCount, String code){
+  public int ejbHomeGetBookingsTotalCount(Collection serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn, boolean returnTotalCountInsteadOfBookingCount, String code){
     int returner = 0;
     StringBuffer sql = new StringBuffer();
+    Table bookingTable = new Table(this, "b");
+    SelectQuery query = new SelectQuery(bookingTable);
     try {
 
       // @todo lonsa við getInstance crap /
+
       ProductBusiness pBus = (ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
-      Timeframe timeframe = pBus.getTimeframe(pBus.getProduct(serviceId), fromStamp);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
-      String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
+      String addressMiddleTableName = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
 
       String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
       String tTable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
 
-      String dateColumn = this.getBookingDateColumnName();
-      String returning = "sum (b."+getTotalCountColumnName()+") ";
+      Table productTable = new Table(Product.class, "p");
+      Table timeframeTable = new Table(Timeframe.class, "t");
+      Table addressMiddleTable = new Table(addressMiddleTableName, "am");
+      Table timeframeMiddleTable = new Table(middleTable, "m");
+      
+      Column productPK = new Column(productTable, ProductBMPBean.getIdColumnName());
+
+      String dateCol = this.getBookingDateColumnName();
+      String returning = "sum(b."+getTotalCountColumnName()+") ";
       
       if (useDateOfBookingColumn) {
-        dateColumn = this.getDateOfBookingColumnName();
+        dateCol = this.getDateOfBookingColumnName();
       }
+      
+      Column dateColumn = new Column(bookingTable, dateCol);
+      
       if (!returnTotalCountInsteadOfBookingCount) {
       	returning = "count(*)"	;
+      	query.setAsCountQuery(true);
+      	query.addColumn(new WildCardColumn());
+      } else {
+      	query.addColumn(new SumColumn(bookingTable, getTotalCountColumnName()));
       }
 
+//      query.addJoin(bookingTable, getServiceIDColumnName(), productTable, ProductBMPBean.getIdColumnName());
+      
+
         String[] many = {};
-            sql.append("Select "+returning+" from "+getBookingTableName()+" b,"+pTable+" p");
-            if (timeframe != null) {
-              sql.append(","+middleTable+" m,"+tTable+" t");
-            }
+            sql.append("Select "+returning+" from "+getBookingTableName()+" b , "+pTable+" p ");
+//            if (timeframe != null) {
+//              sql.append(", "+middleTable+" m , "+tTable+" t ");
+//            }
             if (travelAddressIds != null) {
-              sql.append(", "+addressMiddleTable+" am");
+              sql.append(", "+addressMiddleTable+" am ");
             }
 
             sql.append(" where ");
             if (travelAddressIds != null) {
-              sql.append("am."+getIDColumnName()+" = b."+getIDColumnName());
+          		query.addJoin(bookingTable, getIDColumnName(), addressMiddleTable, getIDColumnName());
+          		InCriteria inCrit = new InCriteria(new Column(addressMiddleTable, TravelAddressBMPBean.getTravelAddressTableName()+"_ID"), travelAddressIds);
+          		query.addCriteria(inCrit);
+
+          		sql.append("am."+getIDColumnName()+" = b."+getIDColumnName());
               sql.append(" and ");
               sql.append("am."+TravelAddressBMPBean.getTravelAddressTableName()+"_ID in (");
               Iterator iter = travelAddressIds.iterator();
@@ -601,44 +632,110 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
               sql.append(") and ");
             }
 
-            if (timeframe != null) {
-              sql.append("p."+ProductBMPBean.getIdColumnName()+" = m."+ProductBMPBean.getIdColumnName());
-              sql.append(" and ");
-              sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
-              sql.append(" and ");
-              sql.append("t."+timeframe.getIDColumnName()+" = "+timeframe.getID());
-              sql.append(" and ");
+            boolean addTimeframe = false;
+            sql.append(" (");
+            
+            List list = new Vector();
+            Iterator serviter = serviceIds.iterator();
+            int id = -1;
+            int count = 0;
+            while (serviter.hasNext()) {
+            //for (int i = 0; i < serviceIds.length; i++) {
+            	++count;
+            	id = ((Integer) serviter.next()).intValue();
+              Timeframe timeframe = pBus.getTimeframe(pBus.getProduct(id), fromStamp);
+            	MatchCriteria serID = new MatchCriteria(new Column(productTable, ProductBMPBean.getIdColumnName()), MatchCriteria.EQUALS, id);
+	            if (timeframe != null) {
+	          		query.addJoin(productTable, ProductBMPBean.getIdColumnName(), timeframeMiddleTable, ProductBMPBean.getIdColumnName());
+	          		query.addJoin(timeframeMiddleTable, timeframe.getIDColumnName(), timeframeTable, timeframe.getIDColumnName());
+
+	          		if (count > 1) {
+	            		sql.append(" OR ");
+	            	}
+	            	sql.append("(");
+	            	
+	            	
+	            	sql.append("p."+ProductBMPBean.getIdColumnName()+" = m."+ProductBMPBean.getIdColumnName());
+	              sql.append(" and ");
+	              sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
+	              sql.append(" and ");
+	              sql.append("t."+timeframe.getIDColumnName()+" = "+timeframe.getID());
+	              sql.append(" and ");
+	              
+	              MatchCriteria timeID = new MatchCriteria(new Column(timeframeTable, timeframe.getIDColumnName()), MatchCriteria.EQUALS, timeframe.getID());
+	              AND crit = new AND(serID, timeID);
+	              list.add(crit);
+	            } else {
+	            	list.add(serID);
+	            }
+	            sql.append("p."+ProductBMPBean.getIdColumnName()+"="+id);
+	            sql.append(") ");
+	            
             }
-            sql.append("p."+ProductBMPBean.getIdColumnName()+"="+serviceId);
-            sql.append(" and ");
+
+            int listSize = list.size();
+            if (listSize == 1) {
+            	query.addCriteria((Criteria) list.get(0));
+            } else if (listSize > 1) {
+            	Iterator iter = list.iterator();
+            	Criteria previous = (Criteria) iter.next();
+            	Criteria criteria;
+              OR orCrit;
+            	while (iter.hasNext()) {
+            		criteria = (Criteria) iter.next();
+	        			orCrit = new OR(previous, criteria);
+	        			previous = orCrit;
+            	}
+            	query.addCriteria(previous);
+            }
+
+            sql.append(") and ");
+
+          	query.addCriteria(new MatchCriteria(new Column(bookingTable, getServiceIDColumnName()), MatchCriteria.EQUALS, new Column(productTable, ProductBMPBean.getIdColumnName())));
+          	query.addCriteria(new MatchCriteria(new Column(bookingTable, getIsValidColumnName()), MatchCriteria.EQUALS, true));
+            
             sql.append("b."+getServiceIDColumnName()+"= p."+ProductBMPBean.getIdColumnName());
             sql.append(" and ");
             sql.append("b."+getIsValidColumnName()+" = 'Y'");
+            
             if (bookingType != -1) {
+            	query.addCriteria(new MatchCriteria(new Column(bookingTable, getBookingTypeIDColumnName()), MatchCriteria.EQUALS, bookingType));
               sql.append(" and ");
               sql.append(getBookingTypeIDColumnName()+" = "+bookingType);
             }
             sql.append(" and (");
             if ( (fromStamp != null) && (toStamp == null) ) {
 //              sql.append(dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
-              sql.append(dateColumn+" like '%"+fromStamp.toSQLDateString()+"%'");
+              sql.append(dateCol+" like '%"+fromStamp.toSQLDateString()+"%'");
+              
+              query.addCriteria(new MatchCriteria(dateColumn, MatchCriteria.LIKE, "%"+fromStamp.toSQLDateString()+"%"));
             }else if ( (fromStamp != null) && (toStamp != null)) {
+            	MatchCriteria crit1 = new MatchCriteria(dateColumn, MatchCriteria.GREATEREQUAL, fromStamp.toSQLDateString());
+            	MatchCriteria crit2 = new MatchCriteria(dateColumn, MatchCriteria.LESSEQUAL, toStamp.toSQLDateString());
+            	AND andCriteria = new AND(crit1, crit2);
+            	query.addCriteria(andCriteria);
               sql.append(" (");
 //              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
-              sql.append(dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
+              sql.append(dateCol+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
 //              sql.append(dateColumn+" <= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
-              sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"'"); // Gimmi fixar ... +"')");
+              sql.append(dateCol+" <= '"+toStamp.toSQLDateString()+"'"); // Gimmi fixar ... +"')");
 	            sql.append(" )");
             }
             sql.append(" )");
 						if (code != null) {
+							query.addCriteria(new MatchCriteria(new Column(bookingTable, getBookingCodeColumnName()), MatchCriteria.EQUALS, code));
 							sql.append(" and ");
 							sql.append(" b."+getBookingCodeColumnName()+"= '"+code+"'");
 						}
 
             //System.out.println(sql.toString());
-        many = SimpleQuerier.executeStringQuery(sql.toString());
+//            System.out.println(query.toString(false));
+            
+        return (int) idoGetValueFromSingleValueResultSet(query.toString());
+
+//        many = SimpleQuerier.executeStringQuery(query.toString());
+//        many = SimpleQuerier.executeStringQuery(sql.toString());
 //        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 //		System.out.println("GetBookingsTotalCount SQL \n"+sql.toString());
 
@@ -647,12 +744,12 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 //	          returner += Integer.parseInt(many[i]);
 //	        }
 //	      }else 
-	      	if (many != null && many.length > 0 && many[0] != null){
-	      		returner += Integer.parseInt( many[0]);	
-	      }
+//	      	if (many != null && many.length > 0 && many[0] != null){
+//	      		returner += Integer.parseInt( many[0]);	
+//	      }
 
     }catch (Exception e) {
-        System.err.println(sql.toString());
+        System.err.println(query.toString());
         e.printStackTrace(System.err);
     }finally {
       //ConnectionBroker.freeConnection(conn);
