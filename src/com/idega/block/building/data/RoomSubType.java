@@ -2,7 +2,7 @@ package com.idega.block.building.data;
 
 import javax.ejb.*;
 
-public interface RoomSubType extends com.idega.data.IDOLegacyEntity
+public interface RoomSubType extends com.idega.data.TextEntity
 {
  public float getArea();
  public boolean getBalcony();

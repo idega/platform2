@@ -15,21 +15,18 @@ import java.sql.SQLException;
 
 public class BuildingBusiness {
 
-  public static boolean saveComplex(int id,String sName,String sInfo,int imageid){
+  public static boolean saveComplex(int id,String sName,String sInfo,int imageid,int textid){
    Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy();
     boolean update = false;
     try{
       if(id > 0){
         eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(id);
-        update = true;
       }
       eComplex.setName(sName);
       eComplex.setInfo(sInfo);
       eComplex.setImageId(imageid);
-      if(update)
-        eComplex.update();
-      else
-        eComplex.insert();
+      eComplex.setTextId(textid);
+      eComplex.store();
       BuildingCacher.reload();
       return true;
 

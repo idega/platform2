@@ -14,6 +14,7 @@ import com.oreilly.servlet.*;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.Editor;
 import com.idega.block.media.presentation.ImageInserter;
+import com.idega.block.text.presentation.TextChooser;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -40,6 +41,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
   protected int fontSize = 1;
   protected boolean fontBold = false;
   private Table outerTable;
+  private int textId = -1;
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.building";
   protected IWResourceBundle iwrb;
@@ -93,6 +95,14 @@ public class BuildingEditor extends com.idega.presentation.Block{
     if(iwc.getParameter(prmSave)!=null || iwc.getParameter(prmSave+".x")!=null){
       if(iwc.getParameter("bm_choice")!=null){
         int i = Integer.parseInt(iwc.getParameter("bm_choice"));
+        if(iwc.isParameterSet("delete_text")){
+        	textId = -1;
+        }
+        else if(iwc.isParameterSet("txt_id")){
+	        try { textId = Integer.parseInt(iwc.getParameter("txt_id")); }
+	    	catch (Exception ex) { textId = -1; }
+        }
+       
          switch (i) {
             case COMPLEX  : storeComplex(iwc);   break;
             case BUILDING : storeBuilding(iwc);  break;
@@ -189,14 +199,17 @@ public class BuildingEditor extends com.idega.presentation.Block{
     String sInfo = iwc.getParameter("bm_info").trim();
     String sImageId = iwc.getParameter("mapid");
     String sId = iwc.getParameter("dr_id");
+    String sTextId = iwc.getParameter("txt_id");
     int imageid = 1;
     int id = -1;
+    int textId = -1;
     try {  imageid = Integer.parseInt(sImageId); }
     catch (NumberFormatException ex) { imageid = 1;  }
     try { id = Integer.parseInt(sId); }
     catch (Exception ex) { id = -1; }
+   
 
-    BuildingBusiness.saveComplex(id,sName,sInfo,imageid);
+    BuildingBusiness.saveComplex(id,sName,sInfo,imageid,textId);
 
   }
 
@@ -532,12 +545,30 @@ public class BuildingEditor extends com.idega.presentation.Block{
     imageObject = imageInsert;
     return imageObject;
   }
+  private PresentationObject makeTextInput(int id){
+  	Table T = new Table();
+  	
+  	TextChooser ans = new TextChooser("txt_id");
+  	T.add(ans,1,1);
+  	if(id<0)
+		ans.setChooseImage(iwb.getImage("new.gif",iwrb.getLocalizedString("button_create_answer","Create text")));
+	else{
+		ans.setSelectedText(id);
+		ans.setChooseImage(iwb.getImage("open.gif",iwrb.getLocalizedString("button_edit_answer","Edit text")));
+		CheckBox delete = new CheckBox("txt_del",String.valueOf(id));
+		T.add(formatText(iwrb.getLocalizedString("delete_text","Delete text:")),3,1);
+		T.add(delete,3,1);
+	}
+	
+  	return T;
+  }
   private PresentationObject makeComplexFields(Complex eComplex){
     boolean e = eComplex != null ? true : false;
     String sId = e ? String.valueOf(eComplex.getID()):"";
     String sName = e ? eComplex.getName():"";
     String sInfo = e ? eComplex.getInfo():"";
     int iMapId = e ? eComplex.getImageId(): 1 ;
+    int iTextId = e?eComplex.getTextId():-1;
 
     Form form = new Form();
     Table Frame = new Table(2,1);
@@ -548,8 +579,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
       Frame.setWidth("100%");
       Frame.setWidth(2,1,"160");
       Frame.setHeight("100%");
-    Table T = new Table();
-      T.setCellpadding(8);
+    Table T = new Table(2,5);
+      T.setCellpadding(2);
       T.setAlignment("center");
       T.setWidth("100%");
     Table T2 = new Table(1,2);
@@ -571,15 +602,18 @@ public class BuildingEditor extends com.idega.presentation.Block{
     setStyle(categories);
     categories.setToSubmit();
     name.setLength(30);
+    
     T.add(HI);
     T.add(HA);
     T.add(categories,1,1);
     T.add(formatText(iwrb.getLocalizedString("name","Name")),1,2);
-    T.add(Text.getBreak(),1,2);
-    T.add(name,1,2);
-    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,3);
-    T.add(Text.getBreak(),1,3);
-    T.add( makeTextArea(sInfo),1,3);
+    T.add(name,1,3);
+    T.add(formatText(iwrb.getLocalizedString("text","Text")),2,2);
+    T.add(makeTextInput(iTextId),3,2);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,4);
+    T.mergeCells(1,5,2,5);
+    T.add( makeTextArea(sInfo),1,5);
+    
     T2.add(formatText(iwrb.getLocalizedString("map","Map")),1,1);
     T2.add(Text.getBreak(),1,1);
     T2.add(this.makeImageInput(iMapId,"mapid"),1,1);

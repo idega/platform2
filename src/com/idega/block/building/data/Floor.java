@@ -2,7 +2,7 @@ package com.idega.block.building.data;
 
 import javax.ejb.*;
 
-public interface Floor extends com.idega.data.IDOLegacyEntity
+public interface Floor extends com.idega.data.TextEntity
 {
  public int getBuildingId();
  public int getImageId();

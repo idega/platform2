@@ -2,7 +2,7 @@ package com.idega.block.building.data;
 
 import javax.ejb.*;
 
-public interface ApartmentType extends com.idega.data.IDOLegacyEntity
+public interface ApartmentType extends com.idega.data.TextEntity
 {
  public int getApartmentCategoryId();
  public float getArea();

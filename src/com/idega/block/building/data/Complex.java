@@ -2,7 +2,7 @@ package com.idega.block.building.data;
 
 import javax.ejb.*;
 
-public interface Complex extends com.idega.data.IDOLegacyEntity
+public interface Complex extends com.idega.data.TextEntity
 {
  public int getImageId();
  public java.lang.String getInfo();

@@ -12,6 +12,8 @@ import com.idega.data.*;
 import com.idega.block.building.business.BuildingFinder;
 //import com.idega.data.genericentity.Address;
 import com.idega.block.building.data.*;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.business.TextFinder;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -23,7 +25,7 @@ import com.idega.core.data.ICFile;
  * Description: Views buildings in a campus
  * Copyright:    Copyright (c) 2001
  * Company: idega
- * @author Laddi©
+ * @author Laddi?
  * @version 1.0
  */
 
@@ -103,8 +105,15 @@ public void setApartmentTypeWindowClass(Class windowClass){
         complexTable.setWidth("100%");
         complexTable.setWidth(2,1,"20");
         complexTable.setBorder(0);
-
-      String infoText = complex[a].getInfo();
+	  
+	   String infoText = "";
+	  if(complex[a].getTextId()>0){
+	  		ContentHelper helper = TextFinder.getContentHelper(complex[a].getTextId(),iwc.getCurrentLocale());
+			infoText = helper.getLocalizedText()!=null? helper.getLocalizedText().getBody():"";
+	  }
+	  if(infoText.length()==0){
+      	infoText = complex[a].getInfo();
+	  }
         infoText = TextSoap.findAndReplace(infoText,"\n","<br>");
 
       //List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);

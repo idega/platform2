@@ -2,7 +2,7 @@ package com.idega.block.building.data;
 
 import javax.ejb.*;
 
-public interface RoomType extends com.idega.data.IDOLegacyEntity
+public interface RoomType extends com.idega.data.TextEntity
 {
  public java.lang.String getInfo();
  public java.lang.String getName();
