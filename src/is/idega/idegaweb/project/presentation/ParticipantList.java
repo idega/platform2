@@ -622,7 +622,7 @@ public class ParticipantList extends AbstractContentList {
               text.setText("Sími");
               break;
             case 5:
-              text.setText("Fax");
+              //text.setText("Fax");
               break;
             case 6:
               text.setText("Tölvupóstur");
@@ -654,7 +654,7 @@ public class ParticipantList extends AbstractContentList {
               }
               break;
             case 5:
-              text.setText("fax");
+              //text.setText("fax");
               break;
             case 6:
               if(staffHolder.getEmail() != null){
