@@ -50,7 +50,7 @@ public class Messenger extends Block {
         messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
 
         messenger.setWidth(width);
-        messenget.setHeight(height);
+        messenger.setHeight(height);
 
       }
       add(messenger);
