@@ -86,6 +86,10 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   // add these columns to this list that should be parsed
   private List fieldList;
   
+  // used to create an unique identifier for instances of
+  // WorkReportDivisionBoardHelper if the are based on the same WorkReportDivisionBoard 
+  protected int numberOfCallsOfWorkReportBoardMemberHelper = 0;
+  
   { 
     fieldList = new ArrayList();
     fieldList.add(LEAGUE);
@@ -426,7 +430,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private void deleteWorkReportBoardMembers(List ids, IWContext iwc) {
     Iterator iterator = ids.iterator();
     while (iterator.hasNext())  {
-      Integer id = (Integer) iterator.next();
+      Integer id = decodePrimaryKey((Integer) iterator.next());
       WorkReportBoardMember member = findWorkReportBoardMember(id, iwc);
       if (member != null) {
         try {
@@ -493,7 +497,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private void updateWorkReportBoardMember(EntityPathValueContainer valueContainer, IWContext iwc)  {
     // precondition: value container is valid, that is its method isValid() returns true.
     // get the corresponding entity
-    Integer id = valueContainer.getEntityId();
+    Integer id = decodePrimaryKey(valueContainer.getEntityId());
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     WorkReportBoardMember member = findWorkReportBoardMember(id, iwc);
     if (member == null) {
@@ -566,7 +570,16 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       }
     }
   }
-}
+
+  /** Decodes the hidden original primary key. See {@link encodePrimaryKey(Integer)}.
+   * @return the original primary key
+   */
+  private Integer decodePrimaryKey(Integer primaryKey)  {
+    String primaryKeyAsString = primaryKey.toString();
+    int index = primaryKeyAsString.lastIndexOf("8");
+    return new Integer(primaryKeyAsString.substring(0,index));
+  }
+
 
   /** 
    * WorkReportBoardMemberHelper:
@@ -578,6 +591,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     
     String league = null;
     Object member = null;
+    Integer primaryKey = null;
     
     public WorkReportBoardMemberHelper()  {
     }
@@ -585,6 +599,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     public WorkReportBoardMemberHelper(String league, Object member) {
       this.league = league;
       this.member = member;
+      Integer primaryKey = (Integer) ((EntityRepresentation) member).getPrimaryKey();
+      this.primaryKey = encodePrimaryKey(primaryKey);
     }
     
     public void setLeague(String league)  {
@@ -603,10 +619,30 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }  
     
     public Object getPrimaryKey() {
-      return ((EntityRepresentation) member).getPrimaryKey();
+      return primaryKey;
+    }
+    
+    /**
+     * Creates a new unique primary key, that depends on the original primary key and the 
+     * number of invocations of this inner class.
+     * 8 is used as a delimiter, number of calls is converted to an octal representation. 
+     * Note: This method uses a variable of the outer class.
+     * For example:
+     * primary key is 812348.
+     * number of calls is 12, will be changed to 14 (octal representation)
+     * new primary key is 812348814 (812348-8-14).
+     * @param primary key - the original primary key
+     * @return a new unique number
+     */
+    private Integer encodePrimaryKey(Integer primaryKey)  {
+      numberOfCallsOfWorkReportBoardMemberHelper++;
+      StringBuffer buffer = new StringBuffer(primaryKey.intValue());
+      buffer.append("8").append(Integer.toOctalString(numberOfCallsOfWorkReportBoardMemberHelper));
+      return new Integer(buffer.toString());
     }
   }
 
+}
   
 
 

@@ -507,8 +507,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
    */
   private Integer decodePrimaryKey(Integer primaryKey)  {
     String primaryKeyAsString = primaryKey.toString();
-    int index = primaryKeyAsString.indexOf("8");
-    return new Integer(primaryKeyAsString.substring(++index));
+    int index = primaryKeyAsString.lastIndexOf("8");
+    return new Integer(primaryKeyAsString.substring(0,index));
   }
 
 
@@ -557,16 +557,16 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
      * 8 is used as a delimiter, number of calls is converted to an octal representation. 
      * Note: This method uses a variable of the outer class.
      * For example:
-     * primary key is 81234.
+     * primary key is 812348.
      * number of calls is 12, will be changed to 14 (octal representation)
-     * new primary key is 14881234 (14-8-81234).
+     * new primary key is 812348814 (812348-8-14).
      * @param primary key - the original primary key
      * @return a new unique number
      */
     private Integer encodePrimaryKey(Integer primaryKey)  {
       numberOfCallsOfWorkReportDivisionBoardHelper++;
-      StringBuffer buffer = new StringBuffer(Integer.toOctalString(numberOfCallsOfWorkReportDivisionBoardHelper)); 
-      buffer.append("8").append(primaryKey.intValue());
+      StringBuffer buffer = new StringBuffer(primaryKey.intValue());
+      buffer.append("8").append(Integer.toOctalString(numberOfCallsOfWorkReportDivisionBoardHelper));
       return new Integer(buffer.toString());
     }
     
