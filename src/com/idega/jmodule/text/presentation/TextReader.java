@@ -33,6 +33,8 @@ private boolean enableDelete=true;
 private String textWidth = "100%";
 private String textStyle = "";
 private String headlineStyle = "";
+private boolean reverse = false;
+private boolean crazy = false;
 
 public TextReader(){
 }
@@ -130,7 +132,16 @@ public void main(ModuleInfo modinfo) throws Exception {
                         headline.setAttribute("class","headlinetext");
                         headline.setFontStyle(headlineStyle);
 
-		String text_body = formatText(text.getTextBody());
+		String text_body = text.getTextBody();
+
+                if ( reverse ) {
+                  text_body = textReverse(text_body);
+                }
+                if ( crazy ) {
+                  text_body = textCrazy(text_body);
+                }
+
+                text_body = formatText(text_body);
 
 		Text body = new Text(text_body);
 			body.setFontSize(textSize);
@@ -366,6 +377,34 @@ public void main(ModuleInfo modinfo) throws Exception {
 		return linkVector;
 	}
 
+        public String textReverse(String strengur) {
+
+          StringBuffer buffer = new StringBuffer(strengur);
+
+          String reverse = buffer.reverse().toString();
+
+          return reverse;
+
+        }
+
+        public String textCrazy(String strengur) {
+
+          String crazy = "";
+
+          StringTokenizer token = new StringTokenizer(strengur);
+
+          while ( token.hasMoreTokens() ) {
+            StringBuffer buffer = new StringBuffer(token.nextToken());
+            crazy += buffer.reverse().toString();
+            if ( token.hasMoreTokens() ) {
+              crazy += " ";
+            }
+          }
+
+          return crazy;
+
+        }
+
 	public void setAdmin(boolean isAdmin){
 		this.isAdmin=isAdmin;
 	}
@@ -427,6 +466,14 @@ public void main(ModuleInfo modinfo) throws Exception {
 
         public void setWidth(String textWidth) {
                 this.textWidth=textWidth;
+        }
+
+        public void setReverse() {
+                this.reverse=true;
+        }
+
+        public void setCrazy() {
+                this.crazy=true;
         }
 
         public String getAnchorName(){
