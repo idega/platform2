@@ -62,7 +62,7 @@ public class SQLQuery implements DynamicExpression {
   private Map entityQueryEntity= new HashMap();
   
   // field name (String) : (QueryFieldPart)
-  private Map fieldNameQueryField = new HashMap();
+  private HashMatrix fieldNameQueryField = new HashMatrix();
   
   private List fieldOrder = new ArrayList();
   
@@ -553,16 +553,11 @@ public class SQLQuery implements DynamicExpression {
 	}
 	
 	private QueryFieldPart getField(String entityPath, String fieldName)	{
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(entityPath).append("#").append(fieldName);
-		QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(buffer.toString());
-		return field;
+		return (QueryFieldPart) fieldNameQueryField.get(entityPath, fieldName);
 	}	
 	
 	private void setField(QueryFieldPart fieldPart)	{
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(fieldPart.getPath()).append("#").append(fieldPart.getName());
-		fieldNameQueryField.put(buffer.toString(), fieldPart);
+		fieldNameQueryField.put(fieldPart.getPath(), fieldPart.getName(), fieldPart);
 	}
 		 
 	

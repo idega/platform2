@@ -37,6 +37,8 @@ public class CriterionExpression implements DynamicExpression {
   private String firstColumnClass = null;
   private String comparison = null;
   
+  private String patternField = null;
+  
   private boolean isDynamic = false;
   private Map identifierValueMap = null;
   private Map identifierInputDescriptionMap = null;
@@ -66,6 +68,7 @@ public class CriterionExpression implements DynamicExpression {
   protected void initialize(QueryConditionPart condition, SQLQuery sqlQuery)	{
   	String field = condition.getField();
   	String path = condition.getPath();
+ 
   	// set Handler 
   	String inputHandlerDescription = sqlQuery.getHandlerDescriptionForField(path, field); 
   	String inputHandlerClass = sqlQuery.getInputHandlerForField(path, field);
@@ -74,27 +77,39 @@ public class CriterionExpression implements DynamicExpression {
   		// something wrong
   		return;
   	}
-  	//String firstColumnClass = querySQL.getTypeClassForField(field);
   	valueField = (String) fieldValueList.get(0);
     String type = condition.getType();
     comparison = (String) typeSQL.get(type);
-    Object pattern = null;
-    if (condition.hasMoreThanOnePattern()) {
-    	pattern = condition.getPatterns();
-    }
-    else {
-    	pattern = condition.getPattern();
-    }
-    isDynamic = condition.isDynamic();
-  	identifierValueMap = new HashMap();
-   	identifierValueMap.put(identifier, pattern);
-   	String description = condition.getDescription();
+    // set pattern
+    identifierValueMap = new HashMap();
+    String patternFieldName = condition.getPatternField();
+  	String patternPath = condition.getPatternPath();
+  	if (patternFieldName == null && patternPath == null) {
+		  Object pattern = null;
+		  if (condition.hasMoreThanOnePattern()) {
+		  	pattern = condition.getPatterns();
+		  }
+		  else {
+		  	pattern = condition.getPattern();
+		  }
+		 	identifierValueMap.put(identifier, pattern);
+  	}
+  	else {
+  		 List patternFieldValueList = sqlQuery.getUniqueNameForField(patternPath,patternFieldName);
+  		 if (patternFieldValueList.size() != 1)	{
+  		 	// something wrong
+  		 	return;
+  		 }
+  		 patternField = (String) patternFieldValueList.get(0);
+  	}
    	identifierInputDescriptionMap = new HashMap();
+   	String description = condition.getDescription();
    	if (description == null || description.length() == 0)	{
   		StringBuffer buffer = new StringBuffer(valueField).append(" ").append(type);
   		description =  buffer.toString();
    	}
 		identifierInputDescriptionMap.put(identifier, new InputDescription(description, inputHandlerClass, inputHandlerDescription));
+		isDynamic = condition.isDynamic();
   }
 
   public String toSQLString() {
@@ -121,7 +136,11 @@ public class CriterionExpression implements DynamicExpression {
     	}
     	return buffer.toString();
     }    	
-   	return getSingleCondition((String) pattern).toString();
+    else if (patternField != null) {
+    	expression.append(WHITE_SPACE).append(patternField);
+    	return expression.toString();
+    }	
+    return getSingleCondition((String) pattern).toString();
   }
   
   private StringBuffer getSingleCondition(String pattern) {

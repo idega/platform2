@@ -16,6 +16,7 @@ import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.util.StringHandler;
 import com.idega.xml.XMLElement;
 
 /**
@@ -37,9 +38,13 @@ public class QueryConditionPart implements QueryPart {
 	private String path = null;
 	private String type = null;
 	
+	// pattern variables
 	private String pattern = null;
 	// variabe above xor variable below is set
 	private Collection patterns = null;
+	
+	private String patternField = null;
+	private String patternPath = null;
 	
 	private String description = null;
 	private boolean lock = false;
@@ -59,6 +64,10 @@ public class QueryConditionPart implements QueryPart {
 		return   TYPES;
 	}
 	
+	public QueryConditionPart() {
+	}
+	
+	
 	public QueryConditionPart(int idNumber, String entity,String path, String field, String type, String pattern, String description) {
 		this(new StringBuffer(PREFIX).append(idNumber).toString(), entity, path, field, type, pattern, description);
 	}
@@ -72,6 +81,7 @@ public class QueryConditionPart implements QueryPart {
 		this.pattern = pattern;
 		this.description = description;
 	}
+	
 	
 	public QueryConditionPart(int idNumber, String entity,String path, String field, String type, Collection patterns, String description) {
 		this(new StringBuffer(PREFIX).append(idNumber).toString(), entity, path, field, type, patterns, description);
@@ -90,6 +100,8 @@ public class QueryConditionPart implements QueryPart {
 		path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
 		field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
 		type = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
+		patternField = xml.getTextTrim(QueryXMLConstants.FIELD_AS_PATTERN_FIELD);
+		patternPath = xml.getTextTrim(QueryXMLConstants.FIELD_AS_PATTERN_PATH);
 		if(xml.hasChildren()){
 			List xmlPatterns = xml.getChildren(QueryXMLConstants.PATTERN);
 			Iterator iterator = xmlPatterns.iterator();
@@ -106,8 +118,7 @@ public class QueryConditionPart implements QueryPart {
 			lock = xmlLock!=null;
 			XMLElement xmlDyna = xml.getChild(QueryXMLConstants.DYNAMIC);
 			dynamic = xmlDyna!=null;
-			XMLElement xmlDescription = xml.getChild(QueryXMLConstants.DESCRIPTION);
-			description = (xmlDescription == null) ? "" : xmlDescription.getTextTrim();
+			description = xml.getTextTrim(QueryXMLConstants.DESCRIPTION);
 		}
 	}
 	
@@ -132,6 +143,16 @@ public class QueryConditionPart implements QueryPart {
 			XMLElement descriptionElement = new XMLElement(QueryXMLConstants.DESCRIPTION);
 			descriptionElement.addContent(description);
 			el.addContent(descriptionElement);
+		}
+		if (patternField != null) {
+			XMLElement patternFieldElement = new XMLElement(QueryXMLConstants.FIELD_AS_PATTERN_FIELD);
+			patternFieldElement.addContent(patternField);
+			el.addContent(patternFieldElement);
+		}
+		if (patternPath != null) {
+			XMLElement patternPathElement = new XMLElement(QueryXMLConstants.FIELD_AS_PATTERN_PATH);
+			patternPathElement.addContent(patternPath);
+			el.addContent(patternPathElement);
 		}
 		if(lock){
 			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
@@ -160,6 +181,13 @@ public class QueryConditionPart implements QueryPart {
 		return path;
 	}
 	
+	/**
+	 * @param path The path to set.
+	 */
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	private IDOEntityDefinition getIDOEntityDefinition() throws IDOLookupException, ClassNotFoundException{
 		if(entityDef==null){
 			entityDef = IDOLookup.getEntityDefinitionForClass(Class.forName(getEntityClassName()));
@@ -186,6 +214,11 @@ public class QueryConditionPart implements QueryPart {
 	public String getId()	{
 		return id;
 	}
+	
+	public void setIdUsingPrefix(int id) {
+		this.id = StringHandler.concat(PREFIX,Integer.toString(id));
+	}
+		
 	
 	public int getIdNumber()	{
 		return Integer.parseInt(id.substring(QueryConditionPart.PREFIX.length()));
@@ -241,6 +274,19 @@ public class QueryConditionPart implements QueryPart {
 	 */
 	public void setPattern(String string) {
 		pattern = string;
+		patterns = null;
+		patternField = null;
+		patternPath =null;
+	}
+	
+	/**
+	 * @param patterns The patterns to set.
+	 */
+	public void setPatterns(Collection patterns) {
+		this.patterns = patterns;
+		pattern = null;
+		patternField = null;
+		patternPath = null;
 	}
 
 	public void setDescription(String description)	{
@@ -331,6 +377,38 @@ public class QueryConditionPart implements QueryPart {
 	 */
 	public void setDynamic(boolean b) {
 		dynamic = b;
+	}
+
+	/**
+	 * @return Returns the patternField.
+	 */
+	public String getPatternField() {
+		return patternField;
+	}
+
+	/**
+	 * @param patternField The patternField to set.
+	 */
+	public void setPatternField(String patternField) {
+		this.patternField = patternField;
+		pattern = null;
+		patterns = null;
+	}
+
+	/**
+	 * @return Returns the patternPath.
+	 */
+	public String getPatternPath() {
+		return patternPath;
+	}
+
+	/**
+	 * @param patternPath The patternPath to set.
+	 */
+	public void setPatternPath(String patternPath) {
+		this.patternPath = patternPath;
+		pattern = null;
+		patterns = null;
 	}
 
 }
