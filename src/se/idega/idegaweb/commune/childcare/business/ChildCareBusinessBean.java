@@ -1312,6 +1312,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				placement.setRegisterDate((new IWTimestamp(application.getFromDate())).getTimestamp());
 				if (application.getRejectionDate() != null) {
 					placement.setRemovedDate((new IWTimestamp(application.getRejectionDate())).getTimestamp());
+				} else {
+					placement.setRegisterDate(null);
 				}
 				placement.store();
 			}
