@@ -170,7 +170,23 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public Collection ejbFindBySchoolAndSeasonAndYear(int schoolID, int schoolSeasonID,int schoolYearID)throws FinderException ,RemoteException{
   	return super.idoFindPKsBySQL("select * from "+this.getEntityName()+" where "+SCHOOL+" = "+String.valueOf(schoolID)+" and "+SEASON+" = "+String.valueOf(schoolSeasonID)+" and "+SCHOOLYEAR+" = "+schoolYearID+" and ("+COLUMN_VALID+" = '"+VALID+"' or "+COLUMN_VALID+" is null)");
   }
-
+  
+  public Collection ejbFindBySeasonAndYear(SchoolSeason schoolSeason,SchoolYear schoolYear)throws FinderException ,RemoteException{
+	return ejbFindBySeasonAndYear(((Integer)schoolSeason.getPrimaryKey()).intValue(),((Integer)schoolYear.getPrimaryKey()).intValue());
+  }
+  
+  public Collection ejbFindBySeasonAndYear(int schoolSeasonID,int schoolYearID)throws FinderException ,RemoteException{
+	return super.idoFindPKsBySQL("select * from "+this.getEntityName()+" where "+SEASON+" = "+String.valueOf(schoolSeasonID)+" and "+SCHOOLYEAR+" = "+schoolYearID+" and ("+COLUMN_VALID+" = '"+VALID+"' or "+COLUMN_VALID+" is null)");
+  }
+  
+  public Collection ejbFindBySeason(SchoolSeason schoolSeason)throws FinderException ,RemoteException{
+	return ejbFindBySeason(((Integer)schoolSeason.getPrimaryKey()).intValue());
+  }
+  
+  public Collection ejbFindBySeason(int schoolSeasonID)throws FinderException ,RemoteException{
+	return super.idoFindPKsBySQL("select * from "+this.getEntityName()+" where "+SEASON+" = "+String.valueOf(schoolSeasonID)+" and ("+COLUMN_VALID+" = '"+VALID+"' or "+COLUMN_VALID+" is null)");
+  }
+  
   public Collection ejbFindByTeacher(User teacher)throws FinderException ,RemoteException{
   	return ejbFindByTeacher(((Integer)teacher.getPrimaryKey()).intValue());
   }

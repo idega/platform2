@@ -8,6 +8,12 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOCompositPrimaryKeyException;
+import com.idega.data.IDOEntityDefinition;
+import com.idega.data.IDOEntityField;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
@@ -326,6 +332,70 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.append(" and school.sch_school_id = s.sch_school_id");
 		sql.append(" )");
 		return idoFindIDsBySQL(sql.toString());
+	}
+	
+	public int ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException{
+		try {
+			
+			IDOEntityDefinition usrDef = IDOLookup.getEntityDefinitionForClass(User.class);
+			String usrIdColumn = usrDef.getPrimaryKeyDefinition().getField().getSQLFieldName();
+			IDOEntityField dateOfBirth = usrDef.findFieldByUniqueName(User.FIELD_DATE_OF_BIRTH);
+
+			IDOQuery query = this.idoQuery();
+			
+			query.appendSelectCountFrom(usrDef.getSQLTableName());
+			query.appendWhere();
+			query.append(dateOfBirth);
+			query.appendGreaterThanOrEqualsSign();
+			query.append(firstDateOfBirth);
+			
+			query.appendAnd();
+			query.append(dateOfBirth);
+			query.appendLessThanOrEqualsSign();
+			query.append(lastDateOfBirth);
+			
+			query.appendAnd();
+			query.append(usrIdColumn);
+			
+			IDOQuery subQuery = this.idoQuery();
+			
+			subQuery.appendSelect();
+			subQuery.append(" usr.");
+			subQuery.append(usrIdColumn);
+			subQuery.appendFrom();
+			subQuery.append(this.getEntityName());
+			subQuery.append(" cm, ");
+			subQuery.append(usrDef.getSQLTableName());
+			subQuery.append(" usr ");
+			subQuery.appendWhere();
+			subQuery.append("usr.");
+			subQuery.append(usrIdColumn);
+			subQuery.appendEqualSign();
+			subQuery.append("cm.");
+			subQuery.append(MEMBER);
+			
+			subQuery.appendAnd();
+			subQuery.append("cm.");
+			subQuery.append(REGISTER_DATE);
+			subQuery.appendLessThanOrEqualsSign();
+			subQuery.append(date);
+			
+			subQuery.appendAnd();
+			subQuery.append("cm.");
+			subQuery.append(this.SCHOOLCLASS);
+			subQuery.appendInCollection(classes);
+			
+			query.appendNotIn(subQuery);
+			
+			System.out.println("SQL -> "+this.getClass()+":"+query);
+					
+			return idoGetNumberOfRecords(query);
+		} catch (IDOCompositPrimaryKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		return -1;
 	}
 
 }
