@@ -244,7 +244,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						appl.setApplicationStatus(getStatusSentIn());
 						
 						if (hasPriority != null)
-							appl.setHasPriority(hasPriority[i]);
+							appl.setHasQueuePriority(hasPriority[i]);
 						
 						if (checkId != -1)
 							appl.setCheckId(checkId);

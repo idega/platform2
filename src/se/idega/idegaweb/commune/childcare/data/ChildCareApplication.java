@@ -18,6 +18,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public java.sql.Date getFromDate();
  public boolean getHasDateSet();
  public boolean getHasPriority();
+ public boolean getHasQueuePriority();
  public java.lang.String getMessage();
  public int getMethod();
  public java.sql.Date getOfferValidUntil();
@@ -29,6 +30,8 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public int getQueueOrder();
  public java.sql.Date getRejectionDate();
  public void initializeAttributes();
+ public boolean isAcceptedByParent()throws java.rmi.RemoteException;
+ public boolean isCancelledOrRejectedByParent()throws java.rmi.RemoteException;
  public void setApplicationStatus(char p0);
  public void setCareTime(int p0);
  public void setCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0);
@@ -41,6 +44,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setFromDate(java.sql.Date p0);
  public void setHasDateSet(boolean p0);
  public void setHasPriority(boolean p0);
+ public void setHasQueuePriority(boolean p0);
  public void setMessage(java.lang.String p0);
  public void setMethod(int p0);
  public void setOfferValidUntil(java.sql.Date p0);
@@ -51,6 +55,4 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setQueueDate(java.sql.Date p0);
  public void setQueueOrder(int p0);
  public void setRejectionDate(java.sql.Date p0);
- public boolean isAcceptedByParent() throws java.rmi.RemoteException;
- public boolean isCancelledOrRejectedByParent() throws  java.rmi.RemoteException;
 }

@@ -163,9 +163,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 					showComment = true;
 					applicationTable.add(getSmallErrorText("*"), column, row);
 				}
-				if (application.getHasPriority()) {
+				if (application.getHasQueuePriority()) {
 					showPriority = true;
-					applicationTable.add(getSmallText("*"), column, row);
+					applicationTable.add(getSmallErrorText("+"), column, row);
 				}
 				if (showComment || showPriority)
 					applicationTable.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
@@ -200,7 +200,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			if (!showComment)
 				applicationTable.setHeight(2, row++);
 			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-			applicationTable.add(getSmallText("* "), 1, row);
+			applicationTable.add(getSmallErrorText("+ "), 1, row);
 			applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row);
 		}
 		
