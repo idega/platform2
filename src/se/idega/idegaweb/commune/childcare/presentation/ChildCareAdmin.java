@@ -212,7 +212,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				link.setEventListener(ChildCareEventListener.class);
 				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
 				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
-				link.setParameter(getSession().getParameterCaseCode(), getBusiness().getChildCareCaseCode());
+				link.setParameter(getSession().getParameterCaseCode(), ChildCareConstants.CASE_CODE_KEY);
 				if (getResponsePage() != null)
 					link.setPage(getResponsePage());
 	

@@ -108,7 +108,7 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 
 		int numberOfChoices = 0;
 		try {
-			Collection children = getChildCareBusiness().findSentInAndRejectedApplicationsByArea(areaID, numberOfMonths.intValue(), numberOfWeeks.intValue(), firstHandOnly.booleanValue(), getChildCareBusiness().getChildCareCaseCode());
+			Collection children = getChildCareBusiness().findSentInAndRejectedApplicationsByArea(areaID, numberOfMonths.intValue(), numberOfWeeks.intValue(), firstHandOnly.booleanValue(), ChildCareConstants.CASE_CODE_KEY);
 			if (children != null) {
 				Iterator iter = children.iterator();
 				while (iter.hasNext()) {

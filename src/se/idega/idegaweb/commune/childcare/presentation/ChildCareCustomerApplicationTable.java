@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
@@ -40,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.68 2004/09/22 10:50:28 aron Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.69 2004/10/04 17:06:21 thomas Exp $
  * @since 12.2.2003 
  */
 
@@ -202,21 +203,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		}
 
 		_caseCode = null;
-		try {
-			if (_showOnlyChildcare) {
-				_caseCode = getChildCareBusiness(iwc).getChildCareCaseCode();
-			}
-			else if (_showOnlyAfterSchoolCare) {
-				_caseCode = getChildCareBusiness(iwc).getAfterSchoolCareCaseCode();
-			}
-			else {
-				_caseCode = null;
-			}
+		if (_showOnlyChildcare) {
+			_caseCode = ChildCareConstants.CASE_CODE_KEY;
 		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
+		else if (_showOnlyAfterSchoolCare) {
+			_caseCode = ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY;
 		}
-
+		else {
+			_caseCode = null;
+		}
 		return CCConstants.NO_ACTION;
 	}
 
@@ -482,44 +477,42 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)));
 			return "";
 		}
-		else {
-			layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
-			boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(getChildId(iwc), _caseCode);
-			Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
+		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
+		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(getChildId(iwc), _caseCode);
+		Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
 
-			boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc), _caseCode);
+		boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc), _caseCode);
 
-			Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication);
+		Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication);
 
-			GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
-			cancelBtn.setPageToOpen(getParentPageID());
-			cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
+		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
+		cancelBtn.setPageToOpen(getParentPageID());
+		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
 
-			String[] submitName =_showOnlyAfterSchoolCare ? SUBMIT_ANSWER : SUBMIT;
-			SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(submitName)));
-			submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
-			
-			int row = 1;
-			layoutTbl.add(placementInfo, 1, row++);
-			if (applications.size() > 0) {
-				layoutTbl.setHeight(row++, 12);
-				layoutTbl.add(appTable, 1, row++);
-			}
-			if (hasOffer) {
-				layoutTbl.setHeight(row++, 12);
-				layoutTbl.add(cancelBtn, 1, row);
-				layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
-				layoutTbl.add(submitBtn, 1, row);
-				layoutTbl.setAlignment(1, row++, Table.HORIZONTAL_ALIGN_RIGHT);
-				layoutTbl.setHeight(row++, 12);
-				layoutTbl.add(getHelpTextPage1(), 1, row);
-			}
-			else {
-				layoutTbl.setHeight(row++, 12);
-				layoutTbl.add(new UserHomeLink(), 1, row);
-			}
-			return ((ChildCarePlaceOfferTable1) appTable).getOnSubmitHandler();
+		String[] submitName =_showOnlyAfterSchoolCare ? SUBMIT_ANSWER : SUBMIT;
+		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(submitName)));
+		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
+		
+		int row = 1;
+		layoutTbl.add(placementInfo, 1, row++);
+		if (applications.size() > 0) {
+			layoutTbl.setHeight(row++, 12);
+			layoutTbl.add(appTable, 1, row++);
 		}
+		if (hasOffer) {
+			layoutTbl.setHeight(row++, 12);
+			layoutTbl.add(cancelBtn, 1, row);
+			layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
+			layoutTbl.add(submitBtn, 1, row);
+			layoutTbl.setAlignment(1, row++, Table.HORIZONTAL_ALIGN_RIGHT);
+			layoutTbl.setHeight(row++, 12);
+			layoutTbl.add(getHelpTextPage1(), 1, row);
+		}
+		else {
+			layoutTbl.setHeight(row++, 12);
+			layoutTbl.add(new UserHomeLink(), 1, row);
+		}
+		return ((ChildCarePlaceOfferTable1) appTable).getOnSubmitHandler();
 	}
 
 	private Table getPlacedAtSchool(IWContext iwc, boolean hasActiveApplication) throws RemoteException {

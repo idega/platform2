@@ -2,13 +2,10 @@ package se.idega.idegaweb.commune.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
-
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBOServiceBean;
@@ -42,11 +39,10 @@ public class CommuneCaseBusinessBean extends IBOServiceBean implements CommuneCa
 	public CaseCode[] getProviderCaseCodes() {
 		if (providerCaseCodes == null) {
 			try {
-				ChildCareBusiness ccBus = (ChildCareBusiness) getServiceInstance(ChildCareBusiness.class);
 				SchoolChoiceBusiness scBus = (SchoolChoiceBusiness) getServiceInstance(SchoolChoiceBusiness.class);
 				providerCaseCodes = new CaseCode[3];
-				providerCaseCodes[0] = getCaseBusiness().getCaseCode(ccBus.getAfterSchoolCareCaseCode());
-				providerCaseCodes[1] = getCaseBusiness().getCaseCode(ccBus.getChildCareCaseCode());
+				providerCaseCodes[0] = getCaseBusiness().getCaseCode(ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY);
+				providerCaseCodes[1] = getCaseBusiness().getCaseCode(ChildCareConstants.CASE_CODE_KEY);
 				providerCaseCodes[2] = getCaseBusiness().getCaseCode(scBus.getSchoolChoiceCaseCode());
 			} 
 			catch (Exception e) {

@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
@@ -83,7 +84,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		if (child != null) {
 			try {
 				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
-				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue(), getBusiness().getChildCareCaseCode());
+				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue(), ChildCareConstants.CASE_CODE_KEY);
 			}
 			catch (RemoteException re) {
 				currentProvider = null;
@@ -154,7 +155,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		boolean hasPendingApplications = false;
 		if (child != null) {
 			try {
-				hasPendingApplications = getBusiness().hasPendingApplications(((Integer) child.getPrimaryKey()).intValue(), getBusiness().getChildCareCaseCode());
+				hasPendingApplications = getBusiness().hasPendingApplications(((Integer) child.getPrimaryKey()).intValue(), ChildCareConstants.CASE_CODE_KEY);
 				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue(), null);
 			}
 			catch (RemoteException e) {
@@ -390,6 +391,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				table.add(getSmallText(address.getStreetAddress() + ", " + address.getPostalAddress()), 3, 3);
 		}
 		catch (RemoteException e) {
+			// empty
 		}
 
 		return table;

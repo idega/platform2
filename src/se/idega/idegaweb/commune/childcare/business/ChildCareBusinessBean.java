@@ -122,9 +122,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	final int FS_WITH_PLACE = 2;
 	final int FS_WITHOUT_PLACE = 3;
 
-	private final static String CASE_CODE_KEY = "MBANBOP";
-	private final static String AFTER_SCHOOL_CASE_CODE_KEY = "MBFRITV";
-
 	private final static String PROPERTY_CONTRACT_CATEGORY = "childcare_contract_category";
 
 	private final static String STATUS_NOT_PROCESSED = String.valueOf(ChildCareConstants.STATUS_SENT_IN);
@@ -132,14 +129,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
-	}
-
-	public String getChildCareCaseCode() {
-		return CASE_CODE_KEY;
-	}
-
-	public String getAfterSchoolCareCaseCode() {
-		return AFTER_SCHOOL_CASE_CODE_KEY;
 	}
 
 	private ChildCareApplicationHome getChildCareApplicationHome() {
@@ -1065,7 +1054,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean isAfterSchoolApplication(Case application) {
-		if (application.getCode().equals(AFTER_SCHOOL_CASE_CODE_KEY)) return true;
+		if (application.getCode().equals(ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY)) return true;
 		return false;
 	}
 
@@ -2474,7 +2463,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		String caseCode = "unreachable";
 		try {
 			caseCode = theCase.getCode();
-			if (CASE_CODE_KEY.equals(caseCode) || AFTER_SCHOOL_CASE_CODE_KEY.equals(caseCode)) {
+			if (ChildCareConstants.CASE_CODE_KEY.equals(caseCode) || ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY.equals(caseCode)) {
 				int caseID = ((Integer) theCase.getPrimaryKey()).intValue();
 				return this.getApplicationByPrimaryKey(String.valueOf(caseID));
 			}
@@ -3725,7 +3714,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(ChildCareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
@@ -3734,7 +3723,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getCaseLogAlteredContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(ChildCareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
@@ -3743,7 +3732,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getCaseLogTerminatedContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(ChildCareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
