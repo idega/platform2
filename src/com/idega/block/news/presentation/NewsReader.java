@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.89 2002/04/11 23:54:54 laddi Exp $
+ * $Id: NewsReader.java,v 1.90 2002/04/23 12:20:40 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -490,7 +490,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       if(showNewsCollectionButton){
 	if( !collection){
 	  // adds collectionButton only if one category bound to instance:
-	  if(getCategoryIds().length == 1)
+	  //if(getCategoryIds().length == 1)
 	    T.add(getCollectionTable(iwc,getCategoryIds()[0]));
 	}
 	else if(collection && isFromCollectionLink(iwc)){
