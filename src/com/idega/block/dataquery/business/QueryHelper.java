@@ -37,7 +37,7 @@ public class QueryHelper {
 	private QuerySQLPart sqlPart = null;
 	private QueryEntityPart sourceEntity = null;
 	private List listOfRelatedEntities = null;
-	private List listOfFields = null;
+	private List listOfFields = new ArrayList();
 	private List listOfConditions = null;
 	private int step = 0;
 	private boolean isTemplate = false;
@@ -88,7 +88,9 @@ public class QueryHelper {
 			// check for direct sql
 			XMLElement sqlElement = root.getChild(QueryXMLConstants.SQL);
 			if (sqlElement != null)	{
-				QuerySQLPart sqlPart = new QuerySQLPart(sqlElement);
+				sqlPart = new QuerySQLPart(sqlElement);
+				List fields = sqlPart.getFields( name);
+				listOfFields.addAll(fields);
 			}
 			XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
 			if (source != null) {
@@ -119,7 +121,6 @@ public class QueryHelper {
 							related.getAttribute(QueryXMLConstants.LOCK);
 						fieldsLock = (fieldLock != null && Boolean.getBoolean(fieldLock.getValue()));
 						if (fields != null && fields.hasChildren()) {
-							listOfFields = new ArrayList();
 							Iterator iter = fields.getChildren().iterator();
 							while (iter.hasNext()) {
 								XMLElement xmlField = (XMLElement) iter.next();

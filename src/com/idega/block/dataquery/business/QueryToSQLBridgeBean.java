@@ -31,7 +31,7 @@ import com.idega.util.database.ConnectionBroker;
  * @version 1.0
  * Created on May 27, 2003
  */
-public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLBridge  {
+public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQLBridge {
   
   public QuerySQL createQuerySQL(QueryHelper queryHelper, IWContext iwc) throws QueryGenerationException  {
   	// avoid trouble with other users that use the query at the same time
@@ -43,20 +43,29 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
     return querySQL;
   }
   
+  /**
+   *  Use this method if you do not need to print or show the executed sql statements
+   */
+  public QueryResult executeQueries(QuerySQL querySQL)	{
+  	return executeQueries(querySQL, new ArrayList());
+  }
 
-  public QueryResult executeQueries(QuerySQL querySQL) {
+	/** 
+	 * Use this method for printing or showing the executed sql statements
+	 */
+  public QueryResult executeQueries(QuerySQL querySQL, List executedSQLStatements) {
   	QueryResult queryResult = null;
   	List temporaryTables = new ArrayList();
   	UserTransaction transactionManager = getSessionContext().getUserTransaction();
 		Connection connection = ConnectionBroker.getConnection();
   	try {
   		transactionManager.begin();
-  		queryResult = executeSQL(querySQL, connection, temporaryTables);
+  		queryResult = executeSQL(querySQL, connection, temporaryTables, executedSQLStatements);
   		// drop created views 
   		Iterator iterator = temporaryTables.iterator();
   		while (iterator.hasNext()) 	{
   			String tableName = (String) iterator.next();
-  			dropTemporaryView(tableName,connection);
+  			dropTemporaryView(tableName,connection, executedSQLStatements);
   		}
   		// finally...done!!
   		transactionManager.commit();
@@ -75,11 +84,13 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
   	return queryResult;  			
   }
   
-  private void dropTemporaryView(String tableName, Connection connection) throws SQLException {
+  private void dropTemporaryView(String tableName, Connection connection, List executedSQLStatements) throws SQLException {
   	StringBuffer buffer = new StringBuffer("DROP VIEW ").append(tableName);
+  	String dropTable = buffer.toString();
 		Statement statement = connection.createStatement();
 		try {
-  		statement.execute(buffer.toString());
+  		statement.execute(dropTable);
+  		executedSQLStatements.add(dropTable);
 		}
 		catch (SQLException ex) {
 			String message =
@@ -90,9 +101,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
 		}
   }
  
-  	
-  
-  private QueryResult executeSQL(QuerySQL querySQL, Connection connection, List temporaryTables) throws SQLException	{
+	private QueryResult executeSQL(QuerySQL querySQL, Connection connection, List temporaryTables, List executedSQLStatements) throws SQLException	{
   	// go back to the very first query
   	QuerySQL currentQuery = querySQL;
   	while (currentQuery.hasPreviousQuery())	{
@@ -102,12 +111,12 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
   	do {
   		if (currentQuery.hasNextQuery())	{
    			// mark the generated table
-  			String viewTableName = createViewFromQuery(connection, currentQuery);
+  			String viewTableName = createViewFromQuery(connection, currentQuery, executedSQLStatements);
   			temporaryTables.add(viewTableName);
   			currentQuery = currentQuery.nextQuery();
   		}
   		else {
-  			return executeQuery(connection, currentQuery);
+  			return executeQuery(connection, currentQuery, executedSQLStatements);
   		}
   	}
   	while (true);
@@ -115,7 +124,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
   			
  		
   
-	private String createViewFromQuery(Connection connection, QuerySQL querySQL)	throws SQLException {
+	private String createViewFromQuery(Connection connection, QuerySQL querySQL, List executedSQLStatements)	throws SQLException {
 		String viewTableName = null;
 		Statement statement = connection.createStatement();
 		try {
@@ -129,6 +138,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
 			String createViewStatement = buffer.toString();
 			// execute statement
 	    statement.execute(createViewStatement);
+	    executedSQLStatements.add(createViewStatement);
 		}
     catch (SQLException ex) {
       System.err.println("[QueryToSQLBridge] sql statement could not be executed. Message was: " + 
@@ -143,7 +153,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
     return viewTableName;
 	}
 
-	private QueryResult executeQuery(Connection connection, QuerySQL querySQL) throws SQLException	{
+	private QueryResult executeQuery(Connection connection, QuerySQL querySQL, List executedSQLStatements) throws SQLException	{
 		Statement statement = connection.createStatement();
 		String sqlStatement = querySQL.toSQLString();
 		List displayNames = querySQL.getDisplayNames();
@@ -154,6 +164,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean  implements QueryToSQLB
       // get default connection
       statement = connection.createStatement();
       resultSet = statement.executeQuery(sqlStatement);
+      executedSQLStatements.add(sqlStatement);
       metadata = resultSet.getMetaData();
       
       int numberOfColumns = metadata.getColumnCount();

@@ -375,7 +375,10 @@ public class ReportOverview extends Block {
 	    		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
 	    		query.setIdentifierValueMap(modifiedValues);
 	    		// show result of query
-	    		if (! executeQueries(query, bridge))	{
+	    		List executedSQLStatements = new ArrayList();
+	    		boolean isOkay = executeQueries(query, bridge, executedSQLStatements);
+	    		addExecutedSQLQueries(executedSQLStatements);
+	    		if (! isOkay)	{
 	    			errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 	    		}	
 	     		// show again the input fields
@@ -393,7 +396,9 @@ public class ReportOverview extends Block {
 	    // query is not dynamic
 	    //
 	    else {
-	    	boolean isOkay = executeQueries(query, bridge);
+	    	List executedSQLStatements = new ArrayList();
+	    	boolean isOkay = executeQueries(query, bridge, executedSQLStatements);
+	    	addExecutedSQLQueries(executedSQLStatements);
 	    	if (! isOkay)	{
 	    		errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 	    	}
@@ -413,7 +418,18 @@ public class ReportOverview extends Block {
 	  add(text);
 	  add(Text.getBreak());
 	}
-
+	
+	private void addExecutedSQLQueries(List executedSQLStatements) {
+		Iterator iterator = executedSQLStatements.iterator();
+		while (iterator.hasNext())	{
+			String statement = (String) iterator.next();
+			Text text = new Text(statement);
+			text.setBold();
+	  	text.setFontColor("#FF0000");
+	  	add(text);
+	  	add(Text.getBreak());
+		}
+	}
 		
 	
 	private void showInputFields(QuerySQL query, Map identifierValueMap, IWResourceBundle resourceBundle)	{
@@ -427,8 +443,8 @@ public class ReportOverview extends Block {
 	}
 
 	
-	private boolean executeQueries(QuerySQL query, QueryToSQLBridge bridge) throws RemoteException {
-		QueryResult queryResult = bridge.executeQueries(query);
+	private boolean executeQueries(QuerySQL query, QueryToSQLBridge bridge, List executedSQLQueries) throws RemoteException {
+		QueryResult queryResult = bridge.executeQueries(query, executedSQLQueries);
 		// check if everything is fine
 		if (queryResult == null || queryResult.isEmpty())	{
 			// nothing to do

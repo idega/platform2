@@ -4,6 +4,7 @@
  */
 package com.idega.block.dataquery.business;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +38,7 @@ public class QuerySQLPart implements QueryPart {
 			XMLElement element = (XMLElement) childrenIterator.next();
 			String name = element.getName();
 			if (name.equals(QueryXMLConstants.SQL_STATEMENT))	{
-				String sqlStatement = element.getTextTrim();
+				statement = element.getTextTrim();
 			}
 			if (name.equals(QueryXMLConstants.SQL_VARIABLE))	{
 				String key = element.getChild(QueryXMLConstants.SQL_VARIABLE_KEY).getTextTrim();
@@ -94,6 +95,11 @@ public class QuerySQLPart implements QueryPart {
 		this.statement = statement;
 	}
 	
+	public String getStatement()	{
+		return statement;
+	}
+	
+	
 	public void setVariable(String key, String value, String description) {	
 		keyValueMap.put(key, value);
 		keyDescriptionMap.put(key, description);
@@ -103,6 +109,20 @@ public class QuerySQLPart implements QueryPart {
 		resultFieldType.put(field, type);
 		resultDescriptionMap.put(field,description);
 	}
+
+	public List getFields(String queryName)	{
+		List fields = new ArrayList();
+		Iterator iterator = resultFieldType.entrySet().iterator();
+		while (iterator.hasNext())	{
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String field = (String) entry.getKey();
+			String type = (String) entry.getValue();
+			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type);
+			fields.add(fieldPart);
+		}
+		return fields;
+	}
+			
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.business.QueryPart#encode()
