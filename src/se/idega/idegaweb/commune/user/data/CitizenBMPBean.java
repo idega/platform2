@@ -24,6 +24,8 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOStoreException;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
 import com.idega.util.ListUtil;
@@ -203,27 +205,81 @@ public class CitizenBMPBean extends UserBMPBean {
 	
 	
 	
-	public Collection ejbFindCitizensNotAssignedToClassOnGivenDate(Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException, FinderException{
+	public Collection ejbFindCitizensNotAssignedToClassOnGivenDate(Group citizenGroup, Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException, FinderException{
 		try {
 			
 			IDOEntityDefinition usrDef = IDOLookup.getEntityDefinitionForClass(User.class);
 			IDOEntityDefinition scmDef = IDOLookup.getEntityDefinitionForClass(SchoolClassMember.class);
+			IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+
 			String usrIdColumn = usrDef.getPrimaryKeyDefinition().getField().getSQLFieldName();
 			IDOEntityField dateOfBirthField = usrDef.findFieldByUniqueName(User.FIELD_DATE_OF_BIRTH);
 
 			IDOEntityField memberField = scmDef.findFieldByUniqueName(SchoolClassMember.FIELD_MEMBER);
 			IDOEntityField registerDateField = scmDef.findFieldByUniqueName(SchoolClassMember.FIELD_REGISTER_DATE);
 			IDOEntityField schoolClassField = scmDef.findFieldByUniqueName(SchoolClassMember.FIELD_SCHOOLCLASS);
-
-			IDOQuery query = this.idoQuery();
 			
-			query.appendSelectAllFrom(usrDef.getSQLTableName());
+			//relationStatus could be as parameter to this method
+			String[] relationStatus = new String[1];
+			relationStatus[0] = GroupRelation.STATUS_ACTIVE;
+		  	
+			String[] tables = new String[2];
+			String[] variables = new String[2];
+			//table name
+			tables[0] = usrDef.getSQLTableName();
+			//	as variable
+			variables[0] = "u";
+			//table name
+			tables[1] = grRelDef.getSQLTableName();
+			//	as variable
+			variables[1] = "gr_rel";
+			  	
+			//constructing query
+			IDOQuery query = idoQuery();
+			//select
+			query.appendSelect();
+			query.append(variables[0]);
+			query.append(".* ");
+			//from
+			query.appendFrom(tables,variables);
+			//where
 			query.appendWhere();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_GROUP).getSQLFieldName());
+			query.appendEqualSign();
+			query.append(citizenGroup.getPrimaryKey());
+			//and
+			query.appendAnd();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_RELATED_GROUP).getSQLFieldName());
+			query.appendEqualSign();
+			query.append(variables[0]);
+			query.append(".");
+			query.append(usrIdColumn);
+			
+			
+			//and if relationstatus
+			if(relationStatus!= null){
+				//and
+				query.appendAnd();
+				query.append(variables[1]);
+				query.append(".");
+				query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_STATUS).getSQLFieldName());
+				query.appendInArrayWithSingleQuotes(relationStatus);		
+			}
+
+			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
 			query.append(dateOfBirthField);
 			query.appendGreaterThanOrEqualsSign();
 			query.append(firstDateOfBirth);
 			
 			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
 			query.append(dateOfBirthField);
 			query.appendLessThanOrEqualsSign();
 			query.append(lastDateOfBirth);
@@ -264,8 +320,9 @@ public class CitizenBMPBean extends UserBMPBean {
 			System.out.println("SQL -> "+this.getClass()+":"+query);
 					
 			return idoFindPKsByQuery(query);
+			//Temp debug
+			//return idoFindPKsByQuery(query,100);
 		} catch (IDOCompositPrimaryKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return ListUtil.getEmptyList();

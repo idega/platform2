@@ -258,7 +258,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     
     
     
-	public JasperDesign generateLayout(JRDataSource _dataSource, Map parameters) throws IOException, JRException{
+	public JasperDesign generateLayout(JRDataSource _dataSource) throws IOException, JRException{
 		int columnWidth = 120;
 		int prmLableWidth = 95;
 		int prmValueWidth = 55;
@@ -266,16 +266,19 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
 		
 		Collection _allFields = null;
+		Map externalParameters = null;
 		if(_dataSource != null && _dataSource instanceof ReportableCollection){
 			ReportableCollection rcSource = ((ReportableCollection)_dataSource);
 			_allFields = rcSource.getListOfFields();
+			externalParameters = rcSource.getExtraHeaderParameters();
+			
 		}
 		
 
 	
-		if(parameters != null ){
-			Iterator keyIter = parameters.keySet().iterator();
-			Iterator valueIter = parameters.values().iterator();
+		if(externalParameters != null ){
+			Iterator keyIter = externalParameters.keySet().iterator();
+			Iterator valueIter = externalParameters.values().iterator();
 			while (keyIter.hasNext()) {
 				String keyLabel = (String)keyIter.next();
 				String valueLabel = (String)valueIter.next();

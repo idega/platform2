@@ -257,7 +257,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				data.addData(childAddress,childAddressString);
 			}
 			
-			Collection coll = gRelationHome.findGroupsRelationshipsContaining(communeGroup,child);
+			Collection coll = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,child,GroupRelation.STATUS_ACTIVE);
 			Iterator iterator = coll.iterator();
 			if(iterator.hasNext()){
 				GroupRelation rel = (GroupRelation)iterator.next();
@@ -291,7 +291,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						String parent1AddressString = stName+((number==null)?"":(" "+number));
 						data.addData(parent1Address,parent1AddressString);
 					}			
-					Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
+					Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 					Iterator pIterator = pColl.iterator();
 					if(pIterator.hasNext()){
 						GroupRelation rel = (GroupRelation)pIterator.next();
@@ -323,7 +323,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						data.addData(parent2Address,parent2AddressString);
 					}
 								
-					Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
+					Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 					Iterator pIterator = pColl.iterator();
 					if(pIterator.hasNext()){
 						GroupRelation rel = (GroupRelation)pIterator.next();
@@ -596,7 +596,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					data.addData(childAddress,childAddressString);
 				}
 				
-				Collection coll = gRelationHome.findGroupsRelationshipsContaining(communeGroup,child);
+				Collection coll = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,child,GroupRelation.STATUS_ACTIVE);
 				Iterator iterator = coll.iterator();
 				if(iterator.hasNext()){
 					GroupRelation rel = (GroupRelation)iterator.next();
@@ -630,7 +630,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 							String parent1AddressString = stName+((number==null)?"":(" "+number));
 							data.addData(parent1Address,parent1AddressString);
 						}			
-						Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
+						Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 						Iterator pIterator = pColl.iterator();
 						if(pIterator.hasNext()){
 							GroupRelation rel = (GroupRelation)pIterator.next();
@@ -662,7 +662,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 							data.addData(parent2Address,parent2AddressString);
 						}
 									
-						Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
+						Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 						Iterator pIterator = pColl.iterator();
 						if(pIterator.hasNext()){
 							GroupRelation rel = (GroupRelation)pIterator.next();
@@ -773,7 +773,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
 		initializeCommuneUserBusinessIfNeeded();
 		Group protectedUserGroup = _communeUserService.getRootProtectedCitizenGroup();
-		Collection relToProtectedGroup = gRelationHome.findGroupsRelationshipsContaining(protectedUserGroup,usr);
+		Collection relToProtectedGroup = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(protectedUserGroup,usr,GroupRelation.STATUS_ACTIVE);
 		if(relToProtectedGroup != null){
 			long first = firstDateOfContitionInPeriode.getTime();
 			long last = lastDateOfConditionInPeriode.getTime()+millisecondsInOneDay-1;

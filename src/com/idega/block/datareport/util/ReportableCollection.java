@@ -38,7 +38,7 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	private List _fields = new ArrayList();
 	private Object _defaultFieldValue = null;
 	
-	private Map _extraHeaderParameters = new QueueMap();
+	private QueueMap _extraHeaderParameters = new QueueMap();
 	
 	
 	/**
@@ -123,6 +123,11 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	public void addExtraHeaderParameter(String labelKey, String LabelValue, String valueKey, String valueValue){
 		_extraHeaderParameters.put(labelKey,LabelValue);
 		_extraHeaderParameters.put(valueKey,valueValue);
+	}
+	
+	public void addExtraHeaderParameterAtBeginning(String labelKey, String LabelValue, String valueKey, String valueValue){
+		_extraHeaderParameters.putAtBeginning(valueKey,valueValue);
+		_extraHeaderParameters.putAtBeginning(labelKey,LabelValue);
 	}
 
 	/**

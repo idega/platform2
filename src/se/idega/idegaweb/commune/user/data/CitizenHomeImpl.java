@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.user.data;
 
+import com.idega.user.data.Group;
+
 
 public class CitizenHomeImpl extends com.idega.data.IDOFactory implements CitizenHome
 {
@@ -17,21 +19,21 @@ public java.util.Collection findAllCitizensRegisteredToChildCare(java.sql.Date p
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CitizenBMPBean)entity).ejbFindAllCitizensRegisteredToChildCare(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
+	return this.getIDOEntityListForPrimaryKeys(ids);
 }
 
 public java.util.Collection findAllCitizensRegisteredToSchool(com.idega.block.school.data.SchoolSeason p0,java.sql.Date p1,java.sql.Date p2)throws javax.ejb.FinderException,com.idega.data.IDOLookupException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CitizenBMPBean)entity).ejbFindAllCitizensRegisteredToSchool(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
+	return this.getIDOEntityListForPrimaryKeys(ids);
 }
 
-public java.util.Collection findCitizensNotAssignedToClassOnGivenDate(java.sql.Date p0,java.util.Collection p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException,com.idega.data.IDOLookupException,javax.ejb.FinderException{
+public java.util.Collection findCitizensNotAssignedToClassOnGivenDate(Group citizenGroup, java.sql.Date p0,java.util.Collection p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException,com.idega.data.IDOLookupException,javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CitizenBMPBean)entity).ejbFindCitizensNotAssignedToClassOnGivenDate(p0,p1,p2,p3);
+	java.util.Collection ids = ((CitizenBMPBean)entity).ejbFindCitizensNotAssignedToClassOnGivenDate(citizenGroup,p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
+	return this.getIDOEntityListForPrimaryKeys(ids);
 }
 
  public Citizen findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
