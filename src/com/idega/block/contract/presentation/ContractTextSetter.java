@@ -147,7 +147,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		T.setAlignment(1, 2, "right");
 		return T;
 	}
-	private PresentationObject getTitleForm(IWContext iwc, int iCategoryId) {
+	private Form getTitleForm(IWContext iwc, int iCategoryId) {
 		Form F = new Form();
 		Table T = new Table();
 		int row = 1;
@@ -172,7 +172,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		F.add(T);
 		return (F);
 	}
-	private PresentationObject getSetupForm(IWContext iwc, int iCategoryId) {
+	private Form getSetupForm(IWContext iwc, int iCategoryId) {
 		//Table Frame = new Table(2,1);
 		Table T = new Table();
 		T.add(getUpLink(iCategoryId), 1, 1);
@@ -224,7 +224,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		return myForm;
 	}
 
-	private PresentationObject ConfirmDelete(IWContext iwc) {
+	private Form ConfirmDelete(IWContext iwc) {
 		String sTextId = iwc.getParameter("text_id");
 		Form F = new Form();
 		Table T = new Table(3, 2);

@@ -98,7 +98,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     }
   }
 
-  public PresentationObject getConfirmBox(IWContext iwc,String typeOfObject){
+  public Form getConfirmBox(IWContext iwc,String typeOfObject){
     Table t = new Table();
     t.setStyleClass(borderAllWhite);
     f = new Form();

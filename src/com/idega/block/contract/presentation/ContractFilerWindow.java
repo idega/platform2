@@ -73,7 +73,7 @@ public class ContractFilerWindow extends IWAdminWindow
 		else
 			add(printForm(iCategoryId, iContractId));
 	}
-	private PresentationObject printForm(int iCategoryId, int iContractId)
+	private Form printForm(int iCategoryId, int iContractId)
 	{
 		Table T = new Table(5, 7);
 		T.add(iwrb.getLocalizedString("titlefont", "Title font"), 1, 2);

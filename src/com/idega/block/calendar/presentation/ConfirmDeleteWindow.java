@@ -64,7 +64,7 @@ public class ConfirmDeleteWindow extends IWAdminWindow{
       }
   }
 
-  public PresentationObject getConfirmBox(IWContext iwc){
+  public Form getConfirmBox(IWContext iwc){
     Table t = new Table(1,2);
     Form f = new Form();
 

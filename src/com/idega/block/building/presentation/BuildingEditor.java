@@ -5,9 +5,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-
 import javax.ejb.FinderException;
-
+import javax.faces.component.UIComponent;
 import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentCategory;
@@ -731,7 +730,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 
 		return T;
 	}
-	private PresentationObject makeComplexFields(Complex eComplex) throws RemoteException,FinderException{
+	private UIComponent makeComplexFields(Complex eComplex) throws RemoteException,FinderException{
 		boolean e = eComplex != null ? true : false;
 		String sId = e ? eComplex.getPrimaryKey().toString() : "";
 		String sName = e ? eComplex.getName() : "";
@@ -792,7 +791,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		return form;
 	}
 
-	private PresentationObject makeBuildingFields(Building eBuilding) throws RemoteException,FinderException{
+	private UIComponent makeBuildingFields(Building eBuilding) throws RemoteException,FinderException{
 		boolean e = eBuilding != null ? true : false;
 		String sName = e ? eBuilding.getName() : "";
 		String sInfo = e ? eBuilding.getInfo() : "";
@@ -873,7 +872,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		form.add(Frame);
 		return form;
 	}
-	private PresentationObject makeFloorFields(Floor eFloor) throws RemoteException,FinderException{
+	private Form makeFloorFields(Floor eFloor) throws RemoteException,FinderException{
 		boolean e = eFloor != null ? true : false;
 		String sName = e ? eFloor.getName() : "";
 		String sInfo = e ? eFloor.getInfo() : "";
@@ -941,7 +940,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		form.add(Frame);
 		return form;
 	}
-	private PresentationObject makeCategoryFields(ApartmentCategory eApartmentCategory)throws RemoteException,FinderException {
+	private Form makeCategoryFields(ApartmentCategory eApartmentCategory)throws RemoteException,FinderException {
 		boolean e = eApartmentCategory != null ? true : false;
 		String sName = e ? eApartmentCategory.getName() : "";
 		String sInfo = e ? eApartmentCategory.getInfo() : "";
@@ -1001,7 +1000,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		return form;
 	}
 
-	private PresentationObject makeTypeFields(ApartmentType eApartmentType, int iPhoto, int iPlan)throws FinderException,RemoteException {
+	private Form makeTypeFields(ApartmentType eApartmentType, int iPhoto, int iPlan)throws FinderException,RemoteException {
 		boolean e = eApartmentType != null ? true : false;
 		String sName = e ? eApartmentType.getName() : "";
 		String sInfo = e ? eApartmentType.getInfo() : "";
@@ -1156,7 +1155,7 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		form.add(Frame);
 		return form;
 	}
-	private PresentationObject makeApartmentFields(Apartment eApartment)throws FinderException,RemoteException {
+	private Form makeApartmentFields(Apartment eApartment)throws FinderException,RemoteException {
 		boolean e = eApartment != null ? true : false;
 		String sName = e ? eApartment.getName() : "";
 		String sInfo = e ? eApartment.getInfo() : "";
