@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.*;
@@ -123,6 +124,13 @@ public class VoucherWindow extends Window {
     table.add(searchNum,3,2);
 
     return form;
+  }
+
+  public static Link getVoucherLink(Booking booking) {
+    Link link = new Link("Voucher");
+      link.setWindowToOpen(VoucherWindow.class);
+      link.addParameter(parameterBookingId, booking.getID());
+    return link;
   }
 
 }

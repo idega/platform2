@@ -185,10 +185,10 @@ public class TourBookingForm extends TravelManager {
             depAddr.setSelectedElement(Integer.toString(addressId));
           DropdownMenu pickupMenu = null;
           TextInput roomNumber = null;
-          Text tReferenceNumber = (Text) theText.clone();
-            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
-          TextInput tiReferenceNumber = new TextInput("reference_number");
-            tiReferenceNumber.setSize(10);
+//          Text tReferenceNumber = (Text) theText.clone();
+//            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
+//          TextInput tiReferenceNumber = new TextInput("reference_number");
+//            tiReferenceNumber.setSize(10);
 
           TextInput surname = new TextInput("surname");
               surname.setSize(textInputSizeLg);
@@ -451,11 +451,11 @@ public class TourBookingForm extends TravelManager {
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
           ++row;
-          if (_reseller != null) {
-            table.setAlignment(2,row,"right");
-            table.add(tReferenceNumber,2,row);
-            table.add(tiReferenceNumber,3,row);
-          }
+//          if (_reseller != null) {
+//            table.setAlignment(2,row,"right");
+//            table.add(tReferenceNumber,2,row);
+//            table.add(tiReferenceNumber,3,row);
+//          }
 
           if (super.user != null) {
             ++row;
@@ -685,10 +685,10 @@ public class TourBookingForm extends TravelManager {
 
           DropdownMenu pickupMenu = null;
           TextInput roomNumber = null;
-          Text tReferenceNumber = (Text) theText.clone();
-            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
-          TextInput tiReferenceNumber = new TextInput("reference_number");
-            tiReferenceNumber.setSize(10);
+//          Text tReferenceNumber = (Text) theText.clone();
+//            tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
+//          TextInput tiReferenceNumber = new TextInput("reference_number");
+//            tiReferenceNumber.setSize(10);
 
           TextInput surname = new TextInput("surname");
               surname.setSize(textInputSizeLg);
@@ -1147,6 +1147,11 @@ public class TourBookingForm extends TravelManager {
   private DropdownMenu getDropdownMenuWithUsers(List users, String name) {
     DropdownMenu usersDrop = new DropdownMenu("ic_user");
     User usr = null;
+
+    if (!users.contains(super.user)) {
+      users.add(0, super.user);
+    }
+
     for (int i = 0; i < users.size(); i++) {
       if (users.get(i) ==null) {
         if (i != (users.size() -1)) {
@@ -1164,6 +1169,7 @@ public class TourBookingForm extends TravelManager {
         usersDrop.addMenuElement(usr.getID(), usr.getName());
       }
     }
+
     return usersDrop;
   }
 
@@ -1182,7 +1188,7 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter("country");
       form.maintainParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
       form.maintainParameter("room_number");
-      form.maintainParameter("reference_number");
+//      form.maintainParameter("reference_number");
       form.maintainParameter(CalendarBusiness.PARAMETER_YEAR);
       form.maintainParameter(CalendarBusiness.PARAMETER_MONTH);
       form.maintainParameter(CalendarBusiness.PARAMETER_DAY);
@@ -1366,7 +1372,7 @@ public class TourBookingForm extends TravelManager {
       String country = iwc.getParameter("country");
       String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
       String roomNumber = iwc.getParameter("room_number");
-      String referenceNumber = iwc.getParameter("reference_number");
+//      String referenceNumber = iwc.getParameter("reference_number");
 
       String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
       int iAddressId = Integer.parseInt(sAddressId);
@@ -1562,7 +1568,7 @@ public class TourBookingForm extends TravelManager {
     String country = iwc.getParameter("country");
     String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
 
-    String referenceNumber = iwc.getParameter("reference_number");
+//    String referenceNumber = iwc.getParameter("reference_number");
     String fromDate = iwc.getParameter(parameterFromDate);
     String manyDays = iwc.getParameter(parameterManyDays);
 
