@@ -66,7 +66,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private boolean _showOverviewLink = true;
 	protected boolean _showTopicName = false;
 	private boolean _showResponses = true;
-	private boolean iShowTopicInCollection = false;
+	private boolean iShowTopicInCollection = true;
 
 	protected int _state = ForumBusiness.FORUM_TOPICS;
 	private int _initialState = ForumBusiness.FORUM_TOPICS;
@@ -1037,6 +1037,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	public void setShowForumLinks(boolean showForumLinks) {
 		iShowForumLinks = showForumLinks;
 	}
+	
 	public void setShowTopicInCollection(boolean showTopicInCollection) {
 		iShowTopicInCollection = showTopicInCollection;
 	}
