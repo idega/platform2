@@ -34,7 +34,7 @@ private int iNumberInRow = 3; //iXXXX for int
 private int ifirst = 0;
 private int maxImageWidth =100;
 private boolean limitImageWidth=true;
-private String callingModule = "";
+private String callingModule = "image_id";
 
 private boolean backbutton = false;
 private boolean refresh = false;
@@ -50,7 +50,6 @@ private Image headerBackgroundImage;
 private ImageEntity[] entities;
 private String percent = "100";
 private Link continueRefresh = new Link("Click here to continue...");
-
 
 
 private Text textProxy = new Text();
@@ -136,12 +135,15 @@ public void main(ModuleInfo modinfo)throws Exception{
   ImageEntity[] image =  new ImageEntity[1];
   String imageId = modinfo.getParameter("image_id");
   String imageCategoryId = modinfo.getParameter("image_catagory_id");
+
   percent = modinfo.getParameter("percent");
   String sEdit = modinfo.getParameter("edit");
   String action = modinfo.getParameter("action");
 
   String refreshing = (String) modinfo.getSessionAttribute("im_refresh");
   String sessionImageId = (String) modinfo.getSessionAttribute("im_image_id");
+  String imageSessionName = (String) modinfo.getParameter("im_image_session_name");
+  if( imageSessionName!=null ) callingModule = imageSessionName;
 
   if( sessionImageId!=null ){// new uploaded image
      imageId = sessionImageId;
@@ -262,7 +264,7 @@ public void main(ModuleInfo modinfo)throws Exception{
              handler = (ImageHandler) modinfo.getSessionAttribute("handler");
           }
           else if( "use".equalsIgnoreCase(action) ){
-            modinfo.setSessionAttribute("image_id",imageId);
+            modinfo.setSessionAttribute("image_id",callingModule);
             //debug is this legal? check if opened from another page or not. close or not
             Page parent = getParentPage();
             parent.close();
@@ -270,6 +272,11 @@ public void main(ModuleInfo modinfo)throws Exception{
           }
           else if( "editcategories".equalsIgnoreCase(action) ){
             outerTable.add(getCategoryEditForm(),1,2);
+            Text flokkar = new Text("Myndaflokkar");
+            flokkar.setBold();
+            flokkar.setFontColor(textColor);
+            flokkar.setFontSize(3);
+            outerTable.add(flokkar,1,1);
           }
           else if( "savecategories".equalsIgnoreCase(action) ){
             texti = new Text("Imagecategories saved.");
@@ -414,31 +421,24 @@ return table;
 private Table displayImage( ImageEntity image ) throws SQLException
 {
   String texti = image.getText();
+  String link = image.getLink();
 
   int imageId = image.getID();
-  Table imageTable = new Table(1, 3);
+  Table imageTable = new Table(1,2);
 
   imageTable.setAlignment("center");
   imageTable.setAlignment(1,1,"center");
   imageTable.setAlignment(1,2,"center");
-  imageTable.setAlignment(1,3,"center");
   imageTable.setVerticalAlignment("top");
   imageTable.setCellpadding(0);
 
   Image theImage = new Image(imageId);
-  if( limitImageWidth ) theImage.setWidth(maxImageWidth);
-  Link bigger = new Link(theImage);
-  bigger.addParameter("image_id",imageId);
 
-  imageTable.add(bigger, 1, 1);
-
-  if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
-    Text imageText = new Text(texti);
-    getTextProxy().setFontSize(1);
-    imageText = setTextAttributes( imageText );
-    imageTable.add(imageText, 1, 2);
-    imageTable.setColor(1,2,"#CCCCCC");
+  if(limitImageWidth) {
+    theImage.setMaxImageWidth(maxImageWidth);
   }
+
+  imageTable.add(theImage);
 
   if(isAdmin) {
     //String adminPage="/image/imageadmin.jsp";//change to same page and object
@@ -479,7 +479,7 @@ private Table displayImage( ImageEntity image ) throws SQLException
 
     editTable.add(imageEdit7,3,1);
 
-    imageTable.add(editTable, 1, 3);
+    imageTable.add(editTable, 1, 2);
   }
 
 return imageTable;
@@ -649,10 +649,6 @@ private void refresh(ModuleInfo modinfo) throws SQLException{
 
 }
 
-public void setCallingModule(String callingModule){
-  this.callingModule = callingModule;
-}
-
 private Table getImageInfoTable(){
  Table table = new Table();
  table.setColor("");
@@ -748,34 +744,39 @@ private Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modi
   setAction(rotate,"rotate");
   toolbarRight.add(rotate,2,2);
 
-  Link horizontal = new Link(new Image("/pics/jmodules/image/buttons/horizontal.gif","Flip the image horizontaly"));
+  Link horizontal = new Link(new Image("/pics/jmodules/image/buttons/horizontal.gif","Flip the image horizontally"));
   setAction(horizontal,"horizontal");
   toolbarRight.add(horizontal,2,3);
 
-  Link vertical = new Link(new Image("/pics/jmodules/image/buttons/vertical.gif","Flip the image verticaly"));
+  Link vertical = new Link(new Image("/pics/jmodules/image/buttons/vertical.gif","Flip the image vertically"));
   setAction(vertical,"vertical");
   toolbarRight.add(vertical,2,4);
 
+  //debug make a better table!
+  Table innerTable = new Table(2,1);
+  innerTable.setWidth("100%");
+  innerTable.setWidth(1,"130");
+  innerTable.setAlignment(1,1,"left");
+  innerTable.setAlignment(2,1,"center");
 
-  imageTable.add(toolbarRight,1,1);
+  innerTable.add(toolbarRight,1,1);
+  imageTable.add(innerTable,1,1);
   imageTable.add(toolbarBelow,1,2);
   imageTable.mergeCells(1,2,2,2);
   imageTable.setWidth("100%");
   imageTable.setHeight("100%");
-  imageTable.setAlignment(1,1,"left");
-  imageTable.setAlignment(2,1,"left");
   imageTable.setAlignment(1,2,"center");
   imageTable.setVerticalAlignment(1,1,"top");
   imageTable.setVerticalAlignment(2,1,"middle");
 
 
   if( handler != null) {
-  //debug
     Image myndin = handler.getModifiedImageAsImageObject(modinfo);
-
     String percent2  = modinfo.getParameter("percent");
     if (percent2!=null) percent = TextSoap.findAndReplace(percent2,"%","");
     int iPercent = 100;
+    if(percent==null) percent = "100";
+
     try{
       iPercent = Integer.parseInt(percent);
     }
@@ -786,11 +787,12 @@ private Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modi
     myndin.setWidth( (myndin.getWidth()* iPercent)/100  );
     myndin.setHeight( (myndin.getHeight()* iPercent)/100 );
 
-    imageTable.add( myndin ,2,1);
+    innerTable.add( myndin ,2,1);
 
     Text percentText = new Text(Text.getBreak()+"Percent:"+Text.getBreak());
     percentText.setFontSize(1);
     imageTable.add(percentText,1,1);
+
     TextInput percentInput = new TextInput("percent",percent+"%");
     percentInput.setSize(4);
     imageTable.add(percentInput,1,1);
@@ -893,8 +895,7 @@ private Form getCategoryEditForm(){
 }
 
 
-public void getEditor(ModuleInfo modinfo) throws Throwable{
-
+private void getEditor(ModuleInfo modinfo) throws Exception{
   String whichButton = modinfo.getParameter("submit");
   String ImageId = modinfo.getParameter("image_id");
   String imageInSession = (String) modinfo.getSessionAttribute("image_in_session");
@@ -906,7 +907,6 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
         modinfo.setSessionAttribute("image_in_session",ImageId);
         handler = new ImageHandler(Integer.parseInt(ImageId));
         modinfo.setSessionAttribute("handler",handler);
-
       }
       ImageBusiness.handleEvent(modinfo,handler);
       outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
@@ -926,83 +926,6 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
       outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
     }
    }
-
-
-
-////
-/*
- try {
-
-  Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
-
-    if (Conn != null) {
-        if (whichButton!=null && !(whichButton.equals(""))){
-          // opening a new upload window
-          if( whichButton.equals("new")){
-          //getSession().removeAttribute("ImageId");
-
-
-            //debug eiki was in main(....
-            if( ImageId!=null){//var til fyrir
-              drawUploadTable(ImageId,true);
-            }
-            else{
-              drawUploadTable( ImageBusiness.getImageID(Conn) ,false);
-            }
-
-            //
-
-
-            Upload(Conn,modinfo);
-          }
-          // done uploading
-          else if (whichButton.equals("Vista")){
-
-          //debug eiki make this work!
-          //  myWindow.setParentToReload();
-
-            //debug eiki added
-            int imageId = Integer.parseInt((String)modinfo.getSessionAttribute("image_id"));
-            String[] categories = modinfo.getParameterValues("category");
-            ImageBusiness.saveImageToCatagories(imageId,categories);
-
-            //debug eiki make this work!
-
-            //myWindow.close();
-
-          }
-          // updating
-          else{
-            ImageId = (String)modinfo.getSessionAttribute("image_id");
-
-            //debug eiki
-            if( ImageId!=null){//var til fyrir
-              drawUploadTable(ImageId,true);
-            }
-            else{
-              drawUploadTable( ImageBusiness.getImageID(Conn) ,false);
-            }
-
-          }
-          }
-          else {
-                  //Upload(Conn);//no if here because of the multipart-request
-          }
-    }
-
-  }
-  catch (Throwable E){
-          E.printStackTrace(System.err);
-          add(E.getMessage());
-  }
-  finally{
-    if( Conn!=null) GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").freeConnection(Conn);
-  }
-
-*/
-
-
-
 }
 
 
