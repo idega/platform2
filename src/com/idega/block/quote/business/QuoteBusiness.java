@@ -19,7 +19,7 @@ public static final String PARAMETER_CLOSE = "close";
 
   public static QuoteEntity getRandomQuote(int localeID) {
     try {
-      QuoteEntity[] quotes = (QuoteEntity[]) QuoteEntity.getStaticInstance(QuoteEntity.class).findAllByColumn(QuoteEntity.getColumnNameICLocaleID(),localeID);
+      QuoteEntity[] quotes = (QuoteEntity[]) QuoteEntity.getStaticInstance(QuoteEntity.class).findAllByColumn(QuoteEntity.getColumnNameICLocaleID(),Integer.toString(localeID),"=");
       if ( quotes != null ) {
         if ( quotes.length > 0 ) {
           int quoteNumber = (int) Math.round(Math.random() * (quotes.length - 1));
