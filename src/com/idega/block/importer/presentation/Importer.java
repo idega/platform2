@@ -173,7 +173,7 @@ public class Importer extends Window {
       add(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
 
       String[] values = iwc.getParameterValues(IMPORT_FILE_PATHS);
-      String groupID = (String)iwc.getSessionAttribute(this.PARAMETER_GROUP_ID);
+      String groupIDFromSession = (String)iwc.getSessionAttribute(this.PARAMETER_GROUP_ID);
       String handler = iwc.getParameter(this.PARAMETER_IMPORT_HANDLER);
       String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
       
@@ -185,8 +185,8 @@ public class Importer extends Window {
    
         boolean success = false;
         
-        if(groupId!=null){
-        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i],new Integer(groupId));       
+        if(groupIDFromSession!=null){
+        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i],new Integer(groupIDFromSession));       
         }
         else{
         	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i]);
