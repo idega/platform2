@@ -86,14 +86,14 @@ public class MessengerApplet extends Applet implements ActionListener{
     catch(MalformedURLException e) {
       e.printStackTrace(System.err);
     }
-
+/*
     try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
         logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_out.gif"));
       }
       catch (Exception ex) {
         ex.printStackTrace(System.err);
-      }
+      }*/
 /*
     userPanel = new Panel();
     userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
@@ -352,7 +352,7 @@ public class MessengerApplet extends Applet implements ActionListener{
       item.setWindowToOpen(dialog);
       item.addActionListener(this);
 
-      if( faceLabel!= null ) item.add(faceLabel);
+      //if( faceLabel!= null ) item.add(faceLabel);
 
       item.add(new Label(name));
       item.setSize(16,100);
