@@ -1399,6 +1399,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			caseBiz.changeCaseStatus(application, getCaseStatusGranted().getStatus(), user);
 
 			sendMessageToParents(application, subject, message);
+			
+			if (hasPendingApplications(application.getChildId(), application.getCaseCode().getCode())) {
+				Collection pending = getPendingApplications(application.getChildId(), application.getCaseCode().getCode());
+				Iterator iter = pending.iterator();
+				while (iter.hasNext()) {
+					ChildCareApplication app = (ChildCareApplication) iter.next();
+					changeCaseStatus(app, getCaseStatusOpen().getStatus(), user);
+				}
+			}
 
 			t.commit();
 
