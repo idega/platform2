@@ -90,6 +90,11 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
                subCategory.setHandlerGroupId (handlerGroupId.intValue ());
                subCategory.setTopCategoryId (topCategoryId.intValue ());
                subCategory.store ();
+           } else {
+               System.err.println ("Couldn't store sub category ("
+                                   + subCategoryName + ", " + topCategoryName
+                                   + ", " + groupName + ") with ids (" +
+                                   topCategoryId + ", " + handlerGroupId + ")");
            }
        }
     }
