@@ -1,8 +1,6 @@
 /*
  * Created on 24.9.2003
  *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
@@ -108,7 +106,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String PAR_REMARK = KEY_REMARK;
 	private static final String PAR_TO = KEY_TO;
 	private static final String PAR_SEEK_TO = "SEEK_" + KEY_TO;	
-	private static final String PAR_USER_SSN = "selected_user_pid"; //Constant used in UserSearcher...
+	/** The current user. Used to set user in userSearcher (if not set) */
+	private static final String PAR_USER_SSN = "selected_user_pid"; 
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
@@ -147,14 +146,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 private UserSearcher _userSearcher = null;
 	
 	public void init(final IWContext iwc) {
-		
-
-//		User user = getUser(iwc);
-		_userSearcher = getUserSearcherForm(iwc);
+		_userSearcher = getUserSearcherForm(iwc, getUser(iwc));
 		User user = _userSearcher.getUser();
 
-
-		String dateFormatErrorMessage = null;	
 
 		String parFrom = iwc.getParameter(PAR_SEEK_FROM);
 		Date fromDate = parseDate(parFrom);
@@ -162,9 +156,26 @@ private UserSearcher _userSearcher = null;
 		String parTo = iwc.getParameter(PAR_SEEK_TO);
 		Date toDate = parseDate(parTo);
 		
-		if ((parFrom != null && fromDate == null) || (parTo != null && toDate == null)){
-			dateFormatErrorMessage = localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm.");
-			handleDefaultAction(iwc, user, fromDate, toDate, dateFormatErrorMessage);
+		String errorMessage;
+		boolean seekFromEmpty = (parFrom != null && parFrom.length() == 0);
+		boolean seekToEmpty = (parTo != null && parTo.length() == 0);
+		boolean seekFromEmptyOnly = seekFromEmpty && ! seekToEmpty;
+		boolean seekToEmptyOnly = seekToEmpty && ! seekFromEmpty;
+		boolean seekFromFormatError = ! seekFromEmpty && fromDate == null;
+		boolean seekToFormatError = ! seekToEmpty && toDate == null;
+		boolean seekNegativePeriode = toDate != null && fromDate != null && toDate.before(fromDate);
+		errorMessage =  
+			(seekFromFormatError ? localize(LOCALIZER_PREFIX + "date_format_from_error", "From format error") : 
+			(seekToFormatError ? localize(LOCALIZER_PREFIX + "date_format_to_error", "To format error") :
+			(seekFromEmptyOnly ? localize(LOCALIZER_PREFIX + "date_from_missing", "From missing") :
+			(seekToEmptyOnly ? localize(LOCALIZER_PREFIX + "date_to_missing", "To missing") : 
+			(seekNegativePeriode ? localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode") :
+				null
+			)))));
+		
+		
+		if (errorMessage != null){
+			handleDefaultAction(iwc, user, fromDate, toDate, errorMessage);
 			return;
 		}		
 		
@@ -184,8 +195,10 @@ private UserSearcher _userSearcher = null;
 				case ACTION_CANCEL:
 					// TODO implement
 					break;
+				case ACTION_SEARCH_INVOICE:	
+					handleDefaultAction(iwc, user, fromDate, toDate, (seekFromEmpty && seekToEmpty) ? localize(LOCALIZER_PREFIX + "date_empty", "No date present") : null);						
+					break;
 				case ACTION_CANCEL_NEW_EDIT:				
-				case ACTION_SEARCH_INVOICE:		
 				case ACTION_OPFIELD_MAINSCREEN:
 					handleDefaultAction(iwc, user, fromDate, toDate);
 					break;
@@ -424,28 +437,17 @@ private UserSearcher _userSearcher = null;
 		
 		t1.setCellpadding(getCellpadding());
 		t1.setCellspacing(getCellspacing());
-		
 
-		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN, user), 1, 1); //PAR_CANCEL make it stay on the first screen (list)
-		
-		
-		
+		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN, user), 1, 1); 
 		
 		Form form = new Form();			
 		Table t2 = new Table();
 		int row = 1;
 		UserSearcher searcher = _userSearcher;
-		//getUserSearcherForm(iwc, user);
-	
 		
 		t2.add(searcher, 1, row++);
-//		user = searcher.getUser();
 		if (user != null){
-	
-//			Table t2 = new Table();				
-
-			addPeriodeForm(t2, fromDate, toDate, errorMessage, row++);
-				
+			t2.add(getPeriodeForm(fromDate, toDate, errorMessage), 1, row++);
 			t2.add(getInvoiceList(entries, user, fromDate, toDate), 1, row++);
 		
 			ButtonPanel bp = new ButtonPanel(this);
@@ -453,22 +455,12 @@ private UserSearcher _userSearcher = null;
 			bp.addLocalizedButton(PAR_CANCEL, KEY_CANCEL, "Cancel");
 			t2.add(bp, 1, row++);
 
-	
-////			form.maintainAllParameters();
-//			form.maintainParameter(PAR_USER_SSN);
-
 			form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
-//			t2.add(form, 1, row++);	
 		}
 		
-//		form.maintainParameter(_userSearcher.getUniqueUserParameterName(""));	
 		if (user != null){
 			form.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));
 		}
-//		form.maintainParameter(PAR_USER_SSN);
-//		if (user != null) {
-//			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
-//		}
 		
 		form.add(t2);		
 		t1.add(form, 1, 2);
@@ -486,7 +478,6 @@ private UserSearcher _userSearcher = null;
 		if (user != null){
 			ofm.setParameter(PAR_USER_SSN, user.getPersonalID());
 		}
-//		ofm.maintainParameter(PAR_USER_SSN);		
 		ofm.maintainParameter(PAR_SEEK_FROM);
 		ofm.maintainParameter(PAR_SEEK_TO);
 	
@@ -495,7 +486,7 @@ private UserSearcher _userSearcher = null;
 		return inner;
 	}	
 	
-	private UserSearcher getUserSearcherForm(IWContext iwc){
+	private UserSearcher getUserSearcherForm(IWContext iwc, User currentUser){
 	
 		UserSearcher searcher = new UserSearcher();
 		searcher.setPersonalIDLength(15);
@@ -521,7 +512,7 @@ private UserSearcher _userSearcher = null;
 		try{
 			searcher.process(iwc);	
 			if (searcher.getUser() == null && ! searcher.isHasManyUsers() && ! searcher.isClearedButtonPushed(iwc)){
-				searcher.setUser(getUser(iwc));
+				searcher.setUser(currentUser);
 			}			
 		} catch (FinderException ex){
 			
@@ -529,33 +520,23 @@ private UserSearcher _userSearcher = null;
 		} catch (RemoteException ex){
 			ex.printStackTrace();			
 		}
-	
-		
-
-
-
-//		table.add(searcher, 1, row);
-		
 		return searcher;
 	}
 	
 
-	private int addPeriodeForm(Table table, Date fromDate, Date toDate, String errorMessage, int row){
+	private Table getPeriodeForm(Date fromDate, Date toDate, String errorMessage){
 			
-//		Form form = new Form();
 
 		Table formTable = new Table();
 		formTable.add(getLocalizedLabel("KEY_PERIODE", "Periode"), 1, 2);
 		TextInput from = getTextInput(PAR_SEEK_FROM, "");
 		from.setLength(4);
-		from.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
 		if (fromDate != null){
 			from.setContent(formatDate(fromDate, 4));	
 		}	
 		
 		TextInput to = getTextInput(PAR_SEEK_TO, "");
 		to.setLength(4);
-		to.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
 		if (toDate != null){
 			to.setContent(formatDate(toDate, 4));	
 		}
@@ -571,10 +552,7 @@ private UserSearcher _userSearcher = null;
 
 		formTable.add(getLocalizedButton(PAR_SEARCH_INVOICE, KEY_SEARCH, "Search"), 10, 2);
 
-
-//		form.add(formTable);
-		table.add(formTable, 1, row++);
-		return row;	
+		return formTable;	
 	}	
 	
 	
@@ -650,7 +628,6 @@ private UserSearcher _userSearcher = null;
 		RegulationSearchPanel searchPanel = new RegulationSearchPanel(iwc);
 		
 		searchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_PK});
-//		searchPanel.maintainParameter(new String[]{PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_PK});
 		searchPanel.setPlacingIfNull(entry.getPlacing());
 		searchPanel.setSchoolIdIfNull(entry.getSchoolId());
 		
@@ -711,8 +688,6 @@ private UserSearcher _userSearcher = null;
 			}
 		}
 		table.add(postingBlock, 1, row++);
-//		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
-//		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
 		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getDescription", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
