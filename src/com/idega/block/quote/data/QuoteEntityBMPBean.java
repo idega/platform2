@@ -76,5 +76,10 @@ public class QuoteEntityBMPBean extends GenericEntity implements QuoteEntity {
     return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" where "+getColumnNameICLocaleID()+" = "+String.valueOf(localeID));
   }
 
+  public int ejbHomeGetNumberOfQuotes(int localeID) throws FinderException, IDOException {
+    IDOQuery ido = new IDOQuery();
+    ido.appendSelectCountFrom(getEntityName()).appendWhereEquals(getColumnNameICLocaleID(), localeID);
+    
+    return super.idoGetNumberOfRecords(ido.toString());
+  }
 }
-
