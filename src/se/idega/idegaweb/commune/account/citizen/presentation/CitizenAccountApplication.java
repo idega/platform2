@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.3 2002/07/22 10:37:09 palli Exp $
+ * $Id: CitizenAccountApplication.java,v 1.4 2002/08/08 12:12:18 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -24,8 +24,7 @@ import java.util.Vector;
 import java.util.Iterator;
 
 /**
- * This is the presentation class for the CitizenAccount application and bla bla
- * bla, rhubarb and Laddi forgot the tapes.....
+ * This is the presentation class for the CitizenAccount application
  * 
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -74,8 +73,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}
 		catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
-		}
-    
+		}    
 	}
 
 	private void viewForm(IWContext iwc) {
@@ -185,8 +183,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 			_isError = true;
 			addErrorString(localize(ERROR_NOT_EMAIL, "Email invalid"));
 		}
-		/*    else
-		      checkEmail(emailString);*/
 
 		if (phoneHomeString == null || phoneHomeString.equals("")) {
 			_isPhoneHomeError = true;
