@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.14 2003/08/28 15:25:42 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.15 2003/08/28 18:32:59 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -92,6 +92,23 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 		return ret.toString();
 	}
+	
+	
+	/**
+	 * extractField
+	 * Retrieves portion of a PostingString 
+	 * @param ps posting string
+	 * @param readPointer index in string
+	 * @param postingField The field itself
+	 * @return an extracted part of the ps string
+	*/
+	public String extractField(String ps, int readPointer, int fieldLength, PostingField field) {
+		if (ps == null) {
+			return "";
+		}
+		return trim(ps.substring(readPointer, readPointer + fieldLength), field);
+	}
+
 
 	/**
 	 * Hämta konteringsinformation
@@ -258,7 +275,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				pp.setPeriodeTo(periodeTo);
 				pp.setChangedSign(changedSign);
 				pp.setChangedDate(IWTimestamp.getTimestampRightNow());
-
+				pp.setPostingString(ownPostingString);
+				pp.setDoublePostingString(doublePostingString);
 				pp.setActivity(parm1);
 				pp.setRegSpecType(parm2);
 				pp.setCompanyType(parm3);
@@ -278,19 +296,26 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	
 		try {
 			int match;
+			if(ownPosting == null || doublePosting == null) {
+				return false;
+			}
 			ActivityTypeHome ath = getActivityTypeHome();
 			PostingParametersHome home = getPostingParametersHome();
 			Collection ppCol = (Collection) home.findAllPostingParameters();
 			Iterator iter = ppCol.iterator();
-	
+			
 			while(iter.hasNext())  {
 				PostingParameters pp = (PostingParameters) iter.next();
 				int eq = 0;
-				if (pp.getPostingString().compareTo(ownPosting.trim()) == 0) {
-					eq++;
+				if(pp.getPostingString() != null) {
+					if (pp.getPostingString().compareTo(ownPosting) == 0) {
+						eq++;
+					}
 				}
-				if (pp.getDoublePostingString().compareTo(doublePosting.trim()) == 0) {
-					eq++;
+				if(pp.getDoublePostingString() != null) {
+					if (pp.getDoublePostingString().compareTo(doublePosting) == 0) {
+						eq++;
+					}
 				}
 				if (pp.getPeriodeFrom() != null) {
 					if(pp.getPeriodeFrom().compareTo(from) == 0) {
@@ -439,7 +464,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @param postingField holds the rules for padding
 	 * @return the padded string
 	 */
-	private String pad(String in, PostingField postingField){
+	public String pad(String in, PostingField postingField){
 		StringBuffer ret = new StringBuffer(in);
 		//Add the padding character on right side of the string until it is of right size
 		if(postingField.getJustification() == JUSTIFY_LEFT) {
@@ -460,7 +485,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @param postingField holds the rules for trimming 
 	 * @return the trimmed string
 	 */
-	private String trim(String in, PostingField postingField) {
+	public String trim(String in, PostingField postingField) {
 		String ret = "";
 		int i;
 		//Remove all padding characters until a non padding character is encountered
