@@ -1,6 +1,6 @@
 /*
- * $Id: GolfUserPluginBusinessHome.java,v 1.1 2004/11/16 10:23:24 eiki Exp $
- * Created on Nov 15, 2004
+ * $Id: GolfUserPluginBusinessHome.java,v 1.2 2004/11/17 19:16:45 eiki Exp $
+ * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHome;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/16 10:23:24 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/11/17 19:16:45 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface GolfUserPluginBusinessHome extends IBOHome {
 

@@ -1,11 +1,19 @@
 package is.idega.idegaweb.golf.presentation;
 
+import is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusiness;
 import is.idega.idegaweb.golf.util.GolfConstants;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.data.IDOEntity;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
@@ -14,8 +22,10 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.GenericSelect;
+import com.idega.presentation.ui.SelectDropdown;
+import com.idega.presentation.ui.SelectOption;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserConstants;
 import com.idega.user.presentation.UserTab;
@@ -34,6 +44,7 @@ public class GolferTab extends UserTab {
 	protected IDOEntity entity;
 	protected Map inputs = null;
 	protected Map titles = null;
+	private GolfUserPluginBusiness golfBiz;
 	
 	public GolferTab() {
 		super();
@@ -46,72 +57,106 @@ public class GolferTab extends UserTab {
 	public void initializeFieldValues() {}
 
 	public void updateFieldsDisplayStatus() {
-		if(inputs==null){
-			inputs = new HashMap();
-			titles = new HashMap();
-		}
+		initializeFields();
 //		get the values and update all the inputs
 //		main club
 		User user = getUser();
 		String mainClubAbbreviation = user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+		List mainSelected = new ArrayList();
+		
 		//sub clubs
 		String subClubAbbreviations = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+		List subClubSelected = new ArrayList();
 		
-		InterfaceObject mainClubInput = (InterfaceObject)inputs.get(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+		GenericSelect mainClubInput = (DropdownMenu)inputs.get(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 		if(mainClubAbbreviation!=null){
-			mainClubInput.setContent(mainClubAbbreviation);
+			mainSelected.add(mainClubAbbreviation);
 		}
+		fillSelection(mainClubInput,mainSelected);
 		
-		InterfaceObject subClubsInput = (InterfaceObject)inputs.get(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+		GenericSelect subClubsInput = (GenericSelect)inputs.get(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 		if(subClubAbbreviations!=null){
-			subClubsInput.setContent(mainClubAbbreviation);
+			subClubSelected.add(subClubAbbreviations);
 		}
+		fillSelection(subClubsInput,subClubSelected);
+		
 	}
 
 	public void initializeFields() {
 		//create all the inputs
 		if(inputs==null){
 			inputs = new HashMap();
-			titles = new HashMap();
+			
+			GenericSelect mainClubInput = getMainClubDropDown();
+			inputs.put(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubInput);
+			
+			GenericSelect subClubsInput = getSubClubsSelectionBox();
+			inputs.put(GolfConstants.SUB_CLUBS_META_DATA_KEY, subClubsInput);
 		}
-		
-		InterfaceObject mainClubInput = getMainClubDropDown();
-		inputs.put(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubInput);
-		
-		InterfaceObject subClubsInput = getSubClubsSelectionBox();
-		inputs.put(GolfConstants.SUB_CLUBS_META_DATA_KEY, subClubsInput);
-		
 	}
 
 	/**
 	 * @return
 	 */
-	private InterfaceObject getSubClubsSelectionBox() {
-		InterfaceObject subClubsInput = new DropdownMenu(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+	protected GenericSelect getSubClubsSelectionBox() {
+		GenericSelect subClubsInput = new GenericSelect(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 		return subClubsInput;
 	}
 
 	/**
+	 * @param subClubsInput
+	 */
+	protected void fillSelection(GenericSelect input, List selectedValues) {
+		if(input!=null){
+			try {
+				Collection clubs = getGolfUserPluginBusiness().getGolfClubs();
+				if(!clubs.isEmpty()){
+					Iterator iter = clubs.iterator();
+					while (iter.hasNext()) {
+						Group group = (Group) iter.next();
+						String abbr = group.getAbbrevation();
+						if(abbr!=null){
+							SelectOption option = new SelectOption(abbr,abbr);
+							input.addOption(option);
+							if(selectedValues.contains(abbr)){
+								input.setSelectedOption(abbr);
+							}
+						}
+					}
+				}
+				
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * @return
 	 */
-	private InterfaceObject getMainClubDropDown() {
-		InterfaceObject mainClubInput = new SelectionBox(GolfConstants.MAIN_CLUB_META_DATA_KEY);
+	protected GenericSelect getMainClubDropDown() {
+		SelectDropdown mainClubInput = new SelectDropdown(GolfConstants.MAIN_CLUB_META_DATA_KEY);	
 		return mainClubInput;
 	}
 
 	public void initializeTexts() {
-		IWContext iwc = IWContext.getInstance();
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-			
-		//add main and sub (extra) club titles
-		//bold text
-		Text title = new Text(iwrb.getLocalizedString(GolfConstants.MAIN_CLUB_META_DATA_KEY,"Main club:"),true,false,false);
-		//title.setFontStyle("font-size:8px");
-		titles.put(GolfConstants.MAIN_CLUB_META_DATA_KEY,title);
 		
-		Text title2 = new Text(iwrb.getLocalizedString(GolfConstants.SUB_CLUBS_META_DATA_KEY,"Extra clubs:"),true,false,false);
-		//title.setFontStyle("font-size:8px");
-		titles.put(GolfConstants.SUB_CLUBS_META_DATA_KEY,title2);
+		if(titles==null){
+			titles = new HashMap();
+			IWContext iwc = IWContext.getInstance();
+			IWResourceBundle iwrb = getResourceBundle(iwc);
+				
+			//add main and sub (extra) club titles
+			//bold text
+			Text title = new Text(iwrb.getLocalizedString(GolfConstants.MAIN_CLUB_META_DATA_KEY,"Main club:"),true,false,false);
+			//title.setFontStyle("font-size:8px");
+			titles.put(GolfConstants.MAIN_CLUB_META_DATA_KEY,title);
+			
+			Text title2 = new Text(iwrb.getLocalizedString(GolfConstants.SUB_CLUBS_META_DATA_KEY,"Extra clubs:"),true,false,false);
+			//title.setFontStyle("font-size:8px");
+			titles.put(GolfConstants.SUB_CLUBS_META_DATA_KEY,title2);
+		}
 	}
 
 	public Help getHelpButton() {
@@ -146,7 +191,7 @@ public class GolferTab extends UserTab {
 		
 		if(!inputs.isEmpty()){
 			int row = 1;
-			Iterator iter = inputs.keySet().iterator();
+			Iterator iter = titles.keySet().iterator();
 			while(iter.hasNext()){
 				String key = (String) iter.next();
 				table.add((PresentationObject)titles.get(key), 1, row);
@@ -199,6 +244,7 @@ public class GolferTab extends UserTab {
 
 		} catch (Exception e) {
 			System.err.println("GolferTab error initFieldContents, userId : " + getUserId());
+			e.printStackTrace();
 		}
 	}
 
@@ -241,5 +287,18 @@ public class GolferTab extends UserTab {
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+	
+	
+	public GolfUserPluginBusiness getGolfUserPluginBusiness(){
+		if(golfBiz == null){
+			try {
+				golfBiz = (GolfUserPluginBusiness)IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(),GolfUserPluginBusiness.class);
+			}
+			catch (IBOLookupException e) {
+				e.printStackTrace();
+			}
+		}
+		return golfBiz;
+	}
 
-} // Class UserPhoneTab
+}

@@ -1,6 +1,6 @@
 /*
- * $Id: GolfUserPluginBusiness.java,v 1.1 2004/11/16 10:23:24 eiki Exp $
- * Created on Nov 15, 2004
+ * $Id: GolfUserPluginBusiness.java,v 1.2 2004/11/17 19:16:45 eiki Exp $
+ * Created on Nov 16, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOService;
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -23,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/16 10:23:24 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/11/17 19:16:45 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -106,4 +107,14 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#isUserSuitedForGroup
 	 */
 	public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getGolfClubs
+	 */
+	public Collection getGolfClubs() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getGroupBusiness
+	 */
+	public GroupBusiness getGroupBusiness() throws java.rmi.RemoteException;
 }

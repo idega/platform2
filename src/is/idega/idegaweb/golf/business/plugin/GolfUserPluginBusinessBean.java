@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.1 2004/11/16 10:23:24 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.2 2004/11/17 19:16:45 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,14 +10,17 @@
 package is.idega.idegaweb.golf.business.plugin;
 
 import is.idega.idegaweb.golf.presentation.GolferTab;
+import is.idega.idegaweb.golf.util.GolfConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -25,12 +28,15 @@ import com.idega.user.data.User;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2004/11/16 10:23:24 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/11/17 19:16:45 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
+
+	private Collection clubs;
+	private GroupBusiness groupBiz;
 
 	/**
 	 * 
@@ -143,4 +149,37 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	/**
+	 * Clubs must start their name with "Golf".
+	 * @return A cached list of golfclubs (Groups)
+	 */
+	public Collection getGolfClubs(){
+		if(clubs==null){
+			try {
+				clubs = getGroupBusiness().getGroupsByGroupTypeAndFirstPartOfName(GolfConstants.GROUP_TYPE_CLUB,"Golf");
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return clubs;
+	}
+	
+	public GroupBusiness getGroupBusiness(){
+		if(groupBiz==null){
+			try {
+				groupBiz = (GroupBusiness)this.getServiceInstance(GroupBusiness.class);
+			}
+			catch (IBOLookupException e) {
+				e.printStackTrace();
+			}
+		}
+		return groupBiz;
+	}
+	
 }
