@@ -264,6 +264,12 @@ public class SchoolEditor extends Block {
       }
       catch(Exception ex){}
     }
+    else {
+    	Commune commune = getCommuneBusiness(iwc).getDefaultCommune();
+    	if (commune != null) {
+    		communes.setSelectedElement(commune.getPrimaryKey().toString());
+    	}
+    }
 
     int row = 1;
 
