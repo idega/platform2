@@ -1652,10 +1652,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		ArrayList l = new ArrayList();
 		try {
 			CommuneHome home = (CommuneHome) IDOLookup.getHome(Commune.class);
-			Object defaultCommunePK = null;
+			String defaultCommunePK = "-1";
 			try {
 				Commune defaultCommune = home.findDefaultCommune();
-				defaultCommunePK = defaultCommune.getPrimaryKey();
+				defaultCommunePK = defaultCommune.getPrimaryKey().toString();
 			} catch (Exception e) {}
 			
 			Iterator iter = schools.iterator();
@@ -1664,7 +1664,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				boolean isHomeCommune = true;
 				Object communePK = school.getCommunePK();
 				if (communePK != null) {
-					if (defaultCommunePK != communePK) {
+					if (!defaultCommunePK.equals(communePK.toString())) {
 						isHomeCommune = false;
 					}
 				}
