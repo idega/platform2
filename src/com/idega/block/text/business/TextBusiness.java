@@ -89,12 +89,6 @@ public class TextBusiness{
       }
       Content eContent = ContentBusiness.saveContent(eTxText.getContentId(),iLocalizedTextId,iLocaleId,iUserId,tsPubFrom,tsPubTo,sHeadline,sBody,sTitle,listOfFiles);
       if(eContent != null){
-         if(InstanceId > 0){
-          //System.err.println("instance er til");
-          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
-          //System.err.println(" object instance "+objIns.getID() + objIns.getName());
-          eTxText.addTo(objIns);
-        }
         if(sAttribute != null){
           eTxText.setAttribute(sAttribute);
         }
@@ -104,11 +98,17 @@ public class TextBusiness{
           eTxText.update();
         else
           eTxText.insert();
+        if(InstanceId > 0){
+          //System.err.println("instance er til");
+          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+          //System.err.println(" object instance "+objIns.getID() + objIns.getName());
+          eTxText.addTo(objIns);
+        }
         return true;
       }
     }
     catch (SQLException ex) {
-
+      ex.printStackTrace();
     }
     return false;
   }

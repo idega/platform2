@@ -211,20 +211,20 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.setBorder(0);
 
     if(iTextId > 0){
-    Link breyta = new Link(iwrb.getImage("change.gif"));
+    Link breyta = new Link(iwb.getImage("/shared/edit.gif"));
       breyta.setWindowToOpen(TextEditorWindow.class);
       breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
     T.add(breyta,1,1);
 
       if ( enableDelete ) {
-        Link delete = new Link(iwrb.getImage("delete.gif"));
+        Link delete = new Link(iwb.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(TextEditorWindow.class);
         delete.addParameter(TextEditorWindow.prmDelete,iTextId);
         T.add(delete,3,1);
       }
     }
     if(newObjInst && !hasId){
-      Link newLink = new Link(iwrb.getImage("new.gif"));
+      Link newLink = new Link(iwb.getImage("/shared/create.gif"));
       newLink.setWindowToOpen(TextEditorWindow.class);
       if(newObjInst)
         newLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());

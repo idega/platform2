@@ -202,7 +202,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
       ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       T.add(ne,1,1);
 
-      Link list = new Link(iwb.getImage("/shared/edit.gif"));
+      Link list = new Link(iwb.getImage("/shared/info.gif"));
       list.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       list.addParameter(prmListCategory,"true");
       T.add(list,1,1);
