@@ -19,6 +19,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
@@ -84,11 +85,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public static final String GROUP_TYPE_SCHOOL_GROUP = "school_staff_group";
 
-	private static SchoolCategory SCHOOL_CATEGORY_CHILD_CARE;
-	private static SchoolCategory SCHOOL_CATEGORY_ELEMENTARY_SCHOOL;
-	private static SchoolCategory SCHOOL_CATEGORY_HIGH_SCHOOL;
-	private static SchoolCategory SCHOOL_CATEGORY_COLLEGE;
-	private static SchoolCategory SCHOOL_CATEGORY_UNIVERSITY;
+	private static SchoolCategory iSchoolCategoryChildCare;
+	private static SchoolCategory iSchoolCategoryElementarySchool;
+	private static SchoolCategory iSchoolCategoryHighSchool;
+	private static SchoolCategory iSchoolCategoryCollege;
+	private static SchoolCategory iSchoolCategoryUniversity;
+	private static SchoolCategory iSchoolCategoryMusicSchool;
 
 	public final static String PROPERTY_NAME_REJECT_STUDENT_MESSAGE = "reject_student_message";
 	public final static String PROPERTY_NAME_GROUP_OFFER_SUBJECT = "group_offer_headline";
@@ -163,6 +165,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public SchoolStudyPathHome getSchoolStudyPathHome() {
+		try {
+			return (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
 	public SchoolManagementTypeHome getSchoolManagementTypeHome() {
 		try {
 			return (SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class);
@@ -212,69 +223,91 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public SchoolCategory getCategoryChildcare() {
-		if (SCHOOL_CATEGORY_CHILD_CARE == null) {
+	public SchoolCategory getCategoryMusicSchool() {
+		if (iSchoolCategoryMusicSchool == null) {
 			try {
-				SCHOOL_CATEGORY_CHILD_CARE = getSchoolCategoryHome().findChildcareCategory();
+				iSchoolCategoryMusicSchool = getSchoolCategoryHome().findMusicSchoolCategory();
 			}
 			catch (FinderException e) {
-				SCHOOL_CATEGORY_CHILD_CARE = null;
+				try {
+					iSchoolCategoryMusicSchool = getSchoolCategoryHome().create();
+					iSchoolCategoryMusicSchool.setCategory(SchoolCategoryBMPBean.CATEGORY_MUSIC_SCHOOL);
+					iSchoolCategoryMusicSchool.setName("Music school");
+					iSchoolCategoryMusicSchool.setLocalizedKey("school_category." + SchoolCategoryBMPBean.CATEGORY_MUSIC_SCHOOL);
+					iSchoolCategoryMusicSchool.store();
+				}
+				catch (CreateException ce) {
+					log(ce);
+				}
 			}
 		}
 
-		return SCHOOL_CATEGORY_CHILD_CARE;
+		return iSchoolCategoryMusicSchool;
+	}
+
+	public SchoolCategory getCategoryChildcare() {
+		if (iSchoolCategoryChildCare == null) {
+			try {
+				iSchoolCategoryChildCare = getSchoolCategoryHome().findChildcareCategory();
+			}
+			catch (FinderException e) {
+				iSchoolCategoryChildCare = null;
+			}
+		}
+
+		return iSchoolCategoryChildCare;
 	}
 
 	public SchoolCategory getCategoryElementarySchool() {
-		if (SCHOOL_CATEGORY_ELEMENTARY_SCHOOL == null) {
+		if (iSchoolCategoryElementarySchool == null) {
 			try {
-				SCHOOL_CATEGORY_ELEMENTARY_SCHOOL = getSchoolCategoryHome().findElementarySchoolCategory();
+				iSchoolCategoryElementarySchool = getSchoolCategoryHome().findElementarySchoolCategory();
 			}
 			catch (FinderException e) {
-				SCHOOL_CATEGORY_ELEMENTARY_SCHOOL = null;
+				iSchoolCategoryElementarySchool = null;
 			}
 		}
 
-		return SCHOOL_CATEGORY_ELEMENTARY_SCHOOL;
+		return iSchoolCategoryElementarySchool;
 	}
 
 	public SchoolCategory getCategoryHighSchool() {
-		if (SCHOOL_CATEGORY_HIGH_SCHOOL == null) {
+		if (iSchoolCategoryHighSchool == null) {
 			try {
-				SCHOOL_CATEGORY_HIGH_SCHOOL = getSchoolCategoryHome().findHighSchoolCategory();
+				iSchoolCategoryHighSchool = getSchoolCategoryHome().findHighSchoolCategory();
 			}
 			catch (FinderException e) {
-				SCHOOL_CATEGORY_HIGH_SCHOOL = null;
+				iSchoolCategoryHighSchool = null;
 			}
 		}
 
-		return SCHOOL_CATEGORY_HIGH_SCHOOL;
+		return iSchoolCategoryHighSchool;
 	}
 
 	public SchoolCategory getCategoryCollege() {
-		if (SCHOOL_CATEGORY_COLLEGE == null) {
+		if (iSchoolCategoryCollege == null) {
 			try {
-				SCHOOL_CATEGORY_COLLEGE = getSchoolCategoryHome().findCollegeCategory();
+				iSchoolCategoryCollege = getSchoolCategoryHome().findCollegeCategory();
 			}
 			catch (FinderException e) {
-				SCHOOL_CATEGORY_COLLEGE = null;
+				iSchoolCategoryCollege = null;
 			}
 		}
 
-		return SCHOOL_CATEGORY_COLLEGE;
+		return iSchoolCategoryCollege;
 	}
 
 	public SchoolCategory getCategoryUniversity() {
-		if (SCHOOL_CATEGORY_UNIVERSITY == null) {
+		if (iSchoolCategoryUniversity == null) {
 			try {
-				SCHOOL_CATEGORY_UNIVERSITY = getSchoolCategoryHome().findUniversityCategory();
+				iSchoolCategoryUniversity = getSchoolCategoryHome().findUniversityCategory();
 			}
 			catch (FinderException e) {
-				SCHOOL_CATEGORY_UNIVERSITY = null;
+				iSchoolCategoryUniversity = null;
 			}
 		}
 
-		return SCHOOL_CATEGORY_UNIVERSITY;
+		return iSchoolCategoryUniversity;
 	}
 
 	public Collection getSchoolManagementTypes() {
@@ -552,9 +585,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				}
 				return map;
 			}
-		}
-		catch (IDOException e) {
-			e.printStackTrace();
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -1052,7 +1082,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public void storeSchoolYear(int pk, String name, int schoolTypeId, String info, int age) throws java.rmi.RemoteException {
+	public void storeSchoolYear(int pk, String name, int schoolTypeId, String category, String info, String localizedKey, int age) throws java.rmi.RemoteException {
 
 		SchoolYearHome shome = getSchoolYearHome();
 		SchoolYear newYear;
@@ -1077,6 +1107,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newYear.setSchoolYearAge(age);
 		if (schoolTypeId > 0) {
 			newYear.setSchoolTypeId(schoolTypeId);
+		}
+		if (category != null) {
+			newYear.setSchoolCategory(category);
+		}
+		if (localizedKey != null) {
+			newYear.setLocalizedKey(localizedKey);
 		}
 		newYear.store();
 	}

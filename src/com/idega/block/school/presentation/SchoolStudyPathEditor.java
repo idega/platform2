@@ -46,6 +46,7 @@ public class SchoolStudyPathEditor extends Block {
 	private String PARAMETER_SCHOOL_COURSE_ID = "sce_sc_id";
 	private String PARAMETER_COURSE_NAME = "sce_cn";
 	private String PARAMETER_COURSE_DESCRIPTION = "sce_cd";
+	private String PARAMETER_CATEGORY = "sce_category";
 	private School school;
 	private String schoolTypeId;
 
@@ -220,6 +221,7 @@ public class SchoolStudyPathEditor extends Block {
 	private boolean saveCourse(IWContext iwc) {
 		String name = iwc.getParameter(PARAMETER_COURSE_NAME);
 		String description = iwc.getParameter(PARAMETER_COURSE_DESCRIPTION);
+		String category = iwc.getParameter(PARAMETER_CATEGORY);
 		
 		String schoolCourseId = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
 		if (name != null && !name.equals("") ) {
@@ -235,6 +237,7 @@ public class SchoolStudyPathEditor extends Block {
 				course.setDescription(description);
 //				course.setSchoolPk(school.getPrimaryKey());
 				course.setSchoolTypeId(new Integer(schoolTypeId));
+				course.setSchoolCategory(category);
 				course.store();
 				return true;
 			} catch (Exception e) {

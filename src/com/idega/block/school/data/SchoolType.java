@@ -22,4 +22,6 @@ public interface SchoolType extends com.idega.data.IDOEntity
  public void setSchoolCategory(java.lang.String p0);
  public void setSchoolTypeInfo(java.lang.String p0);
  public void setSchoolTypeName(java.lang.String p0);
+ public boolean isSelectable();
+ public void setSelectable(boolean isSelectable);
 }

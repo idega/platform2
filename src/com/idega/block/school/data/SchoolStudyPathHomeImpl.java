@@ -41,9 +41,58 @@ public SchoolStudyPath findByCodeAndSchoolType(java.lang.String p0,int p1)throws
 	return this.findByPrimaryKey(pk);
 }
 
+public java.util.Collection findBySchoolAndSchoolCategory(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindBySchoolAndSchoolCategory(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchoolCategory(com.idega.block.school.data.SchoolCategory p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindBySchoolCategory(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findBySchoolType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindBySchoolType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchoolTypes(java.lang.String[] p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindBySchoolTypes(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchoolTypes(java.util.Collection p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindBySchoolTypes(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0,java.util.Collection p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindStudyPaths(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0)throws com.idega.data.IDORelationshipException,javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindStudyPaths(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0,java.lang.Object p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindStudyPaths(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -52,27 +101,6 @@ public java.util.Collection findBySchoolType(int p0)throws javax.ejb.FinderExcep
   return (SchoolStudyPath) super.findByPrimaryKeyIDO(pk);
  }
 
-
-public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0)throws com.idega.data.IDORelationshipException,javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection theReturn = ((SchoolStudyPathBMPBean)entity).ejbHomeFindStudyPaths(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0,java.lang.Object p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection theReturn = ((SchoolStudyPathBMPBean)entity).ejbHomeFindStudyPaths(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public java.util.Collection findStudyPaths(com.idega.block.school.data.School p0,java.util.Collection p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection theReturn = ((SchoolStudyPathBMPBean)entity).ejbHomeFindStudyPaths(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
 
 
 }

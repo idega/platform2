@@ -21,6 +21,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	private static String COLUMN_CODE          = "STUDY_PATH_CODE";
 	private static String COLUMN_DESCRIPTION   = "DESCRIPTION";
 	private static String COLUMN_SCHOOL_TYPE   = "SCH_SCHOOL_TYPE_ID";
+	private static String COLUMN_SCHOOL_CATEGORY   = "SCH_SCHOOL_CATEGORY_ID";
 	private static String COLUMN_IS_VALID      = "IS_VALID";
 	
 	public String getEntityName() {
@@ -35,6 +36,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		addAttribute(COLUMN_IS_VALID, "is valid", true, true, Boolean.class);
 		
 		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE, SchoolType.class);
+		this.addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY, SchoolCategory.class);
 		this.addManyToManyRelationShip(School.class, "sch_school_study_path");
 	}
 
@@ -68,6 +70,18 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	
 	public void setSchoolTypeId(Object schoolTypeId) {
 		setColumn(COLUMN_SCHOOL_TYPE, schoolTypeId);
+	}
+
+	public SchoolType getSchoolCategory() {
+		return (SchoolType) getColumnValue(COLUMN_SCHOOL_CATEGORY);
+	}
+	
+	public Object getSchoolCategoryPK() {
+		return getColumnValue(COLUMN_SCHOOL_CATEGORY);
+	}
+	
+	public void setSchoolCategory(Object schoolCategory) {
+		setColumn(COLUMN_SCHOOL_TYPE, schoolCategory);
 	}
 
     public boolean isValid () {
@@ -133,17 +147,17 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 
-	public Collection ejbHomeFindStudyPaths(School school) throws IDORelationshipException, FinderException {
-		return ejbHomeFindStudyPaths(school, school.getSchoolTypes());
+	public Collection ejbFindStudyPaths(School school) throws IDORelationshipException, FinderException {
+		return ejbFindStudyPaths(school, school.getSchoolTypes());
 	}
 
-	public Collection ejbHomeFindStudyPaths(School school, Object schoolTypePK) throws FinderException {
+	public Collection ejbFindStudyPaths(School school, Object schoolTypePK) throws FinderException {
 		Vector vector = new Vector();
 		vector.add(schoolTypePK);
-		return ejbHomeFindStudyPaths(school, vector);
+		return ejbFindStudyPaths(school, vector);
 	}
 
-	public Collection ejbHomeFindStudyPaths(School school, Collection schoolTypePKs) throws FinderException {
+	public Collection ejbFindStudyPaths(School school, Collection schoolTypePKs) throws FinderException {
 		boolean useTypes = schoolTypePKs != null && !schoolTypePKs.isEmpty();
 		
 		if (useTypes) {
@@ -193,4 +207,45 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		return idoFindPKsByQuery(query);
 	}
 
+	public Collection ejbFindBySchoolTypes(String[] schoolTypeIDs) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhere().append(COLUMN_SCHOOL_TYPE).appendInArray(schoolTypeIDs);
+		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		query.appendOrderBy(COLUMN_CODE);
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindBySchoolTypes(Collection schoolTypes) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhere().append(COLUMN_SCHOOL_TYPE).appendInCollection(schoolTypes);
+		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		query.appendOrderBy(COLUMN_CODE);
+		return idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindBySchoolCategory(SchoolCategory schoolCategory) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(COLUMN_SCHOOL_CATEGORY, schoolCategory);
+		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		query.appendOrderBy(COLUMN_CODE);
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindBySchoolAndSchoolCategory(School school, SchoolCategory schoolCategory) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom().append(getEntityName()).append(" s, sch_school_study_path r");
+		query.appendWhereEquals("s."+COLUMN_SCHOOL_CATEGORY, schoolCategory);
+		query.appendAndEquals("r.sch_school_id", school.getPrimaryKey());
+		query.appendAndEquals("r." + getIDColumnName(), "s." + getIDColumnName());
+		query.append(" AND (s.").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR s.").append(COLUMN_IS_VALID).append(" = 'Y')");
+		
+		return this.idoFindPKsByQuery(query);
+	}
 }

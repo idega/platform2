@@ -11,6 +11,7 @@ public interface SchoolCategoryHome extends com.idega.data.IDOHome
  public SchoolCategory findCollegeCategory()throws javax.ejb.FinderException;
  public SchoolCategory findElementarySchoolCategory()throws javax.ejb.FinderException;
  public SchoolCategory findHighSchoolCategory()throws javax.ejb.FinderException;
+ public SchoolCategory findMusicSchoolCategory()throws javax.ejb.FinderException;
  public SchoolCategory findUniversityCategory()throws javax.ejb.FinderException;
 
 }

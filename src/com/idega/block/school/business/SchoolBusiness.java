@@ -76,6 +76,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.SchoolCategory getCategoryCollege() throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolCategory getCategoryElementarySchool() throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolCategory getCategoryHighSchool() throws java.rmi.RemoteException;
+ public com.idega.block.school.data.SchoolCategory getCategoryMusicSchool() throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolCategory getCategoryUniversity() throws java.rmi.RemoteException;
  public java.lang.String getChildCareSchoolCategory() throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolSeason getCurrentSchoolSeason()throws javax.ejb.FinderException, java.rmi.RemoteException;
@@ -111,6 +112,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Map getSchoolRelatedSchoolTypes(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public java.util.Map getSchoolRelatedSchoolYears(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolSeason getSchoolSeason(java.lang.Object p0) throws java.rmi.RemoteException;
+ public com.idega.block.school.data.SchoolStudyPathHome getSchoolStudyPathHome() throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolType getSchoolType(java.lang.Object p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolTypeHome getSchoolTypeHome() throws java.rmi.RemoteException;
  public int getSchoolTypeIdFromSchoolClass(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -157,7 +159,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public void storeSchoolDepartment(java.lang.String p0,java.lang.String p1,int p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolSeason(int p0,java.lang.String p1,java.util.Date p2,java.util.Date p3,java.util.Date p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolType(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5,boolean p6,boolean p7,int p8)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void storeSchoolYear(int p0,java.lang.String p1,int p2,java.lang.String p3,int p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void storeSchoolYear(int p0,java.lang.String p1,int p2,String category,java.lang.String p3,String localizedKey,int p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolYearPlaces(int p0,int p1,int p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasGroupPlacement(int userID, int groupID) throws java.rmi.RemoteException;
  public boolean hasGroupPlacement(int userID, int groupID, boolean isSubGroup) throws java.rmi.RemoteException;

@@ -55,6 +55,13 @@ public SchoolCategory findHighSchoolCategory()throws javax.ejb.FinderException{
 	return this.findByPrimaryKey(pk);
 }
 
+public SchoolCategory findMusicSchoolCategory()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolCategoryBMPBean)entity).ejbFindMusicSchoolCategory();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public SchoolCategory findUniversityCategory()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolCategoryBMPBean)entity).ejbFindUniversityCategory();

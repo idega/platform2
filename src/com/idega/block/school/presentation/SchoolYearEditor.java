@@ -1,22 +1,30 @@
 package com.idega.block.school.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.util.TextFormat;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolYear;
-import com.idega.block.school.business.*;
-
-import java.util.Collection;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.util.TextFormat;
 
 
 /**
@@ -86,6 +94,11 @@ public class SchoolYearEditor extends Block {
       String type = iwc.getParameter("sch_type");
       String age = iwc.getParameter("sch_year_age");
       String info = iwc.getParameter("sch_year_info");
+      String localizedKey = iwc.getParameter("localized_key");
+      String category = null;
+      if (iwc.isParameterSet("sch_category")) {
+      		category = iwc.getParameter("sch_category");
+      }
       int iAge = -1,sid = -1, stid = -1;
       if(id !=null)
         sid = Integer.parseInt(id);
@@ -93,7 +106,7 @@ public class SchoolYearEditor extends Block {
         iAge = Integer.parseInt(age);
        if(type!=null)
        	stid = Integer.parseInt(type);
-      sabBean.storeSchoolYear(sid,name,stid,info,iAge);
+      sabBean.storeSchoolYear(sid,name,stid,category,info,localizedKey,iAge);
     }
   }
 
@@ -149,18 +162,22 @@ public class SchoolYearEditor extends Block {
   }
 
   public PresentationObject getInputTable(SchoolYear entity){
-    Table T = new Table(3,6);
+    Table T = new Table(3,8);
     T.mergeCells(1,1,3,1);
     T.add(tFormat.format(iwrb.getLocalizedString("school_year","SchoolYear"),tFormat.TITLE),1,1);
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,2);
 		T.add(tFormat.format(iwrb.getLocalizedString("school_type","Type"),tFormat.HEADER),1,3);
     T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
     T.add(tFormat.format(iwrb.getLocalizedString("age","Age")),1,5);
+    T.add(tFormat.format(iwrb.getLocalizedString("localized_key","Localized key")),1,6);
+    T.add(tFormat.format(iwrb.getLocalizedString("category","Category")),1,7);
 
     TextInput inputName = new TextInput("sch_year_name");
     TextInput inputAge = new TextInput("sch_year_age");
     DropdownMenu inputType = new DropdownMenu("sch_type");
     TextArea inputInfo = new TextArea("sch_year_info");
+    TextInput localizedKey = new TextInput("localized_key");
+    DropdownMenu inputCategory = new DropdownMenu("sch_category");
 
 	try {
 			SchoolTypeHome stHome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
@@ -172,6 +189,20 @@ public class SchoolYearEditor extends Block {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+		
+		try {
+			SchoolCategoryHome scHome = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+			Collection coll = scHome.findAllCategories();
+			Iterator iter = coll.iterator();
+			while (iter.hasNext()) {
+				SchoolCategory category = (SchoolCategory) iter.next();
+				inputCategory.addMenuElement(category.getCategory(), iwrb.getLocalizedString(category.getLocalizedKey(), category.getCategory()));
+			}
+			inputCategory.addMenuElementFirst("", "");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
     int beanId = -1;
     if(entity!=null){
@@ -181,6 +212,12 @@ public class SchoolYearEditor extends Block {
       	inputInfo.setContent(entity.getSchoolYearInfo());
       	inputAge.setContent(String.valueOf(entity.getSchoolYearAge()));
       	inputType.setSelectedElement(entity.getSchoolTypeId());
+      	if (entity.getLocalizedKey() != null) {
+      		localizedKey.setContent(entity.getLocalizedKey());
+      	}
+      	if (entity.getSchoolCategory() != null) {
+      		inputCategory.setSelectedElement(entity.getSchoolCategoryPK().toString());
+      	}
       	T.add(new HiddenInput("sch_school_year_id",String.valueOf(beanId)));
       }
       catch(Exception ex){}
@@ -191,13 +228,15 @@ public class SchoolYearEditor extends Block {
     T.add(inputType, 3, 3);
     T.add(inputInfo,3,4);
     T.add(inputAge,3,5);
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_year","true"),3,6);
+    T.add(localizedKey,3,6);
+    T.add(inputCategory,3,7);
+    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_year","true"),3,8);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
-    T.add(cancel,3,6);
+    T.add(cancel,3,8);
     if(beanId>0){
       Link delete = new Link(iwrb.getLocalizedImageButton("delete","Delete"));
       delete.addParameter("sch_delete_year",beanId);
-      T.add(delete,3,6);
+      T.add(delete,3,8);
     }
 
     return T;
