@@ -187,6 +187,7 @@ public class TextEditorWindow extends IWAdminWindow{
       locText = contentHelper.getLocalizedText(TextFinder.getLocale(iLocaleId));
     boolean hasLocalizedText = ( locText !=null ) ? true:false;
 
+		Link propslink = null;
     TextInput tiHeadline = new TextInput(prmHeadline);
     tiHeadline.setLength(40);
     tiHeadline.setMaxlength(255);
@@ -226,6 +227,7 @@ public class TextEditorWindow extends IWAdminWindow{
         ICFile file1 = (ICFile) files.get(0);
         imageInsert.setImageId(file1.getID());
         Text properties = new Text("properties");
+        propslink = com.idega.block.media.presentation.ImageAttributeSetter.getLink(properties,file1.getID(),"txre_im_prop");
       }
     }
 
@@ -233,6 +235,8 @@ public class TextEditorWindow extends IWAdminWindow{
     addLeft(iwrb.getLocalizedString("locale","Locale"), LocaleDrop,true);
     addLeft(iwrb.getLocalizedString("body","Text"),taBody,true);
     addRight(iwrb.getLocalizedString("image","Image"),imageInsert,true);
+		if(propslink != null)
+      addRight("props",propslink,true);
     addSubmitButton(save);
   }
 

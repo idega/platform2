@@ -24,6 +24,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.core.data.ICFile;
 import java.text.DateFormat;
+import com.idega.util.text.TextStyler;
 
 
 /**
@@ -51,6 +52,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   private Table outerTable = new Table(1,1);
 
   private int numberOfLetters = 273;
+	private int numberOfHeadlineLetters = -1;
   private int numberOfDisplayedNews = 5;
   private int numberOfExpandedNews = 3;
 	private int numberOfCollectionNews = 5;
@@ -68,9 +70,6 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   private String date = null;
   private String newsReaderURL;
   private String newsCollectionURL;
-  private String selectFrom = "select nw_news.* from nw_news where ";
-  private String orderBy = " order by news_date DESC";
-  private String sNewsCategoryId = "nw_news_cat_id ='";
   private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
 
   private static String prmDelete = "nwr_delete";
@@ -138,6 +137,9 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   }
 */
   private void init(){
+		headlineProxy.setFontStyle(TextStyler.getStyle(null,Text.FONT_FACE_STYLE_BOLD,null,"10",null));
+		informationProxy.setFontStyle(TextStyler.getStyle(null,null,"666666",null,null));
+		textProxy.setFontStyle(TextStyler.getDefaultStyle());
     headlineProxy.setBold();
     informationProxy.setFontColor("#666666");
     textProxy.setFontSize(1);
@@ -406,33 +408,43 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
 		if(iLayout == SINGLE_LINE_LAYOUT)
 			showOnlyDates = true;
 
-    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates);
-
-    String sNewsBody = "";
+		String sNewsBody = "";
     String sHeadline = "";
 
-    if(locText!=null){
+		if(locText!=null){
       sHeadline = locText.getHeadline();
-      sNewsBody =  locText.getBody();
     }
 
-    // shortening newstext
-    if(!showAll && sNewsBody.length() >= numberOfLetters){
-      sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
-    }
+		// shortening headlinestext
+		if(!showAll && numberOfHeadlineLetters > -1 && sHeadline.length() >= numberOfHeadlineLetters ){
+			sNewsBody=sNewsBody.substring(0,numberOfHeadlineLetters)+"...";
+		}
 
-    Text headLine = new Text(sHeadline);
+
+		Text headLine = new Text(sHeadline);
+
+    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates);
+		newsInfo = setInformationAttributes(newsInfo);
+		headLine = setHeadlineAttributes(headLine);
+
 
 		// Check if using single_line_layout
 		if(iLayout != SINGLE_LINE_LAYOUT){
 			Text newsBody = new Text(sNewsBody);
 
+			if(locText!=null){
+        sNewsBody =  locText.getBody();
+			}
+
+			// shortening newstext
+			if(!showAll && sNewsBody.length() >= numberOfLetters){
+				sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
+			}
+
 			if( showAll ) {
 					T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
 			}
 
-			newsInfo = setInformationAttributes(newsInfo);
-			headLine = setHeadlineAttributes(headLine);
 			newsBody = setTextAttributes(newsBody);
 			T.add(newsInfo,1,1);
 
@@ -490,16 +502,21 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
 		// if single line view
 		else{
 			T.add(newsInfo,1,1);
+			T.setAlignment(3,1,"left");
+			T.setAlignment(4,1,"right");
+			T.setWidth(2,1,"45");
+			T.setWidth(2,1,"10");
+			T.setBorder(1);
 		  if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
 				headlineLink.addParameter(prmMore,news.getID());
-				T.add(headlineLink, 2, 1);
+				T.add(headlineLink, 3, 1);
 			}
 			else {
-				T.add(headLine, 2, 1);
+				T.add(headLine, 3, 1);
 			}
 			if(isAdmin){
-			  T.add(getNewsAdminPart(news),3,1);
+			  T.add(getNewsAdminPart(news),4,1);
 			}
 		}
     return T;
@@ -592,17 +609,17 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   public void setInformationProxy(Text informationProxy){
     this.informationProxy = informationProxy;
   }
-  public Text setTextAttributes( Text realText ){
+  private Text setTextAttributes( Text realText ){
     Text tempText = (Text) textProxy.clone();
     tempText.setText( realText.getText() );
   return tempText;
   }
-  public Text setHeadlineAttributes( Text realText ){
+  private Text setHeadlineAttributes( Text realText ){
     Text tempText = (Text) headlineProxy.clone();
     tempText.setText( realText.getText() );
     return tempText;
   }
-  public Text setInformationAttributes( Text realText ){
+  private Text setInformationAttributes( Text realText ){
     Text tempText = (Text) informationProxy.clone();
     tempText.setText( realText.getText() );
     return tempText;
@@ -645,9 +662,24 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
 	}
 
 
+	public void setInformationFontStyle(String style){
+	  getInformationProxy().setFontStyle(style);
+	}
+
+	public void setHeadlineFontStyle(String face){
+		getHeadlineProxy().setFontStyle(face);
+	}
+
+	public void setTextFontFontStyle(String face){
+	  getTextProxy().setFontStyle(face);
+	}
 
   public void setNumberOfLetters(int numberOfLetters){
     this.numberOfLetters = Math.abs(numberOfLetters);
+  }
+
+	public void setNumberOfHeadlineLetters(int numberOfLetters){
+    this.numberOfHeadlineLetters = Math.abs(numberOfLetters);
   }
   //debug this changes the number of news displayed..that is the date alone is failing
   public void setNumberOfDisplayedNews(int numberOfDisplayedNews){

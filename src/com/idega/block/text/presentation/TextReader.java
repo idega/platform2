@@ -285,6 +285,11 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     this.textColor=textColor;
   }
 
+	public void setBackgroundColor(String BgColor) {
+    this.headlineBgColor=BgColor;
+		this.textBgColor=BgColor;
+  }
+
   public void setHeadlineBgColor(String headlineBgColor) {
     this.headlineBgColor=headlineBgColor;
   }
