@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/13 13:03:46 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/13 13:19:11 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.102 $
+ * @version $Revision: 1.103 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -433,10 +433,31 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 	protected Collection getRegulationForResourceArray(RegulationsBusiness regBus, SchoolClassMember schoolClassMember, ResourceClassMember resource, Provider provider) throws RemoteException {
 		Collection resourceConditions = new ArrayList();
-		errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
-		errorRelated.append("Resource "+resource.getResource().getResourceName());
-		errorRelated.append("SchoolYear "+schoolClassMember.getSchoolYear().getName());
+		//Just a safety precation to trace down null pointer error
+		if(null==regBus || null==schoolClassMember || null==resource || null == provider){
+			createNewErrorMessage(errorRelated, "invoice.NullpointerInCallToGetRegulationForResourceArray");
+			return resourceConditions;
+		}
+		if(null!=schoolClassMember.getSchoolType()){
+			errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
+		}else{
+			createNewErrorMessage(errorRelated, "invoice.NullpointerInSchoolType");
+			return resourceConditions;
+		}
+		if(null!=resource.getResource()){
+			errorRelated.append("Resource "+resource.getResource().getResourceName());
+		}else{
+			createNewErrorMessage(errorRelated, "invoice.NullpointerInResource");
+			return resourceConditions;
+		}
+		if(null!=schoolClassMember.getSchoolYear()){
+			errorRelated.append("SchoolYear "+schoolClassMember.getSchoolYear().getName());
+		}else{
+			createNewErrorMessage(errorRelated, "invoice.NullpointerInSchoolYear");
+			return resourceConditions;
+		}
 		errorRelated.append("Statsbidrag "+provider.getStateSubsidyGrant());
+
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
