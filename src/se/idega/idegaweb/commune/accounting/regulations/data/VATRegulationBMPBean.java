@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.6 2003/08/25 14:41:24 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.7 2003/08/25 15:09:03 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/08/25 14:41:24 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 15:09:03 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -64,6 +64,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 				Integer.class, "many-to-one", PaymentFlowType.class);
 		addAttribute(COLUMN_PROVIDER_TYPE_ID, "Provider type (foreign key)", true, true, 
 				Integer.class, "many-to-one", ProviderType.class);
+		setAsPrimaryKey (getIDColumnName(), true);
 	}
 
 	public Date getPeriodFrom() {
