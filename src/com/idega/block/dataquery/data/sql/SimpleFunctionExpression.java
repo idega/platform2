@@ -32,10 +32,10 @@ public class SimpleFunctionExpression extends FunctionExpression {
     FUNCTION_SQL.put(QueryXMLConstants.FUNC_AVG,   "AVG"); 
   }
 
-  protected void initialize() {
+  protected void initialize(SQLQuery sqlQuery) {
     String function = queryField.getFunction();
     sqlFunctionName = (String) FUNCTION_SQL.get(function);
-    List fieldValueList = querySQL.getUniqueNameForField(queryField);
+    List fieldValueList = sqlQuery.getUniqueNameForField(queryField);
     if (fieldValueList.size() != 1) {
       // something wrong
       return;

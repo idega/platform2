@@ -16,7 +16,7 @@ import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
-import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
@@ -414,7 +414,7 @@ public class ReportOverview extends Block {
 		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
     QueryHelper queryHelper = queryService.getQueryHelper(currentQueryId);
     QueryToSQLBridge bridge = getQueryToSQLBridge(); 
-    QuerySQL query = null;
+    SQLQuery query = null;
     try {
     	query = bridge.createQuerySQL(queryHelper, iwc);
     }
@@ -507,7 +507,7 @@ public class ReportOverview extends Block {
 	}
 		
 	
-	private void showInputFields(QuerySQL query, Map identifierValueMap, IWResourceBundle resourceBundle)	{
+	private void showInputFields(SQLQuery query, Map identifierValueMap, IWResourceBundle resourceBundle)	{
     Map identifierDescriptionMap = query.getIdentifierDescriptionMap();
     String name = query.getName();
     PresentationObject presentationObject = getInputFields(name, identifierValueMap, identifierDescriptionMap, resourceBundle);
@@ -518,7 +518,7 @@ public class ReportOverview extends Block {
 	}
 
 	
-	private boolean executeQueries(QuerySQL query, QueryToSQLBridge bridge, List executedSQLQueries) throws RemoteException {
+	private boolean executeQueries(SQLQuery query, QueryToSQLBridge bridge, List executedSQLQueries) throws RemoteException {
 		QueryResult queryResult = bridge.executeQueries(query, executedSQLQueries);
 		// check if everything is fine
 		if (queryResult == null || queryResult.isEmpty())	{

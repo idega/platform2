@@ -18,8 +18,8 @@ public class EmptyFunctionExpression extends FunctionExpression {
 
   private List fieldValues = null;
   
-  protected void initialize() {
-    fieldValues = querySQL.getUniqueNameForField(queryField);
+  protected void initialize(SQLQuery sqlQuery) {
+    fieldValues = sqlQuery.getUniqueNameForField(queryField);
   }
     
   

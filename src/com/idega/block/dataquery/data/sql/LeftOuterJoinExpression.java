@@ -17,7 +17,6 @@ public class LeftOuterJoinExpression implements Expression {
 
 	private IDOEntityDefinition sourceDefinition = null;
 	private IDOEntityDefinition targetDefinition = null;
-	private QuerySQL querySQL = null;
 
 	private String sourceAlias;
 	private String sourceKey;
@@ -26,38 +25,35 @@ public class LeftOuterJoinExpression implements Expression {
 	private String targetKey;
 	private String targetTableName;
 	
-  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, QuerySQL querySQL) throws IDOCompositePrimaryKeyException {
-    this.querySQL = querySQL;
+  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, SQLQuery sqlQuery) throws IDOCompositePrimaryKeyException {
     sourceKey = sourceDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
-    initialize(sourceDefinition, sourcePath, targetDefinition, targetPath);
+    initialize(sourceDefinition, sourcePath, targetDefinition, targetPath, sqlQuery);
   }
   
-  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourceKey, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, QuerySQL querySQL) throws IDOCompositePrimaryKeyException {
-    this.querySQL = querySQL;
+  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourceKey, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, SQLQuery sqlQuery) throws IDOCompositePrimaryKeyException {
     this.sourceKey = sourceKey;
-    initialize(sourceDefinition, sourcePath, targetDefinition, targetPath);
+    initialize(sourceDefinition, sourcePath, targetDefinition, targetPath, sqlQuery);
   }
   
-  public LeftOuterJoinExpression(String sourceTableName, String sourceKey, String sourcePath, String targetTableName, String targetKey, String targetPath, QuerySQL querySQL)	{
-  	this.querySQL = querySQL;
+  public LeftOuterJoinExpression(String sourceTableName, String sourceKey, String sourcePath, String targetTableName, String targetKey, String targetPath, SQLQuery sqlQuery)	{
   	this.sourceKey = sourceKey;
   	this.targetKey = targetKey;
   	this.targetTableName = targetTableName;
-		initialize(sourceTableName, sourcePath, targetPath);
+		initialize(sourceTableName, sourcePath, targetPath, sqlQuery);
   }
   	
   	
   
-  private void initialize(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath) throws IDOCompositePrimaryKeyException	{
+  private void initialize(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, SQLQuery sqlQuery) throws IDOCompositePrimaryKeyException	{
   	targetKey = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
  	 	String sourceTableName = sourceDefinition.getSQLTableName();
 		targetTableName = targetDefinition.getSQLTableName();
-  	initialize(sourceTableName, sourcePath, targetPath);
+  	initialize(sourceTableName, sourcePath, targetPath, sqlQuery);
   } 
   	
-  private void initialize(String sourceTableName, String sourcePath, String targetPath)	{
-  	sourceAlias = querySQL.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
-  	targetAlias = querySQL.getUniqueNameForEntityByTableName(targetTableName, targetPath);
+  private void initialize(String sourceTableName, String sourcePath, String targetPath, SQLQuery sqlQuery)	{
+  	sourceAlias = sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+  	targetAlias = sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
   }
 
 	/* (non-Javadoc)

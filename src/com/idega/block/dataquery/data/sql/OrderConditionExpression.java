@@ -28,15 +28,15 @@ public class OrderConditionExpression implements Expression {
 	
 	private int orderPriority = 0;
 	
-  public OrderConditionExpression(QueryOrderConditionPart orderConditionPart, QuerySQL querySQL) {
-  	initialize(orderConditionPart, querySQL);
+  public OrderConditionExpression(QueryOrderConditionPart orderConditionPart, SQLQuery sqlQuery) {
+  	initialize(orderConditionPart, sqlQuery);
   }
   
-  protected void initialize(QueryOrderConditionPart orderConditionPart, QuerySQL querySQL)	{
+  protected void initialize(QueryOrderConditionPart orderConditionPart, SQLQuery sqlQuery)	{
   	String field = orderConditionPart.getField();
   	path = orderConditionPart.getPath();
   	isAscendant = orderConditionPart.isAscendant();
-  	List fieldValueList = querySQL.getUniqueNameForField(path,field);
+  	List fieldValueList = sqlQuery.getUniqueNameForField(path,field);
   	if (fieldValueList.size() != 1)	{
   		// something wrong
   		return;

@@ -15,7 +15,7 @@ import javax.transaction.UserTransaction;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultCell;
 import com.idega.block.dataquery.data.QueryResultField;
-import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.*;
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.IWContext;
@@ -33,34 +33,34 @@ import com.idega.util.database.ConnectionBroker;
 public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQLBridge {
 	
   
-  public QuerySQL createQuerySQL(QueryHelper queryHelper, IWContext iwc) throws QueryGenerationException  {
+  public SQLQuery createQuerySQL(QueryHelper queryHelper, IWContext iwc) throws QueryGenerationException  {
   	// avoid trouble with other users that use the query at the same time
   	if (! iwc.isLoggedOn()) {
   		throw new QueryGenerationException("User is not logged on");
   	}
   	String uniqueIdentifier = Integer.toString(iwc.getCurrentUserId());
-    QuerySQL querySQL = QuerySQL.getInstance(queryHelper, uniqueIdentifier);
-    return querySQL;
+    SQLQuery sqlQuery = SQLQuery.getInstance(queryHelper, uniqueIdentifier);
+    return sqlQuery;
   }
   
   /**
    *  Use this method if you do not need to print or show the executed sql statements
    */
-  public QueryResult executeQueries(QuerySQL querySQL)	{
-  	return executeQueries(querySQL, new ArrayList());
+  public QueryResult executeQueries(SQLQuery sqlQuery)	{
+  	return executeQueries(sqlQuery, new ArrayList());
   }
 
 	/** 
 	 * Use this method for printing or showing the executed sql statements
 	 */
-  public QueryResult executeQueries(QuerySQL querySQL, List executedSQLStatements) {
+  public QueryResult executeQueries(SQLQuery sqlQuery, List executedSQLStatements) {
   	QueryResult queryResult = null;
   	List temporaryTables = new ArrayList();
   	UserTransaction transactionManager = getSessionContext().getUserTransaction();
 		Connection connection = ConnectionBroker.getConnection();
   	try {
   		transactionManager.begin();
-  		queryResult = executeSQL(querySQL, connection, temporaryTables, executedSQLStatements);
+  		queryResult = executeSQL(sqlQuery, connection, temporaryTables, executedSQLStatements);
   		// drop created views 
   		// delete the view in reverse direction because of dependencies
   		for (int i = temporaryTables.size() - 1; i > -1 ; i--) {
@@ -101,9 +101,9 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
 		}
   }
  
-	private QueryResult executeSQL(QuerySQL querySQL, Connection connection, List temporaryTables, List executedSQLStatements) throws SQLException	{
+	private QueryResult executeSQL(SQLQuery sqlQuery, Connection connection, List temporaryTables, List executedSQLStatements) throws SQLException	{
   	// go back to the very first query
-  	QuerySQL currentQuery = querySQL;
+  	SQLQuery currentQuery = sqlQuery;
   	while (currentQuery.hasPreviousQuery())	{
   		currentQuery = currentQuery.previousQuery();
   	}
@@ -123,17 +123,17 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
   			
  		
   
-	private String createViewFromQuery(Connection connection, QuerySQL querySQL, List executedSQLStatements)	throws SQLException {
+	private String createViewFromQuery(Connection connection, SQLQuery sqlQuery, List executedSQLStatements)	throws SQLException {
 		String viewTableName = null;
 		Statement statement = connection.createStatement();
 		try {
-			String sqlStatement = querySQL.toSQLString();
-			viewTableName = querySQL.getMyTableName();
+			String sqlStatement = sqlQuery.toSQLString();
+			viewTableName = sqlQuery.getMyTableName();
 			// create view
 			StringBuffer buffer = new StringBuffer("CREATE VIEW ");
 			buffer.append(viewTableName);
 			buffer.append(" ( ");
-			List displayNames = querySQL.getDisplayNames();
+			List displayNames = sqlQuery.getDisplayNames();
 			Iterator displayIterator = displayNames.iterator();
 			String separator = "";
 			while (displayIterator.hasNext())	{
@@ -162,10 +162,10 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
     return viewTableName;
 	}
 
-	private QueryResult executeQuery(Connection connection, QuerySQL querySQL, List executedSQLStatements) throws SQLException	{
+	private QueryResult executeQuery(Connection connection, SQLQuery sqlQuery, List executedSQLStatements) throws SQLException	{
 		Statement statement = connection.createStatement();
-		String sqlStatement = querySQL.toSQLString();
-		List displayNames = querySQL.getDisplayNames();
+		String sqlStatement = sqlQuery.toSQLString();
+		List displayNames = sqlQuery.getDisplayNames();
     ResultSet resultSet = null;
     ResultSetMetaData metadata;
     QueryResult queryResult = new QueryResult();

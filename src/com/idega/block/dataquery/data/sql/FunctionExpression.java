@@ -18,7 +18,6 @@ import com.idega.block.dataquery.data.xml.QueryXMLConstants;
 public abstract class FunctionExpression implements Expression {
 	
 	protected QueryFieldPart queryField = null;
-	protected QuerySQL querySQL = null;
   
   private static final Map CLASS_FUNCTION;
   
@@ -36,7 +35,7 @@ public abstract class FunctionExpression implements Expression {
     CLASS_FUNCTION.put(QueryXMLConstants.FUNC_AVG,   SIMPLE_FUNCTION_CLASS); 
   }
 
-  public static FunctionExpression getInstance(QueryFieldPart queryField, QuerySQL querySQL) {
+  public static FunctionExpression getInstance(QueryFieldPart queryField, SQLQuery sqlQuery) {
     FunctionExpression functionExpression = null;
     String function = queryField.getFunction();
     String className = (String) CLASS_FUNCTION.get(function);
@@ -68,11 +67,10 @@ public abstract class FunctionExpression implements Expression {
       functionExpression = new EmptyFunctionExpression();      
     }
     functionExpression.queryField = queryField;
-    functionExpression.querySQL = querySQL;
-    functionExpression.initialize();
+    functionExpression.initialize(sqlQuery);
     return functionExpression;
   }
     
-  protected abstract void initialize();
+  protected abstract void initialize(SQLQuery sqlQuery);
 
 }

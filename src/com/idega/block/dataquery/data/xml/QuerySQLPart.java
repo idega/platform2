@@ -26,7 +26,7 @@ public class QuerySQLPart implements QueryPart {
 	private Map keyDescriptionMap = new HashMap();
 	
 	private List  resultFieldOrder = new ArrayList();
-	private Map resultFieldType = new HashMap();
+	private Map resultFieldTypeMap = new HashMap();
 	private Map resultDescriptionMap = new HashMap(); 
 	
 	public QuerySQLPart(String statement) {
@@ -58,26 +58,55 @@ public class QuerySQLPart implements QueryPart {
 		}
 	}
 		
-	/** WARNING! NOT COMPLETE METHOD!
+	/** 
 	 * 
 	 * @see com.idega.block.dataquery.business.QueryPart#getQueryElement()
 	 */
-//TODO thi: THIS METHOD IS NOT COMPLETE!!!!!!!!
 	public XMLElement getQueryElement() {
 		XMLElement sqlElement = new XMLElement(QueryXMLConstants.SQL);
 		
 		XMLElement statementElement = new XMLElement(QueryXMLConstants.SQL_STATEMENT);
 		statementElement.setText(this.statement);
-		sqlElement.addContent(statement);
+		sqlElement.addContent(statementElement);
+		// result
+		Iterator fieldIterator = resultFieldOrder.iterator();
+		while (fieldIterator.hasNext())	{
+			String field = (String) fieldIterator.next();
+			String type = (String) resultFieldTypeMap.get(field);
+			String description = (String) resultDescriptionMap.get(field); 
+			
+			XMLElement resultFieldElement = new XMLElement(QueryXMLConstants.SQL_RESULT);
+			
+			XMLElement fieldElement = new XMLElement(QueryXMLConstants.SQL_RESULT_FIELD);
+			fieldElement.setText(field);
+			resultFieldElement.addContent(fieldElement);
+			
+			XMLElement typeElement = new XMLElement(QueryXMLConstants.SQL_RESULT_TYPE);
+			typeElement.setText(type);
+			resultFieldElement.addContent(typeElement);
+			
+			XMLElement descriptionElement = new XMLElement(QueryXMLConstants.SQL_RESULT_DESCRIPTION);
+			descriptionElement.setText(description);
+			resultFieldElement.addContent(descriptionElement);
+			
+			sqlElement.addContent(resultFieldElement);
+		}
+			
 		
+		// variable
 		Iterator iterator = keyValueMap.entrySet().iterator();
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
 			String description = (String) keyDescriptionMap.get(key);
+			String type = (String) keyTypeMap.get(key);
 			
 			XMLElement variableElement = new XMLElement(QueryXMLConstants.SQL_VARIABLE);
+			
+			XMLElement typeElement = new XMLElement(QueryXMLConstants.TYPE);
+			typeElement.setText(type);
+			variableElement.addContent(typeElement);
 
 			XMLElement keyElement = new XMLElement(QueryXMLConstants.SQL_VARIABLE_KEY);
 			keyElement.setText(key);
@@ -120,7 +149,7 @@ public class QuerySQLPart implements QueryPart {
 		
 	public void setField(String field, String type, String description)	{
 		resultFieldOrder.add(field);
-		resultFieldType.put(field, type);
+		resultFieldTypeMap.put(field, type);
 		resultDescriptionMap.put(field,description);
 	}
 	
@@ -133,7 +162,7 @@ public class QuerySQLPart implements QueryPart {
 		Iterator iterator = resultFieldOrder.iterator();
 		while (iterator.hasNext())	{
 			String field = (String) iterator.next();
-			String type = (String) resultFieldType.get(field);
+			String type = (String) resultFieldTypeMap.get(field);
 			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type, false);
 			fields.add(fieldPart);
 		}

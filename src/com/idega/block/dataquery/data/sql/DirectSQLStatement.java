@@ -28,7 +28,7 @@ public class DirectSQLStatement implements DynamicExpression {
   
   private Map keyValueMap = new HashMap();
   
-  public DirectSQLStatement(QuerySQLPart sqlPart, Object identifier, QuerySQL querySQL)	{
+  public DirectSQLStatement(QuerySQLPart sqlPart, Object identifier, SQLQuery sqlQuery)	{
   	sqlStatement = sqlPart.getStatement();
   	Map variableValueMap = sqlPart.getVariableValueMap();
   	identifierValueMap.putAll(variableValueMap);

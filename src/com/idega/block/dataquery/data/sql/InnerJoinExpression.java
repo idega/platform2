@@ -16,23 +16,19 @@ public class InnerJoinExpression implements Expression {
 	
 	public static final String PREFIX=" , "; 
 	
-	private QuerySQL querySQL = null;
-	
 	private String alias;
 	private String tableName;
 	
-  public InnerJoinExpression(QueryEntityPart queryEntityPart, QuerySQL querySQL) {
-    this.querySQL = querySQL;
+  public InnerJoinExpression(QueryEntityPart queryEntityPart, SQLQuery sqlQuery) {
     String entity = queryEntityPart.getBeanClassName();
     String path = queryEntityPart.getPath();
-    alias = querySQL.getUniqueNameForEntity(entity, path);
-		tableName = querySQL.getTableName(entity);
+    alias = sqlQuery.getUniqueNameForEntity(entity, path);
+		tableName = sqlQuery.getTableName(entity);
   }
   
-  public InnerJoinExpression(String tableName, String path, QuerySQL querySQL)	{
-  	this.querySQL = querySQL;
+  public InnerJoinExpression(String tableName, String path, SQLQuery sqlQuery)	{
   	this.tableName = tableName;
-  	alias = querySQL.getUniqueNameForEntityByTableName(tableName, path);
+  	alias = sqlQuery.getUniqueNameForEntityByTableName(tableName, path);
   }
   
 	/* (non-Javadoc)

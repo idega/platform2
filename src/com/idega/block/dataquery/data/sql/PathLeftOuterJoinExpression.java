@@ -21,8 +21,8 @@ public class PathLeftOuterJoinExpression extends PathCriterionExpression {
 	
 	private List outerJoins;
 	
-  public PathLeftOuterJoinExpression(QueryEntityPart queryEntityPart, QuerySQL querySQL) {
-  	super(queryEntityPart, querySQL);
+  public PathLeftOuterJoinExpression(QueryEntityPart queryEntityPart, SQLQuery sqlQuery) {
+  	super(queryEntityPart, sqlQuery);
   }
 	
 	protected void initialize() throws IDOCompositePrimaryKeyException, ExpressionException	{
@@ -44,15 +44,15 @@ public class PathLeftOuterJoinExpression extends PathCriterionExpression {
 		
 		// just a decision: middle table gets source path
 		LeftOuterJoinExpression middleTableOuterJoin = 
-			new LeftOuterJoinExpression(sourceTableName, sourcePrimaryKeyColumnName, sourcePath, middleTableName, sourcePrimaryKeyColumnName, sourcePath, querySQL);
+			new LeftOuterJoinExpression(sourceTableName, sourcePrimaryKeyColumnName, sourcePath, middleTableName, sourcePrimaryKeyColumnName, sourcePath, sqlQuery);
 		LeftOuterJoinExpression  targetTableOuterJoin =
-			new LeftOuterJoinExpression(middleTableName, targetPrimaryKeyColumnName, sourcePath, targetTableName, targetPrimaryKeyColumnName, targetPath, querySQL);
+			new LeftOuterJoinExpression(middleTableName, targetPrimaryKeyColumnName, sourcePath, targetTableName, targetPrimaryKeyColumnName, targetPath, sqlQuery);
 		outerJoins.add(middleTableOuterJoin);
 		outerJoins.add(targetTableOuterJoin);
 	}
 
 	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, String pathElement, List criteriaList) throws IDOCompositePrimaryKeyException {
-		LeftOuterJoinExpression outerJoin = new LeftOuterJoinExpression(sourceDefinition, pathElement, sourcePath, targetDefinition, targetPath, querySQL);
+		LeftOuterJoinExpression outerJoin = new LeftOuterJoinExpression(sourceDefinition, pathElement, sourcePath, targetDefinition, targetPath, sqlQuery);
 		outerJoins.add(outerJoin);
 	}
 	

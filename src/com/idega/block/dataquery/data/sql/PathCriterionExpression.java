@@ -27,14 +27,14 @@ import com.idega.data.IDORelationshipException;
 public class PathCriterionExpression implements DynamicExpression {
   
   protected QueryEntityPart queryEntityPart = null;
-  protected QuerySQL querySQL = null;
+  protected SQLQuery sqlQuery = null;
   
   private List criteriaList = null;
   private List innerJoins = new ArrayList();
   
-  public PathCriterionExpression(QueryEntityPart queryEntityPart, QuerySQL querySQL) {
+  public PathCriterionExpression(QueryEntityPart queryEntityPart, SQLQuery sqlQuery) {
     this.queryEntityPart = queryEntityPart;
-    this.querySQL = querySQL;
+    this.sqlQuery = sqlQuery;
     try {
     	initialize();
     }
@@ -52,9 +52,9 @@ public class PathCriterionExpression implements DynamicExpression {
   	// Note: class name can also be a query name
     String className = (String) pathElements.get(0);
 
-    String tableName = querySQL.getTableName(className);
+    String tableName = sqlQuery.getTableName(className);
     String targetPath = (String) pathElements.get(0);
-		innerJoins.add(new InnerJoinExpression(tableName, targetPath, querySQL));			      
+		innerJoins.add(new InnerJoinExpression(tableName, targetPath, sqlQuery));			      
 
     if (pathElements.size() > 1) {
     	criteriaList = new ArrayList();
@@ -100,8 +100,8 @@ public class PathCriterionExpression implements DynamicExpression {
 		String targetTableName = targetDefinition.getSQLTableName();
 		
 		// get aliases
-		String aliasSourceTableName = querySQL.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
-		String aliasTargetTableName = querySQL.getUniqueNameForEntityByTableName(targetTableName, targetPath);
+		String aliasSourceTableName = sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+		String aliasTargetTableName = sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
 		
 		// retrieve name of middle table
 		Class sourceClass = sourceDefinition.getInterfaceClass();
@@ -109,7 +109,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		String middleTable = EntityControl.getManyToManyRelationShipTableName(sourceClass, targetClass);
 		//String middleTable = StringHandler.concatAlphabetically(sourceTableName, targetTableName, "_");
 		// just a decision: middle table gets the source path
-		String aliasMiddleTable = querySQL.getUniqueNameForEntityByTableName(middleTable, sourcePath);
+		String aliasMiddleTable = sqlQuery.getUniqueNameForEntityByTableName(middleTable, sourcePath);
 		
 		// build the condition 
 		StringBuffer buffer = new StringBuffer(" (");
@@ -127,9 +127,9 @@ public class PathCriterionExpression implements DynamicExpression {
 		buffer.append(") ");
 		
 		// add the middle table to the query
-		innerJoins.add(new InnerJoinExpression(middleTable, sourcePath, querySQL));
+		innerJoins.add(new InnerJoinExpression(middleTable, sourcePath, sqlQuery));
 		// add the target table to the query
-		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, querySQL));
+		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, sqlQuery));
 		
 		criteriaList.add(buffer.toString());
 	}
@@ -140,8 +140,8 @@ public class PathCriterionExpression implements DynamicExpression {
 		String sourceTableName = sourceDefinition.getSQLTableName();
 		
 		// get aliases
-		String aliasSourceTableName = querySQL.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
-		String aliasTargetTableName = querySQL.getUniqueNameForEntityByTableName(targetTableName, targetPath);
+		String aliasSourceTableName = sqlQuery.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+		String aliasTargetTableName = sqlQuery.getUniqueNameForEntityByTableName(targetTableName, targetPath);
 					
 		// build the condition
 		StringBuffer buffer = new StringBuffer(aliasSourceTableName);
@@ -151,7 +151,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		buffer.append(targetPrimaryKeyColumnName);
 		
 		// add the target table to the query
-		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, querySQL));			
+		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, sqlQuery));			
 		
 		criteriaList.add(buffer.toString());
 	}

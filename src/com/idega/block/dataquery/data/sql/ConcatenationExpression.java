@@ -11,7 +11,7 @@ package com.idega.block.dataquery.data.sql;
  */
 public class ConcatenationExpression extends FunctionExpression {
   
-   protected void initialize() {
+   protected void initialize(SQLQuery sqlQuery) {
    }
   
   public String toSQLString() {

@@ -47,16 +47,16 @@ public class CriterionExpression implements DynamicExpression {
     typeSQL.put(QueryConditionPart.TYPE_LEQ, "<=");
   }
      
-	public CriterionExpression(QueryConditionPart condition, Object identifier, QuerySQL querySQL)	{
+	public CriterionExpression(QueryConditionPart condition, Object identifier, SQLQuery sqlQuery)	{
 		this.id = condition.getId();
 		this.identifier = identifier;
-		initialize(condition, querySQL);
+		initialize(condition, sqlQuery);
 	}	
   
-  protected void initialize(QueryConditionPart condition, QuerySQL querySQL)	{
+  protected void initialize(QueryConditionPart condition, SQLQuery sqlQuery)	{
   	String field = condition.getField();
   	String path = condition.getPath();
-  	List fieldValueList = querySQL.getUniqueNameForField(path,field);
+  	List fieldValueList = sqlQuery.getUniqueNameForField(path,field);
   	if (fieldValueList.size() != 1)	{
   		// something wrong
   		return;

@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.block.dataquery.data.Query;
-import com.idega.block.dataquery.data.sql.QuerySQL;
 import com.idega.data.GenericEntity;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
@@ -47,8 +46,6 @@ public class QueryHelper {
 	
 	private QueryHelper previousQuery;
 	private QueryHelper nextQuery;
-	
-	private QuerySQL mySQLQuery;
 	
 	public QueryHelper()	{
 	}
@@ -201,6 +198,11 @@ public class QueryHelper {
 			root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
 		}
 		root.setAttribute(QueryXMLConstants.NAME, name);
+		// check for direct sql
+		if (sqlPart != null)	{
+			root.addContent(sqlPart.getQueryElement());
+		}
+		
 		//	SOURCE ENTITY PART (STEP 1)
 		if (sourceEntity != null) {
 			XMLElement sourceElement = getSourceEntityElement();

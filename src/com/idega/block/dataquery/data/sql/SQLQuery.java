@@ -33,7 +33,7 @@ import com.idega.util.datastructures.HashMatrix;
  * @version 1.0
  * Created on May 30, 2003
  */
-public class QuerySQL implements DynamicExpression {
+public class SQLQuery implements DynamicExpression {
   
   private final String DOT = ".";
   private final String ALIAS_PREFIX = "A_";
@@ -69,8 +69,8 @@ public class QuerySQL implements DynamicExpression {
   
   private DynamicExpression query = null;
   
-  private QuerySQL previousQuery = null;
-  private QuerySQL nextQuery = null;
+  private SQLQuery previousQuery = null;
+  private SQLQuery nextQuery = null;
   
   // caching of table names
   private Map beanClassNameTableNameMap = new HashMap();
@@ -83,13 +83,13 @@ public class QuerySQL implements DynamicExpression {
    * first sql query -> second sql query -> ..... -> returned sql query
    * Do not change the behaviour because you have to work with last sql query.
    */ 
-  static public  QuerySQL getInstance(QueryHelper queryHelper, String uniqueIdentifier)	{
+  static public  SQLQuery getInstance(QueryHelper queryHelper, String uniqueIdentifier)	{
   	// go back to the very first query helper
   	QueryHelper currentQueryHelper = queryHelper;
   	while (currentQueryHelper.hasPreviousQuery())	{
   		currentQueryHelper = currentQueryHelper.previousQuery();
   	}
-  	QuerySQL currentQuery = new QuerySQL(currentQueryHelper, uniqueIdentifier, 0, new TreeMap(), new HashMap(), null);
+  	SQLQuery currentQuery = new SQLQuery(currentQueryHelper, uniqueIdentifier, 0, new TreeMap(), new HashMap(), null);
   	// go forward to the very first query
   	while(currentQuery.hasNextQuery())	{
   		currentQuery = currentQuery.nextQuery();
@@ -99,11 +99,11 @@ public class QuerySQL implements DynamicExpression {
 		
   	
   
-	private QuerySQL(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, QuerySQL previousQuery)	{
+	private SQLQuery(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery)	{
   	initialize(queryHelper, uniqueIdentifier, counter, queryTablesNames,  entityQueryEntityMap, previousQuery);
   }
   
-  protected void initialize(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, QuerySQL previousQuery) {
+  protected void initialize(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery) {
   	this.previousQuery = previousQuery;
   	this.counter = counter;
   	name = queryHelper.getName();
@@ -127,9 +127,9 @@ public class QuerySQL implements DynamicExpression {
     // go to the next query
     if (queryHelper.hasNextQuery())	{
     	QueryHelper nextQueryHelper = queryHelper.nextQuery();
-    	QuerySQL querySQL = new QuerySQL(nextQueryHelper, uniqueIdentifier, this.counter , beanClassNameTableNameMap, entityQueryEntityMap ,this);
+    	SQLQuery sqlQuery = new SQLQuery(nextQueryHelper, uniqueIdentifier, this.counter , beanClassNameTableNameMap, entityQueryEntityMap ,this);
     	// get the generated dynamic expression
-    	nextQuery = querySQL;
+    	nextQuery = sqlQuery;
     }	
   }
   
@@ -141,11 +141,11 @@ public class QuerySQL implements DynamicExpression {
   	return nextQuery() != null;
   }
   
-  public QuerySQL nextQuery()	{
+  public SQLQuery nextQuery()	{
   	return nextQuery;
   }
   
-  public QuerySQL previousQuery()	{
+  public SQLQuery previousQuery()	{
   	return previousQuery;
   }
   
@@ -227,7 +227,7 @@ public class QuerySQL implements DynamicExpression {
     }
   }
   
-  private void setFields(QueryHelper queryHelper) throws IOException {
+  private void setFields(QueryHelper queryHelper)  {
     List fields = queryHelper.getListOfFields();
     if (fields == null) {
       return;
@@ -290,7 +290,7 @@ public class QuerySQL implements DynamicExpression {
       String path = queryField.getPath();
       // test if entity is supported
       if (! entityQueryEntity.containsKey(path))  {
-        throw new IOException("[QuerySQL] criteria could not be created, table is unknown");
+        throw new IOException("[SQLQuery] criteria could not be created, table is unknown");
       }
    		// create expression
    		FunctionExpression functionExpression = FunctionExpression.getInstance(queryField, this);
