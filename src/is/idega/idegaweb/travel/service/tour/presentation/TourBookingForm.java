@@ -7,6 +7,7 @@ import java.util.*;
 import javax.ejb.*;
 
 import com.idega.block.calendar.business.*;
+import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -315,7 +316,7 @@ public class TourBookingForm extends BookingForm{
           Table pTable = new Table();
             pTable.setBorder(1);
           int pWidthLeft = 60;
-          int pWidthCenter = 60;
+          int pWidthCenter = 75;
           int pWidthRight = 75;
 
           pTable = new Table(3,1);
@@ -351,6 +352,7 @@ public class TourBookingForm extends BookingForm{
                   ++row;
                   category = pPrices[i].getPriceCategory();
                   int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+//                  String currency = CurrencyBusiness.  pPrices[i].getCurrencyId()
       //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
