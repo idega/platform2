@@ -28,7 +28,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.13 2003/04/07 17:03:20 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.14 2003/04/10 14:34:22 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -214,30 +214,34 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				if(status.equals(CCConstants.YES)) {
 					System.out.println("Accepting application.");
 					getChildCareBusiness(iwc).parentsAgree(
-						application,
+					    Integer.valueOf(status._appid).intValue(), 
 						application.getOwner(),
 						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT), 
 						getAcceptedMessage(iwc, application)
 						); 
 						
 				} else if(status.equals(CCConstants.NO_NEW_DATE)) {
-					getChildCareBusiness(iwc).rejectApplication(
-						application, 
-						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), /**@TODO: Change text */
-						getRejectedMessage(iwc, application),
-						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
-						getAcceptedMessage(iwc, application),
-						application.getOwner()); 
-						application.setFromDate(status._date);							
+					getChildCareBusiness(iwc).rejectOfferWithNewDate(
+					    Integer.valueOf(status._appid).intValue(), 
+					    application.getOwner(),
+					    status._date);
+//						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), /**@TODO: Change text */
+//						getRejectedMessage(iwc, application),
+//						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
+//						getAcceptedMessage(iwc, application),
+//						application.getOwner()); 
+//						application.setFromDate(status._date);							
 					
 				} else if(status.equals(CCConstants.NO)){	
-					getChildCareBusiness(iwc).rejectApplication(
-						application, 
-						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), 
-						getRejectedMessage(iwc, application),
-						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
-						getAcceptedMessage(iwc, application),
-						application.getOwner()); 
+					getChildCareBusiness(iwc).rejectOffer(
+						Integer.valueOf(status._appid).intValue(), 
+					    application.getOwner()); 
+
+//						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), 
+//						getRejectedMessage(iwc, application),
+//						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
+//						getAcceptedMessage(iwc, application),
+//						application.getOwner()); 
 				}					
 			}
 		}
@@ -254,15 +258,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 	}
 	
-	private String getRejectedMessage(IWContext iwc, ChildCareApplication application) throws RemoteException{
-		return localize(CCConstants.TEXT_OFFER_REJECTED_MESSAGE)
-			+"<br><br>"
-			+ getHeader(localize(CCConstants.TEXT_DETAILS) + ":") + "<br>"
-			+ localize(CCConstants.TEXT_CUSTOMER) + ": "+ iwc.getCurrentUser().getName() + "<br>"
-			+ localize(CCConstants.TEXT_CHILD) + ": "+ application.getChild().getDisplayName() + "<br>"
-			+ localize(CCConstants.TEXT_FROM) + ": "+ application.getFromDate();
-		
-	}
+//	private String getRejectedMessage(IWContext iwc, ChildCareApplication application) throws RemoteException{
+//		return localize(CCConstants.TEXT_OFFER_REJECTED_MESSAGE)
+//			+"<br><br>"
+//			+ getHeader(localize(CCConstants.TEXT_DETAILS) + ":") + "<br>"
+//			+ localize(CCConstants.TEXT_CUSTOMER) + ": "+ iwc.getCurrentUser().getName() + "<br>"
+//			+ localize(CCConstants.TEXT_CHILD) + ": "+ application.getChild().getDisplayName() + "<br>"
+//			+ localize(CCConstants.TEXT_FROM) + ": "+ application.getFromDate();
+//		
+//	}
 		
 
 	
