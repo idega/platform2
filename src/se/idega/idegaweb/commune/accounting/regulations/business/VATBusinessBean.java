@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.14 2003/10/10 13:20:47 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.15 2003/10/13 09:24:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,10 +28,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/10/10 13:20:47 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/13 09:24:02 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -297,11 +297,18 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 		try {
 			VATRegulationHome home = getVATRegulationHome();
 			VATRegulation vr = null;
+
 			try {
-				vr = home.findByPrimaryKey(new Integer(id));
-			} catch (FinderException e) {
+				Integer pk = new Integer(id);
+				if (pk.intValue() > 0) { 
+					vr = home.findByPrimaryKey(new Integer(id));
+				}
+			} catch (Exception e) {}
+
+			if (vr == null) {
 				vr = home.create();
 			}
+
 			vr.setPeriodFrom(periodFrom);
 			vr.setPeriodTo(periodTo);
 			vr.setDescription(description);
