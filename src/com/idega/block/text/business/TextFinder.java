@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Hashtable;
 import java.sql.SQLException;
 import java.util.Locale;
-import com.idega.core.business.ICLocaleBusiness;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
 /**
  * Title:
@@ -201,7 +201,7 @@ public class TextFinder {
   }
 
   public static List listOfLocales(){
-    return ICLocaleBusiness.listLocaleCreateNew();
+    return ICLocaleBusiness.listLocaleCreateIsEn();
   }
 
   public static int getLocaleId(Locale locale){
