@@ -677,7 +677,9 @@ public class PublicBooking extends Block  {
       if (currency != null)
       table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
 
-      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
+//      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
+      SubmitButton yes = new SubmitButton(this.sAction, this.parameterBookingVerified);
+        yes.setOnClick("this.form."+yes.getName()+".disabled = true");
       Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
           no.setAttribute("onClick","history.go(-1)");
 

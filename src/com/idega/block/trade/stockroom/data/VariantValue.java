@@ -32,7 +32,7 @@ public class VariantValue extends GenericEntity {
 
   public static String getTableNameVariantValue() {return "SR_VARIANT_VALUE";}
   public static String getColumnNameVariantId() {return "SR_VARIANT_ID";}
-  public static String getColumnNameVariantValue() {return "VALUE";}
+  public static String getColumnNameVariantValue() {return "SR_VARIANT_VALUE";}
 
 
   public void setVariantId(int id) {
