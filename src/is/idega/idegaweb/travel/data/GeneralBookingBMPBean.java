@@ -417,7 +417,6 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       /** @todo lonsa við getInstance crap */
 //      ProductBusiness pBus = new ProductBusiness();//(ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
       ProductBusiness pBus = (ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
-
       Timeframe timeframe = pBus.getTimeframe(pBus.getProduct(serviceId), fromStamp);
 //      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
@@ -433,9 +432,10 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       }
 
         String[] many = {};
-            sql.append("Select b."+getTotalCountColumnName()+" from "+getBookingTableName()+" b");
-            sql.append(","+pTable+" p,"+middleTable+" m,"+tTable+" t");
-
+            sql.append("Select b."+getTotalCountColumnName()+" from "+getBookingTableName()+" b,"+pTable+" p");
+            if (timeframe != null) {
+              sql.append(","+middleTable+" m,"+tTable+" t");
+            }
             if (travelAddressIds != null) {
               sql.append(", "+addressMiddleTable+" am");
             }
@@ -456,11 +456,11 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
               sql.append(") and ");
             }
 
-            sql.append("p."+ProductBMPBean.getIdColumnName()+" = m."+ProductBMPBean.getIdColumnName());
-            sql.append(" and ");
-            sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
-            sql.append(" and ");
             if (timeframe != null) {
+              sql.append("p."+ProductBMPBean.getIdColumnName()+" = m."+ProductBMPBean.getIdColumnName());
+              sql.append(" and ");
+              sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
+              sql.append(" and ");
               sql.append("t."+timeframe.getIDColumnName()+" = "+timeframe.getID());
               sql.append(" and ");
             }
@@ -484,6 +484,8 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             }
             sql.append(" )");
 
+
+//            System.err.println(sql.toString());
         many = SimpleQuerier.executeStringQuery(sql.toString());
 //        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 

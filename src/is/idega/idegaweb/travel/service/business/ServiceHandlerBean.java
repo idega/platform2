@@ -47,19 +47,19 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
       ProductCategory pCat = (ProductCategory) iter.next();
       String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
       if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-        System.out.println("Returning form for TOUR");
+        System.out.println("Returning bookingform for TOUR");
         return new TourBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-        System.out.println("Returning form for HOTEL");
+        System.out.println("Returning bookingform for HOTEL");
         return new HotelBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-        System.out.println("Returning form for FISHING");
+        System.out.println("Returning bookingform for FISHING");
         return new FishingBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
         System.out.println("Cannot find BookingForm for ProductCategory PRODUCT, returning form for TOUR");
         return new TourBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-        System.out.println("Returning form for CAR RENTAL");
+        System.out.println("Returning bookingform for CAR RENTAL");
         return new CarRentalBookingForm(iwc, product);
       }
     }else {

@@ -71,7 +71,7 @@ public class Booking extends TravelManager {
 
   private Service service;
   private Timeframe timeframe;
-  private Tour tour;
+//  private Tour tour;
 
   public static String parameterProductId = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
   private static String parameterInqueryId = "bookInqueryId";
@@ -143,22 +143,21 @@ public class Booking extends TravelManager {
           productId = Integer.parseInt(sProductId);
           product = getProductBusiness(iwc).getProduct(productId);
           service = tsb.getService(product);
-          try {
-            tour = getTourBusiness(iwc).getTour(product);
-          }catch (TourNotFoundException tnfe) {
-            //tnfe.printStackTrace(System.err);
-            System.out.println("Tour not found");
-          }
           timeframe = tsb.getTimeframe(product);
 
           String travelAddressId = iwc.getParameter(BookingForm.parameterDepartureAddressId);
-          if (travelAddressId == null) {
+          if (travelAddressId == null || travelAddressId.equals("-1")) {
             List addresses = product.getDepartureAddresses(true);
-            travelAddress = (TravelAddress) addresses.get(0);
+            if (addresses != null && addresses.size() > 0) {
+              travelAddress = (TravelAddress) addresses.get(0);
+            }
           }else {
             travelAddress = ((TravelAddressHome) (IDOLookup.getHomeLegacy(TravelAddress.class))).findByPrimaryKey(Integer.parseInt(travelAddressId));
           }
-          travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, travelAddress);
+
+          if (travelAddress != null) {
+            travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, travelAddress);
+          }
         }
 
 
@@ -294,27 +293,33 @@ public class Booking extends TravelManager {
          * @todo minnka endurtekningar
          */
 
+      BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
+
       int row = 1;
       boolean isDayVisible = false;
       boolean isExpired = false;
       int iBookings = 0;
       try {
         if (reseller != null) {
-          isExpired = tsb.getIfExpired(contract, stamp);
+          isExpired = bf.getIfExpired(iwc);
+          //isExpired = tsb.getIfExpired(contract, stamp);
+
           if (!isExpired) {
-            if (this.tour != null) {
-              isDayVisible = getTourBusiness(iwc).getIfDay(iwc, contract, tour, stamp);
-            }else {
-              isDayVisible = tsb.getIfDay(iwc, contract, product, stamp);
-            }
+            isDayVisible = bf.getIsDayVisible(iwc);
+//            if (this.tour != null) {
+//              isDayVisible = getTourBusiness(iwc).getIfDay(iwc, contract, tour, stamp);
+//            }else {
+//              isDayVisible = tsb.getIfDay(iwc, contract, product, stamp);
+//            }
           }
         }
         else {
-          if (this.tour != null) {
-            isDayVisible = getTourBusiness(iwc).getIfDay(iwc, tour, stamp, false);
-          }else {
-            isDayVisible = tsb.getIfDay(iwc,this.product, product.getTimeframes(), this.stamp);
-          }
+          isDayVisible = bf.getIsDayVisible(iwc);
+//          if (this.tour != null) {
+//            isDayVisible = getTourBusiness(iwc).getIfDay(iwc, tour, stamp, false);
+//          }else {
+//            isDayVisible = tsb.getIfDay(iwc,this.product, product.getTimeframes(), this.stamp);
+//          }
           if (supplier == null) {
             if (isDayVisible) {
               iBookings = getBooker(iwc).getNumberOfBookings(productId, stamp);
@@ -331,7 +336,10 @@ public class Booking extends TravelManager {
       }
 
 
-      boolean yearly = timeframe.getIfYearly();
+      boolean yearly = true;
+      if (timeframe != null) {
+        yearly = timeframe.getIfYearly();
+      }
       List depDays = null;
 
       if (isDayVisible) {
@@ -488,7 +496,7 @@ public class Booking extends TravelManager {
       if (contract != null) ch.setContract(contract);
       if (product != null)  ch.setProduct(product);
       if (reseller != null) ch.setReseller(reseller);
-      if (tour != null)     ch.setTour(tour);
+//      if (tour != null)     ch.setTour(tour);
       ch.setTimestamp(stamp);
 
       return ch.getCalendarTable(iwc);
@@ -628,7 +636,7 @@ public class Booking extends TravelManager {
   }
 
 
-  private Form getTotalTable(IWContext iwc) throws RemoteException, FinderException{
+  private Form getTotalTable(IWContext iwc) throws Exception{
     Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -702,9 +710,12 @@ public class Booking extends TravelManager {
           bookedTextBold.setFontColor(super.BLACK);
           availableTextBold.setFontColor(super.BLACK);
 
+//      BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
+
       try {
         if (reseller != null) {
           try {
+//          if (bf.getIsDayVisible(iwc)) {
           if (tsb.getIfDay(iwc, contract,product, this.stamp)) {
             iCount = contract.getAlotment();
 
@@ -733,6 +744,7 @@ public class Booking extends TravelManager {
         }
         else {
            try {
+//           if (bf.getIsDayVisible(iwc)) {
           if (tsb.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
             iCount = 0;
 //            if (this.travelAddress != null) {
@@ -752,7 +764,8 @@ public class Booking extends TravelManager {
               if (sDay != null) {
                 iCount = sDay.getMax();
                 iMin = sDay.getMin();
-                if (tour != null) {
+              }
+/*                if (tour != null) {
                   if (iCount < 1) {
                     iCount = tour.getTotalSeats();
                   }
@@ -760,15 +773,17 @@ public class Booking extends TravelManager {
                     iMin = tour.getMinimumSeats();
                   }
                 }
+
               }else if (tour != null ){
                 iCount = tour.getTotalSeats();
                 iMin = tour.getMinimumSeats();
               }
+*/
             }catch (Exception e) {
               e.printStackTrace(System.err);
-              if (tour != null) {
-                iCount = tour.getTotalSeats();
-              }
+//              if (tour != null) {
+//                iCount = tour.getTotalSeats();
+//              }
             }
 
             if (supplier != null) {
@@ -820,8 +835,8 @@ public class Booking extends TravelManager {
       table.add(bookedTextBold,3,row);
       table.add(inqTextBold,4,row);
       table.add(availableTextBold,5,row);
-      if (tour != null)
-      if (tour.getNumberOfDays() > 1) {
+//      if (tour != null)
+/*      if (tour.getNumberOfDays() > 1) {
         List depDays = getTourBusiness(iwc).getDepartureDays(iwc, tour);
         String dateStr = iwc.getParameter("booking_date");
         DropdownMenu menu = getTourBusiness(iwc).getDepartureDaysDropdownMenu(iwc, depDays, "booking_date");
@@ -829,7 +844,7 @@ public class Booking extends TravelManager {
           if (dateStr != null) menu.setSelectedElement(dateStr);
           menu.setToSubmit();
         table.add(menu,6,row);
-      }
+      }*/
 
       table.setColumnAlignment(1,"left");
       table.setColumnAlignment(2,"center");

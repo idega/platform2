@@ -1,4 +1,5 @@
 package is.idega.idegaweb.travel.service.presentation;
+import javax.ejb.FinderException;
 import java.rmi.*;
 import java.sql.*;
 
@@ -19,4 +20,5 @@ import is.idega.idegaweb.travel.business.*;
 
 public interface ServiceOverview {
   public Table getServiceInfoTable(IWContext iwc, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException;
+  public Table getPublicServiceInfoTable(IWContext iwc, Product product) throws FinderException, RemoteException;
 }

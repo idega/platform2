@@ -80,10 +80,10 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
          prPrice.setMaxUsage(maxUsage);
        prPrice.insert();
        if (timeframeId != -1) {
-        prPrice.addTo(Timeframe.class, timeframeId);
+         prPrice.addTo(Timeframe.class, timeframeId);
        }
        if (addressId != -1) {
-        prPrice.addTo(TravelAddress.class, addressId);
+         prPrice.addTo(TravelAddress.class, addressId);
        }
        return prPrice;
   }

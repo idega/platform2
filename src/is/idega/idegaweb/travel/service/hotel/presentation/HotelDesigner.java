@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.service.hotel.presentation;
 
+import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
+import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import java.rmi.*;
 
 import javax.ejb.*;
@@ -44,6 +46,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
   private String PARAMETER_NAME            = "hd_par_name";
   private String PARAMETER_DESCRIPTION     = "hd_par_desc";
   private String PARAMETER_NUMBER          = "hd_par_num";
+  private String PARAMETER_NUMBER_OF_UNITS = "hd_par_num_un";
   private String PARAMETER_ACTIVE_FROM     = "hd_par_act_fr";
   private String PARAMETER_ACTIVE_TO       = "hd_par_act_to";
   private String PARAMETER_ACTIVE_YEARLY   = "hd_par_act_yrl";
@@ -102,7 +105,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       description = "";
     }
     String imageId = iwc.getParameter( PARAMETER_DESIGN_IMAGE_ID );
-    String activeFrom = iwc.getParameter( PARAMETER_ACTIVE_FROM );
+    String numberOfUnits = iwc.getParameter( PARAMETER_NUMBER_OF_UNITS );
+/*    String activeFrom = iwc.getParameter( PARAMETER_ACTIVE_FROM );
     String activeTo = iwc.getParameter( PARAMETER_ACTIVE_TO );
     String activeYearly = iwc.getParameter( PARAMETER_ACTIVE_YEARLY );
 
@@ -114,23 +118,23 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     String fridays = iwc.getParameter( PARAMETER_FRIDAYS );
     String saturdays = iwc.getParameter( PARAMETER_SATURDAYS );
     String sundays = iwc.getParameter( PARAMETER_SUNDAYS );
-    String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
 
     String departureFrom = iwc.getParameter( PARAMETER_DEPARTURE_FROM );
     String departureTime = iwc.getParameter( PARAMETER_DEPARTURE_TIME );
     String arrivalAt = iwc.getParameter( PARAMETER_ARRIVAL_AT );
     String arrivalTime = iwc.getParameter( PARAMETER_ARRIVAL_TIME );
-
+*/
+    String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
     String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
 
-
+/*
     boolean yearly = false;
     if ( activeYearly != null ) {
       if ( activeYearly.equals( "Y" ) ) {
         yearly = true;
       }
     }
-
+*/
     int iDiscountType = com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT;
     if ( discountType != null ) {
       iDiscountType = Integer.parseInt( discountType );
@@ -143,7 +147,15 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       }
     }
 
+    int iNumberOfUnits = 0;
+    if (numberOfUnits != null) {
+      try {
+        iNumberOfUnits = Integer.parseInt(numberOfUnits);
+      }catch (NumberFormatException n){
+      }
+    }
 
+/*
     IWTimestamp activeFromStamp = null;
     if ( activeFrom != null ) {
       activeFromStamp = new IWTimestamp( activeFrom );
@@ -201,7 +213,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
     int[] activeDays = new int[counter];
     System.arraycopy( tempDays, 0, activeDays, 0, counter );
-
+*/
 
     int returner = -1;
 
@@ -209,15 +221,15 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
     try {
       if ( serviceId == -1 ) {
-        hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
-        returner = hb.createHotel(_supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp,true, iDiscountType);
+//        hb.setTimeframe( activeFromStamp, activeToStamp, yearly );
+        returner = hb.createHotel(_supplier.getID(), iImageId, name, number, description, iNumberOfUnits,true, iDiscountType);
       } else {
         String timeframeId = iwc.getParameter( PARAMETER_TIMEFRAME_ID );
         if ( timeframeId == null ) {
           timeframeId = "-1";
         }
-        hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
-        returner = hb.updateHotel(serviceId, _supplier.getID(), iImageId, name, number, description, activeDays, departureFrom, departureStamp, arrivalAt, arrivalStamp, true, iDiscountType);
+//        hb.setTimeframe( Integer.parseInt( timeframeId ), activeFromStamp, activeToStamp, yearly );
+        returner = hb.updateHotel(serviceId, _supplier.getID(), iImageId, name, number, description, iNumberOfUnits, true, iDiscountType);
         if ( useImageId == null ) {
           ProductEditorBusiness.getInstance().dropImage( _product, true );
         }
@@ -272,7 +284,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
       int currentYear = IWTimestamp.RightNow().getYear();
 
-      DateInput active_from = new DateInput( PARAMETER_ACTIVE_FROM );
+/*      DateInput active_from = new DateInput( PARAMETER_ACTIVE_FROM );
       active_from.setDate( stamp.getDate() );
       active_from.setYearRange( 2001, currentYear + 5 );
       active_from.keepStatusOnAction();
@@ -317,6 +329,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       arrival_time.setMinute( 0 );
       arrival_time.keepStatusOnAction();
 
+*/
+      TextInput numberOfUnits = new TextInput( PARAMETER_NUMBER_OF_UNITS );
 
       DropdownMenu discountType = new DropdownMenu( PARAMETER_DISCOUNT_TYPE );
       discountType.addMenuElement( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT, _iwrb.getLocalizedString( "travel.amount", "Amount" ) );
@@ -356,6 +370,13 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       String imageId = iwc.getParameter( PARAMETER_DESIGN_IMAGE_ID );
       if ( _service != null ) {
         _product = _service.getProduct();
+        Hotel hotel = null;
+        try {
+          hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(_product.getPrimaryKey());
+          numberOfUnits.setContent(Integer.toString(hotel.getNumberOfUnits()));
+        }catch (FinderException fe) {
+          System.out.println("[HotelDesigner] HotelBean not available");
+        }
         if ( imageId != null ) {
           imageInserter.setImageId( Integer.parseInt( imageId ) );
           imageInserter.setSelected( true );
@@ -384,7 +405,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       Text tfYearlyText = ( Text ) smallText.clone();
       tfYearlyText.setText( _iwrb.getLocalizedString( "travel.yearly", "yearly" ) );
 
-      Table activeTable = new Table( 5, 2 );
+/*      Table activeTable = new Table( 5, 2 );
 
       activeTable.add( tfFromText, 1, 1 );
       activeTable.add( active_from, 1, 2 );
@@ -399,7 +420,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
       table.add( timeframeText, 1, row );
       table.add( activeTable, 2, row );
-
+*/
+/*
       ++row;
       Table weekdayFixTable = new Table( 9, 2 );
       weekdayFixTable.setCellpadding( 0 );
@@ -478,6 +500,12 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       departureTimeText.setText( _iwrb.getLocalizedString( "travel.departure_time", "Departure time" ) );
       table.add( departureTimeText, 1, row );
       table.add( departure_time, 2, row );
+*/
+      ++row;
+      Text noUnitsText = ( Text ) theBoldText.clone();
+      noUnitsText.setText( _iwrb.getLocalizedString( "travel.number_of_units", "Number of units" ) );
+      table.add( noUnitsText, 1, row );
+      table.add( numberOfUnits, 2, row );
 
       ++row;
       Text discountTypeText = ( Text ) theBoldText.clone();
@@ -498,6 +526,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
         Parameter par1 = new Parameter( PARAMETER_IS_UPDATE, Integer.toString( serviceId ) );
         par1.keepStatusOnAction();
         table.add( par1 );
+        /*
         if ( _timeframe != null ) {
           Parameter par2 = new Parameter( PARAMETER_TIMEFRAME_ID, Integer.toString( _timeframe.getID() ) );
           par2.keepStatusOnAction();
@@ -505,12 +534,13 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           active_from.setDate( new IWTimestamp( _timeframe.getFrom() ).getDate() );
           active_to.setDate( new IWTimestamp( _timeframe.getTo() ).getDate() );
           active_yearly.setSelected( _timeframe.getIfYearly() );
-        }
+        }*/
 
         name.setContent( _product.getProductName( super.getLocaleId() ) );
         number.setContent( _product.getNumber() );
         description.setContent( _product.getProductDescription( super.getLocaleId() ) );
 
+        /*
         int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
         try {
           ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
@@ -545,7 +575,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           }
         }
         IWTimestamp tempStamp;
-
+        */
 
         discountType.setSelectedElement( Integer.toString( _product.getDiscountTypeId() ) );
       } else {

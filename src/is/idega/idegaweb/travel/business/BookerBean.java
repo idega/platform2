@@ -79,7 +79,6 @@ public class BookerBean extends IBOServiceBean implements Booker{
     }
 
     try {
-//      if (type != null)
       if (bookingId == -1) {
         booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).create();
           booking.setServiceID(serviceId);
@@ -129,6 +128,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
             booking.setComment(comment);
           }
         booking.store();
+
         /** @todo fixa þetta getStaticInstance() crap */
         removeBookingPriceApplication(booking);
       }
@@ -136,9 +136,12 @@ public class BookerBean extends IBOServiceBean implements Booker{
       GeneralBooking temp = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(booking.getID()));
   //    temp.removeFrom(TravelAddress.class);
       temp.removeAllTravelAddresses();
-      TravelAddressHome taHome = (TravelAddressHome) IDOLookup.getHome(TravelAddress.class);
-      TravelAddress tAddress = taHome.findByPrimaryKey(addressId);
-      temp.addTravelAddress(tAddress);
+
+      if (addressId > 0) {
+        TravelAddressHome taHome = (TravelAddressHome) IDOLookup.getHome(TravelAddress.class);
+        TravelAddress tAddress = taHome.findByPrimaryKey(addressId);
+        temp.addTravelAddress(tAddress);
+      }
   //    temp.addTo(TravelAddress.class, addressId);
     }catch (FinderException fe) {
       throw new CreateException(fe.getMessage());

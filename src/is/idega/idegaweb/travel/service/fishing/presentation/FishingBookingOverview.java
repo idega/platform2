@@ -170,6 +170,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
                 iAvailable = iCount - iBooked - iAssigned -iInquery;
                 iCount = iCount -iBooked;
               }
+              countTextBold = (Text) theSmallBoldText.clone();
               countTextBold.setText(Integer.toString(iCount));
 
 
@@ -178,8 +179,6 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 
               assignedTextBold = (Text) theSmallBoldText.clone();
               assignedTextBold.setText(Integer.toString(iAssigned));
-              countTextBold = (Text) super.theSmallBoldText.clone();
-              countTextBold.setText(Integer.toString(iCount));
               inqTextBold = (Text) theSmallBoldText.clone();
               inqTextBold.setText(Integer.toString(iInquery));
               bookedTextBold = (Text) theSmallBoldText.clone();

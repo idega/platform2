@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.service.presentation;
 
+import com.idega.block.trade.data.Currency;
+import java.text.DecimalFormat;
+import com.idega.business.IBOLookup;
 import java.rmi.*;
 import java.sql.*;
 import java.util.*;
@@ -40,13 +43,16 @@ public abstract class BookingForm extends TravelManager{
   protected Product _product;
   protected Service _service;
   protected Reseller _reseller;
+  protected Contract _contract;
   protected int _productId;
   protected int _resellerId;
+  protected int _contractId;
   protected IWTimestamp _stamp;
   protected Booking _booking;
 
   protected int available = is.idega.idegaweb.travel.presentation.Booking.available;
   protected int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
+  protected DecimalFormat df = new DecimalFormat("0.00");
 
   public static String BookingAction = is.idega.idegaweb.travel.presentation.Booking.BookingAction;
   protected String BookingParameter = is.idega.idegaweb.travel.presentation.Booking.BookingParameter;
@@ -77,7 +83,27 @@ public abstract class BookingForm extends TravelManager{
     iwrb = super.getResourceBundle(iwc);
     supplier = super.getSupplier();
     _reseller = super.getReseller();
+    if ((_reseller != null) && (product != null)){
+      try {
+          Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(_reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
+          if (contracts.length > 0) {
+            _contract = contracts[0];
+            _contractId = ((Integer) _contract.getPrimaryKey()).intValue();
+          }
+      }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+      }
+
+    }
     setTimestamp(iwc);
+  }
+
+  protected Form getExpiredForm(IWContext iwc) {
+    Form form = new Form();
+    Table table = new Table();
+    form.add(table);
+    table.add(iwrb.getLocalizedString("travel.time_for_booking_has_passed","Time for booking has passed"));
+    return form;
   }
 
   public void main(IWContext iwc)throws Exception {
@@ -135,9 +161,14 @@ public abstract class BookingForm extends TravelManager{
     ProductPrice[] prices = {};
     ProductPrice[] misc = {};
     Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
+    int timeframeId = -1;
     if (tFrame != null) {
+      timeframeId = tFrame.getID();
       prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
       misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
+    }else {
+      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, false);
+      misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, -1, false);
     }
 
     if (prices.length > 0) {
@@ -351,7 +382,7 @@ public abstract class BookingForm extends TravelManager{
             try {
                 ++row;
                 category = pPrices[i].getPriceCategory();
-                int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
     //              pPrices[i].getPrice();
                 pPriceCatNameText = (Text) theText.clone();
                   pPriceCatNameText.setText(category.getName());
@@ -1306,9 +1337,17 @@ public abstract class BookingForm extends TravelManager{
     int iMany = 0;
 
     String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
-    int iAddressId = Integer.parseInt(sAddressId);
+    int iAddressId = -1;
+    int timeframeId = -1;
+    try {
+      iAddressId = Integer.parseInt(sAddressId);
+    }catch (Exception e) {}
+
     Collection addressIds = getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(getProductBusiness(iwc).getProduct(_service.getID()), iAddressId);
     Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, iAddressId);
+    if (tFrame != null) {
+      timeframeId = tFrame.getID();
+    }
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     int iBookingId = -1;
 
@@ -1332,7 +1371,7 @@ public abstract class BookingForm extends TravelManager{
     }
 
 
-    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
+    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {
@@ -1473,10 +1512,15 @@ public abstract class BookingForm extends TravelManager{
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
       ProductPrice[] misc = {};
+      int timeframeId = -1;
       Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, iAddressId);
       if (tFrame != null) {
-        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
-        misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
+        timeframeId = tFrame.getID();
+        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
+        misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
+      }else {
+        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
+        misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
       }
       int lbookingId = -1;
 
@@ -1848,6 +1892,299 @@ public abstract class BookingForm extends TravelManager{
     return form;
   }
 
+  public Table getVerifyBookingTable(IWContext iwc, Product product) throws RemoteException, SQLException{
+    String surname = iwc.getParameter("surname");
+    String lastname = iwc.getParameter("lastname");
+    String address = iwc.getParameter("address");
+    String area_code = iwc.getParameter("area_code");
+    String email = iwc.getParameter("e-mail");
+    String telephoneNumber = iwc.getParameter("telephone_number");
+    String city = iwc.getParameter("city");
+    String country = iwc.getParameter("country");
+    String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
+    String room_number = iwc.getParameter("room_number");
+    String comment = iwc.getParameter("comment");
+    String depAddressId = iwc.getParameter(parameterDepartureAddressId);
+
+    String fromDate = iwc.getParameter(parameterFromDate);
+    String manyDays = iwc.getParameter(parameterManyDays);
+
+    String ccNumber = iwc.getParameter(parameterCCNumber);
+    String ccMonth = iwc.getParameter(parameterCCMonth);
+    String ccYear = iwc.getParameter(parameterCCYear);
+
+    String inquiry = iwc.getParameter(parameterInquiry);
+
+    boolean valid = true;
+    String errorColor = "YELLOW";
+    Text star = new Text(Text.NON_BREAKING_SPACE+"*");
+      star.setFontColor(errorColor);
+
+
+//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
+    ProductPrice[] prices = {};
+    ProductPrice[] misc = {};
+    Timeframe tFrame = getProductBusiness(iwc).getTimeframe(product, _stamp, Integer.parseInt(depAddressId));
+    if (tFrame != null && depAddressId != null) {
+      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
+      misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
+    }
+
+    Table table = new Table();
+      table.setCellpadding(3);
+      table.setCellspacing(3);
+      int row = 1;
+
+      table.mergeCells(1,1,2,1);
+      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")),1,1);
+
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
+      table.add(getBoldTextWhite(product.getProductName(iwc.getCurrentLocaleId())),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+
+      IWTimestamp fromStamp = new IWTimestamp(fromDate);
+      try {
+        int iManyDays = Integer.parseInt(manyDays);
+        IWTimestamp toStamp = new IWTimestamp(fromStamp);
+        if (iManyDays > 1) {
+          toStamp.addDays(iManyDays);
+          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
+        }else {
+          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)),2,row);
+        }
+      }catch (NumberFormatException n) {
+        table.add(star, 2,row);
+      }
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.date","Date")),1,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.departure_place","Departure place")),1,row);
+      table.add(getBoldTextWhite(((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(depAddressId)).getName()),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.name","Name")),1,row);
+      table.add(getBoldTextWhite(surname+" "+lastname),2,row);
+      if (surname.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.address","Address")),1,row);
+      table.add(getBoldTextWhite(address),2,row);
+      if (address.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.area_code","Area code")),1,row);
+      table.add(getBoldTextWhite(area_code),2,row);
+      if (area_code.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
+      table.add(getBoldTextWhite(city),2,row);
+      if (city.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.country","Country")),1,row);
+      table.add(getBoldTextWhite(country),2,row);
+      if (country.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.email","E-mail")),1,row);
+      table.add(getBoldTextWhite(email),2,row);
+      if (email.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
+      table.add(getBoldTextWhite(telephoneNumber),2,row);
+
+/*      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.comment","Comment")),1,row);
+      table.add(getBoldTextWhite(comment),2,row);
+*/
+      ++row;
+
+      float price = 0;
+      int total = 0;
+      int current = 0;
+      Currency currency = null;
+
+      int pricesLength = prices.length;
+      int miscLength = misc.length;
+      ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
+      for (int i = 0; i < pricesLength; i++) {
+        pPrices[i] = prices[i];
+      }
+      for (int i = 0; i < miscLength; i++) {
+        pPrices[i+pricesLength] = misc[i];
+      }
+
+      for (int i = 0; i < pPrices.length; i++) {
+        ++row;
+        table.setAlignment(1,row,"right");
+        table.setAlignment(2,row,"left");
+
+        try {
+          if (i >= pricesLength) {
+            current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+(i-pricesLength)));
+          }else {
+            current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+            total += current;
+          }
+        }catch (NumberFormatException n) {
+          current = 0;
+        }
+
+        try {
+          if (i == 0)
+          currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
+          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,product.getID(),pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
+        }catch (SQLException sql) {
+        }catch (NumberFormatException n) {}
+
+        table.add(getTextWhite(pPrices[i].getPriceCategory().getName()),1,row);
+        table.add(getBoldTextWhite(Integer.toString(current)),2,row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.total_passengers","Total passengers")),1,row);
+      table.add(getBoldTextWhite(Integer.toString(total)),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.price","Price")),1,row);
+      price *= Integer.parseInt(manyDays);
+      table.add(getBoldTextWhite(this.df.format(price) + " "),2,row);
+      if (currency != null)
+      table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
+
+//      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
+      SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"));
+//        yes.setOnSubmit("this.form."+yes.getName()+".disabled = true");
+      table.add(new HiddenInput(this.sAction, PublicBooking.parameterBookingVerified),2,row);
+        yes.setOnClick("this.form.submit()");
+        yes.setOnClick("this.form."+yes.getName()+".disabled = true");
+      Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
+          no.setAttribute("onClick","history.go(-1)");
+
+
+      if (inquiry == null) {
+        ++row;
+        table.setAlignment(1,row,"right");
+        table.setAlignment(2,row,"left");
+        table.add(getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number")),1,row);
+        if (ccNumber.length() <5) {
+          table.add(getBoldTextWhite(ccNumber),2,row);
+        }else {
+          for (int i = 0; i < ccNumber.length() -4; i++) {
+            table.add(getBoldTextWhite("*"),2,row);
+          }
+          table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
+
+        }
+        if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
+          valid = false;
+          Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
+            ccError.setFontColor(errorColor);
+          ++row;
+          table.mergeCells(1, row, 2, row);
+          table.add(ccError, 1, row);
+        }
+      }else {
+        debug("inquiry");
+      }
+
+
+      if (inquiry == null) {
+        Text bookingsError = getBoldText(iwrb.getLocalizedString("travel.some_days_are_not_available","Some of the selected days are not available"));
+          bookingsError.setFontColor(errorColor);
+        try {
+          BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+//          TourBookingForm tbf = new TourBookingForm(iwc, product);
+          int id = bf.checkBooking(iwc, false);
+          if (id != BookingForm.errorTooMany) {
+          }else {
+            ++row;
+            table.mergeCells(1, row, 2, row);
+            table.add(bookingsError, 1, row);
+            List errorDays = bf.getErrorDays();
+            Text dayText;
+            if (errorDays != null) {
+              valid = false;
+              for (int i = 0; i < errorDays.size(); i++) {
+                ++row;
+                dayText = getBoldText(((IWTimestamp) errorDays.get(i)).getLocaleDate(iwc));
+                  dayText.setFontColor(errorColor);
+                table.add(dayText, 2, row);
+              }
+            }
+
+          }
+        }catch (Exception e) {
+          valid = false;
+          table.mergeCells(1, row, 2, row);
+          table.add(bookingsError, 1, row);
+          e.printStackTrace(System.err);
+        }
+      }else {
+        debug("INQUIRY");
+      }
+
+      ++row;
+      table.setAlignment(1,row,"left");
+      table.setAlignment(2,row,"right");
+      table.add(no,1,row);
+      if (valid) {
+        table.add(yes,2,row);
+      }
+
+
+    return table;
+  }
+
   public Form getErrorForm(IWContext iwc, int error) {
     switch (error) {
       case errorTooMany :
@@ -1867,6 +2204,38 @@ public abstract class BookingForm extends TravelManager{
     _resellerId = reseller.getID();
   }
 
+  protected Text getBoldText(String content) {
+    Text text = new Text();
+    text.setFontStyle(TravelManager.theBoldTextStyle);
+    text.setText(content);
+    return text;
+  }
+
+  protected Text getBoldTextWhite(String content) {
+    Text text = getBoldText(content);
+    text.setFontColor(TravelManager.WHITE);
+    return text;
+  }
+  protected Text getTextWhite(String content) {
+    Text text = new Text();
+    text.setFontStyle(TravelManager.theTextStyle);
+    text.setFontColor(TravelManager.WHITE);
+    text.setText(content);
+    return text;
+  }
+
+  public boolean getIfExpired(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException{
+    if (_reseller != null) {
+      return super.getTravelStockroomBusiness(iwc).getIfExpired(_contract, _stamp);
+    }else {
+      return super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp);
+    }
+
+  }
+
+  public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
+    return super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp);
+  }
 
 
 }

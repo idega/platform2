@@ -47,8 +47,8 @@ public class PublicBooking extends Block  {
   IWResourceBundle iwrb;
   IWBundle bundle;
   Product product;
-  Service service;
-  Timeframe[] timeframes;
+//  Service service;
+//  Timeframe[] timeframes;
   Supplier supplier;
   int productId = -1;
 
@@ -61,7 +61,7 @@ public class PublicBooking extends Block  {
 
   private String sAction = "publicBookingAction";
   private String parameterSubmitBooking = "publicBookingSubmitBooking";
-  private String parameterBookingVerified = "publicBookingBookingVerified";
+  public static String parameterBookingVerified = "publicBookingBookingVerified";
 
 
   public PublicBooking() {
@@ -105,8 +105,6 @@ public class PublicBooking extends Block  {
         if (!product.getIsValid()) {
           throw new SQLException("Product not valid");
         }
-        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
-        timeframes = product.getTimeframes();
         supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(product.getSupplierId());
 
       }catch (SQLException s) {
@@ -145,7 +143,7 @@ public class PublicBooking extends Block  {
   }
 
 
-  private void displayForm(IWContext iwc) {
+  private void displayForm(IWContext iwc) throws RemoteException, FinderException{
       Table table = new Table(2,4);
         table.setWidth("90%");
         table.setAlignment("center");
@@ -240,208 +238,11 @@ public class PublicBooking extends Block  {
     return table;
   }
 
-  private Form leftTop(IWContext iwc) {
-    Image background = bundle.getImage("images/sb_background.gif");
-
-    Form form = new Form();
-    Table aroundTable = new Table(2,2);
-      aroundTable.setWidth("100%");
-      aroundTable.setHeight("100%");
-      aroundTable.setCellpadding(0);
-      aroundTable.setCellspacing(0);
-      aroundTable.setBackgroundImage(1,1,background);
-      aroundTable.setBackgroundImage(2,1,background);
-      aroundTable.setBackgroundImage(1,2,background);
-      aroundTable.setWidth(1,"1");
-      aroundTable.setHeight(1,"1");
-      aroundTable.setBorder(0);
-
-
-    Table table = new Table();
-      aroundTable.add(table,2,2);
-    form.add(aroundTable);
-
-
-
-    try {
-//      ServiceOverview so = new ServiceOverview(iwc);
-//        form.add(so.getProductInfoTable(iwc, iwrb, product));
-
-      table.setWidth("100%");
-      table.setHeight("100%");
-      table.setAlignment("center");
-      table.setBorder(0);
-
-      IWTimestamp depTimeStamp = new IWTimestamp(service.getDepartureTime());
-      List depAddresses = product.getDepartureAddresses(true);
-      TravelAddress depAddress = getProductBusiness(iwc).getDepartureAddress(product);
-      Currency currency;
-
-      Text nameText = getText(iwrb.getLocalizedString("travel.name","Name"));
-      Text daysText = getText(iwrb.getLocalizedString("travel.active_days","Active days"));
-      Text timeframeText = getText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
-      Text supplierText = getText(iwrb.getLocalizedString("travel.supplier","Supplier"));
-      Text departureFromText = getText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
-      Text departureTimeText = getText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
-      Text pricesText = getText(iwrb.getLocalizedString("travel.prices","Prices"));
-      Image image = TravelManager.getDefaultImage(iwrb);
-      if (product.getFileId() != -1) {
-        image = new Image(product.getFileId());
-      }
-      image.setMaxImageWidth(138);
-
-      Image arrow = bundle.getImage("images/black_arrow.gif");
-        arrow.setAlignment("center");
-
-      Text space = getText(" : ");
-
-
-      Text nameTextBold = getBoldText("");
-      Text daysTextBold = getBoldText("");
-      Text supplierTextBold = getBoldText("");
-      Text departureFromTextBold = getBoldText("");
-      Text departureTimeTextBold = getBoldText("");
-      Text pricesTextBold = getBoldText("");
-      Text nameOfCategory = getBoldText("");
-      Text priceText = getBoldText("");
-      Text currencyText = getBoldText("");
-
-      nameTextBold.setText(getProductBusiness(iwc).getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
-      supplierTextBold.setText(supplier.getName());
-      departureFromTextBold.setText(depAddress.getName());
-      departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
-
-      String[] dayOfWeekName = new String[8];
-      IWCalendar cal = new IWCalendar();
-      Locale locale = iwc.getCurrentLocale();
-        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,locale,IWCalendar.LONG).substring(0,3);
-        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,locale,IWCalendar.LONG).substring(0,3);
-        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,locale,IWCalendar.LONG).substring(0,3);
-        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,locale,IWCalendar.LONG).substring(0,3);
-        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,locale,IWCalendar.LONG).substring(0,3);
-        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,locale,IWCalendar.LONG).substring(0,3);
-        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,locale,IWCalendar.LONG).substring(0,3);
-      int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
-      try {
-        ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-        ServiceDay sDay = sdayHome.create();
-        days = sDay.getDaysOfWeek(product.getID());
-      }catch (Exception e) {
-        e.printStackTrace(System.err);
-      }
-
-      if (days.length == 7) {
-        daysTextBold.setText(iwrb.getLocalizedString("travel.daily","daily"));
-      }else {
-        for (int j = 0; j < days.length; j++) {
-          if (j > 0) daysTextBold.addToText(", ");
-          daysTextBold.addToText(dayOfWeekName[days[j]]);
-        }
-      }
-
-      table.add(nameText,1,1);
-      table.add(space,1,1);
-      table.add(nameTextBold,1,1);
-
-      table.add(supplierText,1,2);
-      table.add(space,1,2);
-      table.add(supplierTextBold,1,2);
-
-      table.add(image,1,3);
-      table.setAlignment(1,3,"left");
-
-      table.add(daysText,2,2);
-      table.add(space,2,2);
-      table.add(daysTextBold,2,2);
-
-
-      String stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
-      String stampTxt2 = iwrb.getLocalizedString("travel.not_configured","Not configured");
-      ProductPrice[] prices;
-      Text timeframeTextBold;
-
-      Table pTable = new Table();
-        pTable.setCellspacing(0);
-
-      int pRow = 1;
-      for (int l = 0; l < depAddresses.size(); l++) {
-        depAddress = (TravelAddress) depAddresses.get(l);
-        departureFromTextBold = getBoldText(depAddress.getName());
-          departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-        pTable.add(departureFromTextBold, 1, pRow);
-        for (int i = 0; i < timeframes.length; i++) {
-          prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
-          if (prices.length > 0) {
-            stampTxt1 = new IWTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
-            stampTxt2 = new IWTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
-            if (timeframes[i].getIfYearly()) {
-              try {
-                stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
-                stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
-              }catch (NumberFormatException n) {}
-            }
-            timeframeTextBold = getText("");
-              timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-            pTable.add(timeframeTextBold,2,pRow);
-
-            if (prices.length == 0) {
-              ++pRow;
-            }
-            for (int j = 0; j < prices.length; j++) {
-              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-              nameOfCategory = getText(prices[j].getPriceCategory().getName());
-                nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-              try {
-                priceText = getBoldText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
-                currencyText = getBoldText(currency.getCurrencyAbbreviation());
-                pTable.add(currencyText,5,pRow);
-              }catch (ProductPriceException p) {
-                priceText.setText(iwrb.getLocalizedString("travel.not_configured","Not configured"));
-              }
-
-              pTable.add(nameOfCategory,3,pRow);
-              pTable.add(priceText,4,pRow);
-              ++pRow;
-            }
-          }
-        }
-      }
-
-      pTable.setColumnAlignment(1,"left");
-      pTable.setColumnAlignment(2,"left");
-      pTable.setColumnAlignment(3,"left");
-      pTable.setColumnAlignment(4,"right");
-      pTable.setColumnAlignment(5,"left");
-      pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
-
-      table.add(pTable,2,3);
-
-      Link currCalc = new Link(iwrb.getLocalizedImageButton("travel.currency_calculator","Currency calculator"));
-        currCalc.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
-//      table.add(currCalc, 2, 3);
-
-      table.setAlignment(2,1,"right");
-      table.setAlignment(2,2,"right");
-      table.setAlignment(2,3,"right");
-      table.setAlignment(2,4,"right");
-      table.setVerticalAlignment(1,3,"top");
-      table.setVerticalAlignment(1,4,"top");
-      table.mergeCells(1,1,2,1);
-//      table.mergeCells(1,2,2,2);
-      table.mergeCells(1,3,1,5);
-      table.mergeCells(2,3,2,5);
-//      table.setWidth(1,"138");
-//      table.setWidth(3,"350");
-//      table.setWidth(2,"350");
-//      table.setBorder(1);
-
-
-    }catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-    return form;
+  private Table leftTop(IWContext iwc) throws RemoteException, FinderException{
+    is.idega.idegaweb.travel.service.presentation.ServiceOverview so = getServiceHandler(iwc).getServiceOverview(iwc, product);
+    return so.getPublicServiceInfoTable(iwc, product);
+//    return getPublicServiceInfoTable(iwc);
   }
-
 
 
   private Form leftBottom(IWContext iwc) {
@@ -451,20 +252,23 @@ public class PublicBooking extends Block  {
       CalendarHandler ch  = new CalendarHandler(iwc);
         ch.setProduct(product);
 
-      boolean legalDay = false;
-      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
+      boolean legalDay = bf.getIsDayVisible(iwc);
+//      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
 
 
       Form form = new Form();
 
+
       if (legalDay) {
+
         String action = iwc.getParameter(this.sAction);
 
-        String tbfAction = iwc.getParameter(TourBookingForm.sAction);
-        if (tbfAction == null || !tbfAction.equals(TourBookingForm.parameterSaveBooking)) {
+        String tbfAction = iwc.getParameter(BookingForm.sAction);
+        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {
           action = "";
         }
 
+        System.err.println("action = "+action);
         if (action == null || action.equals("")) {
             form = bf.getPublicBookingForm(iwc, product, stamp);
             form.maintainParameter(this.parameterProductId);
@@ -472,7 +276,7 @@ public class PublicBooking extends Block  {
         }else if (action.equals(this.parameterSubmitBooking)) {
             form = bf.getFormMaintainingAllParameters();
             form.maintainParameter(this.parameterProductId);
-            form.add(getVerifyBookingTable(iwc));
+            form.add(bf.getVerifyBookingTable(iwc, product));
         }else if (action.equals(this.parameterBookingVerified)) {
             form = bf.getFormMaintainingAllParameters();
             form.maintainParameter(this.parameterProductId);
@@ -514,299 +318,6 @@ public class PublicBooking extends Block  {
       table.add(notAvailSeats);
       table.add(dateText);
       table.add(pleaseFindAnotherDay);
-
-    return table;
-  }
-
-  private Table getVerifyBookingTable(IWContext iwc) throws RemoteException, SQLException{
-    String surname = iwc.getParameter("surname");
-    String lastname = iwc.getParameter("lastname");
-    String address = iwc.getParameter("address");
-    String area_code = iwc.getParameter("area_code");
-    String email = iwc.getParameter("e-mail");
-    String telephoneNumber = iwc.getParameter("telephone_number");
-    String city = iwc.getParameter("city");
-    String country = iwc.getParameter("country");
-    String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
-    String room_number = iwc.getParameter("room_number");
-    String comment = iwc.getParameter("comment");
-    String depAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
-
-    String fromDate = iwc.getParameter(TourBookingForm.parameterFromDate);
-    String manyDays = iwc.getParameter(TourBookingForm.parameterManyDays);
-
-    String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
-    String ccMonth = iwc.getParameter(TourBookingForm.parameterCCMonth);
-    String ccYear = iwc.getParameter(TourBookingForm.parameterCCYear);
-
-    String inquiry = iwc.getParameter(TourBookingForm.parameterInquiry);
-
-    boolean valid = true;
-    String errorColor = "YELLOW";
-    Text star = new Text(Text.NON_BREAKING_SPACE+"*");
-      star.setFontColor(errorColor);
-
-
-//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
-    ProductPrice[] prices = {};
-    ProductPrice[] misc = {};
-    Timeframe tFrame = getProductBusiness(iwc).getTimeframe(this.product, stamp, Integer.parseInt(depAddressId));
-    if (tFrame != null && depAddressId != null) {
-      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
-      misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
-    }
-
-    Table table = new Table();
-      table.setCellpadding(3);
-      table.setCellspacing(3);
-      int row = 1;
-
-      table.mergeCells(1,1,2,1);
-      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")),1,1);
-
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
-      table.add(getBoldTextWhite(product.getProductName(iwc.getCurrentLocaleId())),2,row);
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-
-      IWTimestamp fromStamp = new IWTimestamp(fromDate);
-      try {
-        int iManyDays = Integer.parseInt(manyDays);
-        IWTimestamp toStamp = new IWTimestamp(fromStamp);
-        if (iManyDays > 1) {
-          toStamp.addDays(iManyDays);
-          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
-        }else {
-          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)),2,row);
-        }
-      }catch (NumberFormatException n) {
-        table.add(star, 2,row);
-      }
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.date","Date")),1,row);
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.departure_place","Departure place")),1,row);
-      table.add(getBoldTextWhite(((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(depAddressId)).getName()),2,row);
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.name","Name")),1,row);
-      table.add(getBoldTextWhite(surname+" "+lastname),2,row);
-      if (surname.length() < 1) {
-        valid = false;
-        table.add(star, 2, row);
-      }
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.address","Address")),1,row);
-      table.add(getBoldTextWhite(address),2,row);
-      if (address.length() < 1) {
-        valid = false;
-        table.add(star, 2, row);
-      }
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.area_code","Area code")),1,row);
-      table.add(getBoldTextWhite(area_code),2,row);
-      if (area_code.length() < 1) {
-        valid = false;
-        table.add(star, 2, row);
-      }
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
-      table.add(getBoldTextWhite(city),2,row);
-      if (city.length() < 1) {
-        valid = false;
-        table.add(star, 2, row);
-      }
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.country","Country")),1,row);
-      table.add(getBoldTextWhite(country),2,row);
-      if (country.length() < 1) {
-        valid = false;
-        table.add(star, 2, row);
-      }
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.email","E-mail")),1,row);
-      table.add(getBoldTextWhite(email),2,row);
-      if (email.length() < 1) {
-        valid = false;
-        table.add(star, 2, row);
-      }
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
-      table.add(getBoldTextWhite(telephoneNumber),2,row);
-
-/*      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.comment","Comment")),1,row);
-      table.add(getBoldTextWhite(comment),2,row);
-*/
-      ++row;
-
-      float price = 0;
-      int total = 0;
-      int current = 0;
-      Currency currency = null;
-
-      int pricesLength = prices.length;
-      int miscLength = misc.length;
-      ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
-      for (int i = 0; i < pricesLength; i++) {
-        pPrices[i] = prices[i];
-      }
-      for (int i = 0; i < miscLength; i++) {
-        pPrices[i+pricesLength] = misc[i];
-      }
-
-      for (int i = 0; i < pPrices.length; i++) {
-        ++row;
-        table.setAlignment(1,row,"right");
-        table.setAlignment(2,row,"left");
-
-        try {
-          if (i >= pricesLength) {
-            current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+(i-pricesLength)));
-          }else {
-            current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
-            total += current;
-          }
-        }catch (NumberFormatException n) {
-          current = 0;
-        }
-
-        try {
-          if (i == 0)
-          currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
-          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
-        }catch (SQLException sql) {
-        }catch (NumberFormatException n) {}
-
-        table.add(getTextWhite(pPrices[i].getPriceCategory().getName()),1,row);
-        table.add(getBoldTextWhite(Integer.toString(current)),2,row);
-      }
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.total_passengers","Total passengers")),1,row);
-      table.add(getBoldTextWhite(Integer.toString(total)),2,row);
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.price","Price")),1,row);
-      price *= Integer.parseInt(manyDays);
-      table.add(getBoldTextWhite(this.df.format(price) + " "),2,row);
-      if (currency != null)
-      table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
-
-//      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
-      SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"));
-//        yes.setOnSubmit("this.form."+yes.getName()+".disabled = true");
-      table.add(new HiddenInput(this.sAction, this.parameterBookingVerified),2,row);
-        yes.setOnClick("this.form.submit()");
-        yes.setOnClick("this.form."+yes.getName()+".disabled = true");
-      Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
-          no.setAttribute("onClick","history.go(-1)");
-
-
-      if (inquiry == null) {
-        ++row;
-        table.setAlignment(1,row,"right");
-        table.setAlignment(2,row,"left");
-        table.add(getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number")),1,row);
-        if (ccNumber.length() <5) {
-          table.add(getBoldTextWhite(ccNumber),2,row);
-        }else {
-          for (int i = 0; i < ccNumber.length() -4; i++) {
-            table.add(getBoldTextWhite("*"),2,row);
-          }
-          table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
-
-        }
-        if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
-          valid = false;
-          Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
-            ccError.setFontColor(errorColor);
-          ++row;
-          table.mergeCells(1, row, 2, row);
-          table.add(ccError, 1, row);
-        }
-      }else {
-        debug("inquiry");
-      }
-
-
-      if (inquiry == null) {
-        Text bookingsError = getBoldText(iwrb.getLocalizedString("travel.some_days_are_not_available","Some of the selected days are not available"));
-          bookingsError.setFontColor(errorColor);
-        try {
-          BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
-//          TourBookingForm tbf = new TourBookingForm(iwc, product);
-          int id = bf.checkBooking(iwc, false);
-          if (id != BookingForm.errorTooMany) {
-          }else {
-            ++row;
-            table.mergeCells(1, row, 2, row);
-            table.add(bookingsError, 1, row);
-            List errorDays = bf.getErrorDays();
-            Text dayText;
-            if (errorDays != null) {
-              valid = false;
-              for (int i = 0; i < errorDays.size(); i++) {
-                ++row;
-                dayText = getBoldText(((IWTimestamp) errorDays.get(i)).getLocaleDate(iwc));
-                  dayText.setFontColor(errorColor);
-                table.add(dayText, 2, row);
-              }
-            }
-
-          }
-        }catch (Exception e) {
-          valid = false;
-          table.mergeCells(1, row, 2, row);
-          table.add(bookingsError, 1, row);
-          e.printStackTrace(System.err);
-        }
-      }else {
-        debug("INQUIRY");
-      }
-
-      ++row;
-      table.setAlignment(1,row,"left");
-      table.setAlignment(2,row,"right");
-      table.add(no,1,row);
-      if (valid) {
-        table.add(yes,2,row);
-      }
-
 
     return table;
   }

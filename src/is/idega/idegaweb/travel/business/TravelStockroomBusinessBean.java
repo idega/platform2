@@ -370,14 +370,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
 
-//      System.err.println("Checking day : "+stamp.toSQLDateString());
       HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
-      //Object obj = serviceDayHash.get(key1, key2);
       Object obj = null;
       if (obj == null) {
 
           int dayOfWeek = stamp.getDayOfWeek();
-          // = product.getTimeframes();
 
           boolean tooEarly = false;
           if (!includePast) {
@@ -391,18 +388,19 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
           if (!tooEarly) {
             boolean isValidWeekDay = getIfDay(iwc, product.getID(), dayOfWeek);
             if (isValidWeekDay) {
-//              System.err.println("repps 1");
-              if (isDayValid(timeframes, stamp, fixTimeframe)) {
-//              System.err.println("repps 2");
-                isDay = true;
+              if (timeframes == null || timeframes.length == 0) {
                 serviceDayHash.put(key1, key2, new Boolean(true) );
-              }
-              else {
-//              System.err.println("repps 3");
-                serviceDayHash.put(key1, key2, new Boolean(false) );
+                isDay = true;
+              }else {
+                if (isDayValid(timeframes, stamp, fixTimeframe)) {
+                  isDay = true;
+                  serviceDayHash.put(key1, key2, new Boolean(true) );
+                }
+                else {
+                  serviceDayHash.put(key1, key2, new Boolean(false) );
+                }
               }
             }else {
-//              System.err.println("repps 4");
               serviceDayHash.put(key1, key2, new Boolean(false) );
             }
           }
@@ -806,8 +804,12 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
   public Collection getTravelAddressIdsFromRefill(Product product, int tAddressId) throws RemoteException, IDOFinderException, FinderException {
-    TravelAddress ta = ((TravelAddressHome) IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKey(tAddressId);
-    return getTravelAddressIdsFromRefill(product, ta);
+    if (tAddressId > 0) {
+      TravelAddress ta = ((TravelAddressHome) IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKey(tAddressId);
+      return getTravelAddressIdsFromRefill(product, ta);
+    }else {
+      return new Vector();
+    }
   }
 
   public Collection getTravelAddressIdsFromRefill(Product product, TravelAddress tAddress) throws RemoteException, IDOFinderException {
@@ -879,6 +881,10 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     }
 
     return 0;
+  }
+
+  protected boolean setActiveDaysAll(int serviceId) throws RemoteException {
+    return setActiveDays(serviceId, new int[]{GregorianCalendar.SUNDAY, GregorianCalendar.MONDAY,GregorianCalendar.TUESDAY, GregorianCalendar.WEDNESDAY, GregorianCalendar.THURSDAY, GregorianCalendar.FRIDAY, GregorianCalendar.SATURDAY});
   }
 
   protected boolean setActiveDays(int serviceId, int[] activeDays) throws RemoteException {

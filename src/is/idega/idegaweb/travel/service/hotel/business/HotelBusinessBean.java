@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.service.hotel.business;
 
+import javax.ejb.FinderException;
+import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
+import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import java.sql.*;
 
 
@@ -24,22 +27,36 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
   public HotelBusinessBean() {
   }
 
-  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimestamp departureTime, String arrivalAt, IWTimestamp arrivalTime,  boolean isValid, int discountTypeId) throws Exception{
-    return updateHotel(-1, supplierId, fileId, name, number, description, activeDays, departureFrom, departureTime, arrivalAt, arrivalTime, isValid, discountTypeId);
+  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, boolean isValid, int discountTypeId) throws Exception{
+    return updateHotel(-1, supplierId, fileId, name, number, description, numberOfUnits, isValid, discountTypeId);
   }
 
-  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimestamp departureTime, String arrivalAt, IWTimestamp arrivalTime,boolean isValid, int discountTypeId) throws Exception{
+  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, boolean isValid, int discountTypeId) throws Exception{
     int productId = -1;
-    int[] departureAddressIds = setDepartureAddress(serviceId, departureFrom, departureTime);
-    int[] arrivalAddressesIds = setArrivalAddress(serviceId, arrivalAt);
 
     if (serviceId == -1) {
-      productId = createService(supplierId, fileId, name, number, description, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp(), discountTypeId);
+      productId = createService(supplierId, fileId, name, number, description, isValid, new int[]{}, null, null, discountTypeId);
     }else {
-      productId = updateService(serviceId, supplierId, fileId, name, number, description, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp(), discountTypeId);
+      productId = updateService(serviceId, supplierId, fileId, name, number, description, isValid, new int[]{}, null, null, discountTypeId);
     }
 
-    setActiveDays(productId, activeDays);
+    Hotel hotel;
+    HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
+    try {
+      /** update hotel */
+      hotel = hHome.findByPrimaryKey(new Integer(productId));
+      hotel.setNumberOfUnits(numberOfUnits);
+      hotel.store();
+    }catch (FinderException fe) {
+      /** create hotel */
+      hotel = hHome.create();
+      hotel.setPrimaryKey(new Integer(productId));
+      hotel.setNumberOfUnits(numberOfUnits);
+      hotel.store();
+    }
+
+
+    setActiveDaysAll(productId);
 
     try {
       ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
@@ -49,6 +66,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       product.removeAllFrom(ProductCategory.class);
       pCat.addTo(Product.class, productId);
     }catch (SQLException sql) {}
+
 
     return productId;
   }

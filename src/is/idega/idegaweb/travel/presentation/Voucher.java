@@ -95,7 +95,9 @@ public abstract class Voucher extends TravelManager {
       _timeframe = getProductBusiness(iwc).getTimeframe(_product, new IWTimestamp(_booking.getBookingDate()));
       Collection coll = gBooking.getTravelAddresses();
       TravelAddress[] addresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
-      _address = addresses[addresses.length - 1];
+      if (addresses != null && addresses.length > 0 ) {
+        _address = addresses[addresses.length - 1];
+      }
       add(getVoucher(iwc));
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);

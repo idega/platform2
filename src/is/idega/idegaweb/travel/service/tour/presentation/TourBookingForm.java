@@ -54,6 +54,11 @@ public class TourBookingForm extends BookingForm{
   }
 
   public Form getBookingForm(IWContext iwc) throws RemoteException, FinderException {
+    return getForm(iwc);
+  }
+
+
+  public Form getForm(IWContext iwc) throws RemoteException, FinderException {
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -1881,6 +1886,16 @@ public class TourBookingForm extends BookingForm{
       sql.printStackTrace();
       return -1;
     }
+  }
+
+
+  public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
+    if (_reseller != null) {
+      return getTourBusiness(iwc).getIfDay(iwc, _contract, _tour, _stamp);
+    }else {
+      return getTourBusiness(iwc).getIfDay(iwc, _tour, _stamp, false);
+    }
+
   }
 
 

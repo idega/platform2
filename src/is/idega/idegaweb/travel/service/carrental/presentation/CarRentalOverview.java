@@ -1,21 +1,20 @@
 package is.idega.idegaweb.travel.service.carrental.presentation;
-import is.idega.idegaweb.travel.business.ServiceNotFoundException;
-import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
-import is.idega.idegaweb.travel.data.Service;
-import is.idega.idegaweb.travel.data.ServiceDay;
-import is.idega.idegaweb.travel.data.ServiceDayHome;
+import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
+import com.idega.presentation.text.Link;
+import java.util.*;
+import is.idega.idegaweb.travel.data.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.business.IBOLookup;
+import is.idega.idegaweb.travel.business.*;
+import javax.ejb.FinderException;
+import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.service.presentation.AbstractServiceOverview;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Vector;
 
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.Timeframe;
-import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.core.data.Address;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
@@ -305,6 +304,218 @@ public class CarRentalOverview extends AbstractServiceOverview {
         contentTable.setColor(super.WHITE);
 
     return contentTable;
+  }
+  public Table getPublicServiceInfoTable(IWContext iwc, Product product) throws RemoteException, FinderException{
+    TravelSessionManager tsm = (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
+    Supplier supplier =( (SupplierHome) IDOLookup.getHome(Supplier.class)).findByPrimaryKey(product.getSupplierId());
+    IWBundle bundle = tsm.getIWBundle();
+    Service service = ((ServiceHome) IDOLookup.getHome(Service.class)).findByPrimaryKey(product.getPrimaryKey() );
+
+    Image background = bundle.getImage("images/sb_background.gif");
+    Table aroundTable = new Table(2,2);
+      aroundTable.setWidth("100%");
+      aroundTable.setHeight("100%");
+      aroundTable.setCellpadding(0);
+      aroundTable.setCellspacing(0);
+      aroundTable.setBackgroundImage(1,1,background);
+      aroundTable.setBackgroundImage(2,1,background);
+      aroundTable.setBackgroundImage(1,2,background);
+      aroundTable.setWidth(1,"1");
+      aroundTable.setHeight(1,"1");
+      aroundTable.setBorder(0);
+
+
+    Table table = new Table();
+      aroundTable.add(table,2,2);
+
+
+
+    try {
+    //      ServiceOverview so = new ServiceOverview(iwc);
+    //        form.add(so.getProductInfoTable(iwc, iwrb, product));
+
+      table.setWidth("100%");
+      table.setHeight("100%");
+      table.setAlignment("center");
+      table.setBorder(0);
+
+      IWTimestamp depTimeStamp = new IWTimestamp(service.getDepartureTime());
+      List depAddresses = product.getDepartureAddresses(true);
+      TravelAddress depAddress = getProductBusiness(iwc).getDepartureAddress(product);
+      Timeframe[] timeframes = product.getTimeframes();
+      Currency currency;
+
+      Text nameText = getText(_iwrb.getLocalizedString("travel.name","Name"));
+      Text daysText = getText(_iwrb.getLocalizedString("travel.active_days","Active days"));
+      Text timeframeText = getText(_iwrb.getLocalizedString("travel.timeframe","Timeframe"));
+      Text supplierText = getText(_iwrb.getLocalizedString("travel.supplier","Supplier"));
+      Text departureFromText = getText(_iwrb.getLocalizedString("travel.departure_from","Departure from"));
+      Text departureTimeText = getText(_iwrb.getLocalizedString("travel.departure_time","Departure time"));
+      Text pricesText = getText(_iwrb.getLocalizedString("travel.prices","Prices"));
+      Image image = TravelManager.getDefaultImage(_iwrb);
+      if (product.getFileId() != -1) {
+        image = new Image(product.getFileId());
+      }
+      image.setMaxImageWidth(138);
+
+      Image arrow = bundle.getImage("images/black_arrow.gif");
+        arrow.setAlignment("center");
+
+      Text space = getText(" : ");
+
+
+      Text nameTextBold = getBoldText("");
+      Text daysTextBold = getBoldText("");
+      Text supplierTextBold = getBoldText("");
+      Text departureFromTextBold = getBoldText("");
+      Text departureTimeTextBold = getBoldText("");
+      Text pricesTextBold = getBoldText("");
+      Text nameOfCategory = getBoldText("");
+      Text priceText = getBoldText("");
+      Text currencyText = getBoldText("");
+
+      nameTextBold.setText(getProductBusiness(iwc).getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
+      supplierTextBold.setText(supplier.getName());
+      departureFromTextBold.setText(depAddress.getName());
+      departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
+
+      String[] dayOfWeekName = new String[8];
+      IWCalendar cal = new IWCalendar();
+      Locale locale = tsm.getLocale();
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,locale,IWCalendar.LONG).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,locale,IWCalendar.LONG).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,locale,IWCalendar.LONG).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,locale,IWCalendar.LONG).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,locale,IWCalendar.LONG).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,locale,IWCalendar.LONG).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,locale,IWCalendar.LONG).substring(0,3);
+      int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
+      try {
+        ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+        ServiceDay sDay = sdayHome.create();
+        days = sDay.getDaysOfWeek(product.getID());
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+
+      if (days.length == 7) {
+        daysTextBold.setText(_iwrb.getLocalizedString("travel.daily","daily"));
+      }else {
+        for (int j = 0; j < days.length; j++) {
+          if (j > 0) daysTextBold.addToText(", ");
+          daysTextBold.addToText(dayOfWeekName[days[j]]);
+        }
+      }
+
+      table.add(nameText,1,1);
+      table.add(space,1,1);
+      table.add(nameTextBold,1,1);
+
+      table.add(supplierText,1,2);
+      table.add(space,1,2);
+      table.add(supplierTextBold,1,2);
+
+      table.add(image,1,3);
+      table.setAlignment(1,3,"left");
+
+      table.add(daysText,2,2);
+      table.add(space,2,2);
+      table.add(daysTextBold,2,2);
+
+
+      String stampTxt1 = _iwrb.getLocalizedString("travel.not_configured","Not configured");
+      String stampTxt2 = _iwrb.getLocalizedString("travel.not_configured","Not configured");
+      ProductPrice[] prices;
+      Text timeframeTextBold;
+
+      Table pTable = new Table();
+        pTable.setCellspacing(0);
+
+      int pRow = 1;
+      for (int l = 0; l < depAddresses.size(); l++) {
+        depAddress = (TravelAddress) depAddresses.get(l);
+        departureFromTextBold = getBoldText(depAddress.getName());
+          departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+        pTable.add(departureFromTextBold, 1, pRow);
+        for (int i = 0; i < timeframes.length; i++) {
+          prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
+          if (prices.length > 0) {
+            stampTxt1 = new IWTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+            stampTxt2 = new IWTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+            if (timeframes[i].getIfYearly()) {
+              try {
+                stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+                stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+              }catch (NumberFormatException n) {}
+            }
+            timeframeTextBold = getText("");
+              timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+            pTable.add(timeframeTextBold,2,pRow);
+
+            if (prices.length == 0) {
+              ++pRow;
+            }
+            for (int j = 0; j < prices.length; j++) {
+              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+              nameOfCategory = getText(prices[j].getPriceCategory().getName());
+                nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              try {
+                priceText = getBoldText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
+                currencyText = getBoldText(currency.getCurrencyAbbreviation());
+                pTable.add(currencyText,5,pRow);
+              }catch (ProductPriceException p) {
+                priceText.setText(_iwrb.getLocalizedString("travel.not_configured","Not configured"));
+              }
+
+              pTable.add(nameOfCategory,3,pRow);
+              pTable.add(priceText,4,pRow);
+              ++pRow;
+            }
+          }
+        }
+      }
+
+      pTable.setColumnAlignment(1,"left");
+      pTable.setColumnAlignment(2,"left");
+      pTable.setColumnAlignment(3,"left");
+      pTable.setColumnAlignment(4,"right");
+      pTable.setColumnAlignment(5,"left");
+      pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
+
+      table.add(pTable,2,3);
+
+      Link currCalc = new Link(_iwrb.getLocalizedImageButton("travel.currency_calculator","Currency calculator"));
+        currCalc.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
+    //      table.add(currCalc, 2, 3);
+
+      table.setAlignment(2,1,"right");
+      table.setAlignment(2,2,"right");
+      table.setAlignment(2,3,"right");
+      table.setAlignment(2,4,"right");
+      table.setVerticalAlignment(1,3,"top");
+      table.setVerticalAlignment(1,4,"top");
+      table.mergeCells(1,1,2,1);
+    //      table.mergeCells(1,2,2,2);
+      table.mergeCells(1,3,1,5);
+      table.mergeCells(2,3,2,5);
+    //      table.setWidth(1,"138");
+    //      table.setWidth(3,"350");
+    //      table.setWidth(2,"350");
+    //      table.setBorder(1);
+
+
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+    return aroundTable;
+  }
+
+  private Text getBoldText(String content) {
+    Text text = new Text();
+    text.setStyle(TravelManager.theBoldTextStyle);
+    text.setBold(true);
+    text.setText(content);
+    return text;
   }
 
 }

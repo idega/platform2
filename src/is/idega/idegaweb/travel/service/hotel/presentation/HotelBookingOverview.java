@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.service.hotel.presentation;
 
+import is.idega.idegaweb.travel.service.hotel.data.Hotel;
+import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.presentation.*;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.core.user.data.User;
@@ -125,11 +127,17 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 
         boolean bContinue= false;
         ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+        Hotel hotel = null;
 
         Iterator iter = products.iterator();
         while (iter.hasNext()) {
           try {
-            prod = (Product) iter.next();
+          prod = (Product) iter.next();
+            try {
+              hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(prod.getPrimaryKey());
+            }catch (FinderException ex) {
+
+            }
 
             if (_supplier != null) {
               bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,prod,tempStamp);
@@ -145,11 +153,13 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               service = getTravelStockroomBusiness(iwc).getService(prod);
 
               if (_supplier != null) {
+                iCount = hotel.getNumberOfUnits();
+/*
                 sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
                 if (sDay != null) {
                   iCount = sDay.getMax();
                 }
-
+*/
                 iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
 
@@ -170,16 +180,14 @@ public class HotelBookingOverview extends AbstractBookingOverview {
                 iAvailable = iCount - iBooked - iAssigned -iInquery;
                 iCount = iCount -iBooked;
               }
+              countTextBold = (Text) theSmallBoldText.clone();
               countTextBold.setText(Integer.toString(iCount));
-
 
               nameTextBold  = (Text) theSmallBoldText.clone();
               nameTextBold.setText(service.getName(super.getTravelSessionManager(iwc).getLocaleId() ));
 
               assignedTextBold = (Text) theSmallBoldText.clone();
               assignedTextBold.setText(Integer.toString(iAssigned));
-              countTextBold = (Text) super.theSmallBoldText.clone();
-              countTextBold.setText(Integer.toString(iCount));
               inqTextBold = (Text) theSmallBoldText.clone();
               inqTextBold.setText(Integer.toString(iInquery));
               bookedTextBold = (Text) theSmallBoldText.clone();
@@ -415,26 +423,17 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     }
 
 
-    List addresses = product.getDepartureAddresses(true);
-    TravelAddress trAddress;
-    int addressesSize = addresses.size();
-    int tempRow;
-    int tempTotal;
-    int tempBookings;
-    int tempAvail;
-    int tempInq;
-    Collection travelAddressIds;
-    //          int trAddrBookings = 0;
-    for (int g = 0; g < addressesSize; g++) {
-      trAddress = (TravelAddress) addresses.get(g);
-      ++row;
-      tempRow = row;
-      tempTotal = 0;
-      tempAvail = 0;
-      tempInq = 0;
-      table.mergeCells(1, row, 2, row);
-      table.add(getHeaderText(trAddress.getName()), 1, row);
-      table.setRowColor(row, super.backgroundColor);
+//    int tempRow;
+//    int tempTotal;
+//    int tempBookings;
+//    int tempAvail;
+//    int tempInq;
+
+//      ++row;
+//      tempRow = row;
+//      tempTotal = 0;
+//      tempAvail = 0;
+//      tempInq = 0;
 
       Link link;
       // ------------------ INQUERIES ------------------------
@@ -445,16 +444,16 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       Inquery[] inqueries = null;
 
       int[] iNumbers;
-      if (_supplier != null) inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, trAddress, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+      if (_supplier != null) inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
       if (_reseller != null) {
-        inqueries = inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, trAddress, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+        inqueries = inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
         //              Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(service.getID(), stamp, _reseller.getID(),true, trAddress,is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
         //              inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
       }
       for (int i = 0; i < inqueries.length; i++) {
         ++row;
         iNumbers = getInquirer(iwc).getMultibleInquiriesNumber(inqueries[i]);
-        tempInq += inqueries[i].getNumberOfSeats();
+//        tempInq += inqueries[i].getNumberOfSeats();
         Tname = (Text) super.theSmallBoldText.clone();
         Tname.setText(inqueries[i].getName());
         if ( iNumbers[0] != 0 ) {
@@ -479,7 +478,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
         //            table.setRowColor(row, super.GRAY);
 
         link = (Link) answerLink.clone();
-        link.addParameter(HotelBookingForm.parameterDepartureAddressId, trAddress.getID());
+//        link.addParameter(HotelBookingForm.parameterDepartureAddressId, trAddress.getID());
         table.add(link, 9, row);
 
       }
@@ -496,7 +495,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       int[] bNumbers;
 
       if (this._supplier != null) {
-        bookings = getBooker(iwc).getBookings(((Integer) product.getPrimaryKey()).intValue(), stamp, trAddress);
+        bookings = getBooker(iwc).getBookings(((Integer) product.getPrimaryKey()).intValue(), stamp);
       }else if (this._reseller != null) {
         Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(_reseller.getID(), product.getID(), stamp);
         bookings = getBooker(iwc).collectionToBookingsArray(coll);
@@ -517,14 +516,14 @@ public class HotelBookingOverview extends AbstractBookingOverview {
           Tname.addToText(Text.NON_BREAKING_SPACE+"( "+bNumbers[0]+" / "+bNumbers[1]+" )");
         }
 
-        tempBookings = bookings[i].getTotalCount();
-        tempTotal += tempBookings;
+//        tempBookings = bookings[i].getTotalCount();
+//        tempTotal += tempBookings;
         //                trAddrBookings += tempBookings;
 
         Temail = (Text) super.theSmallBoldText.clone();
         Temail.setText(bookings[i].getEmail());
         Tbooked = (Text) super.theSmallBoldText.clone();
-        Tbooked.setText(Integer.toString(tempBookings));
+        Tbooked.setText(Integer.toString(bookings[i].getTotalCount() ));
 
         Tname.setFontColor(super.BLACK);
         Temail.setFontColor(super.BLACK);
@@ -573,22 +572,21 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 
       }
 
-      table.add(getHeaderText(Integer.toString(seats)), 3, tempRow);
-      table.add(getHeaderText(Integer.toString(assigned)), 4, tempRow);
-      table.add(getHeaderText(Integer.toString(tempInq)), 5, tempRow);
-      table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
+//      table.add(getHeaderText(Integer.toString(seats)), 3, tempRow);
+//      table.add(getHeaderText(Integer.toString(assigned)), 4, tempRow);
+//      table.add(getHeaderText(Integer.toString(tempInq)), 5, tempRow);
+//      table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
       if (seats > 0) {
-        travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress);
-        tempAvail = seats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, travelAddressIds );
-        table.add(getHeaderText(Integer.toString(tempAvail)), 7, tempRow);
+//        travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress);
+//        tempAvail = seats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{} );
+//        table.add(getHeaderText(Integer.toString(tempAvail)), 7, tempRow);
       }
 
-      Link daLink = LinkGenerator.getLink(iwc, product.getID(), is.idega.idegaweb.travel.presentation.Booking.class);
-      daLink.addParameter(HotelBookingForm.parameterDepartureAddressId, trAddress.getID());
-      daLink.setPresentationObject(_iwrb.getImage("buttons/book.gif"));
-      table.add(Text.NON_BREAKING_SPACE, 1, tempRow);
-      table.add(daLink, 1, tempRow);
-    }
+//      Link daLink = LinkGenerator.getLink(iwc, product.getID(), is.idega.idegaweb.travel.presentation.Booking.class);
+//      daLink.addParameter(HotelBookingForm.parameterDepartureAddressId, trAddress.getID());
+//      daLink.setPresentationObject(_iwrb.getImage("buttons/book.gif"));
+//      table.add(Text.NON_BREAKING_SPACE, 1, tempRow);
+//      table.add(daLink, 1, tempRow);
 
     ++row;
     table.mergeCells(1,row,6,row);
