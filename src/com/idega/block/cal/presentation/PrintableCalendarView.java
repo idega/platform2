@@ -42,7 +42,7 @@ public class PrintableCalendarView extends Window{
 			cal.setViewInUserID(userID);
 		}
 		Table t = new Table();
-		PrintButton print = new PrintButton();
+		PrintButton print = new PrintButton(this.getResourceBundle(iwc).getLocalizedString("button.print","Print"));
 		t.add(cal,1,1);
 		t.add(print,1,2);
 		add(t);

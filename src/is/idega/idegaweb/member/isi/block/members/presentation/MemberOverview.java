@@ -96,7 +96,7 @@ public class MemberOverview extends Block {
 		
 		mainTable.add(table, 1, 2);
 		
-		PrintButton button = new PrintButton();
+		PrintButton button = new PrintButton(_iwrb.getLocalizedString("button.print","Print"));
 		mainTable.add(button, 1, 3);
 		mainTable.setAlignment(1, 3, "right");
 		
