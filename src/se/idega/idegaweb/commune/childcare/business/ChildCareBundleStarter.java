@@ -34,6 +34,7 @@ public class ChildCareBundleStarter implements IWBundleStartable {
 	 * @see com.idega.idegaweb.IWBundleStartable#start(com.idega.idegaweb.IWBundle)
 	 */
 	public void start(IWBundle starterBundle) {
+		System.out.println("[CHILD CARE]: Child care bundle starter starting...");
     _bundle = starterBundle;
 		int queueInterval = Integer.parseInt(_bundle.getProperty(BUNDLE_PROPERTY_NAME_QUEUE_INTERVAL, String.valueOf(1440)));
 		System.out.println("[CHILD CARE]: Queue interval = " + queueInterval + "minutes");
