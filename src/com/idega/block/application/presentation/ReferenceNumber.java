@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.6 2001/11/29 14:03:55 palli Exp $
+ * $Id: ReferenceNumber.java,v 1.7 2002/01/09 13:12:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,6 +45,7 @@ public class ReferenceNumber extends Block {
   private String color_ = "";
   private String referenceTextColor_;
   private String styleAttribute_ = "font-size: 10pt";
+  private String textStyles = "font-family: Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none;";
   private String submitButtonAlignment_;
   private boolean hasHelpButton = false;
 
@@ -99,6 +100,8 @@ public class ReferenceNumber extends Block {
     if (referenceTextColor_ != null) {
       referenceTexti.setFontColor(referenceTextColor_);
     }
+
+    referenceTexti.setFontStyle(textStyles);
 
     Table inputTable;
 
@@ -275,4 +278,9 @@ public class ReferenceNumber extends Block {
   public void setSubmitButtonAlignment(String alignment) {
     submitButtonAlignment_ = alignment;
   }
+
+  public void setTextStyle(String styleAttribute){
+    this.textStyles=styleAttribute;
+  }
+
 }
