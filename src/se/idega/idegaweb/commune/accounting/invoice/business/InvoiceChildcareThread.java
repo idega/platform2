@@ -564,7 +564,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
 	 */
-	private void regularInvoiceForChild(User child,SchoolClassMember classMember,User custodian,InvoiceHeader invoiceHeader,PlacementTimes pTimes, float totalSum){
+	private void regularInvoiceForChild(User child,SchoolClassMember classMember,User custodian,InvoiceHeader invoiceHeader,PlacementTimes pTimes, long totalSum){
 		int days = pTimes.getDays();
 		float months = pTimes.getMonths();
 		int childId = ((Number)child.getPrimaryKey()).intValue();
@@ -647,11 +647,13 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setDateCreated(currentDate);
 						invoiceRecord.setCreatedBy(BATCH_TEXT);
 						long amount = AccountingUtil.roundAmount(regularInvoiceEntry.getAmount()*months);
-						invoiceRecord.setAmount(amount);
 						totalSum += amount;
 						if(totalSum<0){
+							errorRelated.append("Previous sum:"+amount+" changed to "+(amount-totalSum));
 							createNewErrorMessage(errorRelated,"invoice.SumLessThanZeroForRegularInvoiceRecord");
+							amount = amount-totalSum;
 						}
+						invoiceRecord.setAmount(amount);
 						invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
 						invoiceRecord.setVATRuleRegulation(regularInvoiceEntry.getVatRuleRegulationId());
 						invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
