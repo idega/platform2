@@ -241,8 +241,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
 		if (schoolClassID != -1)
 			sql.appendAndEquals("mb."+SCHOOLCLASS, schoolClassID);
-		sql.appendAnd().appendLeftParenthesis().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date)
-			.appendOr().append(REGISTER_DATE).append(" is null").appendRightParenthesis();
+		//sql.appendAnd().appendLeftParenthesis().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date)
+			//.appendOr().append(REGISTER_DATE).append(" is null").appendRightParenthesis();
 		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date)
 			.appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
