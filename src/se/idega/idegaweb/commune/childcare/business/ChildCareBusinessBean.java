@@ -341,6 +341,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.setQueueOrder(++queueOrder);
 					application.store();
 				}
+				else {
+					application.setQueueOrder(((Integer)application.getPrimaryKey()).intValue());
+					application.store();
+				}
 			}
 		}
 		catch (RemoteException e) {
