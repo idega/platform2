@@ -186,13 +186,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       int imid = imagefile.getID();
       String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
 
+			//System.err.println("image metadata : "+att+" "+TextEditorWindow.imageAttributeKey);
       Image textImage = new Image(imid);
       if(att != null)
         textImage.setAttributes(getAttributeMap(att));
-      //newsImage.setAlignment("right");
-      //imageTable.setAlignment("right");
-      //imageTable.setVerticalAlignment("top");
-      //imageTable.add(newsImage, 1, 1);
       T.add(textImage,1,2);
       }
       catch(SQLException ex){

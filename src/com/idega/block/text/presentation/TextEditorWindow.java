@@ -48,7 +48,7 @@ public class TextEditorWindow extends IWAdminWindow{
   public  static String prmObjInstId = "txep_icobjinstid";
   private static String prmHeadline = "txep_headline";
   private static String prmBody = "txep_body";
-  public static String imageAttributeKey = "txep_image";
+  public static String imageAttributeKey = "txre_im_prop";
   //debug
   //private static String prmImageId = "txep.imageid";
   private static String prmImageId = "txep_imageid";
@@ -227,7 +227,7 @@ public class TextEditorWindow extends IWAdminWindow{
         ICFile file1 = (ICFile) files.get(0);
         imageInsert.setImageId(file1.getID());
         Text properties = new Text("properties");
-        propslink = com.idega.block.media.presentation.ImageAttributeSetter.getLink(properties,file1.getID(),"txre_im_prop");
+        propslink = com.idega.block.media.presentation.ImageAttributeSetter.getLink(properties,file1.getID(),imageAttributeKey);
       }
     }
 
