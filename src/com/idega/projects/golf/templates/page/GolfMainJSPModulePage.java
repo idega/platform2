@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.21 2001/07/30 10:52:34 tryggvil Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.22 2001/07/30 10:56:12 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -115,6 +115,7 @@ public class GolfMainJSPModulePage extends MainPage {
 
     leftTable.setAlignment(1,1,"center");
     leftTable.add(Canon(),1,1);
+    leftTable.addBreak(1,1);
     leftTable.addBreak(1,1);
     leftTable.add(Languages(),1,2);
     leftTable.add(Sponsors(), 1,3);
