@@ -58,15 +58,16 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/15 16:08:27 $ by $Author: palli $
+ * Last modified: $Date: 2003/12/16 12:08:06 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.55 $
+ * @version $Revision: 1.56 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -269,8 +270,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
         
 		dispTime("Found " + schoolClassMember.getStudent().getName());
+		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
 		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
-		if (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate) {
+		if (placementIsInPeriod  && (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)) {
 			ArrayList conditions = getConditions (schoolClassMember);
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append(
@@ -290,17 +292,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				conditions, 					//The conditions that need to fulfilled
 				0, 								//Sent in to be used for "Specialutrakning"
 				null);							//Sent in to be used for "Specialutrakning"
-			Date sDate = null;
-			Date eDate = null;
-			if (schoolClassMember.getRegisterDate() != null) {
-				sDate = new Date(schoolClassMember.getRegisterDate().getTime());
-			}
-			if (schoolClassMember.getRemovedDate() != null) {
-				eDate = new Date(schoolClassMember.getRemovedDate().getTime());
-			}
-			PlacementTimes placementTimes = calculateTime(sDate, eDate);
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
+			PlacementTimes placementTimes = getPlacementTimes(schoolClassMember);
 			final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 			createInvoiceRecord (record, schoolClassMember, postingDetail, placementTimes);
 			SchoolType schoolType = null;
@@ -356,6 +350,36 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				}
 			}
 		}
+	}
+
+	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember) {
+		Date sDate = null;
+		Date eDate = null;
+		if (schoolClassMember.getRegisterDate() != null) {
+			sDate = new Date(schoolClassMember.getRegisterDate().getTime());
+		}
+		if (schoolClassMember.getRemovedDate() != null) {
+			eDate = new Date(schoolClassMember.getRemovedDate().getTime());
+		}
+		PlacementTimes placementTimes = calculateTime(sDate, eDate);
+		return placementTimes;
+	}
+
+	private boolean isPlacementInPeriod(SchoolClassMember schoolClassMember) {
+		IWTimestamp placementStart = null;
+		IWTimestamp placementEnd = null;
+		if (schoolClassMember.getRegisterDate() != null) {
+			placementStart = new IWTimestamp(schoolClassMember.getRegisterDate().getTime());
+		}
+		if (schoolClassMember.getRemovedDate() != null) {
+			placementEnd = new IWTimestamp(schoolClassMember.getRemovedDate().getTime());
+		}
+		IWTimestamp periodStart = new IWTimestamp(startPeriod);
+		startPeriod.setAsDate();
+		IWTimestamp periodEnd = new IWTimestamp(endPeriod);
+		endPeriod.setAsDate();
+		final boolean placementIsInPeriod = !placementStart.isLaterThan (periodEnd) && (null == placementEnd || !periodStart.isLaterThan (placementEnd));
+		return placementIsInPeriod;
 	}
 
 	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource)

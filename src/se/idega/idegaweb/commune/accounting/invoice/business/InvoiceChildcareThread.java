@@ -739,7 +739,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					try {
 						getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),startPeriod.getDate());
 						//If kids have same address add to collection
-						Address siblingAddress = userBus.getUsersMainAddress(contract.getChild());
+						Address siblingAddress = userBus.getUsersMainAddress(sibling);
 						if(childAddress.getPostalAddress().equals(siblingAddress.getPostalAddress()) &&
 							childAddress.getCity().equals(siblingAddress.getCity()) &&
 							childAddress.getStreetAddress().equals(siblingAddress.getStreetAddress())){
