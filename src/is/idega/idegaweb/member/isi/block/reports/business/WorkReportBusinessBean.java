@@ -2009,7 +2009,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		DropdownMenu dateSelector = new DropdownMenu(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
 		IWTimestamp stamp = IWTimestamp.RightNow();
 		int currentYear = stamp.getYear();
-		int beginningYear = 2001;//Because we have no older data, could also be
+		int beginningYear = 2004;//Because we have no older data, could also be
 								 // an application setting
 		for (int i = beginningYear; i <= currentYear; i++) {
 			dateSelector.addMenuElement(i, Integer.toString(i));
