@@ -288,10 +288,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			r.setRunGroupName(groupName);
 			r.setUserNationality(nationality);
 			if (bestTime != null && !bestTime.equals("")) {
-				r.setBestTime(Integer.parseInt(bestTime));
+				r.setBestTime(bestTime);
 			}
 			if (goalTime != null && !goalTime.equals("")) {
-				r.setGoalTime(Integer.parseInt(goalTime));
+				r.setGoalTime(goalTime);
 			}
 			if (distanceType != null) {
 				try {

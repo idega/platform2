@@ -167,12 +167,12 @@ public class RunBMPBean extends GenericEntity implements Run {
 		return getStringColumnValue(getColumnNameRunGroupName());
 	}
 
-	public int getBestTime() {
-		return getIntColumnValue(getColumnNameBestTime());
+	public String getBestTime() {
+		return getStringColumnValue(getColumnNameBestTime());
 	}
 
-	public int getGoalTime() {
-		return getIntColumnValue(getColumnNameGoalTime());
+	public String getGoalTime() {
+		return getStringColumnValue(getColumnNameGoalTime());
 	}
 
 	public int getParticipantNumber() {
@@ -224,11 +224,11 @@ public class RunBMPBean extends GenericEntity implements Run {
 		setColumn(getColumnNameRunGroupName(), runGrName);
 	}
 
-	public void setBestTime(double bestTime) {
+	public void setBestTime(String bestTime) {
 		setColumn(getColumnNameBestTime(), bestTime);
 	}
 
-	public void setGoalTime(double goalTime) {
+	public void setGoalTime(String goalTime) {
 		setColumn(getColumnNameGoalTime(), goalTime);
 	}
 	
