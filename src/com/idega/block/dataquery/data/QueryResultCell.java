@@ -54,7 +54,6 @@ public class QueryResultCell {
     return instance;
   }  
   
-    
   public QueryResultCell(String id, String fieldId) {
     this.fieldId = fieldId;
     this.id = id;

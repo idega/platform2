@@ -9,6 +9,7 @@ import java.sql.Statement;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultCell;
 import com.idega.block.dataquery.data.QueryResultField;
+import com.idega.block.dataquery.data.QuerySQL;
 import com.idega.business.IBOServiceBean;
 import com.idega.util.database.ConnectionBroker;
 
@@ -23,9 +24,13 @@ import com.idega.util.database.ConnectionBroker;
  */
 public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBridge {
   
+  private final char ROW_COLUMN_DELIMITER = '_';
+  
   public String createSQLStatement(QueryHelper queryHelper)  {
-    return "";
-  } 
+    QuerySQL querySQL = new QuerySQL();
+    querySQL.initialize(queryHelper);
+    return querySQL.getSQLStatement();
+  }
   
   public QueryResult executeStatement(String sqlQuery) throws SQLException {
     Connection connection = ConnectionBroker.getConnection();
@@ -54,9 +59,11 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
         for (i=1 ; i <= numberOfColumns; i++)  {
           String columnValue = resultSet.getString(i);
           // store into QueryResultCell
-          String numberRow = Integer.toString(numberOfRow++);
           String fieldId = Integer.toString(i);  
-          QueryResultCell cell = new QueryResultCell(numberRow, fieldId, columnValue);
+          StringBuffer cellId = new StringBuffer(numberOfRow++)
+            .append(ROW_COLUMN_DELIMITER)
+            .append(i);
+          QueryResultCell cell = new QueryResultCell(cellId.toString(), fieldId, columnValue);
           queryResult.addCell(cell);
         }
       }
@@ -76,5 +83,4 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
       return queryResult;
     }
   }
-
 }

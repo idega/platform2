@@ -5,8 +5,13 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.idega.util.datastructures.SortedHashMatrix;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
+
+import dori.jasper.engine.JRDataSource;
+import dori.jasper.engine.JRException;
+import dori.jasper.engine.JRField;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -17,14 +22,17 @@ import com.idega.xml.XMLElement;
  * @version 1.0
  * Created on May 27, 2003
  */
-public class QueryResult {
+public class QueryResult implements JRDataSource {
   private static final String QUERY_RESULT = "queryResult";
   
   private static final String DEFINITION = "definition";
   private static final String CONTENT = "content";
     
   private SortedMap fields = new TreeMap();
-  private SortedMap cells = new TreeMap();
+  private SortedHashMatrix cells = new SortedHashMatrix();
+  
+  private Iterator cellIterator = null;
+  private String currentCellId = null;
   
   public static QueryResult getInstanceForDocument(XMLDocument document)  {
     QueryResult instance = new QueryResult(); 
@@ -58,15 +66,15 @@ public class QueryResult {
   }
   
   public void addCell(QueryResultCell cell) {
-    cells.put(cell.getId(), cell);
+    cells.put(cell.getId(), cell.getFieldId(), cell);
   }
   
   public String getField(String id) {
     return (String) fields.get(id);
   }
   
-  public String getCell(String id)  {
-    return (String) cells.get(id);
+  public String getCell(String id, String fieldId)  {
+    return (String) cells.get(id, fieldId);
   }
   
   public XMLElement convertToXML()  {
@@ -80,7 +88,7 @@ public class QueryResult {
       XMLElement fieldElement = field.convertToXML();
       definition.addContent(fieldElement);
     }
-    Iterator cellIterator = cells.values().iterator();
+    Iterator cellIterator = cells.getCopiedListOfValues().iterator();
     while (cellIterator.hasNext())  {
       QueryResultCell cell = (QueryResultCell) cellIterator.next();
       XMLElement cellElement = cell.convertToXML();
@@ -92,5 +100,34 @@ public class QueryResult {
     
     return queryResult;
   }
+  
+  /** @see dori.jasper.engine.JRDataSource#next()
+   * 
+   */
+  public boolean next() throws JRException  {
+    if (cellIterator == null) {
+      cellIterator = cells.firstKeySet().iterator();
+    }
+    if (cellIterator.hasNext()) {
+      currentCellId = (String) cellIterator.next();
+      return true;
+    }
+    return false;
+  }
+      
+  public void resetDataSource() {
+    cellIterator = null;
+    currentCellId = null;
+   }
+
+  /**
+   *  @see dori.jasper.engine.JRDataSource#next()
+   * 
+   */
+  public Object getFieldValue(JRField jrField) throws JRException {
+    String fieldId = jrField.getName();
+    return cells.get(currentCellId, fieldId);
+  }
+
   
 }
