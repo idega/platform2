@@ -329,6 +329,7 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 		}
 		
 		
+		add(new Form());
 		this.add(loginForm);
 
 
