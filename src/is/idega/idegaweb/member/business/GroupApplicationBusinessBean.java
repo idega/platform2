@@ -3,18 +3,22 @@ package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.data.GroupApplication;
 import is.idega.idegaweb.member.data.GroupApplicationHome;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.ListUtil;
 
 
 /**
@@ -28,18 +32,23 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	private static final String GENDER_FEMALE = "f";
 	 
 	
-	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String address, String phone, String comment, String[] groupIds) throws RemoteException, CreateException ,IDOAddRelationshipException{
+	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String address, String phone, String comment, String[] groupIds) throws RemoteException, FinderException, CreateException ,IDOAddRelationshipException{
 		UserBusiness userBiz = this.getUserBusiness();
 		User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,pin,getGender(gender), getBirthDateFromPin(pin));
 		
 		user.setGender((Integer) this.getGender(gender).getPrimaryKey() );
-		
-		user.store();
-		
-		
+				
 		List groups = null;
-		String status = getGroupApplicationHome().getPendingStatusString();
+
+		if( groupIds!=null ){
+			GroupBusiness groupBiz = getGroupBusiness();
+			groups = ListUtil.convertCollectionToList(groupBiz.getGroups(groupIds));
+		}
+			
+		String status = getGroupApplicationHome().getPendingStatusString();	
 		
+		user.store(); 
+				
 		
 		return createGroupApplication(applicationGroup, user, status, comment, groups);
 		
@@ -54,6 +63,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		appl.addGroups(groups);
 		appl.setUserComment(userComment);
 		appl.setCreated(IWTimestamp.getTimestampRightNow());
+		appl.store();
 		
 		return appl;
  
@@ -61,6 +71,10 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 
 	private UserBusiness getUserBusiness() throws RemoteException {
 		return (UserBusiness) getServiceInstance(UserBusiness.class);	
+	}
+	
+	private GroupBusiness getGroupBusiness() throws RemoteException {
+		return (GroupBusiness) getServiceInstance(GroupBusiness.class);	
 	}
 
 	private GroupApplicationHome getGroupApplicationHome() throws RemoteException {
