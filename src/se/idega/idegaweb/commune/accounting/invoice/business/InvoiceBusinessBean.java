@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
@@ -33,10 +34,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/10/28 13:14:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/28 15:20:20 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -144,10 +145,27 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return getPaymentRecordHome().getTotAmountForSchoolCategoryAndPeriod(schoolCategoryID,period);
 	}
 
+    /**
+     * Retreives an array of all InvoiceHeaders where the user given is either
+     * custodian or the child. An empty list is returned if no invoice header
+     * was found.
+     *
+     * @param user the user to search for
+     * @return array of invoice headers
+     */
     public InvoiceHeader [] getInvoiceHeadersByCustodianOrChild
         (final User user) {
-        throw new UnsupportedOperationException ("not implemented yet ["
-                                                 + user + ']');
+        Collection collection = null;
+        try {
+            collection = getInvoiceHeaderHome ()
+                    .findInvoiceHeadersByCustodianOrChild (user);
+        } catch (RemoteException exception) {
+            exception.printStackTrace ();
+        } catch (FinderException exception) {
+            // no problem, return empty array
+        }
+        return null == collection ? new InvoiceHeader [0]
+                : (InvoiceHeader []) collection.toArray (new InvoiceHeader [0]);
     }
 
 

@@ -162,6 +162,29 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		
 		return idoFindPKsByQuery(sql);
 	}
-	
+
+    /**
+     * Retreives a collection of all InvoiceHeaders where the user given is
+     * either custodian or the child. 
+     *
+     * @param user the user to search for
+     * @return collection of invoice headers
+     */
+    public Collection ejbFindInvoiceHeadersByCustodianOrChild (final User user)
+        throws FinderException {
+		final IDOQuery sql = idoQuery ();
+        final String H_ = "h."; // sql alias for invoice header
+        final String U_ = "u."; // sql alias for user
+        sql.appendSelectAllFrom (getTableName () + " h")
+                .append (',' + com.idega.user.data.UserBMPBean.TABLE_NAME
+                         + " u")
+                .appendWhere ()
+                .appendEquals (H_ + COLUMN_CUSTODIAN_ID,
+                               user.getPrimaryKey ().toString ())
+                .appendAndEquals (H_ + COLUMN_CUSTODIAN_ID,
+                                  U_ + User.FIELD_USER_ID)
+                .appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
+		return idoFindPKsBySQL(sql.toString());		
+    }
 }
 
