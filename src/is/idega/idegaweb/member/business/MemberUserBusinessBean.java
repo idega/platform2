@@ -21,6 +21,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.ListUtil;
 
 /**
  * Description:	Use this business class to handle member information
@@ -257,7 +258,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	}
 	
 	/*
-	 * Return a list og League groups if the user has a league as a top node.
+	 * Return a list of League groups if the user has a league as a top node.
 	 */
 	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException{
 		Collection tops = getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwuc);
@@ -274,6 +275,75 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		}
 		return list;
 	}
+	
+	/*
+	 * Return a list of regional union groups if the user has a regional union as a top node.
+	 */
+	public List getRegionalUnionListForUser(User user, IWUserContext iwuc) throws RemoteException{
+		Collection tops = getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwuc);
+		List list = new Vector();
+		if(tops!=null && !tops.isEmpty()){
+			Iterator iter = tops.iterator();
+			while (iter.hasNext()) {
+				Group group = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(group.getGroupType())){
+					list.add(group);
+				}
+			}
+			
+		}
+		return list;
+	}
+	
+	/** 
+	 * @return All groups with the type iwme_regional_union
+	 * @throws RemoteException
+	 */
+	public Collection getAllRegionalUnionGroups() throws RemoteException{
+		try {
+			return this.getGroupBusiness().getGroupHome().findGroupsByType(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	} 
+	
+	/** 
+	 * @return All groups with the type iwme_league
+	 * @throws RemoteException
+	 */
+	public Collection getAllLeagueGroups() throws RemoteException{
+		try {
+			return this.getGroupBusiness().getGroupHome().findGroupsByType(IWMemberConstants.GROUP_TYPE_LEAGUE);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	} 
+	
+	/** 
+	 * @return All groups with the type iwme_club
+	 * @throws RemoteException
+	 */
+	public Collection getAllClubGroups() throws RemoteException{
+		try {
+			return this.getGroupBusiness().getGroupHome().findGroupsByType(IWMemberConstants.GROUP_TYPE_CLUB);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	} 
+	
+	
+	
+	/** 
+	 * @return All groups with the type iwme_club that are children of the supplied regional union group
+	 */
+	public Collection getClubGroupsForRegionUnionGroup(Group regionalUnion) throws RemoteException{
+		String[] clubType = { IWMemberConstants.GROUP_TYPE_CLUB };
+		return regionalUnion.getChildGroups(clubType,true);
+	} 
+	
 	
 	/*
 	 * Returns a list of all the clubs the user is a member of.

@@ -2,39 +2,23 @@ package is.idega.idegaweb.member.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.List;
 
-import javax.mail.MessagingException;
-
-import com.idega.business.IBOService;
-import com.idega.idegaweb.IWUserContext;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
-import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
 
 
-public interface MemberUserBusiness extends IBOService,UserBusiness
+public interface MemberUserBusiness extends com.idega.business.IBOService,com.idega.user.business.UserBusiness
 {
-	/**
-	 * @param user
-	 * @param fromDiv
-	 * @param toDiv
-	 * @param term
-	 * @param init
-	 * @return success
-	 */
-	public boolean moveUserBetweenDivisions(User user, Group fromDiv, Group toDiv, IWTimestamp term, IWTimestamp init, IWUserContext iwuc) throws RemoteException;
-	public Collection getAllClubDivisionsForLeague(Group league) throws RemoteException;
-	/**
-	 * @param user
-	 * @return a Group of the type iwme_league
-	 */
-	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException;
-	public boolean sendEmailFromIWMemberSystemAdministrator(String toEmailAddress, String CC, String BCC,String subject, String theMessageBody, IWUserContext iwuc) throws MessagingException, RemoteException;
-	public Group getClubForGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException;
-	public List getClubListForUser(User user) throws NoClubFoundException,RemoteException;
-	public boolean setClubMemberNumberForUser(String number, User user, Group club) throws RemoteException;
-	
-	
+ public java.util.Collection getAllClubDivisionsForLeague(com.idega.user.data.Group p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getAllClubGroups()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getAllLeagueGroups()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getAllRegionalUnionGroups()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.user.data.Group getClubForGroup(com.idega.user.data.Group p0,com.idega.idegaweb.IWUserContext p1)throws is.idega.idegaweb.member.business.NoClubFoundException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.List getClubListForUser(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoClubFoundException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.String getClubMemberNumberForUser(com.idega.user.data.User p0,com.idega.user.data.Group p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.List getLeaguesListForUser(com.idega.user.data.User p0,com.idega.idegaweb.IWUserContext p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.List getRegionalUnionListForUser(com.idega.user.data.User p0,com.idega.idegaweb.IWUserContext p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean moveUserBetweenDivisions(com.idega.user.data.User p0,com.idega.user.data.Group p1,com.idega.user.data.Group p2,com.idega.util.IWTimestamp p3,com.idega.util.IWTimestamp p4,com.idega.idegaweb.IWUserContext p5)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean sendEmailFromIWMemberSystemAdministrator(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.idegaweb.IWUserContext p5)throws javax.mail.MessagingException, java.rmi.RemoteException;
+ public boolean setClubMemberNumberForUser(java.lang.String p0,com.idega.user.data.User p1,com.idega.user.data.Group p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public Collection getClubGroupsForRegionUnionGroup(Group regionalUnion) throws RemoteException;
 }
