@@ -684,7 +684,7 @@ public class Booking extends TravelManager {
       if (reseller != null) tbf.setReseller(reseller);
       tbf.setTimestamp(stamp);
       if (booking != null)  tbf.setBooking(booking);
-      return tbf.getBookingForm();
+      return tbf.getBookingForm(iwc);
     }catch (Exception e) {
       return new Form();
     }

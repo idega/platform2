@@ -719,7 +719,7 @@ public class DailyReport extends TravelManager {
               bookedText = (Text) smallText.clone();
                 bookedText.setText(Integer.toString(many));
               amountText = (Text) smallText.clone();
-                amountText.setText(Integer.toString(many * ((int) tsb.getPrice(service.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()))));
+                amountText.setText(Integer.toString(many * ((int) tsb.getPrice(prices[i].getID(), service.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()))));
 
               nameText.setFontColor(super.BLACK);
               bookedText.setFontColor(super.BLACK);

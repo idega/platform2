@@ -16,6 +16,7 @@ import is.idega.idegaweb.travel.business.Booker;
 
 import java.text.DecimalFormat;
 import java.sql.SQLException;
+import java.util.List;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -39,6 +40,8 @@ public class Voucher extends TravelManager {
   private Service _service;
   private Product _product;
   private Supplier _supplier;
+  private Timeframe _timeframe;
+  private Address _address;
 
   private DecimalFormat df = new DecimalFormat("0.00");
 
@@ -57,6 +60,10 @@ public class Voucher extends TravelManager {
       _product = _service.getProduct();
       _entries = _booking.getBookingEntries();
       _supplier = new Supplier(_product.getSupplierId());
+      _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
+      GeneralBooking gBooking = new GeneralBooking(_booking.getID());
+      Address[] addresses = (Address[]) gBooking.findRelated(Address.getStaticInstance(Address.class));
+      _address = addresses[addresses.length - 1];
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }

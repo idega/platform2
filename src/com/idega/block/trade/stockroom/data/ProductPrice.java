@@ -37,7 +37,7 @@ public class ProductPrice extends GenericEntity{
     addAttribute(getColumnNameIsValid(), "virkt", true, true, Boolean.class);
 
     this.addManyToManyRelationShip(Timeframe.class,getProductPriceTableName()+"_TIMEFRAME");
-    this.addManyToManyRelationShip(Timeframe.class,getProductPriceTableName()+"_ADDRESS");
+    this.addManyToManyRelationShip(Address.class,getProductPriceTableName()+"_ADDRESS");
   }
 
 
@@ -99,27 +99,7 @@ public class ProductPrice extends GenericEntity{
   }
 
   public float getPrice() {
-/*    float returner = 0;
-    try {
-      if (this.getPriceType() == PRICETYPE_PRICE) {
-        returner = getFloatColumnValue(getColumnNamePrice());
-      }else if (this.getPriceType() == PRICETYPE_DISCOUNT) {
-        PriceCategory pCat = this.getPriceCategory();
-        int parentId = pCat.getParentId();
-        ProductPrice[] parent = (ProductPrice[]) (new ProductPrice()).findAllByColumn(getColumnNamePriceCategoryId(), parentId);
-        if (parent.length > 0) {
-          returner = parent[0].getPrice() * ((100 - getFloatColumnValue(getColumnNamePrice())) / 100);
-        }else {
-          System.err.println("Cannot find Parent");
-        }
-      }
-    }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-    }
-    return returner;
-*/
     return getFloatColumnValue(getColumnNamePrice());
-
   }
 
   public int getDiscount() {
@@ -169,28 +149,45 @@ public class ProductPrice extends GenericEntity{
   public static ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
     return getProductPrices(productId, -1, netBookingOnly);
   }
+  /**
+   * @deprecated
+   */
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, boolean netBookingOnly) {
+    return getProductPrices(productId, timeframeId, -1, netBookingOnly);
+  }
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
       ProductPrice[] prices = {};
       try {
         ProductPrice price = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
         PriceCategory category = (PriceCategory) PriceCategory.getStaticInstance(PriceCategory.class);
         Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
+        Address address = (Address) Address.getStaticInstance(Address.class);
         Product product = (Product) Product.getStaticInstance(Product.class);
 
-        String mTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Timeframe.class);
+        String ptmTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Timeframe.class);
+        String pamTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Address.class);
         String pTable = price.getProductPriceTableName();
         String cTable = category.getEntityName();
 
         StringBuffer SQLQuery = new StringBuffer();
           SQLQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+cTable);
           if (timeframeId != -1) {
-            SQLQuery.append(" , "+mTable);
+            SQLQuery.append(" , "+ptmTable);
+          }
+          if (addressId != -1) {
+            SQLQuery.append(" , "+pamTable);
           }
           SQLQuery.append(" WHERE ");
           if (timeframeId != -1) {
-            SQLQuery.append(mTable+"."+timeframe.getIDColumnName()+" = "+timeframeId);
+            SQLQuery.append(ptmTable+"."+timeframe.getIDColumnName()+" = "+timeframeId);
             SQLQuery.append(" AND ");
-            SQLQuery.append(mTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+            SQLQuery.append(ptmTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+            SQLQuery.append(" AND ");
+          }
+          if (addressId != -1) {
+            SQLQuery.append(pamTable+"."+address.getIDColumnName()+" = "+addressId);
+            SQLQuery.append(" AND ");
+            SQLQuery.append(pamTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
             SQLQuery.append(" AND ");
           }
           SQLQuery.append(pTable+"."+ProductPrice.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());

@@ -48,17 +48,17 @@ public class StockroomBusiness /* implements SupplyManager */ {
     throw new java.lang.UnsupportedOperationException("Method getSupplyStatus() not yet implemented.");
   }
 
-  public void setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId) throws SQLException {
+  public void setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
     if (productPriceIdToReplace != -1) {
         ProductPrice pPrice = new ProductPrice(productPriceIdToReplace);
           pPrice.invalidate();
           pPrice.update();
     }
 
-    setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId);
+    setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId);
   }
 
-  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId) throws SQLException {
+  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
        ProductPrice prPrice = new ProductPrice();
          prPrice.setProductId(productId);
          prPrice.setCurrencyId(currencyId);
@@ -70,12 +70,15 @@ public class StockroomBusiness /* implements SupplyManager */ {
        if (timeframeId != -1) {
         prPrice.addTo(Timeframe.class, timeframeId);
        }
+       if (addressId != -1) {
+        prPrice.addTo(Address.class, addressId);
+       }
   }
-
+/*
   public static float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     return getPrice(-1, productId, priceCategoryId, currencyId, time);
   }
-
+*/
   public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
@@ -109,6 +112,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
           if(result != null && result.size() > 0){
             return ((ProductPrice)result.get(0)).getPrice();
           }else{
+            System.err.println("Er her 2");
             throw new ProductPriceException();
           }
         }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
@@ -132,7 +136,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
             disc = ((ProductPrice)result.get(0)).getPrice();
           }
 
-          float pr = StockroomBusiness.getPrice(productId,cat.getParentId(),currencyId,time);
+          float pr = StockroomBusiness.getPrice(productPriceId, productId,cat.getParentId(),currencyId,time);
           return pr*((100-disc) /100);
         }else{
           throw new ProductPriceException();

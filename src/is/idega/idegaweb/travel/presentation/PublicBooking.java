@@ -248,6 +248,7 @@ public class PublicBooking extends Block  {
       table.setBorder(0);
 
       idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
+      Address[] depAddresses = ProductBusiness.getDepartureAddresses(product);
       Address depAddress = ProductBusiness.getDepartureAddress(product);
       Currency currency;
 
@@ -293,17 +294,17 @@ public class PublicBooking extends Block  {
       table.add(space,1,2);
       table.add(supplierTextBold,1,2);
 
-      table.add(departureFromText,3,1);
+/*      table.add(departureFromText,3,1);
       table.add(space,3,1);
       table.add(departureFromTextBold,3,1);
-
+*/
       table.add(image,1,3);
 //      table.add(arrow,1,3);
       table.setAlignment(1,3,"left");
 
-      table.add(departureTimeText,3,2);
-      table.add(space,3,2);
-      table.add(departureTimeTextBold,3,2);
+      table.add(departureTimeText,2,2);
+      table.add(space,2,2);
+      table.add(departureTimeTextBold,2,2);
 
       table.add(Text.NON_BREAKING_SPACE,2,3);
 
@@ -313,45 +314,48 @@ public class PublicBooking extends Block  {
       Text timeframeTextBold;
       Table pTable = new Table();
         pTable.setCellspacing(0);
-        pTable.setBorder(0);
 
         //pTable.add(pricesText,1,1);
         int pRow = 1;
+      for (int l = 0; l < depAddresses.length; l++) {
+        departureFromTextBold = getBoldText(depAddresses[l].getStreetName());
+          departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+        pTable.add(departureFromTextBold, 1, pRow);
+        for (int i = 0; i < timeframes.length; i++) {
+          prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
+          stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+          stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+          if (timeframes[i].getIfYearly()) {
+            try {
+              stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+              stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+            }catch (NumberFormatException n) {}
+          }
+          timeframeTextBold = getText("");
+            timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+          pTable.add(timeframeTextBold,2,pRow);
 
-      for (int i = 0; i < timeframes.length; i++) {
-        prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), true);
-        stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
-        stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
-        if (timeframes[i].getIfYearly()) {
-          try {
-            stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
-            stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
-          }catch (NumberFormatException n) {}
-        }
-        timeframeTextBold = getBoldText("");
-          timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-        pTable.add(timeframeTextBold,2,pRow);
+          if (prices.length == 0) {
+            ++pRow;
+          }
+          for (int j = 0; j < prices.length; j++) {
+            currency = new Currency(prices[j].getCurrencyId());
+            nameOfCategory = getText(prices[j].getPriceCategory().getName());
+              nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+            try {
+              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+              currencyText = getBoldText(currency.getCurrencyAbbreviation());
+              pTable.add(currencyText,5,pRow);
+            }catch (ProductPriceException p) {
+              priceText.setText("T - rangt upp sett");
+            }
 
-        if (prices.length == 0) {
-          ++pRow;
-        }
-        for (int j = 0; j < prices.length; j++) {
-          currency = new Currency(prices[j].getCurrencyId());
-          nameOfCategory = getText(prices[j].getPriceCategory().getName());
-            nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-          try {
-            priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
-            currencyText = getBoldText(currency.getCurrencyAbbreviation());
-            pTable.add(currencyText,5,pRow);
-          }catch (ProductPriceException p) {
-            priceText.setText("T - rangt upp sett");
+            pTable.add(nameOfCategory,3,pRow);
+            pTable.add(priceText,4,pRow);
+            ++pRow;
           }
 
-          pTable.add(nameOfCategory,3,pRow);
-          pTable.add(priceText,4,pRow);
-          ++pRow;
         }
-
       }
 
       pTable.setColumnAlignment(1,"left");
@@ -361,19 +365,21 @@ public class PublicBooking extends Block  {
       pTable.setColumnAlignment(5,"left");
       pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
 
-      table.add(pTable,2,4);
-      table.setAlignment(2,4,"right");
+      table.add(pTable,2,3);
+//      table.setAlignment(2,4,"right");
 
-      table.setAlignment(3,1,"right");
-      table.setAlignment(3,2,"right");
-      table.setAlignment(3,3,"right");
+      table.setAlignment(2,1,"right");
+      table.setAlignment(2,2,"right");
+      table.setAlignment(2,3,"right");
       table.setVerticalAlignment(1,3,"top");
       table.mergeCells(1,1,2,1);
-      table.mergeCells(1,2,2,2);
-      table.mergeCells(1,3,1,5);
-      table.mergeCells(2,4,3,4);
+//      table.mergeCells(1,2,2,2);
+//      table.mergeCells(1,3,1,5);
+      table.mergeCells(2,3,2,4);
 //      table.setWidth(1,"138");
 //      table.setWidth(3,"350");
+//      table.setWidth(2,"350");
+//        table.setBorder(1);
 
 
     }catch (Exception e) {
@@ -403,6 +409,12 @@ public class PublicBooking extends Block  {
 
       if (legalDay) {
         String action = iwc.getParameter(this.sAction);
+
+        String tbfAction = iwc.getParameter(TourBookingForm.sAction);
+        if (tbfAction == null || !tbfAction.equals(TourBookingForm.parameterSaveBooking)) {
+          action = "";
+        }
+
         if (action == null || action.equals("")) {
             form = tbf.getPublicBookingForm(iwc, product, stamp);
             form.maintainParameter(this.parameterProductId);
@@ -456,7 +468,7 @@ public class PublicBooking extends Block  {
     return table;
   }
 
-  private Table getVerifyBookingTable(IWContext iwc) {
+  private Table getVerifyBookingTable(IWContext iwc) throws SQLException{
     String surname = iwc.getParameter("surname");
     String lastname = iwc.getParameter("lastname");
     String address = iwc.getParameter("address");
@@ -467,12 +479,13 @@ public class PublicBooking extends Block  {
     String country = iwc.getParameter("country");
     String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
     String room_number = iwc.getParameter("room_number");
+    String depAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
 
 //    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
     ProductPrice[] pPrices = {};
     Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
-    if (tFrame != null) {
-      pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), true);
+    if (tFrame != null && depAddressId != null) {
+      pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
     }
 
     Table table = new Table();
@@ -487,14 +500,20 @@ public class PublicBooking extends Block  {
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
-      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
       table.add(getBoldTextWhite(ProductBusiness.getProductName(product)),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
-      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.date","Date")),1,row);
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.date","Date")),1,row);
       table.add(getBoldTextWhite(this.stamp.getLocaleDate(iwc)),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.departure_place","Departure place")),1,row);
+      table.add(getBoldTextWhite(new Address(Integer.parseInt(depAddressId)).getStreetName()),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");

@@ -4,6 +4,8 @@ import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
 
+import com.idega.util.idegaTimestamp;
+
 /**
  * Title:        IW Travel
  * Description:
@@ -38,7 +40,9 @@ public class Timeframe extends GenericEntity{
     return getTimeframeTableName();
   }
   public String getName(){
-    return getNameColumnName();
+    String stampTxt1 = new idegaTimestamp(this.getFrom()).getLocaleDate(idegaTimestamp.getIceland());
+    String stampTxt2 = new idegaTimestamp(this.getTo()).getLocaleDate(idegaTimestamp.getIceland());
+    return stampTxt1+" - "+stampTxt2;
   }
 
   public void setName(String name){

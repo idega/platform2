@@ -19,6 +19,7 @@ import java.text.DecimalFormat;
 
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.service.tour.presentation.TourDesigner;
+import com.idega.core.data.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -47,6 +48,7 @@ public class ServiceDesigner extends TravelManager {
   public static String parameterProductPriceId = "serviceDesignerProductPriceId";
   public static String parameterProductCategoryId = "parameterProductCategoryId";
   public static String parameterTimeframeId = "parameterTimeframeId";
+  public static String parameterAddressId = "parameterAddressId";
   public static String parameterCreate = "create";
 
   public static String NAME_OF_FORM = "service_designer_form";
@@ -183,18 +185,19 @@ public class ServiceDesigner extends TravelManager {
             tc.setValue(product.getText());
           }
 
-          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
+          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra_info"));
 
           Link tfAdder = new Link(iwrb.getLocalizedImageButton("travel.timeframes","Timeframes"));
             tfAdder.addParameter(TimeframeAdder._parameterProductId, product.getID());
             tfAdder.setWindowToOpen(TimeframeAdder.class);
 
-          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure places"));
+          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure_places"));
             addAdder.addParameter(AddressAdder._parameterProductId, product.getID());
             addAdder.setWindowToOpen(AddressAdder.class);
 
 
           Timeframe[] tFrames = product.getTimeframes();
+          Address[] addresses = ProductBusiness.getDepartureAddresses(product);
 
           Text serviceNameText = (Text) super.theBoldText.clone();
             serviceNameText.setText(ProductBusiness.getProductNameWithNumber(product));
@@ -212,101 +215,113 @@ public class ServiceDesigner extends TravelManager {
           ++row;
           table.add(addAdder,1,row);
           table.setRowColor(row, super.GRAY);
-          table.mergeCells(1,row,3,row);          ++row;
-
-          for (int k = 0; k < tFrames.length; k++) {
-
-
-          ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), tFrames[k].getID(), false);
-            PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
-            TextInput priceDiscount;
-
-            Text categoryName;
-            Text infoText;
+          table.mergeCells(1,row,3,row);
+          ++row;
+          table.add(Text.NON_BREAKING_SPACE,1,row);
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,3,row);
+          ++row;
 
 
+          Text addrText;
+              TextInput priceDiscount;
+              Text categoryName;
+              Text infoText;
+              Text counter;
 
-            Text counter;
+          for (int l = 0; l < addresses.length; l++) {
+            table.mergeCells(1,row,3,row);
+            table.setRowColor(row, super.backgroundColor);
+            addrText = (Text) super.theBoldText.clone();
+              addrText.setText(addresses[l].getStreetName());
+            table.add(addrText, 1, row);
+            ++row;
 
-            Text catName = (Text) theText.clone();
-              catName.setText(iwrb.getLocalizedString("travel.name","Name"));
-              catName.setFontColor(super.WHITE);
-            Text priceDiscountText = (Text) theText.clone();
-              priceDiscountText.setText(iwrb.getLocalizedString("travel.price_discount","Price / Discount"));
-              priceDiscountText.setFontColor(super.WHITE);
-            Text timeframeText = getTimeframeText(tFrames[k], iwc);
-              timeframeText.setFontColor(super.WHITE);
+            for (int k = 0; k < tFrames.length; k++) {
+              ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), tFrames[k].getID(), addresses[l].getID(), false);
+              PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
 
-
-
-            table.add(catName,1,row);
-            table.add(priceDiscountText,2,row);
-            table.add(timeframeText,3,row);
-            table.setAlignment(3, row, "right");
-            table.setRowColor(row,super.backgroundColor);
-
-            DecimalFormat df = new DecimalFormat("0.00");
-
-            for (int i = 0; i < cats.length; i++) {
-                table.add(new HiddenInput(parameterTimeframeId, Integer.toString(tFrames[k].getID())),1,row);
-                categoryName = (Text) theText.clone();
-                  categoryName.setFontColor(super.BLACK);
-                  categoryName.setText(cats[i].getName());
-                infoText = (Text) theText.clone();
-                  infoText.setFontColor(super.BLACK);
-                  infoText.setText(cats[i].getName());
+              Text catName = (Text) theText.clone();
+                catName.setText(iwrb.getLocalizedString("travel.name","Name"));
+                catName.setFontColor(super.WHITE);
+              Text priceDiscountText = (Text) theText.clone();
+                priceDiscountText.setText(iwrb.getLocalizedString("travel.price_discount","Price / Discount"));
+                priceDiscountText.setFontColor(super.WHITE);
+              Text timeframeText = getTimeframeText(tFrames[k], iwc);
+                timeframeText.setFontColor(super.WHITE);
 
 
-                priceDiscount = new TextInput("price_discount");
 
-                if (cats[i].getType().equals(PriceCategory.PRICETYPE_PRICE)) {
-                  infoText.setText("");
-                }else if (cats[i].getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
-                  try {
-                    priceDiscount.setSize(6);
-                    infoText.setText("%");
-                    infoText.addToText(Text.NON_BREAKING_SPACE);
-                    infoText.addToText(iwrb.getLocalizedString("travel.of","of"));
-                    infoText.addToText(Text.NON_BREAKING_SPACE);
-                    infoText.addToText(new PriceCategory(cats[i].getParentId()).getName());
-                  }catch (SQLException sql) {
-                    sql.printStackTrace(System.err);
-                  }
-                }
+              table.add(catName,1,row);
+              table.add(priceDiscountText,2,row);
+              table.add(timeframeText,3,row);
+              table.setAlignment(3, row, "right");
+              table.setRowColor(row,super.backgroundColor);
 
-                if (prices.length == 0) {
-                  table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
-                }
-                for (int j = 0; j < prices.length; j++) {
-                  if (cats[i].getID() == prices[j].getPriceCategoryID()) {
+              DecimalFormat df = new DecimalFormat("0.00");
+
+              for (int i = 0; i < cats.length; i++) {
+                  table.add(new HiddenInput(parameterTimeframeId, Integer.toString(tFrames[k].getID())),1,row);
+                  table.add(new HiddenInput(parameterAddressId, Integer.toString(addresses[l].getID())),1,row);
+                  categoryName = (Text) theText.clone();
+                    categoryName.setFontColor(super.BLACK);
+                    categoryName.setText(cats[i].getName());
+                  infoText = (Text) theText.clone();
+                    infoText.setFontColor(super.BLACK);
+                    infoText.setText(cats[i].getName());
+
+
+                  priceDiscount = new TextInput("price_discount");
+
+                  if (cats[i].getType().equals(PriceCategory.PRICETYPE_PRICE)) {
+                    infoText.setText("");
+                  }else if (cats[i].getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
                     try {
-                      if (prices[j].getPriceType() == ProductPrice.PRICETYPE_PRICE) {
-                        //priceDiscount.setContent(df.format(prices[j].getPrice()));
-                        priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
-                      }else {
-                        priceDiscount.setContent(Float.toString(prices[j].getPrice()));
-                      }
-                      table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[j].getID())),1,row);//PriceCategoryID())),1,row);
-                    }catch (ArrayIndexOutOfBoundsException a) {
-                      table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                      priceDiscount.setSize(6);
+                      infoText.setText("%");
+                      infoText.addToText(Text.NON_BREAKING_SPACE);
+                      infoText.addToText(iwrb.getLocalizedString("travel.of","of"));
+                      infoText.addToText(Text.NON_BREAKING_SPACE);
+                      infoText.addToText(new PriceCategory(cats[i].getParentId()).getName());
+                    }catch (SQLException sql) {
+                      sql.printStackTrace(System.err);
                     }
-                  }else {
+                  }
+
+                  if (prices.length == 0) {
                     table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
                   }
-                }
+                  for (int j = 0; j < prices.length; j++) {
+                    if (cats[i].getID() == prices[j].getPriceCategoryID()) {
+                      try {
+                        if (prices[j].getPriceType() == ProductPrice.PRICETYPE_PRICE) {
+                          //priceDiscount.setContent(df.format(prices[j].getPrice()));
+                          priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
+                        }else {
+                          priceDiscount.setContent(Float.toString(prices[j].getPrice()));
+                        }
+                        table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[j].getID())),1,row);//PriceCategoryID())),1,row);
+                      }catch (ArrayIndexOutOfBoundsException a) {
+                        table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                      }
+                    }else {
+                      table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                    }
+                  }
 
 
-                ++row;
-                table.add(new HiddenInput(this.parameterProductCategoryId,Integer.toString(cats[i].getID())),1,row);
-                table.add(categoryName,1,row);
-                table.add(priceDiscount,2,row);
-                table.setAlignment(2,row,"right");
-                table.setWidth(2,"150");
-                table.add(infoText,3,row);
-                table.setRowColor(row,super.GRAY);
+                  ++row;
+                  table.add(new HiddenInput(this.parameterProductCategoryId,Integer.toString(cats[i].getID())),1,row);
+                  table.add(categoryName,1,row);
+                  table.add(priceDiscount,2,row);
+                  table.setAlignment(2,row,"right");
+                  table.setWidth(2,"150");
+                  table.add(infoText,3,row);
+                  table.setRowColor(row,super.GRAY);
+              }
+
+              ++row;
             }
-
-            ++row;
           }
 
           table.setRowColor(row,super.GRAY);
@@ -324,6 +339,7 @@ public class ServiceDesigner extends TravelManager {
 
   private void priceCategorySave(IWContext iwc) {
       String[] timeframeIds = (String[]) iwc.getParameterValues(parameterTimeframeId);
+      String[] addressIds = (String[]) iwc.getParameterValues(parameterAddressId);
       String[] priceDiscount = (String[]) iwc.getParameterValues("price_discount");
       String[] priceCategoryIds = (String[]) iwc.getParameterValues(this.parameterProductCategoryId);
 
@@ -359,7 +375,7 @@ public class ServiceDesigner extends TravelManager {
 
               if (pCategory.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)) {
                 priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
-                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]));
+                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
               }else if (pCategory.getType().equals(PriceCategory.PRICETYPE_PRICE)) {
                 priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
                 if (priceDiscount[i].indexOf(",") > 0) {
@@ -370,7 +386,7 @@ public class ServiceDesigner extends TravelManager {
                   price = (float) Float.parseFloat(priceDiscount[i]);
                 }
 
-                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), price, ProductPrice.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]));
+                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), price, ProductPrice.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
               }
             }
           }

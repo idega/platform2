@@ -3,8 +3,10 @@ package is.idega.idegaweb.travel.presentation;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
+import com.idega.core.data.Address;
 import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.travel.business.Booker;
@@ -27,6 +29,8 @@ public class AdditionalBooking extends TravelWindow {
 
   public static String parameterServiceId = "addBookServiceId";
   public static String parameterDate = "addBookDate";
+  private static String parameterDepartureAddressId = "addDepAddId";
+  private static String parameterTimeframeId = "addDepTFId";
 
   public static String parameterSave = "addBookSave";
   public static String sAction = "addBookAction";
@@ -37,7 +41,9 @@ public class AdditionalBooking extends TravelWindow {
 
   TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
   Service service;
+  Product product;
   idegaTimestamp stamp;
+  Timeframe timeframe;
 
   public AdditionalBooking() {
     super.setHeight(450);
@@ -51,16 +57,21 @@ public class AdditionalBooking extends TravelWindow {
     super.main(iwc);
     initialize(iwc);
 
-    if (service != null) {
-      String action = iwc.getParameter(this.sAction);
-      if (action == null) {
-        displayForm(iwc);
-      }else if (action.equals(this.parameterSave) ) {
-        saveBooking(iwc);
-        super.close(true);
+    try {
+      if (service != null) {
+        String action = iwc.getParameter(this.sAction);
+        if (action == null || action.equals("")) {
+          displayForm(iwc);
+        }else if (action.equals(this.parameterSave) ) {
+          saveBooking(iwc);
+          super.close(true);
+        }
+      }else {
+        add(iwrb.getLocalizedString("travel.session_has_expired","Session has expired"));
       }
-    }else {
-      add(iwrb.getLocalizedString("travel.session_has_expired","Session has expired"));
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      add(iwrb.getLocalizedString("travel.error","Error"));
     }
   }
 
@@ -72,20 +83,33 @@ public class AdditionalBooking extends TravelWindow {
         this.isCorrection = true;
       }
         service = new Service(Integer.parseInt(iwc.getParameter(this.parameterServiceId)));
+        product = new Product(service.getID());
         stamp = new idegaTimestamp(iwc.getParameter(this.parameterDate));
+        timeframe = ProductBusiness.getTimeframe(product, stamp);
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
   }
 
-  private void displayForm(IWContext iwc) {
+  private void displayForm(IWContext iwc) throws SQLException{
       Form form = new Form();
       Table table = new Table();
         form.add(table);
         table.setAlignment("center");
       int row = 1;
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
+      String addId = iwc.getParameter(this.parameterDepartureAddressId);
+      String tfrId = iwc.getParameter(this.parameterTimeframeId);
+
+      Address[] addresses = ProductBusiness.getDepartureAddresses(product);
+      Timeframe[] timeframes = product.getTimeframes();
+      int iAddressId = addresses[0].getID();
+      int iTimeframeId = timeframe.getID();
+      if (addId != null) iAddressId = Integer.parseInt(addId);
+      if (tfrId != null) iTimeframeId = Integer.parseInt(tfrId);
+
+
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), iTimeframeId, iAddressId, false);
       PriceCategory category;
 
       Text header = (Text) text.clone();
@@ -103,6 +127,12 @@ public class AdditionalBooking extends TravelWindow {
           nameText.setText(iwrb.getLocalizedString("travel.name","name"));
       TextInput name = new TextInput("name");
           name.setSize(18);
+          name.keepStatusOnAction();
+      Text depPlaceText = (Text) text.clone();
+          depPlaceText.setText(iwrb.getLocalizedString("travel.departure_place","Departure place"));
+      Text tframeText = (Text) text.clone();
+          tframeText.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
+
 
       Text pPriceCatNameText;
       ResultOutput pPriceText;
@@ -114,6 +144,17 @@ public class AdditionalBooking extends TravelWindow {
         TotalPassTextInput.setSize(5);
       ResultOutput TotalTextInput = new ResultOutput("total","0");
         TotalTextInput.setSize(8);
+      DropdownMenu depAddr = new DropdownMenu(addresses, this.parameterDepartureAddressId);
+        depAddr.setToSubmit();
+      DropdownMenu tFrames = new DropdownMenu(timeframes, this.parameterTimeframeId);
+        tFrames.setToSubmit();
+
+      if (addId != null) {
+        depAddr.setSelectedElement(addId);
+      }
+      if (tfrId != null) {
+        tFrames.setSelectedElement(tfrId);
+      }
 
     ++row;
     table.mergeCells(1,row,2,row);
@@ -122,11 +163,29 @@ public class AdditionalBooking extends TravelWindow {
     ++row;
     table.add(nameText,1,row);
     table.add(name,2,row);
+
+    if (addresses.length > 1) {
+      ++row;
+      table.add(depPlaceText, 1, row);
+      table.add(depAddr, 2,row);
+    }else {
+      table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(addresses[0].getID())));
+    }
+
+    if (timeframes.length > 1) {
+      ++row;
+      table.add(tframeText, 1, row);
+      table.add(tFrames, 2,row);
+    }else {
+      table.add(new HiddenInput(this.parameterTimeframeId, Integer.toString(timeframes[0].getID())));
+    }
+
+
       for (int i = 0; i < pPrices.length; i++) {
         try {
             ++row;
             category = pPrices[i].getPriceCategory();
-            int price = (int) tsb.getPrice(service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
+            int price = (int) tsb.getPrice(pPrices[i].getID(), service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
             pPriceCatNameText = (Text) text.clone();
               pPriceCatNameText.setText(category.getName());
 
@@ -168,6 +227,7 @@ public class AdditionalBooking extends TravelWindow {
 
   public void saveBooking(IWContext iwc) {
       String name = iwc.getParameter("name");
+      String addressId = iwc.getParameter(this.parameterDepartureAddressId);
 
       String many;
       int iMany = 0;
@@ -203,7 +263,7 @@ public class AdditionalBooking extends TravelWindow {
         int ownerId = -1;
         int userId = -1;
 
-        bookingId = Booker.Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"",Booking.PAYMENT_TYPE_ID_CASH, userId, ownerId);
+        bookingId = Booker.Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"",Booking.PAYMENT_TYPE_ID_CASH, userId, ownerId, Integer.parseInt(addressId));
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {

@@ -14,6 +14,7 @@ import java.util.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.block.trade.data.Currency;
 import com.idega.idegaweb.*;
+import com.idega.core.data.Address;
 
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.*;
@@ -32,19 +33,19 @@ public class Booker {
   public Booker() {
   }
 
-  public static int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId) throws SQLException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId);
+  public static int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId);
   }
 
-  public static int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId) throws SQLException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId);
+  public static int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId);
   }
 
-  public static int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId) throws SQLException {
-    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId);
+  public static int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId) throws SQLException {
+    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId);
   }
 
-  private static int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId) throws SQLException {
+  private static int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId) throws SQLException {
     Booking booking = null;
     int returner = bookingId;
     Object type = getServiceType(serviceId);
@@ -89,8 +90,11 @@ public class Booker {
         booking.setUserId(userId);
         booking.setOwnerId(ownerId);
       booking.update();
-
     }
+
+    GeneralBooking temp = new GeneralBooking(booking.getID());
+    temp.removeFrom(Address.class);
+    temp.addTo(Address.class, addressId);
 
     return returner;
   }
@@ -378,7 +382,7 @@ public class Booker {
         ProductPrice pPrice;
 
         pPrice = entry.getProductPrice();
-        total = entry.getCount() * TravelStockroomBusiness.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), idegaTimestamp.getTimestampRightNow());
+        total = entry.getCount() * TravelStockroomBusiness.getPrice(pPrice.getID(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), idegaTimestamp.getTimestampRightNow());
 
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
