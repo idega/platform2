@@ -55,6 +55,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection findSchoolClassesBySchoolAndSeason(int p0,int p1) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndSeasonAndTeacher(int p0,int p1,int p2) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndSeasonAndYear(int p0,int p1,int p2) throws java.rmi.RemoteException;
+ public java.util.Collection findSchoolClassesBySchoolAndSeasonAndYears(int p0,int p1,String[] p2) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndTeacher(int p0,int p1) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndYear(int p0,int p1) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesByTeacher(int p0) throws java.rmi.RemoteException;
