@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.30 2003/07/30 11:27:07 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.31 2003/07/30 12:20:29 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -88,7 +88,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	 *
 	 */
 	protected void control(IWContext iwc) {
-		debugParameters(iwc);
+		//debugParameters(iwc);
 		//System.err.println("referencenumbering");
 		 dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 		 dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
