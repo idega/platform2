@@ -40,6 +40,7 @@ import javax.transaction.UserTransaction;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
+import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.care.business.AlreadyCreatedException;
@@ -512,13 +513,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			member = null;
 		}
 
-		Collection parents = getUserBusiness().getParentsForChild(child);
+		Collection parents = null;
+		UserInfoService uis = (UserInfoService) getServiceInstance(UserInfoService.class);
 		try {
-			UserInfoService uis = (UserInfoService) getServiceInstance(UserInfoService.class);
-			Collection moreParents = uis.getCustodiansAndTheirPartnersAtSameAddress(child);
-			if (moreParents != null) {
-				parents.addAll(moreParents);
-			}	
+			parents = uis.getCustodiansAndTheirPartnersAtSameAddress(child);
 		} catch (Exception e) {}
 		
 		if (parents != null) {
@@ -526,7 +524,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator iter = parents.iterator();
 			while (iter.hasNext()) {
 				User parent = (User) iter.next();
-				Collection children = getUserBusiness().getChildrenForUser(parent);
+				HouseHoldFamily f = uis.getHouseHoldFamily(parent);
+				Collection children = f.getChildren();
 				if (children != null) {
 					Iterator iterator = children.iterator();
 					while (iterator.hasNext()) {
@@ -1097,20 +1096,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.store();
 			try {
 				User child = application.getChild();
-				Collection parents = getUserBusiness().getParentsForChild(child);
+				
+				Collection parents = null;
+				UserInfoService uis = (UserInfoService) getServiceInstance(UserInfoService.class);
+				try {
+					parents = uis.getCustodiansAndTheirPartnersAtSameAddress(child);
+				} catch (Exception e) {}
+				
 				if (parents != null) {
-					try {
-						UserInfoService uis = (UserInfoService) getServiceInstance(UserInfoService.class);
-						Collection moreParents = uis.getCustodiansAndTheirPartnersAtSameAddress(child);
-						if (moreParents != null) {
-							parents.addAll(moreParents);
-						}	
-					} catch (Exception e) {}
 					Iterator iter = parents.iterator();
 					String[] statuses = { String.valueOf(getStatusSentIn()), String.valueOf(getStatusAccepted()), String.valueOf(getStatusParentsAccept()), String.valueOf(getStatusContract()), String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()) };
 					while (iter.hasNext()) {
 						User parent = (User) iter.next();
-						Collection children = getUserBusiness().getChildrenForUser(parent);
+						HouseHoldFamily f = uis.getHouseHoldFamily(parent);
+						Collection children = f.getChildren();
 						if (children != null) {
 							Iterator iterator = children.iterator();
 							while (iterator.hasNext()) {
