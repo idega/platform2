@@ -1,5 +1,15 @@
 package com.idega.jmodule.image.presentation;
 
+/**
+ * Title: ImageViewer
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company: idega
+ * @author Eirikur Hrafnsson, eiki@idega.is
+ * @version 1.0
+ *
+ */
+
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -128,7 +138,7 @@ public void main(ModuleInfo modinfo)throws Exception{
   outerTable.setHeight(1,3,"18");
   outerTable.setCellpadding(2);
   outerTable.setCellspacing(0);
-  outerTable.setBorder(1);
+ // outerTable.setBorder(1);
   if ( headerBackgroundImage != null ) outerTable.setBackgroundImage(1,1,headerBackgroundImage);
   if ( footerBackgroundImage != null ) outerTable.setBackgroundImage(1,3,footerBackgroundImage);
 
