@@ -341,19 +341,11 @@ private Table resultTable;
        }
       }
       else {
-        if ( this.tournamentGroupID == -1 ) {
-          if ( !championship ) {
-            TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,gender);
-                tournResults.sortBy(orderBy);
-
-            resultTable.add(tournResults,1,1);
-          }
-          else {
-            resultTable.setAlignment(1,1,"center");
-            resultTable.add(Text.getBreak());
-            resultTable.add(Text.getBreak());
-            resultTable.add("Veldu hvern einstakan flokk úr listanum hér að ofan til að sjá stöðuna innan hans",1,1);
-          }
+        if ( championship && tournamentGroupID == -1 ) {
+          resultTable.setAlignment(1,1,"center");
+          resultTable.add(Text.getBreak());
+          resultTable.add(Text.getBreak());
+          resultTable.add("Veldu hvern einstakan flokk úr listanum hér að ofan til að sjá stöðuna innan hans.",1,1);
         }
         else {
           TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,gender);
