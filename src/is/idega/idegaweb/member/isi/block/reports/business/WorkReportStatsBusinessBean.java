@@ -4504,6 +4504,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leagueFilter, false);
 
 		Iterator iter = members.iterator();
+		HashSet userSet = new HashSet();
 		while (iter.hasNext()) {
 			WorkReport report = (WorkReport) iter.next();
 			try {
@@ -4526,15 +4527,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						}
 						
 						if (users != null) {
-							HashSet userSet = new HashSet();
 							Iterator itor = users.iterator();
 							while (itor.hasNext()) {
 								WorkReportMember element = (WorkReportMember) itor.next();
 								if(userSet.contains(element.getPrimaryKey())) {
-									System.out.println("member " + element.getPrimaryKey() + " already listed, skipping");
 									continue;
 								}
-								System.out.println("listing member " + element.getPrimaryKey() + " - " + element.getName());
 								userSet.add(element.getPrimaryKey());
 								
 								if (birthYear != null && birthYear.intValue() > 0) {
@@ -4662,6 +4660,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leagueFilter, false);
 
 		Iterator iter = members.iterator();
+		HashSet userSet = new HashSet();
 		while (iter.hasNext()) {
 			WorkReport report = (WorkReport) iter.next();
 			try {
@@ -4685,14 +4684,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						
 						if (users != null) {
 							Iterator itor = users.iterator();
-							HashSet userSet = new HashSet();
+							
 							while (itor.hasNext()) {
 								WorkReportMember element = (WorkReportMember) itor.next();
 								if(userSet.contains(element.getPrimaryKey())) {
 									continue;
-								} else {
-									userSet.add(element.getPrimaryKey());
 								}
+								userSet.add(element.getPrimaryKey());
 								if (birthYear != null && birthYear.intValue() > 0) {
 									if (birthYear.intValue() != element.getAge()) {
 										continue;
