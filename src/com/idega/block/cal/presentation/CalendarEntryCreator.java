@@ -342,7 +342,9 @@ public class CalendarEntryCreator extends Form{
 		descriptionField = new TextArea(descriptionFieldParameterName);
 		
 		save = new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue);
+		save.setAsImageButton(true);
 		reset = new ResetButton(iwrb.getLocalizedString("reset", "Reset"));
+		reset.setAsImageButton(true);
 		
 		hiddenEntryID = new HiddenInput(entryIDParameterName,iwc.getParameter(entryIDParameterName));
 		hiddenView = new HiddenInput(CalendarParameters.PARAMETER_VIEW,view);
