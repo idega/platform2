@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.29 2003/05/22 11:05:31 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.30 2003/05/22 16:30:42 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -482,7 +482,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		} else {
 			Table placementInfo =
-				getPlacedAtSchool(iwc, getAcceptedOffer(applications));
+				getPlacedAtSchool(iwc, getActiveApplication(applications));
 
 			Table appTable =
 				new ChildCarePlaceOfferTable1(
@@ -731,6 +731,20 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return null;
 	}
 
+	private ChildCareApplication getActiveApplication(Collection applications)
+		throws RemoteException {
+			
+		Iterator i = applications.iterator();
+		while (i.hasNext()) {
+			ChildCareApplication app = (ChildCareApplication) i.next();
+
+			if (app.isActive()){
+				return app;
+			}
+		}
+		return null;		
+	}
+	
 	/**
 	 * Method getChildCareBusiness returns the ChildCareBusiness object.
 	 * @param iwc
