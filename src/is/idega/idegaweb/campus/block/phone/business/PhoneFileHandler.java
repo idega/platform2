@@ -70,7 +70,7 @@ public class PhoneFileHandler {
             ape.setMainNumber(anumber);
             ape.setPhonedStamp(stamp.getTimestamp());
             ape.setPhoneNumber(bnumber);
-            ape.setPrice(price);
+            ape.setPrice(-price);
             ape.setSubNumber(snumber);
             ape.setStatus(ape.statusUnread);
             V.add(ape);

@@ -1,6 +1,6 @@
 /*
 
- * $Id: ReferenceNumberInfo.java,v 1.6 2002/02/27 18:42:14 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.7 2002/02/28 15:03:00 aron Exp $
 
  *
 
@@ -572,7 +572,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
         }
         else{
            add(new Text("Það er  búið að ná í lykilorð fyrir kennitölu"));
-            if( iwc.isSuperAdmin() ){
+            if( iwc.hasEditPermission(this) ){
             Form f = new Form();
             f.add(new SubmitButton("allow","Leyfa innskráningu á ný"));
             f.addParameter("usrid",((Integer)li.get(0)).intValue());
@@ -740,6 +740,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
    */
 
   public void main(IWContext iwc) {
+    debugParameters(iwc);
     _iwrb = getResourceBundle(iwc);
     control(iwc);
   }
