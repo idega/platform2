@@ -21,7 +21,7 @@ public class CalendarFinder {
 
   public static CalendarEntry[] getEntries(idegaTimestamp stamp) {
     try {
-      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toSQLString(),CalendarEntry.getColumnNameEntryTypeID(),"=");
+      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toString(),CalendarEntry.getColumnNameEntryTypeID(),"=");
       if ( cal.length > 0 )
         return cal;
       return null;
@@ -55,7 +55,7 @@ public class CalendarFinder {
         stampPlus.setHour(0);
         stampPlus.setSecond(0);
 
-      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLString(),CalendarEntry.getColumnNameEntryDate(),stamp.toSQLString(),CalendarEntry.getColumnNameEntryDate(),"<",">=");
+      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stampPlus.toString(),CalendarEntry.getColumnNameEntryDate(),stamp.toString(),CalendarEntry.getColumnNameEntryDate(),"<",">=");
       if ( cal.length > 0 )
         return cal;
       return null;
@@ -81,7 +81,7 @@ public class CalendarFinder {
         stampPlus.setHour(0);
         stampPlus.setSecond(0);
 
-      return EntityFinder.findAllByColumnOrdered(CalendarEntry.getStaticInstance(),CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLString(),CalendarEntry.getColumnNameEntryDate(),stampMinus.toSQLString(),CalendarEntry.getColumnNameEntryDate(),"<",">=","distinct",CalendarEntry.getColumnNameEntryDate());
+      return EntityFinder.findAllByColumnOrdered(CalendarEntry.getStaticInstance(),CalendarEntry.getColumnNameEntryDate(),stampPlus.toString(),CalendarEntry.getColumnNameEntryDate(),stampMinus.toString(),CalendarEntry.getColumnNameEntryDate(),"<",">=","distinct",CalendarEntry.getColumnNameEntryDate());
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);

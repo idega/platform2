@@ -49,6 +49,7 @@ private String _actionDay = "#660000";
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.calendar";
 protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
+protected IWBundle _iwbCalendar;
 
 public Calendar(){
 }
@@ -57,9 +58,10 @@ public Calendar(idegaTimestamp timestamp){
   _stamp = timestamp;
 }
 
-	public void main(IWContext iwc) throws Exception{
+  public void main(IWContext iwc) throws Exception{
     _iwrb = getResourceBundle(iwc);
     _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    _iwbCalendar = getBundle(iwc);
 
     _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
@@ -140,7 +142,7 @@ public Calendar(idegaTimestamp timestamp){
           }
         }
         if ( typeImage == null ) {
-          typeImage = _iwb.getImage("shared/day_dot.gif");
+          typeImage = _iwbCalendar.getImage("shared/day_dot.gif");
         }
 
         if ( localeStrings != null ) {
