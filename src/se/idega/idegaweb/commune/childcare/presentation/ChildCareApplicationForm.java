@@ -56,18 +56,11 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	private final static String ERROR_NO_CHECKS = "cca_no_checks";
 
-	private final static String SUBJECT = "cca_subject";
 	private final static String PROVIDERS = "cca_providers";
-	private final static String LAST_NAME = "cca_last_name";
-	private final static String FIRST_NAME = "cca_first_name";
 	private final static String NAME = "cca_name";
 	private final static String PID = "cca_pid";
 	private final static String ADDRESS = "cca_address";
-	private final static String PO_TOWN = "cca_po_town";
 	private final static String CARE_FROM = "cca_care_from";
-	private final static String WANT_PROVIDER = "cca_want_provider";
-	private final static String WANT_PROVIDER_LINK = "cca_want_provider_link";
-	private final static String CHILD_CARE_CHOICES = "cca_choices";
 	private final static String SELECT_CHILD = "cca_select_child";
 
 	private final static String PARAM_FORM_SUBMIT = "cca_submit";
@@ -86,45 +79,8 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private final static String EMAIL_PROVIDER_MESSAGE = "child_care.application_received_body";
 
 	private String prefix = "cc_app_";
-	private String prmPreSchool = prefix + "pre_scl";
-	private String prmPreArea = prefix + "pre_ara";
-	private String prmFirstSchool = prefix + "fst_scl";
-	private String prmSecondSchool = prefix + "snd_scl";
-	private String prmThirdSchool = prefix + "trd_scl";
-	private String prmFourthSchool = prefix + "fou_scl";
-	private String prmFifthSchool = prefix + "fiv_scl";
-	private String prmFirstArea = prefix + "fst_ara";
-	private String prmSecondArea = prefix + "snd_ara";
-	private String prmThirdArea = prefix + "trd_ara";
-	private String prmFourthArea = prefix + "fou_ara";
-	private String prmFifthArea = prefix + "fiv_ara";
-	private String prmPreType = prefix + "pre_typ";
-	private String prmType = prefix + "cho_typ";
 
 	private String prmAction = prefix + "snd_frm";
-	private String prmMessage = prefix + "msg";
-
-	private School school = null;
-	private SchoolArea schoolArea = null;
-
-	private int valPreArea = 1;
-	private int valPreSchool = -1;
-	private int valFirstSchool = -1;
-	private int valSecondSchool = -1;
-	private int valThirdSchool = -1;
-	private int valFourthSchool = -1;
-	private int valFifthSchool = -1;
-	private int valFirstArea = -1;
-	private int valSecondArea = -1;
-	private int valThirdArea = -1;
-	private int valFourthArea = -1;
-	private int valFifthArea = -1;
-	private int valPreType = 1;
-	private int valType = 1;
-
-	private boolean schoolChange = false;
-	private boolean hasPreviousSchool = false;
-	private boolean hasChosen = false;
 
 	protected User _user = null;
 	protected IBPage _presentationPage = null;
@@ -632,10 +588,11 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		return s.toString();
 	}
 
+	/* Commented out since it is never used...
 	private DropdownMenu getDropdown(String name, String value, String area, String school, String firstElement) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
 		menu.addMenuElementFirst("-1", firstElement);
 		menu.setOnChange(getFilterCallerScript(area, school));
 		return menu;
-	}
+	}*/
 }

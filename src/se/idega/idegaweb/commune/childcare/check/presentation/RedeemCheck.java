@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -280,6 +279,7 @@ public class RedeemCheck extends CommuneBlock {
 		}
 	}
 
+	/* Commented out since it is never used...
 	private CheckBusiness getCheckBusiness(IWContext iwc) {
 		try {
 			return (CheckBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CheckBusiness.class);
@@ -288,6 +288,7 @@ public class RedeemCheck extends CommuneBlock {
 			return null;
 		}
 	}
+	*/
 
 	protected MemberFamilyLogic getMemberFamilyLogic(IWContext iwc) {
 		try {

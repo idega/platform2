@@ -10,7 +10,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -191,11 +190,9 @@ public class ManagerView extends CommuneBlock {
 	}
 
 
-	/**
-	 * Method getWorkGroupDescription.
+	/* Commented out since it is never used...	 * Method getWorkGroupDescription.
 	 * @param manager
 	 * @return String
-	 */
 	private String getWorkGroupDescription(User manager,IWContext iwc) {
 		try
 		{	
@@ -208,7 +205,7 @@ public class ManagerView extends CommuneBlock {
 			return "-";
 		}
 		return "-";
-	}
+	}*/
 
 	/**
 	 * Method getWorkGroupDescription.
@@ -286,9 +283,10 @@ public class ManagerView extends CommuneBlock {
 		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 	}
 
+	/* Commented out since it is never used...
 	private GroupBusiness getGroupBusiness(IWContext iwc) throws Exception {
 		return (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
-	}
+	}*/
 
 	public void setManager(User manager) {
 		try{

@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/03/24 10:57:35 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -33,8 +33,8 @@ public class ReportLink extends CommuneBlock {
     // Localized key and deafult value pairs
     final private static String COLUMN_NAME_DEFAULT = "Kolumnernas namn";
     final private static String COLUMN_NAME_KEY = PREFIX + "column_name";
-    final private static String FETCH_RESULT_DEFAULT = "Exempeldata direkt från databasen";
-    final private static String FETCH_RESULT_KEY = PREFIX + "fetch_result";
+    //final private static String FETCH_RESULT_DEFAULT = "Exempeldata direkt från databasen";
+    //final private static String FETCH_RESULT_KEY = PREFIX + "fetch_result";
     final private static String REPORT_NAME_DEFAULT = "Rapportens namn";
     final private static String REPORT_NAME_KEY = PREFIX + "report_name";
     final private static String SAVE_GENERATOR_DEFAULT = "Spara rapportgenerator";

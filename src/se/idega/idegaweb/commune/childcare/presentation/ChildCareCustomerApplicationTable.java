@@ -26,7 +26,7 @@ import com.idega.presentation.ui.SubmitButton;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.7 2003/04/02 16:12:22 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.8 2003/04/02 16:45:53 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -252,17 +252,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 	}
 		
-	/**
+	/* Commented out since it is never used...
 	 * Method printStatus. For debugging only.
 	 * @param l
-	 */
 	private void printStatus(List l) {
 		Iterator i = l.iterator();		
 		while(i.hasNext()){
 			AcceptedStatus status = (AcceptedStatus) i.next();
 			add(new Text(status._appid + " : " + status._status + " (" + status._date + ")<br>"));
 		}
-	}
+	}*/
 	
 
 	

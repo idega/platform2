@@ -7,15 +7,15 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 
 /**
- * Last modified: $Date: 2003/04/02 16:12:21 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     implements CitizenApplicantCohabitant {
     private static final String ENTITY_NAME = "comm_cit_cohab";
-    private static final String COLUMN_ID = ENTITY_NAME + "_id";
+    //private static final String COLUMN_ID = ENTITY_NAME + "_id";
 	private static final String COLUMN_APPLICATION_ID = "application_id";
     private final static String COLUMN_FIRST_NAME = "first_name";
     private final static String COLUMN_LAST_NAME = "last_name";

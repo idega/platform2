@@ -14,7 +14,6 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.Converter;
 
 import se.idega.idegaweb.commune.complaint.business.ComplaintBusiness;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import java.rmi.RemoteException;
@@ -30,7 +29,7 @@ import javax.ejb.FinderException;
 
 public class ComplaintForm extends CommuneBlock {
 
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	//private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
 	private final static int ACTION_VIEW_FORM = 1;
 	private final static int ACTION_FORM_SUBMITTED = 2;
@@ -154,7 +153,8 @@ public class ComplaintForm extends CommuneBlock {
 		return (ComplaintBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ComplaintBusiness.class);
 	}
 
+	/* Commented out since it is never used...
 	private MessageBusiness getMessageBusiness(IWContext iwc) throws RemoteException {
 		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
-	}
+	}*/
 }

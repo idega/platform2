@@ -48,7 +48,7 @@ public class ChangeChildCareForm extends CommuneBlock {
 	private final static int ACTION_SUBMIT_CANCEL = 3;
 
 	private final static String NOT_LOGGED_IN = "cca_not_logged_in";
-	private final static String NO_CHILDREN = "cccf_no_children";
+	//private final static String NO_CHILDREN = "cccf_no_children";
 
 	private final static String PARAM_CHILD_ID = "cca_child_id";
 

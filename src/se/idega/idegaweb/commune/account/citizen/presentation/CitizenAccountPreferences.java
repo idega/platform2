@@ -63,13 +63,13 @@ public class CitizenAccountPreferences extends CommuneBlock {
 
 	private final static String PARAMETER_FORM_SUBMIT = "cap_sbmt";
 	private final static String PARAMETER_CANCEL = "cap_cncl";
-	private final static String PARAMETER_LOGIN = "cap_lgn";
+	//private final static String PARAMETER_LOGIN = "cap_lgn";
 	private final static String PARAMETER_OLD_LOGIN = "cap_old_lgn";
 	private final static String PARAMETER_CURRENT_PASSWORD = "cap_c_pw";
 	private final static String PARAMETER_NEW_PASSWORD = "cap_n_pw";
 	private final static String PARAMETER_NEW_PASSWORD_REPEATED = "cap_n_pw_r";
 	private final static String PARAMETER_EMAIL = "cap_email";
-	private final static String PARAMETER_EMAIL_ID = "cap_email_id";
+	//private final static String PARAMETER_EMAIL_ID = "cap_email_id";
 	private final static String PARAMETER_PHONE_HOME = "cap_phn_h";
 	private final static String PARAMETER_PHONE_WORK = "cap_phn_w";
 	private final static String PARAMETER_CO_ADDRESS_SELECT = "cap_co";
@@ -83,12 +83,12 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String KEY_PREFIX = "citizen.";
 	private final static String KEY_EMAIL = KEY_PREFIX + "email";
 	private final static String KEY_LOGIN = KEY_PREFIX + "login";
-	private final static String KEY_OLD_LOGIN = KEY_PREFIX + "old_login";
+	//private final static String KEY_OLD_LOGIN = KEY_PREFIX + "old_login";
 	private final static String KEY_CURRENT_PASSWORD = KEY_PREFIX + "current_password";
 	private final static String KEY_NEW_PASSWORD = KEY_PREFIX + "new_password";
 	private final static String KEY_NEW_PASSWORD_REPEATED = KEY_PREFIX + "new_password_repeated";
 	private final static String KEY_UPDATE = KEY_PREFIX + "update";
-	private final static String KEY_CANCEL = KEY_PREFIX + "cancel";
+	//private final static String KEY_CANCEL = KEY_PREFIX + "cancel";
 	private final static String KEY_NAME = KEY_PREFIX + "name";
 	private final static String KEY_ADDRESS = KEY_PREFIX + "address";
 	private final static String KEY_PHONE_HOME = KEY_PREFIX + "phone_home";
@@ -113,12 +113,12 @@ public class CitizenAccountPreferences extends CommuneBlock {
 
 	private final static String DEFAULT_EMAIL = "E-mail";	
 	private final static String DEFAULT_LOGIN = "Login";	
-	private final static String DEFAULT_OLD_LOGIN = "Old login";	
+	//private final static String DEFAULT_OLD_LOGIN = "Old login";	
 	private final static String DEFAULT_CURRENT_PASSWORD = "Current password";	
 	private final static String DEFAULT_NEW_PASSWORD = "New password";	
 	private final static String DEFAULT_NEW_PASSWORD_REPEATED = "Repeat new password";	
 	private final static String DEFAULT_UPDATE = "Update";	
-	private final static String DEFAULT_CANCEL = "Cancel";	
+	//private final static String DEFAULT_CANCEL = "Cancel";	
 	private final static String DEFAULT_NAME = "Name";	
 	private final static String DEFAULT_ADDRESS = "Address";		
 	private final static String DEFAULT_PHONE_HOME = "Phone (home)";		

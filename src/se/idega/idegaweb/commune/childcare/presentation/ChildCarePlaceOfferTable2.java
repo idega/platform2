@@ -16,13 +16,13 @@ class ChildCarePlaceOfferTable2 extends Table{
 	private static Text HEADER_YOUR_CHOICE;
 	private static Text HEADER_OFFER;
 	private static Text HEADER_PROGNOSE;
-	private static Text HEADER_QUEUE_INFO;
+	//private static Text HEADER_QUEUE_INFO;
 	private static Text HEADER_YES;
-	private static Text HEADER_YES_BUT;
+	//private static Text HEADER_YES_BUT;
 	private static Text HEADER_NO;
 
 	private static String GRANTED;
-	private static String REQUEST_INFO;
+	//private static String REQUEST_INFO;
 
 	private static boolean _initializeStatics = false;
 	

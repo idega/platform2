@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountAdmin.java,v 1.3 2003/04/02 16:12:22 laddi Exp $
+ * $Id: ProviderAccountAdmin.java,v 1.4 2003/04/02 16:45:53 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -33,13 +33,13 @@ public class ProviderAccountAdmin extends CommuneBlock
 	private final static int ACTION_VIEW_LIST = 0;
 	private final static int ACTION_VIEW_DETAILS = 1;
 	private final static int ACTION_SUBMIT = 2;
-	private final static int SUBACTION_APPROVE = 10;
-	private final static int SUBACTION_REJECT = 11;
-	private final static int SUBACTION_NOT_CITIZEN = 12;
+	//private final static int SUBACTION_APPROVE = 10;
+	//private final static int SUBACTION_REJECT = 11;
+	//private final static int SUBACTION_NOT_CITIZEN = 12;
 	private final static String PARAM_NUM_PLACES = "paa_num_places";
-	private final static String PARAM_EMAIL = "paa_email";
-	private final static String PARAM_PHONE_HOME = "paa_phone_home";
-	private final static String PARAM_PHONE_WORK = "paa_phone_work";
+	//private final static String PARAM_EMAIL = "paa_email";
+	//private final static String PARAM_PHONE_HOME = "paa_phone_home";
+	//private final static String PARAM_PHONE_WORK = "paa_phone_work";
 	private final static String PARAM_NAME = "paa_adm_name";
 	private final static String PARAM_ADDRESS = "paa_adm_address";
 	private final static String PARAM_FORM_APPROVE = "paa_adm_approve";

@@ -5,16 +5,16 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CitizenApplicantPutChildrenBMPBean extends GenericEntity
     implements CitizenApplicantPutChildren {
     private static final String ENTITY_NAME
         = "comm_cit_put_children";
-    private static final String COLUMN_ID = ENTITY_NAME + "_id";
+    //private static final String COLUMN_ID = ENTITY_NAME + "_id";
 	private static final String COLUMN_APPLICATION_ID = "application_id";
     private final static String COLUMN_CURRENT_KOMMUN = "current_kommun";
 

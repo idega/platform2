@@ -42,7 +42,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static int ACTION_YES = 1;
 	private final static int ACTION_NO = 2;
 	private final static int ACTION_ASSIGN_CONTRACT = 3;
-	private final static int ACTION_PRINT_CONTRACT = 4;
+	//private final static int ACTION_PRINT_CONTRACT = 4;
 	private final static int ACTION_ASSIGN_PLACE = 5;
 	
 	private final static String CHILD = "ccaa_child";
@@ -76,14 +76,14 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String ERROR_UNABLE_TO_ASSIGN_CONTRACT = "ccaa_unable_to_assign_contract";
 	private final static String ERROR_UNABLE_TO_ASSIGN_PLACE = "ccaa_unable_to_assign_place";
 	
-	private final static String EMAIL_PROVIDER_SUBJECT = "cca_provider_email_subject";
-	private final static String EMAIL_PROVIDER_MESSAGE = "cca_provider_email_message";
+	//private final static String EMAIL_PROVIDER_SUBJECT = "cca_provider_email_subject";
+	//private final static String EMAIL_PROVIDER_MESSAGE = "cca_provider_email_message";
 	private final static String EMAIL_USER_SUBJECT = "child_care.application_received_subject";
 	private final static String EMAIL_USER_MESSAGE = "child_care.application_received_body";
 	private final static String EMAIL_USER_REJECT_SUBJECT = "child_care.application_rejected_subject";
 	private final static String EMAIL_USER_REJECT_MESSAGE = "child_care.application_rejected_body";
 
-	private final static String HIDDEN_PARAM_APPL_COUNT = "ccaa_appl_count";
+	//private final static String HIDDEN_PARAM_APPL_COUNT = "ccaa_appl_count";
 	
 	protected User _user = null;
 

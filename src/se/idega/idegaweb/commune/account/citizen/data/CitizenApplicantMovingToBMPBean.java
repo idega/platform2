@@ -5,15 +5,15 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CitizenApplicantMovingToBMPBean extends GenericEntity
     implements CitizenApplicantMovingTo {
     private static final String ENTITY_NAME = "comm_cit_moving_to";
-    private static final String COLUMN_ID = ENTITY_NAME + "_id";
+    //private static final String COLUMN_ID = ENTITY_NAME + "_id";
 	private static final String COLUMN_APPLICATION_ID = "application_id";
     private final static String COLUMN_ADDRESS = "address";
     private final static String COLUMN_MOVING_IN_DATE = "moving_in_date";

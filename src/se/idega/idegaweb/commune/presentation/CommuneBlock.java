@@ -316,7 +316,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 	
 	protected String getZebraColor2() {
-		return getProperty(ZEBRA_COLOR1_PROPERTY,DEFAULT_ZEBRA_COLOR_2);
+		return getProperty(ZEBRA_COLOR2_PROPERTY,DEFAULT_ZEBRA_COLOR_2);
 	}
 	
 	protected int getCellpadding() {

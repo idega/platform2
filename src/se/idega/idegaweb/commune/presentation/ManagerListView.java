@@ -2,10 +2,6 @@ package se.idega.idegaweb.commune.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
-import com.idega.block.process.business.CaseBusiness;
 import com.idega.builder.data.IBPage;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -17,7 +13,6 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
@@ -269,19 +264,26 @@ public class ManagerListView extends CommuneBlock {
 	      getMessageBusiness(iwc).deleteUserMessage(Integer.parseInt(ids[i]));
 	    }
 	  }*/
+	
+	/* Commented out since it is never used...
 	private CaseBusiness getCaseBusiness(IWContext iwc) throws Exception {
 		return (CaseBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CaseBusiness.class);
-	}
+	}*/
+	
+	/* Commented out since it is never used...
 	private CommuneCaseBusiness getCommuneCaseBusiness(IWContext iwc) throws Exception {
 		return (CommuneCaseBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneCaseBusiness.class);
-	}
+	}*/
+	
+	/* Commented out since it is never used...
 	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
 		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-	}
+	}*/
 	
+	/* Commented out since it is never used...
 	private CommuneUserBusiness getCommuneUserBusiness(IWContext iwc) throws Exception {
 		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
-	}	
+	}*/
 	
 	
 	public void setManagerViewPage(IBPage page) {

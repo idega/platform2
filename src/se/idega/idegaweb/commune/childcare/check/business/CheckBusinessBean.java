@@ -1,25 +1,7 @@
 package se.idega.idegaweb.commune.childcare.check.business;
 
-import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.SchoolType;
-import com.idega.core.data.Address;
-import com.idega.core.data.PostalCode;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
-
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
-
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheckHome;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
@@ -29,6 +11,22 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheckHome;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
+
+import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.SchoolType;
+import com.idega.core.data.Address;
+import com.idega.core.data.PostalCode;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 
 /**
@@ -58,9 +56,10 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return (GrantedCheckHome) com.idega.data.IDOLookup.getHome(GrantedCheck.class);
 	}
 
+	/* Commented out since it is never used...
 	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) com.idega.data.IDOLookup.getHome(ChildCareApplication.class);
-	}
+	}*/
 
 	public Check getCheck(int checkId) throws RemoteException {
 		try {

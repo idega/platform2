@@ -7,7 +7,6 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
@@ -57,7 +56,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private final static int ACTION_PROC_SELECTED = 7;
 
 	private final static String PARAM_VIEW_UNPRINTED = "prv_view_upr";
-	private final static String PARAM_VIEW_MESSAGE_LIST = "prv_view_msg_list";
+	//private final static String PARAM_VIEW_MESSAGE_LIST = "prv_view_msg_list";
 	private final static String PARAM_MESSAGE_ID = "prv_id";
 	private final static String PARAM_SHOW_DELETE_INFO = "prv_s_delete_i";
 	private final static String PARAM_DELETE_MESSAGE = "prv_delete_message";
@@ -667,6 +666,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		}
 	}
 
+	/* Commented out since it is never used...
 	private void addDocumentsListView(IWContext iwc) throws Exception {
 		Form myForm = new Form();
 		Table T = new Table();
@@ -735,8 +735,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			printedLetterDocs.add(viewLink);
 			count++;
 		}
-	}
+	}*/
 
+	/* Commented out since it is never used...
 	private void addMessagesList(IWContext iwc) throws Exception {
 		Form uForm = new Form();
 		Form pForm = new Form();
@@ -880,7 +881,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				printedLetterDocs.add("");
 			count++;
 		}
-	}
+	}*/
 
 	private PresentationObject getPrintedMessagesPart(IWContext iwc)
 		throws RemoteException, FinderException {
@@ -1216,11 +1217,12 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 	}
 
+	/* Commented out since it is never used...
 	private Message getMessage(String id, IWContext iwc) throws Exception {
 		int msgId = Integer.parseInt(id);
 		Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
 		return msg;
-	}
+	}*/
 
 	public void setShowTypesInDropdown(boolean showInDropdown) {
 		this.showTypesAsDropdown = showInDropdown;

@@ -51,8 +51,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_CANCEL_DATE = "cc_cancel_date";
 	
 
-	private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
-	private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
+	//private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
+	//private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
 
 	public static final int METHOD_GRANT_PRIORITY = 2;
 	public static final int METHOD_OFFER = 3;
@@ -301,10 +301,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 
 		return table;
-	}
-
-	private Table getLetterForm(IWContext iwc) {
-		return null;
 	}
 
 	private Table getPlaceInGroupForm(IWContext iwc) throws RemoteException {

@@ -2,10 +2,6 @@ package se.idega.idegaweb.commune.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
-import com.idega.block.process.business.CaseBusiness;
 import com.idega.builder.data.IBPage;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.ExceptionWrapper;
@@ -17,7 +13,6 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.util.StringHandler;
@@ -188,22 +183,29 @@ public class ManagerGroupListView extends CommuneBlock {
 	}
 	
 	
+	/* Commented out since it is never used...
 	private CaseBusiness getCaseBusiness(IWContext iwc) throws Exception {
 		return (CaseBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CaseBusiness.class);
-	}
+	}*/
+	
+	/* Commented out since it is never used...
 	private CommuneCaseBusiness getCommuneCaseBusiness(IWContext iwc) throws Exception {
 		return (CommuneCaseBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneCaseBusiness.class);
-	}
+	}*/
+	
+	/* Commented out since it is never used...
 	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
 		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-	}
+	}*/
+	
 	private GroupBusiness getGroupBusiness(IWContext iwc) throws Exception {
 		return (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
 	}
 	
+	/* Commented out since it is never used...
 	private CommuneUserBusiness getCommuneUserBusiness(IWContext iwc) throws Exception {
 		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
-	}	
+	}*/
 	
 	
 	public void setManagerListViewPage(IBPage page) {

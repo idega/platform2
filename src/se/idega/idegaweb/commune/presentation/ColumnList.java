@@ -21,7 +21,7 @@ import com.idega.presentation.text.Text;
 
 public class ColumnList extends CommuneBlock {
 
-  private static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.presentation";
+  //private static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.presentation";
 
   private int cols = 0;
   private List rowList = null;
