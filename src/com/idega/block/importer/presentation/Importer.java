@@ -177,8 +177,19 @@ public class Importer extends Block {
 	 * @param iwc
 	 */
 	private void importFiles(IWContext iwc) throws Exception{
-		 add(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
-	
+		 
+		 
+		 Table table = getFrameTable();
+		 
+		 Text header = new Text(iwrb.getLocalizedString("importer.importing","Importer : Importing"));
+		 header.setBold();
+		 table.add(header,1,1);
+		 
+		 Text done = new Text(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
+		 table.add(done,1,2);
+		 
+		 table.mergeCells(1,2,7,2);
+		
 	     String[] values = null;
 	     if(usingLocalFileSystem) values = iwc.getParameterValues(IMPORT_FILE_PATHS);//for local file importing
 	     else values = iwc.getParameterValues(IMPORT_FILE_IDS);
@@ -211,17 +222,19 @@ public class Importer extends Block {
 		        Text fileStatus = new Text(path+" : "+status);
 		        fileStatus.setBold();
 		
-				addBreak();
-		        add(fileStatus);
-		        addBreak();
+		        table.addBreak(1,2);
+		        table.add(fileStatus,1,2);
 		     }
+		     
 		
 		}
 		else{
-			add(new Text(iwrb.getLocalizedString("importer.no.file.selected","No file selected!")));
+			table.add(new Text(iwrb.getLocalizedString("importer.no.file.selected","No file selected!")),1,2);
 			addBreak();
-			add(new BackButton(iwrb.getLocalizedString("importer.back","back")));
+			table.add(new BackButton(iwrb.getLocalizedString("importer.back","back")),7,3);
 		}
+		
+		add(table);
 	}
 
 
@@ -230,20 +243,20 @@ public class Importer extends Block {
 	 * @param iwc
 	 */
 	private void showIWFileSystemSelection(IWContext iwc) throws Exception{
-
+		Table fileTable = getFrameTable();
         if( MediaBusiness.isFolder(importFolder) ){
         	
         	//do I have to do this?
         	ImportFileRecord folder = changeICFileToImportFileRecord(importFolder);
         	int fileCount = folder.getChildCount();
-          
+          	
           
         	if(fileCount>0){
 	          	Iterator files = folder.getChildren();
 	          	Form form = new Form();
 	          	//name,size,creationdate(uploaddate),modificationdata(importdate),
 	          	//imported(status),reportlink,checkbox
-	          	Table fileTable = getFrameTable();
+	          	
 	          	fileTable.resize(7,fileCount+3);
 	          	
 	          	form.add(fileTable);
@@ -256,18 +269,37 @@ public class Importer extends Block {
 	          	fileTable.add(new HiddenInput(ACTION_PARAMETER,IMPORT_FILES),1,1); 
 	            fileTable.add(heading,1,1);
 	            
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.filename","File name")),1,2);
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.filesize","File size")),2,2);
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.creationdate","Uploaded")),3,2);
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.modificationdate","Imported")),4,2);
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.status","Status")),5,2);
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.report","Report")),6,2);
+	            Text name = new Text(iwrb.getLocalizedString("importer.filename","File name"));
+	            name.setBold();
+	            Text size = new Text(iwrb.getLocalizedString("importer.filesize","File size"));
+	            size.setBold();
+	            Text uploaded = new Text(iwrb.getLocalizedString("importer.creationdate","Uploaded"));
+	            uploaded.setBold();
+	            Text imported = new Text(iwrb.getLocalizedString("importer.modificationdate","Imported"));
+	            imported.setBold();
+	            Text status = new Text(iwrb.getLocalizedString("importer.status","Status"));
+	            status.setBold();
+	            Text report = new Text(iwrb.getLocalizedString("importer.report","Report"));
+	            report.setBold();
+	            	            
+	            fileTable.add(name,1,2);
+	            fileTable.add(size,2,2);
+	            fileTable.add(uploaded,3,2);
+	            fileTable.add(imported,4,2);
+	            fileTable.add(status,5,2);
+	            fileTable.add(report,6,2);
 	            
 	            //footer
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.import.handler","Import handler")+" : "), 1, fileCount+3);
+	            Text importHandler = new Text(iwrb.getLocalizedString("importer.import.handler","Import handler : "));
+	            importHandler.setBold();
+	            
+	            fileTable.add(importHandler, 1, fileCount+3);
 	            fileTable.add(this.getImportHandlers(iwc), 2, fileCount+3);
 	            
-	            fileTable.add(new Text(iwrb.getLocalizedString("importer.import.filetype","File type")+" : "), 3, fileCount+3);
+	            Text fileType = new Text(iwrb.getLocalizedString("importer.import.filetype","File type : "));
+	            fileType.setBold();
+	            
+	            fileTable.add(fileType, 3, fileCount+3);
 	            fileTable.add(this.getImportFileClasses(iwc), 4, fileCount+3);
 	            
 	            fileTable.add(new SubmitButton(iwrb.getLocalizedString("importer.import","Import")), 7, fileCount+3);
@@ -283,11 +315,11 @@ public class Importer extends Block {
 						fileTable.add(file.getName()+iwrb.getLocalizedString("importer.folder"," (Folder)"),1,row);
 					}
 					else{//is a file
-						boolean imported = file.hasBeenImported();
+						boolean wasImported = file.hasBeenImported();
 						fileTable.add(new Text( file.getName() ) ,1,row);
 						fileTable.add(new Text( file.getFileSize().toString() ) ,2,row);
 						fileTable.add(new Text( file.getCreationDate().toString() ) ,3,row);
-						if(imported){
+						if(wasImported){
 							fileTable.add(new Text( file.getModificationDate().toString() ) ,4,row);
 							fileTable.add(new Text(iwrb.getLocalizedString("importer.imported","Imported")),5,row);
 						}
@@ -311,13 +343,23 @@ public class Importer extends Block {
           	
           }
           else{
-          	add(iwrb.getLocalizedString("no.files","No files to import, please upload files first"));	
+          	Text header = new Text(iwrb.getLocalizedString("importer","Importer"));
+          	header.setBold();
+          	
+          	fileTable.add(header,1,1);
+          	fileTable.add(iwrb.getLocalizedString("no.files","No files to import, please upload files first"),1,2);	
+          	add(fileTable);
           }
           
           
         }
         else{
-          add( iwrb.getLocalizedString("importer.not.a.folder","Selected import folder is a file! Please select a folder.") );
+          Text header = new Text(iwrb.getLocalizedString("importer","Importer"));
+          header.setBold();
+          	
+          fileTable.add(header,1,1);
+          fileTable.add( iwrb.getLocalizedString("importer.not.a.folder","Selected import folder is a file! Please select a folder."),1,2 );
+          add(fileTable);
         }		
 	}
 
@@ -328,11 +370,12 @@ public class Importer extends Block {
 	 */
 	private void showLocalFileSystemSelection(IWContext iwc) throws Exception{
 	    File folder = new File(getLocalFolderPath());
+	    Table fileTable = getFrameTable();
 
         if( folder.isDirectory() ){
 
           File[] files = folder.listFiles();
-          Table fileTable = getFrameTable();
+          
           fileTable.resize(2,files.length+4);
           
           Form form = new Form();
@@ -370,8 +413,15 @@ public class Importer extends Block {
 
         }
         else{
-          add( iwrb.getLocalizedString("importer.nosuchfolder","No such folder.") );
-          add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) );
+          Text header = new Text(iwrb.getLocalizedString("importer","Importer"));
+          header.setBold();
+          	
+          fileTable.add(header,1,1);
+          
+          
+          fileTable.add( iwrb.getLocalizedString("importer.nosuchfolder","No such folder."),1,2 );
+          fileTable.add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")),7,3 );
+          add(fileTable);
         }		
 		
 	}
