@@ -75,7 +75,7 @@ public class ServiceViewer extends Block {
     dayOfWeekName = new String[8];
     if(link==null){
       link = new Link();
-      link.setAsImageButton(true);/**@todo localize*/
+      link.setAsImageButton(true);/**@todo localize check if this gets cloned*/
     }
     if(text==null) text = new Text();
 
@@ -171,6 +171,8 @@ public class ServiceViewer extends Block {
   private Table getServiceListTable(IWContext iwc){
     List prodlist;
     Table content = new Table();
+    content.setCellspacing(0);
+
 
     if( (dateFrom!=null) && (dateTo!=null) ){
       prodlist = ProductBusiness.getProducts(supplier.getID(),dateFrom,dateTo);
@@ -219,6 +221,7 @@ public class ServiceViewer extends Block {
           more.setTarget(Link.TARGET_NEW_WINDOW);
           more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
           more.setText("more");/**@todo localize **/
+          more.setAsImageButton(true);
           content.add(more,++x,y);
 
           Link buy = LinkGenerator.getLink(iwc,prod.getID());
@@ -246,6 +249,7 @@ public class ServiceViewer extends Block {
 
   private Table getServiceInfoTable(IWContext iwc){
     Table content = new Table(1,4);
+    content.setCellspacing(0);
     try {
       int i = 1;
       Product product = new Product(service.getID());
@@ -295,7 +299,6 @@ public class ServiceViewer extends Block {
   public void setWidth(String width){
    this.width = width;
   }
-
 
   public void setHeight(String height){
    this.height = height;
