@@ -210,9 +210,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.setCellpadding(2);
     T.setCellspacing(2);
     T.setBorder(0);
-    Window adminWindow = new Window("AdminWindow",TextEditorWindow.class,com.idega.presentation.Page.class);
-    adminWindow.setWidth(570);
-    adminWindow.setHeight(430);
+
     if(iTextId > 0){
     Link breyta = new Link(iwrb.getImage("change.gif"));
       breyta.setWindowToOpen(TextEditorWindow.class);

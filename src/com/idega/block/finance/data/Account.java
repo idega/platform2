@@ -129,6 +129,9 @@ public class Account extends GenericEntity {
   public void addAmount(Float amount){
     this.setBalance(this.getBalance()+amount.intValue());
   }
+  public void addAmount(float amount){
+    this.setBalance(this.getBalance()+amount);
+  }
   public void setValid(boolean valid){
     setColumn(getValidColumnName(),valid);
   }

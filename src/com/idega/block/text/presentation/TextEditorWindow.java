@@ -13,8 +13,8 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.block.text.data.*;
 import com.idega.block.text.business.*;
 import com.idega.core.user.data.User;
-//import com.idega.jmodule.image.presentation.ImageInserter;
-import com.idega.block.media.presentation.ImageInserter;
+import com.idega.jmodule.image.presentation.ImageInserter;
+//import com.idega.block.media.presentation.ImageInserter;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.util.text.*;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -48,7 +48,7 @@ public class TextEditorWindow extends IWAdminWindow{
   private static String prmBody = "txep.body";
   //debug
   //private static String prmImageId = "txep.imageid";
-  private static String prmImageId = "txep.imageid";
+  private static String prmImageId = "txep_imageid";
   private static String prmTxTextId = "txep.txtextid";
   private static String prmLocalizedTextId = "txep.loctextid";
   private static String prmUseImage = "txep.useimage";
