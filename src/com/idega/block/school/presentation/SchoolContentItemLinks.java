@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Email;
 import com.idega.core.data.EmailHome;
@@ -99,8 +100,10 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 		
 		try {
-			int headmasterId = _school.getHeadmasterUserId();
-			if (headmasterId > 0 ) {
+			Collection hmUsers = getSchoolUserBusiness(_iwc).getHeadmasters(_school);
+			if (hmUsers != null && !hmUsers.isEmpty()) {
+//			int headmasterId = _school.getHeadmasterUserId();
+//			if (headmasterId > 0 ) {
 				if (useBreak) {
 					++row;
 					table.setHeight(row, _spaceBetween);
@@ -108,32 +111,17 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				}
 				table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
 				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
-				User user = uHome.findByPrimaryKey(new Integer(headmasterId));
-				row = insertUser(table, row, user);
+				Iterator iter = hmUsers.iterator();
+				while (iter.hasNext()) {
+					User user = uHome.findByPrimaryKey(iter.next());
+					row = insertUser(table, row, user);
+				}
 				useBreak = true;
 			}
 		} catch (FinderException e) {
 			e.printStackTrace(System.err);
 		}
 		
-/*		try {
-			int assistantHeadmasterId = _school.getAssistantHeadmasterUserId();
-			if (assistantHeadmasterId > 0 ) {
-				if (useBreak) {
-					++row;
-					table.setHeight(row, _spaceBetween);
-					++row;
-				}
-				table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
-				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
-				User user = uHome.findByPrimaryKey(new Integer(assistantHeadmasterId));
-				row = insertUser(table, row, user);
-				useBreak = true;
-			}
-		} catch (FinderException e) {
-			e.printStackTrace(System.err);
-		}
-*/
 		
 		String webPage = _school.getSchoolWebPage();
 		if (webPage != null) {
@@ -250,6 +238,10 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 
 	private UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
+	}
+	
+	private SchoolUserBusiness getSchoolUserBusiness(IWApplicationContext iwac) throws RemoteException {
+		return (SchoolUserBusiness) IDOLookup.getServiceInstance(iwac, SchoolUserBusiness.class);	
 	}
 
 }
