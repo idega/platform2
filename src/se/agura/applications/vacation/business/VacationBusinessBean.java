@@ -40,6 +40,7 @@ import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
 
 /**
  * @author Anna
@@ -48,10 +49,11 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 
 	protected static final String IW_VACATION_BUNDLE_IDENTIFIER = "se.agura.applications.vacation";
 	
-  private static String DEFAULT_SMTP_MAILSERVER="mail.agurait.com";
-	private static String PROP_SYSTEM_SMTP_MAILSERVER="messagebox_smtp_mailserver";
-	private static String PROP_MESSAGEBOX_FROM_ADDRESS="messagebox_from_mailaddress";
-	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS="messagebox@idega.com";
+  private static String DEFAULT_SMTP_MAILSERVER = "mail.agurait.com";
+	private static String PROP_SYSTEM_SMTP_MAILSERVER = "messagebox_smtp_mailserver";
+	private static String PROP_MESSAGEBOX_FROM_ADDRESS = "messagebox_from_mailaddress";
+	private static String PROP_SALARY_DEPARTMENT_EMAIL = "salary_department_mailaddress";
+	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS = "no-reply@aguraintra.se";
 	
 	protected String getBundleIdentifier() {
 		return IW_VACATION_BUNDLE_IDENTIFIER;
@@ -244,6 +246,19 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 	public void approveApplication(VacationRequest vacation, User performer, String comment, boolean hasCompensation) {
 		vacation.setSalaryCompensation(hasCompensation);
 		changeCaseStatus(vacation, getCaseStatusGranted().getStatus(), comment, performer, null);
+
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		String email = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL, "laddi@idega.is");
+		if (email != null) {
+			VacationType type = vacation.getVacationType();
+			User user = vacation.getUser();
+			Locale locale = getIWApplicationContext().getApplicationSettings().getDefaultLocale();
+			IWTimestamp from = new IWTimestamp(vacation.getFromDate());
+			IWTimestamp to = new IWTimestamp(vacation.getToDate());
+			
+			Object[] arguments = { user.getName(), PersonalIDFormatter.format(user.getPersonalID(), locale), getLocalizedString(type.getLocalizedKey(), type.getTypeName()), from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT) };
+			sendMessage(email, getLocalizedString("vacation_application.accepted_subject", "Vacation application accepted"), MessageFormat.format(getLocalizedString("vacation_application.accepted_body", "A vacation application has been accepted for {0}, {1}.\n\nThe vacation type is {2} from {3} to {4}."), arguments), null);
+		}
 	}
 
 	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
@@ -261,11 +276,10 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		try {
 			Email email = getUserBusiness().getUsersMainEmail(handler);
 			if (email != null) {
-				sendMessage(email.getEmailAddress(), "", "", null);
+				sendMessage(email.getEmailAddress(), getLocalizedString("vacation_application.forwarded_subject", "Acceptance of a vacation application forwarded to you"), getLocalizedString("vacation_application.forward_body", "You have to handle it on 'My page' on the intranet."), null);
 			}
 		}
 		catch (NoEmailFoundException nefe) {
-			// Nothing done...
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);

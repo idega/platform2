@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.10 2005/01/14 15:21:38 laddi Exp $ Created on
+ * $Id: VacationApprover.java,v 1.11 2005/01/19 12:34:37 laddi Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,7 +34,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -60,7 +60,7 @@ public class VacationApprover extends VacationBlock {
 			parse(iwc);
 
 			if (action.equals(ACTION_FORWARD_VIEW)) {
-				getSendToHandleForm(iwc);
+				add(getSendToHandleForm(iwc));
 			}
 			else if (action.equals(ACTION_FORWARD)) {
 				forward(iwc);
