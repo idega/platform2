@@ -104,7 +104,7 @@ public class InitialData extends TravelManager {
                 extra.setWidth("90%");
                 extra.setAlignment(1,1,"left");
                 extra.setAlignment("center");
-              Link newSupplier = new Link("new");
+              Link newSupplier = new Link(iwrb.getImage("buttons/new.gif"));
                 newSupplier.addParameter("admin_action","new");
               extra.add(newSupplier,1,1);
               form.add(extra);
@@ -152,7 +152,7 @@ public class InitialData extends TravelManager {
       Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
         deleteLink.addParameter(this.sAction, this.parameterInvalidate);
 
-      Link chooseLink = new Link("T - use");
+      Link chooseLink = new Link(iwrb.getImage("buttons/use.gif"));
         chooseLink.addParameter(this.sAction, this.parameterChoose);
 
 
@@ -192,9 +192,11 @@ public class InitialData extends TravelManager {
         link = (Link) editLink.clone();
           link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
         table.add(link,4,row);
+        table.add(Text.NON_BREAKING_SPACE,4,row);
         link = (Link) chooseLink.clone();
           link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
         table.add(link,4,row);
+        table.add(Text.NON_BREAKING_SPACE,4,row);
         link = (Link) deleteLink.clone();
           link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
         table.add(link,4,row);
