@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.11 2003/10/15 11:25:18 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.12 2003/10/30 15:27:00 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/10/15 11:25:18 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/30 15:27:00 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -261,7 +261,20 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 		} catch (Exception e) {}
 		return schools;
 	}
-		
+
+	/**
+	 * Returns all schools including terminated for the specified operational field.
+	 * @param operationaField the operational field (school category)
+	 */
+	public Collection findAllSchoolsByOperationalField(String operationalField) {
+		Collection schools = null;
+		try {
+			SchoolHome home = getSchoolHome();
+			schools = home.findAllSchoolsByCategoryIncludingTerminated(operationalField);
+		} catch (Exception e) {}
+		return schools;
+	}
+					
 	/**
 	 * Returns school business. 
 	 */	
