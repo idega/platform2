@@ -100,6 +100,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_SCHOOL_CLASS = "cc_sch_class";
 	
 	public static final String PARAMETER_SHOW_PARENTAL= "cc_show_parental";
+	public static final String PARAMETER_SHOW_EMPLOYMENT_DROP= "cc_show_employment_drop";
 	//private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
 	public static final String FIELD_CURRENT_DATE = "currentdate";
@@ -158,6 +159,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private int _pageID;
 	private boolean _showVacancies= false;
 	private boolean _showParental= true;
+	private boolean _showEmploymentDrop= true;
 	
 	//private IWTimestamp earliestDate;
 
@@ -251,6 +253,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_PLACEMENT_ID);
 		form.maintainParameter(PARAMETER_SHOW_VACANCIES);		
 		form.maintainParameter(PARAMETER_SHOW_PARENTAL);
+		form.maintainParameter(PARAMETER_SHOW_EMPLOYMENT_DROP);
 		form.setStyleAttribute("height:100%");
 
 		Table table = new Table(3, 5);
@@ -817,11 +820,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		//table.add(mSchoolType, 2, row++);
 		dropdownTable.add(schoolClasses,2,dropRow);
 		
-		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
-		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
+		if (_showEmploymentDrop){
+			DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
+			employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
+			
+			dropdownTable.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, dropRow);
+			dropdownTable.add(employmentTypes, 2, dropRow);
+		}
 		
-		dropdownTable.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, dropRow);
-		dropdownTable.add(employmentTypes, 2, dropRow);
 		
 		table.add(dropdownTable, 1, row++);
 
@@ -1040,9 +1046,17 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
+		IWTimestamp placementDate = null;
+		IWTimestamp today = new IWTimestamp();
+		//today.addDays(1);
 		
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
 		if(application!=null){
+		
+		if (application.getFromDate() != null) {
+			placementDate = new IWTimestamp(application.getFromDate());
+		}
+		
 		
 		boolean canCancel = getBusiness().canCancelContract(((Integer)application.getPrimaryKey()).intValue());
 		
@@ -1097,8 +1111,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			    }
 			    // still within deadline
 			    else{
-			        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
-			        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
+			    	if (placementDate != null && placementDate.isLaterThan(deadlinePeriod.getFirstTimestamp())){ // && today.isEarlierThan(deadlinePeriod.getFirstTimestamp())){
+			    		today.addDays(1);
+			    		dateInput.setEarliestPossibleDate(today.getDate(), localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen"));
+			    		dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
+			    	}else {
+			    		dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
+			    		dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());	
+			    	}
+			        
 			    }
 			    
 			}
@@ -1770,6 +1791,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		if (iwc.isParameterSet(PARAMETER_SHOW_PARENTAL))
 			_showParental = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PARENTAL)).booleanValue();
+		if (iwc.isParameterSet(PARAMETER_SHOW_EMPLOYMENT_DROP))
+			_showEmploymentDrop = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_EMPLOYMENT_DROP)).booleanValue();
 			//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
 			//earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 
