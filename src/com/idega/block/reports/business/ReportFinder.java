@@ -28,7 +28,7 @@ public class ReportFinder {
   public static int	countReportsInCategory(int iCategoryId){
     try {
       Report eReport = (Report)Report.getStaticInstance(Report.class);
-      return eReport.getNumberOfRecords(eReport.getColumnCategoryId(),String.valueOf(iCategoryId));
+      return eReport.getNumberOfRecords(Report.getColumnCategoryId(),String.valueOf(iCategoryId));
     }
     catch (SQLException ex) {
 
@@ -161,9 +161,9 @@ public class ReportFinder {
   public static List listOfReportInfo(int iCategoryId,String type){
     try {
       ReportInfo info = new ReportInfo();
-      StringBuffer sql = new StringBuffer("select * from ").append(info.getEntityTableName());
-      sql.append(" where ").append(info.getColumnCategoryId()).append(" = ").append(iCategoryId);
-      sql.append(" and ").append(info.getColumnType()).append(" = '").append(type).append("'");
+      StringBuffer sql = new StringBuffer("select * from ").append(ReportInfo.getEntityTableName());
+      sql.append(" where ").append(ReportInfo.getColumnCategoryId()).append(" = ").append(iCategoryId);
+      sql.append(" and ").append(ReportInfo.getColumnType()).append(" = '").append(type).append("'");
       return EntityFinder.findAll(info,sql.toString());
     }
     catch (Exception ex) {
@@ -175,11 +175,11 @@ public class ReportFinder {
    public static List listOfReportInfo(String type){
     try {
       ReportInfo info = new ReportInfo();
-      StringBuffer sql = new StringBuffer("select * from ").append(info.getEntityTableName());
+      StringBuffer sql = new StringBuffer("select * from ").append(ReportInfo.getEntityTableName());
       if(type!=null)
-        sql.append(" where ").append(info.getColumnType()).append(" = '").append(type).append("'");
+        sql.append(" where ").append(ReportInfo.getColumnType()).append(" = '").append(type).append("'");
       else
-        sql.append(" order by ").append(info.getColumnType());
+        sql.append(" order by ").append(ReportInfo.getColumnType());
       return EntityFinder.findAll(info,sql.toString());
     }
     catch (Exception ex) {
