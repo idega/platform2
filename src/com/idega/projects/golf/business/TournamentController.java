@@ -709,7 +709,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
                                         activeColor = darkColor;
                                     }
 
-                                    time = new Flash("http://jgenerator.sidan.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),50,30);
+                                    time = new Flash("http://jgenerator.sidan.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),80,50);
                                     table.add(time,1,row);
                                     table.setAlignment(1,row,"center");
                                     table.setVerticalAlignment(1,row,"middle");
