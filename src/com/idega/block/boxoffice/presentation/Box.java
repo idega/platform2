@@ -2,6 +2,8 @@ package com.idega.block.boxoffice.presentation;
 
 import com.idega.util.idegaTimestamp;
 import com.idega.util.text.TextSoap;
+import com.idega.util.text.TextStyler;
+import com.idega.util.text.StyleConstants;
 import com.idega.block.IWBlock;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -62,6 +64,7 @@ private String _visitedStyle;
 private String _activeStyle;
 private String _hoverStyle;
 private String _name;
+private String _highlightColor = "#0000FF";
 
 private String _target;
 
@@ -263,7 +266,6 @@ public Box(String attribute){
   }
 
   private void getCategoryView(BoxEntity box,BoxCategory[] categories,Table boxTable,IWContext iwc) {
-    BoxCategory category = BoxFinder.getCategory(_boxCategoryID);
     int row = 1;
 
     Table categoryTable = new Table(2,categories.length);
@@ -271,13 +273,22 @@ public Box(String attribute){
       categoryTable.setCellspacing(0);
       categoryTable.setWidth(2,"100%");
 
+    TextStyler styler = new TextStyler(_categoryStyle);
+    styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,_highlightColor);
+
     for ( int a = 0; a < categories.length; a++ ) {
+      if ( a == 0 && _boxCategoryID == -1 )
+        _boxCategoryID = categories[a].getID();
+
       String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
       if ( categoryString == null ) {
         categoryString = "$language$";
       }
 
       Text categoryText = new Text(categoryString);
+      if ( _boxCategoryID == categories[a].getID() )
+        categoryText.setFontStyle(styler.getStyleString());
+      else
         categoryText.setFontStyle(_categoryStyle);
 
       Image categoryImage = _iwbBox.getImage("shared/category.gif");
@@ -291,6 +302,7 @@ public Box(String attribute){
       categoryTable.add(categoryLink,2,a+1);
     }
 
+    BoxCategory category = BoxFinder.getCategory(_boxCategoryID);
     boxTable.add(categoryTable,1,row);
     row++;
     boxTable.setHeight(1,row,"5");
@@ -496,10 +508,10 @@ public Box(String attribute){
     _boxSpacing = 3;
     _numberOfDisplayed = 4;
     _categoryStyle = "font-face: Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: bold";
-    _linkStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000; text-decoration: none;";
-    _visitedStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #6E6E6E; text-decoration: none;";
-    _activeStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #D8D8D8; text-decoration: none;";
-    _hoverStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #D8D8D8; text-decoration: underline overline;";
+    _linkStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
+    _visitedStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
+    _activeStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
+    _hoverStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000;";
     _target = Link.TARGET_TOP_WINDOW;
   }
 
@@ -574,6 +586,10 @@ public Box(String attribute){
     _visitedStyle = linkStyle;
     _activeStyle = visitedStyle;
     _hoverStyle = hoverStyle;
+  }
+
+  public void setSelectedCategoryColor(String color) {
+    _highlightColor = color;
   }
 
   private void setStyles() {
