@@ -32,10 +32,10 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
-import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.user.presentation.GroupChooser;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -140,7 +140,7 @@ public class CalendarEntryCreator extends Form{
 	private DatePicker dayToField;
 	private TimeInput timeFromField;
 	private TimeInput timeToField;
-	private AttendantChooser attendeesField;
+	private GroupChooser attendeesField;
 	private TextArea descriptionField;
 	private SubmitButton save;
 	private ResetButton reset;
@@ -329,15 +329,8 @@ public class CalendarEntryCreator extends Form{
 			timeToField.setHour(stamp.getHour() + 1);
 		}		
 		timeToField.setMinute(0);
-		
-		
-		
-		attendeesField = (AttendantChooser) ImplementorRepository.getInstance().newInstanceOrNull(AttendantChooser.class, this.getClass());
-		if (attendeesField == null) {
-			throw new RuntimeException("[CalendarEntryWindow] Implementation of AttendChooser could not be found. Implementing bundle was not loaded.");
-		}
-		attendeesField.setChooserParameter(attendeesFieldParameterName);
-		// prior version: attendeesField = new GroupChooser(attendeesFieldParameterName);
+	
+		attendeesField = new GroupChooser(attendeesFieldParameterName);
 
 		descriptionField = new TextArea(descriptionFieldParameterName);
 		

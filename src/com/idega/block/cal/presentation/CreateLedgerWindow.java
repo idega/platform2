@@ -23,6 +23,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.User;
+import com.idega.user.presentation.GroupChooser;
 
 /**
  * Description: <br>
@@ -56,8 +57,8 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
 	//fields
 	private Text coachNameField;
-	private AttendantChooser otherCoachesNameField;
-  private AttendantChooser groupNameField;
+	private GroupChooser otherCoachesNameField;
+  private GroupChooser groupNameField;
   private DatePicker fromDatePickerField;
   private TextInput nameField;
   
@@ -116,21 +117,10 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 			User user =iwc.getCurrentUser();
 			coachNameField = new Text(user.getName());
 		}
-		ImplementorRepository implementorRepository =  ImplementorRepository.getInstance();
-		otherCoachesNameField = (AttendantChooser) implementorRepository.newInstanceOrNull(AttendantChooser.class, this.getClass());
-		if (otherCoachesNameField == null) {
-			throw new RuntimeException("[CreateLedgerWindow] Implementation of AttendChooser could not be found. Implementing bundle was not loaded.");
-		}
-		otherCoachesNameField.setChooserParameter(otherCoachesFieldParameterName);
-		groupNameField = (AttendantChooser) implementorRepository.newInstanceOrNull(AttendantChooser.class, this.getClass());
-		if (groupNameField == null) {
-			throw new RuntimeException("[CreateLedgerWindow] Implementation of AttendChooser could not be found. Implementing bundle was not loaded.");
-		}
-		groupNameField.setChooserParameter(groupFieldParameterName);
-		/* prior version:
+
 		otherCoachesNameField = new GroupChooser(otherCoachesFieldParameterName);
 		groupNameField = new GroupChooser(groupFieldParameterName);
-		*/
+
 		//fromDate is the start date of the ledger
 		fromDatePickerField =new DatePicker(dateFieldParameterName);
 		//when save button is pushed the new ledger is created

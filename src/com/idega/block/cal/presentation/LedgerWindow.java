@@ -47,10 +47,10 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -447,16 +447,10 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					aLink.setStyleClass(styledLinkUnderline);
 				}
 				
-				CalPropertyWindow propertyWindow = (CalPropertyWindow) ImplementorRepository.getInstance().newInstanceOrNull(CalPropertyWindow.class, this.getClass());
-				if (propertyWindow == null) {
-					logWarning("[LedgerWindow] Implementation of CalPropertyWindow could not be found. Implementing bundle was not loaded."); 
-					aLink.setWindowToOpen(propertyWindow.getClass());
-					aLink.addParameter(propertyWindow.getIdParameter(), user.getPrimaryKey().toString());
-				}
-				/* prior version:
+
 				aLink.setWindowToOpen(UserPropertyWindow.class);
 				aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
-				*/
+
 
 				return aLink;
 			}
