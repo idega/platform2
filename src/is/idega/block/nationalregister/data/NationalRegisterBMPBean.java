@@ -94,6 +94,8 @@ public class NationalRegisterBMPBean extends GenericEntity implements NationalRe
 		addAttribute(DATE_OF_DELETION, "Dagsetning brottfellinguar", true, true, String.class, 6);
 		addAttribute(NEW_SSN_OR_NAME, "Kennitala/Nafn ef breyting", true, true, String.class, 18);
 		addAttribute(DATE_OF_BIRTH, "Faedingardagur", true, true, String.class, 6);
+		
+		addIndex(SSN);
 	}
 
 	public void setSymbol(String symbol) {
