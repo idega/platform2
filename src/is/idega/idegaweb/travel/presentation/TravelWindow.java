@@ -6,11 +6,14 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 
 import java.rmi.RemoteException;
 
+import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
@@ -211,5 +214,14 @@ public class TravelWindow extends Window {
   protected TravelSessionManager getTravelSessionManager(IWContext iwc) throws RemoteException {
     return TravelManager.getTravelSessionManagerStatic(iwc);
 //    return (TravelSessionManager) IBOLookup.getServiceInstance(iwc, TravelSessionManager.class);
+  }
+  
+  protected CreditCardBusiness getCreditCardBusiness(IWContext iwc) {
+  	try {
+  		return (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
   }
 }
