@@ -5,8 +5,6 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.data.IDOLookup;
-
 
 /**
  * Title:        com.idega.block.importer.data.ImportHandlerBMPBean
