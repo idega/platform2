@@ -77,14 +77,14 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
       table.add(hr, 1, 2);
     }else {
       if (productViewer._seperator != null) {
-        table.add(productViewer._seperator, 1, 2);
+	table.add(productViewer._seperator, 1, 2);
       }
     }
     table.add(description, 1, 3);
     if (_product != null) {
       ProductItemImages pii = new ProductItemImages(_product);
-        pii.setVerticalView(true);
-        pii.setImageAlignment("right");
+	pii.setVerticalView(true);
+	pii.setImageAlignment(Table.HORIZONTAL_ALIGN_CENTER);
       table.add(pii, 2, 3);
     }
 

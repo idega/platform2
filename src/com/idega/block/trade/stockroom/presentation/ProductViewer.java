@@ -91,7 +91,6 @@ public class ProductViewer extends Block {
 	  }
 	  if ( !showProduct )
 	    _product = null;
-	  System.out.println("ShowProduct: "+showProduct);
 	}
       }
     } catch (Exception e) {
@@ -110,7 +109,6 @@ public class ProductViewer extends Block {
       PresentationObject po = null;
 
       if ( _product == null && _showRandom ) {
-	System.out.println("Getting random");
 	if ( categoryList != null ) {
 	  List products = ProductBusiness.getProducts(categoryList);
 	  if ( products != null && products.size() > 0 ) {
