@@ -53,6 +53,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   private int numberOfLetters = 273;
   private int numberOfDisplayedNews = 5;
   private int numberOfExpandedNews = 3;
+	private int numberOfCollectionNews = 5;
   private int iSpaceBetween = 1;
   private boolean backbutton = false;
   private boolean showAll = false;
@@ -60,7 +61,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   private boolean showOnlyDates = false;
   private boolean headlineAsLink = false;
   private boolean showHeadlineImage = false;
-  private boolean showMoreButton = false;
+  private boolean showMoreButton = true;
   private boolean alignWithHeadline = false;
   private boolean limitNumberOfNews = false;
   private boolean enableDelete=true;
@@ -70,7 +71,6 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   private String selectFrom = "select nw_news.* from nw_news where ";
   private String orderBy = " order by news_date DESC";
   private String sNewsCategoryId = "nw_news_cat_id ='";
-  private String sNewsEditorUrl ="/news/editor.jsp";
   private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
 
   private static String prmDelete = "nwr_delete";
@@ -84,6 +84,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   private Hashtable objectsBetween = null;
   private String sObjectAlign = "center";
 
+
   private Text textProxy = new Text();
   private Text headlineProxy  = new Text();
   private Text informationProxy  = new Text();
@@ -95,10 +96,13 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   private IWBundle iwb;
   private IWResourceBundle iwrb ;
 
-  public static final int SINGLE_FILE_LAYOUT = 1;
-  public static final int NEWS_SITE_LAYOUT = 2;
-  public static final int NEWS_PAPER_LAYOUT = 3;
-  private int iLayout =1;
+  public static final int SINGLE_FILE_LAYOUT = NewsLayoutHandler.SINGLE_FILE_LAYOUT;
+  public static final int NEWS_SITE_LAYOUT = NewsLayoutHandler.NEWS_SITE_LAYOUT;
+  public static final int NEWS_PAPER_LAYOUT = NewsLayoutHandler.NEWS_PAPER_LAYOUT;
+	public static final int SINGLE_LINE_LAYOUT = NewsLayoutHandler.SINGLE_LINE_LAYOUT;
+  public static final int COLLECTION_LAYOUT = NewsLayoutHandler.COLLECTION_LAYOUT;
+
+  private int iLayout =SINGLE_FILE_LAYOUT;
 
   public NewsReader(){
     init();
@@ -347,7 +351,13 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
   }
 
   private PresentationObject publishNews(IWContext iwc ,NewsCategory newsCategory,Locale locale){
-    List L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
+		List L = null;
+		if(iLayout == COLLECTION_LAYOUT){
+		  L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),numberOfCollectionNews,locale);
+		}
+		else{
+      L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
+		}
     NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT );
     boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
     if(L!=null){
@@ -383,7 +393,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
 
   // Make a table around each news
   private PresentationObject getNewsTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,boolean showAll){
-    Table T = new Table(1,4);
+    Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
     T.setBorder(0);
@@ -392,6 +402,10 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     ContentHelper contentHelper = newsHelper.getContentHelper();
     NwNews news = newsHelper.getNwNews();
     LocalizedText locText = contentHelper.getLocalizedText(locale);
+
+		if(iLayout == SINGLE_LINE_LAYOUT)
+			showOnlyDates = true;
+
     Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates);
 
     String sNewsBody = "";
@@ -408,69 +422,86 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     }
 
     Text headLine = new Text(sHeadline);
-    Text newsBody = new Text(sNewsBody);
 
-    if( showAll ) {
-        T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
-    }
+		// Check if using single_line_layout
+		if(iLayout != SINGLE_LINE_LAYOUT){
+			Text newsBody = new Text(sNewsBody);
 
-    newsInfo = setInformationAttributes(newsInfo);
-    headLine = setHeadlineAttributes(headLine);
-    newsBody = setTextAttributes(newsBody);
-    T.add(newsInfo,1,1);
+			if( showAll ) {
+					T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
+			}
 
-    //if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
-    List files = newsHelper.getContentHelper().getFiles();
-    if(files!=null){
-      try{
-      Table imageTable = new Table(1, 2);
-      ICFile imagefile = (ICFile)files.get(0);
-      int imid = imagefile.getID();
-      String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+			newsInfo = setInformationAttributes(newsInfo);
+			headLine = setHeadlineAttributes(headLine);
+			newsBody = setTextAttributes(newsBody);
+			T.add(newsInfo,1,1);
 
-      Image newsImage = new Image(imid);
-      if(att != null)
-        newsImage.setAttributes(getAttributeMap(att));
-      //newsImage.setAlignment("right");
-      //imageTable.setAlignment("right");
-      //imageTable.setVerticalAlignment("top");
-      //imageTable.add(newsImage, 1, 1);
-      T.add(newsImage,1,3);
+			//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+			List files = newsHelper.getContentHelper().getFiles();
+			if(files!=null){
+				try{
+				Table imageTable = new Table(1, 2);
+				ICFile imagefile = (ICFile)files.get(0);
+				int imid = imagefile.getID();
+				String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+
+				Image newsImage = new Image(imid);
+				if(att != null)
+					newsImage.setAttributes(getAttributeMap(att));
+				//newsImage.setAlignment("right");
+				//imageTable.setAlignment("right");
+				//imageTable.setVerticalAlignment("top");
+				//imageTable.add(newsImage, 1, 1);
+				T.add(newsImage,1,3);
+				}
+				catch(SQLException ex){
+					ex.printStackTrace();
+				}
+			}
+			//else
+				//System.err.println(" no news files");
+
+			T.add(newsBody,1,3);
+
+			//  add news
+			 if(!showAll && showMoreButton){
+				Link moreLink = new Link(iwrb.getImage("more.gif"));
+				moreLink.addParameter(prmMore,news.getID());
+				T.add(moreLink, 1, 4);
+			}
+
+			if ( alignWithHeadline && headlineImageURL!=null){
+				T.add(new Image(headlineImageURL), 1, 2);
       }
-      catch(SQLException ex){
-        ex.printStackTrace();
-      }
-    }
-    //else
-      //System.err.println(" no news files");
-
-    T.add(newsBody,1,3);
-
-    //  add news
-     if(!showAll && showMoreButton){
-      Link moreLink = new Link(iwrb.getImage("more.gif"));
-      moreLink.addParameter(prmMore,news.getID());
-      T.add(moreLink, 1, 4);
-    }
-
-    if ( alignWithHeadline && headlineImageURL!=null){
-      T.add(new Image(headlineImageURL), 1, 2);
-    }
-
-    if ( headlineAsLink ) {
-      Link headlineLink = new Link(headLine);
-      headlineLink.addParameter(prmMore,news.getID());
-      T.add(headlineLink, 1, 2);
-    }
-    else {
-      T.add(headLine, 1, 2);
-    }
 
 
-
-    if(isAdmin){
-      T.add(getNewsAdminPart(news),1,4);
-    }
+			if ( headlineAsLink ) {
+				Link headlineLink = new Link(headLine);
+				headlineLink.addParameter(prmMore,news.getID());
+				T.add(headlineLink, 1, 2);
+			}
+			else {
+				T.add(headLine, 1, 2);
+			}
+			if(isAdmin){
+				T.add(getNewsAdminPart(news),1,4);
+			}
+		}
+		// if single line view
+		else{
+			T.add(newsInfo,1,1);
+		  if ( headlineAsLink ) {
+				Link headlineLink = new Link(headLine);
+				headlineLink.addParameter(prmMore,news.getID());
+				T.add(headlineLink, 2, 1);
+			}
+			else {
+				T.add(headLine, 2, 1);
+			}
+			if(isAdmin){
+			  T.add(getNewsAdminPart(news),3,1);
+			}
+		}
     return T;
   }
 
@@ -529,12 +560,6 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     this.attributeId = Integer.parseInt(attributeId);
   }
 
-  public void setNumberOfDays( int daysIn ){
-    idegaTimestamp stamp= idegaTimestamp.RightNow();
-    stamp.addDays(-daysIn);//dagar inni
-    this.date= stamp.toSQLString();
-  }
-
   /*
   ** This method uses static layouts from this class
   **
@@ -582,6 +607,45 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     tempText.setText( realText.getText() );
     return tempText;
   }
+
+	public void setInformationFontSize(int size){
+	  getInformationProxy().setFontSize(size);
+	}
+
+	public void setHeadlineFontSize(int size){
+	  getHeadlineProxy().setFontSize(size);
+	}
+
+	public void setTextFontSize(int size){
+	  getTextProxy().setFontSize(size);
+	}
+
+	public void setInformationFontColor(String color){
+	  getInformationProxy().setFontColor(color);
+	}
+
+	public void setHeadlineFontColor(String color){
+		getHeadlineProxy().setFontColor(color);
+	}
+
+	public void setTextFontFontColor(String color){
+	  getTextProxy().setFontColor(color);
+	}
+
+	public void setInformationFontFace(String face){
+	  getInformationProxy().setFontFace(face);
+	}
+
+	public void setHeadlineFontFace(String face){
+		getHeadlineProxy().setFontFace(face);
+	}
+
+	public void setTextFontFontFace(String face){
+	  getTextProxy().setFontFace(face);
+	}
+
+
+
   public void setNumberOfLetters(int numberOfLetters){
     this.numberOfLetters = Math.abs(numberOfLetters);
   }
@@ -590,6 +654,12 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     this.limitNumberOfNews = true;
     this.numberOfDisplayedNews = Math.abs(numberOfDisplayedNews);
   }
+
+	public void setNumberOfCollectionNews(int numberOfCollectionNews){
+    this.limitNumberOfNews = true;
+    this.numberOfCollectionNews = Math.abs(numberOfCollectionNews);
+  }
+
   public void setAdmin(boolean isAdmin){
     this.isAdmin=isAdmin;
   }

@@ -1,6 +1,7 @@
 package com.idega.block.news.business;
 
 import java.util.Vector;
+import java.util.List;
 import java.util.StringTokenizer;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.Content;
@@ -21,6 +22,24 @@ import com.idega.util.idegaTimestamp;
 public class NewsFormatter {
 
   public NewsFormatter() {
+  }
+
+  public static List listOfTextBetweenImages(String newsString){
+    Vector V = new Vector();
+    String image = "[image]";
+    String imageid = "[xxx]";
+    int index = 0, start = 0,end = 0,idstart = 0,idend= 0;
+
+    while((end = newsString.indexOf(image,start)) != -1){
+      idstart = newsString.indexOf("[",end+image.length());
+      idend = newsString.indexOf("]",end+image.length());
+      V.add(newsString.substring(start,end));
+      if( idstart != -1 && idend != -1){
+        String id = newsString.substring(idstart+1,idend-1);
+        V.add(new Integer(id));
+      }
+    }
+    return V;
   }
 
   public static String formatNews(String newsString,String textSize){
@@ -95,7 +114,7 @@ public class NewsFormatter {
       }
       if(!"".equals(NewsStamp)){
         info.append(NewsStamp);
-        info.append(spacer);
+        //info.append(spacer);
       }
     }
     return info.toString();
