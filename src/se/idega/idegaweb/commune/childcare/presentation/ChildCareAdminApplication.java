@@ -270,7 +270,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 
 			if (status == getBusiness().getStatusSentIn()) {
 				int column = 3;
-				if (numberInQueue == 1 || hasPriority || getBusiness().isAfterSchoolApplication(application)) {
+				if (numberInQueue == 1 || hasPriority) {
 					GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
 					table.add(changeDate, column++, 1);
 					column++;
