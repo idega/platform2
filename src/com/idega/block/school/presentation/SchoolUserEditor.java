@@ -102,7 +102,7 @@ public class SchoolUserEditor extends Block {
   			++row;
   			try {
 					school = getSchoolHome().findByPrimaryKey(iter.next());
-	  			link = getLink(_tFormat.format(_iwrb.getLocalizedString("school.edit","edit"),TextFormat.NORMAL), ACTION_VIEW_SCHOOL);
+	  			link = getLink(_tFormat.format(_iwrb.getLocalizedString("school.edit","edit"),TextFormat.NORMAL), ACTION_VIEW_SCHOOL, false);
 	  			link.addParameter(this.PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString());
 	  			table.add(link, 1, row);
 					if (school.equals(_school)) {
@@ -152,10 +152,10 @@ public class SchoolUserEditor extends Block {
 		}
 	}
 
-	private Link getLink(Text text, String action) {
+	private Link getLink(Text text, String action, boolean maintainSchoolId) {
 		Link link = new Link(text);
 		link.addParameter(PARAMETER_ACTION, action);
-		if (_school != null) {
+		if (_school != null && maintainSchoolId) {
 			link.addParameter(PARAMETER_SCHOOL_ID, _school.getPrimaryKey().toString());	
 		}
 		if (parameterNames != null) {
@@ -300,9 +300,9 @@ public class SchoolUserEditor extends Block {
 		Link login = new Link(getTextNormal(_iwrb.getLocalizedString("school.login","Login")));
 		login.setWindowToOpen(LoginEditorWindow.class);
 		login.addParameter(LoginEditor.prmUserId, hmId);
-		Link edit = getLink(getTextNormal(_iwrb.getLocalizedString("school.edit","Edit")), ACTION_VIEW_SCHOOL);
+		Link edit = getLink(getTextNormal(_iwrb.getLocalizedString("school.edit","Edit")), ACTION_VIEW_SCHOOL, true);
 		edit.addParameter(PARAMETER_EDIT_USER, hmId);
-		Link delete = getLink(getTextNormal(_iwrb.getLocalizedString("school.delete","Delete")), ACTION_VIEW_SCHOOL);
+		Link delete = getLink(getTextNormal(_iwrb.getLocalizedString("school.delete","Delete")), ACTION_VIEW_SCHOOL, true);
 		delete.addParameter(PARAMETER_DELTE_USER, hmId);
 		
 		
