@@ -6,6 +6,7 @@ package is.idega.idegaweb.member.presentation;
 
 
 import java.rmi.RemoteException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
@@ -115,9 +117,11 @@ public class UserEditor extends Block {
 
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_HEADER = "Header";
+	public final static String STYLENAME_DECEASED = "Deceased";
 
 	private String textFontStyle = "font-weight:plain;";
 	private String headerFontStyle = "font-weight:bold;";
+	private String deceasedFontStyle = "font-weight:bold;font-color:red";
 	
 	private UserSearcher searcher = null;
 	
@@ -345,10 +349,20 @@ public class UserEditor extends Block {
 		// TODO check for deceased date
 		Text tDeceased = new Text(iwrb.getLocalizedString("mbe.deceased", "Deceased"));
 		setStyle(tDeceased,STYLENAME_HEADER);
-		DateInput deceasedInput = new DateInput(prm_deceased_date);
 		addressTable.add(tDeceased, 1, row);
-		addressTable.add(deceasedInput, 2, row++);
+		UserStatus deceasedStatus = getUserStatusService(iwc).getDeceasedUserStatus((Integer)user.getPrimaryKey());
+		if(deceasedStatus!=null){
+			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
+			Text tDeceasedDate = new Text(df.format(deceasedStatus.getDateFrom()));
+			setStyle(tDeceasedDate,STYLENAME_DECEASED);
+			addressTable.add(tDeceasedDate,2,row);
+		}
+		else{
+			DateInput deceasedInput = new DateInput(prm_deceased_date);
+			addressTable.add(deceasedInput, 2, row);
+		}
 
+		row++;
 		mainTable.add(addressTable, 1, mainRow++);
 		mainTable.add(Text.getBreak(),1,mainRow++);
 
@@ -504,6 +518,7 @@ public class UserEditor extends Block {
 			// deceased part
 			if(iwc.isParameterSet(prm_deceased_date)){
 				IWTimestamp deceased = new IWTimestamp(iwc.getParameter(prm_deceased_date));
+				getUserStatusService(iwc).setUserAsDeceased(userID,deceased.getDate());
 				//TODO use some userbusiness to inform any services that want to know about a deceased user
 			}
 		}
@@ -581,6 +596,7 @@ public class UserEditor extends Block {
 		HashMap map = new HashMap();
 		map.put(STYLENAME_HEADER, headerFontStyle);
 		map.put(STYLENAME_TEXT, textFontStyle);
+		map.put(STYLENAME_DECEASED,deceasedFontStyle);
 		return map;
 	}
 	
@@ -605,6 +621,10 @@ public class UserEditor extends Block {
 	
 	public UserBusiness getUserService(IWApplicationContext iwac) throws RemoteException {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);	
+	}
+	
+	public UserStatusBusiness getUserStatusService(IWApplicationContext iwac) throws RemoteException {
+		return (UserStatusBusiness) IBOLookup.getServiceInstance(iwac, UserStatusBusiness.class);	
 	}
 	
 	public PhoneTypeHome getPhoneHome() throws RemoteException{
@@ -718,6 +738,20 @@ public class UserEditor extends Block {
 		UserEditor obj = (UserEditor)super.clone();
 		obj.searcher = (UserSearcher)searcher.clone();
 		return obj;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getDeceasedFontStyle() {
+		return deceasedFontStyle;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setDeceasedFontStyle(String string) {
+		deceasedFontStyle = string;
 	}
 
 }
