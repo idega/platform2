@@ -38,7 +38,8 @@ private String todayColor = headerColor;
 private String selectedColor = "#CCCCCC";
 private String URL;
 
-private int width = 110;
+private String width = "110";
+private String height = "60";
 private Link _link;
 private String _target;
 
@@ -108,6 +109,10 @@ public SmallCalendar(int year,int month) {
     Table T2 = new Table(1,2);
     T2.setCellpadding(1);
     T2.setCellspacing(0);
+    T2.setWidth(width);
+    T.setWidth(width);
+    T2.setHeight(height);
+    T.setHeight(height);
     T2.setColor(backgroundColor);
     T2.setColumnAlignment(1,"center");
     T2.setColumnVerticalAlignment(1,"middle");
@@ -358,8 +363,20 @@ public SmallCalendar(int year,int month) {
       setDaysAsLink(true);
   }
 
-  public void setWidth(int width) {
+  public void setWidth(String width) {
       this.width = width;
+  }
+
+  public void setWidth(int width) {
+      setWidth(Integer.toString(width));
+  }
+
+  public void setHeight(String height) {
+      this.height = height;
+  }
+
+  public void setHeight(int height) {
+      setHeight(Integer.toString(height));
   }
 
   public void showNameOfDays(boolean show) {
