@@ -248,7 +248,7 @@ public class SetupEditor extends Block {
       int id;
       while (iter.hasNext()) {
         acc = (EmailAccount) iter.next();
-        id = Integer.parseInt(acc.toString());
+        id = acc.getIdentifier().intValue();
         if (id == account && EditObject.equals("account")) {
           name.setContent(acc.getName());
           host.setContent(acc.getHost());
@@ -528,7 +528,7 @@ public class SetupEditor extends Block {
   			accounts = MailFinder.getInstance().getTopicAccounts(topicID,MailProtocol.SMTP);
   			if(accounts!=null && !accounts.isEmpty()){
   				account = (EmailAccount) accounts.iterator().next();
-  				T.add(getAccountLink(topicID,Integer.parseInt( account.toString()),account.getHost()),3,row);
+  				T.add(getAccountLink(topicID,( account.getIdentifier().intValue()),account.getHost()),3,row);
   			}
   			else{
   				T.add(getAccountLink(topicID,-1,"X"),3,row);
@@ -538,7 +538,7 @@ public class SetupEditor extends Block {
   			welcomes = MailFinder.getInstance().getEmailLetters(topicID,MailLetter.TYPE_SUBSCRIPTION);
   			if(welcomes!=null && !welcomes.isEmpty()){
   				welcome = (MailLetter) welcomes.iterator().next();
-  				T.add(getWelcomeLetterLink(Integer.parseInt(welcome.toString()),topicID,welcome.getSubject()),5,row);
+  				T.add(getWelcomeLetterLink(welcome.getIdentifier().intValue()),topicID,welcome.getSubject()),5,row);
   				//T.add(tf.format(welcome.getSubject()),5,row);
   			}
   			else{
