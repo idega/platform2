@@ -23,6 +23,7 @@ import javax.ejb.RemoveException;
 
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
+import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.UserQuery;
 import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
@@ -1301,8 +1302,13 @@ public class ReportQueryBuilder extends Block {
 		row++;
 		RadioGroup radioGroup = new RadioGroup(PARAM_IS_PRIVATE_QUERY);
 		radioGroup.setWidth(1);
-		radioGroup.addRadioButton(PRIVATE, new Text(iwrb.getLocalizedString("step_5_private_query", "private")), true);
-		radioGroup.addRadioButton(PUBLIC, new Text(iwrb.getLocalizedString("step_5_public_query", "public")));
+		boolean isPrivate = true;
+		if (userQueryID > 0) {
+			String permission = helper.getUserQuery().getPermisson();
+			isPrivate = QueryConstants.PERMISSION_PRIVATE_QUERY.equals(permission);
+		}
+		radioGroup.addRadioButton(PRIVATE, new Text(iwrb.getLocalizedString("step_5_private_query", "private")), isPrivate);
+		radioGroup.addRadioButton(PUBLIC, new Text(iwrb.getLocalizedString("step_5_public_query", "public")), ! isPrivate);
 		table.add(radioGroup, 1, row);
 		row++;
 		if (userQueryID > 0) {
