@@ -70,6 +70,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	//Keys to error Map
 	private Object ERROR_PLACING_EMPTY = "error_placing_empty";
 	private Object ERROR_DATE_FORMAT = "error_date_form";
+	private Object ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
 
 	private String LOCALIZER_PREFIX = "regular_invoice_entries_list.";
 	
@@ -343,7 +344,9 @@ private UserSearcher _userSearcher = null;
 		
 		if (from == null || to == null){
 			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
-		}else if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
+		}else if (to.before(from)){
+			errorMessages.put(ERROR_DATE_PERIODE_NEGATIVE, localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode"));
+		} else if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
 			errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
 		} 
 		
@@ -520,8 +523,9 @@ private UserSearcher _userSearcher = null;
 		searcher.setUniqueIdentifier("");
 		searcher.setBelongsToParent(true);
 		searcher.setConstrainToUniqueSearch(false);
+//		searcher.setHeaderFontStyleName (getHeaderFontStyle());		
 		
-		searcher.setTextFontStyle(getTextFontStyle());
+//		searcher.setTextFontStyle(getTextFontStyle());
 
 		if (iwc.getParameter(PAR_SEEK_FROM) != null){
 			searcher.maintainParameter(new Parameter(PAR_SEEK_FROM, iwc.getParameter(PAR_SEEK_FROM)));		
@@ -671,8 +675,13 @@ private UserSearcher _userSearcher = null;
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		if (errorMessages.get(ERROR_DATE_FORMAT) != null) {
-			table.add(getErrorText((String) errorMessages.get(ERROR_DATE_FORMAT)), 1, row++);			
+			table.add(getErrorText((String) errorMessages.get(ERROR_DATE_FORMAT)), 2, row++);			
 		}
+		
+		if (errorMessages.get(ERROR_DATE_PERIODE_NEGATIVE) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_DATE_PERIODE_NEGATIVE)), 2, row++);			
+		}
+				
 		table.add(getLocalizedLabel(KEY_PERIODE, "Periode:"), 1, row);
 		TextInput fromInput = getTextInput(PAR_FROM, KEY_FROM);
 		fromInput.setContent(formatDate(entry.getFrom(), 4));
