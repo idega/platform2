@@ -6,6 +6,7 @@
  */
 package is.idega.idegaweb.member.isi.block.members.presentation;
 
+import is.idega.idegaweb.golf.entity.PhoneBMPBean;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
@@ -23,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+
 import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -261,6 +264,20 @@ public class MemberOverview extends Block {
 							buf.append(", ").append(pc);
 						}
 					}
+				} else if(o instanceof Phone) {
+				    Phone phone = (Phone) o;
+				    if (phone != null) {
+				        if (phone.getPhoneTypeId() == 1) {
+				            buf.append("hs ");
+				        } else if(phone.getPhoneTypeId() == 2) {
+				            buf.append("vs ");
+				        } else if(phone.getPhoneTypeId() == 3) {
+				            buf.append("gsm ");
+				        } else if(phone.getPhoneTypeId() == 4) {
+				            buf.append("fax ");
+				        }
+				        buf.append(phone.getNumber());
+				    }
 				} else {
 					buf.append(o.toString());
 				}
