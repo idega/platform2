@@ -5,12 +5,12 @@ package com.idega.block.websearch.business;
 import java.io.File;
 import java.net.HttpURLConnection;
 
-import com.lucene.index.IndexWriter;
-import com.lucene.document.Field;
-import com.lucene.document.DateField;
-import com.idega.block.websearch.data.*;
+import com.idega.block.websearch.data.WebSearchIndex;
 import com.idega.util.FileUtil;
 import com.idega.util.text.TextSoap;
+import com.lucene.document.DateField;
+import com.lucene.document.Field;
+import com.lucene.index.IndexWriter;
 
 /**
  * <p><code>Crawler</code> Web crawler.</p>
@@ -41,7 +41,7 @@ public final class Crawler {
     
     // reporting
     private int reporting; // reporting level
-    private java.io.PrintWriter report;
+
     
     // Current URL data
     private java.net.URL currentURL;
@@ -67,14 +67,8 @@ public final class Crawler {
     public Crawler(WebSearchIndex index) {
         this(index, 0);
     }
-    /**
-     *
-     */
-    public Crawler(WebSearchIndex index, int reporting) {
-        this(index, reporting, null);
-    }
     
-    public Crawler(WebSearchIndex index, int reporting, java.io.PrintWriter report) {
+    public Crawler(WebSearchIndex index, int reporting) {
         try {
             
             this.index = index;
@@ -86,12 +80,6 @@ public final class Crawler {
             this.created = false;
             
             this.reporting = reporting;
-            if (reporting > 0) {
-                if (report == null) {
-                    this.report = new java.io.PrintWriter(new java.io.StringWriter());
-                }
-                    this.report = report;
-            }
             
             linkQueue = new java.util.Stack();
             links = new java.util.TreeSet();
@@ -108,7 +96,7 @@ public final class Crawler {
     public void crawl() {
         try {
             
-            if (reporting > 0) report.println("Websearch: START CRAWLING");
+            if (reporting > 0) System.out.println("Websearch: START CRAWLING");
             
             
              
@@ -121,7 +109,7 @@ public final class Crawler {
                 System.out.print("Websearch: "+indexPath);
              	FileUtil.createFileAndFolder(indexPath,"segments");
              
-                if (reporting > 0) report.println("create new index");
+                if (reporting > 0) System.out.println("create new index");
                 IndexWriter writer = new IndexWriter(indexPath, new com.lucene.analysis.StopAnalyzer(), true);
                 writer.close();
             } else {
@@ -129,15 +117,14 @@ public final class Crawler {
                 // implement incremental index later.
                 
                 //delete all
-                if (reporting > 0) report.println("index exists, delete all files");
+                if (reporting > 0) System.out.println("index exists, delete all files");
                 com.lucene.index.IndexReader reader = com.lucene.index.IndexReader.open(indexPath);
                 int count = reader.numDocs();
                 if (reporting > 0) {
-                    report.println("deleting " + count + " records");
-                    report.flush();
+                    System.out.println("deleting " + count + " records");
                 }
                 for (int i = 0; i < count; i++) {
-                    //if (reporting > 1) report.println("deleted " + i);
+                    //if (reporting > 1) System.out.println("deleted " + i);
                     reader.delete(i);
                 }
                 reader.close();
@@ -163,52 +150,51 @@ public final class Crawler {
                     // example http://www.12a.com to https://secure.i2a.com/
                     this.rootURL = url.substring(0, url.indexOf("/", 8));
                 }
-                if (reporting > 1) report.println();
+                if (reporting > 1) System.out.println();
                 if (reporting > 1) {
-                    report.print("SCANNING : " + url);
-                    report.flush();
+                    System.out.print("SCANNING : " + url);
                 }
                 
                 String result = scanPage(url);
 
                 if (result.equals("good")) {
-                    if (reporting > 1) report.print(" status: " + result);
+                    if (reporting > 1) System.out.print(" status: " + result);
                     if (reporting > 2) {
-                        report.println(" lastModified : " + lastModified);
-                        report.println(" contentType : " + contentType);
-                        report.println(" robot rules: index=" + handler.getRobotIndex()
+                        System.out.println(" lastModified : " + lastModified);
+                        System.out.println(" contentType : " + contentType);
+                        System.out.println(" robot rules: index=" + handler.getRobotIndex()
                         + "  follow=" + handler.getRobotFollow());
-                        report.println(" HREF : " +handler.getHREF());
-                        report.println(" title : " +handler.getTitle());
-                        report.println(" author : " +handler.getAuthor());
-                        report.println(" published : " +handler.getPublished());
-                        report.println(" description : " +handler.getDescription());
-                        report.println(" keywords : " +handler.getKeywords());
-                        report.println(" links : " + handler.getLinks());
+                        System.out.println(" HREF : " +handler.getHREF());
+                        System.out.println(" title : " +handler.getTitle());
+                        System.out.println(" author : " +handler.getAuthor());
+                        System.out.println(" published : " +handler.getPublished());
+                        System.out.println(" description : " +handler.getDescription());
+                        System.out.println(" keywords : " +handler.getKeywords());
+                        System.out.println(" links : " + handler.getLinks());
                         if (reporting > 3) {
-                            report.println(" contents : " +handler.getContents());
+                            System.out.println(" contents : " +handler.getContents());
                         }
                     }
                     
                 } else {
                     if (reporting == 1) {
-                        report.println();
-                        report.println("SCANNED : " + url);
+                        System.out.println();
+                        System.out.println("SCANNED : " + url);
                     }
-                    if (reporting > 0) report.println(" *status: " + result);
+                    if (reporting > 0) System.out.println(" *status: " + result);
                 }
-                if (reporting > 0) report.flush();
+                
             }
             if (reporting > 0) {
-                report.println();
-                report.println();
-                report.println("DONE CRAWLING");
-                report.println("links crawled");
+                System.out.println();
+                System.out.println();
+                System.out.println("DONE CRAWLING");
+                System.out.println("links crawled");
                 java.util.Iterator it = links.iterator();
                 while (it.hasNext()) {
-                    report.println(it.next());
+                    System.out.println(it.next());
                 }
-                report.println();
+                System.out.println();
             }
             writer.optimize();
             writer.close();
@@ -436,7 +422,7 @@ public final class Crawler {
             
             if (httpCon.getHeaderField("Set-Cookie") != null) {
                 cookie = stripCookie(httpCon.getHeaderField("Set-Cookie"));
-                if (reporting > 1) report.print(" got cookie : " + cookie);
+                if (reporting > 1) System.out.print(" got cookie : " + cookie);
             }
             
             if (httpCon.getResponseCode() == HttpURLConnection.HTTP_OK) {

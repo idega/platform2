@@ -119,7 +119,7 @@ public class WebSearcher extends Block {
 			search(iwc);
 		}
 		else if( crawl ){
-			crawl(iwc);
+			crawl();
 		}
 		else{	
 			add(getSearchForm());
@@ -127,19 +127,24 @@ public class WebSearcher extends Block {
 	}
 
 
-	private void crawl(IWContext iwc) throws Exception{
-		add(new BackButton(iwrb.getLocalizedString("back","back")));
+	private void crawl() throws Exception{
+		add(iwrb.getLocalizedString("indexing","Indexing..."));
+		addBreak();
+		
 		index = WebSearchManager.getIndex("main");//this should not be hard coded
 					
 		if ( report  > 0) {
-			crawler = new Crawler(index, report, iwc.getWriter() );//change so that crawler return an arraylist and then print that or something
+			crawler = new Crawler(index, report);//change so that crawler return an arraylist and then print that or something
 		}
 		else{//no report
 			crawler = new Crawler(index);
 		}
 	
 		crawler.crawl();
+		addBreak();
 		add(iwrb.getLocalizedString("done","Done!"));
+		addBreak();
+		add(new BackButton(iwrb.getLocalizedString("back","back")));
 		
 	}
 
