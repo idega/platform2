@@ -46,7 +46,8 @@ public class SchoolBMPBean extends GenericEntity implements School {
   public final static String WEB_PAGE = "web_page";
   public final static String MANAGEMENT_TYPE = "managment_type";
   public final static String HEADMASTER_USER_ID = "headmaster_user_id";
-  public final static String ASSISTANT_HEADMASTER_USER_ID = "assistant_hm_user_id";
+  public final static String ASSISTANT_HEADMASTER_GROUP_ID = "assistant_hm_grp_id";
+  public final static String MAP_URL = "map_url";
 
 
   public void initializeAttributes() {
@@ -68,7 +69,8 @@ public class SchoolBMPBean extends GenericEntity implements School {
     this.addAttribute(WEB_PAGE,"web_page",true,true,String.class,50);
     this.addAttribute(MANAGEMENT_TYPE,"management_type",true,true,Integer.class);
     this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
-    this.addAttribute(ASSISTANT_HEADMASTER_USER_ID, "assistant headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
+    this.addAttribute(ASSISTANT_HEADMASTER_GROUP_ID, "assistant headmaster group id", true, true, Integer.class, this.MANY_TO_ONE, Group.class);
+    this.addAttribute(MAP_URL, "url to map", true, true, String.class);
     
     
     
@@ -168,6 +170,25 @@ public class SchoolBMPBean extends GenericEntity implements School {
   }
   public void setSchoolLongitude(String lon){
     this.setColumn(LONGITUDE,lon);
+  }
+
+  public Collection ejbFindAllBySchoolType(Collection typeIds) throws javax.ejb.FinderException{
+  	if (typeIds == null || typeIds.size() < 1) {
+  		return null;	
+  	}else {
+	    StringBuffer select = new StringBuffer("select distinct(s.*) from "+SCHOOL+" s,sch_school_sch_school_type m where m.sch_school_type_id in (");
+	    Iterator iter = typeIds.iterator();
+	    int count = 0;
+	    while (iter.hasNext()) {
+				if (count != 0) {
+					select.append(", ");	
+				}	    	
+	    	select.append(iter.next().toString()); 
+	    	++count;
+	    }
+	    select.append(") and m.sch_school_id = s.sch_school_id");
+	    return super.idoFindPKsBySQL(select.toString());
+  	}
   }
 
   public Collection ejbFindAllBySchoolType(int typeId) throws javax.ejb.FinderException{
@@ -291,6 +312,14 @@ public class SchoolBMPBean extends GenericEntity implements School {
   	setColumn(WEB_PAGE, webPage);	
   }
   
+  public String getMapUrl() {
+  	return getStringColumnValue(MAP_URL);	
+  }
+  
+  public void setMapUrl(String url) {
+  	setColumn(MAP_URL, url);	
+  }
+  
   public int getSchoolManagermentType() {
   	return getIntColumnValue(MANAGEMENT_TYPE);	
   }
@@ -342,12 +371,12 @@ public class SchoolBMPBean extends GenericEntity implements School {
   	setColumn(HEADMASTER_USER_ID, userId);
   }
   
-  public int getAssistantHeadmasterUserId() {
-  	return getIntColumnValue(ASSISTANT_HEADMASTER_USER_ID);
+  public int getAssistantHeadmasterGroupId() {
+  	return getIntColumnValue(ASSISTANT_HEADMASTER_GROUP_ID);
   }
   
-  public void setAssistantHeadmasterUserId(int userId) {
-  	setColumn(ASSISTANT_HEADMASTER_USER_ID, userId);	
+  public void setAssistantHeadmasterGroupId(int groupId) {
+  	setColumn(ASSISTANT_HEADMASTER_GROUP_ID, groupId);	
   }
   
   public static void main(String[] args){
