@@ -120,6 +120,15 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
       getValuesFromDatabase();
     }
 
+    if ( getCurrencyHolder(defaultCurrency) == null && currencyMap != null ) {
+      CurrencyHolder holder = new CurrencyHolder();
+	holder.setCurrencyName(defaultCurrency);
+	holder.setBuyValue(1);
+	holder.setSellValue(1);
+	holder.setMiddleValue(1);
+      currencyMap.put(holder.getCurrencyName(),holder);
+    }
+
     System.out.println("Default currency: "+defaultCurrency);
   }
 
