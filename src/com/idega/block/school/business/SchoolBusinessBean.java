@@ -46,6 +46,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		try
 		{
 			School school = getSchool(new Integer(id));
+			school.addSchoolTypesRemoveOther(new int[0]);
+			school.addSchoolYearsRemoveOther(new int[0]);
 			school.remove();
 		}
 		catch (Exception ex)

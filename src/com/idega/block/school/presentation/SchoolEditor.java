@@ -43,7 +43,7 @@ public class SchoolEditor extends Block {
     Form F = new Form();
 
     if(iwc.isParameterSet("sch_save_school")){
-      saveArea(iwc);
+      saveSchool(iwc);
       F.add(getListTable(null));
     }
     else if(iwc.isParameterSet("sch_delete_school")){
@@ -74,9 +74,10 @@ public class SchoolEditor extends Block {
     return getInputTable(iwc,sabBean.getSchool(new Integer(id)));
   }
 
-  private void saveArea(IWContext iwc)throws java.rmi.RemoteException{
+  private void saveSchool(IWContext iwc)throws java.rmi.RemoteException{
     if(iwc.isParameterSet("sch_save_school")){
       String id = iwc.getParameter("sch_school_id");
+      
       String name = iwc.getParameter("sch_name");
       String address = iwc.getParameter("sch_address");
       String info = iwc.getParameter("sch_info");
@@ -90,8 +91,8 @@ public class SchoolEditor extends Block {
       String lat = iwc.getParameter("sch_lat");
       String[] type_ids = iwc.getParameterValues("sch_type_ids");
       String[] year_ids = iwc.getParameterValues("sch_year_ids");
-      int[] types = null;
-      int[] years = null;
+      int[] types = new int[0];
+      int[] years = new int[0];
       if(type_ids!=null && type_ids.length > 0){
         types = new int[type_ids.length];
         for (int i = 0; i < type_ids.length; i++) {
@@ -111,8 +112,9 @@ public class SchoolEditor extends Block {
         sid = Integer.parseInt(id);
       if(area!=null)
         areaId = Integer.parseInt(area);
-
-      sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types,years);
+        
+		//System.err.println("school id is "+id);      
+		sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types,years);
     }
   }
 
@@ -213,13 +215,14 @@ public class SchoolEditor extends Block {
       drpType.setSelectedElement(String.valueOf(ent.getSchoolTypeId()));
       drpArea.setSelectedElement(String.valueOf(ent.getSchoolAreaId()));
 
-      T.add(new HiddenInput("sch_school_id",String.valueOf(Id)));
+     
       }
       catch(Exception ex){}
     }
 
     int row = 1;
 
+	T.add(new HiddenInput("sch_school_id",String.valueOf(Id)));
     //T.add(tFormat.format(iwrb.getLocalizedString("type","Type")),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("area","Area"),tFormat.HEADER),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name"),tFormat.HEADER),1,row++);
