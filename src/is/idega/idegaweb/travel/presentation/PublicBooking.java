@@ -270,7 +270,8 @@ public class PublicBooking extends Block  {
         if (action == null || action.equals("")) {
             form = bf.getPublicBookingForm(iwc, product, stamp);
             form.maintainParameter(this.parameterProductId);
-            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
+//            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
+//            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
         }else if (action.equals(BookingForm.parameterSaveBooking)) {
             form = bf.getFormMaintainingAllParameters(true, false);
             form.maintainParameter(this.parameterProductId);
