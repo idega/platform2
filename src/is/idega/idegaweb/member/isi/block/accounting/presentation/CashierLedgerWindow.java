@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.idega.block.cal.business.CalBusiness;
+import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
+import com.idega.block.cal.business.LedgerVariationsHandler;
 import com.idega.block.cal.data.CalendarLedger;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
@@ -31,6 +33,7 @@ import com.idega.user.presentation.UserPropertyWindow;
  */
 public class CashierLedgerWindow extends CashierSubWindowTemplate{
 	public static String NEW_USER_IN_LEDGER = "user_new_in_ledger_";
+	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
 	
 	public CashierLedgerWindow() {
 		super();
@@ -77,21 +80,38 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 							}
 						}				
 					}
+					UserBusiness userBiz = getUserBusiness(iwc);
+					Collection parentGroups = null;
+					String divisionNameField = null;
+					String clubNameField =  null;
+					LedgerVariationsHandler ledgerVariationsHandler = getLedgerVariationsHandler(iwc);
 					Group ledgerGroup = null;
 					try{
-						ledgerGroup = getUserBusiness(iwc).getGroupBusiness().getGroupByGroupID(ledGroupID);
+						ledgerGroup = userBiz.getGroupBusiness().getGroupByGroupID(ledGroupID);
+						parentGroups = userBiz.getGroupBusiness().getParentGroupsRecursive(userBiz.getGroupBusiness().getGroupByGroupID(ledGroupID));
 					}catch(Exception e) {
 						ledgerGroup = null;
-					}					
+					}		
+					if(parentGroups != null) {						
+						divisionNameField = ledgerVariationsHandler.getParentGroupName(parentGroups);
+						clubNameField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
+					}
 					Link aLink = null;
+					IWResourceBundle iwrb = getResourceBundle(iwc);
+					String displayText = text.toString();
 					if(ledgerGroup != null) {
-						IWResourceBundle iwrb = getResourceBundle(iwc);
-						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.in_group_text","in group"));
-						aLink = new Link(text + " - "+ t + " " + ledgerGroup.getName());
+						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.in_group_text","in group") + ":");
+						displayText += " - " + t + " " + ledgerGroup.getName();
 					}
-					else {
-						aLink = new Link(text);
+					if(clubNameField != null) {
+						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.club_name_text", "club name") + ":");
+						displayText += " - " + t + " " + clubNameField;
 					}
+					if(divisionNameField != null) {
+						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.division_name_text","division name") + ":");
+						displayText += " - " + t + " " + divisionNameField;
+					}
+					aLink = new Link(displayText);
 					if(!isInGroup) {
 						aLink.setStyleClass("errorMessage");
 					}
@@ -138,6 +158,32 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		add(entityBrowser);
 		
 	}
+	public static LedgerVariationsHandler getLedgerVariationsHandler(IWContext iwc) {
+		// the class used to handle ledgerVariations is an applicationProperty... 
+		String bClass = null;
+		try {
+			bClass = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS);
+		} catch(Exception e) {
+			// just user default LedgerVariationHandler class
+		}
+		LedgerVariationsHandler ledgerVariationsHandler;
+		if(bClass!=null && bClass.trim().length()>0) {
+			Class classDef;
+			try {
+				classDef = Class.forName(bClass);
+				ledgerVariationsHandler = (LedgerVariationsHandler) classDef.newInstance();
+			} catch (Exception e) {
+				System.out.println("Couldn't instantiate class for ledgerVariationsHandler, using default: " + bClass);
+				e.printStackTrace();
+				ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+			}
+		} else {
+			ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+		}
+		return ledgerVariationsHandler;
+		
+	}
+
 	
 	public UserBusiness getUserBusiness(IWApplicationContext iwc) {
 		UserBusiness userBiz = null;
