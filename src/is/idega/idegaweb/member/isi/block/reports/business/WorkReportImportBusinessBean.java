@@ -652,14 +652,22 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						HSSFCell ssn = row.createCell(COLUMN_MEMBER_SSN);
 						name.setCellValue(memb.getName());
 						ssn.setCellValue(memb.getPersonalId());
-					}
-					
-					HSSFRow r2 = memberSheet.getRow((short)0);
-					HSSFCell c2 = r2.getCell((short)1);
-					c2.setCellValue(club.getName());
+					}					
 				}
 			}
 			
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		try {
 			HSSFSheet board = workbook.getSheetAt(SHEET_BOARD_PART);
 			HSSFRow r = board.getRow((short)0);
 			HSSFCell c = r.getCell((short)2);
@@ -703,6 +711,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			c = r.getCell((short)9);
 			c.setCellValue(club.getName());
 			
+			HSSFSheet memberSheet = workbook.getSheetAt(SHEET_MEMBER_PART);
+			r = memberSheet.getRow((short)0);
+			c = r.getCell((short)1);
+			c.setCellValue(club.getName());
+			
+			
 			HSSFSheet lookup = workbook.getSheetAt(SHEET_LOOKUP_PART);
 			//this.getGroupBusiness().
 			Collection leagues = getAllLeagueGroups();
@@ -710,19 +724,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			int rowNr = 1;
 			while (it.hasNext()) {
 				Group league = (Group)it.next();
-				r = lookup.getRow((short)rowNr++);
-				c = r.getCell((short)0);
+				r = lookup.createRow((short)rowNr++);
+				c = r.createCell((short)0);
 				c.setCellValue(league.getAbbrevation()+"-"+league.getName());
 			}
+			
 		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (EJBException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
+		catch(Exception e) {
+			
 		}
 	}
 
