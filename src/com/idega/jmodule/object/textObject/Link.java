@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.44 2001/09/27 13:31:17 laddi Exp $
+ * $Id: Link.java,v 1.45 2001/09/27 13:37:08 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -812,10 +812,6 @@ public class Link extends Text {
 	  initVariables(modinfo);
     boolean addParameters = true;
     String oldURL = getURL();
-
-System.out.println("DisplayString: "+displayString);
-System.out.println("ObjectType: "+_objectType);
-System.out.println("HasClass: "+hasClass);
 
     if (oldURL == null) {
       oldURL = modinfo.getRequestURI();
