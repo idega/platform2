@@ -106,7 +106,7 @@ public class Referrals extends EHealthBlock {
 		
 		T.add(new Break(), 1, 3);
 		T.setHeight(1, 3, "160");		
-		T.setHeight(1, 4, "40");
+		T.setHeight(1, 4, "125");
 		myForm.add(T);
 		
 		Page pVisit = this.getParentPage();
@@ -143,7 +143,7 @@ public class Referrals extends EHealthBlock {
 		layer.setOverflow("scroll");
 		layer.setPositionType("absolute");
 		layer.setWidth("610");
-		layer.setHeight("75");
+		layer.setHeight("150");
 		layer.setMarkupAttribute("class", "ehealth_div");
 		
 		
