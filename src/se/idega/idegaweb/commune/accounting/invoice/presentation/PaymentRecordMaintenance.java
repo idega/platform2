@@ -40,11 +40,11 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/13 13:58:02 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/18 09:32:29 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -82,7 +82,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String NO_PAYMENT_RECORDS_FOUND_KEY = PREFIX + "no_payment_records_found";
     private static final String PAYMENT_DEFAULT = "Utbetalning";
     private static final String PAYMENT_KEY = PREFIX + "payment";
-    private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningsrad";
+    //private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningsrad";
     private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
@@ -197,7 +197,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         table.setHeight (row++, 6);
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getDetailedPaymentRecordListTable
-                   (context, record, invoiceRecords), 1, row++);
+                   (context, invoiceRecords), 1, row++);
         table.setHeight (row++, 6);
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getDetailedPaymentRecordSummaryTable
@@ -216,7 +216,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     }
 
     private Table getDetailedPaymentRecordListTable
-        (final IWContext context, final PaymentRecord paymentRecord,
+        (final IWContext context,
          final Collection invoiceRecords)
     throws RemoteException, javax.ejb.FinderException {
         // set up header row
@@ -309,9 +309,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 + getFormattedPeriod (record.getPeriodEndCheck ());
         final String days = record.getDays () + "";
         final String amount = ((long) record.getAmount ()) + "";
-        final String placementPeriod = getFormattedPeriod
-                (record.getPeriodStartPlacement ()) + " - "
-                + getFormattedPeriod (record.getPeriodEndPlacement ());
+        //final String placementPeriod = getFormattedPeriod(record.getPeriodStartPlacement ()) + " - " + getFormattedPeriod (record.getPeriodEndPlacement ());
         final String dateChanged
                 = getFormattedDate (record.getDateChanged ());
         final String changedBy = record.getChangedBy ();
