@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.51 2003/12/13 17:25:24 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.52 2004/01/05 11:36:12 sigtryggur Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -60,6 +60,17 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	private final static String KEY_ERROR_POST_PARAM_DATE_NULL = "posting_parm_edit.post_date_null";
 	private final static String KEY_ERROR_POST_PARAM_SCHOOL_YEARS = "posting_parm_edit.post_school_years";
 	
+	private Collection fieldsList;
+	private Date createdFieldsListDate;
+	
+	private Date getCreatedFieldsListDate() {
+		return createdFieldsListDate;
+	}
+	
+	private Collection getFieldsList() {
+		return fieldsList;
+	}
+
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
 	 * @param first posting string
@@ -123,13 +134,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		int fieldLength=0;							//Length of next field. Fetched from the definition 
 
 		try {
-			PostingStringHome ksHome = getPostingStringHome();
-			PostingFieldHome kfHome = getPostingFieldHome();
-
-			PostingString posting = ksHome.findPostingStringByDate(new Date(IWTimestamp.getTimestampRightNow().getTime()));
-			Collection list = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));
-
-			Iterator iter = list.iterator();
+			if (getCreatedFieldsListDate() == null || getCreatedFieldsListDate().getDate() != IWTimestamp.getTimestampRightNow().getDate())
+				createFieldsList();
+			Iterator iter = getFieldsList().iterator();
 			while (iter.hasNext()) {
 				PostingField field = (PostingField)iter.next();
 				fieldLength = field.getLen();
@@ -151,6 +158,14 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		return "";
 	}
 	
+	private void createFieldsList() throws RemoteException, FinderException {
+		PostingStringHome ksHome = getPostingStringHome();
+		PostingFieldHome kfHome = getPostingFieldHome();
+		createdFieldsListDate = new Date(IWTimestamp.getTimestampRightNow().getTime());
+		PostingString posting = ksHome.findPostingStringByDate(createdFieldsListDate);
+		fieldsList = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));		
+	}
+
 	/**
 	 * Validates that all the required fields have been set. If they are not set, a
 	 * MissingMandatoryFieldException will be thrown.
