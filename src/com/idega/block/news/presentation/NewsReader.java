@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.109 2002/12/19 13:08:27 aron Exp $
+ * $Id: NewsReader.java,v 1.110 2002/12/29 16:03:58 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -628,6 +628,10 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       row++;
       /////////// BODY PART //////////
       if(showTeaserText  && sTeaser.length()> 0 && !showAll){
+				if(showImages){
+					T.add(getNewsImage(newsHelper, sHeadline),1,row);
+					//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+				}
 	      T.add(teaser,1,row);
 	      needMoreButton = true;
       }
@@ -650,44 +654,8 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
         //////////// IMAGE PART ///////////
         if(showImages){
+        	T.add(getNewsImage(newsHelper, sHeadline),1,row);
           //if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
-          List files = newsHelper.getContentHelper().getFiles();
-          if(files!=null){
-            try{
-              //Table imageTable = new Table(1, 2);
-              ICFile imagefile = (ICFile)files.get(0);
-              int imid = imagefile.getID();
-              String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
-
-              Image newsImage = new Image(imid);
-              if(att != null)
-		            newsImage.setAttributes(getAttributeMap(att));
-	            else{
-                newsImage.setAlignment("right");
-                newsImage.setBorder(ImageBorder);
-	            }
-              // first news
-              if(newsCount==1){
-                //if(newsImage.getWidth()==null)
-                  //newsImage.setMaxImageWidth(firstImageWidth);
-                T.add(newsImage,1,row);
-              }
-              // other news
-              else{
-                if(newsImage.getWidth()==null)
-                  newsImage.setMaxImageWidth(ImageWidth);
-                Link L = new Link(newsImage);
-                L.addParameter(ImageWindow.prmImageId,imid);
-                L.addParameter(ImageWindow.prmInfo,sHeadline);
-                ImageWindow w = new ImageWindow();
-                L.setWindowToOpen(ImageWindow.class);
-                T.add(L,1,row);
-              }
-            }
-            catch(SQLException ex){
-              ex.printStackTrace();
-            }
-	        }
 	      }
 
 	      T.add(newsBody,1,row);
@@ -1220,5 +1188,46 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 				returnString += parName+"="+iwc.getParameter(parName);
 		}
     return  cacheStatePrefix+returnString;
+  }
+  
+  private PresentationObject getNewsImage(NewsHelper newsHelper, String headline) {
+		List files = newsHelper.getContentHelper().getFiles();
+		if(files!=null){
+			try{
+				//Table imageTable = new Table(1, 2);
+				ICFile imagefile = (ICFile)files.get(0);
+				int imid = imagefile.getID();
+				String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+
+				Image newsImage = new Image(imid);
+				if(att != null)
+					newsImage.setAttributes(getAttributeMap(att));
+				else{
+					newsImage.setAlignment("right");
+					newsImage.setBorder(ImageBorder);
+				}
+				// first news
+				if(newsCount==1){
+					//if(newsImage.getWidth()==null)
+						//newsImage.setMaxImageWidth(firstImageWidth);
+					return newsImage;
+				}
+				// other news
+				else{
+					if(newsImage.getWidth()==null)
+						newsImage.setMaxImageWidth(ImageWidth);
+					Link L = new Link(newsImage);
+					L.addParameter(ImageWindow.prmImageId,imid);
+					L.addParameter(ImageWindow.prmInfo,headline);
+					ImageWindow w = new ImageWindow();
+					L.setWindowToOpen(ImageWindow.class);
+					return L;
+				}
+			}
+			catch(SQLException ex){
+				ex.printStackTrace();
+			}
+		}
+		return null;
   }
 }
