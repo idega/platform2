@@ -57,6 +57,9 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		
 		//gender
 		user.setGender((Integer) this.getGender(gender).getPrimaryKey() );
+		
+		user.store(); 
+			
 
 		
 		//email
@@ -101,7 +104,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		
 						
 		
-		user.store(); 
+	
 		
 		return createGroupApplication(applicationGroup, user, status, comment, groups);
 		

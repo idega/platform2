@@ -33,6 +33,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
 
     private static final String COLUMN_USER_ID = "ic_user_id";
     private static final String COLUMN_APPLICATION_GROUP_ID = "application_group_id";
+        
     private static final String COLUMN_STATUS = "status";
     private static final String COLUMN_USER_COMMENT = "user_comment";
     private static final String COLUMN_ADMIN_COMMENT = "admin_comment";
@@ -45,8 +46,8 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
             
     
   public final void initializeAttributes(){
-    
-    addAttribute(getIDColumnName(),"Application group",true,true,Integer.class,"many-to-one",Group.class);    
+    addAttribute(getIDColumnName());
+    addAttribute(COLUMN_APPLICATION_GROUP_ID,"Application group",true,true,Integer.class,"many-to-one",Group.class);    
     addAttribute(COLUMN_USER_ID,"User",true,true,Integer.class,"many-to-one",User.class);
     addAttribute(COLUMN_STATUS,"Status", true, true, "java.lang.String",15);    
     addAttribute(COLUMN_USER_COMMENT,"User comment", true, true, "java.lang.String",1000);
@@ -55,8 +56,6 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
     addAttribute(COLUMN_MODIFIED,"Modified",Timestamp.class);
     
     this.addManyToManyRelationShip(Group.class);
-    
-    setAsPrimaryKey(getIDColumnName(),true);
   }
 
 
@@ -67,10 +66,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
 
 
 
-  /*  ColumNames begin   should do this later*/
-  public String getIDColumnName(){
-  	return COLUMN_APPLICATION_GROUP_ID;
-  }
+
     
   /*  ColumNames end   */
 
