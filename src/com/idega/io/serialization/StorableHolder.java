@@ -1,6 +1,5 @@
-package com.idega.builder.data;
+package com.idega.io.serialization;
 
-import com.idega.io.export.Storable;
 
 /**
  * <p>Title: idegaWeb</p>

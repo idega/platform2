@@ -23,7 +23,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
-import com.idega.io.export.Storable;
+import com.idega.io.serialization.Storable;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;

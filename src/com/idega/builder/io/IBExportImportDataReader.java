@@ -1,4 +1,4 @@
-package com.idega.io.export;
+package com.idega.builder.io;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -14,17 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageCacher;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
 import com.idega.builder.data.IBExportImportData;
 import com.idega.builder.data.IBReferences;
-import com.idega.builder.data.StorableHolder;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.data.ICObject;
@@ -36,6 +33,13 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.io.UploadFile;
 import com.idega.io.ZipInputStreamIgnoreClose;
+import com.idega.io.serialization.FileObjectReader;
+import com.idega.io.serialization.ICFileReader;
+import com.idega.io.serialization.ObjectReader;
+import com.idega.io.serialization.ReaderFromFile;
+import com.idega.io.serialization.Storable;
+import com.idega.io.serialization.StorableHolder;
+import com.idega.io.serialization.XMLDataReader;
 import com.idega.presentation.IWContext;
 import com.idega.util.StringHandler;
 import com.idega.util.datastructures.HashMatrix;
@@ -480,7 +484,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
   }
 
 	/* (non-Javadoc)
-	 * @see com.idega.io.ObjectReader#read(com.idega.util.xml.XMLData)
+	 * @see com.idega.io.IBObjectReader#read(com.idega.util.xml.XMLData)
 	 */
 	public Object read(XMLData xmlData, IWContext context)  {
 		return new XMLDataReader(xmlData, context);
@@ -488,7 +492,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 
 
 	/* (non-Javadoc)
-	 * @see com.idega.io.ObjectReader#read(com.idega.builder.data.IBExportImportData)
+	 * @see com.idega.io.IBObjectReader#read(com.idega.builder.data.IBExportImportData)
 	 */
 	public Object read(IBExportImportData metadata, IWContext context) throws RemoteException {
 		// TODO Auto-generated method stub
@@ -497,7 +501,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 
 
 	/* (non-Javadoc)
-	 * @see com.idega.io.ObjectReader#read(com.idega.core.builder.data.ICPage)
+	 * @see com.idega.io.IBObjectReader#read(com.idega.core.builder.data.ICPage)
 	 */
 	public Object read(ICPage page, IWContext context) throws RemoteException {
 		return null;

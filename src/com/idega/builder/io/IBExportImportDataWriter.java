@@ -1,4 +1,4 @@
-package com.idega.io.export;
+package com.idega.builder.io;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -16,6 +16,12 @@ import java.util.zip.ZipOutputStream;
 import com.idega.builder.data.IBExportImportData;
 import com.idega.core.file.data.ICFile;
 import com.idega.io.ZipOutputStreamIgnoreClose;
+import com.idega.io.serialization.FileObjectWriter;
+import com.idega.io.serialization.ICFileWriter;
+import com.idega.io.serialization.ObjectWriter;
+import com.idega.io.serialization.Storable;
+import com.idega.io.serialization.WriterToFile;
+import com.idega.io.serialization.XMLDataWriter;
 import com.idega.presentation.IWContext;
 import com.idega.util.StringHandler;
 import com.idega.util.xml.XMLData;
@@ -159,8 +165,9 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
   			output.closeEntry();
   		}
   	}
-  	// do not hide an existing exception
+
   	catch (IOException io) {
+  	  	// do not hide an existing exception
   	}
   }
   
@@ -170,8 +177,8 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
   			output.closeStream();
   		}
   	}
-  	// do not hide an existing exception
   	catch (IOException io) {
+  	  	// do not hide an existing exception
   	}
   }
 
