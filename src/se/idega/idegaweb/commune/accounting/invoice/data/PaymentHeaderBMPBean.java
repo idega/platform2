@@ -168,4 +168,25 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return idoFindPKsBySQL(sql.toString());
 	}
 
+	/**
+	 * Finds a collection of Payment headers for 
+	 * given the input parameters
+	 * 
+	 * @param status
+	 * @param schoolID
+	 * @return
+	 * @throws IDOLookupException
+	 * @throws EJBException
+	 * @throws FinderException
+	 */
+	public Collection ejbFindByStatusAndSchoolId(String status, int schoolID) throws IDOLookupException, EJBException, FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_STATUS, status);
+		sql.appendAndEquals(COLUMN_SCHOOL_ID, schoolID);
+		return idoFindPKsBySQL(sql.toString());
+	}
+
+
+
 }
