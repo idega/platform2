@@ -2,7 +2,7 @@
  * Created on Aug 1, 2003
  *
  */
-package is.idega.idegaweb.member.presentation;
+package is.idega.block.family.presentation;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;

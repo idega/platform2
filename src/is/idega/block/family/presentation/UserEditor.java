@@ -3,8 +3,6 @@
  *
  */
 package is.idega.block.family.presentation;
-import is.idega.idegaweb.member.presentation.FamilyRelationConnector;
-import is.idega.idegaweb.member.presentation.UserRelationConnector;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.ArrayList;

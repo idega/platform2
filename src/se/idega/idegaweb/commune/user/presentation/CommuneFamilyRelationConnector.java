@@ -14,7 +14,7 @@ import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.presentation.FamilyRelationConnector;
+import is.idega.block.family.presentation.FamilyRelationConnector;
 
 /**
  * CommuneFamilyRelationConnector
