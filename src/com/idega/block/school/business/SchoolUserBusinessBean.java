@@ -76,6 +76,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			SchoolUser sUser = getSchoolUserHome().findByPrimaryKey(id);
 			sUser.remove();
 		}
+		getUserBusiness().deleteUser(user.getID());
 	}
 	
 	public void removeUser(School school, User user) throws FinderException, RemoteException, RemoveException {
@@ -88,6 +89,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				sUser.remove();
 			}
 		}
+		getUserBusiness().deleteUser(user.getID());
 	}
 
 	public Collection getTeachers(int schoolID) throws RemoteException, FinderException {
@@ -105,16 +107,17 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		if ( coll == null || coll.size() < 1 ) {
 			int headmasterId = school.getHeadmasterUserId();
 			if (headmasterId > 0) {
-				User user = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(new Integer(headmasterId));
-				coll = new Vector();
-				coll.add(user.getPrimaryKey());
-				
 				try {
+					User user = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(new Integer(headmasterId));
+					coll = new Vector();
+					coll.add(user.getPrimaryKey());
+				
 					addHeadmaster(school, user);
 					System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school headmasters");
 				} catch (CreateException e) {
 					System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school headmasters failed (addHeadmaster())");
-//					e.printStackTrace(System.err);
+				} catch (FinderException e) {
+					System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school headmasters failed cannot find hm with ID = "+headmasterId);
 				}
 			}
 		}
@@ -129,23 +132,29 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		if ( coll == null || coll.size() < 1 ) {
 			int ahgi = school.getAssistantHeadmasterGroupId();
 			if (ahgi > 0) {
-				Collection users = getUserBusiness().getGroupBusiness().getUsers(ahgi);
-				if ( users != null && users.size() > 0 ) {
-					User user;
-					Iterator iter = users.iterator();
-					coll = new Vector();
-					while (iter.hasNext()) {
-						user = (User) iter.next();
-						coll.add(user.getPrimaryKey());
-						try {
-							addWebAdmin(school, user);
-							System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school assistant headmasters");
-						} catch (CreateException e) {
-							System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school assistant headmasters failed (addWebAdmin())");
-	//					e.printStackTrace(System.err);
+				try {
+					Collection users = getUserBusiness().getGroupBusiness().getUsers(ahgi);
+					if ( users != null && users.size() > 0 ) {
+						User user;
+						Iterator iter = users.iterator();
+						coll = new Vector();
+						while (iter.hasNext()) {
+							try {
+								user = (User) iter.next();
+								coll.add(user.getPrimaryKey());
+								addWebAdmin(school, user);
+								System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school assistant headmasters");
+							} catch (CreateException e) {
+								System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school assistant headmasters failed (addWebAdmin())");
+		//					e.printStackTrace(System.err);
+							} catch (FinderException e) {
+								System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school assistant headmasters failed, cannot find user with ID "+ahgi);
+							}
 						}
+						
 					}
-					
+				}catch (Exception fe) {
+					System.out.println("[SchoolUserBusinessBean] : getAssistantHeadmasters() : cannot find any users...");
 				}
 			}
 		}
@@ -160,23 +169,30 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		if ( coll == null || coll.size() < 1 ) {
 			int hgi = school.getHeadmasterGroupId();
 			if (hgi > 0) {
-				Collection users = getUserBusiness().getGroupBusiness().getUsers(hgi);
-				if ( users != null && users.size() > 0 ) {
-					User user;
-					Iterator iter = users.iterator();
-					coll = new Vector();
-					while (iter.hasNext()) {
-						user = (User) iter.next();
-						coll.add(user.getPrimaryKey());
-						try {
-							addWebAdmin(school, user);
-							System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school web admins");
-						} catch (CreateException e) {
-							System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school web admins failed (addWebAdmin())");
-	//					e.printStackTrace(System.err);
+				try {
+					Collection users = getUserBusiness().getGroupBusiness().getUsers(hgi);
+					if ( users != null && users.size() > 0 ) {
+						User user;
+						Iterator iter = users.iterator();
+						coll = new Vector();
+						while (iter.hasNext()) {
+							try {
+								user = (User) iter.next();
+								coll.add(user.getPrimaryKey());
+								addWebAdmin(school, user);
+								System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school web admins");
+							} catch (CreateException e) {
+								System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school web admins failed (addWebAdmin())");
+		//					e.printStackTrace(System.err);
+							} catch (FinderException e) {
+								System.out.println("[SchoolUserBusinessBean] : Backwards compatability for school web admins failed, cannot find user with Id = "+hgi);
+		//					e.printStackTrace(System.err);
+							}
 						}
+						
 					}
-					
+				}catch (Exception fe) {
+					System.out.println("[SchoolUserBusinessBean] : getWebAdmins() : cannot find any users...");
 				}
 			}
 		}
