@@ -182,7 +182,7 @@ public class TariffAssessments extends Finance {
 				collectionNavigator.addMaintainParameter(PRM_ACTION);
 				
 				try {
-					assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,getCollectionViewSize(),getCollectionIndex());
+					assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,-1,-1);//getCollectionViewSize(),getCollectionIndex());
 					
 				} catch (RemoteException e) {
 					e.printStackTrace();
