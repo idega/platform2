@@ -568,7 +568,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
-		sendMessageToParents(application, subject, body);
+		sendMessageToParents(application, subject, body, false);
 	}
 	
 	private void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {
