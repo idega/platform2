@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.35 2002/11/19 12:14:34 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.36 2002/11/19 13:55:06 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/19 12:14:34 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/19 13:55:06 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -310,6 +310,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.add(getSingleInput(iwc, SSN_KEY + COHABITANT_KEY, 12, true), 3, row++);
 			table.add(getHeader(CIVIL_STATUS_KEY, CIVIL_STATUS_DEFAULT), 1, row);
 			table.add(getSingleInput(iwc, CIVIL_STATUS_KEY + COHABITANT_KEY, 20, false), 3, row++);
+            table.add (getHeader (GENDER_KEY, GENDER_DEFAULT), 1, row);
+            table.add (getGenderDropdownInput (iwc, COHABITANT_KEY), 3, row++);
 			table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, row);
 			table.add(getSingleInput(iwc, PHONE_WORK_KEY + COHABITANT_KEY, 20, false), 3, row++);
 		}
@@ -317,17 +319,26 @@ public class CitizenAccountApplication extends CommuneBlock {
 		final int childrenCount = getIntParameter(iwc, CHILDREN_COUNT_KEY);
 		if (childrenCount > 0) {
 			// applicant has children
-			final Text childrenHeader = getLocalizedHeader(CHILDREN_KEY, CHILDREN_DEFAULT);
+			final Text childrenHeader = getLocalizedHeader (CHILDREN_KEY,
+                                                           CHILDREN_DEFAULT);
 			table.setHeight(row++, 6);
 			table.mergeCells(1, row, 3, row);
 			table.add(childrenHeader, 1, row++);
 			for (int i = 0; i < childrenCount; i++) {
-				table.add(getHeader(FIRST_NAME_KEY, FIRST_NAME_DEFAULT), 1, row);
-				table.add(getSingleInput(iwc, FIRST_NAME_KEY + CHILDREN_KEY + i, 40, true), 3, row++);
-				table.add(getHeader(LAST_NAME_KEY, LAST_NAME_DEFAULT), 1, row);
-				table.add(getSingleInput(iwc, LAST_NAME_KEY + CHILDREN_KEY + i, 40, true), 3, row++);
-				table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, row);
-				table.add(getSingleInput(iwc, SSN_KEY + CHILDREN_KEY + i, 12, true), 3, row++);
+				table.add (getHeader (FIRST_NAME_KEY, FIRST_NAME_DEFAULT), 1,
+                           row);
+				table.add (getSingleInput (iwc, FIRST_NAME_KEY + CHILDREN_KEY
+                                           + i, 40, true), 3, row++);
+				table.add (getHeader (LAST_NAME_KEY, LAST_NAME_DEFAULT), 1,
+                           row);
+				table.add (getSingleInput (iwc, LAST_NAME_KEY + CHILDREN_KEY
+                                           + i, 40, true), 3, row++);
+				table.add (getHeader (SSN_KEY, SSN_DEFAULT), 1, row);
+				table.add (getSingleInput (iwc, SSN_KEY + CHILDREN_KEY + i, 12,
+                                           true), 3, row++);
+                table.add (getHeader (GENDER_KEY, GENDER_DEFAULT), 1, row);
+                table.add (getGenderDropdownInput (iwc, CHILDREN_KEY + i), 3,
+                           row++);
 			}
 		}
 
@@ -546,9 +557,17 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private DropdownMenu getGenderDropdownInput(final IWContext iwc) {
-		DropdownMenu dropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(GENDER_KEY));
+        return getGenderDropdownInput (iwc, "");
+	}
+
+	private DropdownMenu getGenderDropdownInput(final IWContext iwc,
+                                                final String postFix) {
+		DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                (new DropdownMenu(GENDER_KEY));
 		try {
-			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
+			final CitizenAccountBusiness business = (CitizenAccountBusiness)
+                    IBOLookup.getServiceInstance (iwc,
+                                                  CitizenAccountBusiness.class);
 			final Gender[] genders = business.getGenders();
 			for (int i = 0; i < genders.length; i++) {
 				final String nameInDb = genders[i].getName();
@@ -556,8 +575,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 				final String id = genders[i].getPrimaryKey().toString();
 				dropdown.addMenuElementFirst(id, name);
 			}
-			if (iwc.isParameterSet(GENDER_KEY)) {
-				dropdown.setSelectedElement(iwc.getParameter(GENDER_KEY));
+			if (iwc.isParameterSet(GENDER_KEY + postFix)) {
+				dropdown.setSelectedElement(iwc.getParameter(GENDER_KEY
+                                                             + postFix));
 			}
 
 		}
