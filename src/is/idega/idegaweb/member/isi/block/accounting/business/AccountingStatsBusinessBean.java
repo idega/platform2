@@ -4,6 +4,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean;
+import is.idega.idegaweb.member.isi.block.accounting.data.PaymentType;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.util.IWMemberConstants;
@@ -183,41 +184,56 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		 Map financeEntriesByDivisions = new TreeMap();
 		 
-		 //Iterating through reports and creating report data 
+		 //Iterating through reports and creating report data
+		 Group division = null;
+		 Group group = null;
+		 User user = null;
+		 ClubTariffType tariffType = null;
 		 Iterator iter = finEntries.iterator();
 		 while (iter.hasNext()) {
 			 FinanceEntry financeEntry = (FinanceEntry) iter.next();
-			 //try {
-			 	Group division = financeEntry.getDivision();
-			 	Group group = financeEntry.getGroup();
-			 	User user = financeEntry.getUser();
-			 	
-			 	String personalID = user.getPersonalID();
+			 String divisionString = null;
+			 String groupString = null;
+			 String userString = null;
+			 String personalID = null;
+			 String tariffTypeString = null;
+
+			 division = financeEntry.getDivision();
+			 if (division != null)
+			 	divisionString = division.getName();
+			 group = financeEntry.getGroup();
+			 if (group != null)
+			 	groupString = group.getName();
+			 user = financeEntry.getUser();
+			 if (user != null) {
+			 	userString = user.getName();
+			 	personalID = user.getPersonalID();
 			 	if (personalID != null && personalID.length() == 10) {
 			 		personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
 			 	}
+			 }
+			 tariffType = financeEntry.getTariffType();
+			 if (tariffType != null)
+			 	tariffTypeString = tariffType.getName();
+			 
 		 		//create a new ReportData for each row
 		 		ReportableData data = new ReportableData();
 		 		//	add the data to the correct fields/columns
-		 		data.addData(divisionField, division.getName() );
-		 		data.addData(groupField, group.getName() );
-		 		data.addData(nameField, user.getName() );
+		 		data.addData(divisionField, divisionString );
+		 		data.addData(groupField, groupString );
+		 		data.addData(nameField, userString );
 		 		data.addData(personalIDField, personalID );
 		 		data.addData(amountField, new Double(financeEntry.getAmount()) );
 		 		data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
 		 		data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
 		 		data.addData(infoField, financeEntry.getInfo() );
-		 		data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+		 		data.addData(tariffTypeField, tariffTypeString );		
 			 		
 		 		List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 		 		if (statsForDivision == null)
 		 			statsForDivision = new Vector();
 		 		statsForDivision.add(data);
 		 		financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
-			 //}
-			 //catch (Exception e) {
-			 //	e.printStackTrace();
-			 //}
 		 } 
 		 // iterate through the ordered map and ordered lists and add to the final collection
 		 Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
@@ -312,41 +328,55 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		String[] types = {FinanceEntryBMPBean.TYPE_PAYMENT };
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		Map financeEntriesByDivisions = new TreeMap();
-		
+		Group division = null;
+		Group group = null;
+		User user = null;
+		PaymentType paymentType = null;
 		//Iterating through reports and creating report data 
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
-			//try {
-			Group division = financeEntry.getDivision();
-			Group group = financeEntry.getGroup();
-			User user = financeEntry.getUser();
-			
-			String personalID = user.getPersonalID();
-			if (personalID != null && personalID.length() == 10) {
-				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			String divisionString = null;
+			String groupString = null;
+			String userString = null;
+			String personalID = null;
+			String paymentTypeString = null;
+
+			division = financeEntry.getDivision();
+			if (division != null)
+				divisionString = division.getName();
+			group = financeEntry.getGroup();
+			if (group != null)
+				groupString = group.getName();
+			user = financeEntry.getUser();
+			if (user != null) {
+				userString = user.getName();
+				personalID = user.getPersonalID();
+				if (personalID != null && personalID.length() == 10) {
+					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+				}
 			}
+			paymentType = financeEntry.getPaymentType();
+			if (paymentType != null)
+				paymentTypeString = paymentType.getName();
+			
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
 			//	add the data to the correct fields/columns
-			data.addData(divisionField, division.getName() );
-			data.addData(groupField, group.getName() );
-			data.addData(nameField, user.getName() );
+			data.addData(divisionField, divisionString );
+			data.addData(groupField, groupString );
+			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
+			data.addData(paymentModeField, paymentTypeString );
 			data.addData(sentField, "" );
-			data.addData(paymentModeField, financeEntry.getPaymentType() );		
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 			if (statsForDivision == null)
 				statsForDivision = new Vector();
 			statsForDivision.add(data);
-			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
-			//}
-			//catch (Exception e) {
-			//	e.printStackTrace();
-			//}
+			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);
 		} 
 		// iterate through the ordered map and ordered lists and add to the final collection
 		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
@@ -417,6 +447,10 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
+		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
+		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		reportCollection.addField(phoneField);
+		
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
 		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
@@ -445,32 +479,60 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		Map financeEntriesByPersons = new TreeMap();
-		
+		Group division = null;
+		Group group = null;
+		User user = null;
+		ClubTariffType tariffType = null;
+		Phone phone = null;
 		//Iterating through reports and creating report data 
+		
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
-			//try {
-			Group division = financeEntry.getDivision();
-			Group group = financeEntry.getGroup();
-			User user = financeEntry.getUser();
-			
-			String personalID = user.getPersonalID();
-			if (personalID != null && personalID.length() == 10) {
-				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			String divisionString = null;
+			String groupString = null;
+			String userString = null;
+			String personalID = null;
+			String phoneNumber = null;
+			String tariffTypeString = null;
+
+			division = financeEntry.getDivision();
+			if (division != null)
+				divisionString = division.getName();
+			group = financeEntry.getGroup();
+			if (group != null)
+				groupString = group.getName();
+			user = financeEntry.getUser();
+			if (user != null) {
+				userString = user.getName();
+				personalID = user.getPersonalID();
+				if (personalID != null && personalID.length() == 10) {
+					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+				}
+			}
+			tariffType = financeEntry.getTariffType();
+			if (tariffType != null)
+				tariffTypeString = tariffType.getName();
+			Collection phones = user.getPhones();
+			Iterator phIt =	phones.iterator();
+			while (phIt.hasNext()) {
+				phone = (Phone) phIt.next();
+				if (phone!=null)
+					phoneNumber = phone.getNumber();
 			}
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
 			//	add the data to the correct fields/columns
-			data.addData(divisionField, division.getName() );
-			data.addData(groupField, group.getName() );
-			data.addData(nameField, user.getName() );
+			data.addData(divisionField, divisionString );
+			data.addData(groupField, groupString );
+			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
+			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
 			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
 			data.addData(infoField, financeEntry.getInfo() );
-			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			data.addData(tariffTypeField, tariffTypeString );		
 			
 			List statsForPersons = (List) financeEntriesByPersons.get(personalID);
 			if (statsForPersons == null)
@@ -577,16 +639,38 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data 
+		Group division = null;
+		Group group = null;
+		User user = null;
+		ClubTariffType tariffType = null;
+		Phone phone = null;
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
-
-			Group division = financeEntry.getDivision();
-			Group group = financeEntry.getGroup();
-			User user = financeEntry.getUser();
-			
-			Phone phone = null;
+			String divisionString = null;
+			String groupString = null;
+			String userString = null;
+			String personalID = null;
 			String phoneNumber = null;
+			String tariffTypeString = null;
+
+			division = financeEntry.getDivision();
+			if (division != null)
+				divisionString = division.getName();
+			group = financeEntry.getGroup();
+			if (group != null)
+				groupString = group.getName();
+			user = financeEntry.getUser();
+			if (user != null) {
+				userString = user.getName();
+				personalID = user.getPersonalID();
+				if (personalID != null && personalID.length() == 10) {
+					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+				}
+			}
+			tariffType = financeEntry.getTariffType();
+			if (tariffType != null)
+				tariffTypeString = tariffType.getName();
 			Collection phones = user.getPhones();
 			Iterator phIt =	phones.iterator();
 			while (phIt.hasNext()) {
@@ -594,22 +678,18 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				if (phone!=null)
 					phoneNumber = phone.getNumber();
 			}
-			String personalID = user.getPersonalID();
-			if (personalID != null && personalID.length() == 10) {
-				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
-			}
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
 			//	add the data to the correct fields/columns
-			data.addData(divisionField, division.getName() );
-			data.addData(groupField, group.getName() );
-			data.addData(nameField, user.getName() );
+			data.addData(divisionField, divisionString );
+			data.addData(groupField, groupString );
+			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );			
 			data.addData(infoField, financeEntry.getInfo() );
-			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			data.addData(tariffTypeField, tariffTypeString );		
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 			if (statsForDivision == null)
@@ -886,30 +966,49 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByEntryDateDivisionsAndGroups(club, types, entryDateFilter, divisionsFilter, groupsFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
-		//Iterating through reports and creating report data 
+		//Iterating through reports and creating report data
+		Group division = null;
+		Group group = null;
+		User user = null;
+		ClubTariffType tariffType = null;
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
-			//try {
-			Group division = financeEntry.getDivision();
-			Group group = financeEntry.getGroup();
-			User user = financeEntry.getUser();
-			
-			String personalID = user.getPersonalID();
-			if (personalID != null && personalID.length() == 10) {
-				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			String divisionString = null;
+			String groupString = null;
+			String userString = null;
+			String personalID = null;
+			String tariffTypeString = null;
+
+			division = financeEntry.getDivision();
+			if (division != null)
+				divisionString = division.getName();
+			group = financeEntry.getGroup();
+			if (group != null)
+				groupString = group.getName();
+			user = financeEntry.getUser();
+			if (user != null) {
+				userString = user.getName();
+				personalID = user.getPersonalID();
+				if (personalID != null && personalID.length() == 10) {
+					personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+				}
 			}
+			tariffType = financeEntry.getTariffType();
+			if (tariffType != null)
+				tariffTypeString = tariffType.getName();
+			
 			//create a new ReportData for each row
 			ReportableData data = new ReportableData();
 			//	add the data to the correct fields/columns
-			data.addData(divisionField, division.getName() );
-			data.addData(groupField, group.getName() );
-			data.addData(nameField, user.getName() );
+			data.addData(divisionField, divisionString );
+			data.addData(groupField, groupString );
+			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(paymentModeField, financeEntry.getPaymentType() );
 			data.addData(infoField, financeEntry.getInfo() );
-			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			data.addData(tariffTypeField, tariffTypeString );		
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 			if (statsForDivision == null)
