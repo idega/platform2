@@ -58,7 +58,6 @@ public abstract class PaymentThreadSchool extends BillingThread{
 	
 	protected void contracts(){
 		Collection regulationArray = new ArrayList();
-//		Collection applications;
 		ArrayList conditions = new ArrayList();
 		boolean first;
 		ExportDataMapping categoryPosting;
