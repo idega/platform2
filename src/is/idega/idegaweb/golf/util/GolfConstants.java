@@ -1,5 +1,5 @@
 /*
- * $Id: GolfConstants.java,v 1.3 2004/10/29 10:22:01 thomas Exp $
+ * $Id: GolfConstants.java,v 1.4 2005/02/07 17:29:33 eiki Exp $
  * Created on Sep 17, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import com.idega.user.data.MetadataConstants;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/29 10:22:01 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/02/07 17:29:33 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  * 
  */
@@ -36,5 +36,10 @@ public interface GolfConstants {
 	public static final String SUB_CLUBS_META_DATA_KEY = MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY;
 	public static final String MAIN_CLUB_META_DATA_KEY = MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY;
 	public static final String HANDICAP_META_DATA_KEY = MetadataConstants.HANDICAP_GOLF_META_DATA_KEY;
+	
+	
+	public static final String MEMBER_ID = "member_id";
 
+	public static final String MEMBER_UUID = "member_uuid";
+	
 }
