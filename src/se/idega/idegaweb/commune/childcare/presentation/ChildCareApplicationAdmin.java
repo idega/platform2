@@ -10,8 +10,6 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import com.idega.block.process.business.CaseBusiness;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -67,16 +65,11 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String ERROR_MUST_BE_INTEGER	 = "ccaa_must_be_integer";
 	
 	protected User _user = null;
-//	protected IWBundle _iwb;
-//	protected IWResourceBundle _iwrb;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-//		_iwb = getBundle(iwc);
-//		_iwrb = getResourceBundle(iwc);
-
 		if (iwc.getUser() != null)
 			_user = Converter.convertToNewUser(iwc.getUser());
 		else
@@ -86,7 +79,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			setResourceBundle(getResourceBundle(iwc));
 			
 			try {
-				int action = parseAction(iwc);				
+				int action = parseAction(iwc);
 					control(iwc,action);
 			}
 			catch (Exception e) {

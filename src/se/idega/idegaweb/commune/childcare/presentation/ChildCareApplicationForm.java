@@ -73,12 +73,13 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private final static String PARAM_AREA = "cca_area";
 	private final static String PARAM_PROVIDER = "cca_provider";
 	private final static String PARAM_FORM_NAME = "cca_form";
-	private final static String PARAM_TYPE_DROP = "cca_type_drop";
 	private final static String PARAM_CHECK_ID = "cca_check_id";
 	private final static String PARAM_CHILD_ID = "cca_child_id";
-	private final static String PARAM_GUARDIAN_APPROVES = "cca_guardian_approves";
 
 	private final static String NOT_LOGGED_IN = "cca_not_logged_in";
+	private final static String APPLICATION_INSERTED = "cca_application_ok";
+	private final static String APPLICATION_FAILURE = "cca_application_failed";
+	
 
 	protected User _user = null;
 	protected IBPage _presentationPage = null;
@@ -88,10 +89,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	protected int _valProvider[] = {-1, -1, -1, -1, -1};
 	protected int _valArea[] = {-1, -1, -1, -1, -1};
 	protected String _valDate[] = {null, null, null, null, null};
-	protected int _valType = -1;
-	protected boolean _valCustodianAgree = false;
 	
-	protected Collection _schoolTypes = null;
 	protected Collection _areas = null;
 	protected Collection _providers = null;
 
@@ -108,7 +106,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			_user = null;
 
 		if (_user != null) {
-			_schoolTypes = getSchoolTypes(iwc, "CHILDCARE");
 			_areas = getAreas(iwc, "CHILDCARE");
 			_providers = getProviders(iwc, "CHILDCARE");
 			setResourceBundle(getResourceBundle(iwc));
@@ -186,8 +183,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				try {
 					if (child != null) {
 						link = new Link(child.getName());
-						if (getResponsePage() != null)
-							link.setPage(getResponsePage());
 						link.addParameter(PARAM_CHECK_ID, ((Integer) check.getPrimaryKey()).toString());						
 					}
 				}
@@ -275,32 +270,22 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			}
 		}
 
-		Table inputTable = new Table(5, 12);
-		//		inputTable.setWidth("100%");
+		Table inputTable = new Table(5, 9);
 		inputTable.setCellspacing(2);
 		inputTable.setCellpadding(4);
-		inputTable.setAlignment(5, 12, "right");
+		inputTable.setAlignment(5, 9, "right");
 		inputTable.setColor(getBackgroundColor());
 		inputTable.mergeCells(1, 1, 5, 1);
 		inputTable.mergeCells(1, 2, 5, 2);
 		inputTable.mergeCells(1, 3, 5, 3);
-		inputTable.mergeCells(1, 4, 5, 4);
-		inputTable.mergeCells(1, 5, 5, 5);
-		inputTable.mergeCells(1, 11, 5, 11);
-		inputTable.mergeCells(1, 12, 5, 12);
+		inputTable.mergeCells(1, 9, 5, 9);
 
-		inputTable.add(getHeader(localize(SUBJECT, "Application subject")), 1, 1);
-		inputTable.add(getHeader(localize(PROVIDERS, "Providers")), 1, 4);
-
-		CheckBox box = new CheckBox(PARAM_GUARDIAN_APPROVES, "true");
-		inputTable.add(box, 1, 11);
-		inputTable.add(getSmallText(localize(PARAM_GUARDIAN_APPROVES, "Legal guardian approves")), 1, 11);
-		inputTable.setAlignment(1, 11, "Left");
+		inputTable.add(getHeader(localize(PROVIDERS, "Providers")), 1, 2);
 
 		SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, localize(PARAM_FORM_SUBMIT, "Submit application"));
 		submit.setAsImageButton(true);
-		inputTable.setAlignment(1, 12, "Right");
-		inputTable.add(submit, 1, 12);
+		inputTable.setAlignment(1, 9, "Right");
+		inputTable.add(submit, 1, 9);
 
 		String provider = localize(PARAM_PROVIDER, "Provider");
 		String from = localize(CARE_FROM, "From");
@@ -317,17 +302,12 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			providerDrop.setAttribute("style", getSmallTextFontStyle());
 			date.setStyleAttribute("style", getSmallTextFontStyle());
 			providerText = getSmallText(provider + " " + i);
-			inputTable.add(providerText, 1, 5 + i);
-			inputTable.add(fromText, 4, 5 + i);
-			inputTable.add(areaDrop, 2, 5 + i);
-			inputTable.add(providerDrop, 3, 5 + i);
-			inputTable.add(date, 5, 5 + i);
+			inputTable.add(providerText, 1, 3 + i);
+			inputTable.add(fromText, 4, 3 + i);
+			inputTable.add(areaDrop, 2, 3 + i);
+			inputTable.add(providerDrop, 3, 3 + i);
+			inputTable.add(date, 5, 3 + i);
 		}
-
-		DropdownMenu type = getTypeDrop(PARAM_TYPE_DROP);		
-		type.setAttribute("style", getSmallTextFontStyle());
-//		type.setToSubmit();
-		inputTable.add(type, 1, 2);
 
 		add(nameTable1);
 		add(nameTable2);
@@ -344,7 +324,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		boolean done = false;
 		if (business != null) {
 			try {
-				done = business.insertApplications(_user,_valType,_valProvider,_valDate,new Integer(checkId).intValue(),new Integer(childId).intValue(),_valCustodianAgree);
+				done = business.insertApplications(_user,_valProvider,_valDate,new Integer(checkId).intValue(),new Integer(childId).intValue());
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -352,10 +332,14 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			}
 		}
 
-		if (done)
-			add("Done");
+		if (done) {
+			if (getResponsePage() != null)
+				iwc.forwardToIBPage(getParentPage(), getResponsePage());
+			else
+				add(new Text(localize(APPLICATION_INSERTED, "Application submitted")));
+		}
 		else
-			add("Unable to insert application");
+			add(new Text(localize(APPLICATION_FAILURE, "Failed to submit application")));
 	}
 
 	public void setProviderPresentationLink(IBPage page) {
@@ -398,23 +382,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		}
 
 		return null;
-	}
-
-	private DropdownMenu getTypeDrop(String name) {
-		try {
-			DropdownMenu drp = new DropdownMenu(name);
-			drp.addMenuElement("-1", _iwrb.getLocalizedString("cca_type", "School type"));
-			Iterator iter = _schoolTypes.iterator();
-			while (iter.hasNext()) {
-				SchoolType type = (SchoolType) iter.next();
-				drp.addMenuElement(type.getPrimaryKey().toString(), type.getSchoolTypeName());
-			}
-
-			return drp;
-		}
-		catch (java.rmi.RemoteException e) {
-			return null;
-		}
 	}
 
 	private DropdownMenu getAreaDrop(String name) {
@@ -470,8 +437,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			_valArea[i] = iwc.isParameterSet(PARAM_AREA + "_" + (i + 1))?Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))):-1;
 			_valDate[i] = iwc.getParameter(PARAM_DATE + "_" + (i + 1));
 		}
-		_valType = iwc.isParameterSet(PARAM_TYPE_DROP)?Integer.parseInt(iwc.getParameter(PARAM_TYPE_DROP)):-1;
-		_valCustodianAgree = iwc.isParameterSet(PARAM_GUARDIAN_APPROVES);
 		/**
 		 * @todo Setja inn tékk á þessum breytum
 		 */

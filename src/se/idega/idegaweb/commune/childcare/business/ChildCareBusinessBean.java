@@ -43,7 +43,7 @@ import javax.transaction.UserTransaction;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
-	public boolean insertApplications(User user, int type, int provider[], String date[], int checkId, int childId, boolean agree) {
+	public boolean insertApplications(User user, int provider[], String date[], int checkId, int childId) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -56,12 +56,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).create();
 				if (user != null)
 					appl.setOwner(user);
-				appl.setChildrenCareTypeId(type);
+//				appl.setChildrenCareTypeId(type);
 				appl.setProviderId(provider[i]);
 				IWTimestamp fromDate = new IWTimestamp(date[i]);
 				appl.setFromDate(fromDate.getDate());
 				appl.setChildId(childId);
-				appl.setParentsAgree(agree);
+//				appl.setParentsAgree(agree);
 				appl.setQueueDate(now.getDate());
 				appl.setMethod(1);
 				appl.setChoiceNumber(i+1);
