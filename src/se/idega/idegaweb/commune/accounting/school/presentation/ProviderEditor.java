@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.25 2003/10/30 16:31:14 anders Exp $
+ * $Id: ProviderEditor.java,v 1.26 2003/10/31 09:43:15 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,6 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
@@ -33,6 +32,7 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsTypeHo
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
@@ -59,10 +59,10 @@ import com.idega.presentation.ui.TextArea;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/30 16:31:14 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/31 09:43:15 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -102,18 +102,21 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String PARAMETER_BANKGIRO = PP + "bankgiro";
 	private final static String PARAMETER_STATISTICS_TYPE = PP + "statistics_type";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
+	private final static String PARAMETER_OPERATIONAL_FIELD = PP + "operational_field";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
 	private final static String PARAMETER_EDIT = PP + "edit";
-	
+
+	private final static String PARAMETERVALUE_ALL_PROVIDERS = "ALL_PROVIDERS";
+
 	private final static String KP = "provider_editor."; // key prefix 
 	
 	private final static String KEY_TITLE = KP + "title";
 	private final static String KEY_TITLE_ADD = KP + "title_add";
 	private final static String KEY_TITLE_EDIT = KP + "title_edit";
 	private final static String KEY_TITLE_DELETE = KP + "title_delete";
-//	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
+	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
 	private final static String KEY_NAME = KP + "name";
 	private final static String KEY_ADDRESS = KP + "address";
 	private final static String KEY_ZIP_CODE = KP+ "zip_code";
@@ -140,6 +143,8 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_SCHOOL_MANAGEMENT_TYPE_SELECTOR_HEADER = KP + "school_management_type_selector_header";
 	private final static String KEY_STATISTICS_TYPE_SELECTOR_HEADER = KP + "statistics_type_selector_header";
 	private final static String KEY_COMMUNE_SELECTOR_HEADER = KP + "commune_selector_header";
+	private final static String KEY_OPERATIONAL_FIELD_SELECTOR_HEADER = KP + "operational_field_selector_header";
+	private final static String KEY_ALL_PROVIDERS = KP + "all_providers";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_CANCEL = KP + "cancel";
@@ -424,10 +429,21 @@ public class ProviderEditor extends AccountingBlock {
 	 * Returns the search panel for this block.
 	 */
 	private Table getSearchPanel(IWContext iwc) {
-		Table table = new Table();
-//		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
-		table.add(new OperationalFieldsMenu(), 1, 1);
-		table.add(getLocalizedButton(PARAMETER_NEW, KEY_NEW, "New"), 2, 1);
+		Table searchPanel = new Table();
+		searchPanel.setCellpadding(0);
+		searchPanel.setCellspacing(0);
+		
+		Table selectorTable = new Table();
+		selectorTable.setCellpadding(getCellpadding());
+		selectorTable.setCellspacing(getCellspacing());
+		selectorTable.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
+		selectorTable.add(getOperationalFieldDropdownMenu(PARAMETER_OPERATIONAL_FIELD, getParameter(iwc, PARAMETER_OPERATIONAL_FIELD)), 2, 1);
+		searchPanel.add(selectorTable, 1, 1);
+
+		Table buttonTable = new Table();
+		buttonTable.setCellpadding(getCellpadding());
+		buttonTable.setCellspacing(getCellspacing());
+		buttonTable.add(getLocalizedButton(PARAMETER_NEW, KEY_NEW, "New"), 1, 1);
 		if (_useCancelButton) {
 			try {
 				ICPage homePage = iwc.getCurrentUser().getHomePage();
@@ -436,10 +452,12 @@ public class ProviderEditor extends AccountingBlock {
 				}
 				GenericButton cancelButton = new GenericButton(PARAM_CANCEL, localize(KEY_CANCEL, "Cancel"));
 				cancelButton.setPageToOpen(homePage);			
-				table.add(cancelButton, 3, 1);
+				buttonTable.add(cancelButton, 2, 1);
 			} catch (Exception e) {}
 		}
-		return table;
+		searchPanel.add(buttonTable, 1, 2);
+		
+		return searchPanel;
 	}	
 	
 	/*
@@ -449,9 +467,16 @@ public class ProviderEditor extends AccountingBlock {
 		Collection providers = null;
 
 		try {
-			ProviderBusiness pb = getProviderBusiness(iwc);			
-			String operationalField = getSession().getOperationalField();
-			providers = pb.findAllSchoolsByOperationalField(operationalField);
+			ProviderBusiness pb = getProviderBusiness(iwc);
+			String operationalField = getParameter(iwc, PARAMETER_OPERATIONAL_FIELD);
+			if (operationalField.equals(PARAMETERVALUE_ALL_PROVIDERS)) {
+				providers = pb.findAllSchools();
+			} else if (operationalField.length() == 0) {
+				providers = pb.findAllSchoolsByOperationalField(getSession().getOperationalField());				
+			} else {
+				getSession().setOperationalField(operationalField);
+				providers = pb.findAllSchoolsByOperationalField(operationalField);
+			}
 		} catch (RemoteException e) {
 			Table t = new Table();
 			t.add(new ExceptionWrapper(e), 1, 1);
@@ -903,6 +928,38 @@ public class ProviderEditor extends AccountingBlock {
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}
+		return menu;	
+	}
+
+	/*
+	 * Returns a DropdownMenu for operational fields. 
+	 */
+	private DropdownMenu getOperationalFieldDropdownMenu(String parameter, String operationalField) {
+		if (operationalField == null || operationalField.length() == 0) {
+			try {
+				operationalField = getSession().getOperationalField();				
+			} catch (RemoteException e) {}
+		}
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+		menu.addMenuElement("", localize(KEY_OPERATIONAL_FIELD_SELECTOR_HEADER, "Choose operational field"));
+		try {
+			Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					SchoolCategory sc = (SchoolCategory) iter.next();
+					String id = sc.getPrimaryKey().toString();
+					menu.addMenuElement(id, localize(sc.getLocalizedKey(), sc.getLocalizedKey()));
+				}
+				if (operationalField != null) {
+					menu.setSelectedElement(operationalField);
+				}
+			}
+			menu.addMenuElement(PARAMETERVALUE_ALL_PROVIDERS, localize(KEY_ALL_PROVIDERS, "All providers"));
+		} catch (Exception e) {
+			add(new ExceptionWrapper(e));
+		}
+		menu.setToSubmit(true);
 		return menu;	
 	}
 
