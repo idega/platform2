@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.7 2001/08/17 09:52:46 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.8 2001/08/27 11:16:36 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -60,12 +60,16 @@ public class CampusTariffEditor extends KeyEditor{
     super(sHeader);
   }
 
+  public CampusTariffEditor() {
+    super();
+  }
+
   public void setEntities(GenericEntity[] entities){
     this.entities = entities;
   }
 
   protected void control(ModuleInfo modinfo){
-
+    this.getParentPage().setAllMargins(0);
     try{
 
 

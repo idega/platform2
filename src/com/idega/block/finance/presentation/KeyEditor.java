@@ -23,7 +23,7 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
   protected boolean isAdmin = false;
   protected String MiddleColor,LightColor,DarkColor,WhiteColor,TextFontColor,HeaderFontColor,IndexFontColor;
   protected Table Frame,MainFrame,HeaderFrame;
-  protected final int BORDER = 0;
+  protected final int BORDER = 1;
   protected String sHeader;
   protected int fontSize = 2;
   protected boolean fontBold = false;
@@ -39,6 +39,10 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
     HeaderFontColor = DarkColor;
     IndexFontColor = "#000000";
     this.sHeader = sHeader;
+  }
+
+  public KeyEditor() {
+    this("Tariff Editor");
   }
 
   protected abstract void control(ModuleInfo modinfo);

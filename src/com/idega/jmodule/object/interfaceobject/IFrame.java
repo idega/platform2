@@ -79,6 +79,14 @@ public IFrame(String name,String URL,int width,int height){
     setAttribute("src",source);
   }
 
+  public void setSrc(Class classToAdd){
+    setSrc(IWMainApplication.getObjectInstanciatorURL(classToAdd));
+  }
+
+  public void setSrc(Class classToAdd, Class templateClass) {
+    setSrc(IWMainApplication.getObjectInstanciatorURL(classToAdd,templateClass));
+  }
+
   public void setWidth(String width){
     setAttribute("width",width);
   }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.5 2001/08/17 09:52:47 aron Exp $
+ * $Id: CampusFinance.java,v 1.6 2001/08/27 11:16:36 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,73 +10,61 @@
 package is.idegaweb.campus.tariffs;
 
 import com.idega.jmodule.object.textObject.*;
+import com.idega.jmodule.object.interfaceobject.IFrame;
+import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.finance.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import is.idegaweb.campus.tariffs.CampusFinanceMenu;
 
 /**
  *
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusFinance extends KeyEditor{
+public class CampusFinance extends JModuleObject {
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6 = 6,ACT7 = 7;
-  private final String strAction = "fin_action";
-   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
+  public final static String FRAME_NAME = "rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-
-  public CampusFinance(String sHeader) {
-    super(sHeader);
+  public CampusFinance() {
   }
 
-  protected void control(ModuleInfo modinfo){
-    this.add((this.makeLinkTable(0)));
+  public void main(ModuleInfo modinfo){
+    Table myTable = new Table(2,2);
+      myTable.mergeCells(2,1,2,2);
+      myTable.setWidth(1,"160");
+      myTable.setCellpadding(3);
+      myTable.setWidth("100%");
+      myTable.setHeight("100%");
+      myTable.setBorder(0);
+      myTable.setVerticalAlignment(1,1,"top");
+      myTable.setVerticalAlignment(2,1,"top");
+      myTable.setVerticalAlignment(1,2,"top");
+
+    IFrame iFrame = new IFrame("menuFrame");
+      iFrame.setSrc(CampusFinanceMenu.class);
+      iFrame.setWidth(160);
+      iFrame.setHeight(150);
+      iFrame.setBorder(IFrame.FRAMEBORDER_OFF);
+      iFrame.setScrolling(IFrame.SCROLLING_YES);
+      iFrame.setStyle("border: 1 solid #000000");
+      myTable.add(iFrame,1,1);
+
+    IFrame iFrame2 = new IFrame(FRAME_NAME);
+      iFrame2.setWidth("100%");
+      iFrame2.setHeight("100%");
+      iFrame2.setBorder(IFrame.FRAMEBORDER_OFF);
+      iFrame2.setScrolling(IFrame.SCROLLING_YES);
+      iFrame2.setStyle("border: 1 solid #000000");
+      myTable.add(iFrame2,2,1);
+
+    add(myTable);
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table();
-
-    LinkTable.setWidth("100%");
-    LinkTable.setCellpadding(2);
-    LinkTable.setCellspacing(1);
-
-    Link Link1 = new Link("Heim");
-    Link1.setFontColor(this.DarkColor);
-    Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
-    Link Link2 = new Link("Bókhaldsliðir","/finance/accountkey.jsp");
-    Link2.setFontColor(this.DarkColor);
-    Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
-    Link Link3 = new Link("Gjaldliðir","/finance/tariffkey.jsp");
-    Link3.setFontColor(this.DarkColor);
-    Link3.addParameter(this.strAction,String.valueOf(this.ACT3));
-    Link Link4 = new Link("Gjöld","/finance/tariff.jsp");
-    Link4.setFontColor(this.DarkColor);
-    Link4.addParameter(this.strAction,String.valueOf(this.ACT4));
-    Link Link5 = new Link("Álagning","/finance/assessment.jsp");
-    Link5.setFontColor(this.DarkColor);
-    Link5.addParameter(this.strAction,String.valueOf(this.ACT5));
-    Link Link6 = new Link("Símagjöld","/finance/phone.jsp");
-    Link6.setFontColor(this.DarkColor);
-    Link6.addParameter(this.strAction,String.valueOf(this.ACT6));
-    Link Link7 = new Link("Vísitölur","/finance/indexes.jsp");
-    Link7.setFontColor(this.DarkColor);
-    Link7.addParameter(this.strAction,String.valueOf(this.ACT7));
-    if(isAdmin){
-      int row = 1;
-      LinkTable.add(Link1,1,row++);
-      LinkTable.add(Link3,1,row++);
-      LinkTable.add(Link2,1,row++);
-      LinkTable.add(Link7,1,row++);
-      LinkTable.add(Link4,1,row++);
-      LinkTable.add(Link5,1,row++);
-      LinkTable.add(Link6,1,row++);
-    }
-    return LinkTable;
-  }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.4 2001/08/13 09:58:13 aron Exp $
+ * $Id: CampusTariffer.java,v 1.6 2001/08/27 11:16:36 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,6 +61,10 @@ public class CampusTariffer extends KeyEditor {
 
   public CampusTariffer(String sHeader) {
     super(sHeader);
+  }
+
+  public CampusTariffer() {
+    super();
   }
 
   public String getBundleIdentifier(){
@@ -193,7 +197,7 @@ public class CampusTariffer extends KeyEditor {
             user = (ContractAccountApartment)listOfUsers.get(o);
             Account eAccount = new Account(user.getAccountId());
             totalAmount = 0;
-            int Amount = 0;
+            float Amount = 0;
             // For each tariff (Inner loop)
             for (int i=0; i < tlen ;i++ ) {
               Amount = 0;
@@ -278,7 +282,7 @@ public class CampusTariffer extends KeyEditor {
     return T;
   }
 
-  private int insertEntry(Vector V,Tariff T,ContractAccountApartment U,int iRoundId,idegaTimestamp itPaydate)
+  private float insertEntry(Vector V,Tariff T,ContractAccountApartment U,int iRoundId,idegaTimestamp itPaydate)
   throws SQLException{
     AccountEntry AE = new AccountEntry();
     AE.setAccountId(U.getAccountId());
