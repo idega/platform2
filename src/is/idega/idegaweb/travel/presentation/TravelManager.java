@@ -464,7 +464,7 @@ public class TravelManager extends Block {
     }
 
 
-    protected boolean isInPermissionGroup(IWContext iwc) throws RemoteException {
+    public boolean isInPermissionGroup(IWContext iwc) throws RemoteException {
       return isInPermissionGroup(iwc, tsm.getUser());
     }
 
