@@ -255,7 +255,12 @@ public class CitizenAccountPreferences extends CommuneBlock {
 
 		String valueEmail = iwc.getParameter(PARAMETER_EMAIL);
 		if (valueEmail == null) {
-			valueEmail = ub. getUserMail(user).getEmailAddress();
+			Email userMail = ub.getUserMail(user);
+			if (userMail != null) {
+				valueEmail = userMail.getEmailAddress();
+			} else {
+				valueEmail = "";
+			}
 		}
 		String valueCurrentPassword = iwc.getParameter(PARAMETER_CURRENT_PASSWORD) != null ? iwc.getParameter(PARAMETER_CURRENT_PASSWORD) : "";
 		String valueNewPassword = iwc.getParameter(PARAMETER_NEW_PASSWORD) != null ? iwc.getParameter(PARAMETER_NEW_PASSWORD) : "";
