@@ -140,8 +140,7 @@ public class FieldOverview extends GolfBlock {
 
 			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnOrdered("field_id", String.valueOf(field.getID()), "tee_color_id", String.valueOf(teeColor[a].getIntColumnValue("tee_color_id")), "hole_number");
 
-			Text teeColorName = getSmallText(((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(teeColor[a].getIntColumnValue("tee_color_id")).getName() + "&nbsp;");
-			teeColorName.setFontColor("#000000");
+			Text teeColorName = getSmallBoldBlackText(((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(teeColor[a].getIntColumnValue("tee_color_id")).getName() + "&nbsp;");
 			myTable.add(teeColorName, 1, a + 2);
 
 			int teeLength = 0;
@@ -151,8 +150,7 @@ public class FieldOverview extends GolfBlock {
 			for (int b = 0; b < tee.length; b++) {
 
 				int holeLength = tee[b].getIntColumnValue("tee_length");
-				Text lengthText = getSmallText(String.valueOf(holeLength));
-				lengthText.setFontColor("#000000");
+				Text lengthText = getSmallBlackText(String.valueOf(holeLength));
 				myTable.add(lengthText, b + 2, a + 2);
 
 				teeLength += tee[b].getIntColumnValue("tee_length");
@@ -166,10 +164,8 @@ public class FieldOverview extends GolfBlock {
 					holePar = tee[b].getPar();
 					par += tee[b].getPar();
 
-					Text parText = getSmallText(String.valueOf(holePar));
-					parText.setFontColor("#000000");
-					Text handicapText = getSmallText("" + ((int) tee[b].getFloatColumnValue("handicap")));
-					handicapText.setFontColor("#000000");
+					Text parText = getSmallBlackText(String.valueOf(holePar));
+					Text handicapText = getSmallBlackText("" + ((int) tee[b].getFloatColumnValue("handicap")));
 					myTable.add(handicapText, b + 2, a + 3);
 					myTable.add(parText, b + 2, a + 4);
 				}
@@ -177,18 +173,12 @@ public class FieldOverview extends GolfBlock {
 				if (b + 1 == tee.length) {
 					Text holeText = getSmallHeader(getResourceBundle().getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE);
 					Text totalText = getSmallHeader(getResourceBundle().getLocalizedString("field.total", "Total"));
-					Text rating = getSmallText(tee[b].getStringColumnValue("course_rating") + "/" + tee[b].getStringColumnValue("slope"));
-					Text teeLengthText = getSmallText(String.valueOf(teeLength));
-					teeLengthText.setFontColor("#000000");
-					Text totalPar = getSmallText(String.valueOf(par));
-					totalPar.setFontColor("#000000");
+					Text rating = getSmallBoldBlackText(tee[b].getStringColumnValue("course_rating") + "/" + tee[b].getStringColumnValue("slope"));
+					Text teeLengthText = getSmallBoldBlackText(String.valueOf(teeLength));
+					Text totalPar = getSmallBoldBlackText(String.valueOf(par));
 					Text ratingText = getSmallHeader(getResourceBundle().getLocalizedString("field.cr_slope", "CR/Slope"));
-					Text parText2 = getSmallText(getResourceBundle().getLocalizedString("field.par", "Par") + Text.NON_BREAKING_SPACE);
-					parText2.setFontColor("#000000");
-					parText2.setBold(true);
-					Text handicap = getSmallText(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE);
-					handicap.setFontColor("#000000");
-					handicap.setBold(true);
+					Text parText2 = getSmallBoldBlackText(getResourceBundle().getLocalizedString("field.par", "Par") + Text.NON_BREAKING_SPACE);
+					Text handicap = getSmallBoldBlackText(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE);
 
 					myTable.add(rating, b + 4, a + 2);
 					myTable.add(teeLengthText, b + 3, a + 2);
@@ -306,6 +296,7 @@ public class FieldOverview extends GolfBlock {
 		if (fieldText != null) {
 			infoTable.add(fieldText, column, 1);
 		}
+		infoTable.setRowVerticalAlignment(1, Table.VERTICAL_ALIGN_TOP);
 	}
 
 	public Form getHoleChooser(String field_id) throws IOException {
