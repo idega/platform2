@@ -29,7 +29,9 @@ public class PageCounter extends PresentationObjectContainer {
   }
 
   public void main(IWContext iwc) throws Exception{
-    TrackerBusiness.runThroughTheStatsMachine(iwc);
+    if(update){
+      TrackerBusiness.runThroughTheStatsMachine(iwc);
+    }
 
     if(cph){
       Text hits = new Text("Current page hits: "+TrackerBusiness.getCurrentPageHits(iwc));
