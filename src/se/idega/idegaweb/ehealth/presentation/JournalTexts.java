@@ -110,7 +110,7 @@ public class JournalTexts extends EHealthBlock {
 		int theRow;
 		for (theRow = 1; theRow <= 5; theRow++) {
 			Layer layers = (Layer) layer.clone();
-			layers.setID("lay" + theRow + "_");			
+			layers.setID("lay" + theRow + "_");	
 			layers.add(infoDiv[theRow-1]);
 						
 			T.add(layers, 1, 3);
@@ -152,6 +152,7 @@ public class JournalTexts extends EHealthBlock {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
 		layer.setPositionType("relative");
+		layer.setHeight(13);
 		
 		
 		int theRow = 1;
