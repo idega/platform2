@@ -539,26 +539,31 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void sendMessageToProvider(ChildCareApplication application, String subject, String message, User sender) throws RemoteException {
-		Collection users = getSchoolBusiness().getSchoolUsers(application.getProvider());
-		User child = application.getChild();
-		Object[] arguments = {child.getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID()};
-
-		if (users != null) {
-			MessageBusiness messageBiz = getMessageBusiness();
-			Iterator it = users.iterator();
-			while (it.hasNext()) {
-				SchoolUser providerUser = (SchoolUser) it.next();
-				User user = providerUser.getUser();
-				System.out.println("School user: " + user.getName());
-				messageBiz.createUserMessage(application, user, sender, subject, MessageFormat.format(message, arguments), false);
+	public void sendMessageToProvider(ChildCareApplication application, String subject, String message, User sender) {
+		try {
+			Collection users = getSchoolBusiness().getSchoolUsers(application.getProvider());
+			User child = application.getChild();
+			Object[] arguments = {child.getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID()};
+	
+			if (users != null) {
+				MessageBusiness messageBiz = getMessageBusiness();
+				Iterator it = users.iterator();
+				while (it.hasNext()) {
+					SchoolUser providerUser = (SchoolUser) it.next();
+					User user = providerUser.getUser();
+					System.out.println("School user: " + user.getName());
+					messageBiz.createUserMessage(application, user, sender, subject, MessageFormat.format(message, arguments), false);
+				}
 			}
+			else
+				System.out.println("Got no users for provider " + application.getProviderId());
 		}
-		else
-			System.out.println("Got no users for provider " + application.getProviderId());
+		catch (RemoteException re) {
+			re.printStackTrace();
+		}
 	}
 
-	public void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
+	public void sendMessageToProvider(ChildCareApplication application, String subject, String message) {
 		sendMessageToProvider(application, subject, message, null);
 	}
 
@@ -704,6 +709,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getChildCareApplicationHome().findApplicationsByProviderAndBeforeDate(providerID, beforeDate, caseStatus);
 	}
 	
+	public Collection getPendingApplications(int childID) {
+		return getPendingApplications(childID, null);
+	}
+	
 	public Collection getPendingApplications(int childID, String caseCode) {
 		try {
 			String[] caseStatus = { getCaseStatusPending().getStatus() };
@@ -767,6 +776,66 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		
 		return false;
+	}
+	
+	public boolean removePendingFromQueue(User performer) {
+		IWTimestamp lastReplyDate = new IWTimestamp();
+		String[] caseStatus = { getCaseStatusPending().getStatus() };
+
+		Collection applications;
+		try {
+			applications = getChildCareApplicationHome().findApplicationsBeforeLastReplyDate(lastReplyDate.getDate(), caseStatus);
+		}
+		catch (FinderException fe) {
+			return false;
+		}
+		
+		UserTransaction transaction = getSessionContext().getUserTransaction();
+		try {
+			transaction.begin();
+			
+			String subject = getLocalizedString("child_care.application_timed_out_subject", "Old application removed from queue");
+			String body = getLocalizedString("child_care.application_timed_out_body", "Your application for {0}, {2},Êto {1}Êhas been removed from out queue after you failed to renew it. \n\nBest regards,\n{1}");
+			
+			Iterator iter = applications.iterator();
+			while (iter.hasNext()) {
+				ChildCareApplication application = (ChildCareApplication) iter.next();
+				application.setApplicationStatus(getStatusTimedOut());
+				changeCaseStatus(application, getCaseStatusInactive().getStatus(), performer);
+				
+				sendMessageToParents(application, subject, body, true);
+			}
+			
+			transaction.commit();
+			return true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				transaction.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		return false;
+	}
+	
+	public void renewApplication(int applicationID, User performer) {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+
+			application.setApplicationStatus(getStatusSentIn());
+			changeCaseStatus(application, getCaseStatusOpen().getStatus(), performer);
+
+			String subject = getLocalizedString("child_care.application_renewed_subject", "An application was renewed.");
+			String body = getLocalizedString("child_care.application_renewed_body", "Custodian for {0}, {3} has renewed his choice to your establishment.");
+			sendMessageToProvider(application, subject, body);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public int getNumberInQueue(ChildCareApplication application) {
@@ -1613,43 +1682,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	private boolean removeFromQueue(ChildCareApplication application, User user, int[] providerIDs) {
-		try {
-			if (providerIDs != null) {
-				for (int i = 0; i < providerIDs.length; i++) {
-					if (application.getProviderId() == providerIDs[i]) {
-						return false;
-					}
+		if (providerIDs != null) {
+			for (int i = 0; i < providerIDs.length; i++) {
+				if (application.getProviderId() == providerIDs[i]) {
+					return false;
 				}
 			}
+		}
 
-			IWTimestamp removed = new IWTimestamp();
-			application.setApplicationStatus(getStatusRejected());
-			application.setRejectionDate(removed.getDate());
-			changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+		IWTimestamp removed = new IWTimestamp();
+		application.setApplicationStatus(getStatusRejected());
+		application.setRejectionDate(removed.getDate());
+		changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 
-			String subject = getLocalizedString("child_care.removed_from_queue_subject", "A child removed from the queue.");
-			String body = getLocalizedString("child_care.removed_from_queue_body", "Custodian for {0}, {3} has removed you as a choice alternative.  {0} can therefore no longer be found in the queue but in the list of those removed from the queue.");
-			sendMessageToProvider(application, subject, body);
+		String subject = getLocalizedString("child_care.removed_from_queue_subject", "A child removed from the queue.");
+		String body = getLocalizedString("child_care.removed_from_queue_body", "Custodian for {0}, {3} has removed you as a choice alternative.  {0} can therefore no longer be found in the queue but in the list of those removed from the queue.");
+		sendMessageToProvider(application, subject, body);
 
-			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
-				Iterator iter = application.getChildren();
-				while (iter.hasNext()) {
-					Case element = (Case) iter.next();
-					if (element instanceof ChildCareApplication) {
-						application = (ChildCareApplication) element;
-						application.setApplicationStatus(getStatusSentIn());
-						changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
-					}
+		if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+			Iterator iter = application.getChildren();
+			while (iter.hasNext()) {
+				Case element = (Case) iter.next();
+				if (element instanceof ChildCareApplication) {
+					application = (ChildCareApplication) element;
+					application.setApplicationStatus(getStatusSentIn());
+					changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
 				}
 			}
-
-			return true;
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
 		}
 
-		return false;
+		return true;
 	}
 
 	/*
@@ -2572,6 +2634,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 */
 	public char getStatusSentIn() {
 		return STATUS_SENT_IN;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusTimedOut() {
+		return STATUS_TIMED_OUT;
 	}
 
 	/**

@@ -17,6 +17,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
 	public final static char STATUS_READY = 'F';
 	public final static char STATUS_REJECTED = 'Z';
 	public final static char STATUS_SENT_IN = 'A';
+	public final static char STATUS_TIMED_OUT = 'S';
 	
  public boolean acceptApplication(int p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
@@ -94,6 +95,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public int getNumberOfUnhandledApplicationsByProvider(int p0) throws java.rmi.RemoteException;
  public int getOldQueueTotal(java.lang.String[] p0,boolean p1) throws java.rmi.RemoteException;
  public java.util.Collection getOpenAndGrantedApplicationsByProvider(int p0) throws java.rmi.RemoteException;
+ public java.util.Collection getPendingApplications(int childID) throws java.rmi.RemoteException;
  public java.util.Collection getPendingApplications(int childID, String caseCode) throws java.rmi.RemoteException;
  public int getPositionInQueue(se.idega.idegaweb.commune.childcare.data.ChildCareQueue p0) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis getPrognosis(int p0) throws java.rmi.RemoteException;
@@ -119,6 +121,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public char getStatusReady() throws java.rmi.RemoteException;
  public char getStatusRejected() throws java.rmi.RemoteException;
  public char getStatusSentIn() throws java.rmi.RemoteException;
+ public char getStatusTimedOut() throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByChild(int p0) throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByChild(int p0,java.lang.String p1) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getUnhandledApplicationsByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
@@ -177,6 +180,8 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean removeFromQueue(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
  public void removeFutureContracts(int p0) throws java.rmi.RemoteException;
  public void removeFutureContracts(int p0,java.sql.Date p1) throws java.rmi.RemoteException;
+ public void renewApplication(int applicationID, com.idega.user.data.User performer) throws java.rmi.RemoteException;
+ public boolean removePendingFromQueue(com.idega.user.data.User performer) throws java.rmi.RemoteException;
  public boolean retractOffer(int p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
  public boolean retractOffer(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
  public void saveComments(int p0,java.lang.String p1) throws java.rmi.RemoteException;
