@@ -3,7 +3,7 @@ package com.idega.projects.golf;
 /**
  * Title:
  * Description:
- * Copyright:    Copyright (c) 2001
+ * Copyright:    idega Copyright (c) 2001
  * Company:
  * @author
  * @version 1.0
@@ -28,11 +28,16 @@ import com.idega.projects.golf.service.*;
 import com.idega.util.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class HandicapInfo extends JModuleObject {
 
 private String member_id;
 private boolean isAdmin = false;
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 private Table myTable;
 
@@ -48,6 +53,7 @@ private Table myTable;
   }
 
   public void main(ModuleInfo modinfo) throws Exception {
+    iwrb = getResourceBundle(modinfo);
 
         this.isAdmin=isAdministrator(modinfo);
 
@@ -124,21 +130,22 @@ private void drawTable() throws IOException,SQLException {
         Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and handicap_correction='N' and scorecard_date is not null order by scorecard_date desc");
         Scorecard[] scoreCards2 = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dagur+"' and scorecard_date is not null and handicap_correction='N' order by total_points desc");
 
-        Text member = new Text("Nafn kylfings:");
+        Text member = new Text(iwrb.getLocalizedString("handicap.member_name","Member name"));
+
                 member.setFontSize(1);
-        Text handicap = new Text("Forgjöf:");
+        Text handicap = new Text(iwrb.getLocalizedString("handicap.handicap","Handicap"));
                 handicap.setFontSize(1);
-        Text cardTotal = new Text("Fjöldi spilaðra hringja á árinu:");
+        Text cardTotal = new Text(iwrb.getLocalizedString("handicap.rounds_played","Number of rounds played this year"));
                 cardTotal.setFontSize(1);
-        Text scoreText = new Text("Síðasti spilaði hringur:");
+        Text scoreText = new Text(iwrb.getLocalizedString("handicap.last_round","Last round played"));
                 scoreText.setFontSize(1);
-        Text points = new Text("Besti spilaði hringur á árinu:");
+        Text points = new Text(iwrb.getLocalizedString("handicap.best_round","Best round played this year"));
                 points.setFontSize(1);
-        Text averagepoints = new Text("Meðal punktafjöldi:");
+        Text averagepoints = new Text(iwrb.getLocalizedString("handicap.average","Average sum of points"));
                 averagepoints.setFontSize(1);
-        Text totalOrder = new Text("Forgjafarröð á landsvísu:");
+        Text totalOrder = new Text(iwrb.getLocalizedString("handicap.national_ranking","National ranking"));
                 totalOrder.setFontSize(1);
-        Text clubOrderText = new Text("Forgjafarröð innan klúbbs:");
+        Text clubOrderText = new Text(iwrb.getLocalizedString("handicap.club_ranking","Club ranking"));
                 clubOrderText.setFontSize(1);
 
         Text memberText = new Text(memberInfo.getName());
@@ -147,20 +154,21 @@ private void drawTable() throws IOException,SQLException {
         String handicapScaled = scale_decimals(String.valueOf(memberInfo2.getHandicap()),1);
         Text handicapText = new Text(handicapScaled);
             if ( (int) memberInfo2.getHandicap() == 100 ) {
-              handicapText = new Text("Engin forgjöf");
+              handicapText = new Text(iwrb.getLocalizedString("handicap.no_handicap","No handicap"));
             }
                 handicapText.setFontSize(2);
 
         String cardText = String.valueOf(scoreCards.length);
+        String noRounds = iwrb.getLocalizedString("handicap.no_round","No rounds registered");
         Text cardTotalText = new Text(cardText);
                 if ( scoreCards2.length > 0 ) {
-                        if ( cardText.substring(cardText.length()-1,cardText.length()).equals("1") ) { cardTotalText.addToText(" hringur"); }
-                        else { cardTotalText.addToText(" hringir"); }
+                        if ( cardText.substring(cardText.length()-1,cardText.length()).equals("1") ) { cardTotalText.addToText(iwrb.getLocalizedString("handicap.round"," round")); }
+                        else { cardTotalText.addToText(iwrb.getLocalizedString("handicap.rounds"," rounds")); }
                 }
-                if ( scoreCards2.length < 1 ) { cardTotalText = new Text("Enginn hringur skráður..."); }
+                if ( scoreCards2.length < 1 ) { cardTotalText = new Text(noRounds); }
                 cardTotalText.setFontSize(2);
 
-        Text scoreCardsText = new Text("Enginn hringur skráður");
+        Text scoreCardsText = new Text(noRounds);
                 if ( scoreCards.length > 0 ) {
                         idegaTimestamp scoreTime = new idegaTimestamp(scoreCards[0].getScorecardDate());
                         Field fieldId = new Field(scoreCards[0].getFieldID());
@@ -168,7 +176,7 @@ private void drawTable() throws IOException,SQLException {
                         scoreCardsText = new Text(scoreTime.getISLDate()+"  -  "+fieldId.getName());
                 }
                 else {
-                        scoreCardsText = new Text("Enginn hringur skráður...");
+                        scoreCardsText = new Text(noRounds);
                 }
                 scoreCardsText.setFontSize(2);
 
@@ -177,10 +185,10 @@ private void drawTable() throws IOException,SQLException {
                         idegaTimestamp scoreTime = new idegaTimestamp(scoreCards2[0].getScorecardDate());
                         Field fieldId = new Field(scoreCards2[0].getFieldID());
 
-                        pointsText = new Text(String.valueOf(scoreCards2[0].getTotalPoints())+" punktar  -  "+fieldId.getName()+", "+scoreTime.getISLDate());
+                        pointsText = new Text(String.valueOf(scoreCards2[0].getTotalPoints())+iwrb.getLocalizedString("handicap.points"," points")+"  -  "+fieldId.getName()+", "+scoreTime.getISLDate());
                 }
                 else {
-                        pointsText = new Text("Enginn hringur skráður...");
+                        pointsText = new Text(noRounds);
                 }
                 pointsText.setFontSize(2);
 
@@ -197,36 +205,36 @@ private void drawTable() throws IOException,SQLException {
 
                         String averagePoints = scale_decimals(String.valueOf((punktar/(float) scoreCards.length)),2);
 
-                        averageText = new Text(averagePoints+" punktar");
+                        averageText = new Text(averagePoints+iwrb.getLocalizedString("handicap.points"," points"));
                 }
                 else {
-                        averageText = new Text("Enginn hringur skráður...");
+                        averageText = new Text(noRounds);
                 }
                 averageText.setFontSize(2);
 
-        Text orderText = new Text(""+order);
+        Text orderText = new Text(Integer.toString(order));
             if ( (int) memberInfo2.getHandicap() == 100 ) {
-             orderText = new Text("Engin forgjöf");
+             orderText = new Text(noRounds);
             }
             orderText.setFontSize(2);
 
         Text clubText = new Text(""+clubOrder);
             if ( (int) memberInfo2.getHandicap() == 100 ) {
-             clubText = new Text("Engin forgjöf");
+             clubText = new Text(iwrb.getLocalizedString("handicap.no_handicap","No handicap"));
             }
             if ( clubOrder == 0 ) {
-              clubText = new Text("Utan klúbba");
+              clubText = new Text(iwrb.getLocalizedString("handicap.no_club","Not registered"));
             }
             clubText.setFontSize(2);
 
         Window memberWindow = new Window("",400,220,"/handicap/select_member.jsp?");
-        Image selectMemberImage = new Image("/pics/form_takkar/velja.gif","Velja kylfing");
+        Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif","handicap.select","Select member");
           selectMemberImage.setAttribute("hspace","10");
         Link selectMember = new Link(selectMemberImage,memberWindow);
           selectMember.clearParameters();
 
         Window handicapWindow = new Window("",400,280,"/handicap/update_handicap.jsp?");
-        Image updateHandicapImage = new Image("/pics/form_takkar/uppfaera.gif","Uppfæra forgjöf");
+        Image updateHandicapImage = iwrb.getImage("buttons/update.gif","handicap.update_handicap","Update handicap");
           updateHandicapImage.setAttribute("hspace","10");
         Link handicapUpdate = new Link(updateHandicapImage,handicapWindow);
           handicapUpdate.addParameter("member_id",member_id);
@@ -276,7 +284,7 @@ private void drawTable() throws IOException,SQLException {
 
         Image memberImage = new Image(memberInfo.getImageId());
                 if ( memberImage.getURL().equals("/servlet/imageModule?image_id=1") ) {
-                        memberImage = new Image("/pics/member/x2.gif");
+                        memberImage = iwrb.getImage("/member/x2.gif");
                 }
               memberImage.setAttribute("hspace","10");
 
@@ -293,6 +301,10 @@ private String scale_decimals(String nyForgjof,int scale) throws IOException {
 
         return nyForgjof2;
 
+}
+
+public String getBundleIdentifier(){
+  return IW_BUNDLE_IDENTIFIER;
 }
 
 }
