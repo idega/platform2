@@ -63,11 +63,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/16 22:28:13 $ by $Author: palli $
+ * Last modified: $Date: 2003/12/17 08:09:28 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -121,21 +121,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				try {
 					school = (School) i.next();
 //					school = getSchoolHome().findByPrimaryKey(new Integer(8));
-//					System.err.print("### school = " + school.getName());
 					errorRelated = new ErrorLogger();
 					errorRelated.append("School " + school.getName(),1);
 					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
 					//Only look at those not "payment by invoice"
 					//Check if it is private or in Nacka
 					final boolean schoolIsInDefaultCommune = school.getCommune().getIsDefault();
-					errorRelated.append("; inDefaultCommune = " + schoolIsInDefaultCommune);
 					final boolean schoolIsPrivate = provider.getProviderTypeId() == privateType;
-					errorRelated.append("; isPrivate = " + schoolIsPrivate);
-					errorRelated.append("; paymentByInvoice = " + provider.getPaymentByInvoice());
 					errorRelated.logToConsole();
 					if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
-						errorRelated.append("; investigate school = yes",1);
-						
 						ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated.toString());
 						Collection pupils = getSchoolClassMembers(school);
 						Iterator j = pupils.iterator();
@@ -194,7 +188,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							}
 						}
 					}else{
-						System.err.println ("; investigate school = no");
 						log.info("School "+school.getName()+" is not in home commune and not private or gets payment by invoice");
 					}
 				}
@@ -282,18 +275,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			errorRelated.append("Student "+schoolClassMember.getStudent().getName());
 			dispTime("Found " + schoolClassMember.getStudent().getName());
 		}
-		errorRelated.append("&&& member id = " + schoolClassMember.getPrimaryKey ());
-		errorRelated.append("; pid = " + schoolClassMember.getStudent ().getPersonalID ());
-		errorRelated.append("; name = " + schoolClassMember.getStudent ().getName ());
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
-
-		errorRelated.append("; placementIsInPeriod = " + placementIsInPeriod);
 		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
-		errorRelated.append("; userIsInDefaultCommune = " + userIsInDefaultCommune);
-		errorRelated.append("; schoolIsInDefaultCommuneAndNotPrivate = " + schoolIsInDefaultCommuneAndNotPrivate);
 		errorRelated.logToConsole();
 		if (placementIsInPeriod  && (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)) {
-			errorRelated.append("; create payment = yes",1);
 			ArrayList conditions = getConditions (schoolClassMember);
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + currentDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
@@ -373,7 +358,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					createNewErrorMessage(errorRelated, "invoice.createPaymentsForResourceError");
 				}
 			}
-		} else System.err.println ("; create payment = no");
+		}
 	}
 
 	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember) {

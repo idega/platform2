@@ -97,14 +97,11 @@ public abstract class BillingThread extends Thread{
 		PaymentHeader paymentHeader;
 		PaymentRecord paymentRecord;
 		System.out.println("About to create payment record");
-		System.err.println ("%%% create payment record");
 		//Get the payment header
 		try {
-		System.err.println ("%%% find payment header");
 			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).
 					findBySchoolCategorySchoolPeriod(school,category,currentDate);
 		} catch (FinderException e) {
-		System.err.println ("%%% create payment header");
 			//If No header found, create it	
 			paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
 			paymentHeader.setSchoolID(school);
@@ -126,7 +123,6 @@ public abstract class BillingThread extends Thread{
 		
 		try {
 			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
-			System.err.println ("%%% find payment record");
 			paymentRecord = prechome.findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(ownPosting,doublePosting,ruleSpecType,ruleText,month);
 			
 			//If it already exists, just update the changes needed.
@@ -134,10 +130,8 @@ public abstract class BillingThread extends Thread{
 
 			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
 			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+postingDetail.getVat()*months);
-			System.err.println ("%%% store updated record");
 			paymentRecord.store();
 		} catch (FinderException e1) {
-			System.err.println ("%%% create payment record");
 			//It didn't exist, so we create it
 			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
 			//Set all the values for the payment record
@@ -159,10 +153,8 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setOwnPosting(ownPosting);
 			paymentRecord.setDoublePosting(doublePosting);
 			paymentRecord.setVATType(postingDetail.getVatRegulationID());
-			System.err.println ("%%% store new record");
 			paymentRecord.store();
 		}
-			System.err.println ("%%% return record");
 		return paymentRecord;
 	}
 	
@@ -183,7 +175,6 @@ public abstract class BillingThread extends Thread{
 		 final PostingDetail postingDetail, PlacementTimes checkPeriod,
 		 final Date startPlacementDate, final Date endPlacementDate)
 		throws RemoteException, CreateException {
-		System.err.println ("%%% create invoice record");
 		final InvoiceRecord result = getInvoiceRecordHome ().create ();
 		result.setAmount (checkPeriod.getMonths () * postingDetail.getAmount ());
 		result.setCreatedBy (BATCH_TEXT);
@@ -216,9 +207,7 @@ public abstract class BillingThread extends Thread{
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
-		System.err.println ("%%% store invoice record");
 		result.store ();
-		System.err.println ("%%% return invoice record");
 		return result;
 	}
     
