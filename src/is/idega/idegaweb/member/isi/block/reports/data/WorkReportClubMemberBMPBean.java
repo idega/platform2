@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -11,6 +12,7 @@ import javax.ejb.FinderException;
 import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 /**
@@ -31,7 +33,7 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 	protected final static String COLUMN_NAME_GENDER = "GENDER";
 	protected final static String COLUMN_NAME_STREET_NAME = "STREET_NAME";
 	protected final static String COLUMN_NAME_POSTAL_CODE_ID = "POSTAL_CODE_ID";
-
+	protected final static String COLUMN_NAME_BOARD_MEMBER = "BOARD_MEMBER";
 	
 	protected final static String MALE = "m";
 	protected final static String FEMALE = "f";
@@ -53,7 +55,7 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP, "The league/division connection, null then use club",true,true,Integer.class,"many-to-many",WorkReportGroup.class);
 		addAttribute(COLUMN_NAME_STREET_NAME,"Streetname",true,true,String.class);
 		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id",true,true,Integer.class,"many-to-one",PostalCode.class);
-		
+		addAttribute(COLUMN_NAME_BOARD_MEMBER, "Is a board member", true, true, Boolean.class);
 	}
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -138,7 +140,52 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
 	
+	public Integer ejbFindClubMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.append(COLUMN_NAME_USER_ID).appendEqualSign().append(userId)
+		.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
+	
+		return (Integer) idoFindOnePKByQuery(sql);
+		
+	}
+	
 	public Collection getLeaguesForMember() throws IDOException {
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
+	
+	public void setAsBoardMember(boolean boardMember){
+		setColumn(COLUMN_NAME_BOARD_MEMBER,boardMember);
+	}
+	
+	public boolean isBoardMember(){
+		return getBooleanColumnValue(COLUMN_NAME_BOARD_MEMBER,false);
+	}
+	
+	public String getStreetName() {
+		return (String) getColumnValue(COLUMN_NAME_STREET_NAME);
+	}
+	public void setStreetName(String streetName) {
+		setColumn(COLUMN_NAME_STREET_NAME, streetName);
+	}
+	
+	public PostalCode getPostalCode() throws SQLException {
+		return (PostalCode) getColumnValue(COLUMN_NAME_POSTAL_CODE_ID);
+	}
+
+	public int getPostalCodeID() {
+		return getIntColumnValue(COLUMN_NAME_POSTAL_CODE_ID);
+	}
+
+	public void setPostalCode(PostalCode postalCode) {
+		setColumn(COLUMN_NAME_POSTAL_CODE_ID, postalCode);
+	}
+	public void setPostalCodeID(int postal_code_id) {
+		setColumn(COLUMN_NAME_POSTAL_CODE_ID, postal_code_id);
+	}
+	
+	
+	
 }

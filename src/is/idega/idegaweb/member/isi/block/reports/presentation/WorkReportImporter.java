@@ -61,7 +61,7 @@ public class WorkReportImporter extends WorkReportSelector {
 		uploadForm.maintainParameters(getParametersToMaintain());
 		
 		SimpleFileChooser uploader = new SimpleFileChooser(uploadForm,PARAM_FILE_ID);
-		//uploader.setShowChangeUploadedFileOption(false);
+		uploader.setShowChangeUploadedFileOption(false);
 		uploadForm.add(uploader);
 		
 		if( !iwc.isParameterSet(PARAM_UPLOADING) ){//not uploaded yet

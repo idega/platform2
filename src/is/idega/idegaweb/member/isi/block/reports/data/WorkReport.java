@@ -19,7 +19,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setAccountFileId(int p0);
  public void setAccountPartDone(boolean p0);
  public void setBoardFileId(int p0);
- public void setBordPartDone(boolean p0);
+ public void setBoardPartDone(boolean p0);
  public void setClubId(int p0);
  public void setClubId(java.lang.Integer p0);
  public void setClubName(java.lang.String p0);

@@ -7,8 +7,10 @@ import java.sql.SQLException;
 
 import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupType;
+import com.inet.pool.i;
 
 /**
  * Description: The list of leagues and their info in the import files<br>
@@ -18,7 +20,7 @@ import com.idega.user.data.GroupType;
  */
 public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportGroup{
 	protected final static String ENTITY_NAME = "ISI_WR_GROUP";
-	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
+	protected final static String COLUMN_NAME_GROUP_YEAR = "YEAR";
 	protected final static String COLUMN_NAME_GROUP_NAME = "NAME";
 	protected final static String COLUMN_NAME_GROUP_SHORT_NAME = "SHORT_NAME";
 	protected final static String COLUMN_NAME_GROUP_ID = "IC_GROUP_ID";
@@ -38,7 +40,7 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report",true,true,Integer.class,"many-to-one",WorkReport.class);
+		addAttribute(COLUMN_NAME_GROUP_YEAR, "Year of the work report",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_GROUP_NAME,"Name of group",true,true,String.class);
 		addAttribute(COLUMN_NAME_GROUP_SHORT_NAME,"Short name of group",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_GROUP_ID, "Group id",true,true,Integer.class,"one-to-one",Group.class);
@@ -56,12 +58,13 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		return ENTITY_NAME;
 	}
 	
-	public int getReportId() {
-		return getIntColumnValue(COLUMN_NAME_REPORT_ID);
+	public Integer getYearOfReport(){
+		return getIntegerColumnValue(COLUMN_NAME_GROUP_YEAR);
 	}
+	
 
-	public void setReportId(int reportId) {
-		setColumn(COLUMN_NAME_REPORT_ID,reportId);
+	public void setYearOfReport(int year){
+		setColumn(COLUMN_NAME_GROUP_YEAR,year);
 	}
 	
 	public Integer getGroupId(){
@@ -159,6 +162,10 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 	
 	public String getEmail(){
 		return getStringColumnValue(COLUMN_NAME_EMAIL);
+	}
+	
+	public void addMember(WorkReportClubMember member) throws IDOAddRelationshipException{
+		this.idoAddTo(member);
 	}
 	
 }

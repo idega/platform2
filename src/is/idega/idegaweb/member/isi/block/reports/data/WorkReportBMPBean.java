@@ -145,7 +145,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 	}
 	
 
-	public void setBordPartDone(boolean isDone){
+	public void setBoardPartDone(boolean isDone){
 		setColumn(COLUMN_NAME_BOARD_DONE,isDone);
 	}
 	
