@@ -10,6 +10,9 @@ import com.idega.util.idegaTimestamp;
 import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Collection;
 import java.sql.SQLException;
 import java.util.Locale;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -159,5 +162,39 @@ public class CategoryFinder {
     catch (SQLException ex) {
       return null;
     }
+  }
+
+  private static String getRelatedSQL(int iObjectInstanceId){
+    StringBuffer sql = new StringBuffer("select ");
+    sql.append(((ICCategory)ICCategory.getStaticInstance(ICCategory.class)).getIDColumnName());
+    sql.append(" from ").append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(ICCategory.class,ICObjectInstance.class));
+    return sql.toString();
+  }
+
+  /**
+   *  Returns a Collection of ICCategory-ids that
+   *  have reference to a ICObjectInstance
+   */
+  public static Collection collectCategoryIntegerIds(int iObjectInstanceId){
+    String[] ids = null;
+
+    try {
+      ids = com.idega.data.SimpleQuerier.executeStringQuery(getRelatedSQL(iObjectInstanceId));
+      if(ids != null){
+        HashSet H = new HashSet();
+        Integer I;
+        for (int i = 0; i < ids.length; i++) {
+          I = new Integer(ids[0]);
+          if(!H.contains(I))
+            H.add(I);
+        }
+        return H;
+      }
+    }
+    catch (Exception ex) {
+
+    }
+
+    return null;
   }
 }
