@@ -1,20 +1,46 @@
 package is.idega.idegaweb.travel.presentation;
 
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
+import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
+import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchAdmin;
+import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchEditor;
+import is.idega.idegaweb.travel.business.Assigner;
+import is.idega.idegaweb.travel.business.Booker;
+import is.idega.idegaweb.travel.business.ContractBusiness;
+import is.idega.idegaweb.travel.business.Inquirer;
+import is.idega.idegaweb.travel.business.TravelSessionManager;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
 
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.business.*;
-import com.idega.core.accesscontrol.data.*;
-import com.idega.core.user.data.*;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.service.business.*;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.ResellerManager;
+import com.idega.block.trade.stockroom.business.SupplierManager;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.user.data.User;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
 
 public class TravelManager extends Block {
 
@@ -56,6 +82,7 @@ public class TravelManager extends Block {
     protected static String parameterInitialData = "lInitialData";
     protected static String parameterUpdatePassword = "lUpdatePassword";
     protected static String parameterHome = "lHome";
+    protected static String parameterEngines = "lEngines";
 
     protected boolean isInPermissionGroup = false;
     protected boolean isSuperAdmin = false;
@@ -119,6 +146,7 @@ public class TravelManager extends Block {
 
     public void main(IWContext iwc) throws Exception{
       initializer(iwc);
+      
       showLogo = isLoggedOn(iwc);
       draw(iwc);
     }
@@ -133,7 +161,7 @@ public class TravelManager extends Block {
     }
 
     protected boolean hasLoginExpired(IWContext iwc) throws RemoteException {
-      return (!iwc.hasEditPermission(this) && tsm.getSupplier() == null && tsm.getReseller() == null);
+      return (!iwc.hasEditPermission(this) && tsm.getSupplier() == null && tsm.getReseller() == null && tsm.getSearchEngine() == null);
     }
 
     protected boolean isLoggedOn(IWContext iwc) throws RemoteException {
@@ -231,6 +259,10 @@ public class TravelManager extends Block {
 							table.add( (Link) links.get(i), 1, 1);
 						}
 						
+						Link engines = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.search_engines", "Search Engines"), ServiceSearchEditor.class);
+						engines.addParameter(this.sAction, this.parameterEngines);
+						table.add(engines, 1, 1);
+						
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
@@ -286,6 +318,13 @@ public class TravelManager extends Block {
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
+        }else if (tsm.getSearchEngine() != null) {
+					Link engines = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.search_engines", "Search Engines"), ServiceSearchAdmin.class);
+					engines.addParameter(this.sAction, this.parameterEngines);
+					table.add(engines, 1, 1);
+					if (isInPermissionGroup) {
+						//table.add(" admin walking...");
+					}
         }
 
         Link lHome = new Link(iHome,LoginPage.class);
@@ -341,7 +380,23 @@ public class TravelManager extends Block {
             }
         }
         catch (Exception e) {
+        	//e.printStackTrace(System.err);
           debug(e.getMessage());
+        }
+        
+        try {
+        	ServiceSearchBusiness ssb = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
+        	User user = tsm.getUser();
+        	if (user != null) {
+        		ServiceSearchEngine engine = ssb.getUserSearchEngine(user);
+        		if (!engine.getIsValid()) {
+        			oldLogin = true;
+        		} else {
+        			tsm.setSearchEngine(engine);
+        		}
+        	}
+        } catch (Exception e) {
+        	debug(e.getMessage());
         }
       }
 
@@ -358,6 +413,7 @@ public class TravelManager extends Block {
         theSmallBoldText.setFontColor(this.textColor);
 
         this.isInPermissionGroup = this.isInPermissionGroup(iwc);
+        this.isSuperAdmin = isTravelAdministrator(iwc);
     }
 
     public void add(PresentationObject mo) {
@@ -421,22 +477,35 @@ public class TravelManager extends Block {
           }
           else if (tsm.getSupplier() != null) {
             pGroup = SupplierManager.getPermissionGroup(tsm.getSupplier());
+          } else if (tsm.getSearchEngine() != null) {
+          	ServiceSearchBusiness ssb = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
+          	pGroup = ssb.getPermissionGroup(tsm.getSearchEngine()); 
           }
 
           if (pGroup != null) {
-            com.idega.core.user.business.UserGroupBusiness ugb = new com.idega.core.user.business.UserGroupBusiness();
-            List allUsers = ugb.getUsersContained(pGroup);
+          	UserBusiness uBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+          	GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+          	//List allUsers = pGroup.getChildGroups();
+          	List allUsers = pGroup.getAllGroupsContainingUser(user);
+//          	Collection allUsers = uBus.getUsersInGroup(pGroup.getID());
+          	Iterator iter = allUsers.iterator();
+//          	System.out.println("allUsers.size() = "+allUsers.size());
+/*          	while (iter.hasNext()) {
+          		System.out.println(((GenericGroup)iter.next()).getID());
+          		//System.out.println("User : "+((User)iter.next()).getName());
+          	}*/
+            //UserGroupBusiness ugb = new UserGroupBusiness();
+            //List allUsers = ugb.getUsersContained(pGroup);
             if (allUsers != null) {
-              return allUsers.contains(user);
+              return allUsers.contains(pGroup);
             }
           }
-        }catch (SQLException sql) {
+        }catch (Exception sql) {
           sql.printStackTrace(System.err);
         }
 
       }
       return false;
-
     }
 
     public static Table getTable() {
@@ -460,6 +529,9 @@ public class TravelManager extends Block {
       return text;
     }
 
+    protected boolean hasPermission() {
+    	return this.isInPermissionGroup || this.isSuperAdmin;
+    }
     protected Booker getBooker(IWApplicationContext iwac) throws RemoteException{
       return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);
     }
@@ -503,4 +575,5 @@ public class TravelManager extends Block {
     public static TravelSessionManager getTravelSessionManagerStatic(IWContext iwc) throws RemoteException{
       return (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
     }
+    
 }
