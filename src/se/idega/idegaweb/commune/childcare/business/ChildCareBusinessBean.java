@@ -878,8 +878,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public int getNumberInQueueByStatus(ChildCareApplication application) {
 		try {
 			int numberInQueue = 0;
-			numberInQueue += getChildCareApplicationHome().getPositionInQueue(application.getQueueDate(), application.getProviderId(), application.getCaseStatus().getStatus());
-			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), application.getQueueDate(), application.getProviderId(), application.getCaseStatus().getStatus());
+			numberInQueue += getChildCareApplicationHome().getPositionInQueue(application.getQueueDate(), application.getProviderId(), String.valueOf(application.getApplicationStatus()));
+			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), application.getQueueDate(), application.getProviderId(), String.valueOf(application.getApplicationStatus()));
 			return numberInQueue;
 		}
 		catch (IDOException e) {
