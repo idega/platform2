@@ -713,6 +713,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 									if (league != null) {
 										try {
 											league.addEntity(member);
+											try {
+												report.addLeague(league);
+											}
+											catch(Exception e) {
+												//e.printStackTrace();
+											}
 											mainBoard.addEntity(member);
 											playerCount++;
 											Integer count = (Integer)divPlayerCount.get(new Integer(j));
