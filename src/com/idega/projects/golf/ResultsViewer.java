@@ -31,11 +31,20 @@ private int tournament_id = 0;
 private int numberOfGolfers = 10;
 private boolean showHeader = true;
 private boolean groups = false;
+private boolean gender = false;
 
 
   public ResultsViewer(int tournament_id,boolean groups) {
     this.tournament_id=tournament_id;
     this.groups=groups;
+  }
+
+  public ResultsViewer(int tournament_id,boolean groups,boolean gender) {
+    this.tournament_id=tournament_id;
+    this.groups=groups;
+    this.gender=gender;
+    if ( gender ) groups = false;
+    if ( groups ) gender = false;
   }
 
   public ResultsViewer(int tournament_id) {
@@ -50,6 +59,7 @@ private boolean groups = false;
 
    Tournament tournament = new Tournament(tournament_id);
    TournamentGroup[] tournamentGroup = tournament.getTournamentGroups();
+   String[] genderString = getGenderInTournament();
 
    Table myTable = new Table();
     myTable.setWidth("100%");
@@ -82,6 +92,32 @@ private boolean groups = false;
      groupTable.add(results,1,2);
      myTable.add(groupTable,1,a);
      a++;
+    }
+   }
+
+   else if ( gender ) {
+    for ( int b = 0; b < genderString.length; b++ ) {
+      Text genderText = new Text();
+        if ( genderString[b].equalsIgnoreCase("m") ) {
+          genderText.setText("Karlar");
+        }
+        else if ( genderString[b].equalsIgnoreCase("f") ) {
+          genderText.setText("Konur");
+        }
+        genderText.setFontSize(3);
+        genderText.setBold();
+
+       Table genderTable = new Table(1,2);
+        genderTable.setWidth("100%");
+
+       TournamentResults results = new TournamentResults(tournament_id,genderString[b]);
+        results.setShowHeader(false);
+        results.setNumberOfGolfers(numberOfGolfers);
+
+       genderTable.add(genderText,1,1);
+       genderTable.add(results,1,2);
+       myTable.add(genderTable,1,a);
+       a++;
     }
    }
 

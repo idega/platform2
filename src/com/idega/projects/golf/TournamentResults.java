@@ -49,6 +49,7 @@ private String headerText = "#000000";
 private boolean showHeader = true;
 private int tournament_group_id = 0;
 private String groupSQLString = "";
+private String gender = null;
 
   public TournamentResults(int tournament_id, int tournament_group_id) {
     this.tournament_id=tournament_id;
@@ -59,10 +60,18 @@ private String groupSQLString = "";
     this.tournament_id=tournament_id;
   }
 
+  public TournamentResults(int tournament_id, String gender) {
+    this.tournament_id=tournament_id;
+    this.gender=gender;
+  }
+
   public void main(ModuleInfo modinfo) throws SQLException {
 
     if ( tournament_group_id != 0 ) {
      groupSQLString = "and tournament_group_id = "+tournament_group_id+" ";
+    }
+    if ( gender != null ) {
+     groupSQLString = "and m.gender = '"+gender+"' ";
     }
 
     tournament = new Tournament(tournament_id);
