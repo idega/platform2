@@ -139,7 +139,7 @@ public class SchoolTypeEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("localization_key","Key")),1,5);
 
 		SelectorUtility util = new SelectorUtility();
-		DropdownMenu drpCategory = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), sbBean.getSchoolManagementTypes(), "getLocalizedKey", iwrb);
+		DropdownMenu drpCategory = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), sbBean.getSchoolCategories(), "getLocalizedKey", iwrb);
 
     TextInput inputName = new TextInput("sch_type_name");
     TextInput inputKey = new TextInput("sch_type_lockey");
