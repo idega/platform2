@@ -74,6 +74,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	public int saveUser(String name, String ssn, IWTimestamp dateOfBirth, String gender, String address, String postal, String city, String country, String tel, String mobile, String email) {
 		User user = null;
 		try {
+			if (dateOfBirth == null) {
+				dateOfBirth = getBirthDateFromSSN(ssn);
+			}
 			user = getUserBiz().createUserByPersonalIDIfDoesNotExist(name, ssn, null, dateOfBirth);
 			user.store();
 			if (gender != null && !gender.equals("")) {
@@ -183,6 +186,42 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (CreateException cre) {
 		}
 		return Integer.parseInt(String.valueOf(user.getPrimaryKey()));
+	}
+
+	/**
+	 * 
+	 * @param pin -
+	 *            a social security number - format ddmmyyxxxx or ddmmyyyy
+	 * @return IWTimstamp - the date of birth from the pin..
+	 */
+	private IWTimestamp getBirthDateFromSSN(String pin) {
+		//pin format = 14011973
+		if (pin.length() == 8) {
+			int edd = Integer.parseInt(pin.substring(0, 2));
+			int emm = Integer.parseInt(pin.substring(2, 4));
+			int eyyyy = Integer.parseInt(pin.substring(4, 8));
+			IWTimestamp dob = new IWTimestamp(edd, emm, eyyyy);
+			return dob;
+		}
+		//  pin format = 140173xxxx ddmmyyxxxx
+		else if (pin.length() == 10) {
+			int dd = Integer.parseInt(pin.substring(0, 2));
+			int mm = Integer.parseInt(pin.substring(2, 4));
+			int yy = Integer.parseInt(pin.substring(4, 6));
+			int century = Integer.parseInt(pin.substring(9, 10));
+			int yyyy = 0;
+			if (century == 9) {
+				yyyy = yy + 1900;
+			}
+			else if (century == 0) {
+				yyyy = yy + 2000;
+			}
+			IWTimestamp dob = new IWTimestamp(dd, mm, yyyy);
+			return dob;
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
