@@ -71,7 +71,6 @@ public class GroupMemberList extends Block {
 		if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type)) {
 			showGroup = true;
 		}
-		System.out.println("showGroup=" + showGroup + ", groupType=" + type);
 		
 		Table table = new Table();
 		table.setCellspacing(0);
@@ -146,8 +145,6 @@ public class GroupMemberList extends Block {
 						buf.append(", ");
 					}
 					buf.append(name);
-				} else {
-					System.out.println("Group " + name + " not added to list of groups for trainer " + trainer.getName());
 				}
 			}
 		}
@@ -165,7 +162,7 @@ public class GroupMemberList extends Block {
 				isTrainer = IWMemberConstants.STATUS_COACH.equals(st.getStatusKey()) ||
 				            IWMemberConstants.STATUS_ASSISTANT_COACH.equals(st.getStatusKey());
 			}
-			System.out.println("After checkin status in group, isTrainer=" + isTrainer);
+			//System.out.println("After checkin status in group, isTrainer=" + isTrainer);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -178,18 +175,18 @@ public class GroupMemberList extends Block {
 					if(usInd!=-1) {
 						flockTrainerGroupId = flockTrainerGroupId.substring(usInd+1);
 					}
-					System.out.println("Trainer group for flock " + flock.getName() + " has id " + flockTrainerGroupId);
+					//System.out.println("Trainer group for flock " + flock.getName() + " has id " + flockTrainerGroupId);
 					Iterator trainerParentsIter = trainer.getParentGroups().iterator();
 					while(trainerParentsIter.hasNext()) {
 						Group trainerParent = (Group) trainerParentsIter.next();
 						if(flockTrainerGroupId.equals(trainerParent.getPrimaryKey().toString())) {
 							isTrainer = true;
-							System.out.println("Found trainer for flock " + flock.getName());
+							//System.out.println("Found trainer for flock " + flock.getName());
 							break;
 						}
 					}
 				}
-				System.out.println("After checking trainer groups in flock, isTrainer=" + isTrainer);
+				//System.out.println("After checking trainer groups in flock, isTrainer=" + isTrainer);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -202,14 +199,14 @@ public class GroupMemberList extends Block {
 		boolean showClubMainCommitee = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_CLUB_COMMITEE_MAIN));
 		
 		if(showClubMainCommitee) {
-			System.out.println("showing members of club's main commitee");
+			//System.out.println("showing members of club's main commitee");
 			String clubId = iwc.getParameter(ClubPageIncluder.PARAM_ROOT_CLUB_ID);
 			Group group = null;
 			try {
 				Group club = getGroup(iwc, Integer.parseInt(clubId));
 				Group commiteeGroup = ((Group) club.getChildGroups(new String[] {IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE}, true).iterator().next());
 				group = ((Group) commiteeGroup.getChildGroups(new String[] {IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN}, true).iterator().next());
-				System.out.println("Got group to show members for; " + group.getName());
+				//System.out.println("Got group to show members for; " + group.getName());
 			} catch(Exception e) {
 				System.out.println("Exception getting club's main commitee");
 				e.printStackTrace();
@@ -218,7 +215,7 @@ public class GroupMemberList extends Block {
 		} else {
 			String groupId = iwc.getParameter(PARAM_NAME_GROUP_ID);
 			if(groupId == null || groupId.length()==0) {
-				System.out.println("no group to display players for");
+				//System.out.println("no group to display players for");
 			}
 			Group group = null;
 			try {
