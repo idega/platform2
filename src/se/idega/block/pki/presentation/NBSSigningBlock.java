@@ -9,10 +9,12 @@ package se.idega.block.pki.presentation;
 import se.nexus.nbs.sdk.NBSException;
 
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.text.Text;
 import java.io.File;
 
@@ -68,23 +70,39 @@ public class NBSSigningBlock extends Block implements Builderaware{
 				return;
 			}
 	
-			boolean initDone = iwc.getSessionAttribute(INIT_DONE) != null;
+//			boolean initDone = iwc.getSessionAttribute(INIT_DONE) != null;
 			
-			String toBeSigned = getNBSSignedEntity(iwc).getText();
+			NBSSignedEntity signedEntity = getNBSSignedEntity(iwc);
+			String toBeSigned = signedEntity.getText();
 			
+			System.out.println("signedEntity.getAction():" + signedEntity.getAction());
 		
-			if (! initDone){
-				System.out.println("contractIdSession == null");
-				add(new NBSSigningApplet(initSignContract(iwc, toBeSigned)));
-				iwc.setSessionAttribute(INIT_DONE, new Object());			
+			switch(signedEntity.getAction()){
+				case NBSSignedEntity.ACTION_INIT:
+					add(new NBSSigningApplet(initSignContract(iwc, toBeSigned)));
+					break;
+										
+				case NBSSignedEntity.ACTION_PROCESS:
+					processSignContract(iwc);	
+					forwardToIBPage(iwc,getParentPage(), getGotoPage());					
+					break;
 				
-			}else {	
-				System.out.println("contractIdSession != null");			
-				iwc.removeSessionAttribute(INIT_DONE);	
-				processSignContract(iwc);	
-				iwc.forwardToIBPage(getParentPage(), getGotoPage());	
-	
+				case NBSSignedEntity.ACTION_END:
+					add(new Text("Forwarding..."));				
+					break;
+				
 			}
+			
+			signedEntity.setNextAction();
+			
+//			if (! initDone){
+//		
+//				
+//			}else {	
+//				
+//
+//	
+//			}
 		}catch(NBSException ex){
 			String errorMsg = null;
 			switch(ex.getCode()){
@@ -252,5 +270,14 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		return path != null ? path : "bidt_sdk.properties";
 	}
 	
+
+	protected void forwardToIBPage(IWContext iwc,Page fromPage,IBPage pageTo){
+		StringBuffer URL = new StringBuffer();
+		URL.append(BuilderLogic.getInstance().getIBPageURL(iwc.getApplicationContext(), ((Integer) pageTo.getPrimaryKeyValue()).intValue()));
+		//URL.append('&');
+		//URL.append(getRequest().getQueryString());
+		fromPage.setToRedirect(URL.toString());
+		fromPage.empty();	
+	}	
 	
 }
