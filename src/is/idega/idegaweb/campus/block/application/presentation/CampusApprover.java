@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.56 2004/06/28 11:35:47 aron Exp $
+ * $Id: CampusApprover.java,v 1.57 2004/07/12 09:15:31 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1595,6 +1595,7 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	private DropdownMenu priorityDrop(String name, String selected) {
+		
 		DropdownMenu drp = new DropdownMenu(name);
 		drp.addMenuElement("A", "A");
 		drp.addMenuElement("B", "B");
@@ -1622,7 +1623,7 @@ public class CampusApprover extends CampusBlock {
 	private DropdownMenu orderDrop(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);
 		
-		drp.addMenuElement("-1", localize("submitted", "Submitted"));
+		drp.addMenuElement("app_applicant_id", localize("submitted", "Submitted"));
 		drp.addMenuElement(
 			com.idega.block.application.data.ApplicantBMPBean.getFullnameOrderValue(),
 			localize("name", "Name"));
