@@ -31,24 +31,30 @@ public class ProductCatalog extends CategoryBlock{
   private static final String _ORDER_BY ="prod_cat_order_by";
 
 
-  private int productsPerPage = 10;
-  private int currentPage = 1;
-  private int orderBy = ProductComparator.NUMBER;
+  int productsPerPage = 10;
+  int currentPage = 1;
+  int orderBy = ProductComparator.NUMBER;
 
-  private IWResourceBundle iwrb;
+  IWResourceBundle iwrb;
   private IWBundle bundle;
 
-  private Image iCreate = null;
+  Image iCreate = null;
   private Image iDelete = null;
   private Image iEdit = null;
-  private Image iDetach = null;
+  Image iDetach = null;
 
   private String _fontStyle = null;
   private String _catFontStyle = null;
-  private String _width = null;
-  private IBPage _productLinkPage = null;
-  private boolean _productIsLink = false;
-  private boolean _allowMulitpleCategories = true;
+  String  _width = null;
+  IBPage _productLinkPage = null;
+  boolean _productIsLink = false;
+  boolean _showCategoryName = true;
+  boolean _showImage = false;
+
+  boolean _hasEditPermission = false;
+  boolean _allowMulitpleCategories = true;
+
+  private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
 
   public ProductCatalog() {
   }
@@ -67,6 +73,8 @@ public class ProductCatalog extends CategoryBlock{
     iwrb = bundle.getResourceBundle(iwc);
 
     setAutoCreate(false);
+
+    this._hasEditPermission = this.hasEditPermission();
 
     IWBundle  coreBundle = iwc.getApplication().getCoreBundle();
     iCreate = coreBundle.getImage("shared/create.gif");
@@ -90,163 +98,58 @@ public class ProductCatalog extends CategoryBlock{
   }
 
   private void catalog(IWContext iwc) {
-    idegaCatalog(iwc);
-  }
-
-  private void toEMM(IWContext iwc) {
-/*    debug("Getting products..."+idegaTimestamp.RightNow().toString());
-    List products = ProductBusiness.getProducts();
-    int manyProducts = products.size();
-    debug("Start sorting..... "+idegaTimestamp.RightNow().toString());
-    Collections.sort(products, new ProductComparator(orderBy));
-    debug("Done sorting...... "+idegaTimestamp.RightNow().toString());
-*/
-    /*int totalPages = manyProducts / productsPerPage;
-    if (manyProducts % productsPerPage != 0) {
-      ++totalPages;
-    }
-
-    int totalPages = 1;
-
-    int startProductId = 0;
-    if (currentPage > 1) {
-      startProductId = productsPerPage * (currentPage - 1);
-    }
-    int stopProductId = startProductId + productsPerPage;
-    //if (manyProducts < stopProductId) {
-    //  stopProductId = manyProducts;
-    //}
-*/
-
-
-/*
-    for (int i = startProductId; i < stopProductId; i++) {
-//    for (int i = 0; i < products.size(); i++) {
-      ++row;
-      try {
-        product = (Product) products.get(i);
-        fileId = product.getFileId();
-        table.add(getText(product.getNumber()), 1,row);
-        table.add(getText(ProductBusiness.getProductName(product)), 2,row);
-        if (fileId != -1) {
-          //image = new Image(fileId);
-          //table.add(image, 4, row);
-          table.add("MYND FYLGIR", 4, row);
-        }
-
-      }catch (Exception e) {
-        table.add("Villa", 1, row);
-        e.printStackTrace(System.err);
-      }
-    }
-*/
-
-  }
-
-  private void idegaCatalog(IWContext iwc) {
-    Form form = new Form();
-    Table table = new Table();
-      if (this._width != null) {
-      table.setWidth(this._width);
-      }
-      form.add(table);
-
-    int row = 0;
-
-    List productCategories = new Vector();
     try {
-      productCategories = (List) getCategories();
-    }catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
+      Link createLink = ProductEditorWindow.getEditorLink(-1);
+        createLink.setImage(iCreate);
+      Link detachLink = getCategoryLink(ProductCategory.CATEGORY_TYPE_PRODUCT);
+        detachLink.setImage(iDetach);
 
-    ICCategory pCat;
-    Product product;
-    int fileId;
-    Image image;
-
-    List catProducts;
-    Link configCategory;
-    Link productLink;
-    for (int i = 0; i < productCategories.size(); i++) {
-      if (i != 0){
-        ++row;
-        table.add(getCategoryText(Text.NON_BREAKING_SPACE), 1,row);
+      if (hasEditPermission()) {
+        add(createLink);
+        add(detachLink);
       }
-      ++row;
+
+      AbstractProductCatalogLayout layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
+
+      List productCategories = new Vector();
       try {
-        pCat = (ICCategory) productCategories.get(i);
-        configCategory = new Link(iDetach);
-          configCategory.setWindowToOpen(ProductCategoryEditor.class);
-          configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
-        table.add(getCategoryText(pCat.getName()), 1,row);
-        if (hasEditPermission()) {
-          table.add(configCategory, 2,row);
-        }
-        catProducts = ProductBusiness.getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
-        for (int j = 0; j < catProducts.size(); j++) {
-          ++row;
-          try {
-            product = (Product) catProducts.get(j);
-            fileId = product.getFileId();
-            //table.add(getText(product.getNumber()), 1,row);
-
-            if (this._productIsLink) {
-              productLink = new Link(getText(ProductBusiness.getProductName(product)));
-              productLink.addParameter(ProductViewer.PRODUCT_ID, product.getID());
-              if (this._productLinkPage != null) {
-                productLink.setPage(_productLinkPage);
-              }else {
-                productLink.setWindowToOpen(ProductViewerWindow.class);
-              }
-              table.add(productLink, 1,row);
-            }else {
-              table.add(getText(ProductBusiness.getProductName(product)), 1,row);
-            }
-
-            if (fileId != -1) {
-              //image = new Image(fileId);
-              //table.add(image, 4, row);
-              //table.add("MYND FYLGIR", 4, row);
-            }
-
-          }catch (Exception e) {
-            table.add("Villa", 1, row);
-            e.printStackTrace(System.err);
-          }
-        }
-
-
+        productCategories = (List) getCategories();
       }catch (Exception e) {
-        table.add("Villa", 1, row);
         e.printStackTrace(System.err);
       }
-    }
+      Table table = new Table();
+        table.setCellpadding(0);
+        table.setCellspacing(0);
+        if (_width != null) {
+          table.setWidth(_width);
+        }
+      PresentationObject po = layout.getCatalog(this, iwc, productCategories);
 
-    Link createLink = ProductEditorWindow.getEditorLink(-1);
-      createLink.setImage(iCreate);
-    Link detachLink = getCategoryLink(ProductCategory.CATEGORY_TYPE_PRODUCT);
-      detachLink.setImage(iDetach);
+      table.add(po);
 
-    if (hasEditPermission()) {
-      add(createLink);
-      add(detachLink);
+      add(table);
+    }catch (IllegalAccessException iae) {
+      iae.printStackTrace(System.err);
+    }catch (InstantiationException ie) {
+      ie.printStackTrace(System.err);
     }
-//    add(getPagesTable(totalPages));
-    add(form);
   }
 
-  private Table getPagesTable(int pages) {
+
+
+  Table getPagesTable(int pages, List parameters) {
     Table pagesTable = new Table(pages+2, 1);
       pagesTable.setCellpadding(2);
       pagesTable.setCellspacing(2);
+
+    if (parameters == null) parameters = new Vector();
 
     Text pageText;
 
     if (currentPage > 1) {
       pageText = getText(iwrb.getLocalizedString("travel.previous","Previous"));
       Link prevLink = new Link(pageText);
-        prevLink.addParameter(this._VIEW_PAGE, currentPage -1);
+        prevLink.addParameter(_VIEW_PAGE, currentPage -1);
       pagesTable.add(prevLink, 1, 1);
     }
 
@@ -259,21 +162,23 @@ public class ProductCatalog extends CategoryBlock{
         pageText = getText(Integer.toString(i));
       }
       pageLink = new Link(pageText);
-        pageLink.addParameter(this._VIEW_PAGE, i);
+        pageLink.addParameter(_VIEW_PAGE, i);
+
+
       pagesTable.add(pageLink, i+1, 1);
     }
 
     if (currentPage < pages) {
       pageText = getText(iwrb.getLocalizedString("travel.next","Next"));
       Link nextLink = new Link(pageText);
-        nextLink.addParameter(this._VIEW_PAGE, currentPage + 1);
+        nextLink.addParameter(_VIEW_PAGE, currentPage + 1);
       pagesTable.add(nextLink, pages + 2, 1);
     }
 
     return pagesTable;
   }
 
-  private Text getText(String content) {
+  Text getText(String content) {
     Text text = new Text(content);
     if (_fontStyle != null) {
       text.setFontStyle(_fontStyle);
@@ -281,7 +186,7 @@ public class ProductCatalog extends CategoryBlock{
     return text;
   }
 
-  private Text getCategoryText(String content) {
+  Text getCategoryText(String content) {
     Text text = new Text(content);
     if (_catFontStyle != null) {
       text.setFontStyle(_catFontStyle);
@@ -322,6 +227,14 @@ public class ProductCatalog extends CategoryBlock{
     return ProductCategory.CATEGORY_TYPE_PRODUCT;
   }
 
+  public void setShowCategoryName(boolean showName) {
+    this._showCategoryName = showName;
+  }
+
+  public void setShowImage(boolean showImage) {
+    this._showImage = showImage;
+  }
+
   public boolean getMultible() {
     return this._allowMulitpleCategories;
   }
@@ -329,5 +242,13 @@ public class ProductCatalog extends CategoryBlock{
   public boolean deleteBlock(int ICObjectInstanceId) {
     //return super.removeInstanceCategories();
     return CategoryBusiness.getInstance().disconnectBlock(ICObjectInstanceId);
+  }
+
+  public void setLayoutClassName(String className) {
+    try {
+      this._layoutClass = Class.forName(className);
+    }catch (ClassNotFoundException cnf) {
+      cnf.printStackTrace(System.err);
+    }
   }
 }
