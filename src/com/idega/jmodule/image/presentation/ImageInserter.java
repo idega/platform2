@@ -40,6 +40,7 @@ private boolean selected = false;
 private boolean openInWindow = false;
 private Class windowClass = SimpleChooserWindow.class;
 private Image setImage;
+private boolean limitWidth = true;
 
 private IWBundle iwb;
 private IWResourceBundle iwrb;
@@ -109,7 +110,7 @@ public ImageInserter(Class WindowToOpen) {
           else {
             image = new Image(imageId);
           }
-          image.setMaxImageWidth(this.maxImageWidth);
+          if( limitWidth ) image.setMaxImageWidth(this.maxImageWidth);
           image.setNoImageLink();
         }
 
@@ -201,5 +202,9 @@ public ImageInserter(Class WindowToOpen) {
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void limitImageWidth(boolean limitWidth){
+   this.limitWidth = limitWidth;
   }
 }
