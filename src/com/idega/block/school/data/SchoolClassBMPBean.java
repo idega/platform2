@@ -19,9 +19,11 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public final static String TEACHER = "ic_user_id";
   public final static String SEASON = "sch_school_season_id";
   public final static String NAME = "class_name";
+  public final static String SCHOOL = "school_id";
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
+    addAttribute(SCHOOL,"School",true,true,Integer.class,MANY_TO_ONE,School.class);
     addAttribute(SCHOOLYEAR,"Schoolyear",true,true,String.class,MANY_TO_ONE,SchoolYear.class);
     addAttribute(TEACHER,"Teacher",true,true,Integer.class);
     addAttribute(SEASON,"Season",true,true,Integer.class,MANY_TO_ONE,SchoolSeason.class);
@@ -29,6 +31,13 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   }
   public String getEntityName() {
     return SCHOOLCLASS;
+  }
+  
+  public int getSchoolId(){
+    return getIntColumnValue(SCHOOL);
+  }
+  public void setSchoolId(int id){
+    this.setColumn(SCHOOL,id);
   }
   public void setSchoolYear(String year){
     this.setColumn(SCHOOLYEAR,year);
