@@ -14,17 +14,22 @@ import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -46,6 +51,8 @@ public class ContractEditor extends ChildCareBlock {
 	private static String PARAMETER_CANCELLED_DATE = "p_cd";
 	private static String PARAMETER_CARE_TIME = "p_ct";
 	private static String PARAMETER_EMPLOYMENT_TYPE = "p_et";
+	private static String PARAMETER_INVOICE_REVCEIVER = "p_ir";
+	private static String PARAMETER_SCHOOL_TYPE = "p_sct";
 	
 	public void init(IWContext iwc) throws Exception {
 		int applId = session.getApplicationID();
@@ -92,16 +99,21 @@ public class ContractEditor extends ChildCareBlock {
 		try {
 			ChildCareContractHome contractHome = (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 			ChildCareContract contract = contractHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CONTRACT_ID)));
+			SchoolClassMember placement = contract.getSchoolClassMember();
 			
 			String fromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 			String toDate = iwc.getParameter(PARAMETER_CANCELLED_DATE);
 			String careTime = iwc.getParameter(PARAMETER_CARE_TIME);
 			String empType = iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE);
+			String inRe = iwc.getParameter(PARAMETER_INVOICE_REVCEIVER);
+			String schType = iwc.getParameter(PARAMETER_SCHOOL_TYPE);
 			
 			int iCareTime = -1;
 			int iEmpType = -1;
 			Date dFromDate = null;
 			Date dToDate = null;
+			int invoiceReceiver = -1;
+			int schoolType = -1;
 			
 			try {
 				iCareTime = Integer.parseInt(careTime);
@@ -119,6 +131,13 @@ public class ContractEditor extends ChildCareBlock {
 				dToDate = (new IWTimestamp(toDate)).getDate();
 			} catch (Exception ignore) {}
 			
+			try {
+				invoiceReceiver = Integer.parseInt(inRe);
+			} catch (Exception ignore) {}
+			
+			try {
+				schoolType = Integer.parseInt(schType);
+			} catch (Exception ignore) {}
 			
 			boolean success = false;
 			
@@ -126,7 +145,15 @@ public class ContractEditor extends ChildCareBlock {
 				success = getBusiness().alterContract(contract, iCareTime, dFromDate, dToDate, iwc.getCurrentLocale(), iwc.getCurrentUser());
 				if (iEmpType > 0) {
 					contract.setEmploymentType(iEmpType);
-					contract.store();
+				}
+				if (invoiceReceiver > 0) {
+					contract.setInvoiceReceiverID(invoiceReceiver);
+				}
+				contract.store();
+				
+				if (placement != null && schoolType > 0) {
+					placement.setSchoolTypeId(schoolType);
+					placement.store();
 				}
 			}
 			
@@ -152,7 +179,23 @@ public class ContractEditor extends ChildCareBlock {
 		try {
 			ChildCareContractHome contractHome = (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 			ChildCareContract contract = contractHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CONTRACT_ID)));
+
+			EmploymentType et = contract.getEmploymentType();
+			int etId = -1;
+			if (et != null) {
+				etId = new Integer(et.getPrimaryKey().toString()).intValue();
+			}
 			
+			School school = contract.getApplication().getProvider();
+			SchoolClassMember placement = contract.getSchoolClassMember();
+			Collection custodians =	getBusiness().getUserBusiness().getParentsForChild(contract.getChild());
+			Collection schoolTypes = null;
+			try {
+				schoolTypes = school.getSchoolTypes();
+			} catch (IDOException e) {
+				e.printStackTrace();
+				schoolTypes = null;
+			}
 			
 			DateInput from = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
 			IWTimestamp stamp = IWTimestamp.RightNow();
@@ -170,6 +213,16 @@ public class ContractEditor extends ChildCareBlock {
 			if (contract.getCareTime() > 0) {
 				careTime.setContent (Integer.toString(contract.getCareTime()));
 			}
+			DropdownMenu mCustodians = new DropdownMenu(custodians, PARAMETER_INVOICE_REVCEIVER);
+			if (contract.getInvoiceReceiverID() > 0) {
+				mCustodians.setSelectedElement(contract.getInvoiceReceiverID());
+			}
+			DropdownMenu mSchoolType = new DropdownMenu(PARAMETER_SCHOOL_TYPE);
+			SelectorUtility su = new SelectorUtility();
+			mSchoolType = (DropdownMenu) su.getSelectorFromIDOEntities(mSchoolType, schoolTypes, "getLocalizationKey", getResourceBundle());
+			if (placement != null && placement.getSchoolTypeId() > 0) {
+				mSchoolType.setSelectedElement(placement.getSchoolTypeId());
+			}
 			
 			
 			table.add(getSmallHeader(contract.getChild().getName()+" - "+contract.getApplication().getProvider().getName()), 1, row);
@@ -183,12 +236,11 @@ public class ContractEditor extends ChildCareBlock {
 			table.add(getLocalizedSmallText("child_care.care_time","Care time"), 1, row);
 			table.add(careTime, 2, row++);
 			table.add(getLocalizedSmallText("child_care.employment", "Employment"), 1, row);
-			EmploymentType et = contract.getEmploymentType();
-			int etId = -1;
-			if (et != null) {
-				etId = new Integer(et.getPrimaryKey().toString()).intValue();
-			}
 			table.add(getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, etId), 2, row++);
+			table.add(getLocalizedSmallText("child_care.invoice_receiver", "Invoice receiver"), 1, row);
+			table.add(mCustodians, 2, row++);
+			table.add(getLocalizedSmallText("child_care.school_type", "School type"), 1, row);
+			table.add(mSchoolType, 2, row++);
 			
 			Link back = new Link(getResourceBundle().getLocalizedImageButton("child_care.cancel","Cancel"));
 			table.add(back, 1, row);
@@ -240,6 +292,8 @@ public class ContractEditor extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.employment","Employment"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.school_type", "School type"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.invoice_receiver", "Invoice receiver"), column++, row);
 		table.setRowColor(row++, getHeaderColor());
 		
 		boolean showComment = false;
@@ -248,6 +302,7 @@ public class ContractEditor extends ChildCareBlock {
 		
 		if (contracts != null) {
 			ChildCareContract contract;
+			SchoolClassMember placement;
 			User child;
 			IWTimestamp created;
 			IWTimestamp validFrom;
@@ -266,6 +321,7 @@ public class ContractEditor extends ChildCareBlock {
 			while (iter.hasNext()) {
 //				contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 				contract = (ChildCareContract) iter.next();
+				placement =  contract.getSchoolClassMember();
 				child = application.getChild();
 				hasComment = true;
 				column = 1;
@@ -364,6 +420,21 @@ public class ContractEditor extends ChildCareBlock {
 						table.add(getSmallText("-"), column, row);
 					}
 					column++;
+					
+					if (placement != null && placement.getSchoolType() != null) {
+						table.add(getSmallText(localize(placement.getSchoolType().getLocalizationKey(), placement.getSchoolType().getLocalizationKey())), column, row);
+					} else {
+						table.add(getSmallText("-"), column, row);
+					}
+					column++;
+					
+					if (contract.getInvoiceReceiver() != null) {
+						table.add(getSmallText(contract.getInvoiceReceiver().getName()), column, row);
+					} else {
+						table.add(getSmallText("-"), column, row);
+					}
+					column++;
+					
 					
 					table.setWidth(column, row, 12);
 					table.add(viewContract, column++, row);
