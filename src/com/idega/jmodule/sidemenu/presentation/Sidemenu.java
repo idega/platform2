@@ -35,6 +35,10 @@ public class Sidemenu extends JModuleObject{
     private int cellPadding = 2;
     private Image submitImage;
 
+    private Image bulletImage = null;
+    private String extraParameterName;
+    private String extraParameterValue;
+
     boolean isAdmin = false;
     boolean show_menu_name = false;
 
@@ -78,6 +82,15 @@ public class Sidemenu extends JModuleObject{
 
     public void setAddBullet(boolean addBullet) {
       this.addBullet=addBullet;
+    }
+
+    public void setBulletImage(Image bulletImage) {
+      this.bulletImage = bulletImage;
+    }
+
+    public void addParameter(String parameterName, String parameterValue) {
+        this.extraParameterName = parameterName;
+        this.extraParameterValue = parameterValue;
     }
 
     public void setSubmitImageURL(String submitImageURL){
@@ -300,6 +313,9 @@ public class Sidemenu extends JModuleObject{
 
                   link = new Link(textinn,URI);
                     link.setAttribute("style","text-decoration: none");
+                    if (this.extraParameterName != null) {
+                      link.addParameter(this.extraParameterName ,this.extraParameterValue);
+                    }
                   if (this.forward_id) {
                     link.addParameter("sidemenu_id",this.menu.getID());
                   }
@@ -324,6 +340,9 @@ public class Sidemenu extends JModuleObject{
                   }
 
 
+                  if (this.bulletImage != null) {
+                      table.add(bulletImage,position,row);
+                  }
 
                   if (position == 1) {
                     table.add(link,position,row);
