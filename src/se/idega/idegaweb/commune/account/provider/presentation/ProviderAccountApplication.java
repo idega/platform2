@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.5 2002/09/29 22:42:37 tryggvil Exp $
+ * $Id: ProviderAccountApplication.java,v 1.6 2002/10/15 11:38:13 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -229,7 +229,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 		else
 			textPhone = getSmallErrorText(phone);
 		TextInput inputPhone = new TextInput(PARAM_PHONE);
-		inputPhone.setStyle(getSmallTextFontStyle());
+		inputPhone.setStyleClass(getSmallTextFontStyle());
 		inputPhone.setMaxlength(20);
 		if (phoneString != null)
 			inputPhone.setContent(phoneString);
@@ -246,7 +246,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 		else
 			textNumPlaces = getSmallErrorText(numPlaces);
 		TextInput inputNumPlaces = new TextInput(PARAM_NUM_PLACES);
-		inputNumPlaces.setStyle(getSmallTextFontStyle());
+		inputNumPlaces.setStyleClass(getSmallTextFontStyle());
 		inputNumPlaces.setMaxlength(3);
 		inputNumPlaces.setLength(3);
 		if (numPlacesString != null)
@@ -284,7 +284,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 			textAddress = getSmallErrorText(address);
 		TextInput inputAddress = new TextInput(PARAM_ADDR);
 		inputAddress.setMaxlength(50);
-		inputAddress.setStyle(getSmallTextFontStyle());
+		inputAddress.setStyleClass(getSmallTextFontStyle());
 		if (addressString != null)
 			inputAddress.setContent(addressString);
 		add(textAddress,currCol,currRow);
@@ -304,7 +304,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 		TextInput inputManName = new TextInput(PARAM_MAN_NAME);
 		inputManName.setMaxlength(40);
 		inputManName.setLength(30);
-		inputManName.setStyle(getSmallTextFontStyle());
+		inputManName.setStyleClass(getSmallTextFontStyle());
 		if (manNameString != null)
 			inputManName.setContent(manNameString);
 		add(textManName,currCol,currRow);
@@ -321,7 +321,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 			textEmail = getSmallErrorText(email);
 		TextInput inputEmail = new TextInput(PARAM_EMAIL);
 		inputEmail.setAsEmail(localize(ERROR_NOT_EMAIL, "Not a valid email"));
-		inputEmail.setStyle(getSmallTextFontStyle());
+		inputEmail.setStyleClass(getSmallTextFontStyle());
 		inputEmail.setMaxlength(40);
 		if (emailString != null)
 			inputEmail.setContent(emailString);
@@ -391,7 +391,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 				getBundle(iwc).getImageButton(
 					localize(PARAM_FORM_SUBMIT, "Submit application")),
 				PARAM_FORM_SUBMIT);
-		submitButton.setStyle(getLinkFontStyle());
+		submitButton.setStyleClass(getLinkFontStyle());
 		//inputTable.add(submitButton, 2, 10);
 		addButton(submitButton);
 	}

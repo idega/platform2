@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.20 2002/06/12 16:36:23 aron Exp $
+ * $Id: ApplicationForm.java,v 1.21 2002/10/15 11:32:48 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -188,36 +188,36 @@ public class ApplicationForm extends PresentationObjectContainer {
 
     TextInput input1 = (TextInput)textInputTemplate.clone();
     input1.setName("firstName");
-    input1.setStyle("formstyle");
+    input1.setStyleClass("formstyle");
     input1.setLength(40);
     TextInput input2 = (TextInput)textInputTemplate.clone();
     input2.setName("middleName");
-    input2.setStyle("formstyle");
+    input2.setStyleClass("formstyle");
     input2.setLength(40);
     TextInput input3 = (TextInput)textInputTemplate.clone();
     input3.setName("lastName");
-    input3.setStyle("formstyle");
+    input3.setStyleClass("formstyle");
     input3.setLength(40);
     TextInput input4 = (TextInput)textInputTemplate.clone();
     input4.setName("ssn");
     input4.setLength(11);
-    input4.setStyle("formstyle");
+    input4.setStyleClass("formstyle");
     TextInput input5 = (TextInput)textInputTemplate.clone();
     input5.setName("legalResidence");
-    input5.setStyle("formstyle");
+    input5.setStyleClass("formstyle");
     input5.setLength(40);
     TextInput input6 = (TextInput)textInputTemplate.clone();
     input6.setName("residence");
-    input6.setStyle("formstyle");
+    input6.setStyleClass("formstyle");
     input6.setLength(40);
     TextInput input7 = (TextInput)textInputTemplate.clone();
     input7.setName("residencePhone");
     input7.setLength(8);
-    input7.setStyle("formstyle");
+    input7.setStyleClass("formstyle");
     TextInput input8 = (TextInput)textInputTemplate.clone();
     input8.setName("po");
     input8.setLength(3);
-    input8.setStyle("formstyle");
+    input8.setStyleClass("formstyle");
 
     t.addTitle(heading);
     t.add(text1,1,1);

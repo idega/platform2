@@ -215,7 +215,7 @@ public class GolferFriendsSigningSheet extends Block {
     TextInput creditCardNumberInput = new TextInput(creditCardNumberInputName);
     creditCardNumberInput.setAsIntegers(iwrb.getLocalizedString(
       "golferpage.please_give_card_number_integers","Vinsamlegast aðeins tölustafi i kortanúmeri"));
-    creditCardNumberInput.setAsCredidCardNumber(iwrb.getLocalizedString(
+    creditCardNumberInput.setAsCreditCardNumber(iwrb.getLocalizedString(
       "golferpage.please_give_valid_card","Vinsamlegast gefið gilt kortanúmer"));
     TextInput creditCardExpDateInput = new TextInput(creditCardExpDateInputName);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.4 2002/08/08 12:12:18 palli Exp $
+ * $Id: CitizenAccountApplication.java,v 1.5 2002/10/15 11:38:05 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -100,10 +100,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 		TextInput inputPhoneWork = new TextInput(PARAM_PHONE_WORK);
 		inputPhoneWork.setMaxlength(20);
 
-		inputPid.setStyle(getSmallTextFontStyle());
-		inputEmail.setStyle(getSmallTextFontStyle());
-		inputPhoneHome.setStyle(getSmallTextFontStyle());
-		inputPhoneWork.setStyle(getSmallTextFontStyle());
+		inputPid.setStyleClass(getSmallTextFontStyle());
+		inputEmail.setStyleClass(getSmallTextFontStyle());
+		inputPhoneHome.setStyleClass(getSmallTextFontStyle());
+		inputPhoneWork.setStyleClass(getSmallTextFontStyle());
 
 		String pidString = iwc.getParameter(PARAM_PID);
 		String emailString = iwc.getParameter(PARAM_EMAIL);
@@ -142,7 +142,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		inputTable.add(inputPhoneWork, 2, 4);
 
 		SubmitButton submitButton = new SubmitButton(getBundle(iwc).getImageButton(localize(PARAM_FORM_SUBMIT, "Submit application")), PARAM_FORM_SUBMIT);
-		submitButton.setStyle(getLinkFontStyle());
+		submitButton.setStyleClass(getLinkFontStyle());
 
 		inputTable.add(submitButton, 2, 6);
 		if (_isError) {
