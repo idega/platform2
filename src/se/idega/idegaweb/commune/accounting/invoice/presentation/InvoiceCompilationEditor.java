@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Address;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -28,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/10/31 07:57:51 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/31 13:47:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -40,25 +41,33 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
 public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PREFIX = "cacc_invcmp_";
 
+    private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
+    private static final String ADJUSTMENT_DATE_DEFAULT = "Justerings.dag";
+    private static final String CREATION_DATE_DEFAULT = "Skapande.dag";
+    private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String FROM_PERIOD_KEY = PREFIX + "from_period";
+    private static final String INVOICE_ADDRESS_DEFAULT = "Faktureringsadress";
+    private static final String INVOICE_ADDRESS_KEY = PREFIX + "invoice_address";
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
     private static final String INVOICE_COMPILATION_LIST_DEFAULT = "Faktureringsunderlagslista";
     private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String INVOICE_RECEIVER_DEFAULT = "Fakturamottagare";
     private static final String INVOICE_RECEIVER_KEY = PREFIX + "invoice_receiver";
+    private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokföringsdag";
+    private static final String JOURNAL_ENTRY_DATE_KEY = PREFIX + "journal_entry_date";
     private static final String LAST_NAME_DEFAULT = "Efternamn";
     private static final String LAST_NAME_KEY = PREFIX + "last_name";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
-    private static final String PERSONAL_ID_DEFAULT = "Personnummer";
-    private static final String PERSONAL_ID_KEY = PREFIX + "personal_id";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
+    private static final String SSN_DEFAULT = "Personnummer";
+    private static final String SSN_KEY = PREFIX + "personal_id";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
@@ -75,6 +84,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
+    private static final SimpleDateFormat dateFormatter
+        = new SimpleDateFormat ("yyyy-MM-dd");
 
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
@@ -116,12 +127,61 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 * @param context session data like user info etc.
 	 */
     private void showCompilation (final IWContext context)
-        throws RemoteException {
+        throws RemoteException, FinderException {
+        final int headerId = Integer.parseInt (context.getParameter
+                                               (INVOICE_COMPILATION_KEY));
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final InvoiceHeaderHome home = business.getInvoiceHeaderHome ();
+        final InvoiceHeader header
+                = home.findByPrimaryKey (new Integer (headerId));
+		final Date period = header.getPeriod ();
+        final UserBusiness userBusiness = (UserBusiness)
+                IBOLookup.getServiceInstance (context, UserBusiness.class);
+        final UserHome userHome = userBusiness.getUserHome ();
+		final User custodian = userHome.findByPrimaryKey
+		        (new Integer (header.getCustodianId ()));
+
+        final Table table = createTable (4);
+        setColumnWidthsEqual (table);
+        int row = 1;
+        int col = 1;
+        addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
+        addSmallText(table, (null != period ? periodFormatter.format (period)
+                             : ""), col++, row);
+        addSmallHeader (table, col++, row, STATUS_KEY, STATUS_DEFAULT, ":");
+        addSmallText(table, header.getStatus () + "", col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
+                        INVOICE_RECEIVER_DEFAULT, ":");
+        addSmallText(table, getUserName (custodian), col++, row);
+        addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
+        addSmallText(table, custodian.getPersonalID (), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, INVOICE_ADDRESS_KEY,
+                        INVOICE_ADDRESS_DEFAULT, ":");
+        table.mergeCells (col, row, col + 2, row);
+        addSmallText(table, getAddressString (custodian), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, CREATION_DATE_KEY,
+                        CREATION_DATE_DEFAULT, ":");
+        addSmallText(table, getFormattedDate (header.getDateCreated ()), col++,
+                     row);
+        addSmallText(table, header.getCreatedBy (), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, ADJUSTMENT_DATE_KEY,
+                        ADJUSTMENT_DATE_DEFAULT, ":");
+        addSmallText(table, getFormattedDate (header.getDateAdjusted ()), col++,
+                     row);
+        addSmallText(table, header.getChangedBy (), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, JOURNAL_ENTRY_DATE_KEY,
+                        JOURNAL_ENTRY_DATE_DEFAULT, ":");
+        addSmallText(table, getFormattedDate (header.getDateJournalEntry ()),
+                     col++, row);
+
         add (createMainTable (INVOICE_COMPILATION_KEY,
-                              INVOICE_COMPILATION_DEFAULT, createTable (1)));
-        add ("pk=" + context.getParameter (INVOICE_COMPILATION_KEY));
-        throw new UnsupportedOperationException ("not implemnted yet ["
-                                                 + context + ']');
+                              INVOICE_COMPILATION_DEFAULT, table));
     }
 
     /**
@@ -183,9 +243,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         int row = 1;
         table.setRowColor(row, getHeaderColor());
         for (int i = 0; i < columnNames.length; i++) {
-            table.add(getSmallHeader(localize (columnNames [i][0],
-                                                      columnNames [i][1])),
-                             i + 1, row);
+            addSmallHeader (table, i + 1, row, columnNames [i][0],
+                            columnNames [i][1]);
         }
         row++;
 
@@ -207,32 +266,25 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
 	private void showInvoiceHeaderOnARow
-        (final Table table, final int row,
-         final InvoiceBusiness invoiceBusiness,	final UserHome userHome,
-         final InvoiceHeader header) throws FinderException {
+        (final Table table, final int row, final InvoiceBusiness business,
+         final UserHome userHome, final InvoiceHeader header)
+        throws FinderException {
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 		                   : getZebraColor2 ());
 		final char status = header.getStatus ();
-		final java.sql.Date period = header.getPeriod ();
 		final User custodian = userHome.findByPrimaryKey
 		        (new Integer (header.getCustodianId ())) ;
-
-		final Link custodianLink = getSmallLink
-                (custodian.getFirstName () + ' '  + custodian.getLastName ());
-        custodianLink.addParameter (ACTION_KEY, ACTION_SHOW_COMPILATION);
-		custodianLink.addParameter (INVOICE_COMPILATION_KEY,
-                              header.getPrimaryKey ().toString ());
-		final InvoiceRecord [] records
-		        = invoiceBusiness.getInvoiceRecordsByInvoiceHeader (header);
-		float totalAmount = 0;
-		for (int j = 0; j < records.length; j++) {
-		    totalAmount += records[j].getAmount ();
-		}
+		final Date period = header.getPeriod ();
+		final Link periodLink = getSmallLink
+                (null != period ? periodFormatter.format (period) : "?");
+        periodLink.addParameter (ACTION_KEY, ACTION_SHOW_COMPILATION);
+		periodLink.addParameter (INVOICE_COMPILATION_KEY,
+                                 header.getPrimaryKey ().toString ());
+		final long totalAmount = getTotalAmount (header, business);
 		table.add (status + "", col++, row);
-		table.add (null != period ? periodFormatter.format (period) : "",
-		           col++, row);
-		table.add (custodianLink, col++, row);
+		table.add (periodLink, col++, row);
+		table.add (getUserName (custodian), col++, row);
 		table.add (totalAmount + "", col++, row);
 	}
 
@@ -251,15 +303,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         mainTable.setWidth (Table.HUNDRED_PERCENT);
         mainTable.setRowColor (1, getHeaderColor ());
         mainTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER) ;
-        mainTable.add (getSmallHeader (localize (headerKey, headerDefault)), 1,
-                       1);
+        addSmallHeader (mainTable, 1, 1,  headerKey, headerDefault);
         final Table operationTable = new Table ();
         operationTable.setCellpadding (getCellpadding ());
         operationTable.setCellspacing (getCellspacing ());
         operationTable.setColumns (2);
-        operationTable.add (getSmallHeader
-                            (localize (MAIN_ACTIVITY_KEY,
-                                       MAIN_ACTIVITY_DEFAULT) + ":"), 1, 1);
+        addSmallHeader (operationTable, 1, 1, MAIN_ACTIVITY_KEY,
+                        MAIN_ACTIVITY_DEFAULT, ":");
         String operationalField = getSession ().getOperationalField();
         operationalField = operationalField == null ? "" : operationalField;
         operationTable.add (new OperationalFieldsMenu (), 2, 1);
@@ -279,19 +329,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             // do nothing, it's ok that none was found
         }
         int col = 1;
-        table.add (getSmallHeader (localize (PERSONAL_ID_KEY,
-                                             PERSONAL_ID_DEFAULT) + ':'), col++,
-                   1);
+        addSmallHeader (table, col++, 1, SSN_KEY, SSN_DEFAULT, ":");
         table.add (getUserSearcherInput
                    (context, USERSEARCHER_PERSONALID_KEY), col++, 1);
-        table.add (getSmallHeader (localize (FIRST_NAME_KEY,
-                                             FIRST_NAME_DEFAULT) + ':'), col++,
-                   1);
+        addSmallHeader (table, col++, 1, FIRST_NAME_KEY,  FIRST_NAME_DEFAULT,
+                        ":");
         table.add (getUserSearcherInput
                    (context, USERSEARCHER_FIRSTNAME_KEY), col++, 1);
-        table.add (getSmallHeader (localize (LAST_NAME_KEY,
-                                             LAST_NAME_DEFAULT) + ':'), col++,
-                   1);
+        addSmallHeader (table, col++, 1, LAST_NAME_KEY, LAST_NAME_DEFAULT,
+                        ":");
         table.add (getUserSearcherInput
                    (context, USERSEARCHER_LASTNAME_KEY), col++, 1);
         return table;
@@ -300,8 +346,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     Table getPeriodFormTable (final IWContext context) {
         final Table table = createTable (3);
         int col = 1;
-        table.add (getSmallHeader (localize (PERIOD_KEY, PERIOD_DEFAULT) + ':'),
-                   col++, 1);
+        addSmallHeader (table, col++, 1, PERIOD_KEY, PERIOD_DEFAULT);
         table.add (getUserSearcherInput (context, FROM_PERIOD_KEY), col++, 1);
         table.add (getUserSearcherInput (context, TO_PERIOD_KEY), col++, 1);
         return table;
@@ -316,6 +361,24 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             input.setValue (context.getParameter (key));
         }
         return input;
+    }
+
+    private void addSmallText (final Table table, final String string,
+                               final int col, final int row) {
+        table.add (getSmallText (string), col, row);
+    }
+
+    private void addSmallHeader (final Table table, final int col,
+                                 final int row, final String key,
+                                 final String defaultString) {
+        addSmallHeader (table, col, row, key, defaultString, "");
+    }
+
+    private void addSmallHeader
+        (final Table table, final int col, final int row, final String key,
+         final String defaultString, final String suffix) {
+        final String localizedString = localize (key, defaultString) + suffix;
+        table.add (getSmallHeader (localizedString), col, row);
     }
 
     private Table createTable (final int columnCount) {
@@ -382,6 +445,50 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
         exception.printStackTrace ();
         add ("Det inträffade ett fel. Försök igen senare.");
+    }
+
+    private static String getUserName (final User user) {
+        return user.getLastName () + ", " + user.getFirstName ();
+    }
+
+    private static String getFormattedDate (final Date date) {
+        return null == date ? "" : dateFormatter.format (date);
+    }
+
+    private static void setColumnWidthsEqual (final Table table) {
+        final int columnCount = table.getColumns ();
+        System.err.println ("ColumnCont = " + columnCount);
+        final int percentageInt = 100 / columnCount;
+        final String percentageString = percentageInt + "%";
+        for (int i = 1; i <= columnCount; i++) {
+            table.setColumnWidth (i, percentageString);
+            System.err.println (i + " " + percentageString);
+        }
+    }
+
+    private static String getAddressString (final User user) {
+        final StringBuffer result = new StringBuffer ();
+        if (null != user) {
+            final Collection addresses = user.getAddresses ();
+            if (!addresses.isEmpty ()) {
+                final Address address = (Address) addresses.toArray () [0];
+                result.append (address.getStreetAddress());
+                result.append (", ");
+                result.append (address.getPostalAddress());
+            }
+        }
+        return result.toString ();
+    }
+
+    private long getTotalAmount (final InvoiceHeader header,
+                                   final InvoiceBusiness business) {
+ 		final InvoiceRecord [] records
+		        = business.getInvoiceRecordsByInvoiceHeader (header);
+		long totalAmount = 0;
+		for (int j = 0; j < records.length; j++) {
+		    totalAmount += records[j].getAmount ();
+		}
+        return totalAmount;
     }
 
     private void displayRedText (final String key, final String defaultString) {
