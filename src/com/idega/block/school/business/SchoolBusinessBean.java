@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
@@ -36,236 +38,138 @@ import com.idega.util.IWTimestamp;
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
-public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
-{
-	public SchoolHome getSchoolHome() throws java.rmi.RemoteException
-	{
+public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness {
+	public SchoolHome getSchoolHome() throws java.rmi.RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);
 	}
 
-  public SchoolClassMemberHome getSchoolClassMemberHome()throws java.rmi.RemoteException{
-    return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
-  }
-   public SchoolClassHome getSchoolClassHome()throws java.rmi.RemoteException{
-    return (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
-  }
-   public SchoolYearHome getSchoolYearHome()throws java.rmi.RemoteException{
-    return (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
-  }
-   public SchoolAreaHome getSchoolAreaHome()throws java.rmi.RemoteException{
-    return (SchoolAreaHome) IDOLookup.getHome(SchoolArea.class);
-  }
-  public SchoolTypeHome getSchoolTypeHome()throws java.rmi.RemoteException{
-    return (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
-  }
-	public School getSchool(Object primaryKey)
-	{
-		try
-		{
+	public SchoolClassMemberHome getSchoolClassMemberHome() throws RemoteException {
+		return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+	}
+	
+	public SchoolClassHome getSchoolClassHome() throws RemoteException {
+		return (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
+	}
+	
+	public SchoolYearHome getSchoolYearHome() throws RemoteException {
+		return (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+	}
+	
+	public SchoolAreaHome getSchoolAreaHome() throws RemoteException {
+		return (SchoolAreaHome) IDOLookup.getHome(SchoolArea.class);
+	}
+	
+	public SchoolTypeHome getSchoolTypeHome() throws RemoteException {
+		return (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+	}
+	
+	public School getSchool(Object primaryKey) throws RemoteException {
+		try {
 			SchoolHome shome = getSchoolHome();
 			return shome.findByPrimaryKey(primaryKey);
 		}
-		catch (Exception ex)
-		{
+		catch (FinderException fe) {
 			return null;
 		}
 	}
-	public void removeSchool(int id)
-	{
-		try
-		{
+	
+	public void removeSchool(int id) throws RemoteException {
+		try {
 			School school = getSchool(new Integer(id));
 			school.addSchoolTypesRemoveOther(new int[0]);
 			school.addSchoolYearsRemoveOther(new int[0]);
 			school.remove();
 		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
+		catch (RemoveException re) {
+			re.printStackTrace();
 		}
 	}
-	public Collection findAllSchools()
-	{
-		try
-		{
+	
+	public Collection findAllSchools() throws RemoteException {
+		try {
 			SchoolHome shome = getSchoolHome();
 			return shome.findAllSchools();
 		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-			return new java.util.Vector();
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new Vector();
 		}
 	}
-	public Collection findAllSchoolsByAreaAndType(int area, int type)
-	{
-		try
-		{
+	
+	public Collection findAllSchoolsByAreaAndType(int area, int type) throws RemoteException {
+		try {
 			SchoolHome shome = getSchoolHome();
 			return shome.findAllByAreaAndType(area, type);
 		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-			return new java.util.Vector();
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new Vector();
 		}
 	}
-	public School createSchool(
-		String name,
-		String address,
-		String zipcode,
-		String ziparea,
-		String phone,
-		int school_type)
-		throws CreateException
-	{
+	
+	public School createSchool(String name, String address, String zipcode, String ziparea, String phone, int school_type) throws RemoteException {
 		/**
 		 * @todo figure out how to implement
 		 */
-		int area_id=-1;
+		int area_id = -1;
 		int sch_types[] = { school_type };
 		return createSchool(name, null, address, zipcode, ziparea, phone, null, null, null, area_id, sch_types);
 	}
-	public School createSchool(
-		String name,
-		String address,
-		String zipcode,
-		String ziparea,
-		String phone,
-		int area_id,
-		int[] sch_types)
-		throws CreateException
-	{
+	
+	public School createSchool(String name, String address, String zipcode, String ziparea, String phone, int area_id, int[] sch_types) throws RemoteException {
 		return createSchool(name, null, address, zipcode, ziparea, phone, null, null, null, area_id, sch_types);
 	}
 
-	public School createSchool(
-		String name,
-		String info,
-		String address,
-		String zipcode,
-		String ziparea,
-		String phone,
-		String keycode,
-		String latitude,
-		String longitude,
-		int area_id,
-		int[] type_ids)
-		throws CreateException
-	{
-		return createSchool(
-			name,
-			info,
-			address,
-			zipcode,
-			ziparea,
-			phone,
-			keycode,
-			latitude,
-			longitude,
-			area_id,
-			type_ids,
-			null);
+	public School createSchool(String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids) throws RemoteException {
+		return createSchool(name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, type_ids, null);
 	}
-	public School createSchool(
-		String name,
-		String info,
-		String address,
-		String zipcode,
-		String ziparea,
-		String phone,
-		String keycode,
-		String latitude,
-		String longitude,
-		int area_id,
-		int[] type_ids,
-		int[] year_ids)
-		throws CreateException
-	{
-		try
-		{
-			return storeSchool(
-				-1,
-				name,
-				info,
-				address,
-				zipcode,
-				ziparea,
-				phone,
-				keycode,
-				latitude,
-				longitude,
-				area_id,
-				type_ids,
-				year_ids);
-		}
-		catch (RemoteException rme)
-		{
-			throw new IDOCreateException(rme);
-		}
+	
+	public School createSchool(String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids) throws RemoteException {
+		return storeSchool(-1, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, type_ids, year_ids);
 	}
-	public School storeSchool(
-		int id,
-		String name,
-		String info,
-		String address,
-		String zipcode,
-		String ziparea,
-		String phone,
-		String keycode,
-		String latitude,
-		String longitude,
-		int area_id,
-		int[] type_ids,
-		int[] year_ids)
-		throws java.rmi.RemoteException
-	{
+	
+	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids) throws RemoteException {
 		SchoolHome shome = getSchoolHome();
 		School newSchool;
-		try
-		{
-			if (id > 0)
-			{
+		try {
+			if (id > 0) {
 				newSchool = shome.findByPrimaryKey(new Integer(id));
 			}
-			else
-			{
+			else {
 				newSchool = shome.create();
 			}
-			if(newSchool.getHeadmasterGroupId() < 0){
+			if (newSchool.getHeadmasterGroupId() < 0) {
 
-				newSchool.setHeadmasterGroupId( ( (Integer) getNewSchoolGroup(name,name).getPrimaryKey()).intValue() );
+				newSchool.setHeadmasterGroupId(((Integer) getNewSchoolGroup(name, name).getPrimaryKey()).intValue());
 
 			}
 		}
-		catch (javax.ejb.FinderException fe)
-		{
+		catch (javax.ejb.FinderException fe) {
 			throw new java.rmi.RemoteException(fe.getMessage());
 		}
-		catch (javax.ejb.CreateException ce)
-		{
+		catch (javax.ejb.CreateException ce) {
 			throw new java.rmi.RemoteException(ce.getMessage());
 		}
 
-		if(area_id > 0)
+		if (area_id > 0)
 			newSchool.setSchoolAreaId(area_id);
-		if(address!=null)
+		if (address != null)
 			newSchool.setSchoolAddress(address);
-		if(info!=null)
+		if (info != null)
 			newSchool.setSchoolInfo(info);
-		if(keycode!=null)
+		if (keycode != null)
 			newSchool.setSchoolKeyCode(keycode);
-		if(latitude!=null)
+		if (latitude != null)
 			newSchool.setSchoolLatitude(latitude);
-		if(longitude!=null)
+		if (longitude != null)
 			newSchool.setSchoolLongitude(longitude);
-		if(name!=null)
+		if (name != null)
 			newSchool.setSchoolName(name);
-		if(phone!=null)
+		if (phone != null)
 			newSchool.setSchoolPhone(phone);
-		if(ziparea!=null)
+		if (ziparea != null)
 			newSchool.setSchoolZipArea(ziparea);
-		if(zipcode!=null)
+		if (zipcode != null)
 			newSchool.setSchoolZipCode(zipcode);
 
 		newSchool.store();
@@ -275,161 +179,175 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			newSchool.addSchoolYearsRemoveOther(year_ids);
 		return newSchool;
 	}
-	public Map getSchoolRelatedSchoolTypes(School school)
-	{
-		try
-		{
+	
+	public Map getSchoolRelatedSchoolTypes(School school) throws RemoteException {
+		try {
 			Collection types = school.findRelatedSchoolTypes();
-			if (types != null && !types.isEmpty())
-			{
+			if (types != null && !types.isEmpty()) {
 				HashMap map = new HashMap(types.size());
 				Iterator iter = types.iterator();
 				SchoolType type;
-				while (iter.hasNext())
-				{
+				while (iter.hasNext()) {
 					type = (SchoolType) iter.next();
 					map.put((Integer) type.getPrimaryKey(), type);
 				}
 				return map;
 			}
 		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
+		catch (IDORelationshipException ie) {
+			ie.printStackTrace();
 		}
 		return null;
 	}
-	public Map getSchoolRelatedSchoolYears(School school)
-	{
-		try
-		{
+	
+	public Map getSchoolRelatedSchoolYears(School school) throws RemoteException {
+		try {
 			Collection years = school.findRelatedSchoolYears();
-			if (years != null && !years.isEmpty())
-			{
+			if (years != null && !years.isEmpty()) {
 				HashMap map = new HashMap(years.size());
 				Iterator iter = years.iterator();
 				SchoolYear year;
-				while (iter.hasNext())
-				{
+				while (iter.hasNext()) {
 					year = (SchoolYear) iter.next();
 					map.put(year.getPrimaryKey(), year);
 				}
 				return map;
 			}
 		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
+		catch (IDORelationshipException ie) {
+			ie.printStackTrace();
 		}
 		return null;
 	}
-	public Map getMapOfSchools()
-	{
-		try
-		{
+	
+	public Map getMapOfSchools() {
+		try {
 			Collection schools = findAllSchools();
-			if (schools != null && !schools.isEmpty())
-			{
+			if (schools != null && !schools.isEmpty()) {
 				HashMap map = new HashMap(schools.size());
 				Iterator iter = schools.iterator();
 				School school;
-				while (iter.hasNext())
-				{
+				while (iter.hasNext()) {
 					school = (School) iter.next();
 					map.put(school.getPrimaryKey(), school);
 				}
 				return map;
 			}
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return null;
 	}
 
-	public Group getNewSchoolGroup(String name, String info)throws CreateException,FinderException,RemoteException{
-		GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-		GroupType type = typeHome.create();
-
-		Group rootGroup = this.getRootSchoolGroup();
-		Group schoolGroup = getUserBusiness().getGroupBusiness().createGroup(name,info,type.getGeneralGroupTypeString());
-		rootGroup.addGroup(schoolGroup);
-		return schoolGroup;
+	public Group getNewSchoolGroup(String name, String info) throws RemoteException {
+		try {
+			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+			GroupType type = typeHome.create();
+	
+			Group rootGroup = this.getRootSchoolGroup();
+			Group schoolGroup = getUserBusiness().getGroupBusiness().createGroup(name, info, type.getGeneralGroupTypeString());
+			rootGroup.addGroup(schoolGroup);
+			return schoolGroup;
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+			return null;
+		}
 	}
 
-	public Group getRootSchoolGroup()throws CreateException,FinderException,RemoteException{
-		String ROOT_SCHOOL_GROUP_ID_PARAMETER = "root_school_group_id";
-	    Group rootGroup = null;
-	    //create the default group
-	    IWBundle bundle = this.getIWApplicationContext().getApplication().getBundle("com.idega.block.school");
-	   String groupId =  bundle.getProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER);
-	    //String groupId = (String) this.getIWApplicationContext().getApplicationSettings().getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
-	    if( groupId!=null ){
-	      rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+	public Group getRootSchoolGroup() throws RemoteException {
+		try {
+			String ROOT_SCHOOL_GROUP_ID_PARAMETER = "root_school_group_id";
+			Group rootGroup = null;
+			//create the default group
+			IWBundle bundle = this.getIWApplicationContext().getApplication().getBundle("com.idega.block.school");
+			String groupId = bundle.getProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER);
+			//String groupId = (String) this.getIWApplicationContext().getApplicationSettings().getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
+			if (groupId != null) {
+				rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
 
-	    }
-	    else{
-	      System.err.println("trying to store School Root group");
-	      /**@todo this seems a wrong way to do things**/
-	      GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-	      GroupType type = typeHome.create();
+			}
+			else {
+				try {
+					System.err.println("trying to store School Root group");
+					/**@todo this seems a wrong way to do things**/
+					GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+					GroupType type = typeHome.create();
 
+					rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Root Group", "The School Root Group.", type.getGeneralGroupTypeString());
+					bundle.setProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER, rootGroup.getPrimaryKey().toString());
+				}
+				catch (CreateException ce) {
+					ce.printStackTrace(System.err);
+				}
+			}
 
-	      rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Root Group","The School Root Group.",type.getGeneralGroupTypeString());
-		  bundle.setProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER, rootGroup.getPrimaryKey().toString());
+			return rootGroup;
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace(System.err);
+			return null;
+		}
+	}
 
-	    }
+	protected UserBusiness getUserBusiness() throws RemoteException {
+		return (UserBusiness) this.getServiceInstance(UserBusiness.class);
+	}
 
-    return rootGroup;
-  }
+	public SchoolClass createSchoolClass(String schoolClassName, School school, SchoolYear year, SchoolSeason season) throws RemoteException {
+		try {
+			SchoolClassHome sClassHome = (SchoolClassHome) this.getIDOHome(SchoolClass.class);
+			SchoolClass sClass = sClassHome.create();
 
-  protected UserBusiness getUserBusiness()throws RemoteException{
-    return (UserBusiness)this.getServiceInstance(UserBusiness.class);
-  }
+			sClass.setSchoolClassName(schoolClassName);
+			sClass.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
+			sClass.setSchoolSeasonId(((Integer) season.getPrimaryKey()).intValue());
+			sClass.setSchoolYearId(((Integer) year.getPrimaryKey()).intValue());
 
-  public SchoolClass createSchoolClass(String schoolClassName,School school, SchoolYear year,SchoolSeason season) throws CreateException, RemoteException{
-  	SchoolClassHome sClassHome = (SchoolClassHome) this.getIDOHome(SchoolClass.class);
-  	SchoolClass sClass = sClassHome.create();
+			return sClass;
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+			return null;
+		}
+	}
 
-  	sClass.setSchoolClassName(schoolClassName);
-  	sClass.setSchoolId( ((Integer)school.getPrimaryKey()).intValue() );
-  	sClass.setSchoolSeasonId( ((Integer)season.getPrimaryKey()).intValue() );
-  	sClass.setSchoolYearId( ((Integer)year.getPrimaryKey()).intValue() );
+	public SchoolClassMember createSchoolClassMember(SchoolClass sClass, User user) throws RemoteException {
+		try {
+			SchoolClassMemberHome sClassMemberHome = (SchoolClassMemberHome) this.getIDOHome(SchoolClassMember.class);
+			SchoolClassMember sClassMember = sClassMemberHome.create();
+			sClassMember.setSchoolClassId(((Integer) sClass.getPrimaryKey()).intValue());
+			sClassMember.setClassMemberId(((Integer) user.getPrimaryKey()).intValue());
+			sClassMember.setRegisterDate(IWTimestamp.getTimestampRightNow());
+			//NEEDS THE CURRENT USER ID FOR REGISTERING USER
 
- 	return sClass;
-  }
+			return sClassMember;
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+			return null;
+		}
+	}
 
-  public SchoolClassMember createSchoolClassMember(SchoolClass sClass, User user) throws CreateException,java.rmi.RemoteException{
-	SchoolClassMemberHome sClassMemberHome = (SchoolClassMemberHome) this.getIDOHome(SchoolClassMember.class);
-  	SchoolClassMember sClassMember = sClassMemberHome.create();
-  	sClassMember.setSchoolClassId(((Integer)sClass.getPrimaryKey()).intValue() );
-  	sClassMember.setClassMemberId(((Integer)user.getPrimaryKey()).intValue());
-  	sClassMember.setRegisterDate(IWTimestamp.getTimestampRightNow());
-  	//NEEDS THE CURRENT USER ID FOR REGISTERING USER
-
-  	return sClassMember;
-
-  }
-
-
-	public Collection findAllSchoolsByType(int type)
-	{
-		try
-		{
+	public Collection findAllSchoolsByType(int type) {
+		try {
 			SchoolHome shome = getSchoolHome();
 			return shome.findAllBySchoolType(type);
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			ex.printStackTrace();
 			return new java.util.Vector();
 		}
 	}
 
-	public Collection findAllSchoolYearsInSchool(int schoolID) throws IDORelationshipException,RemoteException {
-		School school = this.getSchool(new Integer(schoolID));
-		return school.findRelatedSchoolYears();
+	public Collection findAllSchoolYearsInSchool(int schoolID) throws RemoteException {
+		try {
+			School school = this.getSchool(new Integer(schoolID));
+			return school.findRelatedSchoolYears();
+		}
+		catch (IDORelationshipException ie) {
+			return new Vector();
+		}
 	}
-
 }

@@ -2,6 +2,7 @@ package com.idega.block.school.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -10,15 +11,11 @@ import javax.ejb.RemoveException;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 
 /**
  * @author Laddi
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class SchoolClassBusinessBean extends IBOServiceBean implements SchoolClassBusiness {
 
@@ -26,57 +23,125 @@ public class SchoolClassBusinessBean extends IBOServiceBean implements SchoolCla
 		return (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
 	}
 	
-	public SchoolClass findSchoolClass(Object primaryKey) throws FinderException,RemoteException {
-    return getSchoolClassHome().findByPrimaryKey(primaryKey);
+	public SchoolClass findSchoolClass(Object primaryKey) throws RemoteException {
+    try {
+	    return getSchoolClassHome().findByPrimaryKey(primaryKey);
+    }
+    catch (FinderException fe) {
+    	return null;
+    }
 	}
 	
-	public Collection findSchoolClassesBySchool(int schoolID) throws FinderException,RemoteException {
-		return getSchoolClassHome().findBySchool(schoolID);
+	public Collection findSchoolClassesBySchool(int schoolID) throws RemoteException {
+    try {
+			return getSchoolClassHome().findBySchool(schoolID);
+    }
+    catch (FinderException fe) {
+    	return new Vector();
+    }
 	}
 	
-	public Collection findSchoolClassesBySchoolAndSeason(int schoolID,int schoolSeasonID) throws FinderException,RemoteException {
-		return getSchoolClassHome().findBySchoolAndSeason(schoolID,schoolSeasonID);
+	public Collection findSchoolClassesBySchoolAndSeason(int schoolID,int schoolSeasonID) throws RemoteException {
+    try {
+			return getSchoolClassHome().findBySchoolAndSeason(schoolID,schoolSeasonID);
+    }
+    catch (FinderException fe) {
+    	return new Vector();
+    }
 	}
 	
-	public Collection findSchoolClassesBySchoolAndYear(int schoolID,int schoolYearID) throws FinderException,RemoteException {
-		return getSchoolClassHome().findBySchoolAndYear(schoolID,schoolYearID);
+	public Collection findSchoolClassesBySchoolAndYear(int schoolID,int schoolYearID) throws RemoteException {
+    try {
+			return getSchoolClassHome().findBySchoolAndYear(schoolID,schoolYearID);
+    }
+    catch (FinderException fe) {
+    	return new Vector();
+    }
 	}
 	
-	public Collection findSchoolClassesBySchoolAndSeasonAndYear(int schoolID,int schoolSeasonID,int schoolYearID) throws FinderException,RemoteException {
-		return getSchoolClassHome().findBySchoolAndSeasonAndYear(schoolID,schoolSeasonID,schoolYearID);
+	public Collection findSchoolClassesBySchoolAndSeasonAndYear(int schoolID,int schoolSeasonID,int schoolYearID) throws RemoteException {
+    try {
+			return getSchoolClassHome().findBySchoolAndSeasonAndYear(schoolID,schoolSeasonID,schoolYearID);
+    }
+    catch (FinderException fe) {
+    	return new Vector();
+    }
 	}
 	
-	public Collection findSchoolClassesByTeacher(int teacherID) throws FinderException,RemoteException {
-		return getSchoolClassHome().findByTeacher(teacherID);
+	public Collection findSchoolClassesByTeacher(int teacherID) throws RemoteException {
+    try {
+			return getSchoolClassHome().findByTeacher(teacherID);
+    }
+    catch (FinderException fe) {
+    	return new Vector();
+    }
 	}
 	
-	public Collection findSchoolClassesBySchoolAndTeacher(int schoolID,int teacherID) throws FinderException,RemoteException {
-		return getSchoolClassHome().findBySchoolAndTeacher(schoolID,teacherID);
+	public Collection findSchoolClassesBySchoolAndTeacher(int schoolID,int teacherID) throws RemoteException {
+    try {
+			return getSchoolClassHome().findBySchoolAndTeacher(schoolID,teacherID);
+    }
+    catch (FinderException fe) {
+    	return new Vector();
+    }
 	}
 	
-	public Collection findSchoolClassesBySchoolAndSeasonAndTeacher(int schoolID,int schoolSeasonID,int teacherID) throws FinderException,RemoteException {
-		return getSchoolClassHome().findBySchoolAndSeasonAndTeacher(schoolID,schoolSeasonID,teacherID);
+	public Collection findSchoolClassesBySchoolAndSeasonAndTeacher(int schoolID,int schoolSeasonID,int teacherID) throws RemoteException {
+    try {
+			return getSchoolClassHome().findBySchoolAndSeasonAndTeacher(schoolID,schoolSeasonID,teacherID);
+    }
+    catch (FinderException fe) {
+    	return new Vector();
+    }
 	}
 	
-	public void removeSchoolClass(int schoolClassID) throws FinderException,RemoveException,RemoteException {
-		SchoolClass schoolClass = findSchoolClass(new Integer(schoolClassID));
-		schoolClass.remove();
+	public int getNumberOfStudentsInClass(int schoolClassID) throws RemoteException {
+    try {
+			return getSchoolClassHome().getNumberOfStudentsInClass(schoolClassID);
+    }
+    catch (FinderException fe) {
+    	return 0;
+    }
+    catch (IDOException ie) {
+    	return 0;
+    }
 	}
 	
-	public void storeSchoolClass(int schoolClassID,String className,int schoolID,int schoolSeasonID,int schoolYearID,int teacherID) throws CreateException,FinderException,RemoteException {
-		SchoolClass schoolClass;
-		if ( schoolClassID != -1 )
-			schoolClass = findSchoolClass(new Integer(schoolClassID));
-		else
-			schoolClass = getSchoolClassHome().create();
-		
-		schoolClass.setSchoolClassName(className);
-		schoolClass.setSchoolId(schoolID);
-		schoolClass.setSchoolSeasonId(schoolSeasonID);
-		schoolClass.setSchoolYearId(schoolYearID);
-		if ( teacherID != -1 )
-			schoolClass.setTeacherId(teacherID);
-		
-		schoolClass.store();
+	public void removeSchoolClass(int schoolClassID) throws RemoteException {
+    try {
+			SchoolClass schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
+			schoolClass.remove();
+    }
+    catch (FinderException fe) {
+    	fe.printStackTrace(System.err);
+    }
+    catch (RemoveException re) {
+    	re.printStackTrace(System.err);
+    }
+	}
+	
+	public void storeSchoolClass(int schoolClassID,String className,int schoolID,int schoolSeasonID,int schoolYearID,int teacherID) throws RemoteException {
+		try {
+			SchoolClass schoolClass;
+			if ( schoolClassID != -1 )
+				schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
+			else
+				schoolClass = getSchoolClassHome().create();
+			
+			schoolClass.setSchoolClassName(className);
+			schoolClass.setSchoolId(schoolID);
+			schoolClass.setSchoolSeasonId(schoolSeasonID);
+			schoolClass.setSchoolYearId(schoolYearID);
+			if ( teacherID != -1 )
+				schoolClass.setTeacherId(teacherID);
+			
+			schoolClass.store();
+		}
+    catch (FinderException fe) {
+    	fe.printStackTrace(System.err);
+    }
+    catch (CreateException ce) {
+    	ce.printStackTrace(System.err);
+    }
 	}
 }

@@ -3,6 +3,10 @@ package com.idega.block.school.business;
 import com.idega.block.school.data.*;
 import com.idega.data.IDOLookup;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
+
 import com.idega.business.IBOServiceBean;
 
 /**

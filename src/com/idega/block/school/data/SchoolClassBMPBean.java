@@ -6,6 +6,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
@@ -148,5 +149,13 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   	.appendAnd().append(SEASON).appendEqualSign().append(((Integer)schoolSeason.getPrimaryKey()).intValue());
 
   	return (Integer)super.idoFindOnePKBySQL(sql.toString());
+  }
+
+  public int ejbHomeGetNumberOfStudentsInClass(int schoolClassID) throws FinderException, IDOException, RemoteException {
+  	IDOQuery sql = new IDOQuery();
+  	sql.appendSelect().append("count(*)").appendFrom().append(getEntityName()).append(" sc,").append(SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER).append(" scm");
+  	sql.appendWhere().append("sc.").append(getIDColumnName()).appendEqualSign().append(schoolClassID).appendAnd().append("sc.").append(getIDColumnName()).appendEqualSign().append("scm.").append(getIDColumnName());
+
+		return super.idoGetNumberOfRecords(sql.toString());
   }
 }
