@@ -1098,7 +1098,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return findAllSchoolTypesInCategory(getElementarySchoolSchoolCategory());
 	}
 
-	public void storeSchoolType(int id, String name, String info, String category, String locKey,Integer maxAge, boolean isFreetimeType) throws java.rmi.RemoteException {
+	public void storeSchoolType(int id, String name, String info, String category, String locKey,int maxAge, boolean isFreetimeType) throws java.rmi.RemoteException {
 
 		SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 		SchoolType newType;
@@ -1121,8 +1121,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newType.setSchoolTypeName(name);
 		newType.setSchoolCategory(category);
 		newType.setLocalizationKey(locKey);
-		if(maxAge!=null)
-			newType.setMaxSchoolAge(maxAge.toString());
+		if(maxAge!=-1)
+			newType.setMaxSchoolAge(maxAge);
 		newType.setIsFreetimeType(isFreetimeType);
 		newType.store();
 	}

@@ -42,7 +42,8 @@ public class SchoolTypeEditor extends Block {
 	SchoolBusiness sbBean;
 	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 	
-	private static final String PARAMETER_IS_FREETIME_TYPE = "sch_freetime_type";
+	private static final String PARAMETER_IS_FREETIME_TYPE = "sch_type_freetime";
+	private static final String PARAMETER_MAX_AGE = "sch_type_max_age";
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -96,13 +97,14 @@ public class SchoolTypeEditor extends Block {
 			String info = iwc.getParameter("sch_type_info");
 			String cat = iwc.getParameter("sch_type_cat");
 			String locKey = iwc.getParameter("sch_type_lockey");
-			String maxAge = iwc.getParameter("sch_type_maxage");
-			Integer iMaxAge = null;
-			try {
-				iMaxAge = Integer.valueOf(maxAge);
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
+			int maxAge = -1;
+			if (iwc.isParameterSet(PARAMETER_MAX_AGE)) {
+				try {
+					maxAge = Integer.parseInt(iwc.getParameter(PARAMETER_MAX_AGE));
+				}
+				catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
 			}
 			int aid = -1;
 			if (id != null)
@@ -111,7 +113,7 @@ public class SchoolTypeEditor extends Block {
 			if (iwc.isParameterSet(PARAMETER_IS_FREETIME_TYPE))
 				isFreetimeType = true;
 
-			sbBean.storeSchoolType(aid, name, info, cat, locKey, iMaxAge, isFreetimeType);
+			sbBean.storeSchoolType(aid, name, info, cat, locKey, maxAge, isFreetimeType);
 		}
 	}
 
@@ -171,7 +173,7 @@ public class SchoolTypeEditor extends Block {
 
 		TextInput inputName = new TextInput("sch_type_name");
 		TextInput inputKey = new TextInput("sch_type_lockey");
-		TextInput inputAge = new TextInput("sch_type_maxage");
+		TextInput inputAge = new TextInput(PARAMETER_MAX_AGE);
 		inputAge.setLength(4);
 		TextArea inputInfo = new TextArea("sch_type_info");
 		CheckBox isFreetime = new CheckBox(PARAMETER_IS_FREETIME_TYPE);
@@ -186,8 +188,8 @@ public class SchoolTypeEditor extends Block {
 				String info = type.getSchoolTypeInfo();
 				if (info != null)
 					inputInfo.setContent(info);
-				String maxAge = Integer.toString(type.getMaxSchoolAge());
-				inputAge.setContent(maxAge);
+				if (type.getMaxSchoolAge() != -1)
+					inputAge.setContent(String.valueOf(type.getMaxSchoolAge()));
 				typeId = ((Integer) type.getPrimaryKey()).intValue();
 				T.add(new HiddenInput("sch_school_type_id", String.valueOf(typeId)));
 				String category = type.getSchoolCategory();
@@ -207,7 +209,7 @@ public class SchoolTypeEditor extends Block {
 		T.add(inputInfo, 3, 4);
 		T.add(inputAge, 3, 5);
 		T.add(inputKey, 3, 6);
-		T.add(isFreetime, 3, 6);
+		T.add(isFreetime, 3, 7);
 		T.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "sch_save_type", "true"), 3, 8);
 		Link cancel = new Link(iwrb.getLocalizedImageButton("cancel", "Cancel"));
 		T.add(cancel, 3, 9);

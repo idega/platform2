@@ -15,7 +15,7 @@ public interface SchoolType extends com.idega.data.IDOEntity
  public void setCategory(com.idega.block.school.data.SchoolCategory p0);
  public void setIsFreetimeType(boolean p0);
  public void setLocalizationKey(java.lang.String p0);
- public void setMaxSchoolAge(java.lang.String p0);
+ public void setMaxSchoolAge(int p0);
  public void setSchoolCategory(java.lang.String p0);
  public void setSchoolTypeInfo(java.lang.String p0);
  public void setSchoolTypeName(java.lang.String p0);

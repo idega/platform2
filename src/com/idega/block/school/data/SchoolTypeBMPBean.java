@@ -89,8 +89,8 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     return getIntColumnValue(MAXSCHOOLAGE);
   }
 
-  public void setMaxSchoolAge(String key){
-    setColumn(MAXSCHOOLAGE,key);
+  public void setMaxSchoolAge(int maxAge){
+    setColumn(MAXSCHOOLAGE,maxAge);
   }
   
   public boolean getIsFreetimeType() {
