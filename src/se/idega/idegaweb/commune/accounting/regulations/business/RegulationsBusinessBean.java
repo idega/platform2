@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.115 2004/01/12 08:51:15 laddi Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.116 2004/01/14 13:10:23 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1841,6 +1841,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			if (vatRuleRegulation != null && vatBusiness.isSchoolVATEligible(school)) {
 				VATRegulation vatRegulation = vatBusiness.getVATRegulationFromRegulation(reg);
 				ret.setVATPercent(vatRegulation.getVATPercent());
+				ret.setVATAmount(ret.getVATPercentage()*ret.getAmount());
 				ret.setVATRegulation(vatRegulation);
 				int vatRuleRegulationId = ((Number) vatRuleRegulation.getPrimaryKey()).intValue();
 				ret.setVatRuleRegulationId(vatRuleRegulationId);

@@ -36,7 +36,8 @@ public class PostingDetail {
 		}
 		setOrderID(999);
 	}
-	
+	/* This constructor is not used anywhere
+	 * 
 	public PostingDetail(String t, float amount, float vatPercent, int vatRuleRegulationID, String rst){
 		term = t;
 		this.amount = amount;
@@ -45,6 +46,7 @@ public class PostingDetail {
 		ruleSpecType = rst;
 		setVATAmount(getVATPercentage()*getAmount());
 	}
+	*/
 	
 	public float getAmount() {
 		return amount;
