@@ -159,6 +159,15 @@ public class MessengerApplet extends Applet implements Runnable{
           messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
           messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
           messageDialog.setVisible(true);
+          Image logo = null;
+          try {
+            logo = getImage(new URL(hostURL+resourceURL),"idegalogo.gif");
+          }
+          catch (MalformedURLException ex) {
+            ex.printStackTrace(System.err);
+          }
+          if( logo != null ) messageDialog.setLogoImage(logo);
+
           listener.start();
         }
 
