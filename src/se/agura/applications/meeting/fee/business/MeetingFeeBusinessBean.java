@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.11 2005/02/17 18:58:11 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.12 2005/02/18 09:56:41 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -37,14 +37,17 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
+import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 
 /**
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -252,8 +255,54 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		String email = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL, "helen.overgaard@svenskakyrkan.se");
 		String cc = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL_CC, "ylva.jacobsson@svenskakyrkan.se");
+		
 		if (email != null) {
-			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), getLocalizedString("meeting_fee.accepted_body", "A meeting fee report has been accepted..."), null);
+			Locale locale = getIWApplicationContext().getApplicationSettings().getDefaultLocale();
+			IWTimestamp from = new IWTimestamp(meetingFee.getMeetingDate());
+			
+			User user = meetingFee.getOwner();
+			Group userParish = getUserParish(user);
+			Group parish = meetingFee.getCongregationGroup();
+			Group participantGroup = meetingFee.getParticipantGroup();
+
+			String comment = meetingFee.getComment();
+			String location = null;
+			if (meetingFee.getInCommune()) {
+				location = getLocalizedString("meeting.fee.in_commune", "In commune");
+			}
+			else {
+				location = getLocalizedString("meeting.fee.outside_commune", "Outside commune");
+			}
+			
+			StringBuffer participants = new StringBuffer();
+			try {
+				Collection infos = getMeetingFeeInfo(meetingFee);
+				Iterator iter = infos.iterator();
+				while (iter.hasNext()) {
+					MeetingFeeInfo info = (MeetingFeeInfo) iter.next();
+					User participant = info.getUser();
+					Name name = new Name(participant.getFirstName(), participant.getMiddleName(), participant.getLastName());
+					int hours = info.getMeetingDuration() / 60;
+					int minutes = info.getMeetingDuration() % 60;
+					int amount = info.getAmount();
+					
+					participants.append(name.getName(locale)).append("\t");
+					if (participant.getPersonalID() != null) {
+						participants.append(PersonalIDFormatter.format(participant.getPersonalID(), locale));
+					}
+					participants.append("\t").append(hours).append(":").append(minutes).append("\t").append(amount);
+					if (iter.hasNext()) {
+						participants.append("\n");
+					}
+				}
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
+			
+			Object[] arguments = { user.getName(), userParish.getName(), parish.getName(), participantGroup.getName(), from.getLocaleDate(locale, IWTimestamp.SHORT), comment, location, participants.toString() };
+
+			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), MessageFormat.format(getLocalizedString("meeting_fee.accepted_body", "{0} in parish {1} has sent in the following meeting report.\n\nParish: {2}\nDate:{4}\nMeeting group: {3}\nLocation: {5}\nComment: {6}\n\nParticipants:\n{7}"), arguments), null);
 		}
 	}
 
