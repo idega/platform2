@@ -1,13 +1,16 @@
 package com.idega.block.presentation;
 
-import com.idega.block.IWBlock;
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import com.idega.core.business.CategoryBusiness;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.data.ICCategory;
+import com.idega.core.data.ICCategoryHome;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
-import com.idega.core.data.ICCategory;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.business.CategoryBusiness;
-import java.util.Collection;
 
 /**
  * Title:
@@ -194,6 +197,10 @@ public abstract class CategoryBlock extends Block{
    */
   public boolean deleteBlock(int iObjectInstanceId) {
     return CategoryBusiness.getInstance().removeInstanceCategories(iObjectInstanceId);
+  }
+  
+  public ICCategoryHome getCategoryHome()throws RemoteException{
+  		return (ICCategoryHome) IDOLookup.getHome(ICCategory.class);
   }
 
 }
