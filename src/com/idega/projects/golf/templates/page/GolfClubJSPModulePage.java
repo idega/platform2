@@ -51,14 +51,14 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     innerTable.setCellpadding(2);
 
     ForumAttributes[] forum = (ForumAttributes[]) (new ForumAttributes()).findAllByColumn("attribute_id",union_id);
-    Text clubLink = new Text("Um "+abbreviation);
+    Text clubLink = new Text(iwrb.getLocalizedString("clubs.about","About")+" "+abbreviation);
     clubLink.setFontSize(1);
-    Text fieldLink = new Text("Völlur");
+    Text fieldLink = new Text(iwrb.getLocalizedString("clubs.course","Courses"));
     fieldLink.setFontSize(1);
-    Link tournLink = new Link("Mótaskrá","/tournament/index.jsp");
+    Link tournLink = new Link(iwrb.getLocalizedString("clubs.tournaments","Tournaments"),"/tournament/index.jsp");
     tournLink.setFontSize(1);
     tournLink.addParameter("union_id",union_id);
-    Link chatLink = new Link("Spjallið","/clubs/thread.jsp");
+    Link chatLink = new Link(iwrb.getLocalizedString("clubs.forums","Forums"),"/clubs/thread.jsp");
     chatLink.setFontSize(1);
     chatLink.addParameter("union_id",union_id);
     if ( forum.length > 0 ) {
@@ -66,24 +66,24 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
       chatLink.addParameter("from","FList");
       chatLink.addParameter("state","2");
     }
-    Window applyWindow = new Window("Umsóknir",550,600,"/clubs/application.jsp");
-    Window requestWindow = new Window("Umsóknir",900,600,"/clubs/request_member.jsp");
-    Text applyText = new Text("Umsókn");
+    Window applyWindow = new Window(iwrb.getLocalizedString("clubs.applications","Applications"),550,600,"/clubs/application.jsp");
+    Window requestWindow = new Window(iwrb.getLocalizedString("clubs.applications","Applications"),900,600,"/clubs/request_member.jsp");
+    Text applyText = new Text(iwrb.getLocalizedString("clubs.applications","Applications"));
     applyText.setFontSize(1);
 
     Link applyLink = new Link(applyText,applyWindow);
-    if ( isAdmin(modinfo) ) {
+    if ( isAdmin ) {
       applyLink = new Link(applyText,requestWindow);
     }
     applyLink.addParameter("union_id",union_id);
-    Window bagsWindow = new Window("Pokamerki",550,600,"/clubs/select_bags.jsp");
-    Text bagsText = new Text("Pokamerki");
+    Window bagsWindow = new Window(iwrb.getLocalizedString("clubs.bag_markings","Bag markings"),550,600,"/clubs/select_bags.jsp");
+    Text bagsText = new Text(iwrb.getLocalizedString("clubs.bag_markings","Bag markings"));
     bagsText.setFontSize(1);
     Link bagsLink = new Link(bagsText,bagsWindow);
-    Link mailLink = new Link("Hafðu samband","mailto:"+abbreviation.toLowerCase()+"@golf.is");
+    Link mailLink = new Link( iwrb.getLocalizedString("clubs.contact_us","Contact us") ,"mailto:"+abbreviation.toLowerCase()+"@golf.is");
     mailLink.setFontSize(1);
     mailLink.addParameter("union_id",union_id);
-    Link homeLink = new Link("Aðalsíða "+abbreviation,"/clubs/index2.jsp");
+    Link homeLink = new Link(abbreviation+" "+iwrb.getLocalizedString("clubs.home","home"),"/clubs/index2.jsp");
     homeLink.setFontSize(1);
     homeLink.addParameter("union_id",union_id);
 
@@ -96,7 +96,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
       memberImage.setAttribute("hspace","6");
       memberImage.setAttribute("align","absmiddle");
 
-      memberLink = new Link("Félagatal","/clubs/members.jsp");
+      memberLink = new Link(iwrb.getLocalizedString("clubs.members","Members"),"/clubs/members.jsp");
       memberLink.setFontSize(1);
       memberLink.addParameter("union_id",union_id);
     //}
@@ -136,7 +136,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
       innerTable.add(tournImage,1,a);
       innerTable.add(tournLink,1,a);
       a++;
-      if ( isAdmin(modinfo) ) {
+      if ( isAdmin ) {
         innerTable.add(memberImage,1,a);
         innerTable.add(memberLink,1,a);
         a++;
@@ -146,7 +146,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
       a++;
 
       // unions that does not want applications ( umsóknir)
-      if((union_id.equalsIgnoreCase("100") || union_id.equalsIgnoreCase("84")) && !isAdmin(modinfo)){
+      if((union_id.equalsIgnoreCase("100") || union_id.equalsIgnoreCase("84")) && !isAdmin){
 
       }
       else{
@@ -154,7 +154,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
         innerTable.add(applyLink,1,a);
         a++;
       }
-      if ( isAdmin(modinfo) && union_id.equalsIgnoreCase("100") ) {
+      if ( isAdmin && union_id.equalsIgnoreCase("100") ) {
         innerTable.add(englishImage,1,a);
         innerTable.add(bagsLink,1,a);
         a++;
@@ -236,7 +236,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
   }
   protected Table Right(ModuleInfo modinfo) throws SQLException,IOException{
     Table rightTable = new Table(1,1);
-    rightTable.setWidth("" + RIGHTWIDTH);
+    rightTable.setWidth(Integer.toString(RIGHTWIDTH));
     rightTable.setCellpadding(0);
     rightTable.setCellspacing(0);
     rightTable.setVerticalAlignment(1,1,"top");
@@ -269,10 +269,12 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     adalTable.setCellspacing(0);
     adalTable.setColor("#FFFFFF");
     adalTable.setWidth("148");
-    if ( (isAdmin(modinfo)) && (action == null) ) {
-        adalTable.add(new SubmitButton(new Image("/pics/samstarfsadilar.gif")),1,1);
+    if ( (isAdmin) && (action == null) ) {
+        adalTable.add(new SubmitButton(iwrb.getImage("/buttons/associates.gif")),1,1);
         adalTable.add(new HiddenInput("action","admin"),1,1);
-        adalTable.addText("<br><br>");
+        adalTable.add(Text.getBreak());
+        adalTable.add(Text.getBreak());
+
     }
     BannerContainer contain = new BannerContainer();
     contain.setConnectionAttributes("union_id",Integer.parseInt(union_id));
@@ -284,7 +286,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     String union_id = modinfo.getParameter("union_id");
     if ( union_id == null ) union_id = (String) modinfo.getSession().getAttribute("golf_union_id");
     if ( union_id == null ) union_id = "3";
-    BoxReader box_office= new BoxReader(union_id,isAdmin(modinfo));
+    BoxReader box_office= new BoxReader(union_id,isAdmin);
     box_office.setBoxBorder(0);
     box_office.setInnerBoxBorder(0);
     box_office.setBoxWidth(148);

@@ -22,8 +22,6 @@ import java.util.Vector;
 
 public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
 
-
-
   protected final int SIDEWIDTH = 864;//720
   protected final int LEFTWIDTH = 163;
   protected final int RIGHTWIDTH = 0;
@@ -66,7 +64,7 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
 
 
           leftTable.add(getSidemenu(modinfo),1,2);
-          leftTable.add("<br>",1,3);
+          leftTable.add(Text.getBreak(),1,3);
           leftTable.add( Sponsors(), 1,3);
 //          leftTable.add(getLinks(),1,4);  // gimmi
          // leftTable.add( getPollVoter() ,1,6);
@@ -87,21 +85,22 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
             table.setCellspacing(0);
 //            table.setBackgroundImage(1,1,new Image("/pics/adalval.gif"));
 
+
             Image dotImage = new Image("/pics/klubbaicon/english.gif");
                     dotImage.setAttribute("hspace","6");
                     dotImage.setAttribute("vspace","2");
                     dotImage.setAttribute("align","absmiddle");
 
-            Link staffLink = new Link("Stjórn og starfsmenn","/gsi/text.jsp");
+            Link staffLink = new Link(iwrb.getLocalizedString("union_board_and_employees","Board and employees"),"/gsi/text.jsp");
                     staffLink.setFontSize(1);
                     staffLink.addParameter("text_id","24");
-            Link committyLink = new Link("Nefndir","/gsi/text.jsp");
+            Link committyLink = new Link(iwrb.getLocalizedString("committees","Committees"),"/gsi/text.jsp");
                     committyLink.setFontSize(1);
                     committyLink.addParameter("text_id","25");
-            Link rulesLink = new Link("Reglugerðir","/gsi/boxoffice.jsp");
+            Link rulesLink = new Link(iwrb.getLocalizedString("regulations","Regulations"),"/gsi/boxoffice.jsp");
                     rulesLink.setFontSize(1);
                     rulesLink.addParameter("issue_id","5");
-            Link listLink = new Link("Listar og útprentarnir","/list/list.jsp");
+            Link listLink = new Link(iwrb.getLocalizedString("lists_and_printouts","Lists and printouts"),"/reports/index.jsp");
                     listLink.setFontSize(1);
                     listLink.setTarget("_new");
 
@@ -111,7 +110,7 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
             table.add(committyLink,1,2);
             table.add(dotImage,1,3);
             table.add(rulesLink,1,3);
-            if ( isAdmin(modinfo) ) {
+            if ( isAdmin ) {
               table.add(dotImage,1,4);
               table.add(listLink,1,4);
             }
