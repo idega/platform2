@@ -632,22 +632,22 @@ public class UserEditor extends Block {
 		TextInput personalIdInput = new TextInput(prm_personal_id);
 		personalIdInput.setLength(personalIdInputLength);
 		personalIdInput.setStyleClass(interfaceStyleName);
-		personalIdInput.keepStatusOnAction(isNewUserView());
+		personalIdInput.keepStatusOnAction(!isNewUserView());
 		
 		TextInput firstNameInput = new TextInput(prm_first_name);
 		firstNameInput.setLength(nameInputLength);
 		firstNameInput.setStyleClass(interfaceStyleName);
-		firstNameInput.keepStatusOnAction(isNewUserView());
+		firstNameInput.keepStatusOnAction(!isNewUserView());
 		
 		TextInput middleNameInput = new TextInput(prm_middle_name);
 		middleNameInput.setLength(nameInputLength);
 		middleNameInput.setStyleClass(interfaceStyleName);
-		middleNameInput.keepStatusOnAction(isNewUserView());
+		middleNameInput.keepStatusOnAction(!isNewUserView());
 		
 		TextInput lastNameInput = new TextInput(prm_last_name);
 		lastNameInput.setLength(nameInputLength);
 		lastNameInput.setStyleClass(interfaceStyleName);
-		lastNameInput.keepStatusOnAction(isNewUserView());
+		lastNameInput.keepStatusOnAction(!isNewUserView());
 		if (user != null) {
 			if (user.getPersonalID() != null) {
 				personalIdInput.setContent(user.getPersonalID());
@@ -854,54 +854,54 @@ public class UserEditor extends Block {
 		TextInput primaryStreetAddressInput = new TextInput(prm_mainaddress_street);
 		primaryStreetAddressInput.setStyleClass(interfaceStyleName);
 		primaryStreetAddressInput.setLength(streetInputLength);
-		primaryStreetAddressInput.keepStatusOnAction(isNewUserView());
+		primaryStreetAddressInput.keepStatusOnAction(!isNewUserView());
 			
 		TextInput primaryPostalCodeInput = new TextInput(prm_mainaddress_postal_code);
 		primaryPostalCodeInput.setStyleClass(interfaceStyleName);
 		primaryPostalCodeInput.setLength(postalcodeInputLength);
-		primaryPostalCodeInput.keepStatusOnAction(isNewUserView());
+		primaryPostalCodeInput.keepStatusOnAction(!isNewUserView());
 		
 		TextInput primaryPostalNameInput = new TextInput(prm_mainaddress_postal_name);
 		primaryPostalNameInput.setStyleClass(interfaceStyleName);
 		primaryPostalNameInput.setLength(postalnameInputLength);
-		primaryPostalNameInput.keepStatusOnAction(isNewUserView());
+		primaryPostalNameInput.keepStatusOnAction(!isNewUserView());
 		
 		DropdownMenu primaryCommunes = new DropdownMenu(prm_maincommune_id);
 		primaryCommunes.addMenuElement("-1",iwrb.getLocalizedString("none-selected","None-selected"));
 		primaryCommunes.setStyleClass(interfaceStyleName);
-		primaryCommunes.keepStatusOnAction(isNewUserView());
+		primaryCommunes.keepStatusOnAction(!isNewUserView());
 		SelectorUtility su = new SelectorUtility();
 		su.getSelectorFromIDOEntities(primaryCommunes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 		
 		CountryDropdownMenu primaryCountryInput = new CountryDropdownMenu(prm_mainaddress_country);
 		primaryCountryInput.setStyleClass(interfaceStyleName);
-		primaryCountryInput.keepStatusOnAction(isNewUserView());
+		primaryCountryInput.keepStatusOnAction(!isNewUserView());
 		
 		TextInput coStreetAddressInput = new TextInput(prm_coaddress_street);
 		coStreetAddressInput.setStyleClass(interfaceStyleName);
 		coStreetAddressInput.setLength(streetInputLength);
-		coStreetAddressInput.keepStatusOnAction(isNewUserView());
+		coStreetAddressInput.keepStatusOnAction(!isNewUserView());
 		
 		TextInput coPostalCodeInput = new TextInput(prm_coaddress_postal_code);
 		coPostalCodeInput.setStyleClass(interfaceStyleName);
 		coPostalCodeInput.setLength(postalcodeInputLength);
-		coPostalCodeInput.keepStatusOnAction(isNewUserView());
+		coPostalCodeInput.keepStatusOnAction(!isNewUserView());
 		
 		TextInput coPostalNameInput = new TextInput(prm_coaddress_postal_name);
 		coPostalNameInput.setStyleClass(interfaceStyleName);
 		coPostalNameInput.setLength(postalnameInputLength);
-		coPostalNameInput.keepStatusOnAction(isNewUserView());
+		coPostalNameInput.keepStatusOnAction(!isNewUserView());
 		
 		DropdownMenu coCommunes = new DropdownMenu(prm_cocommune_id);
 		coCommunes.addMenuElement("-1",iwrb.getLocalizedString("none-selected","None-selected"));
 		su.getSelectorFromIDOEntities(coCommunes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 		coCommunes.setStyleClass(interfaceStyleName);
-		coCommunes.keepStatusOnAction(isNewUserView());
+		coCommunes.keepStatusOnAction(!isNewUserView());
 		
 		CountryDropdownMenu coCountryInput = (CountryDropdownMenu) primaryCountryInput.clone();
 		coCountryInput.setName(prm_coaddress_country);
 		coCountryInput.setStyleClass(interfaceStyleName);
-		coCountryInput.keepStatusOnAction(isNewUserView());
+		coCountryInput.keepStatusOnAction(!isNewUserView());
 		/*
 		PostalCodeDropdownMenu coPostalAddressInput = new PostalCodeDropdownMenu();
 		coPostalAddressInput.setName(prm_coaddress_postal);
@@ -1018,7 +1018,7 @@ public class UserEditor extends Block {
 		TextInput phoneInput = new TextInput(prm_main_phone);
 		phoneInput.setLength(phoneInputLength);
 		phoneInput.setStyleClass(interfaceStyleName);
-		phoneInput.keepStatusOnAction(isNewUserView());
+		phoneInput.keepStatusOnAction(!isNewUserView());
 		
 		addressTable.add(tPhone, 1, row);
 		addressTable.add(phoneInput, 2, row++);
@@ -1038,7 +1038,7 @@ public class UserEditor extends Block {
 		TextInput emailInput = new TextInput(prm_email_address);
 		emailInput.setStyleClass(interfaceStyleName);
 		emailInput.setLength(emailInputLength);
-		emailInput.keepStatusOnAction(isNewUserView());
+		emailInput.keepStatusOnAction(!isNewUserView());
 		
 		emailInput.setAsEmail();
 		addressTable.add(tEmail, 1, row);
@@ -1118,7 +1118,7 @@ public class UserEditor extends Block {
 					user = findPersonalIDUser(iwc,pid);
 				}
 				catch (FinderException e) {
-					e.printStackTrace();
+					user=null;
 				}
 				if(user==null)
 					user = createUser(iwc, pid, fname, mname, lname, groupID);
