@@ -35,6 +35,8 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
@@ -46,7 +48,7 @@ public class StartingTimeTable extends GolfBlock {
 	TeeTimeBusiness service = new TeeTimeBusiness();
 
 	public void main(IWContext modinfo) throws Exception {
-		getParentPage().setTitle("Rástímaskráning");
+		getParentPage().setTitle("R‡st’maskr‡ning");
 		IWCalendar funcDate = new IWCalendar();
 		IWTimestamp stamp = new IWTimestamp();
 
@@ -181,7 +183,7 @@ public class StartingTimeTable extends GolfBlock {
 		RTTop.setCellpadding(0);
 		RTTop.setCellspacing(0);
 		RTTop.setWidth("675");
-		RTTop.setBackgroundImage(getResourceBundle().getImage("greenback.gif"));
+		RTTop.setBackgroundImage(getBundle().getSharedImage("greenback.gif","greenback.gif"));
 		RTTop.setAlignment("center");
 		RTTop.setHeight("45");
 		RTTop.setRowVerticalAlignment(1, "top");
@@ -230,7 +232,7 @@ public class StartingTimeTable extends GolfBlock {
 					IWTimestamp End_ = new IWTimestamp(tempRound.getRoundEndDate());
 					End_.setAsTime();
 					/**
-					 *  					 *
+					 *
 					 */
 					End_.addMinutes(myTableInfo.get_interval());
 					IWTimestamp begintime = new IWTimestamp(0, 1, 0, myField.get_open_hour(), myField.get_open_min(), 0);
@@ -943,13 +945,28 @@ public class StartingTimeTable extends GolfBlock {
 	}
 
 	public Link ConfigFieldLink(IWContext modinfo) {
-		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), new Window("Gluggi", 520, 470, "admin.jsp?"));
+//		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), new Window("Gluggi", 520, 470, "admin.jsp?"));
+		
+		GolfWindow myWindow = new GolfWindow("Gluggi", 520, 320);
+		myWindow.add(new StartingTimeAdmin());
+		myWindow.setContentHorizontalAlignment(Table.HORIZONTAL_ALIGN_CENTER);
+		myWindow.setContentVerticalAlignment(Table.VERTICAL_ALIGN_MIDDLE);
+		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), myWindow);
 
+//		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), StartingTimeAdmin.class);
+		
+		
 		return myLink;
 	}
 
 	public Link Change(IWContext modinfo) {
-		Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), new Window("Gluggi", 800, 600, "admbreyting.jsp?"));
+		//Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), new Window("Gluggi", 800, 600, "admbreyting.jsp?"));
+
+		Window myWindow = new GolfWindow("Gluggi", 800, 600);
+		myWindow.add(new StartingTimeAdminChange());
+		Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), myWindow);
+		
+		//Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), StartingTimeAdminChange.class);
 
 		return myLink;
 	}
@@ -977,6 +994,7 @@ public class StartingTimeTable extends GolfBlock {
 		firstTable.add(insertDropdown("day", dateFunc, Today, modinfo), 3, 2);
 
 		day_field.add(firstTable);
+		day_field.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
 
 		return day_field;
 
@@ -984,28 +1002,29 @@ public class StartingTimeTable extends GolfBlock {
 
 	public Table entry_part(IWContext modinfo, IWCalendar dateFunc, TableInfo myTableInfo, boolean admin, Vector tournamentRounds) throws SQLException, IOException {
 
-		Window theWindow = null;
+		GolfWindow theWindow = null;
 		Form mainForm = null;
 		boolean plainUser = true;
 		if (admin) {
-			theWindow = new Window("Gluggi", 600, 600, "registeradmin.jsp");
-			theWindow.setResizable(true);
-			mainForm = new Form(theWindow);
-			mainForm.setMethod("get");
-			mainForm.setAction("registeradmin.jsp");
+			mainForm = new Form();
+			mainForm.setWindowToOpen(AdminRegisterTimeWindow.class);
+			mainForm.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
+	//		mainForm.setAction("registeradmin.jsp");
 			plainUser = false;
 		}
 		else {
-			theWindow = new Window("Gluggi", 400, 340, "register.jsp");
-			mainForm = new Form(theWindow);
+			mainForm = new Form();
+			mainForm.setWindowToOpen(RegisterTimeWindow.class);
 			mainForm.setMethod("get");
-			mainForm.setAction("register.jsp");
+			mainForm.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
+	//		mainForm.setAction("register.jsp");
 			plainUser = true;
 		}
 
 		mainForm.add(new HiddenInput("daytime", (String) modinfo.getSessionAttribute("when")));
 
-		Window updateWindow = new Window("Gluggi", 800, 600, "admbreyting.jsp");
+		Window updateWindow = new Window("Gluggi", 800, 600);//, "admbreyting.jsp");
+		updateWindow.add(new StartingTimeAdminChange());
 
 		Table fTable = new Table(2, 2);
 		Table entry = new Table(7, 1);
@@ -1071,7 +1090,7 @@ public class StartingTimeTable extends GolfBlock {
 	}
 
 	public Table lineUpTournamentDay(IWContext modinfo, List Tournaments) {
-		Text dayReserved = new Text("Dagur frátekinn fyrir mót");
+		Text dayReserved = new Text("Dagur fr‡tekinn fyrir m—t");
 		dayReserved.setFontSize(4);
 		Table AlignmentTable = new Table();
 		AlignmentTable.setBorder(0);

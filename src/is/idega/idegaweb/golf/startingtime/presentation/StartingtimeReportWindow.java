@@ -1,5 +1,7 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.Window;
@@ -9,7 +11,7 @@ import com.idega.util.IWTimestamp;
 /**
  * @author gimmi
  */
-public class StartingtimeReportWindow extends Window {
+public class StartingtimeReportWindow extends GolfWindow {
 
 	public static final String PARAMETER_DATE = "sr_prm_d";
 	public static final String PARAMETER_FIELD_ID = "sr_prm_f";
@@ -20,7 +22,8 @@ public class StartingtimeReportWindow extends Window {
 		super.setResizable(true);
 	}
 
-	public void main(IWContext modinfo) {
+	public void main(IWContext modinfo) throws Exception{
+		super.main(modinfo);
 		StartingtimeReport sr = new StartingtimeReport();
 		add(sr);
 	}

@@ -215,6 +215,13 @@ public class StartingTimeLogin extends GolfBlock {
 		theForm.setAction(Action);
 		return mySubmit;
 	}
+	
+	private SubmitButton insertButton(Image image, String imageName, Class Action, String Method, Form theForm) {
+		SubmitButton mySubmit = new SubmitButton(image, imageName);
+		theForm.setMethod(Method);
+		theForm.setClassToInstanciateAndSendTo(Action);
+		return mySubmit;
+	}
 
 	private SubmitButton insertButton(String btnName, String Action, String Method, String onSub, Form theForm) {
 		SubmitButton mySubmit = new SubmitButton(btnName);
@@ -346,8 +353,8 @@ public class StartingTimeLogin extends GolfBlock {
 			setPlayers(modinfo);
 
 			myTable.mergeCells(4, i + 2, 7, i + 2);
-			myTable.add(insertButton(new Image(btnSkraUrl), "", "innskraning1.jsp", "post", myForm), 4, i + 2);
-			myTable.add(new CloseButton(new Image(btnCancelUrl)), 4, i + 2);
+			myTable.add(insertButton(getResourceBundle().getImage(btnSkraUrl), "", StartingTimeLogin.class, "post", myForm), 4, i + 2);
+			myTable.add(new CloseButton(getResourceBundle().getImage(btnCancelUrl)), 4, i + 2);
 			myTable.setAlignment(4, i + 2, "right");
 			myForm.add(myTable);
 
@@ -464,8 +471,8 @@ public class StartingTimeLogin extends GolfBlock {
 		getParentPage().setLeftMargin(0);
 		getParentPage().setTopMargin(0);
 
-		Header.setBackgroundImage(2, 1, new Image(picUrl_1));
-		Header.setBackgroundImage(1, 1, new Image(picUrl_2));
+		Header.setBackgroundImage(2, 1, getResourceBundle().getImage(picUrl_1));
+		Header.setBackgroundImage(1, 1, getResourceBundle().getImage(picUrl_2));
 
 		Header.setWidth("100%");
 
@@ -489,10 +496,10 @@ public class StartingTimeLogin extends GolfBlock {
 		//myTable.add(new Image(borderPicUrl), 1, 2);
 		//myTable.add(new Image(borderPicUrl), 1, 3);
 		if (inputErr) {
-			myTable.add(new BackButton(new Image(btnBackUrl)), 2, 3);
+			myTable.add(new BackButton(getResourceBundle().getImage(btnBackUrl)), 2, 3);
 		}
 		else
-			myTable.add(new CloseButton(new Image(btnCloseUrl)), 2, 3);
+			myTable.add(new CloseButton(getResourceBundle().getImage(btnCloseUrl)), 2, 3);
 		myTable.setAlignment(2, 3, "center");
 		myTable.setCellpadding(0);
 		myTable.setCellspacing(0);

@@ -42,7 +42,7 @@ public class GolfWindow extends Window {
     this.setLinkColor("black");
     initialized = false;
     tafla = new Table(3, 2);
-
+    tafla.setVerticalAlignment(1, 2, "top");
   }
 
   public GolfWindow(String name, int width, int height) {
@@ -56,13 +56,13 @@ public class GolfWindow extends Window {
     this.setLinkColor("black");
     initialized = false;
     tafla = new Table(3, 2);
-
+    tafla.setVerticalAlignment(1, 2, "top");
   }
 
   private void initTable(IWContext modinfo) {
     IWBundle iwb = getBundle(modinfo);
     IWResourceBundle iwrb = getResourceBundle(modinfo);
-    
+
     tafla.setWidth("100%");
     tafla.setHeight("100%");
     tafla.setHeight(1, 1, "58");
@@ -70,7 +70,6 @@ public class GolfWindow extends Window {
     tafla.setCellpadding(0);
     tafla.setCellspacing(0);
     tafla.mergeCells(1, 2, 3, 2);
-    tafla.setVerticalAlignment(1, 2, "top");
     Image topLeft = iwb.getImage("golfwindow/idegaweb_standard.gif");
     topLeft.setHeight(58);
     topLeft.setWidth(158);
@@ -94,6 +93,14 @@ public class GolfWindow extends Window {
 
   public void add(PresentationObject objectToAdd) {
     tafla.add(objectToAdd, 1, 2);
+  }
+  
+  public void setContentHorizontalAlignment(String align) {
+  	tafla.setAlignment(1,2,align);
+  }
+  
+  public void setContentVerticalAlignment(String align) {
+  	tafla.setVerticalAlignment(1,2,align);
   }
 
   private void MenuBar() {

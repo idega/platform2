@@ -65,16 +65,6 @@ public class GolfLoginBusiness implements IWPageEventListener {
 
     public boolean actionPerformed(IWContext modinfo) throws IWException {
         try {
-        	
-    		for (Enumeration enum = modinfo.getParameterNames(); enum.hasMoreElements(); ) {
-    			String element = (String) enum.nextElement();
-    			System.out.print("Parameter: "+element+" values: ");
-    			String[] values = modinfo.getParameterValues(element);
-        		for (int i = 0 ; i<values.length;i++) {
-        			System.out.print(values[i]+" ; ");
-        		}
-        		System.out.println();
-    		}
 
             if (isLoggedOn(modinfo)) {
                 String controlParameter = modinfo.getParameter(GolfLoginBusiness.LoginStateParameter);

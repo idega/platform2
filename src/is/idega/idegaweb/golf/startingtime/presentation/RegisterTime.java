@@ -494,7 +494,6 @@ public void main(IWContext modinfo) throws Exception {
     this.setTitle(this.iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
 
 
-
     //Check if the Close button was pressed
     boolean doingClose=false;
     String closeValue = modinfo.getParameter(closeParameterString);

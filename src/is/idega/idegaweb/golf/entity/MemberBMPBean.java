@@ -503,13 +503,13 @@ public class MemberBMPBean extends GenericEntity implements Member {
   }
 
 
-  public static com.idega.data.genericentity.Member getMember(String socialSecurityNumber) {
-      com.idega.data.genericentity.Member returner = null;
+  public static Member getMember(String socialSecurityNumber) {
+      Member returner = null;
       try {
           java.util.List members = com.idega.data.EntityFinder.findAllByColumn((Member) IDOLookup.instanciateEntity(Member.class),"SOCIAL_SECURITY_NUMBER",socialSecurityNumber);
           if (members != null) {
               if (members.size()  > 0) {
-                  returner = (com.idega.data.genericentity.Member) members.get( (members.size() -1));
+                  returner = (Member) members.get( (members.size() -1));
               }
           }
       }
@@ -520,8 +520,8 @@ public class MemberBMPBean extends GenericEntity implements Member {
       return returner;
   }
 
-  public static com.idega.data.genericentity.Member getStaticInstance(){
-    return (com.idega.data.genericentity.Member)getStaticInstance(is.idega.idegaweb.golf.entity.Member.class);
+  public static Member getStaticInstance(){
+    return (Member)getStaticInstance(is.idega.idegaweb.golf.entity.Member.class);
   }
 
   public void insert() throws SQLException{

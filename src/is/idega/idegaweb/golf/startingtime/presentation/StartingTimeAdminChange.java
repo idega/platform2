@@ -294,8 +294,8 @@ public class StartingTimeAdminChange extends GolfBlock {
 		getParentPage().setLeftMargin(0);
 		getParentPage().setTopMargin(0);
 
-		Header.setBackgroundImage(2, 1, new Image(picUrl_1));
-		Header.setBackgroundImage(1, 1, new Image(picUrl_2));
+		Header.setBackgroundImage(2, 1, getResourceBundle().getImage(picUrl_1));
+		Header.setBackgroundImage(1, 1, getResourceBundle().getImage(picUrl_2));
 
 		Header.setWidth("100%");
 
@@ -312,10 +312,10 @@ public class StartingTimeAdminChange extends GolfBlock {
 
 		myTable.addText("Nauðsynlegt er að hafa nafn. Ef þú vilt afturkalla skráningu, veldu þá \"Eyða\" boxið", 2, 1);
 
-		myTable.add(new Image(borderPicUrl), 1, 1);
-		myTable.add(new Image(borderPicUrl), 1, 2);
-		myTable.add(new Image(borderPicUrl), 1, 3);
-		myTable.add(new BackButton(new Image(btnBackUrl)), 2, 3);
+		myTable.add(getResourceBundle().getImage(borderPicUrl), 1, 1);
+		myTable.add(getResourceBundle().getImage(borderPicUrl), 1, 2);
+		myTable.add(getResourceBundle().getImage(borderPicUrl), 1, 3);
+		myTable.add(new BackButton(getResourceBundle().getImage(btnBackUrl)), 2, 3);
 
 		myTable.setAlignment(2, 3, "center");
 		myTable.setCellpadding(0);
@@ -426,7 +426,7 @@ public class StartingTimeAdminChange extends GolfBlock {
 				myTable.addText(formatDate(funcDate, stime.getStartingtimeDate().toString()), 7, i + 2);
 				myTable.addText(group_num, 8, i + 2);
 				if (admin)
-					myTable.add(insertHyperlink(stime.getMember().getName(), stime.getMemberID(), "admbreyting.jsp"), 9, i + 2);
+					myTable.add(insertHyperlink(stime.getMember().getName(), stime.getMemberID(), StartingTimeAdminChange.class), 9, i + 2);
 			}
 			String btnUpdateUrl = "/pics/rastimask/Takkar/Tuppfaera1.gif";
 			String btnCancelUrl = "/pics/rastimask/Takkar/Thaetta-vid1.gif";
@@ -442,8 +442,8 @@ public class StartingTimeAdminChange extends GolfBlock {
 			}
 
 			myTable.mergeCells(5, i + 2, 7, i + 2);
-			myTable.add(new SubmitButton(new Image(btnUpdateUrl), "btnUpdatePlayer"), 5, i + 2);
-			myTable.add(new CloseButton(new Image(btnCancelUrl)), 5, i + 2);
+			myTable.add(new SubmitButton(getResourceBundle().getImage(btnUpdateUrl), "btnUpdatePlayer"), 5, i + 2);
+			myTable.add(new CloseButton(getResourceBundle().getImage(btnCancelUrl)), 5, i + 2);
 			myTable.setAlignment(5, i + 2, "right");
 
 			myForm.add(myTable);
@@ -464,6 +464,14 @@ public class StartingTimeAdminChange extends GolfBlock {
 		//text.setFontColor("green");
 		Link myLink = new Link(name);
 		myLink.setURL(action);
+		myLink.addParameter(name, new Integer(value).toString());
+		return myLink;
+	}
+	
+	private Link insertHyperlink(String name, int value, Class action) {
+		//Text text = new Text(name);
+		//text.setFontColor("green");
+		Link myLink = new Link(name,action);
 		myLink.addParameter(name, new Integer(value).toString());
 		return myLink;
 	}
