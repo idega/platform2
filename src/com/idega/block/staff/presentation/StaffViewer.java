@@ -30,17 +30,17 @@ import com.idega.block.staff.data.StaffInfo;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.util.List;
-/*import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;*/
+import com.idega.idegaweb.IWMainApplication;
 
 
 public class StaffViewer extends JModuleObject{
 
 private boolean isAdmin=false;
-/*private IWBundle iwb;
+private IWBundle iwb;
 private IWResourceBundle iwrb;
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.staff";*/
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.staff";
 
 public static final String PARAMETER_MODE = "mode";
 public static final String PARAMETER_DELETE_USER = "user";
@@ -63,9 +63,9 @@ private List usersInNoGroup;
   }
 
   public void main(ModuleInfo modinfo) throws Exception {
-    //iwb = getBundle(modinfo);
-    //iwrb = getResourceBundle(modinfo);
-    isAdmin = isAdministrator(modinfo);
+    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(modinfo);
+    isAdmin = AccessControl.hasEditPermission(this,modinfo);
 
     String mode = modinfo.getParameter(PARAMETER_MODE);
     if ( mode != null ) {
@@ -99,7 +99,7 @@ private List usersInNoGroup;
           groupName.setBold();
         groupTable.add(groupName,1,groupRow);
         if ( isAdmin ) {
-          Image deleteGroup = new Image("/pics/eyda_medium.gif","Eyða deild");
+          Image deleteGroup = iwrb.getImage("delete.gif",iwrb.getLocalizedString("delete_division","Delete Division"));
             deleteGroup.setHorizontalSpacing(6);
           Link deleteGroupLink = new Link(deleteGroup);
             deleteGroupLink.addParameter(this.PARAMETER_MODE,this.PARAMETER_DELETE_GROUP);
@@ -122,7 +122,7 @@ private List usersInNoGroup;
             link.setWindowToOpen(StaffPropertyWindow.class);
             userTable.add(link,2,1);
 
-            Image userImage = new Image("/pics/starfsmenn/default.jpg");
+            Image userImage = iwb.getImage("/shared/default.jpg");
               userImage.setBorder(1);
 
             if ( staff != null ) {
@@ -141,11 +141,15 @@ private List usersInNoGroup;
             }
               userTable.add(userImage,1,1);
             if ( userPhone != null ) {
-              Text phone = new Text("Beinn sími: "+userPhone.getNumber());
+              Text phoneText = new Text(iwrb.getLocalizedString("work_phone","Work phone")+": ");
+                phoneText.setBold();
+              Text phone = new Text(userPhone.getNumber());
+              userTable.add(phoneText,2,3);
               userTable.add(phone,2,3);
             }
             if ( userMail != null ) {
-              Text mailText = new Text("e-mail: ");
+              Text mailText = new Text(iwrb.getLocalizedString("e_mail","e-mail")+": ");
+                mailText.setBold();
               userTable.add(mailText,3,3);
 
               Link mail = new Link(userMail.getEmailAddress());
@@ -154,7 +158,7 @@ private List usersInNoGroup;
             }
 
             if ( isAdmin ) {
-              Image deleteUser = new Image("/pics/eyda_medium.gif","Eyða starfsmanni");
+              Image deleteUser = iwrb.getImage("delete.gif",iwrb.getLocalizedString("delete_employee","Delete Employee"));
                 deleteUser.setHorizontalSpacing(6);
               Link deleteUserLink = new Link(deleteUser);
                 deleteUserLink.addParameter(this.PARAMETER_MODE,this.PARAMETER_DELETE_USER);
@@ -185,7 +189,7 @@ private List usersInNoGroup;
         link.setWindowToOpen(StaffPropertyWindow.class);
         noGroupTable.add(link,1,groupRow);
 
-        Image deleteUser = new Image("/pics/eyda_medium.gif","Eyða starfsmanni");
+        Image deleteUser = iwrb.getImage("delete.gif",iwrb.getLocalizedString("delete_employee","Delete Employee"));
           deleteUser.setHorizontalSpacing(6);
         Link deleteUserLink = new Link(deleteUser);
           deleteUserLink.addParameter(this.PARAMETER_MODE,this.PARAMETER_DELETE_USER);
@@ -202,17 +206,17 @@ private List usersInNoGroup;
     Table adminTable = new Table(2,1);
       adminTable.setCellpadding(5);
 
-    Image createUserImage = new Image("/pics/starfsmenn/user.gif");
+    Image createUserImage = iwb.getImage("/shared/user.gif");
       createUserImage.setAlignment("absmiddle");
       createUserImage.setHorizontalSpacing(3);
-    Image createGroupImage = new Image("/pics/starfsmenn/group.gif");
+    Image createGroupImage = iwb.getImage("/shared/group.gif");
       createGroupImage.setAlignment("absmiddle");
       createGroupImage.setHorizontalSpacing(3);
 
-    Link createUser = new Link("Nýr starfsmaður");
+    Link createUser = new Link(iwrb.getLocalizedString("new_employee","New Employee"));
       createUser.setWindowToOpen(CreateUser.class);
 
-    Link createGroup = new Link("Ný deild");
+    Link createGroup = new Link(iwrb.getLocalizedString("new_division","New Division"));
       createGroup.setWindowToOpen(CreateUserGroup.class);
 
     adminTable.add(createUserImage,1,1);
@@ -268,7 +272,7 @@ private List usersInNoGroup;
     }
   }
 
-  /*public String getBundleIdentifier(){
+  public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
-  }*/
+  }
 }

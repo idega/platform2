@@ -33,19 +33,22 @@ public class ImageEntity extends GenericEntity{
       ImageEntity image = new ImageEntity();
       image.setName("Default no image");
       image.insert();
-
+      ImageEntity image2 = new ImageEntity();
+      image2.setID(-1);
+      image2.setName("Default no image");
+      image2.insert();
     }
 
-          public String getEntityName(){
-            return "image";
-	}
+    public String getEntityName(){
+      return "image";
+  	}
 
-         public void setDefaultValues() {
-          this.setParentId(-1);
-          this.setFromFile("N");
-          this.setImageLinkOwner("none");
-          this.setDate(new com.idega.util.idegaTimestamp().getTimestampRightNow());
-        }
+    public void setDefaultValues() {
+      this.setParentId(-1);
+      this.setFromFile("N");
+      this.setImageLinkOwner("none");
+      this.setDate(new com.idega.util.idegaTimestamp().getTimestampRightNow());
+    }
 
 	public String getContentType(){
 		return (String) getColumnValue("content_type");

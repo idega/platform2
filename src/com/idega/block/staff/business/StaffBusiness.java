@@ -106,9 +106,17 @@ public class StaffBusiness extends UserBusiness{
   }
 
   public static void deleteStaff(int userId) throws SQLException {
-    StaffInfo delStaff = new StaffInfo(userId);
-    delStaff.delete();
+    try {
+      StaffInfo delStaff = new StaffInfo(userId);
+      delStaff.delete();
+    }
+    catch (SQLException e) {
+    }
 
-    deleteUser(userId);
+    try {
+      deleteUser(userId);
+    }
+    catch (SQLException e) {
+    }
   }
 } // Class StaffBusiness
