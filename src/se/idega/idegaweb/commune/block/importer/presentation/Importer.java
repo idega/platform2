@@ -4,6 +4,9 @@ import com.idega.idegaweb.IWResourceBundle;
 import java.io.File;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import se.idega.idegaweb.commune.block.importer.business.*;
+import se.idega.idegaweb.commune.block.importer.data.*;
 
 /**
  * <p>Title: IdegaWeb classes</p>
@@ -63,6 +66,14 @@ public class Importer extends Block {
   public void main(IWContext iwc) throws Exception {
     iwrb = this.getResourceBundle(iwc);
 
+    parseAction(iwc);
+
+    Link selectFolderLink = new Link(iwrb.getLocalizedString("importer.select.folder","Select folder"));
+    selectFolderLink.addParameter(ACTION_PARAMETER,SELECT_NEW_FOLDER);
+    selectFolderLink.setAsImageButton(true);
+    add(selectFolderLink);
+    addBreak();
+
     if( selectFiles ){
       if( this.getFolderPath()!=null ){
         File folder = new File(getFolderPath());
@@ -70,12 +81,12 @@ public class Importer extends Block {
         if( folder.isDirectory() ){
 
           File[] files = folder.listFiles();
-          Table fileTable = new Table(2,files.length+1);
+          Table fileTable = new Table(2,files.length+2);
           Form form = new Form();
           form.add(fileTable);
 
           fileTable.add(iwrb.getLocalizedString("importer.select_files","Select files to import."),1,1);
-          fileTable.add(new HiddenInput(ACTION_PARAMETER,SELECT_FILES),2,1);
+          fileTable.add(new HiddenInput(ACTION_PARAMETER,IMPORT_FILES),2,1);
 
           for (int i = 0; i < files.length; i++) {
             if( !files[i].isDirectory() ){
@@ -86,8 +97,9 @@ public class Importer extends Block {
               fileTable.add(files[i].getName(),1,i+2);
               fileTable.add(iwrb.getLocalizedString("importer.is.a.folder","Folder"),2,i+2);
             }
+         }
 
-          }
+          fileTable.add(new SubmitButton(),2,files.length+2);
 
           add(form);
 
@@ -104,18 +116,33 @@ public class Importer extends Block {
     else if( selectFolder ){
       Form form = new Form();
       form.add(new HiddenInput(this.ACTION_PARAMETER,this.SELECT_FILES));
-      form.add(new TextInput(this.SELECT_NEW_FOLDER, this.NEW_FOLDER_PATH ) );
+      form.add(new TextInput(NEW_FOLDER_PATH,getFolderPath()) );
+      form.add(new SubmitButton());
       add(form);
+      add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) );
+
 
     }
     else if( importFiles ){
       add(iwrb.getLocalizedString("importer.importing","importing..."));
+      NackaImportFile file;
+
+      String[] values = iwc.getParameterValues(this.IMPORT_FILE_PATHS);
+      for (int i = 0; i < values.length; i++) {
+        file = new NackaImportFile(new File(values[i]));
+        file.parse();
+        add(values[i]);
+        addBreak();
+      }
+
+      /** @todo make a dropdown of possible importers and support for uploaded files
+       *
+       */
+
+
+
     }
 
   }
-
-
-
-
 
 }
