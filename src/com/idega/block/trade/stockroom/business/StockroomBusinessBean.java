@@ -1,19 +1,42 @@
 package com.idega.block.trade.stockroom.business;
 
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
-
-
-import com.idega.block.trade.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.business.*;
-import com.idega.core.accesscontrol.business.*;
-import com.idega.core.data.*;
-import com.idega.core.user.data.*;
-import com.idega.data.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import javax.ejb.FinderException;
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.block.trade.business.CurrencyHolder;
+import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.ResellerBMPBean;
+import com.idega.block.trade.stockroom.data.ResellerStaffGroup;
+import com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierBMPBean;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOServiceBean;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.data.GenericGroupHome;
+import com.idega.core.user.data.User;
+import com.idega.data.EntityControl;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -321,6 +344,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	  	List gr = gGroup.getAllGroupsContainingUser(user);
 	    if(gr != null){
     		System.out.println("StockroomBusiness : gr.size() = "+ gr.size());
+    		SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 	      Iterator iter = gr.iterator();
 	      while (iter.hasNext()) {
 	        GenericGroup item = (GenericGroup)iter.next();
@@ -329,10 +353,24 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	    			System.out.println("StockroomBusiness : itemTypeValue = "+ item.getGroupTypeValue());
 	        if(item.getGroupType().equals(SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE)){
 	        		System.out.println("StockroomBusiness : itemType == "+SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE);
+	        		try {
+	        			Collection coll = sHome.findAllByGroupID(item.getID());
+	        			if (coll != null && !coll.isEmpty()) {
+	  	          	System.out.println("StockroomBusiness : coll != null && !coll.isEmpty()");
+	        				return ((Supplier) coll.iterator().next()).getID();
+	        			} else {
+	  	          	System.out.println("StockroomBusiness : coll i ruglinu");
+	        			}
+	        		} catch (FinderException fe) {
+	        			
+	        		}
+	        		
 	          IDOLegacyEntity[] supp = ((Supplier) SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(SupplierBMPBean.getColumnNameGroupID(),item.getID());
 	          if(supp != null && supp.length > 0){
 	          	System.out.println("StockroomBusiness : suppID (in here) == "+supp[0].getID());
 	            return supp[0].getID();
+	          } else {
+	          		System.out.println("StockroomBusiness : supp = "+supp);
 	          }
 	        } else {
 	        		System.out.println("StockroomBusiness : itemType != "+SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE);
