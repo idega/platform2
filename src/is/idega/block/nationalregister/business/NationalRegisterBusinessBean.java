@@ -129,9 +129,16 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,gender,t);
 
 			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
-			PostalCode poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,((Integer)country.getPrimaryKey()).intValue());
+			
+			PostalCode poCode = null;
+			if (po != null && !po.equals(""))
+			  poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,((Integer)country.getPrimaryKey()).intValue());
 
-			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, (Integer)poCode.getPrimaryKey(), null, null, null, null);
+			Integer id = null;
+			if (poCode != null)
+				id = (Integer)poCode.getPrimaryKey();
+
+			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, id, null, null, null, null);
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
