@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.9 2002/08/13 15:45:34 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.10 2002/09/18 10:26:08 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -23,8 +23,12 @@ import se.idega.idegaweb.commune.message.data.UserMessage;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
+import com.idega.core.data.Email;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
+import com.idega.idegaweb.IWPropertyList;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserProperties;
 import com.idega.user.data.User;
 
 /**
@@ -33,6 +37,7 @@ import com.idega.user.data.User;
  */
 public class MessageBusinessBean extends com.idega.block.process.business.CaseBusinessBean implements MessageBusiness {
 
+  private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 	private String TYPE_USER_MESSAGE = "SYMEDAN";
 	private String TYPE_SYSTEM_PRINT_MAIL_MESSAGE = "SYMEBRV";
 	private String TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE = "SYMEARK";
@@ -113,7 +118,23 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public Message createUserMessage(User user, String subject, String body) throws CreateException, RemoteException {
-		Message message = createMessage(getTypeUserMessage(), user, subject, body);
+		Message message = null;
+    IWPropertyList property = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserProperties(user).getProperties(IW_BUNDLE_IDENTIFIER);
+		boolean sendMail = true;
+		boolean sendToBox = true;
+		
+		if ( property.getProperty(MessageBusiness.SEND_TO_EMAIL) != null )
+			sendMail = new Boolean(property.getProperty(MessageBusiness.SEND_TO_EMAIL)).booleanValue();
+		if ( property.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX) != null )
+			sendToBox = new Boolean(property.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX)).booleanValue();
+		
+		if ( sendToBox )
+			createMessage(getTypeUserMessage(), user, subject, body);
+		if ( sendMail ) {
+			Email mail = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserMail(user);	
+			if ( mail != null )
+				sendMessage(mail.getEmailAddress(),subject,body);
+		}
 		return message;
 	}
 

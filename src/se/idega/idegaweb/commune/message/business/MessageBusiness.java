@@ -4,6 +4,9 @@ import javax.ejb.*;
 
 public interface MessageBusiness extends com.idega.business.IBOService
 {
+  public static final String SEND_TO_MESSAGE_BOX = "msg_send_box";
+  public static final String SEND_TO_EMAIL = "msg_send_email";
+
  public void deleteUserMessage(int p0)throws javax.ejb.FinderException,javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createPrintArchivationMessage(int p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createUserMessage(int p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
