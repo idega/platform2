@@ -26,6 +26,7 @@ import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.presentation.Image;
 
+import java.text.DateFormat;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -264,6 +265,7 @@ public class CampusContracts extends Block{
     int order = Integer.parseInt(sValues[5]);
     List L = ContractFinder.listOfContracts(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],sGlobalStatus,order);
     //List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus);
+    DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
     Contract C = null;
     User U = null;
     Applicant Ap = null;
@@ -326,8 +328,8 @@ public class CampusContracts extends Block{
           T.add(Edit.formatText(Ap.getFullName()),col++,row);
           T.add(Edit.formatText(Ap.getSSN()),col++,row);
           T.add((getApartmentTable(A)),col++,row);
-          T.add(Edit.formatText(C.getValidFrom().toString()),col++,row);
-          T.add(Edit.formatText(C.getValidTo().toString()),col++,row);
+          T.add(Edit.formatText(df.format(C.getValidFrom())),col++,row);
+          T.add(Edit.formatText(df.format(C.getValidTo())),col++,row);
           if(C.getIsRented())
             T.add(getKeyLink(keyImage,C.getID()),col++,row);
           else

@@ -35,6 +35,8 @@ import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
 import is.idega.idegaweb.campus.data.*;
+import is.idega.idegaweb.campus.presentation.CampusProperties;
+import is.idega.idegaweb.campus.presentation.Campus;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.LinkedList;
@@ -51,7 +53,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CampusAllocator extends Block{
+public class CampusAllocator extends Block implements Campus{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
@@ -102,7 +104,7 @@ public class CampusAllocator extends Block{
   }
 
   protected void control(IWContext iwc){
-    debugParameters(iwc);
+    //debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     this.fontSize = 1;
@@ -562,6 +564,8 @@ public class CampusAllocator extends Block{
   }
 
   private PresentationObject getApartmentContracts(int iApartmentId){
+    /** @todo try to use jdbc cursors in sql queries */
+    int iCount = Integer.parseInt(iwb.getProperty(CampusProperties.PROP_ALLOC_APRT_CON_COUNT,"10"));
     DataTable T = new DataTable();
     T.addTitle((iwrb.getLocalizedString("apartment_contracts","Apartment contracts")));
     T.setTitlesHorizontal(true);
@@ -580,7 +584,7 @@ public class CampusAllocator extends Block{
       Integer UID;
       idegaTimestamp temp = null;
       row = 2;
-      while(I.hasNext()){
+      while(I.hasNext() && iCount-- > 0){
         C = (Contract) I.next();
         UID = C.getUserId();
         if(M!=null && M.containsKey(UID)){
@@ -876,7 +880,9 @@ public class CampusAllocator extends Block{
     String sDateFrom = iwc.getParameter("contract_date_from");
     String sDateTo = iwc.getParameter("contract_date_to");
     String sMustFrom = iwc.getParameter("from");
+    /** @todo  contract overlap */
     idegaTimestamp mustBeFrom = sMustFrom !=null ? new idegaTimestamp(sMustFrom):null;
+    mustBeFrom.addDays(1);
 
     if( sDateFrom!=null && sDateTo!=null){
       idegaTimestamp from = new idegaTimestamp(sDateFrom);

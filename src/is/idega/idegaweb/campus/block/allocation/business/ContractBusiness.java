@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.6 2002/02/12 15:14:08 aron Exp $
+ * $Id: ContractBusiness.java,v 1.7 2002/02/13 13:08:07 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -209,10 +209,12 @@ public  class ContractBusiness {
     }
   }
 
-  public static void endContract(int iContractId,idegaTimestamp movingDate,String info){
+  public static void endContract(int iContractId,idegaTimestamp movingDate,String info,boolean datesync){
     try {
       Contract C = new Contract(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
+      if(datesync)
+        C.setValidTo(movingDate.getSQLDate());
       C.setResignInfo(info);
       C.setStatusEnded();
       C.update();
@@ -244,10 +246,12 @@ public  class ContractBusiness {
     }
   }
 
-  public static void resignContract(int iContractId,idegaTimestamp movingDate,String info){
+  public static void resignContract(int iContractId,idegaTimestamp movingDate,String info,boolean datesync){
     try {
       Contract C = new Contract(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
+      if(datesync)
+        C.setValidTo(movingDate.getSQLDate());
       C.setResignInfo(info);
       C.setStatusResigned();
       C.update();

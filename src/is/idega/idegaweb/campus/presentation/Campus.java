@@ -1,5 +1,5 @@
 /*
- * $Id: Campus.java,v 1.4 2002/01/08 13:10:46 aron Exp $
+ * $Id: Campus.java,v 1.5 2002/02/13 13:08:07 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ package is.idega.idegaweb.campus.presentation;
  * @version 1.0
  */
 public interface Campus {
+  public final static String CAMPUS_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   public final static int HOME = 1000;
   public final static int ADM_FINANCE = 1;
   public final static int ADM_HABITANTS = 2;

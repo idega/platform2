@@ -5,6 +5,7 @@ import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.data.SystemProperties;
+import is.idega.idegaweb.campus.presentation.CampusProperties;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -54,6 +55,7 @@ public class ContractReSignWindow extends Window{
   private SystemProperties SysProps = null;
   private GenericGroup eGroup = null;
   private User eUser = null;
+  private String prmDateSync = "date_sync";
 
   /*
     Blár litur í topp # 27324B
@@ -69,7 +71,7 @@ public class ContractReSignWindow extends Window{
   }
 
   protected void control(IWContext iwc){
-
+    //debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
@@ -158,6 +160,18 @@ public class ContractReSignWindow extends Window{
           else if(movdate !=null)
             T.add(Edit.formatText(movdate.getLocaleDate(iwc)),2,row);
           row++;
+          boolean DATESYNC = iwb.getProperty(CampusProperties.PROP_CONTRACT_DATE_SYNC,"false").equals("true");
+          if(isAdmin){
+            CheckBox dateSync = new CheckBox(prmDateSync,"true");
+            dateSync.setChecked(DATESYNC);
+            T.add(Edit.formatText(iwrb.getLocalizedString("update_valid_to","Update valid to")),1,row);
+            T.add(dateSync,2,row);
+            row++;
+          }
+          else{
+            if(DATESYNC)
+              T.add(new HiddenInput(prmDateSync,"true"));
+          }
           T.add(Edit.formatText(iwrb.getLocalizedString("new_address","New address")),1,row);
           T.add(new TextInput("new_address"),2,row);
           row++;
@@ -189,10 +203,12 @@ public class ContractReSignWindow extends Window{
     idegaTimestamp movDate = null;
     if(sMovDate !=null && sMovDate.length() == 10 )
       movDate = new idegaTimestamp(sMovDate);
+    boolean datesync = iwc.getParameter(prmDateSync)!=null;
     if(isAdmin)
-      ContractBusiness.endContract(id,movDate,sInfo);
+      ContractBusiness.endContract(id,movDate,sInfo,datesync);
     else if(eUser !=null)
-      ContractBusiness.resignContract(id,movDate,sInfo);
+      ContractBusiness.resignContract(id,movDate,sInfo,datesync);
+    setParentToReload();
     close();
   }
 
