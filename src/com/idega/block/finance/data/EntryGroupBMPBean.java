@@ -1,12 +1,11 @@
 package com.idega.block.finance.data;
 
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.category.data.CategoryEntityBMPBean;
-import com.idega.data.*;
 
 /**
  * Title:

@@ -11,11 +11,25 @@ import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierSubWind
 import is.idega.idegaweb.member.isi.block.accounting.presentation.CashierWindow;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.CheckoutPlugin;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DatePicker;
+import com.idega.presentation.ui.DoubleInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectOption;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.util.DateFormatException;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -39,6 +53,8 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
     private static final String LABEL_NUMBER_OF_PAYMENTS = "isi_acc_ccp_number_of_payments";
 
     private static final String LABEL_DATE_OF_FIRST_PAYMENT = "isi_acc_ccp_first_payment";
+    
+    private static final String LABEL_AMOUNT = "isi_acc_ccp_amount";
 
     private static final String LABEL_RESULT = "isi_acc_ccp_result";
 
@@ -70,45 +86,151 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
     }
 
     private PresentationObject setupCreditCardContract(IWContext iwc) {
+        IWResourceBundle iwrb = getResourceBundle(iwc);
         Form f = new Form();
         Table inputTable = new Table();
         inputTable.setCellpadding(5);
 
-/*        ResultOutput result = new ResultOutput(LABEL_RESULT);
-        DoubleInput input1 = new DoubleInput("input1");
-        DoubleInput input2 = new DoubleInput("input2");
+        /*
+         * ResultOutput result = new ResultOutput(LABEL_RESULT); DoubleInput
+         * input1 = new DoubleInput("input1"); DoubleInput input2 = new
+         * DoubleInput("input2");
+         * 
+         * result.add(input1); result.add(input2);
+         * 
+         * SubmitButton b = new SubmitButton("test", CONTRACT_SETUP, "true");
+         * 
+         * inputTable.add(input1); inputTable.add(input2);
+         * inputTable.add(result); inputTable.add(b); f.add(inputTable);
+         */
 
-        result.add(input1);
-        result.add(input2);
-
-        SubmitButton b = new SubmitButton("test", CONTRACT_SETUP, "true");
-
-        inputTable.add(input1);
-        inputTable.add(input2);
-        inputTable.add(result);
-        inputTable.add(b);
-        f.add(inputTable);*/
-
+        String paramSSN = iwc.getParameter(LABEL_SSN);
+        String paramCardType = iwc.getParameter(LABEL_CARD_TYPE);
+        String paramCardNumber = iwc.getParameter(LABEL_CARD_NUMBER);
+        String paramCardExpires = iwc.getParameter(LABEL_CARD_EXPIRES);
+        String paramNumberOfPayments = iwc.getParameter(LABEL_NUMBER_OF_PAYMENTS);
+        String paramDateOfFirstPayment = iwc.getParameter(LABEL_DATE_OF_FIRST_PAYMENT);
+        
         int row = 1;
-/*        Text labelName = new Text(iwrb.getLocalizedString(LABEL_NAME, "Name"));
-        labelName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION,
-                "Division"));
-        labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelGroup = new Text(iwrb
-                .getLocalizedString(LABEL_GROUP, "Group"));
-        labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelTariff = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE,
-                "Tariff type"));
-        labelTariff.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelStart = new Text(iwrb.getLocalizedString(LABEL_START,
-                "Start time"));
-        labelStart.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelEnd = new Text(iwrb.getLocalizedString(LABEL_END, "End time"));
-        labelEnd.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelUser = new Text(iwrb.getLocalizedString(LABEL_USER, "User"));
-        labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);*/
+        Text labelSSN = new Text(iwrb.getLocalizedString(LABEL_SSN, "SSN"));
+        labelSSN.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelCardType = new Text(iwrb.getLocalizedString(LABEL_CARD_TYPE,
+                "Card type"));
+        labelCardType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelCardNumber = new Text(iwrb.getLocalizedString(
+                LABEL_CARD_NUMBER, "Card number"));
+        labelCardNumber.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelCardExpires = new Text(iwrb.getLocalizedString(
+                LABEL_CARD_EXPIRES, "Card expires"));
+        labelCardExpires.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelNumberOfPayments = new Text(iwrb.getLocalizedString(
+                LABEL_NUMBER_OF_PAYMENTS, "Number of payments"));
+        labelNumberOfPayments
+                .setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelDateOfFirstPayment = new Text(iwrb.getLocalizedString(
+                LABEL_DATE_OF_FIRST_PAYMENT, "Date of first payment"));
+        labelDateOfFirstPayment
+                .setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        Text labelResult = new Text(iwrb.getLocalizedString(LABEL_RESULT,
+                "Result"));
+        labelResult.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
+        inputTable.add(labelSSN, 1, row);
+        inputTable.add(labelCardType, 2, row);
+        inputTable.add(labelCardNumber, 3, row);
+        inputTable.add(labelCardExpires, 4, row);
+        inputTable.add(labelDateOfFirstPayment, 5, row);
+        inputTable.add(labelNumberOfPayments, 6, row++);
+
+        TextInput ssn = new TextInput(LABEL_SSN);
+        if (paramSSN != null) {
+            ssn.setValue(paramSSN);
+        }
+        inputTable.add(ssn, 1, row);
+
+        Collection types = null;
+        try {
+            types = getAccountingBusiness(iwc).findAllCreditCardType();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        DropdownMenu typeInput = new DropdownMenu(LABEL_CARD_TYPE);
+        SelectorUtility util = new SelectorUtility();
+        if (types != null && !types.isEmpty()) {
+            typeInput = (DropdownMenu) util.getSelectorFromIDOEntities(
+                    typeInput, types, "getName");
+        }
+        if (paramCardType != null) {
+            typeInput.setSelectedElement(paramCardType);
+        }
+        inputTable.add(typeInput, 2, row);
+        
+        TextInput cardNumber = new TextInput(LABEL_CARD_NUMBER);
+        if (paramCardNumber != null) {
+            cardNumber.setValue(paramCardNumber);
+        }
+        inputTable.add(cardNumber, 3, row);
+        
+        DateInput cardExpires = new DateInput(LABEL_CARD_EXPIRES, true);
+        cardExpires.setNoDayView();
+        if (paramCardExpires != null) {
+            try {
+                IWTimestamp expires = new IWTimestamp(paramCardExpires);
+                cardExpires.setDate(expires.getDate());
+            } catch(IllegalArgumentException e) {
+            }
+        }
+        inputTable.add(cardExpires, 4, row);
+        
+        DatePicker dateOfFirstPayment = new DatePicker(LABEL_DATE_OF_FIRST_PAYMENT, iwc.getCurrentLocale());
+        if (paramDateOfFirstPayment != null) {
+            IWTimestamp firstPayment = new IWTimestamp(paramDateOfFirstPayment);
+            dateOfFirstPayment.setDate(firstPayment.getDate());
+        }
+        inputTable.add(dateOfFirstPayment, 5, row);
+
+        DropdownMenu numberOfPayments = new DropdownMenu(LABEL_NUMBER_OF_PAYMENTS);
+        for (int i = 1; i < 13; i++) {
+            numberOfPayments.addOption(new SelectOption(Integer.toString(i), i));            
+        }
+        if (paramNumberOfPayments != null) {
+            numberOfPayments.setSelectedElement(paramNumberOfPayments);
+        }
+        inputTable.add(numberOfPayments, 6, row);
+        numberOfPayments.setToSubmit();
+        
+        row += 10;
+        
+        int nop = 1;
+        if (paramNumberOfPayments != null) {
+            nop = Integer.parseInt(paramNumberOfPayments);
+        }
+        
+        IWTimestamp dofp = new IWTimestamp();
+        if (paramDateOfFirstPayment != null) {
+            try {
+                dofp.setDate(paramDateOfFirstPayment);
+            } catch (DateFormatException e1) {
+                e1.printStackTrace();
+            }
+        }
+        
+        Text labelAmount[] = new Text[nop];
+        labelAmount[0] = new Text(dofp.getDateString("dd.MM.yyyy"));
+        labelAmount[0].setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        inputTable.add(labelAmount[0], 1, row);
+        
+        DoubleInput amount[] = new DoubleInput[nop];
+        amount[0] = new DoubleInput(LABEL_AMOUNT + "_1");
+        inputTable.add(amount[0], 2, row);
+        
+        for (int i = 2; i <= nop; i++) {
+            
+        }
+        
+        
+        f.add(inputTable);
         
         f.maintainParameter(CashierWindow.ACTION);
         f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);

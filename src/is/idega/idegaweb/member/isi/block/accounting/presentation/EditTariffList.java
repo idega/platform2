@@ -252,8 +252,8 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		textInput.setLength(10);
 		DoubleInput amountInput = new DoubleInput(LABEL_AMOUNT);
 		amountInput.setLength(10);
-		DatePicker fromInput = new DatePicker(LABEL_FROM);
-		DatePicker toInput = new DatePicker(LABEL_TO);
+		DatePicker fromInput = new DatePicker(LABEL_FROM, iwc.getCurrentLocale());
+		DatePicker toInput = new DatePicker(LABEL_TO, iwc.getCurrentLocale());
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 		CheckBox children = new CheckBox(LABEL_CHILDREN, "true");
 

@@ -240,8 +240,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
         groupInput.setInputLength(10);
         CheckBox includeChildrenInput = new CheckBox(LABEL_INCLUDE_CHILDREN,
                 "true");
-        DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE);
-        DatePicker runOnDateInput = new DatePicker(LABEL_RUN_ON_DATE);
+        DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE, iwc.getCurrentLocale());
+        DatePicker runOnDateInput = new DatePicker(LABEL_RUN_ON_DATE, iwc.getCurrentLocale());
 
         SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(
                 ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");

@@ -273,7 +273,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			TextInput infoInput = new TextInput(LABEL_INFO);
 			infoInput.setLength(20);
 			infoInput.setMaxlength(255);
-			DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE);
+			DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE, iwc.getCurrentLocale());
 			
 			inputTable.add(usersGroupsInput, 1, row);
 			inputTable.add(tariffInput, 2, row);

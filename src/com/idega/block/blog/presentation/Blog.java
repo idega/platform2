@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+
 import com.idega.block.blog.BlogBundle;
 import com.idega.block.blog.business.BlogFinder;
 import com.idega.block.blog.business.BlogFormatter;
@@ -21,7 +22,6 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;

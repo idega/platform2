@@ -1,6 +1,5 @@
 package com.idega.block.category.data;
 
-import com.idega.data.IDOFactory;
 
 
 public class CategoryEntityHomeImpl extends com.idega.data.IDOFactory implements CategoryEntityHome

@@ -1,6 +1,5 @@
 package com.idega.block.category.data;
 
-import com.idega.data.GenericEntity;
 
 
 
