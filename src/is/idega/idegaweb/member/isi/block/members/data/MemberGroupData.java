@@ -47,7 +47,7 @@ public class MemberGroupData {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Collection statuses = null;
+		Collection statuses = java.util.Collections.EMPTY_SET;
 		try {
 			statuses = (Collection) ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(userId);
 		} catch(Exception e) {
