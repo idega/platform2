@@ -35,8 +35,13 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
   }
 
   public void actionPerformed(ActionEvent event) {
-    if(event.getActionCommand().equalsIgnoreCase(IW_CURRENCY_TIMER)){
-      CurrencyBusiness.getCurrencyMap(bundle_);
+    try{
+      if(event.getActionCommand().equalsIgnoreCase(IW_CURRENCY_TIMER)){
+        CurrencyBusiness.getCurrencyMap(bundle_);
+      }
+    }
+    catch(com.idega.data.IDONoDatastoreError error){
+      System.err.println("TradeBundleStarter.actionPerformed() Error: "+error.getMessage());
     }
   }
 
