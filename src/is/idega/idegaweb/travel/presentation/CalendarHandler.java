@@ -340,7 +340,6 @@ public class CalendarHandler extends TravelManager {
 
       List depDays = this.getDepartureDays(iwc, _showPast);
 
-
     TravelStockroomBusiness tsb = super.getServiceHandler(iwc).getServiceBusiness( this._product);
 		int seats = tsb.getMaxBookings( _product, null);
 		int minSeats = tsb.getMinBookings( _product, null);
@@ -357,13 +356,14 @@ public class CalendarHandler extends TravelManager {
 
       try {
 		    BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc,  this._product);
+		    TravelStockroomBusiness sb = super.getServiceHandler(iwc).getServiceBusiness( _product);
+		    
         if (_contract != null) {
           for (int i = 0; i < depDays.size(); i++) {
             temp = (IWTimestamp) depDays.get(i);
-            
-            if (!getTravelStockroomBusiness(iwc).getIfExpired(_contract, temp))
+            if (!sb.getIfExpired(_contract, temp))
             try {
-            if (getTravelStockroomBusiness(iwc).getIfDay(iwc,_contract,_product,temp)) {
+            if (sb.getIfDay(iwc,_contract,_product,temp)) {
               if (bf.isFullyBooked( iwc, _product, temp) ) {
 //              if (seats > 0 && seats <= getBooker(iwc).getBookingsTotalCount(_productId, temp) ) {
                 sm.setDayColor(temp, colorForFullyBooked);

@@ -577,7 +577,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
   public boolean getIfExpired(Contract contract, IWTimestamp stamp) throws RemoteException {
     boolean returner = false;
-      int daysBetween = stamp.getDaysBetween(IWTimestamp.RightNow(), stamp);
+      IWTimestamp temp = new IWTimestamp(IWTimestamp.RightNow().getDay() , IWTimestamp.RightNow().getMonth(), IWTimestamp.RightNow().getYear());
+      int daysBetween = stamp.getDaysBetween(temp, stamp);
       if (daysBetween < contract.getExpireDays()) {
         returner = true;
       }

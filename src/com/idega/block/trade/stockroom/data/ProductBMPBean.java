@@ -358,12 +358,31 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
    *@exception  SQLException  Description of the Exception
    */
   public TxText getText() throws SQLException {
-    TxText[] texti = ( TxText[] ) this.findRelated( ( TxText ) com.idega.block.text.data.TxTextBMPBean.getStaticInstance( TxText.class ) );
-    if ( texti.length > 0 ) {
-      return texti[texti.length - 1];
-    } else {
-      return null;
-    }
+		try {
+			Collection coll = this.idoGetRelatedEntities( TxText.class);
+			if (coll != null && (coll.size() > 0) ) {
+				Iterator iter = coll.iterator();
+				Object obj;
+				// Returns the last object in Collection
+				while (iter.hasNext()) {
+					obj = iter.next();
+					if (!iter.hasNext()) {
+						return (TxText) obj;	
+					}	
+				}
+			}else {
+				return null;
+			}	
+		} catch (IDORelationshipException e) {
+			throw new SQLException(e.getMessage());
+		}
+		return null;
+//    TxText[] texti = ( TxText[] ) this.findRelated( ( TxText ) com.idega.block.text.data.TxTextBMPBean.getStaticInstance( TxText.class ) );
+//    if ( texti.length > 0 ) {
+//      return texti[texti.length - 1];
+//    } else {
+//      return null;
+//    }
   }
 
   /**

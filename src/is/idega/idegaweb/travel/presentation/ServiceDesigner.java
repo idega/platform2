@@ -254,6 +254,9 @@ private void finalize(IWContext iwc) throws Exception {
 
           Product product = getProductBusiness(iwc).getProduct((Integer)this.service.getPrimaryKey());
           com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
+          if (product == null ) {
+          	System.out.println("Product == null");	
+          }
           if (product.getText() != null) {
             tc.setValue(product.getText());
           }
