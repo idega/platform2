@@ -41,7 +41,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	protected final static String COLUMN_NAME_MEMBER_FILE_ID = "MEMBER_PART_FILE_ID";
 	protected final static String COLUMN_NAME_ACCOUNT_FILE_ID = "ACCOUNT_PART_FILE_ID";
 	protected final static String COLUMN_NAME_BOARD_FILE_ID = "BOARD_PART_FILE_ID";
-
+	protected final static String COLUMN_NAME_NUMBER_OF_MEMBERS= "TOTAL_MEMBERS";
+	protected final static String COLUMN_NAME_NUMBER_OF_PLAYERS= "TOTAL_PLAYERS";
 	
 	public WorkReportBMPBean() {
 		super();
@@ -66,6 +67,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		addAttribute(COLUMN_NAME_BOARD_DONE, "Is the board-part of the work report finished", true, true, Boolean.class);
 			
 		addAttribute(COLUMN_NAME_GROUP_INACTIVE, "Is the group inactive", true, true, Boolean.class);	
+		addAttribute(COLUMN_NAME_NUMBER_OF_MEMBERS,"Total sum of members",true,true,Integer.class);
+		addAttribute(COLUMN_NAME_NUMBER_OF_PLAYERS,"Total sum of players",true,true,Integer.class);
 		
 		addAttribute(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, "Has the data been created from database?", true, true, Boolean.class);
     addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
@@ -262,5 +265,19 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	}
 	
 	
+	public int getNumberOfMembers() {
+		return getIntColumnValue(COLUMN_NAME_NUMBER_OF_MEMBERS);
+	}
+
+	public void setNumberOfMembers(int totalMembersCount) {
+		setColumn(COLUMN_NAME_NUMBER_OF_MEMBERS,totalMembersCount);
+	}
 	
+	public int getNumberOfPlayers() {
+		return getIntColumnValue(COLUMN_NAME_NUMBER_OF_PLAYERS);
+	}
+
+	public void setNumberOfPlayers(int totalPlayersCount) {
+		setColumn(COLUMN_NAME_NUMBER_OF_PLAYERS,totalPlayersCount);
+	}
 }
