@@ -336,6 +336,17 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   		totalWidth = ((columnSpacing + columnWidth) * fields.size())  - columnSpacing;
   	}
   	design.setColumnWidth(totalWidth);
+  	// does the width fit the page width?
+  	if (totalWidth > DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_PORTRAIT_A4) {
+  		// change to landscape!
+  		design.setOrientationLandscape();
+  		// does the the width now fit the page width?
+  		int landscapeWidth = (totalWidth > DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_LANDSCAPE_A4) ?
+					totalWidth + DynamicReportDesign.PAGE_LEFT_MARGIN + DynamicReportDesign.PAGE_RIGHT_MARGIN :
+					DynamicReportDesign.PAGE_WIDTH_LANDSCAPE_A4;
+  		design.setPageWidth(landscapeWidth);
+  		design.setPageHeight(DynamicReportDesign.PAGE_HEIGHT_LANDSCAPE_A4);
+  	}
   	// set fields
   	Iterator fieldIterator = fields.iterator();
   	while (fieldIterator.hasNext()) {

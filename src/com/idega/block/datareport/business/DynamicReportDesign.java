@@ -45,6 +45,22 @@ import dori.jasper.engine.design.JasperDesign;
  */
 public class DynamicReportDesign {
 	
+	public static final int PAGE_WIDTH_PORTRAIT_A4 = 595;
+	public static final int PAGE_HEIGHT_PORTRAIT_A4 = 842;
+	public static final int PAGE_LEFT_MARGIN = 20;
+	public static final int PAGE_RIGHT_MARGIN = 20;
+	public static final int PAGE_TOP_MARGIN = 10;
+	public static final int PAGE_BOTTOM_MARGIN = 30;
+	
+	public static final int PAGE_WIDTH_LANDSCAPE_A4 = PAGE_HEIGHT_PORTRAIT_A4;
+	public static final int PAGE_HEIGHT_LANDSCAPE_A4 = PAGE_WIDTH_PORTRAIT_A4;
+	
+	public static final int PAGE_WIDTH_WITHOUT_MARGINS_PORTRAIT_A4 = 
+		PAGE_WIDTH_PORTRAIT_A4 - PAGE_LEFT_MARGIN - PAGE_RIGHT_MARGIN;
+	
+	public static final int PAGE_WIDTH_WITHOUT_MARGINS_LANDSCAPE_A4 =
+		PAGE_HEIGHT_PORTRAIT_A4 - PAGE_LEFT_MARGIN -PAGE_RIGHT_MARGIN;
+		
 	private static int _tempFileCounter = 1;
 	private static final int _TEMP_FILE_COUNTER_MAX = 20;
 	private DesignDocument _designDoc;
@@ -121,14 +137,14 @@ public class DynamicReportDesign {
 		_designDoc = new DesignDocument(name);
 	
 		// set A 4 paper size
-		_designDoc.setPageWidth(595);
-		_designDoc.setPageHeight(842);
+		_designDoc.setPageWidth(PAGE_WIDTH_PORTRAIT_A4);
+		_designDoc.setPageHeight(PAGE_HEIGHT_PORTRAIT_A4);
 		_designDoc.setColumnWidth(540);
 		_designDoc.setColumnSpacing(15);
-		_designDoc.setLeftMargin(20);
-		_designDoc.setRightMargin(20);
-		_designDoc.setTopMargin(10);
-		_designDoc.setBottomMargin(30);
+		_designDoc.setLeftMargin(PAGE_LEFT_MARGIN);
+		_designDoc.setRightMargin(PAGE_RIGHT_MARGIN);
+		_designDoc.setTopMargin(PAGE_TOP_MARGIN);
+		_designDoc.setBottomMargin(PAGE_BOTTOM_MARGIN);
 		_designDoc.setColumnCount(1);
 		_designDoc.setPrintOrderVertical();
 		_designDoc.setOrientationPortrait();
@@ -631,6 +647,10 @@ public class DynamicReportDesign {
 	
 	public void setShowUser(boolean showUser) {
 		this.showUser = showUser;
+	}
+
+	public void setOrientationLandscape() {
+		_designDoc.setOrientationLandscape();
 	}
 	
 }
