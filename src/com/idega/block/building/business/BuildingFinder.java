@@ -65,6 +65,13 @@ public class BuildingFinder {
     catch(SQLException e){return null;}
   }
 
+  public static List ListOfAparmentOrderedByFloor(){
+    try{
+     return EntityFinder.findAllOrdered(new Apartment(),Apartment.getFloorIdColumnName());
+    }
+    catch(SQLException e){return null;}
+  }
+
 
   public static Floor[] findFloors(){
     Floor[] floors = new Floor[0];
@@ -336,6 +343,19 @@ public class BuildingFinder {
     }
 
     return(v);
+  }
+
+  public static List listOfBuildingsInComplex(int id){
+     Building B = new Building();
+    List L = null;
+    try {
+      L = EntityFinder.findAllByColumn(B,B.getComplexIdColumnName(),id);
+    }
+    catch (SQLException ex) {
+
+    }
+    return L;
+
   }
 
 }// class end
