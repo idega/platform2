@@ -1,12 +1,45 @@
 package is.idega.block.nationalregister.business;
 
-import com.idega.user.handler.UserNationalRegisterFileImportHandler;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import java.rmi.RemoteException;
+import java.util.List;
+import com.idega.block.importer.data.ImportFile;
+import com.idega.user.data.Group;
 
 
-public interface NationalRegisterFileImportHandler extends com.idega.business.IBOService,com.idega.block.importer.business.ImportFileHandler, UserNationalRegisterFileImportHandler
-{
- public java.util.List getFailedRecords()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean handleRecords()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void setImportFile(com.idega.block.importer.data.ImportFile p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void setRootGroup(com.idega.user.data.Group p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+/**
+ * @author Joakim
+ *
+ */
+public interface NationalRegisterFileImportHandler {
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean#handleRecords
+	 */
+	public boolean handleRecords() throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean#printFailedRecords
+	 */
+	public void printFailedRecords() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean#setImportFile
+	 */
+	public void setImportFile(ImportFile file) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean#setRootGroup
+	 */
+	public void setRootGroup(Group rootGroup) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean#getFailedRecords
+	 */
+	public List getFailedRecords() throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerBean#getMemberFamilyLogic
+	 */
+	public MemberFamilyLogic getMemberFamilyLogic() throws RemoteException, java.rmi.RemoteException;
 }

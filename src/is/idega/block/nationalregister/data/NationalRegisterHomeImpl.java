@@ -1,36 +1,40 @@
 package is.idega.block.nationalregister.data;
 
-
-public class NationalRegisterHomeImpl extends com.idega.data.IDOFactory implements NationalRegisterHome
-{
- protected Class getEntityInterfaceClass(){
-  return NationalRegister.class;
- }
+import java.rmi.RemoteException;
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.data.IDOFactory;
 
 
- public NationalRegister create() throws javax.ejb.CreateException{
-  return (NationalRegister) super.createIDO();
- }
+/**
+ * @author Joakim
+ *
+ */
+public class NationalRegisterHomeImpl extends IDOFactory implements NationalRegisterHome {
 
+	protected Class getEntityInterfaceClass() {
+		return NationalRegister.class;
+	}
 
-public java.util.Collection findAll()throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((NationalRegisterBMPBean)entity).ejbFindAll();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public NationalRegister create() throws javax.ejb.CreateException {
+		return (NationalRegister) super.createIDO();
+	}
 
-public java.util.Collection findAllBySSN(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((NationalRegisterBMPBean)entity).ejbFindAllBySSN(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public NationalRegister findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+		return (NationalRegister) super.findByPrimaryKeyIDO(pk);
+	}
 
- public NationalRegister findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (NationalRegister) super.findByPrimaryKeyIDO(pk);
- }
+	public Collection findAll() throws FinderException, RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((NationalRegisterBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-
-
+	public Collection findAllBySSN(String ssn) throws FinderException, RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((NationalRegisterBMPBean) entity).ejbFindAllBySSN(ssn);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

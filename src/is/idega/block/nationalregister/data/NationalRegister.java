@@ -1,66 +1,311 @@
 package is.idega.block.nationalregister.data;
 
+import com.idega.data.IDOEntity;
 
-public interface NationalRegister extends com.idega.data.IDOEntity
-{
- public java.lang.String getAddress();
- public java.lang.String getAddressCode();
- public java.lang.String getAddressName();
- public java.lang.String getAgentSSN();
- public java.lang.String getBuilding();
- public java.lang.String getCommune();
- public java.lang.String getDateOfBirth();
- public java.lang.String getDateOfCreation();
- public java.lang.String getDateOfDeletion();
- public java.lang.String getDateOfModification();
- public java.lang.String getFamilyId();
- public java.lang.String getFate();
- public java.lang.String getFloor();
- public java.lang.String getIsNew();
- public java.lang.String getLastDomesticAddress();
- public java.lang.String getMaritalStatus();
- public java.lang.String getName();
- public java.lang.String getNationality();
- public java.lang.String getNewSsnOrName();
- public java.lang.String getOldId();
- public java.lang.String getPO();
- public java.lang.String getParish();
- public java.lang.String getPlaceOfBirth();
- public java.lang.String getPlacementCode();
- public java.lang.String getProhibitMarking();
- public java.lang.String getSSN();
- public java.lang.String getSex();
- public java.lang.String getSpouseSSN();
- public java.lang.String getStreet();
- public java.lang.String getSymbol();
- public void setAddress(java.lang.String p0);
- public void setAddressCode(java.lang.String p0);
- public void setAddressName(java.lang.String p0);
- public void setAgentSSN(java.lang.String p0);
- public void setBuilding(java.lang.String p0);
- public void setCommune(java.lang.String p0);
- public void setDateOfBirth(java.lang.String p0);
- public void setDateOfCreation(java.lang.String p0);
- public void setDateOfDeletion(java.lang.String p0);
- public void setDateOfModification(java.lang.String p0);
- public void setFamilyId(java.lang.String p0);
- public void setFate(java.lang.String p0);
- public void setFloor(java.lang.String p0);
- public void setIsNew(java.lang.String p0);
- public void setLastDomesticAddress(java.lang.String p0);
- public void setMaritalStatus(java.lang.String p0);
- public void setName(java.lang.String p0);
- public void setNationality(java.lang.String p0);
- public void setNewSsnOrName(java.lang.String p0);
- public void setOldId(java.lang.String p0);
- public void setPO(java.lang.String p0);
- public void setParish(java.lang.String p0);
- public void setPlaceOfBirth(java.lang.String p0);
- public void setPlacementCode(java.lang.String p0);
- public void setProhibitMarking(java.lang.String p0);
- public void setSSN(java.lang.String p0);
- public void setSex(java.lang.String p0);
- public void setSpouseSSN(java.lang.String p0);
- public void setStreet(java.lang.String p0);
- public void setSymbol(java.lang.String p0);
+
+/**
+ * @author Joakim
+ *
+ */
+public interface NationalRegister extends IDOEntity {
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setSymbol
+	 */
+	public void setSymbol(String symbol);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getSymbol
+	 */
+	public String getSymbol();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setOldId
+	 */
+	public void setOldId(String id);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getOldId
+	 */
+	public String getOldId();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setSSN
+	 */
+	public void setSSN(String ssn);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getSSN
+	 */
+	public String getSSN();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setFamilyId
+	 */
+	public void setFamilyId(String id);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getFamilyId
+	 */
+	public String getFamilyId();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setCommune
+	 */
+	public void setCommune(String commune);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getCommune
+	 */
+	public String getCommune();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setStreet
+	 */
+	public void setStreet(String street);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getStreet
+	 */
+	public String getStreet();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setBuilding
+	 */
+	public void setBuilding(String building);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getBuilding
+	 */
+	public String getBuilding();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setFloor
+	 */
+	public void setFloor(String floor);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getFloor
+	 */
+	public String getFloor();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setSex
+	 */
+	public void setSex(String sex);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getSex
+	 */
+	public String getSex();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setMaritalStatus
+	 */
+	public void setMaritalStatus(String status);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getMaritalStatus
+	 */
+	public String getMaritalStatus();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setProhibitMarking
+	 */
+	public void setProhibitMarking(String marking);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getProhibitMarking
+	 */
+	public String getProhibitMarking();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setNationality
+	 */
+	public void setNationality(String nationality);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getNationality
+	 */
+	public String getNationality();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setPlaceOfBirth
+	 */
+	public void setPlaceOfBirth(String pob);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getPlaceOfBirth
+	 */
+	public String getPlaceOfBirth();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setSpouseSSN
+	 */
+	public void setSpouseSSN(String ssn);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getSpouseSSN
+	 */
+	public String getSpouseSSN();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setFate
+	 */
+	public void setFate(String fate);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getFate
+	 */
+	public String getFate();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setParish
+	 */
+	public void setParish(String parish);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getParish
+	 */
+	public String getParish();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setPO
+	 */
+	public void setPO(String po);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getPO
+	 */
+	public String getPO();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setAddress
+	 */
+	public void setAddress(String address);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getAddress
+	 */
+	public String getAddress();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setAddressCode
+	 */
+	public void setAddressCode(String code);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getAddressCode
+	 */
+	public String getAddressCode();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setDateOfModification
+	 */
+	public void setDateOfModification(String date);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getDateOfModification
+	 */
+	public String getDateOfModification();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setPlacementCode
+	 */
+	public void setPlacementCode(String code);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getPlacementCode
+	 */
+	public String getPlacementCode();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setDateOfCreation
+	 */
+	public void setDateOfCreation(String date);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getDateOfCreation
+	 */
+	public String getDateOfCreation();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setLastDomesticAddress
+	 */
+	public void setLastDomesticAddress(String address);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getLastDomesticAddress
+	 */
+	public String getLastDomesticAddress();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setAgentSSN
+	 */
+	public void setAgentSSN(String ssn);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getAgentSSN
+	 */
+	public String getAgentSSN();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setIsNew
+	 */
+	public void setIsNew(String isNew);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getIsNew
+	 */
+	public String getIsNew();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setAddressName
+	 */
+	public void setAddressName(String addressName);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getAddressName
+	 */
+	public String getAddressName();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setDateOfDeletion
+	 */
+	public void setDateOfDeletion(String date);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getDateOfDeletion
+	 */
+	public String getDateOfDeletion();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setNewSsnOrName
+	 */
+	public void setNewSsnOrName(String ssnOrName);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getNewSsnOrName
+	 */
+	public String getNewSsnOrName();
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#setDateOfBirth
+	 */
+	public void setDateOfBirth(String date);
+
+	/**
+	 * @see is.idega.block.nationalregister.data.NationalRegisterBMPBean#getDateOfBirth
+	 */
+	public String getDateOfBirth();
 }

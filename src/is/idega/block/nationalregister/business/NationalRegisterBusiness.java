@@ -4,7 +4,6 @@ import is.idega.block.nationalregister.data.NationalRegister;
 import java.rmi.RemoteException;
 import javax.ejb.CreateException;
 import com.idega.business.IBOLookupException;
-import com.idega.business.IBOService;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -14,7 +13,7 @@ import com.idega.user.data.User;
  * @author Joakim
  *
  */
-public interface NationalRegisterBusiness extends IBOService {
+public interface NationalRegisterBusiness {
 
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getEntryBySSN
