@@ -266,7 +266,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 			begin = valfr;
 		}
 		int validDays = IWTimestamp.getDaysBetween(new IWTimestamp(begin),new IWTimestamp(endin));
-		if(validDays>0 )//&& validDays< periodDays)
+		if(validDays>=0 )//&& validDays< periodDays)
 			validDays++;
 		/*
 		IWTimestamp theBegin = new IWTimestamp(begin);
