@@ -71,11 +71,14 @@ public class GenericImportFile implements ImportFile{
 	      br = new BufferedReader(fr);
 	    }
 	
-	    while ( ( (line=br.readLine()) != null ) && ( line.indexOf(getRecordDilimiter())== -1 ) ){
+		while ( ( (line=br.readLine()) != null ) && ( line.indexOf(getRecordDilimiter())== -1 ) ){
 	      buf.append(line);
 	      if( addNewLineAfterRecord ){
 	      	buf.append('\n');
 	      }
+	      
+	      if( getRecordDilimiter().equals("\n") ) break;//need to check because readline strips this token away.
+	      
 	    }
 	
 	    return buf.toString();
