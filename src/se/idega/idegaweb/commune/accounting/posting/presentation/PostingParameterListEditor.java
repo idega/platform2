@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.2 2003/08/20 11:56:44 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.3 2003/08/20 13:04:19 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,12 +22,13 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 
 
 /**
@@ -37,10 +38,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.2 2003/08/20 11:56:44 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.3 2003/08/20 13:04:19 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -144,8 +145,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 	/*
 	 * Adds the default form to the block.
-	 */	
-	 
+    */	
 	private void viewMainForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
 		PostingParameters pp = getThisPostingParameter(iwc);
@@ -164,10 +164,17 @@ public class PostingParameterListEditor extends AccountingBlock {
 		add(app);		
 	}
 
-
+	/*
+	 * Returns a top panel consisting of from, to and changing dates + signature 
+	 * @param iwc user/session context 
+	 * @param pp PostingParameter 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
+	 * @return populated table
+	 */
 	private Table getTopPanel(IWContext iwc, PostingParameters pp) {
 
 		Table table = new Table();
+		table.setWidth("50%");
 		Date dd = Date.valueOf("2003-01-01");
 		
 		table.add(getFormLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
@@ -185,6 +192,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return table;	
 	}
 	
+	/*
+	 * Formats a date according to specifications 
+	 * @param dt user/session context 
+	 * @param pp PostingParameter 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
+	 * @return formated date in String format
+	 */
 	private String formatDate(Date dt, int len) {
 		String ret = "";
 		String y = ("00" + dt.getYear()).substring(2);
@@ -203,11 +217,18 @@ public class PostingParameterListEditor extends AccountingBlock {
 	}
 	
 	/*
-	 * Returns own PostingList
+	 * Generates the main posting form with selectors for Activity, Regulation specs, Company types
+	 * and Commune belonging type.
+	 * It contains edit fields for "own entry" account as well as "double entry" accounts
+	 *    
+	 * @param dt user/session context 
+	 * @param pp PostingParameter 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
+	 * @return main posting table
 	 */
 	private Table getPostingForm(IWContext iwc, PostingParameters pp) {
 
-		Table main = new Table();
+		Table table = new Table();
 		Table selectors = new Table();
 		Table accounts = new Table();
 		ListTable list1 = new ListTable(8);
@@ -277,13 +298,21 @@ public class PostingParameterListEditor extends AccountingBlock {
 		accounts.add(getFormText(KEY_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
 		accounts.add(list2, 1, 4);
 		
-		main.add(getFormLabel(KEY_CONDITIONS, "Villkor"), 1, 1);
-		main.add(selectors, 1, 2);
-		main.add(accounts, 1, 3);
+		table.add(getFormLabel(KEY_CONDITIONS, "Villkor"), 1, 1);
+		table.add(selectors, 1, 2);
+		table.add(accounts, 1, 3);
 		
-		return main;
+		return table;
 	}
 
+	/*
+	 * Retrives from business the current posting data that is pointed out by PARAM_POSTING_ID.
+	 * Remeber that this app only can edit one record at a time.
+	 *    
+	 * @param iwc Idega Web Context 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
+	 * @return PostingParameter loaded with data
+	 */
 	private PostingParameters getThisPostingParameter(IWContext iwc) {
 		PostingBusiness pBiz;
 		PostingParameters pp = null;
@@ -303,11 +332,19 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return pp;
 	}
 	
-
+	/*
+	 * Generates a DropDownSelector for activites that is collected from the regulation framework. 
+	 *    
+	 * @param iwc Idega Web Context 
+	 * @param name HTML Parameter ID for this selector
+	 * @param refIndex The initial position to set the selector to 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType
+	 * @return the drop down menu
+	 */
 	private DropdownMenu activitySelector(IWContext iwc, String name, int refIndex) throws Exception {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
 		menu.addMenuElement(0, localize(KEY_ACTIVITY_HEADER, "Välj aktivitet"));
-		Collection col = getPostingBusiness(iwc).findAllActivityTypes();
+		Collection col = getRegulationsBusiness(iwc).findAllActivityTypes();
 		if(col != null){
 			Iterator iter = col.iterator();
 			while (iter.hasNext()) {
@@ -322,10 +359,20 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return (DropdownMenu) menu;	
 	}
 
+	/*
+	 * Generates a DropDownSelector for Regulation specifications that is collected 
+	 * from the regulation framework. 
+	 *    
+	 * @param iwc Idega Web Context 
+	 * @param name HTML Parameter ID for this selector
+	 * @param refIndex The initial position to set the selector to 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType
+	 * @return the drop down menu
+	 */
 	private DropdownMenu regSpecSelector(IWContext iwc, String name, int refIndex) throws Exception {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		menu.addMenuElement(0, localize(KEY_ACTIVITY_HEADER, "Välj regelspec.typ"));
-		Collection col = getPostingBusiness(iwc).findAllRegulationSpecTypes();
+		menu.addMenuElement(0, localize(KEY_REGSPEC_HEADER, "Välj regelspec.typ"));
+		Collection col = getRegulationsBusiness(iwc).findAllRegulationSpecTypes();
 
 		if(col != null){
 			Iterator iter = col.iterator();
@@ -341,10 +388,20 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return (DropdownMenu) menu;	
 	}
 
+	/*
+	 * Generates a DropDownSelector for Company types that is collected 
+	 * from the regulation framework. 
+	 *    
+	 * @param iwc Idega Web Context 
+	 * @param name HTML Parameter ID for this selector
+	 * @param refIndex The initial position to set the selector to 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType
+	 * @return the drop down menu
+	 */
 	private DropdownMenu companyTypeSelector(IWContext iwc, String name, int refIndex) throws Exception {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		menu.addMenuElement(0, localize(KEY_ACTIVITY_HEADER, "Välj bolagstyp"));
-		Collection col = getPostingBusiness(iwc).findAllCompanyTypes();
+		menu.addMenuElement(0, localize(KEY_COMPANY_TYPE_HEADER, "Välj bolagstyp"));
+		Collection col = getRegulationsBusiness(iwc).findAllCompanyTypes();
 
 		if(col != null){
 			Iterator iter = col.iterator();
@@ -360,10 +417,20 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return (DropdownMenu) menu;	
 	}
 
+	/*
+	 * Generates a DropDownSelector for Commune belongings that is collected 
+	 * from the regulation framework. 
+	 *    
+	 * @param iwc Idega Web Context 
+	 * @param name HTML Parameter ID for this selector
+	 * @param refIndex The initial position to set the selector to 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType
+	 * @return the drop down menu
+	 */
 	private DropdownMenu communeBelongingSelector(IWContext iwc, String name, int refIndex) throws Exception {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		menu.addMenuElement(0, localize(KEY_ACTIVITY_HEADER, "Välj kommuntillhörighet"));
-		Collection col = getPostingBusiness(iwc).findAllCommuneBelongingTypes();
+		menu.addMenuElement(0, localize(KEY_COM_BEL_HEADER, "Välj kommuntillhörighet"));
+		Collection col = getRegulationsBusiness(iwc).findAllCommuneBelongingTypes();
 
 		if(col != null){
 			Iterator iter = col.iterator();
@@ -380,6 +447,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 	}
 
 
+	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
+		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
+	}
 	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 	}
