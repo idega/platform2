@@ -29,8 +29,8 @@ import com.idega.user.data.UserBMPBean;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/03/25 14:26:08 $ by $Author: joakim $
- * @version $Revision: 1.103 $
+ * Last modified: $Date: 2004/03/29 09:18:42 $ by $Author: staffan $
+ * @version $Revision: 1.104 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -331,8 +331,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			sql.appendAnd ().append (M_ + MEMBER);
 			sql.appendIn(idoQuery ().appendCommaDelimited (users));
 		}
-		sql.appendAnd ().append (new Date (System.currentTimeMillis()));
-		sql.appendGreaterThanOrEqualsSign ().append (M_ + REGISTER_DATE);
+		sql.appendAnd ().append (M_ + REGISTER_DATE);
+		sql.appendLessThanSign ();
+		sql.append (new Date (System.currentTimeMillis()));
 		return idoFindPKsBySQL (sql.toString());
 	}
 

@@ -16,14 +16,13 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import javax.ejb.FinderException;
-import javax.servlet.http.HttpSession;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
 import se.idega.idegaweb.commune.accounting.resource.data.ResourceClassMember;
@@ -37,10 +36,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/02/24 12:17:24 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/29 09:17:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -52,10 +51,9 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	private static final String ADDRESS_KEY = PREFIX + "address";
 	private static final String BACK_DEFAULT = "Tillbaka";
 	private static final String BACK_KEY = PREFIX + "back";
-	private static final String CURRENTMEMBERSHIP_DEFAULT
-		= "Nuvarande placering";
-	private static final String CURRENTMEMBERSHIP_KEY
-		= PREFIX + "currentMembership";
+	private static final String MEMBERSHIP_DEFAULT = "Placering";
+	private static final String MEMBERSHIP_KEY
+		= PREFIX + "membership";
 	private static final String ISTERMINATED_DEFAULT = " har avslutats";
 	private static final String ISTERMINATED_KEY = PREFIX + "isTerminated";
 	private static final String NOTES_DEFAULT = "Kommentar";
@@ -77,6 +75,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	private static final String SCHOOLCLASS_KEY = PREFIX + "schoolClass";
 	private static final String SCHOOLYEAR_DEFAULT = "skolår";
 	private static final String SCHOOLYEAR_KEY = PREFIX + "schoolYear";
+	private static final String STARTDATE_DEFAULT = "Startdatum";
+	private static final String STARTDATE_KEY = PREFIX + "startDate";
 	private static final String TERMINATE_MESSAGE_KEY = PREFIX + "terminate_message";
 	private static final String TERMINATE_MESSAGE_DEFAULT = "Placeringen för {0} i {2}/{1} avslutades {3,date} av {5}.\n\n{4}.";
 	private static final String TERMINATEMEMBERSHIP_DEFAULT
@@ -169,13 +169,14 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	 * @param context session data
 	 */
 	private Table getTerminateMembershipTable (final IWContext context) 
-		throws RemoteException, javax.ejb.CreateException {
+		throws RemoteException, FinderException, javax.ejb.CreateException {
 		// find input values
-		final HttpSession session = context.getSession ();
-		final SchoolClassMember member = (SchoolClassMember)
-				session.getAttribute (MEMBER_KEY);
-		final Date date = getDateFromString (context.getParameter
-																				 (TERMINATIONDATE_KEY));
+		final Integer memberId
+				= new Integer (context.getParameter (ACTION_TERMINATE_KEY));
+		final SchoolClassMember member
+				= getSchoolClassMemberHome ().findByPrimaryKey (memberId);
+		final Date date
+				= getDateFromString (context.getParameter (TERMINATIONDATE_KEY));
 		final User child = member.getStudent ();
 		final String childName = child.getFirstName () + " "
 				+ child.getLastName ();
@@ -311,10 +312,6 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 			// exactly one user found - display user and termination form
 			final Table terminateTable = new Table ();
 			terminateTable.add (getStudentTable (context, foundUser), 1, 2);
-			terminateTable.add (getSubmitButton
-													(ACTION_TERMINATE_KEY,
-													 TERMINATEMEMBERSHIP_KEY,
-													 TERMINATEMEMBERSHIP_DEFAULT), 1, 3);
 			final Form terminateForm = new Form ();
 			terminateForm.add (terminateTable);
 			table.add (terminateForm, 1, 3);
@@ -333,7 +330,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	private void fillSearcherWithStudents (final IWContext context,
 																				 final UserSearcher searcher)
 		throws RemoteException {
-		final Collection students = new ArrayList ();
+		final Collection students = new HashSet ();
 		try {
 			// 1. start with a raw search
 			searcher.process (context);
@@ -418,54 +415,64 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 		final Collection members = memberHome
 				.findAllBySchoolAndUsersWithSchoolYearAndNotRemoved
 				(schoolId, java.util.Collections.singleton (user));
-		final SchoolClassMember student
-				= (SchoolClassMember) members.iterator ().next ();
-		// store student in session
-		final HttpSession session = context.getSession ();
-		session.setAttribute (MEMBER_KEY, student);
-		
-		// create interface objects
+		final Table table = new Table ();
+		table.setColumns (2);
+		int row = 1;
 		final Text addressHeader = new Text (localize (ADDRESS_KEY,
 																									 ADDRESS_DEFAULT) + ':');
 		addressHeader.setBold ();
 		final Text address = new Text (getAddressStringFromUser (user));
-		final Text memberHeader = new Text
-				(localize (CURRENTMEMBERSHIP_KEY, CURRENTMEMBERSHIP_DEFAULT)
-				 + ':');
-		memberHeader.setBold ();
-		final Text member = new Text
-				(null != student
-				 ? getMembershipString (student, communeBusiness)
-				 : "ej placerad");
-		final Text terminationDateHeader = new Text
-				(localize (TERMINATIONDATE_KEY, TERMINATIONDATE_DEFAULT) + ':');
-		terminationDateHeader.setBold ();
-		final TextInput terminationDateInput
-				= (TextInput) getStyledInterface (new TextInput
-																					(TERMINATIONDATE_KEY));
-		terminationDateInput.setLength (10);
-		terminationDateInput.setContent
-				(shortDateFormatter.format(new Date (System.currentTimeMillis ())));
-		final Text notesHeader = new Text (localize (NOTES_KEY, NOTES_DEFAULT)
-																			 + ":");
-		notesHeader.setBold ();
-		final TextInput notesInput
-				= (TextInput) getStyledInterface (new TextInput (NOTES_KEY));
-		notesInput.setLength (40);
-		
-		// put interface objects in output table
-		final Table table = new Table ();
-		table.setColumns (2);
-		int row = 1;
 		table.add (addressHeader, 1, row);
 		table.add (address, 2, row++);
-		table.add (memberHeader, 1, row);
-		table.add (member, 2, row++);
-		table.add (terminationDateHeader, 1, row);
-		table.add (terminationDateInput, 2, row++);
-		table.add (notesHeader, 1, row);
-		table.add (notesInput, 2, row++);
+		table.setHeight (row++, 24);
+			
+		for (Iterator i = members.iterator (); i.hasNext ();) {
+			final SchoolClassMember student = (SchoolClassMember) i.next ();
+			
+			final Text memberHeader = new Text
+					(localize (MEMBERSHIP_KEY, MEMBERSHIP_DEFAULT) + ':');
+			memberHeader.setBold ();
+			final Text member = new Text (null != student ? getMembershipString
+																		(student, communeBusiness) : "ej placerad");
+			final Text startDateHeader = new Text
+					(localize (STARTDATE_KEY, STARTDATE_DEFAULT) + ':');
+			memberHeader.setBold ();
+			startDateHeader.setBold ();
+			final Text startDate = new Text (null != student ? shortDateFormatter.format(student.getRegisterDate()) : "ej placerad");
+			final Text terminationDateHeader = new Text
+					(localize (TERMINATIONDATE_KEY, TERMINATIONDATE_DEFAULT) + ':');
+			terminationDateHeader.setBold ();
+			final TextInput terminationDateInput = (TextInput) getStyledInterface
+					(new TextInput (TERMINATIONDATE_KEY));
+			terminationDateInput.setLength (10);
+			terminationDateInput.setContent
+					(shortDateFormatter.format(new Date (System.currentTimeMillis ())));
+			final Text notesHeader = new Text (localize (NOTES_KEY, NOTES_DEFAULT)
+																				 + ":");
+			notesHeader.setBold ();
+			final TextInput notesInput
+					= (TextInput) getStyledInterface (new TextInput (NOTES_KEY));
+			notesInput.setLength (40);
 		
+			// put interface objects in output table
+			table.add (memberHeader, 1, row);
+			table.add (member, 2, row++);
+			table.add (startDateHeader, 1, row);
+			table.add (startDate, 2, row++);
+			table.add (terminationDateHeader, 1, row);
+			table.add (terminationDateInput, 2, row++);
+			table.add (notesHeader, 1, row);
+			table.add (notesInput, 2, row++);
+			final String buttonText
+					= getLocalizedString (TERMINATEMEMBERSHIP_KEY,
+																TERMINATEMEMBERSHIP_DEFAULT);
+			final SubmitButton submit = (SubmitButton) getButton
+					(new SubmitButton	(buttonText, ACTION_TERMINATE_KEY,
+														 student.getPrimaryKey () + ""));
+			table.add (submit, 1, row++);
+			table.setHeight (row++, 24);
+		}
+
 		return table;
 	}
 	
@@ -555,14 +562,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 		calendar.set (year, month - 1, day);
 		return new Date (calendar.getTimeInMillis ());
 	}
-	
-	private SubmitButton getSubmitButton (final String action, final String key,
-																				final String defaultName) {
-		return (SubmitButton) getButton (new SubmitButton
-																		 (action, getLocalizedString
-																			(key, defaultName)));
-	}
-	
+		
 	private String getLocalizedString(final String key, final String value) {
 		return getResourceBundle().getLocalizedString(key, value);
 	}
@@ -585,4 +585,13 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 		searcher.setMaxFoundUserRows (MAX_FOUND_USER_ROWS);
 		return searcher;
 	}
+
+	private static SchoolClassMemberHome getSchoolClassMemberHome () {
+		try {
+			return (SchoolClassMemberHome) IDOLookup.getHome (SchoolClassMember.class);
+		} catch (Exception e) {
+			e.printStackTrace ();
+			return null;
+		}
+	}	
 }
