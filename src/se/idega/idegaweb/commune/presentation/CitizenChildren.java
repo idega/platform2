@@ -13,7 +13,7 @@ import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
+//import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -34,12 +34,12 @@ import com.idega.util.Age;
  * @version 1.0
  */
 public class CitizenChildren extends CommuneBlock {
-	private IWBundle iwb;
+	//private IWBundle iwb;
 	private IWResourceBundle iwrb;
 	private int userID;
 	private User user;
 	private Text buttonLabel;
-	private Text ssnLabel;
+	//private Text ssnLabel;
 	public static final String prmChildId = "comm_child_id";
   private static final String prmParentId = "comm_parent_id";
 	private static final String prmChildSSN = "comm_child_ssn";
@@ -51,11 +51,11 @@ public class CitizenChildren extends CommuneBlock {
 
 	public CitizenChildren() {
 		buttonLabel = getText("");
-		ssnLabel = getText("");
+		//ssnLabel = getText("");
 	}
 
 	public void main(IWContext iwc) throws java.rmi.RemoteException {
-		iwb = getBundle(iwc);
+		//iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		userID = iwc.getUserId();
 		if (userID > 0) {

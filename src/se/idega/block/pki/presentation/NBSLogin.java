@@ -15,7 +15,6 @@ import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
 
 import com.idega.block.login.presentation.Login;
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
@@ -46,8 +45,8 @@ public class NBSLogin extends Login {
 
 	/** Names for objects stored in the servlet context or session. */
 
-	private String _errorPageID = null;
-	private String _loggedOnPageID = null;
+	//private String _errorPageID = null;
+	//private String _loggedOnPageID = null;
 
 	private static IBPage _page;
 	
@@ -70,7 +69,6 @@ public class NBSLogin extends Login {
 	 */
 	public NBSLogin() {
 		super();
-		// TODO Auto-generated constructor stub
 		
 //		setPanelColor("#052F59","#386CB7");
 //		setButtonColor("#052F59","#386CB7");

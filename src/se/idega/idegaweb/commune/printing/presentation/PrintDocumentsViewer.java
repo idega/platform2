@@ -90,14 +90,14 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private String currentType = "";
 	private String currentStatus = "";
 	private int msgID = -1;
-	private int fileID = -1;
+	public int fileID = -1;
 	private IWTimestamp today = IWTimestamp.RightNow(),
 		pFrom = null,
 		pTo = null,
 		uFrom = null,
 		uTo = null;
 	private int defaultDays = 7;
-	private int defaultShown = 10;
+	public int defaultShown = 10;
 	private int cursor_p = 0;
 	private int cursor_u = 0;
 	private int count_p = 10;
@@ -105,7 +105,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private String UserIDPreferenceParameterName = "user_id";
 	private  IBPage userPrefPage = null;
 
-	private String statusPrinted, statusUnprinted, statusDeleted, statusError;
+	private String statusPrinted, statusUnprinted, statusDeleted;
 
 	private Table mainTable = null;
 
@@ -167,7 +167,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		statusUnprinted = msgBuiz.getCaseStatusOpen().getStatus();
 		statusPrinted = msgBuiz.getCaseStatusReady().getStatus();
 		statusDeleted = msgBuiz.getCaseStatusInactive().getStatus();
-		statusError = msgBuiz.getCaseStatusError().getStatus();
+		//statusError = msgBuiz.getCaseStatusError().getStatus();
 	}
 
 	public void add(PresentationObject po) {

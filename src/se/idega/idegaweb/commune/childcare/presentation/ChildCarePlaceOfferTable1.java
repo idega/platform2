@@ -24,9 +24,9 @@ import com.idega.util.IWTimestamp;
 class ChildCarePlaceOfferTable1 extends Table {
 
 	private static Text HEADER_YOUR_CHOICE;
-	private static Text HEADER_OFFER;
-	private static Text HEADER_PROGNOSE;
-	private static Text HEADER_QUEUE_INFO;
+	//private static Text HEADER_OFFER;
+	//private static Text HEADER_PROGNOSE;
+	//private static Text HEADER_QUEUE_INFO;
 	private static Text HEADER_YES;
 	private static Text HEADER_YES_BUT;
 	private static Text HEADER_NO;
@@ -52,9 +52,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 		if (!_initializeStatics) {
 			_page = page;
 			HEADER_YOUR_CHOICE = page.getLocalHeader("ccatp1_your_choice", "Your Choice");
-			HEADER_OFFER = page.getLocalHeader("ccatp1_offer", "Offer");
-			HEADER_PROGNOSE = page.getLocalHeader("ccatp1_prognose", "Prognoses");
-			HEADER_QUEUE_INFO = page.getLocalHeader("ccatp1_queue_info", "Request queue information");
+			//HEADER_OFFER = page.getLocalHeader("ccatp1_offer", "Offer");
+			//HEADER_PROGNOSE = page.getLocalHeader("ccatp1_prognose", "Prognoses");
+			//HEADER_QUEUE_INFO = page.getLocalHeader("ccatp1_queue_info", "Request queue information");
 			HEADER_YES = page.getLocalHeader("ccatp1_yes", "Yes");
 			HEADER_YES_BUT = page.getLocalHeader("ccatp1_yes_but", "No, but don't delete from queue");
 			HEADER_NO = page.getLocalHeader("ccatp1_no", "No");

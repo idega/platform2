@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.13 2003/04/04 12:44:12 roar Exp $
+ * @version $Id: EventList.java,v 1.14 2003/06/11 09:08:16 laddi Exp $
  * @since 17.3.2003 
  */
 
@@ -68,7 +68,7 @@ public class EventList extends CommuneBlock {
 	private final static String PRM_U_COUNT = "prv_ucnt";
 	private final static String PRM_U_CHK = "prv_uchk";
 
-	private final static String PRM_CURSOR_P = "prv_crs_p";
+	//private final static String PRM_CURSOR_P = "prv_crs_p";
 	private final static String PRM_CURSOR_U = "prv_crs_u";
 
 	private final static String PRM_PRINT_SELECTED = "prv_pr_sel";
@@ -86,14 +86,14 @@ public class EventList extends CommuneBlock {
 	private final static String LOCALE_LAST = "eventlist.last";
 	private final static String LOCALE_NEXT = "eventlist.next";
 
-	private boolean showTypesAsDropdown = false;
+	public boolean showTypesAsDropdown = false;
 	private String currentType = ""; 
-	private int msgID = -1;
+	//private int msgID = -1;
 	private IWTimestamp today = IWTimestamp.RightNow(),
 	uFrom = null, uTo = null;
 	private int defaultDays = 7;
-	private int defaultShown = 25;
-	private int cursor_p = 0;
+	public int defaultShown = 25;
+	//private int cursor_p = 0;
 	private int cursor_u = 0;
 	private int count_p = 25;
 	private int count_u = 25;
@@ -168,9 +168,9 @@ public class EventList extends CommuneBlock {
 		}
 
 
-		if (iwc.isParameterSet(PARAM_MESSAGE_ID)) {
+		/*if (iwc.isParameterSet(PARAM_MESSAGE_ID)) {
 			msgID = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
-		}
+		}*/
 
 		//	add(new Text("Action: " + action + "<br>"));
 		return action;
@@ -199,8 +199,8 @@ public class EventList extends CommuneBlock {
 	}
 
 	private void initCursors(IWContext iwc) throws Exception {
-		if (iwc.isParameterSet(PRM_CURSOR_P))
-			cursor_p = Integer.parseInt(iwc.getParameter(PRM_CURSOR_P));
+		/*if (iwc.isParameterSet(PRM_CURSOR_P))
+			cursor_p = Integer.parseInt(iwc.getParameter(PRM_CURSOR_P));*/
 		if (iwc.isParameterSet(PRM_CURSOR_U))
 			cursor_u = Integer.parseInt(iwc.getParameter(PRM_CURSOR_U));
 		if (iwc.isParameterSet(PRM_P_COUNT))

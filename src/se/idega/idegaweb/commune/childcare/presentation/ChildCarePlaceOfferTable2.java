@@ -16,12 +16,12 @@ import com.idega.presentation.ui.RadioButton;
 class ChildCarePlaceOfferTable2 extends Table {
 
 	private static Text HEADER_YOUR_CHOICE;
-	private static Text HEADER_OFFER;
+	//private static Text HEADER_OFFER;
 	private static Text HEADER_PROGNOSE;
 	private static Text HEADER_YES;
 	private static Text HEADER_NO;
 
-	private static String GRANTED;
+	//private static String GRANTED;
 
 	private static boolean _initializeStatics = false;
 
@@ -31,12 +31,12 @@ class ChildCarePlaceOfferTable2 extends Table {
 		if (!_initializeStatics) {
 			_page = page;
 			HEADER_YOUR_CHOICE = page.getLocalHeader("ccatp2_your_choice", "Your Choice");
-			HEADER_OFFER = page.getLocalHeader("ccatp2_offer", "Offer");
+			//HEADER_OFFER = page.getLocalHeader("ccatp2_offer", "Offer");
 			HEADER_PROGNOSE = page.getLocalHeader("ccatp2_queue_position", "Queue position");
 			HEADER_YES = page.getLocalHeader("ccatp2_yes", "Yes, keep application");
 			HEADER_NO = page.getLocalHeader("ccatp2_no", "No, remove application");
 
-			GRANTED = page.localize("ccatp2_granted", "You have accepted this offer, starting ").toString();
+			//GRANTED = page.localize("ccatp2_granted", "You have accepted this offer, starting ").toString();
 
 			_initializeStatics = true;
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.54 2003/06/05 17:58:34 gummi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.55 2003/06/11 09:08:16 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,10 +32,7 @@ import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
-import se.nexus.nbs.sdk.NBSAuthResult;
-import se.nexus.nbs.sdk.NBSResult;
 
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.idegaweb.IWBundle;
@@ -50,7 +47,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.Converter;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -60,11 +56,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/06/05 17:58:34 $ by $Author: gummi $
+ * Last modified: $Date: 2003/06/11 09:08:16 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.54 $
+ * @version $Revision: 1.55 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -178,14 +174,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
-	}
-
-	/**
-	 * @param iwc
-	 */
-	private void welcomeNotesInFinalStep(IWContext iwc) {
-		// TODO(gummi) Auto-generated method stub
-		
 	}
 
 	private void viewSimpleApplicationForm(final IWContext iwc) {

@@ -1,4 +1,5 @@
 package se.idega.idegaweb.commune.childcare.presentation;
+
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -7,29 +8,34 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.HiddenInput;
+
 class ChildCareQueueTable extends Table {
-	private static Text HEADER_YOUR_CHOICE;
+	
+	/*private static Text HEADER_YOUR_CHOICE;
 	private static Text HEADER_OFFER;
 	private static Text HEADER_PROGNOSE;
 	private static Text HEADER_QUEUE_INFO;
 	private static Text HEADER_YES;
 	private static Text HEADER_YES_BUT;
 	private static Text HEADER_NO;
-	private static String GRANTED;
+	private static String GRANTED;*/
+	
 	private static boolean _initializeStatics = false;
 	private static ChildCareQueueUpdateTable _page;
+	
 	final static String[] REQUEST_INFO = new String[] { "ccatp1_request_info", "Request info" };
+	
 	private void initConstants(ChildCareQueueUpdateTable page) {
 		if (!_initializeStatics) {
 			_page = page;
-			HEADER_YOUR_CHOICE = page.getLocalHeader("ccatp1_your_choice", "Your Choice");
+			/*HEADER_YOUR_CHOICE = page.getLocalHeader("ccatp1_your_choice", "Your Choice");
 			HEADER_OFFER = page.getLocalHeader("ccatp1_offer", "Offer");
 			HEADER_PROGNOSE = page.getLocalHeader("ccatp1_prognose", "Prognoses");
 			HEADER_QUEUE_INFO = page.getLocalHeader("ccatp1_queue_info", "Request queue information");
 			HEADER_YES = page.getLocalHeader("ccatp1_yes", "Yes");
 			HEADER_YES_BUT = page.getLocalHeader("ccatp1_yes_but", "No, but don't delete from queue");
 			HEADER_NO = page.getLocalHeader("ccatp1_no", "No");
-			GRANTED = page.localize("ccatp1_granted", "You have received an offer from ").toString();
+			GRANTED = page.localize("ccatp1_granted", "You have received an offer from ").toString();*/
 			_initializeStatics = true;
 		}
 	}

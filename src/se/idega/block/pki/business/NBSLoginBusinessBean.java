@@ -27,9 +27,6 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.business.UserBusinessBean;
-import com.idega.user.business.UserBusinessHome;
 import com.idega.user.data.User;
 import com.idega.util.StringHandler;
 
