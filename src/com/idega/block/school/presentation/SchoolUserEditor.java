@@ -76,7 +76,9 @@ public class SchoolUserEditor extends Block {
     return IW_BUNDLE_IDENTIFIER;
   }
   
-  
+  public SchoolUserEditor(){
+  	
+  }
   
   
   
