@@ -227,7 +227,9 @@ public void checkAction(IWContext iwc) throws Exception{
 
 }
 
-
+/**
+ * @todo: Check if the actionPerformed function is actually used
+ */
 
 /*
 public void actionPerformed(ModuleEvent e)throws Exception{
