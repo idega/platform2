@@ -3,7 +3,6 @@ package com.idega.block.quote.presentation;
 import com.idega.block.IWBlock;
 import com.idega.block.quote.business.QuoteHolder;
 import com.idega.block.quote.business.QuoteBusiness;
-import com.idega.block.quote.business.QuoteFinder;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -22,13 +21,14 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
  * Copyright: Copyright (c) 2000-2002 idega.is All Rights Reserved
  * Company: idega
   *@author <a href="mailto:laddi@idega.is">Thorhallur "Laddi" Helgason</a>
+ * @modified <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.2
  */
 
 public class Quote extends Block implements IWBlock {
 
 private int _quoteID;
-private boolean _isAdmin = false;
+private boolean _hasEditPermission = false;
 private int _iLocaleID;
 private int _row = 1;
 
@@ -45,25 +45,25 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.quote";
 protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
 
-public Quote(){
-  setDefaultValues();
-}
+  public Quote(){
+    setDefaultValues();
+  }
 
-public Quote(int quoteID){
-  this();
-  _quoteID = quoteID;
-}
+  public Quote(int quoteID){
+    this();
+    _quoteID = quoteID;
+  }
 
   public void main(IWContext iwc) throws Exception {
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
 
-    _isAdmin = iwc.hasEditPermission(this);
+    _hasEditPermission = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
     drawTable();
 
-    if ( _isAdmin )
+    if ( _hasEditPermission )
       _myTable.add(getAdminTable(iwc),1,_row++);
     _myTable.add(getQuoteTable(iwc),1,_row);
 
@@ -76,7 +76,7 @@ public Quote(int quoteID){
       table.setWidth("100%");
       table.setHeight("100%");
 
-    QuoteHolder quote = QuoteBusiness.getRandomQuote(iwc,_iLocaleID);
+    QuoteHolder quote = getQuoteBusiness().getRandomQuote(iwc,_iLocaleID);
     if ( quote != null ) {
       table.setAlignment(1,1,"left");
       table.setAlignment(1,3,"right");
@@ -86,11 +86,11 @@ public Quote(int quoteID){
       String originString = quote.getOrigin();
       String textString = quote.getText();
       if ( textString == null ) {
-	textString = "";
+	    textString = "";
       }
       String authorString = quote.getAuthor();
       if ( authorString == null || authorString.length() == 0 ) {
-	authorString = _iwrb.getLocalizedString("unknown","Unknown");
+	    authorString = _iwrb.getLocalizedString("unknown","Unknown");
       }
 
       Text quoteOrigin = formatText(originString+":",originStyle_);
@@ -99,18 +99,18 @@ public Quote(int quoteID){
       Text quoteAuthor = formatText("-"+Text.getNonBrakingSpace().getText()+authorString,authorStyle_);
 
       if ( originString != null && originString.length() > 0 ) {
-	table.add(quoteOrigin,1,1);
-	table.add(quoteText,1,2);
-	table.add(quoteAuthor,1,3);
-	table.setHeight(1,2,"100%");
+    	table.add(quoteOrigin,1,1);
+	    table.add(quoteText,1,2);
+	    table.add(quoteAuthor,1,3);
+	    table.setHeight(1,2,"100%");
       }
       else {
-	table.mergeCells(1,1,1,2);
-	table.setHeight(1,1,"100%");
-	table.setVerticalAlignment(1,1,"middle");
+	    table.mergeCells(1,1,1,2);
+	    table.setHeight(1,1,"100%");
+	    table.setVerticalAlignment(1,1,"middle");
 
-	table.add(quoteText,1,1);
-	table.add(quoteAuthor,1,3);
+    	table.add(quoteText,1,1);
+	    table.add(quoteAuthor,1,3);
       }
     }
     else {
@@ -235,6 +235,10 @@ public Quote(int quoteID){
       ex.printStackTrace(System.err);
     }
     return obj;
+  }
+
+  private QuoteBusiness getQuoteBusiness(){
+    return QuoteBusiness.getQuoteBusinessInstace();
   }
 
   /** @deprecated */ public void setQuoteWidth(String width) { setWidth(width); }

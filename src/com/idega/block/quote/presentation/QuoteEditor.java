@@ -12,13 +12,11 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.quote.business.QuoteBusiness;
-import com.idega.block.quote.business.QuoteFinder;
 import com.idega.block.quote.business.QuoteHolder;
 
 public class QuoteEditor extends IWAdminWindow{
 
 private int _quoteID = -1;
-private boolean _isAdmin = false;
 private boolean _update = false;
 private boolean _save = false;
 private int _iLocaleID;
@@ -36,7 +34,6 @@ public QuoteEditor(){
 }
 
   public void main(IWContext iwc) throws Exception {
-    _isAdmin=iwc.hasEditPermission(new Quote());
     _iwb = getBundle(iwc);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("quote_admin","Quote Admin"));
@@ -44,7 +41,7 @@ public QuoteEditor(){
 
     try {
       _quoteID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_ID));
-      _quote = QuoteFinder.getQuoteHolder(_quoteID);
+      _quote = getQuoteBusiness().getQuoteHolder(_quoteID);
     }
     catch (NumberFormatException e) {
       _quoteID = -1;
@@ -54,7 +51,7 @@ public QuoteEditor(){
 
     if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_EDIT) ) {
       if ( _quoteID != -1 ) {
-	_update = true;
+	    _update = true;
       }
       processForm();
     }
@@ -102,20 +99,24 @@ public QuoteEditor(){
     String quoteText = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_TEXT);
     String quoteAuthor = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_AUTHOR);
 
-    QuoteBusiness.saveQuote(_quoteID,_iLocaleID,quoteOrigin,quoteText,quoteAuthor);
+    getQuoteBusiness().saveQuote(_quoteID,_iLocaleID,quoteOrigin,quoteText,quoteAuthor);
 
     setParentToReload();
     close();
   }
 
   private void deleteQuote() {
-    QuoteBusiness.deleteQuote(_quoteID);
+    getQuoteBusiness().deleteQuote(_quoteID);
     setParentToReload();
     close();
   }
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
+  }
+
+  private QuoteBusiness getQuoteBusiness(){
+    return QuoteBusiness.getQuoteBusinessInstace();
   }
 }
 

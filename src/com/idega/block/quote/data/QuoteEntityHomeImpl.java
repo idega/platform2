@@ -11,16 +11,6 @@ public class QuoteEntityHomeImpl extends com.idega.data.IDOFactory implements Qu
   return (QuoteEntity) super.idoCreate();
  }
 
- public QuoteEntity createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
  public QuoteEntity findByPrimaryKey(int id) throws javax.ejb.FinderException{
   return (QuoteEntity) super.idoFindByPrimaryKey(id);
  }
@@ -29,15 +19,12 @@ public class QuoteEntityHomeImpl extends com.idega.data.IDOFactory implements Qu
   return (QuoteEntity) super.idoFindByPrimaryKey(pk);
  }
 
- public QuoteEntity findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
+public java.util.Collection findAllQuotesByLocale(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((QuoteEntityBMPBean)entity).ejbFindAllQuotesByLocale(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
 
 }
