@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/05 14:39:46 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/05 14:44:47 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.82 $
+ * @version $Revision: 1.83 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -709,13 +709,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallText (details, NOTE_KEY, record.getNotes ());
         details.put (OWN_POSTING_KEY,
                     getPostingListTable (context, record.getOwnPosting ()));
-        addSmallPeriodText (details, CHECK_START_PERIOD_KEY,
+        addSmallDateText (details, CHECK_START_PERIOD_KEY,
                             record.getPeriodStartCheck ());
-        addSmallPeriodText (details, CHECK_END_PERIOD_KEY,
+        addSmallDateText (details, CHECK_END_PERIOD_KEY,
                             record.getPeriodEndCheck ());
-        addSmallPeriodText (details, PLACEMENT_START_PERIOD_KEY,
+        addSmallDateText (details, PLACEMENT_START_PERIOD_KEY,
                             record.getPeriodStartPlacement ());
-        addSmallPeriodText (details, PLACEMENT_END_PERIOD_KEY,
+        addSmallDateText (details, PLACEMENT_END_PERIOD_KEY,
                             record.getPeriodEndPlacement ());
         final RegulationSpecType regSpecType = record.getRegSpecType ();
         if (null != regSpecType) {
