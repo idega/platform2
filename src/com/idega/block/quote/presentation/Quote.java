@@ -39,6 +39,7 @@ private String height_;
 private String quoteStyle_;
 private String authorStyle_;
 private String originStyle_;
+private String alignment_ = Table.HORIZONTAL_ALIGN_CENTER;
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.quote";
 protected IWResourceBundle _iwrb;
@@ -78,7 +79,6 @@ public Quote(int quoteID){
     QuoteHolder quote = QuoteBusiness.getRandomQuote(iwc,_iLocaleID);
     if ( quote != null ) {
       table.setAlignment(1,1,"left");
-      table.setAlignment(1,2,"center");
       table.setAlignment(1,3,"right");
 
       _quoteID = quote.getQuoteID();
@@ -95,6 +95,7 @@ public Quote(int quoteID){
 
       Text quoteOrigin = formatText(originString+":",originStyle_);
       Text quoteText = formatText("\""+textString+"\"",quoteStyle_);
+        quoteText.setHorizontalAlignment(alignment_);
       Text quoteAuthor = formatText("-"+Text.getNonBrakingSpace().getText()+authorString,authorStyle_);
 
       if ( originString != null && originString.length() > 0 ) {
@@ -106,7 +107,6 @@ public Quote(int quoteID){
       else {
 	table.mergeCells(1,1,1,2);
 	table.setHeight(1,1,"100%");
-	table.setAlignment(1,1,"center");
 	table.setVerticalAlignment(1,1,"middle");
 
 	table.add(quoteText,1,1);
@@ -186,8 +186,16 @@ public Quote(int quoteID){
     width_ = width;
   }
 
+  public String getWidth() {
+    return width_;
+  }
+
   public void setHeight(String height) {
     height_ = height;
+  }
+
+  public String getHeight() {
+    return height_;
   }
 
   public void setOriginStyle(String style) {
@@ -200,6 +208,14 @@ public Quote(int quoteID){
 
   public void setAuthorStyle(String style) {
     authorStyle_ = style;
+  }
+
+  public void setHorizontalAlignment(String alignment) {
+    alignment_ = alignment;
+  }
+
+  public String getHorizontalAlignment() {
+    return alignment_;
   }
 
   public boolean deleteBlock(int ICObjectInstanceID) {
