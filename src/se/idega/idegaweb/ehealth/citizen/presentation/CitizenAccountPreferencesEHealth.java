@@ -2,16 +2,13 @@ package se.idega.idegaweb.ehealth.citizen.presentation;
 
 import java.rmi.RemoteException;
 
-import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountSession;
 import se.idega.idegaweb.commune.message.business.MessageSession;
 import se.idega.idegaweb.ehealth.presentation.EHealthBlock;
 
 import com.idega.business.IBOLookup;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.builder.data.ICPage;
+//import com.idega.core.accesscontrol.business.LoginDBHandler;
+//import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
@@ -29,8 +26,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
-import com.idega.presentation.ui.HiddenInput;
+//import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -71,7 +67,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	private final static String PARAMETER_FORM_SUBMIT = "cap_sbmt";
 	private final static String PARAMETER_CANCEL = "cap_cncl";
 	//private final static String PARAMETER_LOGIN = "cap_lgn";
-	private final static String PARAMETER_OLD_LOGIN = "cap_old_lgn";
+//	private final static String PARAMETER_OLD_LOGIN = "cap_old_lgn";
 	private final static String PARAMETER_CURRENT_PASSWORD = "cap_c_pw";
 	private final static String PARAMETER_NEW_PASSWORD = "cap_n_pw";
 	private final static String PARAMETER_NEW_PASSWORD_REPEATED = "cap_n_pw_r";
@@ -79,6 +75,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	//private final static String PARAMETER_EMAIL_ID = "cap_email_id";
 	private final static String PARAMETER_PHONE_HOME = "cap_phn_h";
 	private final static String PARAMETER_PHONE_WORK = "cap_phn_w";
+	private final static String PARAMETER_PHONE_ALT = "cap_phn_a";
 	private final static String PARAMETER_PHONE_MOBILE = "cap_phn_m";
 	private final static String PARAMETER_CO_ADDRESS_SELECT = "cap_co";
 	private final static String PARAMETER_CO_STREET_ADDRESS = "cap_co_sa";
@@ -90,22 +87,24 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	private final static String PARAMETER_MESSAGES_VIA_EMAIL = "cap_m_v_e";
 	private final static String PARAMETER_MESSAGES_VIA_SMS = "cap_m_v_s";
 
-	private final int MIN_PASSWORD_LENGTH = 8;
+	//private final int MIN_PASSWORD_LENGTH = 8;
 	
 	private final static String KEY_PREFIX = "citizen.";
 	private final static String KEY_EMAIL = KEY_PREFIX + "email";
 	private final static String KEY_SMS = KEY_PREFIX + "sms";
-	private final static String KEY_LOGIN = KEY_PREFIX + "login";
+//	private final static String KEY_LOGIN = KEY_PREFIX + "login";
 	//private final static String KEY_OLD_LOGIN = KEY_PREFIX + "old_login";
-	private final static String KEY_CURRENT_PASSWORD = KEY_PREFIX + "current_password";
+	/*private final static String KEY_CURRENT_PASSWORD = KEY_PREFIX + "current_password";
 	private final static String KEY_NEW_PASSWORD = KEY_PREFIX + "new_password";
 	private final static String KEY_NEW_PASSWORD_REPEATED = KEY_PREFIX + "new_password_repeated";
+	*/
 	private final static String KEY_UPDATE = KEY_PREFIX + "update";
 	//private final static String KEY_CANCEL = KEY_PREFIX + "cancel";
 	private final static String KEY_PID = KEY_PREFIX + "personalid";
 	private final static String KEY_PHONE_HOME = KEY_PREFIX + "phone_home";
 	private final static String KEY_PHONE_MOBILE = KEY_PREFIX + "phone_mobile";
 	private final static String KEY_PHONE_WORK = KEY_PREFIX + "phone_work";
+	private final static String KEY_PHONE_ALT = KEY_PREFIX + "phone_alt";
 	private final static String KEY_TEMP_ADDRESS = KEY_PREFIX + "temporay_address";
 	private final static String KEY_CO_ADDRESS_INFO = KEY_PREFIX + "co_address_info";
 	private final static String KEY_CO_ADDRESS_SELECT = KEY_PREFIX + "co_address_select";
@@ -117,12 +116,13 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	
 	private final static String KEY_CHOOSE_WAY = "choose_way";
 	private final static String KEY_MESSAGES_VIA_EMAIL = KEY_PREFIX + "messages_via_email";
-	private final static String KEY_PASSWORD_EMPTY = KEY_PREFIX + "password_empty";
+	/*private final static String KEY_PASSWORD_EMPTY = KEY_PREFIX + "password_empty";
 	private final static String KEY_PASSWORD_REPEATED_EMPTY = KEY_PREFIX + "password_repeated_empty";
 	private final static String KEY_PASSWORDS_NOT_SAME = KEY_PREFIX + "passwords_not_same";
 	private final static String KEY_PASSWORD_INVALID = KEY_PREFIX + "invalid_password";	
 	private final static String KEY_PASSWORD_TOO_SHORT = KEY_PREFIX + "password_too_short";	
 	private final static String KEY_PASSWORD_CHAR_ILLEGAL = KEY_PREFIX + "password_char_illegal";	
+	*/
 	private final static String KEY_EMAIL_INVALID = KEY_PREFIX + "email_invalid";	
 	private final static String KEY_EMAIL_EMPTY = KEY_PREFIX + "email_empty";	
 	private final static String KEY_CO_STREET_ADDRESS_MISSING = KEY_PREFIX + "co_street_address_missing";	
@@ -133,17 +133,19 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 
 	private final static String DEFAULT_EMAIL = "E-mail";
 	private final static String DEFAULT_SMS = "SMS";
-	private final static String DEFAULT_LOGIN = "Login";	
+	//private final static String DEFAULT_LOGIN = "Login";	
 	//private final static String DEFAULT_OLD_LOGIN = "Old login";	
-	private final static String DEFAULT_CURRENT_PASSWORD = "Current password";	
+/*	private final static String DEFAULT_CURRENT_PASSWORD = "Current password";	
 	private final static String DEFAULT_NEW_PASSWORD = "New password";	
 	private final static String DEFAULT_NEW_PASSWORD_REPEATED = "Repeat new password";	
+*/
 	private final static String DEFAULT_UPDATE = "Update";	
 	//private final static String DEFAULT_CANCEL = "Cancel";	
 	private final static String DEFAULT_PID = "Personal id";
 	private final static String DEFAULT_PHONE_HOME = "Phone (home)";		
 	private final static String DEFAULT_PHONE_MOBILE = "Phone (mobile)";
 	private final static String DEFAULT_PHONE_WORK = "Phone (work)";
+	private final static String DEFAULT_PHONE_ALT = "Phone (alt)";
 	private final static String DEFAULT_CO_ADDRESS_INFO = "To use the temporary address...";
 	private final static String DEFAULT_CO_ADDRESS_SELECT = "Use c/o address";
 	private final static String DEFAULT_TEMP_ADDRESS = "Temporary address";
@@ -154,12 +156,13 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	private final static String DEFAULT_CO_END = "End date";
 	private final static String DEFAULT_CHOOSE_WAY = "Choose way";
 	private final static String DEFAULT_MESSAGES_VIA_EMAIL = "I want to get my messages via e-email";		
-	private final static String DEFAULT_PASSWORD_EMPTY = "Password cannot be empty.";		
+	/*private final static String DEFAULT_PASSWORD_EMPTY = "Password cannot be empty.";		
 	private final static String DEFAULT_PASSWORD_REPEATED_EMPTY = "Repeated password cannot be empty.";		
 	private final static String DEFAULT_PASSWORDS_NOT_SAME = "New passwords not the same.";		
 	private final static String DEFAULT_PASSWORD_INVALID = "Invalid password.";		
 	private final static String DEFAULT_PASSWORD_TOO_SHORT = "Password too short.";		
 	private final static String DEFAULT_PASSWORD_CHAR_ILLEGAL = "Password contains illegal character(s).";		
+*/	
 	private final static String DEFAULT_EMAIL_INVALID = "Email address invalid.";		
 	private final static String DEFAULT_EMAIL_EMPTY = "Email address cannot be empty.";		
 	private final static String DEFAULT_CO_STREET_ADDRESS_MISSING = "Street address c/o must be entered.";	
@@ -278,7 +281,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 			table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_BOTTOM);
 		}
 		row++;
-		table.add(getSmallHeader(localize(KEY_LOGIN, DEFAULT_LOGIN)), 1, row);
+		/*table.add(getSmallHeader(localize(KEY_LOGIN, DEFAULT_LOGIN)), 1, row);
 		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
 		if (loginTable != null) {
 			table.add(new HiddenInput(PARAMETER_OLD_LOGIN, loginTable.getUserLogin()), 2, row);
@@ -286,7 +289,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_BOTTOM);
 			table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_BOTTOM);
 		}
-
+*/
 		
 		String valueEmail = iwc.getParameter(PARAMETER_EMAIL);
 		/* if the entered address is invalid show the orignal from database if exists*/
@@ -342,11 +345,13 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		
 		Text tEmail = getSmallHeader(localize(KEY_EMAIL, DEFAULT_EMAIL));
 		//Text tLogin = getSmallHeader(localize(KEY_LOGIN, DEFAULT_LOGIN));
-		Text tCurrentPassword = getSmallHeader(localize(KEY_CURRENT_PASSWORD, DEFAULT_CURRENT_PASSWORD));
+		/*Text tCurrentPassword = getSmallHeader(localize(KEY_CURRENT_PASSWORD, DEFAULT_CURRENT_PASSWORD));
 		Text tNewPassword = getSmallHeader(localize(KEY_NEW_PASSWORD, DEFAULT_NEW_PASSWORD));
 		Text tNewPasswordRepeated = getSmallHeader(localize(KEY_NEW_PASSWORD_REPEATED, DEFAULT_NEW_PASSWORD_REPEATED));
+		*/
 		Text tPhoneHome = getSmallHeader(localize(KEY_PHONE_HOME, DEFAULT_PHONE_HOME));
 		Text tPhoneWork = getSmallHeader(localize(KEY_PHONE_WORK, DEFAULT_PHONE_WORK));
+		Text tPhoneAlt = getSmallHeader(localize(KEY_PHONE_ALT, DEFAULT_PHONE_ALT));
 		Text tPhoneMobile = getSmallHeader(localize(KEY_PHONE_MOBILE, DEFAULT_PHONE_MOBILE));
 		
 		Text tMessagesViaEmail = getSmallText(" " + localize(KEY_MESSAGES_VIA_EMAIL, DEFAULT_MESSAGES_VIA_EMAIL));
@@ -367,6 +372,11 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		TextInput tiPhoneWork = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_WORK));		
 		if(valuePhoneWork!=null){
 			tiPhoneWork.setValue(valuePhoneWork);
+		}
+		
+		TextInput tiPhoneAlt = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_ALT));		
+		if(valuePhoneWork!=null){
+			tiPhoneAlt.setValue(valuePhoneWork);
 		}
 	
 		PasswordInput tiCurrentPassword = (PasswordInput) getStyledInterface(new PasswordInput(PARAMETER_CURRENT_PASSWORD));	
@@ -421,8 +431,12 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		table.add(tiPhoneWork, 2, row);
 		
 		row++;
+		table.add(tPhoneAlt, 1, row);
+		table.add(tiPhoneAlt, 2, row);
+		
+		row++;
 		table.setHeight(row, 12);
-
+		/*
 		if (requirePasswordVerification) {
 			row++;
 			table.add(tCurrentPassword, 1, row);
@@ -436,7 +450,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		row++;
 		table.add(tNewPasswordRepeated, 1, row);
 		table.add(tiNewPasswordRepeated, 2, row);
-		
+		*/
 		row++;
 		table.setHeight(row, 12);
 	
@@ -467,7 +481,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		row++;
 		table.setHeight(row, 12);
 		
-		ICPage homepage = null;
+		/*ICPage homepage = null;
 		try {
 			homepage = ub.getHomePageForUser(user);
 		}
@@ -475,18 +489,18 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 			//No page found
 			homepage = null;
 		}
-		
+		*/
 		row++;
 		table.mergeCells(1, row, 2, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		
-		if (homepage != null) {
+		/*if (homepage != null) {
 			table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 			GenericButton home = getButton(new GenericButton("home", localize("my_page", "Back to My Page")));
 			home.setPageToOpen(homepage);
 			table.add(home, 1, row);
 		}
-		
+		*/
 		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(sbUpdate, 1, row);
 		
@@ -642,11 +656,11 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 	}
 	
 	private void updatePreferences(IWContext iwc)  throws Exception {
-		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
-		String login    = loginTable.getUserLogin();
-		String currentPassword = iwc.getParameter(PARAMETER_CURRENT_PASSWORD);
-		String newPassword1 = iwc.getParameter(PARAMETER_NEW_PASSWORD);
-		String newPassword2 = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED);		
+		//LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
+		//String login    = loginTable.getUserLogin();
+		//String currentPassword = iwc.getParameter(PARAMETER_CURRENT_PASSWORD);
+		//String newPassword1 = iwc.getParameter(PARAMETER_NEW_PASSWORD);
+		//String newPassword2 = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED);		
 		String sEmail = iwc.getParameter(PARAMETER_EMAIL);
 		String phoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
 		String phoneMobile = iwc.getParameter(PARAMETER_PHONE_MOBILE);
@@ -658,7 +672,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		boolean messagesViaEmail = iwc.getParameter(PARAMETER_MESSAGES_VIA_EMAIL) != null;
 		
 		String errorMessage = null;
-		boolean updatePassword = false;
+		//boolean updatePassword = false;
 		boolean updateEmail = false;
 		boolean updateCOAddress = false;
 		
@@ -668,12 +682,13 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		    if(authorizedByBankID(iwc)){
 		        
 		    }
-		    else if (requirePasswordVerification && !LoginDBHandler.verifyPassword(login, currentPassword)) {
-				throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
+		    //else if (requirePasswordVerification && !LoginDBHandler.verifyPassword(login, currentPassword)) {
+		    else if (requirePasswordVerification) {
+				//throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
 			}
 			
 			// Validate new password
-			if (!newPassword1.equals("") || !newPassword2.equals("")) {
+		/*	if (!newPassword1.equals("") || !newPassword2.equals("")) {
 				if (newPassword1.equals("")) {
 					throw new Exception(localize(KEY_PASSWORD_EMPTY, DEFAULT_PASSWORD_EMPTY));
 				}
@@ -706,7 +721,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 				}
 				updatePassword = true;
 			}
-
+*/
 			updateEmail = validateEmail(sEmail);
 			
 			/* IF user checks that he wants all letters sent by email
@@ -739,9 +754,10 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 			// Ok to update preferences
 			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 
-			if (updatePassword) {
+			/*if (updatePassword) {
 				LoginDBHandler.updateLogin(((Integer)user.getPrimaryKey()).intValue(), login, newPassword1);
 			}
+			*/
 			if (updateEmail ) {
 				//ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
 				ub.storeUserEmail(user,sEmail,true);

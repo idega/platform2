@@ -52,7 +52,7 @@ import com.idega.user.data.User;
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CitizenAccountApplicationEHealth extends EHealthBlock {
 
@@ -70,6 +70,9 @@ public class CitizenAccountApplicationEHealth extends EHealthBlock {
 	final static String PHONE_CELL_DEFAULT = "Cell phone";
 	final static String PHONE_WORK_KEY = "scaa_work_phone";
 	final static String PHONE_WORK_DEFAULT = "Work phone";
+	final static String PHONE_ALT_KEY = "scaa_alt_phone";
+	final static String PHONE_ALT_DEFAULT = "Alt phone";
+	
 	final static String CITIZEN_ACCOUNT_INFO_KEY = "scaa_account_info";
 	final static String CITIZEN_ACCOUNT_INFO_DEFAULT = "If you don't have an email addrss your login info will be sent to you by snail mail.";
 	final static String MANDATORY_FIELD_EXPL_KEY = "scaa_mandatory_field_expl";
@@ -219,7 +222,7 @@ public class CitizenAccountApplicationEHealth extends EHealthBlock {
 	private void addSimpleInputs(final Table table, final IWContext iwc) {
 		int row = 1;
 		
-		table.add(getVKLogo(iwc), 1, row++);
+		//table.add(getVKLogo(iwc), 1, row++);
 		table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, row);
 		//table.add(getErrorText("*"), 1, row);
 		TextInput ssnInput = getSingleInput(iwc, SSN_KEY, 25, true);
@@ -235,6 +238,9 @@ public class CitizenAccountApplicationEHealth extends EHealthBlock {
 		table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, row);
 		table.add(getSingleInput(iwc, PHONE_WORK_KEY, 25, false), 3, row++);
 				
+		table.add(getHeader(PHONE_WORK_KEY, PHONE_ALT_DEFAULT), 1, row);
+		table.add(getSingleInput(iwc, PHONE_ALT_KEY, 25, false), 3, row++);
+		
 		table.add(getHeader(PHONE_CELL_KEY, PHONE_CELL_DEFAULT), 1, row);
 		table.add(getSingleInput(iwc, PHONE_CELL_KEY, 25, false), 3, row++);
 		
