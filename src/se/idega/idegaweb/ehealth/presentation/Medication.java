@@ -329,7 +329,7 @@ public class Medication extends EHealthBlock {
 		
 		table.setWidth(2, 1, "20");
 		
-		GenericButton fass = getButton(new GenericButton("linkFass", localize(prmLinkFass, "Link to Fass >")));
+		GenericButton fass = getButton(new GenericButton("linkFass", localize(prmLinkFass, "Link to Fass &gt;")));
 		if (_fassPage != null)
 			fass.setURLToOpen("http://www.fass.se");
 		
