@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.13 2003/10/03 11:48:16 anders Exp $
+ * $Id: AgeEditor.java,v 1.14 2003/10/09 13:38:41 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/03 11:48:16 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/09 13:38:41 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -47,7 +47,8 @@ public class AgeEditor extends AccountingBlock {
 	private final static int ACTION_NEW = 3;
 	private final static int ACTION_OPEN = 4;
 	private final static int ACTION_SAVE = 5;
-	private final static int ACTION_DELETE = 6;
+	private final static int ACTION_COPY = 6;
+	private final static int ACTION_DELETE = 7;
 	
 	private final static String PP = "cacc_age_"; // Parameter prefix 
 
@@ -60,6 +61,7 @@ public class AgeEditor extends AccountingBlock {
 	private final static String PARAMETER_DESCRIPTION = PP + "description";
 	private final static String PARAMETER_CUT_DATE = PP + "cut_date";
 	private final static String PARAMETER_AGE_REGULATION_ID = PP + "age_regulation_id";
+	private final static String PARAMETER_COPY_ID = PP + "copy_id";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
 	private final static String PARAMETER_SEARCH = PP + "search";
 	private final static String PARAMETER_NEW = PP + "new";
@@ -86,10 +88,12 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_EDIT = KP + "edit";
+	private final static String KEY_COPY = KP + "copy";
 	private final static String KEY_CANCEL = KP + "cancel";
 	private final static String KEY_DELETE = KP + "delete";
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm_message";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
+	private final static String KEY_BUTTON_COPY = KP + "button_copy";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
 	/**
@@ -112,7 +116,10 @@ public class AgeEditor extends AccountingBlock {
 					handleNewAction(iwc);
 					break;
 				case ACTION_OPEN:
-					handleOpenAction(iwc);
+					handleOpenAction(iwc, false);
+					break;
+				case ACTION_COPY:
+					handleOpenAction(iwc, true);
 					break;
 				case ACTION_SAVE:
 					handleSaveAction(iwc);
@@ -142,6 +149,8 @@ public class AgeEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
+		} else if (iwc.isParameterSet(PARAMETER_COPY_ID)) {
+			action = ACTION_COPY;
 		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_AGE_REGULATION_ID)) {
@@ -185,13 +194,20 @@ public class AgeEditor extends AccountingBlock {
 	/*
 	 * Handles the open action (link clicked in the list) for this block.
 	 */	
-	private void handleOpenAction(IWContext iwc) {
+	private void handleOpenAction(IWContext iwc, boolean isCopy) {
 		try {
+			int id = getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID);
+			boolean isNew = false;
+			if (isCopy) {
+				id = getIntParameter(iwc, PARAMETER_COPY_ID);
+				isNew = true;
+			}
 			AgeBusiness ab = getAgeBusiness(iwc);
-			AgeRegulation ar = ab.getAgeRegulation(getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID));
+			AgeRegulation ar = ab.getAgeRegulation(id);
+			id = isCopy ? -1 : id;
 			add(getAgeRegulationForm(
 					iwc,
-					ar.getPrimaryKey().toString(),
+					"" + id,
 					formatDate(ar.getPeriodFrom(), 4),
 					formatDate(ar.getPeriodTo(), 4),
 					"" + ar.getAgeFrom(),
@@ -199,7 +215,7 @@ public class AgeEditor extends AccountingBlock {
 					ar.getDescription(),
 					formatCutDate(ar.getCutDate()),
 					null,
-					false)
+					isNew)
 			);
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
@@ -327,18 +343,19 @@ public class AgeEditor extends AccountingBlock {
 			}
 		} catch (RemoteException e) {
 			Table t = new Table();
-			t.add(new ExceptionWrapper(e));
+			t.add(new ExceptionWrapper(e), 1, 1);
 			return t;
 		}
 
-		ListTable list = new ListTable(this, 7);
+		ListTable list = new ListTable(this, 8);
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_AGE_FROM, "Ålder från", 2);
 		list.setLocalizedHeader(KEY_AGE_TO, "Ålder till", 3);
 		list.setLocalizedHeader(KEY_DESCRIPTION, "Regel", 4);
 		list.setLocalizedHeader(KEY_CUT_DATE, "Brytdatum", 5);
 		list.setLocalizedHeader(KEY_EDIT, "Redigera", 6);
-		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 7);
+		list.setLocalizedHeader(KEY_COPY, "Kopiera", 7);
+		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 8);
 
 		list.setColumnWidth(4, "30%");
 		list.setColumnWidth(6, "60");
@@ -358,6 +375,10 @@ public class AgeEditor extends AccountingBlock {
 				edit.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
 				list.add(edit);
 
+				Link copy = new Link(getCopyIcon(localize(KEY_BUTTON_COPY, "Kopiera denna åldersregel")));
+				copy.addParameter(PARAMETER_COPY_ID, ar.getPrimaryKey().toString());
+				list.add(copy);
+
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_DELETE, "Radera")));
 				delete.setDescription(localize(KEY_BUTTON_DELETE, "Klicka h‰r fˆr att ta bort denna åldersregel"));
 				delete.setValueOnClick(PARAMETER_DELETE_ID, ar.getPrimaryKey().toString());
@@ -370,7 +391,7 @@ public class AgeEditor extends AccountingBlock {
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
 		mainPanel.setCellspacing(0);
-		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"));
+		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"), 1, 1);
 	
 		if (errorMessage != null) {
 			Table t = new Table();
@@ -419,7 +440,7 @@ public class AgeEditor extends AccountingBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.add(getLocalizedLabel(KEY_PERIOD, "Period"));
+		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 1);
 		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, 1);
 		table.add(getText(" - "), 2, 1);
 		table.add(getTextInput(PARAMETER_PERIOD_TO, periodTo, 60), 2, 1);
