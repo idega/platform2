@@ -12,7 +12,18 @@ import com.idega.block.creditcard.data.CreditCardMerchant;
  */
 public interface CreditCardClient {
 
+	/**
+	 * Returns a collection of valid card types.
+	 * The collection contains String declared in CreditCardBusiness.
+	 * @return Collection of Card Types that client supports
+	 */
 	public Collection getValidCardTypes();
+	
+	/**
+	 * This method returns the CreditCardMerchant used by this client.
+	 * The Merchant contains the data that the clients uses to connect with.
+	 * @return CreditCardMerchant
+	 */
 	public CreditCardMerchant getCreditCardMerchant();
 	
 	/**
@@ -72,7 +83,7 @@ public interface CreditCardClient {
 	public void finishTransaction(String properties) throws CreditCardAuthorizationException;	
 	
 	/**
-	 * Checks if the client supports delayed transaction. (creditcardAuthorization() and finishTransaction)
+	 * Checks if the client supports delayed transaction. (creditcardAuthorization() and finishTransaction())
 	 * @return
 	 */
 	public boolean supportsDelayedTransactions();
