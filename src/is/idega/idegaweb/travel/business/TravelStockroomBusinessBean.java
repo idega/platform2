@@ -913,6 +913,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
           sDayHome.deleteService(serviceId);
         }
       }else {
+        /*
         if (activeDays.length > 0) {
           ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
           ServiceDay sDayTemp = sDayHome.create();
@@ -923,8 +924,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
             sDay.setDayOfWeek(activeDays[i]);
             sDay.store();
           }
-
         }
+        */
       }
 
       returner = true;

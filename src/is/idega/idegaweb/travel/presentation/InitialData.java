@@ -187,7 +187,7 @@ public class InitialData extends TravelManager {
                 e.printStackTrace(System.err);
                 form = new Form();
               }
-            }else if (selected.equals(this.parameterViewMiscellaneousServices)) {
+            }else if (selected.equals(this.parameterViewaneousServices)) {
               try {
                 PriceCategoryDesigner pcd = new PriceCategoryDesigner(iwc);
                   pcd.setMiscellaneousServices(true);

@@ -576,7 +576,6 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       tourId = Integer.parseInt( sTourId );
       if (tour == null) {
         try {
-          System.err.println("Tour er null, þyrfti að smíða hann kannski hér??");
           tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).create();
           tour.setPrimaryKey(new Integer(tourId));
           tour.store();
@@ -759,6 +758,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
 
     int[] activeDays = new int[counter];
     System.arraycopy( tempDays, 0, activeDays, 0, counter );
+
 
     try {
 

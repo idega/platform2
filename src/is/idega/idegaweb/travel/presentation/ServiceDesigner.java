@@ -213,18 +213,15 @@ public class ServiceDesigner extends TravelManager {
 
 
   private void createService(IWContext iwc) throws Exception{
+    if ( !isCategoryCreation(iwc) ) {
+      DesignerForm df = getServiceHandler(iwc).getDesignerForm(iwc, productCategory);
+      int tourId = df.handleInsert(iwc);
+      setService(iwc,tourId);
+      removeSessionServiceId(iwc);
+    }
 
-      if ( !isCategoryCreation(iwc) ) {
-          DesignerForm df = getServiceHandler(iwc).getDesignerForm(iwc, productCategory);
-//        TourDesigner td = new TourDesigner(iwc);
-          int tourId = df.handleInsert(iwc);
-          setService(iwc,tourId);
-          removeSessionServiceId(iwc);
-      }
-
-      tsb.removeServiceDayHashtable(iwc);
-      priceCategoryCreation(iwc);
-
+    tsb.removeServiceDayHashtable(iwc);
+    priceCategoryCreation(iwc);
   }
 
   private void setService(IWContext iwc,int serviceId) throws RemoteException, FinderException{

@@ -129,7 +129,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 
 
           this.removeDepartureDaysApplication(this.getIWApplicationContext(), tour);
-          setActiveDays(tourId, activeDays);
+          setActiveDays(serviceId, activeDays);
 
 
           ProductCategory pCat = ( (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class)).getProductCategory(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR);

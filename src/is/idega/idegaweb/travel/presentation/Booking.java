@@ -199,20 +199,18 @@ public class Booking extends TravelManager {
       }
 
         if (product != null) {
+          System.err.println("Beginning to create BookingForm ... : "+idegaTimestamp.RightNow().toSQLTimeString());
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
-    System.err.println("1 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
               contentTable.add(getContentHeader(iwc));
               contentTable.add(Text.BREAK);
-    System.err.println("2 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
               contentTable.add(getTotalTable(iwc));
-    System.err.println("3 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
               if (contentTableForm == null) {
                 contentTable.add(getContentTable(iwc));
               }else {
                 contentTable.add(contentTableForm);
               }
-    System.err.println("4 ... : "+idegaTimestamp.RightNow().toSQLTimeString());
+          System.err.println("Finished creating BookingForm ..... : "+idegaTimestamp.RightNow().toSQLTimeString());
               contentTable.setWidth("90%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
