@@ -8,13 +8,14 @@ package com.idega.projects.golf.entity;
 import java.sql.*;
 import java.util.*;
 import com.idega.data.*;
-import com.idega.util.datastructures.*;
+import com.idega.util.datastructures.idegaTreeNode;
+import com.idega.core.ICTreeNode;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class Union extends GenericEntity implements idegaTreeNode{
+public class Union extends GenericEntity implements idegaTreeNode,ICTreeNode{
 
         public static String sClassName = "com.idega.projects.golf.entity.Union";
 
@@ -143,6 +144,26 @@ public class Union extends GenericEntity implements idegaTreeNode{
 
 
 /**
+ * Returns the children of the reciever as an Iterator. Returns null if no children found
+ */
+public Iterator getChildren(){
+  try{
+  List list = EntityFinder.findAll(this,"select * from union_,union_tree where union_.union_id=union_tree.child_union_id and union_tree.union_id='"+this.getID()+"'");
+  if(list != null){
+    return list.iterator();
+  }
+  else{
+    return null;
+  }
+  }
+  catch(Exception e){
+      System.err.println("There was an error in Union.getChildren() "+e.getMessage());
+      e.printStackTrace(System.err);
+      return null;
+  }
+}
+
+/**
  * Returns the children of the reciever as an Enumeration. Returns null if no children found
  */
 public Enumeration children(){
@@ -161,8 +182,6 @@ public Enumeration children(){
       e.printStackTrace(System.err);
       return null;
   }
-
-
 }
 /**
  *  Returns true if the receiver allows children.
@@ -225,10 +244,10 @@ public idegaTreeNode getParent(){
 public boolean isLeaf(){
   int children = getChildCount();
   if (children > 0){
-    return true;
+    return false;
   }
   else{
-    return false;
+    return true;
   }
 }
 
@@ -624,5 +643,23 @@ public List getTournamentGroupsRecursive(){
     }
 
 
+    public int getNodeID(){
+      return getID();
+    }
+
+    public ICTreeNode getParentNode(){
+      return (ICTreeNode)getParent();
+    }
+
+    /**
+     * Returns the index of node in the receivers children.
+     */
+    public int getIndex(ICTreeNode node){
+      return node.getNodeID();
+    }
+
+    public ICTreeNode getChildAtIndex(int index){
+      return (ICTreeNode)getChildAt(index);
+    }
 
 }

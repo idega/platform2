@@ -22,6 +22,7 @@ private Vector maintainedParameters;
 private boolean maintainAllParameters;
 private ModuleObject submitToObject;
 private Parameter controlParameter;
+private Class windowClass;
 
 private static String FORM_EVENT_PARAMETER="idega_special_form_event";
 
@@ -358,6 +359,10 @@ public void print(ModuleInfo modinfo)throws Exception{
         obj.controlParameter = (Parameter)this.controlParameter.clone();
       }
 
+      if(windowClass != null){
+        obj.windowClass = this.windowClass;
+      }
+
       obj.maintainAllParameters = this.maintainAllParameters;
 
     }
@@ -396,6 +401,11 @@ public void setEventListener(String eventListenerClassName){
     this.setTarget(IWConstants.IW_CONTROLLER_FRAME_NAME);
   }
 
+  public void setWindowToOpen(Class windowClass){
+    this.windowClass=windowClass;
+    setAction(IWMainApplication.windowOpenerURL);
+    add(new Parameter(Page.IW_FRAME_CLASS_PARAMETER,windowClass.getName()));
+  }
 
 } // Class ends
 
