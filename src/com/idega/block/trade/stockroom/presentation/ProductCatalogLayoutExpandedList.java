@@ -4,7 +4,7 @@ import com.idega.core.data.ICCategory;
 import com.idega.presentation.text.*;
 import com.idega.block.text.business.TextFormatter;
 import java.sql.SQLException;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.trade.stockroom.data.Product;
 import java.util.Collections;
 import com.idega.block.trade.stockroom.business.*;

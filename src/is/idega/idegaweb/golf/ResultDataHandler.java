@@ -8,7 +8,7 @@ import java.sql.*;
 
 import is.idega.idegaweb.golf.entity.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
@@ -268,7 +268,7 @@ public class ResultDataHandler {
 
 
 
-          r.setDate(new idegaTimestamp(RS2.getTimestamp("scorecard_date")));
+          r.setDate(new IWTimeStamp(RS2.getTimestamp("scorecard_date")));
 
           r.addStroke(stroke);
 

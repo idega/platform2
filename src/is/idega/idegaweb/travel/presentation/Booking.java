@@ -15,7 +15,7 @@ import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.calendar.presentation.SmallCalendar;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import is.idega.idegaweb.travel.business.*;
@@ -84,7 +84,7 @@ public class Booking extends TravelManager {
   public static final int availableIfNoLimit = -1234;
   public static int available = availableIfNoLimit;
 
-  private idegaTimestamp stamp;
+  private IWTimeStamp stamp;
   private int iMax = 0;
   private int iMin = 0;
   private int iBookings = 0;
@@ -199,7 +199,7 @@ public class Booking extends TravelManager {
       }
 
         if (product != null) {
-          System.err.println("Beginning to create BookingForm ... : "+idegaTimestamp.RightNow().toSQLTimeString());
+          System.err.println("Beginning to create BookingForm ... : "+IWTimeStamp.RightNow().toSQLTimeString());
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
               contentTable.add(getContentHeader(iwc));
@@ -210,7 +210,7 @@ public class Booking extends TravelManager {
               }else {
                 contentTable.add(contentTableForm);
               }
-          System.err.println("Finished creating BookingForm ..... : "+idegaTimestamp.RightNow().toSQLTimeString());
+          System.err.println("Finished creating BookingForm ..... : "+IWTimeStamp.RightNow().toSQLTimeString());
               contentTable.setWidth("90%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
@@ -513,18 +513,18 @@ public class Booking extends TravelManager {
       Text countText;
       Text contentText;
 
-      idegaTimestamp theStamp;
+      IWTimeStamp theStamp;
       Link answerYes;
       Link answerNo;
       Link answerDel;
 
       List groupInq;
-      idegaTimestamp tempStamp;
+      IWTimeStamp tempStamp;
       GeneralBooking booking;
       Collection coll;
 
      for (int i = 0; i < inqueries.length; i++) {
-          theStamp = new idegaTimestamp(inqueries[i].getInqueryDate());
+          theStamp = new IWTimeStamp(inqueries[i].getInqueryDate());
           booking = inqueries[i].getBooking();
 
           groupInq = getInquirer(iwc).getInquiryHome().create().getMultibleInquiries(inqueries[i]);
@@ -534,8 +534,8 @@ public class Booking extends TravelManager {
             dateText.setText(theStamp.getLocaleDate(iwc));
           }else {
             InqueryHome iHome = (InqueryHome) IDOLookup.getHome(Inquery.class);
-            theStamp = new idegaTimestamp((iHome.findByPrimaryKey(groupInq.get(0))).getInqueryDate());
-            tempStamp = new idegaTimestamp((iHome.findByPrimaryKey(groupInq.get(groupInq.size()-1))).getInqueryDate());
+            theStamp = new IWTimeStamp((iHome.findByPrimaryKey(groupInq.get(0))).getInqueryDate());
+            tempStamp = new IWTimeStamp((iHome.findByPrimaryKey(groupInq.get(groupInq.size()-1))).getInqueryDate());
             dateText.setText(theStamp.getLocaleDate(iwc)+" - "+tempStamp.getLocaleDate(iwc));
           }
           nameText = (Text) theSmallBoldText.clone();
@@ -565,7 +565,7 @@ public class Booking extends TravelManager {
             Iterator iter = coll.iterator();
             if (iter.hasNext()) {
               TravelAddress item = (TravelAddress) iter.next();
-              idegaTimestamp time = new idegaTimestamp(item.getTime());
+              IWTimeStamp time = new IWTimeStamp(item.getTime());
               addrText.setText(item.getName());
               table.add(addrText, 1, row);
               table.setAlignment(1,row,"left");
@@ -857,8 +857,8 @@ public class Booking extends TravelManager {
 
 
   // BUSINESS
-  private idegaTimestamp getIdegaTimestamp(IWContext iwc) {
-      idegaTimestamp stamp = null;
+  private IWTimeStamp getIdegaTimestamp(IWContext iwc) {
+      IWTimeStamp stamp = null;
 
       String year = iwc.getParameter("year");
       String month = iwc.getParameter("month");
@@ -881,23 +881,23 @@ public class Booking extends TravelManager {
 
           try {
               if ( (day != null) && (month != null) && (year != null)) {
-                  stamp = new idegaTimestamp(day,month,year);
+                  stamp = new IWTimeStamp(day,month,year);
               }
               else if ((day == null) && (month == null) && (year != null)) {
-                  stamp = new idegaTimestamp(1,idegaTimestamp.RightNow().getMonth(),Integer.parseInt(year));
+                  stamp = new IWTimeStamp(1,IWTimeStamp.RightNow().getMonth(),Integer.parseInt(year));
               }
               else if ((day == null) && (month != null) && (year != null)) {
-                  stamp = new idegaTimestamp(1,Integer.parseInt(month),Integer.parseInt(year));
+                  stamp = new IWTimeStamp(1,Integer.parseInt(month),Integer.parseInt(year));
               }
               else {
-                  stamp = idegaTimestamp.RightNow();
+                  stamp = IWTimeStamp.RightNow();
               }
           }
           catch (Exception e) {
-              stamp = idegaTimestamp.RightNow();
+              stamp = IWTimeStamp.RightNow();
           }
       }else {
-        stamp = new idegaTimestamp(dateStr);
+        stamp = new IWTimeStamp(dateStr);
       }
 
       return stamp;
@@ -1046,7 +1046,7 @@ public class Booking extends TravelManager {
     if (sBookingId != null) {
         this.bookingId = Integer.parseInt(sBookingId);
         booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-        this.stamp = new idegaTimestamp(booking.getBookingDate());
+        this.stamp = new IWTimeStamp(booking.getBookingDate());
         displayForm(iwc);
     }else {
       displayForm(iwc, getErrorUpdateBookingTable());

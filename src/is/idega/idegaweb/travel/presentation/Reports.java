@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.IDOLookup;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -34,8 +34,8 @@ public class Reports extends TravelManager {
   private Reseller _reseller;
   private Product _product;
   private List _products;
-  private idegaTimestamp _stamp;
-  private idegaTimestamp _toStamp;
+  private IWTimeStamp _stamp;
+  private IWTimeStamp _toStamp;
   private static Link _link;
   private static Form _form;
 
@@ -126,17 +126,17 @@ public class Reports extends TravelManager {
 
     String from_time = iwc.getParameter(PARAMATER_DATE_FROM);
     if (from_time != null) {
-      _stamp = new idegaTimestamp(from_time);
+      _stamp = new IWTimeStamp(from_time);
     }
     else {
-      _stamp = idegaTimestamp.RightNow();
+      _stamp = IWTimeStamp.RightNow();
     }
 
     String to_time = iwc.getParameter(PARAMATER_DATE_TO);
     if (to_time != null) {
-      _toStamp = new idegaTimestamp(to_time);
+      _toStamp = new IWTimeStamp(to_time);
     }else {
-      _toStamp = new idegaTimestamp(_stamp);
+      _toStamp = new IWTimeStamp(_stamp);
       _toStamp.addDays(14);
     }
   }

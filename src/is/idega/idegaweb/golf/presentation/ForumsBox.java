@@ -7,7 +7,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.HeaderTable;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import com.idega.jmodule.forum.data.ForumThread;
 
@@ -61,7 +61,7 @@ public class ForumsBox extends Block {
     }
 
     for (int a = 0; a < links; a++) {
-      idegaTimestamp stampur = new idegaTimestamp(forum[a].getThreadDate());
+      IWTimeStamp stampur = new IWTimeStamp(forum[a].getThreadDate());
       String minutes = stampur.getMinute()+"";
       if ( stampur.getMinute() < 10 ) {
         minutes = "0" + stampur.getMinute();

@@ -100,7 +100,7 @@ public class PaymentFiler  {
 
     Union U = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(union_id);
 
-    idegaTimestamp datenow = new idegaTimestamp();
+    IWTimeStamp datenow = new IWTimeStamp();
 
 
 
@@ -306,7 +306,7 @@ public class PaymentFiler  {
 
         SB.append("\t");
 
-        SB.append(new idegaTimestamp(p.getPaymentDate()).getISLDate(".",true));
+        SB.append(new IWTimeStamp(p.getPaymentDate()).getISLDate(".",true));
 
         SB.append("\t");
 

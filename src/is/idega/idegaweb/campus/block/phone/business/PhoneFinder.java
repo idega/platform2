@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Iterator;
 import java.sql.SQLException;
 import com.idega.block.finance.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 /**
  * Title:
  * Description:
@@ -76,7 +76,7 @@ public abstract class PhoneFinder {
     }
   }
 
-  public static List listOfAccountPhones(idegaTimestamp from){
+  public static List listOfAccountPhones(IWTimeStamp from){
     StringBuffer sql = new StringBuffer("Select a.* from ");
     sql.append(is.idega.idegaweb.campus.data.AccountPhoneBMPBean.getEntityTableName());
     sql.append(" a ");
@@ -115,7 +115,7 @@ public abstract class PhoneFinder {
     }
   }
 
-  public static List listOfAccountWithPhoneNumber(idegaTimestamp from){
+  public static List listOfAccountWithPhoneNumber(IWTimeStamp from){
     StringBuffer sql = new StringBuffer("Select a.* from ");
     sql.append(com.idega.block.finance.data.AccountBMPBean.getEntityTableName());
     sql.append(" a ,");
@@ -175,7 +175,7 @@ public abstract class PhoneFinder {
     return H;
   }
 
-  public static Map mapOfAccountPhoneListsByPhoneNumber(idegaTimestamp from){
+  public static Map mapOfAccountPhoneListsByPhoneNumber(IWTimeStamp from){
     Hashtable H = null;
     List L = listOfAccountPhones();
     if(L!=null ){
@@ -201,7 +201,7 @@ public abstract class PhoneFinder {
   }
 
 
-  public static Map mapOfAccountsListsByPhoneNumber(idegaTimestamp from)throws java.rmi.RemoteException{
+  public static Map mapOfAccountsListsByPhoneNumber(IWTimeStamp from)throws java.rmi.RemoteException{
     Hashtable H = null;
     List L = listOfAccountPhones(from);
     Map M= mapOfAccountsWithPhoneNumber(from);
@@ -247,7 +247,7 @@ public abstract class PhoneFinder {
     return H;
   }
 
-  public static Map mapOfAccountsWithPhoneNumber(idegaTimestamp from)throws java.rmi.RemoteException{
+  public static Map mapOfAccountsWithPhoneNumber(IWTimeStamp from)throws java.rmi.RemoteException{
     Hashtable H = null;
     List L = listOfAccountWithPhoneNumber(from );
     if(L!=null){

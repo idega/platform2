@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 import com.idega.presentation.IWContext;
 import com.idega.util.IsCollator;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 /**
  * Title:

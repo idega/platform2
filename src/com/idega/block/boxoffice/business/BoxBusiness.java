@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
 import java.util.List;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.IDOLegacyEntity;
@@ -269,7 +269,7 @@ public static final int PAGE = 3;
 
     if ( !update ) {
       try {
-        link.setCreationDate(new idegaTimestamp().getTimestampRightNow());
+        link.setCreationDate(new IWTimeStamp().getTimestampRightNow());
         link.setBoxID(boxID);
         link.setUserID(userID);
         link.insert();
@@ -381,7 +381,7 @@ public static final int PAGE = 3;
 
     locText.setHeadline(categoryName);
 		locText.setBody("");
-		locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
+		locText.setCreated(com.idega.util.IWTimeStamp.getTimestampRightNow());
 
     if ( newLocText ) {
       locText.setLocaleId(iLocaleID);

@@ -6,7 +6,7 @@ package is.idega.idegaweb.campus.data;
 
 import com.idega.data.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
@@ -192,9 +192,9 @@ public class SystemPropertiesBMPBean extends com.idega.data.GenericEntity implem
 
     if(this.getContractYears() > 0){
 
-      idegaTimestamp now = idegaTimestamp.RightNow();
+      IWTimeStamp now = IWTimeStamp.RightNow();
 
-      idegaTimestamp iT = new idegaTimestamp(1,now.getMonth(),now.getYear()+years);
+      IWTimeStamp iT = new IWTimeStamp(1,now.getMonth(),now.getYear()+years);
 
       return iT.getSQLDate();
 

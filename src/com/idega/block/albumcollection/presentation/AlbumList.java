@@ -8,7 +8,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWResourceBundle;
@@ -102,7 +102,7 @@ public class AlbumList extends Block {
           myLayout.setAlbumPerformers(name);
         }
         if(item.getPublishingDay() != null){
-          myLayout.setAlbumPublishingDay(Integer.toString(new idegaTimestamp(item.getPublishingDay()).getYear()));
+          myLayout.setAlbumPublishingDay(Integer.toString(new IWTimeStamp(item.getPublishingDay()).getYear()));
         }
 
         if(item.getAlbumTypeId() > 0){

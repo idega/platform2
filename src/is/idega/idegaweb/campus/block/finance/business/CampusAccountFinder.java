@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.block.finance.business;
 
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.idegaCalendar;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
@@ -56,7 +56,7 @@ public class CampusAccountFinder  {
    *  that have legal contracts in period specified
    *  returns null if nothing found
    */
-  public static List listOfContractAccountApartment(String type,idegaTimestamp startDate,idegaTimestamp endDate){
+  public static List listOfContractAccountApartment(String type,IWTimeStamp startDate,IWTimeStamp endDate){
     StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getEntityTableName());
     sql.append(" where ").append(is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getAccountTypeColumnName());
     sql.append(" = '").append(type).append("'");
@@ -116,7 +116,7 @@ public class CampusAccountFinder  {
    *  that have legal contracts in period specified
    *  returns null if nothing found
    */
-  public static List listOfContractAccounts(idegaTimestamp startDate,idegaTimestamp endDate){
+  public static List listOfContractAccounts(IWTimeStamp startDate,IWTimeStamp endDate){
     StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountsBMPBean.getEntityTableName());
     sql.append(" where ");
     String start = "'"+startDate.toSQLString()+"'";

@@ -4,7 +4,7 @@ package com.idega.block.quote.business;
 
 import com.idega.presentation.IWContext;
 import java.sql.SQLException;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.quote.data.QuoteEntity;
 import com.idega.block.quote.data.QuoteEntityHome;
 import com.idega.idegaweb.IWApplicationContext;
@@ -46,7 +46,7 @@ public class QuoteBusiness{
     QuoteHolder holder = null;
     QuoteHolder newHolder = null;
     String date = null;
-    String dateNow = new idegaTimestamp().toSQLDateString();
+    String dateNow = new IWTimeStamp().toSQLDateString();
 
     try {
       holder = (QuoteHolder) iwc.getApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID)+"_"+String.valueOf(objectID));

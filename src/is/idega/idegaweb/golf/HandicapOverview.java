@@ -238,7 +238,7 @@ private Link textLink = new Link();
 
 		for ( int a = 0; a < scoreCards.length; a++ ) {
 
-      idegaTimestamp date = new idegaTimestamp(scoreCards[a].getScorecardDate());
+      IWTimeStamp date = new IWTimeStamp(scoreCards[a].getScorecardDate());
       Text date2 = ((Text) tableText.clone());
       date2.setText(date.getDate()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
 

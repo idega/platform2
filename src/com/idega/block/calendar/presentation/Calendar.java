@@ -17,7 +17,7 @@ import com.idega.block.IWBlock;
 import com.idega.block.calendar.data.*;
 import com.idega.block.calendar.business.*;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.presentation.text.Link;
@@ -36,7 +36,7 @@ private boolean hasEdit = false,hasAdd = false,hasPref = false;
 private int _iLocaleID;
 private int _view = CalendarBusiness.MONTH;
 
-private idegaTimestamp _stamp;
+private IWTimeStamp _stamp;
 private String _width = "100%";
 private boolean _isSelectedDay = false;
 private Integer _daysAhead = null;//= 7;
@@ -65,7 +65,7 @@ private int iUserId = -1;
 public Calendar(){
 }
 
-public Calendar(idegaTimestamp timestamp){
+public Calendar(IWTimeStamp timestamp){
   _stamp = timestamp;
 }
 
@@ -153,7 +153,7 @@ public Calendar(idegaTimestamp timestamp){
       String[] localeStrings = null;
       Text headlineText = null;
       Text bodyText = null;
-      idegaTimestamp stamp = null;
+      IWTimeStamp stamp = null;
       boolean hasImage = true;
       int imageID;
       int ypos = 1;
@@ -245,7 +245,7 @@ public Calendar(idegaTimestamp timestamp){
 	headlineText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: "+_headlineColor+";");
 	entriesTable.add(headlineText,xpos,ypos);
 
-	stamp = new idegaTimestamp(entry.getDate());
+	stamp = new IWTimeStamp(entry.getDate());
 	DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 	Date date = new Date(stamp.getTimestamp().getTime());
 	Text dateText = new Text(format.format(date));
@@ -356,7 +356,7 @@ public Calendar(idegaTimestamp timestamp){
     add(monthTable);
   }
 
-  private SmallCalendar getCalendar(idegaTimestamp stamp) {
+  private SmallCalendar getCalendar(IWTimeStamp stamp) {
     List list = CalendarFinder.getInstance().getMonthEntries(stamp,getCategoryIds());
 
     SmallCalendar calendar = new SmallCalendar(stamp);
@@ -369,7 +369,7 @@ public Calendar(idegaTimestamp timestamp){
     if ( list != null ) {
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
-	      calendar.setDayFontColor(new idegaTimestamp(((CalendarEntry) iter.next()).getDate()),_actionDay);
+	      calendar.setDayFontColor(new IWTimeStamp(((CalendarEntry) iter.next()).getDate()),_actionDay);
       }
     }
 
@@ -378,7 +378,7 @@ public Calendar(idegaTimestamp timestamp){
 
   private void drawYear(IWContext iwc) {
     Table yearTable = new Table();
-    idegaTimestamp yearStamp = null;
+    IWTimeStamp yearStamp = null;
     SmallCalendar calendar = null;
     int ypos = 1;
     int xpos = 1;
@@ -403,7 +403,7 @@ public Calendar(idegaTimestamp timestamp){
 
 
     for ( int a = 1; a <= 12; a++ ) {
-      yearStamp = new idegaTimestamp(_stamp.getDay(),a,_stamp.getYear());
+      yearStamp = new IWTimeStamp(_stamp.getDay(),a,_stamp.getYear());
       calendar = getCalendar(yearStamp);
       calendar.setICObjectInstanceID(this.getICObjectInstanceID());
       calendar.setOnlySelectedHighlighted(true);
@@ -514,7 +514,7 @@ public Calendar(idegaTimestamp timestamp){
 
   public void setDate(int year,int month,int day) {
     if ( _stamp == null ) {
-      _stamp = new idegaTimestamp(day,month,year);
+      _stamp = new IWTimeStamp(day,month,year);
     }
     else {
       _stamp.setDate(day);

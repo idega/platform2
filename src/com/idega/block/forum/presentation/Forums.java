@@ -390,7 +390,7 @@ public class Forums extends ForumPresentation{
 
       if (lastUpdate != null){
 
-        Lastupdated.setText(new idegaTimestamp(theList.getNewThreadDate()).toString(true, false, false));
+        Lastupdated.setText(new IWTimeStamp(theList.getNewThreadDate()).toString(true, false, false));
 
         Lastupdated.setFontSize(1);
 
@@ -636,7 +636,7 @@ public class Forums extends ForumPresentation{
 
     if (thread.getThreadDate() != null){
 
-      Text date2 = new Text(new idegaTimestamp(thread.getThreadDate()).toString(true, false, false));
+      Text date2 = new Text(new IWTimeStamp(thread.getThreadDate()).toString(true, false, false));
 
       date2.setFontColor(MenuFontColor);
 

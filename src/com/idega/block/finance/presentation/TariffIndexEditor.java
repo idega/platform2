@@ -24,7 +24,7 @@ import com.idega.presentation.PresentationObject;
 
 import com.idega.presentation.text.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import java.text.DateFormat;
 
@@ -476,7 +476,7 @@ public class TariffIndexEditor extends Block {
 
       ID = Integer.parseInt(iwc.getParameter("ti_idinput"+i));
 
-      java.sql.Timestamp stamp = idegaTimestamp.getTimestampRightNow();
+      java.sql.Timestamp stamp = IWTimeStamp.getTimestampRightNow();
 
       if(!"".equals(sIndex)){
 

@@ -18,7 +18,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
@@ -138,21 +138,21 @@ public class ContractReSignWindow extends Window{
           T.add(Edit.formatText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
-          T.add(Edit.formatText(new idegaTimestamp(eContract.getValidFrom()).getLocaleDate(iwc)),2,row);
+          T.add(Edit.formatText(new IWTimeStamp(eContract.getValidFrom()).getLocaleDate(iwc)),2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("valid_to","Valid to")),1,row);
-          T.add(Edit.formatText(new idegaTimestamp(eContract.getValidTo()).getLocaleDate(iwc)),2,row);
+          T.add(Edit.formatText(new IWTimeStamp(eContract.getValidTo()).getLocaleDate(iwc)),2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("moving_date","Moving date")),1,row);
-          idegaTimestamp movdate = eContract.getMovingDate()!=null?new idegaTimestamp(eContract.getMovingDate()):null;
+          IWTimeStamp movdate = eContract.getMovingDate()!=null?new IWTimeStamp(eContract.getMovingDate()):null;
           DateInput movDate = new DateInput("mov_date",true);
-          idegaTimestamp moving = idegaTimestamp.RightNow();
+          IWTimeStamp moving = IWTimeStamp.RightNow();
           int termofnotice = 1;
           if(SysProps !=null)
             termofnotice = (int)SysProps.getTermOfNoticeDays();
           moving.addDays(termofnotice);
 
-          if(moving.isLaterThan(new idegaTimestamp(eContract.getValidTo())))
+          if(moving.isLaterThan(new IWTimeStamp(eContract.getValidTo())))
             movDate.setDate(eContract.getValidTo());
           else
             movDate.setDate(moving.getSQLDate());
@@ -209,9 +209,9 @@ public class ContractReSignWindow extends Window{
     if(sInfo == null)
       sInfo = "";
     String sMovDate = iwc.getParameter("mov_date");
-    idegaTimestamp movDate = null;
+    IWTimeStamp movDate = null;
     if(sMovDate !=null && sMovDate.length() == 10 )
-      movDate = new idegaTimestamp(sMovDate);
+      movDate = new IWTimeStamp(sMovDate);
     boolean datesync = iwc.getParameter(prmDateSync)!=null;
     System.out.println("saving shit");
     if(isAdmin){

@@ -160,7 +160,7 @@ public abstract class EntityInsert {
 
       }
 
-      idegaTimestamp stamp = new idegaTimestamp(strDay, strMonth, strYear);
+      IWTimeStamp stamp = new IWTimeStamp(strDay, strMonth, strYear);
 
       return stamp.getSQLDate();
 

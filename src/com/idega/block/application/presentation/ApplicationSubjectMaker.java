@@ -19,7 +19,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.PresentationObject;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.text.Edit;
 import java.util.List;
 
@@ -111,7 +111,7 @@ public class ApplicationSubjectMaker extends Block{
       for (int i = 0; i < len; i++) {
         ApplicationSubject AS = (ApplicationSubject) L.get(i);
         dTable.add(getSubjectLink(AS),1,a);
-        dTable.add(Edit.formatText(new idegaTimestamp(AS.getExpires()).getISLDate()),2,a);
+        dTable.add(Edit.formatText(new IWTimeStamp(AS.getExpires()).getISLDate()),2,a);
         dTable.add((getDeleteLink(AS)),3,a);
         a++;
       }
@@ -128,7 +128,7 @@ public class ApplicationSubjectMaker extends Block{
     Edit.setStyle(Description);
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
     ExpireDate.setStyleAttribute("style",Edit.styleAttribute);
-    ExpireDate.setDate(idegaTimestamp.RightNow().getSQLDate());
+    ExpireDate.setDate(IWTimeStamp.RightNow().getSQLDate());
 
     if(subject !=null){
       Description.setContent(subject.getDescription());
@@ -168,7 +168,7 @@ public class ApplicationSubjectMaker extends Block{
     String sDate = iwc.getParameter("app_subj_xdate");
     int id = subject !=null?subject.getID():-1;
     if(sDesc.length() > 0){
-      ApplicationBusiness.saveApplicationSubject(id,sDesc,new idegaTimestamp(sDate).getSQLDate());
+      ApplicationBusiness.saveApplicationSubject(id,sDesc,new IWTimeStamp(sDate).getSQLDate());
     }
   }
 

@@ -14,7 +14,7 @@ import com.idega.presentation.*;
 
 import com.idega.presentation.text.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import is.idega.idegaweb.golf.business.TournamentController;
 
@@ -1218,7 +1218,7 @@ public void setTournamentDays(IWContext iwc)throws Exception{
 
       dialog1.add(form);
 
-      idegaTimestamp stamp = new idegaTimestamp(tournament.getStartTime());
+      IWTimeStamp stamp = new IWTimeStamp(tournament.getStartTime());
 
       for(int i=0;i<numberOfDays;i++){
 
@@ -1252,7 +1252,7 @@ public void setTournamentDays(IWContext iwc)throws Exception{
 
       TournamentDay day = ((is.idega.idegaweb.golf.entity.TournamentDayHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentDay.class)).createLegacy();
 
-      idegaTimestamp stamp = new idegaTimestamp(tournament.getStartTime());
+      IWTimeStamp stamp = new IWTimeStamp(tournament.getStartTime());
 
 
 
@@ -1284,7 +1284,7 @@ public void typeInTournamentText(IWContext iwc) throws Exception{
 
       for(int i=0;i<tournamentDays.length;i++){
 
-        idegaTimestamp stamp = new idegaTimestamp(tournamentDays[i]);
+        IWTimeStamp stamp = new IWTimeStamp(tournamentDays[i]);
 
         TournamentDay day = ((is.idega.idegaweb.golf.entity.TournamentDayHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentDay.class)).createLegacy();
 

@@ -374,7 +374,7 @@ public class MemberReport extends com.idega.presentation.PresentationObjectConta
 
       }
 
-      int thisYear = idegaTimestamp.RightNow().getYear();
+      int thisYear = IWTimeStamp.RightNow().getYear();
 
 
 

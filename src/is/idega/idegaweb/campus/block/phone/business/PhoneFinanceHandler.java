@@ -17,7 +17,7 @@ import com.idega.block.finance.data.TariffKey;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.data.SimpleQuerier;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -159,7 +159,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
     return null;
   }
 
-  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate,idegaTimestamp start,idegaTimestamp end){
+  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,IWTimeStamp paydate,IWTimeStamp start,IWTimeStamp end){
     List listOfAccounts = CampusAccountFinder.listOfContractAccounts(start,end);
 
     //List listOfAccounts = listOfContractAccounts();
@@ -224,7 +224,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                   E.put(phAccId,AE);
                 }
                 ape.setAccountEntryId(AE.getID());
-                ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+                ape.setLastUpdated(IWTimeStamp.getTimestampRightNow());
                 ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusBilled);
                 ape.setRoundId(iRoundId);
                 ape.update();
@@ -249,7 +249,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                 phoneEntry.setRoundId(iRoundId);
                 phoneEntry.setAccountEntryId(entry.getID());
                 phoneEntry.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusBilled);
-                //phoneEntry.setPhonedStamp(new idegaTimestamp(maxstamp).getTimestamp());
+                //phoneEntry.setPhonedStamp(new IWTimeStamp(maxstamp).getTimestamp());
                 phoneEntry.insert();
                 entry.update();
               }
@@ -327,7 +327,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
               accounts = (ContractAccounts)I.next();
               totalAmount = 0;
               float Amount = 0;
-              List PhoneEntries = FinanceFinder.getInstance().listOfUnBilledPhoneEntries(accounts.getPhoneAccountId(),null,idegaTimestamp.RightNow());
+              List PhoneEntries = FinanceFinder.getInstance().listOfUnBilledPhoneEntries(accounts.getPhoneAccountId(),null,IWTimeStamp.RightNow());
               if(PhoneEntries != null){
                 Iterator it = PhoneEntries.iterator();
                 AccountEntry AE = insertKreditEntry(accounts.getFinanceAccountId(),iRoundId,paydate,0,AK,TK,iCashierId);
@@ -336,7 +336,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                   Amount = ape.getPrice();
                   totalAmount += Amount;
                   ape.setAccountEntryId(AE.getID());
-                  ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+                  ape.setLastUpdated(IWTimeStamp.getTimestampRightNow());
                   ape.setStatus(ape.statusBilled);
                   ape.setRoundId(iRoundId);
                   ape.update();
@@ -395,18 +395,18 @@ public class PhoneFinanceHandler implements FinanceHandler{
   }
 
 
-  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,idegaTimestamp start,idegaTimestamp end){
+  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,IWTimeStamp start,IWTimeStamp end){
     return null;
   }
 
 
-  private static float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,idegaTimestamp itPaydate,int iCashierId)
+  private static float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,IWTimeStamp itPaydate,int iCashierId)
   throws SQLException,java.rmi.RemoteException{
     AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(T.getAccountKeyId());
     AE.setCashierId(iCashierId);
-    AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+    AE.setLastUpdated(IWTimeStamp.getTimestampRightNow());
     AE.setPrice(-T.getPrice());
     AE.setRoundId(iRoundId);
     AE.setName(T.getName());
@@ -426,12 +426,12 @@ public class PhoneFinanceHandler implements FinanceHandler{
     */
   }
 
-  private static AccountEntry insertEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float nettoamount,AccountKey key,TariffKey tkey,int iCashierId) throws SQLException{
+  private static AccountEntry insertEntry(int iAccountId,int iRoundId,IWTimeStamp itPaydate,float nettoamount,AccountKey key,TariffKey tkey,int iCashierId) throws SQLException{
     AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(key.getID());
     AE.setCashierId(iCashierId);
-    AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+    AE.setLastUpdated(IWTimeStamp.getTimestampRightNow());
     AE.setNetto(nettoamount);
     AE.setRoundId(iRoundId);
     AE.setName(tkey.getName());

@@ -15,10 +15,10 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.media.presentation.ImageInserter;
 
 import java.util.List;
@@ -106,7 +106,7 @@ public class CreateAlbum extends IWAdminWindow {
       }
     }
     _fieldPublishingDay  = new DateInput(_fieldNamePublishingDay);
-    idegaTimestamp time = idegaTimestamp.RightNow();
+    IWTimeStamp time = IWTimeStamp.RightNow();
     _fieldPublishingDay.setYearRange(time.getYear(),time.getYear()-100);
     if(album != null){
       if(album.getPublishingDay() != null){
@@ -265,9 +265,9 @@ public class CreateAlbum extends IWAdminWindow {
     System.out.println("front_cover: "+iwc.getParameter(this._fieldNameFrontCoverId));
 
 
-    idegaTimestamp publishingDay = null;
+    IWTimeStamp publishingDay = null;
     if( acPublishDay != null && !acPublishDay.equals("")){
-      publishingDay = new idegaTimestamp(acPublishDay);
+      publishingDay = new IWTimeStamp(acPublishDay);
     }
 
     int[] authorIDs = null;

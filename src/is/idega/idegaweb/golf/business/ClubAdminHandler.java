@@ -16,7 +16,7 @@ import java.sql.*;
 
 import java.io.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
@@ -213,7 +213,7 @@ public class ClubAdminHandler extends Block {
 
 
 
-   //member.setFirstInstallmentDate(new idegaTimestamp().getSQLDate());
+   //member.setFirstInstallmentDate(new IWTimeStamp().getSQLDate());
 
     member.setFirstName("");
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.40 2002/07/05 11:54:48 palli Exp $
+ * $Id: CampusApprover.java,v 1.41 2002/08/12 12:17:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
@@ -349,7 +349,7 @@ public class CampusApprover extends Block {
 	  eApplicant.addChild(eApplicant);
 	  eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
 	  eApplication.setApplicantId(eApplicant.getID());
-	  eApplication.setSubmitted(idegaTimestamp.getTimestampRightNow());
+	  eApplication.setSubmitted(IWTimeStamp.getTimestampRightNow());
 	  eApplication.setStatusSubmitted();
 	  eApplication.setSubjectId(iSubjectId);
 	  eApplication.insert();
@@ -802,7 +802,7 @@ public class CampusApprover extends Block {
   }
 
   public PresentationObject getFieldsApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
-    int year = idegaTimestamp.RightNow().getYear();
+    int year = IWTimeStamp.RightNow().getYear();
     DataTable T = new DataTable();
     T.setWidth("100%");
     T.addTitle(iwrb.getLocalizedString("applicant","Applicant"));
@@ -852,7 +852,7 @@ public class CampusApprover extends Block {
       tiIncome.setAsIntegers();
       */
 
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       String beginMonth = String.valueOf(today.getMonth());
       String beginYear = String.valueOf(today.getYear()) ;
 
@@ -977,7 +977,7 @@ public class CampusApprover extends Block {
   }
 
   public PresentationObject getViewSpouse(Applicant spouse,CampusApplication eCampusApplication,IWResourceBundle iwrb){
-    int year = idegaTimestamp.RightNow().getYear();
+    int year = IWTimeStamp.RightNow().getYear();
     DataTable T = new DataTable();
     T.setWidth("100%");
     T.addTitle(iwrb.getLocalizedString("spouse","Spouse"));
@@ -1012,7 +1012,7 @@ public class CampusApprover extends Block {
   }
 
   public PresentationObject getFieldsSpouse(Applicant spouse,CampusApplication eCampusApplication,IWResourceBundle iwrb){
-    int year = idegaTimestamp.RightNow().getYear();
+    int year = IWTimeStamp.RightNow().getYear();
     DataTable T = new DataTable();
     T.setWidth("100%");
     T.addTitle(iwrb.getLocalizedString("spouse","Spouse"));
@@ -1034,7 +1034,7 @@ public class CampusApprover extends Block {
       TextInput tiSpStTr = new TextInput("ti_sp_sttr");
       //TextInput tiSPIncome = new TextInput("ti_sp_income");
 
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       String beginMonth = String.valueOf(today.getMonth());
       String beginYear = String.valueOf(today.getYear()) ;
       String endMonth = String.valueOf(today.getMonth());
@@ -1260,7 +1260,7 @@ public class CampusApprover extends Block {
       T.add(Edit.formatText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
       col = 2;
       row = 1;
-      idegaTimestamp iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
+      IWTimeStamp iT = new IWTimeStamp(eCampusApplication.getHousingFrom());
       T.add(Edit.formatText(iT.getLocaleDate(iwc)),col,row++);
       if(eCampusApplication.getWantFurniture())
 	T.add(Edit.formatText("X"),col,row++);
@@ -1373,9 +1373,9 @@ public class CampusApprover extends Block {
       T.add(Edit.formatText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
       T.add(Edit.formatText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
 
-      idegaTimestamp iT = new idegaTimestamp();
+      IWTimeStamp iT = new IWTimeStamp();
       if(eCampusApplication !=null){
-	iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
+	iT = new IWTimeStamp(eCampusApplication.getHousingFrom());
       }
       col = 2;
       row = 1;
@@ -1406,7 +1406,7 @@ public class CampusApprover extends Block {
     if(eCampusApplication == null)
       eCampusApplication = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
     if(sRentFrom!= null)
-      eCampusApplication.setHousingFrom(new idegaTimestamp(sRentFrom).getSQLDate());
+      eCampusApplication.setHousingFrom(new IWTimeStamp(sRentFrom).getSQLDate());
     if("true".equals(sFurni)){
       eCampusApplication.setWantFurniture(true);
     }
@@ -1664,7 +1664,7 @@ public class CampusApprover extends Block {
     if(sDesc.length() > 0){
       ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
       AS.setDescription(sDesc);
-      AS.setExpires(new idegaTimestamp(sDate).getSQLDate());
+      AS.setExpires(new IWTimeStamp(sDate).getSQLDate());
       try {
 	AS.insert();
       }

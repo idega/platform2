@@ -1,6 +1,6 @@
 /*
 
- * $Id: ApartmentTypePeriodsBMPBean.java,v 1.1 2002/04/06 19:11:13 tryggvil Exp $
+ * $Id: ApartmentTypePeriodsBMPBean.java,v 1.2 2002/08/12 12:17:55 palli Exp $
 
  *
 
@@ -28,7 +28,7 @@ import java.sql.*;
 
 import com.idega.data.IDOLegacyEntity;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
@@ -148,7 +148,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
     if(day > 0 && month > 0)
 
-      year = idegaTimestamp.RightNow().getYear();
+      year = IWTimeStamp.RightNow().getYear();
 
     else{
 
@@ -158,7 +158,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
     }
 
-    idegaTimestamp it = new idegaTimestamp(day,month,year);
+    IWTimeStamp it = new IWTimeStamp(day,month,year);
 
     setFirstDate(it.getSQLDate());
 
@@ -184,7 +184,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
     if(day > 0 && month > 0)
 
-      year = idegaTimestamp.RightNow().getYear();
+      year = IWTimeStamp.RightNow().getYear();
 
     else{
 
@@ -194,7 +194,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
     }
 
-    idegaTimestamp it = new idegaTimestamp(day,month,year);
+    IWTimeStamp it = new IWTimeStamp(day,month,year);
 
     setSecondDate(it.getSQLDate());
 
@@ -202,7 +202,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
   public int getFirstDateDay(){
 
-    idegaTimestamp it = new idegaTimestamp(getFirstDate());
+    IWTimeStamp it = new IWTimeStamp(getFirstDate());
 
     return (it.getYear() != ZEROYEAR)?it.getDay():0;
 
@@ -210,7 +210,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
   public int getFirstDateMonth(){
 
-    idegaTimestamp it = new idegaTimestamp(getFirstDate());
+    IWTimeStamp it = new IWTimeStamp(getFirstDate());
 
     return (it.getYear() != ZEROYEAR)?it.getMonth():0;
 
@@ -218,7 +218,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
   public int getSecondDateDay(){
 
-    idegaTimestamp it = new idegaTimestamp(getSecondDate());
+    IWTimeStamp it = new IWTimeStamp(getSecondDate());
 
     return (it.getYear() != ZEROYEAR)?it.getDay():0;
 
@@ -226,7 +226,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
   public int getSecondDateMonth(){
 
-    idegaTimestamp it = new idegaTimestamp(getSecondDate());
+    IWTimeStamp it = new IWTimeStamp(getSecondDate());
 
     return (it.getYear() != ZEROYEAR)?it.getMonth():0;
 
@@ -236,7 +236,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
   public boolean hasFirstPeriod(){
 
-    idegaTimestamp it = new idegaTimestamp(getFirstDate());
+    IWTimeStamp it = new IWTimeStamp(getFirstDate());
 
     return (it.getYear() != ZEROYEAR)?true:false;
 
@@ -244,7 +244,7 @@ public class ApartmentTypePeriodsBMPBean extends com.idega.data.GenericEntity im
 
   public boolean hasSecondPeriod(){
 
-    idegaTimestamp it = new idegaTimestamp(getSecondDate());
+    IWTimeStamp it = new IWTimeStamp(getSecondDate());
 
     return (it.getYear() != ZEROYEAR)?true:false;
 

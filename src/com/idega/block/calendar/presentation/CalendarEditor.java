@@ -34,7 +34,7 @@ private int _entryID = -1;
 private int _typeID = -1;
 private int _userID = -1;
 private int _groupID = -1;
-private idegaTimestamp _stamp;
+private IWTimeStamp _stamp;
 
 private IWBundle _iwb;
 private IWResourceBundle _iwrb;
@@ -112,14 +112,14 @@ public CalendarEditor(){
 
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE) != null ) {
       try {
-	_stamp = new idegaTimestamp(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE));
+	_stamp = new IWTimeStamp(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE));
       }
       catch (Exception e) {
-	_stamp = new idegaTimestamp();
+	_stamp = new IWTimeStamp();
       }
     }
     else {
-      _stamp = new idegaTimestamp();
+      _stamp = new IWTimeStamp();
     }
 
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE) != null ) {
@@ -168,7 +168,7 @@ public CalendarEditor(){
     if ( entry != null )
       locTexts = TextFinder.getLocalizedString(entry,iLocaleId);
     if ( entry != null )
-      _stamp = new idegaTimestamp(entry.getDate());
+      _stamp = new IWTimeStamp(entry.getDate());
 
     DropdownMenu entryTypes = CalendarBusiness.getEntryTypes(CalendarBusiness.PARAMETER_TYPE_ID,iLocaleId);
     if ( entry != null )
@@ -188,11 +188,11 @@ public CalendarEditor(){
       }
     addLeft(_iwrb.getLocalizedString("body","Body")+":",entryBody,true);
 
-    idegaTimestamp stamp = new idegaTimestamp();
+    IWTimeStamp stamp = new IWTimeStamp();
     DateInput entryDate = new DateInput(CalendarBusiness.PARAMETER_ENTRY_DATE);
       entryDate.setYearRange(stamp.getYear()-5,stamp.getYear()+10);
       if(_stamp==null){
-	_stamp = idegaTimestamp.RightNow();
+	_stamp = IWTimeStamp.RightNow();
       }
       entryDate.setDate(_stamp.getSQLDate());
       /*

@@ -4,7 +4,7 @@ import javax.ejb.FinderException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.trade.presentation.CurrencyCalculator;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -138,7 +138,7 @@ public class BookingDeleterWindow extends TravelWindow {
       bookingId = booking.getID();
       table.add(getText(booking.getName()), 1, row);
       table.add(getText(_service.getName()), 2, row);
-      table.add(getText(new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)), 3, row);
+      table.add(getText(new IWTimeStamp(booking.getBookingDate()).getLocaleDate(iwc)), 3, row);
       box = new CheckBox(this.parameterDeleteBId+bookingId);
       table.add(box, 4, row);
       table.add(new HiddenInput(this.parameterBookingIdForForm, Integer.toString(bookingId)), 4,row);

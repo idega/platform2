@@ -16,7 +16,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.data.AccountPhoneEntry;
 import com.idega.block.finance.business.FinanceObject;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.idegaweb.presentation.BusyBar;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -202,7 +202,7 @@ public class PhoneFiles extends Block {
           }
 
           T.add(Edit.formatText(Long.toString(F.length()/1000)+" KB"),3,row);
-          T.add(Edit.formatText(new idegaTimestamp(F.lastModified()).getDateString(true,iwc)),6,row);
+          T.add(Edit.formatText(new IWTimeStamp(F.lastModified()).getDateString(true,iwc)),6,row);
           row++;
         }
 
@@ -223,7 +223,7 @@ public class PhoneFiles extends Block {
           T.add(L,2,row);
           T.add(Edit.formatText(iwrb.getLocalizedString("unread","Unread")),4,row);
           T.add(Edit.formatText(Long.toString(F.length()/1000)+" KB"),3,row);
-          T.add(Edit.formatText(new idegaTimestamp(F.lastModified()).getDateString(true,iwc)),6,row);
+          T.add(Edit.formatText(new IWTimeStamp(F.lastModified()).getDateString(true,iwc)),6,row);
 
           row++;
         }

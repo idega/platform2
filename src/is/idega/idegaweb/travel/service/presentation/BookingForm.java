@@ -40,7 +40,7 @@ public abstract class BookingForm extends TravelManager{
   protected Reseller _reseller;
   protected int _productId;
   protected int _resellerId;
-  protected idegaTimestamp _stamp;
+  protected IWTimeStamp _stamp;
   protected Booking _booking;
 
   protected int available = is.idega.idegaweb.travel.presentation.Booking.available;
@@ -83,8 +83,8 @@ public abstract class BookingForm extends TravelManager{
   }
 
 
-  public void setTimestamp(idegaTimestamp stamp) {
-    _stamp = new idegaTimestamp(stamp);
+  public void setTimestamp(IWTimeStamp stamp) {
+    _stamp = new IWTimeStamp(stamp);
   }
 
   public void setBooking(Booking booking) throws RemoteException, FinderException {
@@ -275,7 +275,7 @@ public abstract class BookingForm extends TravelManager{
           table.add(manyDaysText, 1, row);
           table.add(manyDays, 2, row);
         }else {
-          table.add(new HiddenInput(parameterFromDate, new idegaTimestamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
+          table.add(new HiddenInput(parameterFromDate, new IWTimeStamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
           GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
           GeneralBooking tempBooking = gbHome.findByPrimaryKey(_booking.getPrimaryKey());
           List bookingsJa = gbHome.getMultibleBookings(tempBooking);
@@ -349,7 +349,7 @@ public abstract class BookingForm extends TravelManager{
             try {
                 ++row;
                 category = pPrices[i].getPriceCategory();
-                int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId);
     //              pPrices[i].getPrice();
                 pPriceCatNameText = (Text) theText.clone();
                   pPriceCatNameText.setText(category.getName());
@@ -384,7 +384,7 @@ public abstract class BookingForm extends TravelManager{
                       if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
                         pPri = entries[j].getProductPrice();
                         currentCount = entries[j].getCount();
-                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId);
                         currentSum = (int) (currentCount * price);
 
                         totalCount += currentCount;
@@ -559,7 +559,7 @@ public abstract class BookingForm extends TravelManager{
     return form;
   }
 
-  public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, FinderException {
+  public Form getPublicBookingForm(IWContext iwc, Product product, IWTimeStamp stamp) throws RemoteException, FinderException {
     int bookings = getBooker(iwc).getNumberOfBookings(_productId, this._stamp);
     int max = 0;
     int min = 0;
@@ -590,7 +590,7 @@ public abstract class BookingForm extends TravelManager{
   }
 
 
-  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
+  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, IWTimeStamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
     Form form = new Form();
       form.addParameter(this.parameterOnlineBooking, "true");
     Table table = new Table();
@@ -879,7 +879,7 @@ public abstract class BookingForm extends TravelManager{
                   pTable = (Table) pTableToClone.clone();
 //                  ++pRow;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId);
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -916,7 +916,7 @@ public abstract class BookingForm extends TravelManager{
                         if (entries[j].getProductPriceId() == pPrices[i].getID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId));
+                          currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId));
 
                           totalCount += currentCount;
                           totalSum += currentSum;
@@ -1352,13 +1352,13 @@ public abstract class BookingForm extends TravelManager{
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
     String manyDays = iwc.getParameter(this.parameterManyDays);
-    idegaTimestamp fromStamp = null;
-    idegaTimestamp toStamp = null;
+    IWTimeStamp fromStamp = null;
+    IWTimeStamp toStamp = null;
     int betw = 1;
     int totalSeats = 0;
 
     try {
-      fromStamp = new idegaTimestamp(fromDate);
+      fromStamp = new IWTimeStamp(fromDate);
       int iManyDays = Integer.parseInt(manyDays);
       if (iManyDays < 1) betw = 1;
       else betw = iManyDays;
@@ -1381,7 +1381,7 @@ public abstract class BookingForm extends TravelManager{
     if (totalSeats > 0) {
       if (betw == 1) {
         iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
-        //getNumberOfBookings(int serviceId, idegaTimestamp stamp)
+        //getNumberOfBookings(int serviceId, IWTimeStamp stamp)
 //        iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, _stamp);
         if (iMany > iAvailable) {
           tooMany = true;
@@ -1452,11 +1452,11 @@ public abstract class BookingForm extends TravelManager{
 
 
       try {
-        _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+        _stamp = new IWTimeStamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
       }
-      idegaTimestamp _fromDate = new idegaTimestamp(_stamp);
+      IWTimeStamp _fromDate = new IWTimeStamp(_stamp);
 
       String sBookingId = iwc.getParameter(this.parameterBookingId);
 
@@ -1558,7 +1558,7 @@ public abstract class BookingForm extends TravelManager{
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
-                getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+                getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, new IWTimeStamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
               }
               lbookingId = iBookingId;
 
@@ -1724,8 +1724,8 @@ public abstract class BookingForm extends TravelManager{
         iManyDays = Integer.parseInt(manyDays);
       }
 
-      idegaTimestamp fromStamp = new idegaTimestamp(fromDate);
-      idegaTimestamp toStamp = new idegaTimestamp(fromStamp);
+      IWTimeStamp fromStamp = new IWTimeStamp(fromDate);
+      IWTimeStamp toStamp = new IWTimeStamp(fromStamp);
         toStamp.addDays(iManyDays);
 
       if (bookingId == -1) {
@@ -1781,9 +1781,9 @@ public abstract class BookingForm extends TravelManager{
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
     String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
     if (day != null && month != null && year != null) {
-      _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+      _stamp = new IWTimeStamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
     }else {
-      _stamp = new idegaTimestamp(idegaTimestamp.RightNow());
+      _stamp = new IWTimeStamp(IWTimeStamp.RightNow());
     }
   }
 
@@ -1825,13 +1825,13 @@ public abstract class BookingForm extends TravelManager{
       Table table = new Table();
         form.add(table);
       int row = 1;
-      idegaTimestamp temp;
+      IWTimeStamp temp;
 
       table.add(iwrb.getLocalizedString("travel.unavailable_days","Unavailable days"), 1,row);
       for (int i = 0; i < errorDays.size(); i++) {
         try {
           ++row;
-          temp = new idegaTimestamp((idegaTimestamp)errorDays.get(i));
+          temp = new IWTimeStamp((IWTimeStamp)errorDays.get(i));
           table.add(temp.getLocaleDate(iwc), 1,row);
         }catch (NullPointerException npe) {
           npe.printStackTrace(System.err);

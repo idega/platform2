@@ -18,7 +18,7 @@ import com.idega.block.text.business.TextFinder;
 
 import com.idega.core.data.ICObjectInstance;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import com.idega.presentation.ui.DropdownMenu;
 
@@ -124,7 +124,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
 
 
-  public static idegaTimestamp getStartDate(int pollQuestionID) {
+  public static IWTimeStamp getStartDate(int pollQuestionID) {
 
     PollQuestion question = getPollQuestion(pollQuestionID);
 
@@ -134,7 +134,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
       if ( question.getStartTime() != null ) {
 
-        return new idegaTimestamp(question.getStartTime());
+        return new IWTimeStamp(question.getStartTime());
 
       }
 
@@ -148,7 +148,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
 
 
-  public static idegaTimestamp getEndDate(int pollQuestionID) {
+  public static IWTimeStamp getEndDate(int pollQuestionID) {
 
     PollQuestion question = getPollQuestion(pollQuestionID);
 
@@ -158,7 +158,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
       if ( question.getEndTime() != null ) {
 
-        return new idegaTimestamp(question.getEndTime());
+        return new IWTimeStamp(question.getEndTime());
 
       }
 
@@ -740,13 +740,13 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
     if ( pollStartDate != null && pollStartDate.length() > 0 ) {
 
-      pollQuestion.setStartTime(new idegaTimestamp(pollStartDate).getTimestamp());
+      pollQuestion.setStartTime(new IWTimeStamp(pollStartDate).getTimestamp());
 
     }
 
     if ( pollEndDate != null && pollEndDate.length() > 0 ) {
 
-      pollQuestion.setEndTime(new idegaTimestamp(pollEndDate).getTimestamp());
+      pollQuestion.setEndTime(new IWTimeStamp(pollEndDate).getTimestamp());
 
     }
 
@@ -810,7 +810,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
     locText.setBody(pollInformationString);
 
-    locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
+    locText.setCreated(com.idega.util.IWTimeStamp.getTimestampRightNow());
 
 
 
@@ -1272,7 +1272,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
 
 
-  public static PollQuestion getPollByDate(PollEntity poll, idegaTimestamp date) {
+  public static PollQuestion getPollByDate(PollEntity poll, IWTimeStamp date) {
 
     try {
 
@@ -1286,9 +1286,9 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
         for ( int a = 0; a < polls.size(); a++ ) {
 
-          idegaTimestamp before = new idegaTimestamp(((PollQuestion) polls.get(a)).getStartTime());
+          IWTimeStamp before = new IWTimeStamp(((PollQuestion) polls.get(a)).getStartTime());
 
-          idegaTimestamp after = new idegaTimestamp(((PollQuestion) polls.get(a)).getEndTime());
+          IWTimeStamp after = new IWTimeStamp(((PollQuestion) polls.get(a)).getEndTime());
 
 
 

@@ -10,7 +10,7 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.idegaweb.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -148,7 +148,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       table.setWidth( "90%" );
 
       int row = 0;
-      idegaTimestamp stamp = idegaTimestamp.RightNow();
+      IWTimeStamp stamp = IWTimeStamp.RightNow();
 
       TextInput name = new TextInput( "name_of_trip" );
       name.setSize( 40 );
@@ -162,7 +162,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       number.keepStatusOnAction();
       DropdownMenu locales = ProductBusiness.getLocaleDropDown( iwc );
 
-      int currentYear = idegaTimestamp.RightNow().getYear();
+      int currentYear = IWTimeStamp.RightNow().getYear();
 
       DateInput active_from = new DateInput( "active_from" );
       active_from.setDate( stamp.getSQLDate() );
@@ -476,8 +476,8 @@ public class TourDesigner extends TravelManager implements DesignerForm{
           Parameter par2 = new Parameter( this.parameterTimeframeId, Integer.toString( timeframe.getID() ) );
           par2.keepStatusOnAction();
           table.add( par2 );
-          active_from.setDate( new idegaTimestamp( timeframe.getFrom() ).getSQLDate() );
-          active_to.setDate( new idegaTimestamp( timeframe.getTo() ).getSQLDate() );
+          active_from.setDate( new IWTimeStamp( timeframe.getFrom() ).getSQLDate() );
+          active_to.setDate( new IWTimeStamp( timeframe.getTo() ).getSQLDate() );
           active_yearly.setSelected( timeframe.getIfYearly() );
         }
 
@@ -518,11 +518,11 @@ public class TourDesigner extends TravelManager implements DesignerForm{
               break;
           }
         }
-        idegaTimestamp tempStamp;
+        IWTimeStamp tempStamp;
 
         if ( depAddress != null ) {
           departure_from.setContent( depAddress.getStreetName() );
-          tempStamp = new idegaTimestamp( depAddress.getTime() );
+          tempStamp = new IWTimeStamp( depAddress.getTime() );
           departure_time.setHour( tempStamp.getHour() );
           departure_time.setMinute( tempStamp.getMinute() );
         }
@@ -530,7 +530,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
         if ( arrAddress != null ) {
           arrival_at.setContent( arrAddress.getStreetName() );
         }
-        tempStamp = new idegaTimestamp( service.getArrivalTime() );
+        tempStamp = new IWTimeStamp( service.getArrivalTime() );
         arrival_time.setHour( tempStamp.getHour() );
         arrival_time.setMinute( tempStamp.getMinute() );
 
@@ -697,29 +697,29 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       fKilometers = new Float( 0 );
     }
 
-    idegaTimestamp activeFromStamp = null;
+    IWTimeStamp activeFromStamp = null;
     if ( activeFrom != null ) {
-      activeFromStamp = new idegaTimestamp( activeFrom );
+      activeFromStamp = new IWTimeStamp( activeFrom );
     }
 
-    idegaTimestamp activeToStamp = null;
+    IWTimeStamp activeToStamp = null;
     if ( activeTo != null ) {
-      activeToStamp = new idegaTimestamp( activeTo );
+      activeToStamp = new IWTimeStamp( activeTo );
     }
 
-    idegaTimestamp departureStamp = null;
+    IWTimeStamp departureStamp = null;
     if ( departureTime != null ) {
-      departureStamp = new idegaTimestamp( "2001-01-01 " + departureTime );
+      departureStamp = new IWTimeStamp( "2001-01-01 " + departureTime );
     }
 
-    idegaTimestamp arrivalStamp = null;
+    IWTimeStamp arrivalStamp = null;
     if ( arrivalTime != null ) {
-      arrivalStamp = new idegaTimestamp( "2001-01-01 " + arrivalTime );
+      arrivalStamp = new IWTimeStamp( "2001-01-01 " + arrivalTime );
     }
     /*
-     *  idegaTimestamp hotelPickupTimeStamp = null;
+     *  IWTimeStamp hotelPickupTimeStamp = null;
      *  if (hotelPickupTime != null) {
-     *  hotelPickupTimeStamp = new idegaTimestamp("2001-01-01 "+hotelPickupTime);
+     *  hotelPickupTimeStamp = new IWTimeStamp("2001-01-01 "+hotelPickupTime);
      *  }
      */
     int[] tempDays = new int[7];

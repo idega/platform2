@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
@@ -20,7 +20,7 @@ public class BuildingCacher {
   private static List Complexes,Buildings,Floors,Categories,Types,Apartments;
   private static Hashtable hComplexes,hBuildings,hFloors,hCategories,hTypes,hApartments;
   private static boolean setToReload = false;
-  private static idegaTimestamp lastReloaded = idegaTimestamp.RightNow();
+  private static IWTimeStamp lastReloaded = IWTimeStamp.RightNow();
   private static int reloadCount = 0;
 
   public BuildingCacher() {
@@ -85,7 +85,7 @@ public class BuildingCacher {
 
   public static void reload(){
     initializeLodgings();
-    lastReloaded = idegaTimestamp.RightNow();
+    lastReloaded = IWTimeStamp.RightNow();
     reloadCount++;
     setToReload = false;
   }
@@ -94,7 +94,7 @@ public class BuildingCacher {
     setToReload = true;
   }
 
-  public static idegaTimestamp getLastReloaded(){
+  public static IWTimeStamp getLastReloaded(){
     return lastReloaded;
   }
 

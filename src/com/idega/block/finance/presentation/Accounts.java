@@ -17,7 +17,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Block;
 import com.idega.presentation.text.*;
 import com.idega.presentation.Image;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.Collection;
@@ -27,7 +27,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.core.user.data.User;
 
 /**

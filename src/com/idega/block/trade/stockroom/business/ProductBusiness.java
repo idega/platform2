@@ -456,26 +456,26 @@ public class ProductBusiness {
     return getProducts((ICCategory) productCategory);
   }
 
-  public static List getProducts(idegaTimestamp stamp) {
+  public static List getProducts(IWTimeStamp stamp) {
     return getProducts(-1, stamp);
   }
 
-  public static List getProducts(idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+  public static List getProducts(IWTimeStamp fromStamp, IWTimeStamp toStamp) {
     return getProducts(-1, fromStamp, toStamp);
   }
 
-  public static List getProducts(int supplierId, idegaTimestamp stamp) {
+  public static List getProducts(int supplierId, IWTimeStamp stamp) {
     if (stamp != null)
-      return getProducts(supplierId, stamp, new idegaTimestamp(stamp));
+      return getProducts(supplierId, stamp, new IWTimeStamp(stamp));
     else
       return getProducts(supplierId, null, null);
   }
 
-  public static List getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
+  public static List getProducts(int supplierId, IWTimeStamp from, IWTimeStamp to) {
     return getProducts(supplierId, -1, from, to);
   }
 
-  public static List getProducts(int supplierId, int productCategoryId ,idegaTimestamp from, idegaTimestamp to) {
+  public static List getProducts(int supplierId, int productCategoryId ,IWTimeStamp from, IWTimeStamp to) {
     Object obj = IWContext.getInstance().getApplicationAttribute(productsApplication+supplierId+productCategoryId+from+to);
     List products = null;
     if (obj != null) {
@@ -569,11 +569,11 @@ public class ProductBusiness {
   /**
    * @deprecated
    */
-  public static Timeframe getTimeframe(Product product, idegaTimestamp stamp) {
+  public static Timeframe getTimeframe(Product product, IWTimeStamp stamp) {
     return getTimeframe(product, stamp, -1);
   }
 
-  public static Timeframe getTimeframe(Product product, idegaTimestamp stamp, int travelAddressId) {
+  public static Timeframe getTimeframe(Product product, IWTimeStamp stamp, int travelAddressId) {
     Timeframe returner = null;
     try {
       Timeframe[] frames = product.getTimeframes();
@@ -588,7 +588,7 @@ public class ProductBusiness {
           }
         }
 
-	if (stamp.isInTimeframe( new idegaTimestamp(returner.getFrom()) , new idegaTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
+	if (stamp.isInTimeframe( new IWTimeStamp(returner.getFrom()) , new IWTimeStamp(returner.getTo()), stamp, returner.getIfYearly() )) {
 	  return returner;
 	}
       }

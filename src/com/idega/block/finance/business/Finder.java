@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 import com.idega.util.idegaCalendar;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
 import java.sql.SQLException;
@@ -147,7 +147,7 @@ public class Finder  {
     return ti;
   }
 
-  public static List listOfFinanceEntriesWithoutGroup(idegaTimestamp from,idegaTimestamp to){
+  public static List listOfFinanceEntriesWithoutGroup(IWTimeStamp from,IWTimeStamp to){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
     sql.append(" where fin_entry_group_id is null ");

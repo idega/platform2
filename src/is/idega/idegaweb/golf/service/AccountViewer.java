@@ -51,7 +51,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   private String styleAttribute = "font-size: 8pt";
   private String storage;
   private static String prmToDate = "to_date",prmFromDate = "from_date";
-  private idegaTimestamp from,to;
+  private IWTimeStamp from,to;
   private int accountYear;
   private Account[] memberAccounts;
   private UnionMemberInfo umi;
@@ -100,18 +100,18 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         cashier_id = Cashier.getID();
       }
 
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       if(iwc.isParameterSet(prmFromDate)){
        from = parseStamp(iwc.getParameter(prmFromDate));
       }
       else{
-        from = new idegaTimestamp(1,1,today.getYear());
+        from = new IWTimeStamp(1,1,today.getYear());
       }
       if(iwc.isParameterSet(prmToDate)){
        to = parseStamp(iwc.getParameter(prmToDate));
       }
       else{
-        to = new idegaTimestamp(31,12,today.getYear());
+        to = new IWTimeStamp(31,12,today.getYear());
       }
 
       un_id = Integer.parseInt(union_id)  ;
@@ -374,8 +374,8 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       catch(SQLException sql){ePayment = null;}
 
       if(ePayment != null){
-        idegaTimestamp itPayDate = this.parseStamp(sPayDate);
-        idegaTimestamp itPaymentDate = new idegaTimestamp(ePayment.getPaymentDate());
+        IWTimeStamp itPayDate = this.parseStamp(sPayDate);
+        IWTimeStamp itPaymentDate = new IWTimeStamp(ePayment.getPaymentDate());
         int iPrice = Integer.parseInt(sPrice);
         int iOldPrice = ePayment.getPrice();
         int iPayTypeId = Integer.parseInt(sPayTypeId);
@@ -394,9 +394,9 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           int iPriceChange = iOldPrice - iPrice;
           ePayment.setStatus(true);
           try{
-            TariffService.makeAccountEntry(this.eAccount.getID(),ePayment.getPrice(),ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+            TariffService.makeAccountEntry(this.eAccount.getID(),ePayment.getPrice(),ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),IWTimeStamp.getTimestampRightNow());
             if(iPriceChange != 0)
-              TariffService.makeAccountEntry(this.eAccount.getID(),iPriceChange,ePayment.getName(),sInfo2,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+              TariffService.makeAccountEntry(this.eAccount.getID(),iPriceChange,ePayment.getName(),sInfo2,"","","",this.cashier_id,ePayment.getPaymentDate(),IWTimeStamp.getTimestampRightNow());
             ePayment.update() ;
           }
           catch(SQLException sql){sql.printStackTrace();}
@@ -405,7 +405,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           String sInfo = "Leiðrétting";
           int iPriceChange = iOldPrice - iPrice;
           try{
-            TariffService.makeAccountEntry(this.eAccount.getID(),iPriceChange,ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+            TariffService.makeAccountEntry(this.eAccount.getID(),iPriceChange,ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),IWTimeStamp.getTimestampRightNow());
             ePayment.update();
           }
           catch(SQLException sql){sql.printStackTrace();}
@@ -414,7 +414,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           String sInfo = "NiðurFelling";
           try{
             ePayment.delete();
-            TariffService.makeAccountEntry(this.eAccount.getID(),iOldPrice,ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+            TariffService.makeAccountEntry(this.eAccount.getID(),iOldPrice,ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),IWTimeStamp.getTimestampRightNow());
 
           }
           catch(SQLException sql){sql.printStackTrace();}
@@ -457,7 +457,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           if(stemp != null && stemp.equalsIgnoreCase("true")){
             try{
               PriceCatalogue P = ((is.idega.idegaweb.golf.entity.PriceCatalogueHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCatalogue.class)).findByPrimaryKeyLegacy(itemp);
-              TariffService.makeAccountEntry(this.eAccount.getID() ,-P.getPrice(),P.getName(),"Álagning","","","",0,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
+              TariffService.makeAccountEntry(this.eAccount.getID() ,-P.getPrice(),P.getName(),"Álagning","","","",0,IWTimeStamp.getTimestampRightNow(),IWTimeStamp.getTimestampRightNow());
               if(!isCorrection)
                 totalprice += P.getPrice();
              }
@@ -468,7 +468,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       }
       int iPrice = 0;
       String sName;
-      idegaTimestamp idPayDate = new idegaTimestamp();
+      IWTimeStamp idPayDate = new IWTimeStamp();
       // Special price for you my friend
       if( canmakeEntries && sDescr != null && sDescr.length() > 0 ){
         if( sPrice != null && sPrice.length() > 0){
@@ -478,7 +478,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           try{
             iPrice = Integer.parseInt(sPrice);
             //add("<br>"+(-iPrice)+sDescr+idPayDate.toSQLString());
-            TariffService.makeAccountEntry(this.eAccount.getID() ,-iPrice,sDescr,"Álagning","","","",0,idPayDate.getTimestamp(),idegaTimestamp.getTimestampRightNow());
+            TariffService.makeAccountEntry(this.eAccount.getID() ,-iPrice,sDescr,"Álagning","","","",0,idPayDate.getTimestamp(),IWTimeStamp.getTimestampRightNow());
             if(!isCorrection)
               totalprice += iPrice;
           }
@@ -498,13 +498,13 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         totaladd += iCost;
         totalprice += totaladd;
         if(totaladd > 0){
-          TariffService.makeAccountEntry(this.eAccount.getID() ,-totaladd,"Kostnaður","Álagning","","","",0,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
+          TariffService.makeAccountEntry(this.eAccount.getID() ,-totaladd,"Kostnaður","Álagning","","","",0,IWTimeStamp.getTimestampRightNow(),IWTimeStamp.getTimestampRightNow());
         }
         if(iInst > 0){
           try{
             PaymentRound payround = ((is.idega.idegaweb.golf.entity.PaymentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(PaymentRound.class)).createLegacy();
             payround.setName("Auka");
-            payround.setRoundDate(idegaTimestamp.getTimestampRightNow());
+            payround.setRoundDate(IWTimeStamp.getTimestampRightNow());
             payround.setTotals(totalprice);
             payround.setUnionId(this.un_id);
             payround.insert();
@@ -516,7 +516,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
               if(k == 0)
                 tempPrice += totalprice%iInst;
 
-              TariffService.makePayment(this.eMember.getID(),eAccount.getID() , this.un_id,payRoundId,tempPrice,false,"","",k+1,iInst,iType,new idegaTimestamp(iday,m,idPayDate.getYear()).getTimestamp(), idegaTimestamp.getTimestampRightNow(),3);
+              TariffService.makePayment(this.eMember.getID(),eAccount.getID() , this.un_id,payRoundId,tempPrice,false,"","",k+1,iInst,iType,new IWTimeStamp(iday,m,idPayDate.getYear()).getTimestamp(), IWTimeStamp.getTimestampRightNow(),3);
             }
           }
           catch(SQLException sql){
@@ -528,8 +528,8 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       this.doTariff(iwc);
     }
 
-    private idegaTimestamp parseStamp(String sDate){
-       idegaTimestamp it = new idegaTimestamp();
+    private IWTimeStamp parseStamp(String sDate){
+       IWTimeStamp it = new IWTimeStamp();
        try{
         StringTokenizer st = new StringTokenizer(sDate," .-/+");
         int day = 1,month = 1,year = 2001;
@@ -539,9 +539,9 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           year = Integer.parseInt(st.nextToken());
 
         }
-        it = new idegaTimestamp(day,month,year);
+        it = new IWTimeStamp(day,month,year);
       }
-      catch(Exception pe){ it = new idegaTimestamp();}
+      catch(Exception pe){ it = new IWTimeStamp();}
       return it;
     }
 
@@ -576,7 +576,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         else{
           PaymentRound payround = ((is.idega.idegaweb.golf.entity.PaymentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(PaymentRound.class)).createLegacy();
           payround.setName("Auka");
-          payround.setRoundDate(idegaTimestamp.getTimestampRightNow());
+          payround.setRoundDate(IWTimeStamp.getTimestampRightNow());
           payround.setTotals(price);
           payround.setUnionId(this.un_id);
           payround.insert();
@@ -589,8 +589,8 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
             P.setAccountId(eAccount.getID());
             P.setMemberId(this.mem_id);
             P.setPriceCatalogueId(0);
-            P.setPaymentDate(new idegaTimestamp(iday,imonth+i,iyear).getTimestamp());
-            P.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+            P.setPaymentDate(new IWTimeStamp(iday,imonth+i,iyear).getTimestamp());
+            P.setLastUpdated(IWTimeStamp.getTimestampRightNow());
             P.setCashierId(cashier_id);
             P.setStatus(false);
             P.setExtraInfo(strDescr);
@@ -633,7 +633,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
     private void doCalc(IWContext iwc) throws SQLException{
       try{
-        idegaTimestamp accountLastUpd = new idegaTimestamp(eAccount.getLastUpdated());
+        IWTimeStamp accountLastUpd = new IWTimeStamp(eAccount.getLastUpdated());
         AccountEntry[] E = TariffService.getAccountEntrys(this.eAccount.getID());
         if(this.eAccount.getBalance() == 0){
           eAccount.setBalance(TariffService.calculateBalance(E));
@@ -642,7 +642,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           int len = E.length;
           int i = 0;
           for( i = 0;i < len;i++){
-            idegaTimestamp entryLastUpd = new idegaTimestamp(E[0].getLastUpdated());
+            IWTimeStamp entryLastUpd = new IWTimeStamp(E[0].getLastUpdated());
             if(entryLastUpd.isLaterThan(accountLastUpd))
               break;
           }
@@ -666,7 +666,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       int pCount = Integer.parseInt(iwc.getParameter("payment_totalpaydel"));
       String sInfo = "NiðurFelling";
       int totalprice = 0;
-      Timestamp today = idegaTimestamp.getTimestampRightNow();
+      Timestamp today = IWTimeStamp.getTimestampRightNow();
       Timestamp lastpaydate = today;
       String name = "";
      for (int i = 0; i < pCount; i++) {
@@ -704,7 +704,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       int pCount = Integer.parseInt(iwc.getParameter("payment_totalpaydel"));
       String sInfo = "Greiðsla";
       int totalprice = 0;
-      Timestamp today = idegaTimestamp.getTimestampRightNow();
+      Timestamp today = IWTimeStamp.getTimestampRightNow();
       Timestamp lastpaydate = today;
       String name = "";
       for (int i = 0; i < pCount; i++) {
@@ -1025,7 +1025,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       IntegerInput Price = new IntegerInput(this.getPrcPrm(),P.getPrice());
       Price.setLength(5);
       Price.setAttribute("style",this.styleAttribute);
-      TextInput PayDate = new TextInput(this.getDtPrm(),new idegaTimestamp(P.getPaymentDate()).getISLDate(".",true));
+      TextInput PayDate = new TextInput(this.getDtPrm(),new IWTimeStamp(P.getPaymentDate()).getISLDate(".",true));
       PayDate.setLength(10);
       PayDate.setAttribute("style",this.styleAttribute);
 
@@ -1278,7 +1278,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       Text[] TableTexts = new Text[4];
       TableTexts[0] = new Text(this.eAccount.getName());
       TableTexts[1] = new Text(this.eMember.getName());
-      TableTexts[2] = new Text(new idegaTimestamp(this.eAccount.getLastUpdated()).getISLDate(".",true));
+      TableTexts[2] = new Text(new IWTimeStamp(this.eAccount.getLastUpdated()).getISLDate(".",true));
       int b = this.eAccount.getBalance();
       boolean debet = b > 0?true:false;
       TableTexts[3] = new Text(NF.format(b));
@@ -1474,7 +1474,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     Text[] TableTexts = new Text[4];
     boolean debet = false;
     for(int j = 0; j < entries.length; j++){
-      TableTexts[0] = new Text(new idegaTimestamp(entries[j].getLastUpdated()).getISLDate(".",true));
+      TableTexts[0] = new Text(new IWTimeStamp(entries[j].getLastUpdated()).getISLDate(".",true));
       TableTexts[1] = new Text(entries[j].getName());
       TableTexts[2] = new Text(entries[j].getInfo());
       int p = entries[j].getPrice();
@@ -1545,7 +1545,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     boolean debet = false;
     int total = 0;
     for(int j = 0; j < entries.length; j++){
-      TableTexts[0] = new Text(new idegaTimestamp(entries[j].getLastUpdated()).getISLDate(".",true));
+      TableTexts[0] = new Text(new IWTimeStamp(entries[j].getLastUpdated()).getISLDate(".",true));
       TableTexts[1] = new Text(entries[j].getName());
       TableTexts[2] = new Text(entries[j].getInfo());
       int p = -entries[j].getPrice();
@@ -1651,7 +1651,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     boolean debet = false;
     int delcount = 0;
     for(int j = 0; j < payments.length; j++){
-      TableTexts[0] = new Text(new idegaTimestamp(payments[j].getPaymentDate()).getISLDate(".",true));
+      TableTexts[0] = new Text(new IWTimeStamp(payments[j].getPaymentDate()).getISLDate(".",true));
       TableTexts[1] = new Text(getPaymentType(payments[j].getPaymentTypeID()));
       TableTexts[2] = new Text(payments[j].getInstallmentNr()+"/"+payments[j].getTotalInstallment());
       boolean paid = payments[j].getStatus();
@@ -1700,11 +1700,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     return s;
   }
 
-  private String getDateString(idegaTimestamp stamp){
+  private String getDateString(IWTimeStamp stamp){
     return stamp.getISLDate(".",true);
   }
 
-  public PresentationObject getEntrySearchTable(String action,idegaTimestamp from,idegaTimestamp to){
+  public PresentationObject getEntrySearchTable(String action,IWTimeStamp from,IWTimeStamp to){
     Table T = new Table();
     T.setWidth("100%");
     String sFromDate = getDateString(from);
@@ -1801,7 +1801,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
 
     private DropdownMenu drpMonth(String name){
-      idegaTimestamp Today = new idegaTimestamp();
+      IWTimeStamp Today = new IWTimeStamp();
       int iMonth = Today.getMonth();
       DropdownMenu drp = new DropdownMenu(name);
       for(int i = 1; i < 13 ; i ++){
@@ -1812,7 +1812,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
 
     private DropdownMenu drpYear(String name){
-      idegaTimestamp it = new idegaTimestamp();
+      IWTimeStamp it = new IWTimeStamp();
       int a = it.getYear();
       DropdownMenu drp = new DropdownMenu(name);
       for(int i = a-10; i < a+10 ; i ++){

@@ -5,7 +5,7 @@ import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.util.IsCollator;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.util.*;
 import java.util.Comparator;
 import com.idega.block.trade.stockroom.data.Product;
@@ -110,8 +110,8 @@ public class ProductComparator implements Comparator {
     Product p2 = (Product) o2;
 
     try {
-      idegaTimestamp s1 = p1.getDepartureTime(p1);
-      idegaTimestamp s2 = getServiceHandler().getDepartureTime(p2);
+      IWTimeStamp s1 = p1.getDepartureTime(p1);
+      IWTimeStamp s2 = getServiceHandler().getDepartureTime(p2);
 
       if (s1.isLaterThan(s2)) {
 	return 1;
@@ -157,8 +157,8 @@ public class ProductComparator implements Comparator {
     Product p1 = (Product) o1;
     Product p2 = (Product) o2;
 
-    idegaTimestamp s1 = new idegaTimestamp(p1.getCreationDate());
-    idegaTimestamp s2 = new idegaTimestamp(p2.getCreationDate());
+    IWTimeStamp s1 = new IWTimeStamp(p1.getCreationDate());
+    IWTimeStamp s2 = new IWTimeStamp(p2.getCreationDate());
 
     if (s1.isLaterThan(s2)) {
       return -1;

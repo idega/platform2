@@ -16,7 +16,7 @@ import com.idega.core.user.data.User;
 
 import com.idega.block.timesheet.data.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import com.idega.block.projectmanager.data.Project;
 

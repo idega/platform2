@@ -8,7 +8,7 @@ import com.idega.block.category.business.CategoryBusiness;
 import com.idega.builder.data.IBPage;
 import com.idega.data.EntityFinder;
 import com.idega.block.presentation.CategoryBlock;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.util.*;
 
 import com.idega.idegaweb.*;

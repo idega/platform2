@@ -438,8 +438,8 @@ private Table resultTable;
             }
           }
           else {
-            idegaTimestamp date = new idegaTimestamp();
-            idegaTimestamp date2 = new idegaTimestamp();
+            IWTimeStamp date = new IWTimeStamp();
+            IWTimeStamp date2 = new IWTimeStamp();
               date2.addDays(1);
 
             TournamentRound[] rounds = (TournamentRound[]) is.idega.idegaweb.golf.entity.TournamentRoundBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.TournamentRound").findAll("select * from tournament_round where tournament_id = "+Integer.toString(tournamentID)+" and round_date >= '"+date.getSQLDate()+"' and round_date <= '"+date2.getSQLDate()+"'");

@@ -16,5 +16,5 @@ public interface TravelAddress extends com.idega.data.IDOLegacyEntity
  public void setAddressTypeId(int p0);
  public void setRefillStock(boolean p0);
  public void setTime(java.sql.Timestamp p0);
- public void setTime(com.idega.util.idegaTimestamp p0);
+ public void setTime(com.idega.util.IWTimeStamp p0);
 }

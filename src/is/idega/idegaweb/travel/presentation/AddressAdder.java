@@ -7,7 +7,7 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.core.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 /**
@@ -111,7 +111,7 @@ public class AddressAdder extends TravelWindow {
               TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).createLegacy();
                 tAddress.setAddressId(newAddress.getID());
                 tAddress.setAddressTypeId(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE);
-                tAddress.setTime(new idegaTimestamp("2001-01-01 "+time));
+                tAddress.setTime(new IWTimeStamp("2001-01-01 "+time));
                 if (refill.equals("Y")) {
                   tAddress.setRefillStock(true);
                 }else {
@@ -129,7 +129,7 @@ public class AddressAdder extends TravelWindow {
                 newAddress.delete();
             }else if (!name[i].equals("")) {
               TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(ids[i]));
-                tAddress.setTime(new idegaTimestamp("2001-01-01 "+time));
+                tAddress.setTime(new IWTimeStamp("2001-01-01 "+time));
                 if (refill.equals("Y")) {
                   tAddress.setRefillStock(true);
                 }else {
@@ -193,7 +193,7 @@ public class AddressAdder extends TravelWindow {
       table.add(delTxt, 4, row);
       table.setAlignment(4,row, "center");
       table.setRowColor(row, TravelManager.backgroundColor);
-      idegaTimestamp timestamp;
+      IWTimeStamp timestamp;
       int counter = 0;
       for (int i = 0; i < addressesSize; i++) {
         ++row;
@@ -204,7 +204,7 @@ public class AddressAdder extends TravelWindow {
           nameInp.setContent(tAddress.getStreetName());
         del = new CheckBox(this._parameterDelete+tAddress.getID());
           del.setChecked(false);
-        timestamp = new idegaTimestamp(tAddress.getTime());
+        timestamp = new IWTimeStamp(tAddress.getTime());
         refill = new BooleanInput(this.parameterRefill+counter);
           refill.setSelected(tAddress.getRefillStock());
         timeInp = new TimeInput(this.parameterTime+counter);

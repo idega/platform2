@@ -4,7 +4,7 @@ import java.sql.*;
 import com.idega.presentation.IWContext;
 import com.idega.block.text.data.*;
 import com.idega.core.data.ICObjectInstance;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.util.List;
 import java.util.Iterator;
 

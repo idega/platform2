@@ -3,7 +3,7 @@ package com.idega.block.finance.business;
 
 import com.idega.block.finance.business.*;
 import com.idega.block.finance.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.data.SimpleQuerier;
 import com.idega.data.EntityBulkUpdater;
 import java.util.*;
@@ -30,8 +30,8 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
   public static final char cType = 't';
   public static final char cApartment = 'p';
 
-  public void groupEntriesWithSQL(idegaTimestamp from,
-                                         idegaTimestamp to) throws Exception{
+  public void groupEntriesWithSQL(IWTimeStamp from,
+                                         IWTimeStamp to) throws Exception{
 
     javax.transaction.UserTransaction t = this.getSessionContext().getUserTransaction();
     //TransactionManager t = IdegaTransactionManager.getInstance();
@@ -46,7 +46,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
       int gid = -1;
       try {
         EG = ((EntryGroupHome)IDOLookup.getHome(EntryGroup.class)).create();
-        EG.setGroupDate(idegaTimestamp.RightNow().getSQLDate());
+        EG.setGroupDate(IWTimeStamp.RightNow().getSQLDate());
         EG.store();
         gid = EG.getID();
       }
@@ -112,15 +112,15 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
     }
   }
 
-  public void groupEntries(idegaTimestamp from,
-                                  idegaTimestamp to) throws Exception{
+  public void groupEntries(IWTimeStamp from,
+                                  IWTimeStamp to) throws Exception{
     List L = Finder.listOfFinanceEntriesWithoutGroup(from,to);
     if(L!=null){
       int min = 0,max = 0;
       EntryGroup EG = null;
       try {
         EG = ((com.idega.block.finance.data.EntryGroupHome)com.idega.data.IDOLookup.getHomeLegacy(EntryGroup.class)).createLegacy();
-        EG.setGroupDate(idegaTimestamp.RightNow().getSQLDate());
+        EG.setGroupDate(IWTimeStamp.RightNow().getSQLDate());
         EG.insert();
         int gid = EG.getID();
         //System.err.println(" gid "+gid);

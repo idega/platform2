@@ -4,7 +4,7 @@ package com.idega.block.finance.business;
 
 import com.idega.block.finance.data.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import com.idega.core.data.ICObjectInstance;
 
@@ -548,9 +548,9 @@ public  class FinanceBusiness {
 
 
 
-      tariff.setUseFromDate(idegaTimestamp.getTimestampRightNow());
+      tariff.setUseFromDate(IWTimeStamp.getTimestampRightNow());
 
-      tariff.setUseToDate(idegaTimestamp.getTimestampRightNow());
+      tariff.setUseToDate(IWTimeStamp.getTimestampRightNow());
 
 
 

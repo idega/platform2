@@ -38,7 +38,7 @@ public class CampusTypeWindow extends Window {
     int id = Integer.parseInt(iwc.getParameter(ApartmentTypeViewer.PARAMETER_STRING));
     ApartmentTypeViewer BE = new ApartmentTypeViewer(id);
     String attributeName = iwrb.getLocalizedString("tariffs","Gjaldskrá");
-    String today = com.idega.util.idegaTimestamp.RightNow().getLocaleDate(iwc.getCurrentLocale());
+    String today = com.idega.util.IWTimeStamp.RightNow().getLocaleDate(iwc.getCurrentLocale());
     java.util.Collection typeTariffs = FinanceFinder.getInstance().getKeySortedTariffsByAttribute("t_"+id);
     if(typeTariffs !=null){
       NumberFormat format = DecimalFormat.getCurrencyInstance(iwc.getApplication().getSettings().getDefaultLocale());

@@ -416,7 +416,7 @@ public class Tariffer extends PresentationObjectContainer {
 
       }
 
-      return  idegaTimestamp.RightNow().getYear();
+      return  IWTimeStamp.RightNow().getYear();
 
 
 
@@ -940,9 +940,9 @@ public class Tariffer extends PresentationObjectContainer {
 
       java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
 
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
 
-      idegaTimestamp lastToDate = new idegaTimestamp(31,12,today.getYear());
+      IWTimeStamp lastToDate = new IWTimeStamp(31,12,today.getYear());
 
       Table MainTable = makeMainTable(1);
 
@@ -1022,9 +1022,9 @@ public class Tariffer extends PresentationObjectContainer {
 
             yearTable.add(String.valueOf(AY.getMainYear()),3,i+2);
 
-            yearTable.add(getDateString(new idegaTimestamp(AY.getFrom())),4,i+2);
+            yearTable.add(getDateString(new IWTimeStamp(AY.getFrom())),4,i+2);
 
-            yearTable.add(getDateString(new idegaTimestamp(AY.getTo())),5,i+2);
+            yearTable.add(getDateString(new IWTimeStamp(AY.getTo())),5,i+2);
 
             active = new RadioButton("active_year",String.valueOf(AY.getID()));
 
@@ -1058,13 +1058,13 @@ public class Tariffer extends PresentationObjectContainer {
 
 
 
-        idegaTimestamp from = new idegaTimestamp(lastToDate);
+        IWTimeStamp from = new IWTimeStamp(lastToDate);
 
         from.addDays(1);
 
 
 
-        idegaTimestamp to = new idegaTimestamp(from);
+        IWTimeStamp to = new IWTimeStamp(from);
 
         to.addYears(1);
 
@@ -1126,9 +1126,9 @@ public class Tariffer extends PresentationObjectContainer {
 
             active.setChecked(ay.getActive());
 
-            tiFromDate.setContent(getDateString(new idegaTimestamp(ay.getFrom())));
+            tiFromDate.setContent(getDateString(new IWTimeStamp(ay.getFrom())));
 
-            tiToDate.setContent(getDateString(new idegaTimestamp(ay.getTo())));
+            tiToDate.setContent(getDateString(new IWTimeStamp(ay.getTo())));
 
             newtable.add(new HiddenInput("year_id",String.valueOf(ay.getID())));
 
@@ -1196,9 +1196,9 @@ public class Tariffer extends PresentationObjectContainer {
 
     String info = iwc.getParameter("year_info");
 
-    idegaTimestamp from = parseStamp(iwc.getParameter("from_date"));
+    IWTimeStamp from = parseStamp(iwc.getParameter("from_date"));
 
-    idegaTimestamp to = parseStamp(iwc.getParameter("to_date"));
+    IWTimeStamp to = parseStamp(iwc.getParameter("to_date"));
 
     int mainyear = Integer.parseInt(iwc.getParameter("main_year"));
 
@@ -1230,7 +1230,7 @@ public class Tariffer extends PresentationObjectContainer {
 
       year.setActive(active);
 
-      year.setCreationDate(idegaTimestamp.getTimestampRightNow());
+      year.setCreationDate(IWTimeStamp.getTimestampRightNow());
 
       year.setUnionId(un_id);
 
@@ -1258,7 +1258,7 @@ public class Tariffer extends PresentationObjectContainer {
 
 
 
-  private String getDateString(idegaTimestamp stamp){
+  private String getDateString(IWTimeStamp stamp){
 
     return stamp.getISLDate(".",true);
 
@@ -1266,9 +1266,9 @@ public class Tariffer extends PresentationObjectContainer {
 
 
 
-   private idegaTimestamp parseStamp(String sDate){
+   private IWTimeStamp parseStamp(String sDate){
 
-       idegaTimestamp it = new idegaTimestamp();
+       IWTimeStamp it = new IWTimeStamp();
 
        try{
 
@@ -1288,11 +1288,11 @@ public class Tariffer extends PresentationObjectContainer {
 
         }
 
-        it = new idegaTimestamp(day,month,year);
+        it = new IWTimeStamp(day,month,year);
 
       }
 
-      catch(Exception pe){ it = new idegaTimestamp();}
+      catch(Exception pe){ it = new IWTimeStamp();}
 
       return it;
 
@@ -2416,7 +2416,7 @@ public class Tariffer extends PresentationObjectContainer {
 
       myForm.maintainAllParameters();
 
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
 
       int year = today.getYear();
 
@@ -2658,7 +2658,7 @@ public class Tariffer extends PresentationObjectContainer {
 
       this.getEveryThing(iwc);
 
-       int year = idegaTimestamp.RightNow().getYear();
+       int year = IWTimeStamp.RightNow().getYear();
 
       String ifGiro = iwc.getParameter("catal_giro_choice");
 
@@ -2688,7 +2688,7 @@ public class Tariffer extends PresentationObjectContainer {
 
       if(mbsVectorArray != null){
 
-      System.err.print("\nÁlagning hefst "+ new idegaTimestamp().toSQLTimeString());
+      System.err.print("\nÁlagning hefst "+ new IWTimeStamp().toSQLTimeString());
 
 
 
@@ -2788,7 +2788,7 @@ public class Tariffer extends PresentationObjectContainer {
 
         }
 
-      System.err.print("\nÁlagningu lýkur "+ new idegaTimestamp().toSQLTimeString());
+      System.err.print("\nÁlagningu lýkur "+ new IWTimeStamp().toSQLTimeString());
 
       String sMsg5 = iwrb.getLocalizedString("msg5","Assessment finished");
 
@@ -3654,7 +3654,7 @@ public class Tariffer extends PresentationObjectContainer {
 
     if(this.Values != null){
 
-    idegaTimestamp dateToday = new idegaTimestamp(idegaTimestamp.getTimestampRightNow());
+    IWTimeStamp dateToday = new IWTimeStamp(IWTimeStamp.getTimestampRightNow());
 
     int thisYear = dateToday.getYear();
 
@@ -3664,13 +3664,13 @@ public class Tariffer extends PresentationObjectContainer {
 
     int listlen = linecount +2;
 
-    System.err.println("Byrja Leit"+ idegaTimestamp.RightNow().toString());
+    System.err.println("Byrja Leit"+ IWTimeStamp.RightNow().toString());
 
     List IndependentMembersInfoList = EntityFinder.findAll( ((is.idega.idegaweb.golf.entity.UnionMemberInfoHome)com.idega.data.IDOLookup.getHomeLegacy(UnionMemberInfo.class)).createLegacy() ,  this.getIndependentMembersSQL(this.un_id) );
 
     List MembersInfoList = EntityFinder.findAll( ((is.idega.idegaweb.golf.entity.UnionMemberInfoHome)com.idega.data.IDOLookup.getHomeLegacy(UnionMemberInfo.class)).createLegacy() , this.getDependentMembersSQL(this.un_id) );
 
-    System.err.println("Leit Lokið"+ idegaTimestamp.RightNow().toString());
+    System.err.println("Leit Lokið"+ IWTimeStamp.RightNow().toString());
 
     this.memberCount = MembersInfoList.size();
 
@@ -3708,7 +3708,7 @@ public class Tariffer extends PresentationObjectContainer {
 
     int age = 0, mbid, count = 0, pcid = 0, instlm = 1, pmid = 0, groupnr = 0,lockergrnr=0,extragrnr=0, familygroup = 100, famid = 0, regYear = 0;
 
-    idegaTimestamp instDate = new idegaTimestamp();
+    IWTimeStamp instDate = new IWTimeStamp();
 
     String strName, strKt, strGender, strFamStatus ="", Price = "0";
 
@@ -3726,7 +3726,7 @@ public class Tariffer extends PresentationObjectContainer {
 
     Hashtable FamilyHash = getFamilyHash(MembersInfoList);
 
-    System.err.println("Sortera " +memberCount + " " + idegaTimestamp.RightNow().toString());
+    System.err.println("Sortera " +memberCount + " " + IWTimeStamp.RightNow().toString());
 
     this.AccHsh = new Hashtable();
 
@@ -3782,15 +3782,15 @@ public class Tariffer extends PresentationObjectContainer {
 
       if(umi.getFirstInstallmentDate() != null)
 
-        instDate = new idegaTimestamp(umi.getFirstInstallmentDate());
+        instDate = new IWTimeStamp(umi.getFirstInstallmentDate());
 
       else
 
-        instDate = new idegaTimestamp(1,1,2000);
+        instDate = new IWTimeStamp(1,1,2000);
 
       if(umi.getRegistrationDate() != null)
 
-        regYear = new idegaTimestamp(umi.getRegistrationDate()).getYear();
+        regYear = new IWTimeStamp(umi.getRegistrationDate()).getYear();
 
       else
 
@@ -3842,11 +3842,11 @@ public class Tariffer extends PresentationObjectContainer {
 
 
 
-    System.err.println("Sortera búin " + idegaTimestamp.RightNow().toString());
+    System.err.println("Sortera búin " + IWTimeStamp.RightNow().toString());
 
     this.totals = new Integer[listlen][2];
 
-    System.err.println("Óháðir " + idegaTimestamp.RightNow().toString());
+    System.err.println("Óháðir " + IWTimeStamp.RightNow().toString());
 
     if(IndependentMembersInfoList!=null){
 
@@ -3872,9 +3872,9 @@ public class Tariffer extends PresentationObjectContainer {
 
     }
 
-    System.err.println("Óháðir Búnir " + idegaTimestamp.RightNow().toString());
+    System.err.println("Óháðir Búnir " + IWTimeStamp.RightNow().toString());
 
-    System.err.println("Samtölur " + idegaTimestamp.RightNow().toString());
+    System.err.println("Samtölur " + IWTimeStamp.RightNow().toString());
 
     for(int u = 0; u < listlen ; u++){
 
@@ -3888,7 +3888,7 @@ public class Tariffer extends PresentationObjectContainer {
 
     }
 
-    System.err.println("Samtölur búnar" + idegaTimestamp.RightNow().toString());
+    System.err.println("Samtölur búnar" + IWTimeStamp.RightNow().toString());
 
     if(TotalMembersVector == null) System.err.println("Vector er tomur");
 
@@ -3936,7 +3936,7 @@ public class Tariffer extends PresentationObjectContainer {
 
   private void letThemPay(IWContext iwc, int payTypeId, int defaultInstallmentNr,int defaultYear, int defaultFirstMonth, int defaultPayday,double fBankInterest,int iBankCost) throws SQLException{
 
-    //System.err.print("\nÁlagning hefst "+ new idegaTimestamp().toSQLTimeString());
+    //System.err.print("\nÁlagning hefst "+ new IWTimeStamp().toSQLTimeString());
 
     int giroID=1;
 
@@ -3958,11 +3958,11 @@ public class Tariffer extends PresentationObjectContainer {
 
     }
 
-    idegaTimestamp dateToday = idegaTimestamp.RightNow();
+    IWTimeStamp dateToday = IWTimeStamp.RightNow();
 
     Timestamp T = dateToday.getTimestamp();
 
-    idegaTimestamp prefdate;
+    IWTimeStamp prefdate;
 
 
 
@@ -4030,7 +4030,7 @@ public class Tariffer extends PresentationObjectContainer {
 
     int mlen = TotalMembersVector[0].size();
 
-    //System.err.println("Byrja álagningu"+idegaTimestamp.RightNow().toString());
+    //System.err.println("Byrja álagningu"+IWTimeStamp.RightNow().toString());
 
     //
 
@@ -4076,7 +4076,7 @@ public class Tariffer extends PresentationObjectContainer {
 
         if(D!=null){
 
-          prefdate = new idegaTimestamp(D);
+          prefdate = new IWTimeStamp(D);
 
           thisMonth = prefdate.getMonth();
 
@@ -4172,7 +4172,7 @@ public class Tariffer extends PresentationObjectContainer {
 
         for(int k = 0 ; k < instCount ; k++){
 
-          Paydate = new idegaTimestamp(thisYear,thisMonth+k,thisDay,0,0,0).getTimestamp();
+          Paydate = new IWTimeStamp(thisYear,thisMonth+k,thisDay,0,0,0).getTimestamp();
 
           thePrice = smallprice;
 
@@ -4246,9 +4246,9 @@ public class Tariffer extends PresentationObjectContainer {
 
     A.setCashierId(CashierId);
 
-    A.setCreationDate(idegaTimestamp.getTimestampRightNow());
+    A.setCreationDate(IWTimeStamp.getTimestampRightNow());
 
-    A.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+    A.setLastUpdated(IWTimeStamp.getTimestampRightNow());
 
     A.setMemberId(MemberId);
 

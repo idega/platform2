@@ -40,7 +40,7 @@ import com.idega.block.application.data.Applicant;
 
 
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import java.sql.SQLException;
 
@@ -202,9 +202,9 @@ public class ContractSigner extends PresentationObjectContainer{
 
       User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
 
-      idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
+      IWTimeStamp from = new IWTimeStamp(eContract.getValidFrom());
 
-      idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
+      IWTimeStamp to = new IWTimeStamp(eContract.getValidTo());
 
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
 

@@ -3,7 +3,7 @@ package is.idega.idegaweb.travel.data;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.util.ListUtil;
 import java.util.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import java.sql.*;
@@ -157,7 +157,7 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
   public static String getNumberOfSeatsColumnName() {return "NUMBER_OF_SEATS";}
   public static String getBookingIdColumnName() {return "TB_BOOKING_ID";}
 
-  public int ejbHomeGetInqueredSeats(int serviceId, idegaTimestamp stamp, int resellerId, boolean unansweredOnly) throws FinderException{
+  public int ejbHomeGetInqueredSeats(int serviceId, IWTimeStamp stamp, int resellerId, boolean unansweredOnly) throws FinderException{
     int returner = 0;
     try {
       Reseller res = (Reseller)com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
@@ -202,11 +202,11 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
     return returner;
   }
 
-  public Collection ejbFindInqueries(int serviceId, idegaTimestamp stamp, int resellerId, boolean unansweredOnly, String orderBy) throws FinderException {
+  public Collection ejbFindInqueries(int serviceId, IWTimeStamp stamp, int resellerId, boolean unansweredOnly, String orderBy) throws FinderException {
     return ejbFindInqueries(serviceId, stamp, resellerId, unansweredOnly, null, orderBy);
   }
 
-  public Collection ejbFindInqueries(int serviceId, idegaTimestamp stamp, int resellerId, boolean unansweredOnly, TravelAddress travelAddress ,String orderBy) throws FinderException {
+  public Collection ejbFindInqueries(int serviceId, IWTimeStamp stamp, int resellerId, boolean unansweredOnly, TravelAddress travelAddress ,String orderBy) throws FinderException {
     Collection inqueries = null;
     if (orderBy == null) orderBy = "";
       Reseller res = (Reseller)com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);

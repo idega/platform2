@@ -21,7 +21,7 @@ public interface Product extends com.idega.data.IDOLegacyEntity
  public com.idega.block.trade.stockroom.data.Timeframe getTimeframe()throws java.sql.SQLException;
  public com.idega.block.trade.stockroom.data.Timeframe[] getTimeframes()throws java.sql.SQLException;
  public void setCreationDate(java.sql.Timestamp p0);
- public void setCreationDate(com.idega.util.idegaTimestamp p0);
+ public void setCreationDate(com.idega.util.IWTimeStamp p0);
  public void setDefaultValues();
  public void setDiscountTypeId(int p0);
  public void setFileId(java.lang.Integer p0);

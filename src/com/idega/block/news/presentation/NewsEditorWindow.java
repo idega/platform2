@@ -317,10 +317,10 @@ private IWResourceBundle iwrb;
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
       int iCategoryId = sCategoryId !=null ? Integer.parseInt(sCategoryId):-1;
       boolean bUseImage = sUseImage!= null?true:false;
-      idegaTimestamp today = idegaTimestamp.RightNow();
-      idegaTimestamp pubFrom = sPubFrom!=null ? new idegaTimestamp(sPubFrom):today;
+      IWTimeStamp today = IWTimeStamp.RightNow();
+      IWTimeStamp pubFrom = sPubFrom!=null ? new IWTimeStamp(sPubFrom):today;
       today.addDays(defaultPublishDays);
-      idegaTimestamp pubTo = sPubTo!=null ?new idegaTimestamp(sPubTo):today;
+      IWTimeStamp pubTo = sPubTo!=null ?new IWTimeStamp(sPubTo):today;
       Vector V = null;
       ICFile F = null;
       if(iImageId > 0){
@@ -487,7 +487,7 @@ private IWResourceBundle iwrb;
     tiHeadline.setLength(40);
     tiHeadline.setMaxlength(255);
 
-    idegaTimestamp now = idegaTimestamp.RightNow();
+    IWTimeStamp now = IWTimeStamp.RightNow();
     TimestampInput publishFrom = new TimestampInput(prmPubFrom,true);
       publishFrom.setTimestamp(now.getTimestamp());
     // add default publishing days:
@@ -575,7 +575,7 @@ private IWResourceBundle iwrb;
       if( eUser !=null){
         tiAuthor.setContent(eUser.getFirstName());
       }
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       publishFrom.setTimestamp(today.getTimestamp());
       today.addDays(defaultPublishDays);
       publishTo.setTimestamp(today.getTimestamp());

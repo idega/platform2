@@ -6,7 +6,7 @@ import com.idega.core.data.ICObjectInstance;
 import java.sql.SQLException;
 import java.util.*;
 import com.idega.util.idegaCalendar;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
 import java.sql.SQLException;
@@ -721,7 +721,7 @@ public class FinanceFinder  {
 
   }
 
-   public List listOfUnBilledPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+   public List listOfUnBilledPhoneEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
     boolean where = false;

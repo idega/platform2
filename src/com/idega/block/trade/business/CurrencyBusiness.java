@@ -18,7 +18,7 @@ import java.util.Vector;
 import java.util.Collections;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.io.FileGrabber;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.FileUtil;
 import com.idega.util.text.TextSoap;
 import com.idega.presentation.IWContext;
@@ -50,7 +50,7 @@ public static HashMap currencyMap;
 public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 
   public static void getCurrencyMap(IWBundle bundle) {
-    idegaTimestamp stamp = new idegaTimestamp();
+    IWTimeStamp stamp = new IWTimeStamp();
     FileGrabber grabber = new FileGrabber();
     if ( fileString == null ) {
       try {
@@ -171,7 +171,7 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
   public static void saveCurrencyValuesToDatabase() {
     if ( currencyMap != null ) {
       EntityBulkUpdater bulk = new EntityBulkUpdater();
-      idegaTimestamp stamp = new idegaTimestamp();
+      IWTimeStamp stamp = new IWTimeStamp();
 
       HashMap currencies = saveCurrenciesToDatabase();
 

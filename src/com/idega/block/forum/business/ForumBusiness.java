@@ -10,7 +10,7 @@ import com.idega.core.ICTreeNode;
 import java.sql.SQLException;
 import com.idega.block.forum.data.*;
 import com.idega.presentation.IWContext;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
@@ -104,7 +104,7 @@ public static final String PARAMETER_LAST_THREAD = "fo_l_th";
       thread.setValid(true);
       if ( !update )
 	thread.setNumberOfResponses(0);
-      thread.setThreadDate(new idegaTimestamp().getTimestampRightNow());
+      thread.setThreadDate(new IWTimeStamp().getTimestampRightNow());
 
       if ( update ) {
 	try {

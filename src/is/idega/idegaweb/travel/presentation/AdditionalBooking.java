@@ -11,7 +11,7 @@ import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.business.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.service.tour.business.*;
@@ -44,7 +44,7 @@ public class AdditionalBooking extends TravelWindow {
 
   Service service;
   Product product;
-  idegaTimestamp stamp;
+  IWTimeStamp stamp;
   Timeframe timeframe;
 
   public AdditionalBooking() {
@@ -86,7 +86,7 @@ public class AdditionalBooking extends TravelWindow {
       }
         service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(iwc.getParameter(this.parameterServiceId));
         product = ProductBusiness.getProduct(service.getID());
-        stamp = new idegaTimestamp(iwc.getParameter(this.parameterDate));
+        stamp = new IWTimeStamp(iwc.getParameter(this.parameterDate));
         timeframe = ProductBusiness.getTimeframe(product, stamp);
     }catch (FinderException fe) {
       fe.printStackTrace(System.err);
@@ -189,7 +189,7 @@ public class AdditionalBooking extends TravelWindow {
         try {
             ++row;
             category = pPrices[i].getPriceCategory();
-            int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), iTimeframeId, iAddressId);
+            int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimeStamp.getTimestampRightNow(), iTimeframeId, iAddressId);
             pPriceCatNameText = (Text) text.clone();
               pPriceCatNameText.setText(category.getName());
 

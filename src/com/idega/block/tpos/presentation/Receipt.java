@@ -2,7 +2,7 @@ package com.idega.block.tpos.presentation;
 
 import java.util.List;
 import java.sql.SQLException;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.text.TextSoap;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -88,7 +88,7 @@ public class Receipt extends PresentationObjectContainer{
       table.mergeCells(1, row, 2, row);
       table.add(hr,1 ,row);
       ++row;
-      idegaTimestamp stamp = _client.getIdegaTimestamp();
+      IWTimeStamp stamp = _client.getIdegaTimestamp();
       table.add(getText(iwrb.getLocalizedString("date","Date")+" : "+stamp.getLocaleDate(iwc)), 1, row);
       ++row;
       table.add(getText(iwrb.getLocalizedString("time","Time")+" : "+TextSoap.addZero(stamp.getHour())+":"+TextSoap.addZero(stamp.getMinute())), 1, row);

@@ -13,7 +13,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.text.StyleConstants;
 import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
@@ -487,7 +487,7 @@ public class Doc extends FolderBlock implements IWBlock {
 
 		for (int b = 0; b < links.length; b++) {
 		    Link link = getLink(links[b],iwc);
-		    idegaTimestamp stamp = new idegaTimestamp(links[b].getCreationDate());
+		    IWTimeStamp stamp = new IWTimeStamp(links[b].getCreationDate());
 
 		    if (link != null) {
 			linksTable.add(link, 1, linkRow);

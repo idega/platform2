@@ -3,7 +3,7 @@ package com.idega.block.finance.business;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 /**
  * Title:
  * Description:
@@ -17,10 +17,10 @@ public interface FinanceHandler {
 
   public String getAccountType();
   public List listOfAttributes();
-  //public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String assessmentName,int iCashierId,int iAccountKeyId,idegaTimestamp payDate);
-  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String assessmentName,int iCashierId,int iAccountKeyId,idegaTimestamp payDate,idegaTimestamp start,idegaTimestamp end);
+  //public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String assessmentName,int iCashierId,int iAccountKeyId,IWTimeStamp payDate);
+  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String assessmentName,int iCashierId,int iAccountKeyId,IWTimeStamp payDate,IWTimeStamp start,IWTimeStamp end);
   public boolean rollbackAssessment(int iAssessmentRoundId);
   public Map getAttributeMap();
-  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,idegaTimestamp start,idegaTimestamp end)throws java.rmi.RemoteException;
+  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,IWTimeStamp start,IWTimeStamp end)throws java.rmi.RemoteException;
 
 }

@@ -11,7 +11,7 @@ import com.idega.presentation.ui.*;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.data.SimpleQuerier;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.data.BookingEntry;
@@ -46,19 +46,19 @@ public class BookerBean extends IBOServiceBean implements Booker{
   public BookerBean() {
   }
 
-  public  int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
+  public  int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimeStamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
     return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment);
   }
 
-  public  int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
+  public  int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimeStamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
     return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment);
   }
 
-  public  int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
+  public  int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimeStamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
     return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId, comment);
   }
 
-  private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
+  private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimeStamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
     Booking booking = null;
     int returner = bookingId;
 //    Object type = getServiceType(serviceId);
@@ -81,7 +81,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
           booking.setBookingTypeID(bookingType);
           booking.setCity(city);
           booking.setCountry(country);
-          booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
+          booking.setDateOfBooking(IWTimeStamp.getTimestampRightNow());
           booking.setEmail(email);
           booking.setName(name);
           booking.setPostalCode(postalCode);
@@ -107,7 +107,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
           booking.setBookingTypeID(bookingType);
           booking.setCity(city);
           booking.setCountry(country);
-          booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
+          booking.setDateOfBooking(IWTimeStamp.getTimestampRightNow());
           booking.setEmail(email);
           booking.setName(name);
           booking.setPostalCode(postalCode);
@@ -144,11 +144,11 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return returner;
   }
 
-  public  int getNumberOfBookingsByResellers(int serviceId, idegaTimestamp stamp) throws RemoteException {
+  public  int getNumberOfBookingsByResellers(int serviceId, IWTimeStamp stamp) throws RemoteException {
     return getNumberOfBookings(-1, serviceId, stamp, null);
   }
 
-  public  int getNumberOfBookingsByResellers(int[] resellerIds, int serviceId, idegaTimestamp stamp) throws RemoteException {
+  public  int getNumberOfBookingsByResellers(int[] resellerIds, int serviceId, IWTimeStamp stamp) throws RemoteException {
     int returner = 0;
     for (int i = 0; i < resellerIds.length; i++) {
       returner += getNumberOfBookings(resellerIds[i], serviceId, stamp, null);
@@ -156,15 +156,15 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return returner;
   }
 
-  public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, idegaTimestamp stamp) throws RemoteException{
+  public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, IWTimeStamp stamp) throws RemoteException{
     return getNumberOfBookings(resellerId, serviceId, stamp, null);
   }
 
-  public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, idegaTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
+  public  int getNumberOfBookingsByReseller(int resellerId, int serviceId, IWTimeStamp stamp, TravelAddress travelAddress) throws RemoteException{
     return getNumberOfBookings(resellerId, serviceId, stamp, travelAddress);
   }
 
-  private  int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
+  private  int getNumberOfBookings(int resellerId, int serviceId, IWTimeStamp stamp, TravelAddress travelAddress) throws RemoteException{
     if (resellerId != -1) {
       try {
         Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
@@ -229,36 +229,36 @@ public class BookerBean extends IBOServiceBean implements Booker{
 */
 
 
-  public  int getNumberOfBookings(int serviceId, idegaTimestamp stamp)throws RemoteException{
+  public  int getNumberOfBookings(int serviceId, IWTimeStamp stamp)throws RemoteException{
       return getNumberOfBookings(serviceId, stamp, null);
   }
 
-  public  int getNumberOfBookings(int serviceId, idegaTimestamp stamp, int bookingType) throws RemoteException{
+  public  int getNumberOfBookings(int serviceId, IWTimeStamp stamp, int bookingType) throws RemoteException{
       return getNumberOfBookings(serviceId, stamp, null, bookingType);
   }
 
-  public  int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp)throws RemoteException{
+  public  int getNumberOfBookings(int serviceId, IWTimeStamp fromStamp, IWTimeStamp toStamp)throws RemoteException{
       return getNumberOfBookings(serviceId, fromStamp, toStamp, -1);
   }
 
-  public  int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType) throws RemoteException{
+  public  int getNumberOfBookings(int serviceId, IWTimeStamp fromStamp, IWTimeStamp toStamp, int bookingType) throws RemoteException{
     return getGeneralBookingHome().getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, new int[] {});
   }
 
-  public  Booking[] getBookings(List products, idegaTimestamp stamp) throws RemoteException, FinderException{
+  public  Booking[] getBookings(List products, IWTimeStamp stamp) throws RemoteException, FinderException{
     return getBookings(products, stamp, null);
   }
-  public  Booking[] getBookings(List products, int[] bookingTypeIds, idegaTimestamp stamp) throws RemoteException, FinderException{
+  public  Booking[] getBookings(List products, int[] bookingTypeIds, IWTimeStamp stamp) throws RemoteException, FinderException{
     return getBookings(products, bookingTypeIds, stamp, null, null, null);
   }
-  public  Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) throws RemoteException, FinderException{
+  public  Booking[] getBookings(List products, IWTimeStamp fromStamp, IWTimeStamp toStamp) throws RemoteException, FinderException{
     return getBookings(products, new int[]{}, fromStamp, toStamp, null, null);
   }
-  public  Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException{
+  public  Booking[] getBookings(List products, IWTimeStamp fromStamp, IWTimeStamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException{
     return getBookings(products, new int[]{}, fromStamp, toStamp, columnName, columnValue);
   }
 
-  public  Booking[] getBookings(List products, int[] bookingTypeIds, idegaTimestamp fromStamp, idegaTimestamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException {
+  public  Booking[] getBookings(List products, int[] bookingTypeIds, IWTimeStamp fromStamp, IWTimeStamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException {
     if (products != null) {
       int[] ids = new int[products.size()];
       Product prod;
@@ -272,30 +272,30 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
 
-  public  Booking[] getBookings(int serviceId, idegaTimestamp stamp) throws RemoteException, FinderException{
+  public  Booking[] getBookings(int serviceId, IWTimeStamp stamp) throws RemoteException, FinderException{
     return getBookings(serviceId, stamp, new int[]{});
   }
 
-  public  Booking[] getBookings(int serviceId, idegaTimestamp stamp, TravelAddress address) throws RemoteException, FinderException{
+  public  Booking[] getBookings(int serviceId, IWTimeStamp stamp, TravelAddress address) throws RemoteException, FinderException{
     return getBookings(new int[]{serviceId},stamp, null, new int[]{}, address);
   }
 
-  public  Booking[] getBookings(int serviceId, idegaTimestamp stamp, int bookingTypeId) throws RemoteException, FinderException{
+  public  Booking[] getBookings(int serviceId, IWTimeStamp stamp, int bookingTypeId) throws RemoteException, FinderException{
     return getBookings(serviceId,stamp,new int[]{bookingTypeId});
   }
 
-  public  Booking[] getBookings(int serviceId, idegaTimestamp stamp, int[] bookingTypeIds) throws RemoteException, FinderException{
+  public  Booking[] getBookings(int serviceId, IWTimeStamp stamp, int[] bookingTypeIds) throws RemoteException, FinderException{
     return getBookings(new int[]{serviceId}, stamp, bookingTypeIds);
   }
 
-  public  Booking[] getBookings(int[] serviceIds, idegaTimestamp stamp, int[] bookingTypeIds) throws RemoteException, FinderException {
+  public  Booking[] getBookings(int[] serviceIds, IWTimeStamp stamp, int[] bookingTypeIds) throws RemoteException, FinderException {
     return getBookings(serviceIds, stamp, null, bookingTypeIds);
   }
 
-  public  Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds) throws RemoteException, FinderException{
+  public  Booking[] getBookings(int[] serviceIds, IWTimeStamp fromStamp, IWTimeStamp toStamp,int[] bookingTypeIds) throws RemoteException, FinderException{
     return getBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null);
   }
-  public  Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds, TravelAddress address) throws RemoteException, FinderException{
+  public  Booking[] getBookings(int[] serviceIds, IWTimeStamp fromStamp, IWTimeStamp toStamp,int[] bookingTypeIds, TravelAddress address) throws RemoteException, FinderException{
     return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null, null, address));
   }
 
@@ -486,64 +486,64 @@ public class BookerBean extends IBOServiceBean implements Booker{
     int index = mainIndex;
     boolean cont = true;
 
-    idegaTimestamp tempStamp = new idegaTimestamp(booking.getBookingDate());
+    IWTimeStamp tempStamp = new IWTimeStamp(booking.getBookingDate());
 
     if (mainIndex == 0) {
       while (cont) {
         ++index;
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));
+        betw = IWTimeStamp.getDaysBetween(tempStamp, new IWTimeStamp(book.getBookingDate()));
         if (betw != numberOfDays) {
           list = list.subList(mainIndex, index-1);
           cont = false;
         }
         if (index == list.size()-1) cont = false;
-        tempStamp = new idegaTimestamp(book.getBookingDate());
+        tempStamp = new IWTimeStamp(book.getBookingDate());
       }
     }else if (mainIndex == list.size() -1) {
       while (cont) {
         --index;
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
+        betw = IWTimeStamp.getDaysBetween(new IWTimeStamp(book.getBookingDate()), tempStamp);
         if (betw != numberOfDays) {
           list = list.subList(index+1, mainIndex);
           cont = false;
         }
         if (index == 0) cont = false;
-        tempStamp = new idegaTimestamp(book.getBookingDate());
+        tempStamp = new IWTimeStamp(book.getBookingDate());
       }
     }else {
       while (cont) {
         --index;
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), tempStamp);
+        betw = IWTimeStamp.getDaysBetween(new IWTimeStamp(book.getBookingDate()), tempStamp);
         if (betw != numberOfDays) {
           list = list.subList(index+1, list.size()-1);
           cont = false;
         }
 
         if (index == 0) cont = false;
-        tempStamp = new idegaTimestamp(book.getBookingDate());
+        tempStamp = new IWTimeStamp(book.getBookingDate());
       }
 
       index = 0;
       if (list.size() == 1 ) {
         cont=false;
       }else {
-        tempStamp = new idegaTimestamp(((Booking) list.get(index)).getBookingDate());
+        tempStamp = new IWTimeStamp(((Booking) list.get(index)).getBookingDate());
         cont=true;
       }
 
       while (cont) {
         ++index;
         book = (Booking) list.get(index);
-        betw = idegaTimestamp.getDaysBetween(tempStamp, new idegaTimestamp(book.getBookingDate()));
+        betw = IWTimeStamp.getDaysBetween(tempStamp, new IWTimeStamp(book.getBookingDate()));
         if (betw != numberOfDays) {
           list = list.subList(0, index-1);
           cont = false;
         }
         if (index == list.size()-1) cont = false;
-        tempStamp = new idegaTimestamp(book.getBookingDate());
+        tempStamp = new IWTimeStamp(book.getBookingDate());
       }
     }
 
@@ -552,7 +552,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
 
 
-  public  int getAvailableItems(ProductPrice pPrice, idegaTimestamp stamp) {
+  public  int getAvailableItems(ProductPrice pPrice, IWTimeStamp stamp) {
     return -1;
   }
 

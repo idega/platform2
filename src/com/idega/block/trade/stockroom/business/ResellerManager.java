@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.user.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.core.accesscontrol.business.*;
 import com.idega.core.data.*;
 import com.idega.core.accesscontrol.data.*;
@@ -144,7 +144,7 @@ public class ResellerManager {
       }
 
       UserBusiness uBus = new UserBusiness();
-      User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,idegaTimestamp.RightNow(),null);
+      User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,IWTimeStamp.RightNow(),null);
       LoginDBHandler.createLogin(user.getID(), userName, password);
 
       sGroup.addUser(user);

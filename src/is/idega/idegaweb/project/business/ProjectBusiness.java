@@ -18,7 +18,7 @@ import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.data.ICPermission;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import java.util.List;
 import java.util.Vector;
@@ -729,7 +729,7 @@ public class ProjectBusiness {
       }
       p.setDeleted(true);
       p.setDeletedBy(userId);
-      p.setDeletedWhen(idegaTimestamp.getTimestampRightNow());
+      p.setDeletedWhen(IWTimeStamp.getTimestampRightNow());
       p.update();
 
       return true;

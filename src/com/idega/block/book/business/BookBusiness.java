@@ -1,7 +1,7 @@
 package com.idega.block.book.business;
 
 import javax.ejb.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.core.data.ICCategory;
 import com.idega.core.business.CategoryFinder;
@@ -152,7 +152,7 @@ public class BookBusiness {
       book.setName(bookName);
       book.setDescription(bookDescription);
       if ( bookID == -1 )
-	book.setDateAdded(new idegaTimestamp().getTimestamp());
+	book.setDateAdded(new IWTimeStamp().getTimestamp());
 
       try {
 	book.setYear(Integer.parseInt(bookYear));
@@ -265,7 +265,7 @@ public class BookBusiness {
       author.setName(name);
       author.setDescription(description);
       if ( authorID == -1 )
-	author.setDateAdded(new idegaTimestamp().getTimestamp());
+	author.setDateAdded(new IWTimeStamp().getTimestamp());
 
       try {
 	int imageID = Integer.parseInt(image);
@@ -309,7 +309,7 @@ public class BookBusiness {
       review.setName(name);
       review.setReview(bookReview);
       if ( reviewID == -1 )
-	review.setDateAdded(new idegaTimestamp().getTimestamp());
+	review.setDateAdded(new IWTimeStamp().getTimestamp());
       if ( bookID != -1 )
 	review.setBookID(bookID);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.18 2002/07/03 10:53:10 palli Exp $
+ * $Id: ApplicationFinder.java,v 1.19 2002/08/12 12:15:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,7 +20,7 @@ import java.util.List;
 import com.idega.data.EntityFinder;
 import java.util.Hashtable;
 import java.util.Vector;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 /**
  *
@@ -244,7 +244,7 @@ public class ApplicationFinder {
       sql.append(" where ");
       sql.append(subject.getExpiresColumnName());
       sql.append(" > '");
-      sql.append(com.idega.util.idegaTimestamp.RightNow().toSQLDateString());
+      sql.append(com.idega.util.IWTimeStamp.RightNow().toSQLDateString());
       sql.append("'");
 
       return(EntityFinder.findAll(subject,sql.toString()));

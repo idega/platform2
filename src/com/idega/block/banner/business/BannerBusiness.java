@@ -10,7 +10,7 @@ import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICFile;
 import java.util.List;
 import java.util.Iterator;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.Image;
@@ -175,10 +175,10 @@ public static final String COOKIE_NAME = "idegaAD_";
     ad.setMaxImpressions(_maxImpressions);
 
     if ( beginDate != null && beginDate.length() > 0 ) {
-      ad.setBeginDate(new idegaTimestamp(beginDate).getTimestamp());
+      ad.setBeginDate(new IWTimeStamp(beginDate).getTimestamp());
     }
     if ( endDate != null && endDate.length() > 0 ) {
-      ad.setEndDate(new idegaTimestamp(endDate).getTimestamp());
+      ad.setEndDate(new IWTimeStamp(endDate).getTimestamp());
     }
     if ( adName != null && adName.length() > 0 ) {
       ad.setAdName(adName);
@@ -292,9 +292,9 @@ public static final String COOKIE_NAME = "idegaAD_";
   public static AdEntity getCurrentAd(BannerEntity banner) {
     try {
       List adList = BannerFinder.getAds(banner);
-      idegaTimestamp date = new idegaTimestamp();
-      idegaTimestamp beginDate;
-      idegaTimestamp endDate;
+      IWTimeStamp date = new IWTimeStamp();
+      IWTimeStamp beginDate;
+      IWTimeStamp endDate;
       boolean remove;
       AdEntity ad;
 
@@ -307,9 +307,9 @@ public static final String COOKIE_NAME = "idegaAD_";
           ad = (AdEntity) adList.get(a);
 
           if ( ad.getBeginDate() != null )
-            beginDate = new idegaTimestamp(ad.getBeginDate());
+            beginDate = new IWTimeStamp(ad.getBeginDate());
           if ( ad.getEndDate() != null )
-            endDate = new idegaTimestamp(ad.getEndDate());
+            endDate = new IWTimeStamp(ad.getEndDate());
 
           if ( !remove ) {
             if ( ad.getHits() > 0 && ad.getMaxHits() > 0 && ad.getHits() >= ad.getMaxHits() ) {

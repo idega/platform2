@@ -8,7 +8,7 @@ import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.Tariff;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.building.business.BuildingCacher;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import com.idega.data.EntityBulkUpdater;
 import java.util.Map;
@@ -104,7 +104,7 @@ public class CampusFinanceHandler implements FinanceHandler{
     return false;
   }
 
-  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate,idegaTimestamp start,idegaTimestamp end){
+  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,IWTimeStamp paydate,IWTimeStamp start,IWTimeStamp end){
     Collection tariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
     List listOfTariffs = new Vector(tariffs);
     //List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
@@ -245,7 +245,7 @@ public class CampusFinanceHandler implements FinanceHandler{
    *  if the contract has a delivertime, that is the begin date,
    *  if the contract has a returntime , that is the end date.
    */
-  public double getFactor(ContractAccountApartment con,idegaTimestamp start,idegaTimestamp end   ){
+  public double getFactor(ContractAccountApartment con,IWTimeStamp start,IWTimeStamp end   ){
     double ret = 0;
     long begin = start.getTimestamp().getTime();
     long endin = end.getTimestamp().getTime();
@@ -292,7 +292,7 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
 
-  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,idegaTimestamp start,idegaTimestamp end)throws java.rmi.RemoteException{
+  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,IWTimeStamp start,IWTimeStamp end)throws java.rmi.RemoteException{
     Collection tariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
     List listOfTariffs = new Vector(tariffs);
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
@@ -391,7 +391,7 @@ public class CampusFinanceHandler implements FinanceHandler{
     count++;
   }
 
-  private float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,idegaTimestamp itPaydate,int iCashierId,double factor)
+  private float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,IWTimeStamp itPaydate,int iCashierId,double factor)
   throws SQLException, java.rmi.RemoteException{
 
     if(factor > 0){
@@ -399,7 +399,7 @@ public class CampusFinanceHandler implements FinanceHandler{
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(T.getAccountKeyId());
     AE.setCashierId(iCashierId);
-    AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+    AE.setLastUpdated(IWTimeStamp.getTimestampRightNow());
 
     /** @todo  skeptical precision cut */
 

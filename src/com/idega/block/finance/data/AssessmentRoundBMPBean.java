@@ -3,7 +3,7 @@
 package com.idega.block.finance.data;
 
 import com.idega.data.IDOLegacyEntity;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.sql.*;
 
 /**
@@ -139,21 +139,21 @@ public class AssessmentRoundBMPBean extends com.idega.data.GenericEntity impleme
   public void setAsNew(String name){
     setName(name);
     setStatusAssessed();
-    setRoundStamp(idegaTimestamp.getTimestampRightNow());
+    setRoundStamp(IWTimeStamp.getTimestampRightNow());
     setTotals(0);
   }
 
   public void setAsSent(String name){
     setName(name);
     setStatusSent();
-    setRoundStamp(idegaTimestamp.getTimestampRightNow());
+    setRoundStamp(IWTimeStamp.getTimestampRightNow());
 
   }
 
   public void setAsReceived(String name){
     setName(name);
     setStatusReceived();
-    setRoundStamp(idegaTimestamp.getTimestampRightNow());
+    setRoundStamp(IWTimeStamp.getTimestampRightNow());
   }
 
 }

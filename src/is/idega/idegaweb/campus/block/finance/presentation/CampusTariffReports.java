@@ -14,7 +14,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Building;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.AccountKey;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 /**
  * Title:
@@ -65,13 +65,13 @@ public class CampusTariffReports extends Block implements Campus{
 
     if(iwc.isParameterSet(prmDateFrom)){
       try {
-        from = new idegaTimestamp(iwc.getParameter(prmDateFrom)).getTimestamp();
+        from = new IWTimeStamp(iwc.getParameter(prmDateFrom)).getTimestamp();
       }
       catch (Exception ex) {  }
     }
      if(iwc.isParameterSet(prmDateTo)){
       try {
-        to = new idegaTimestamp(iwc.getParameter(prmDateTo)).getTimestamp();
+        to = new IWTimeStamp(iwc.getParameter(prmDateTo)).getTimestamp();
       }
       catch (Exception ex) {  }
     }
@@ -96,12 +96,12 @@ public class CampusTariffReports extends Block implements Campus{
     buildings.setSelectedElement(String.valueOf(building));
     DropdownMenu keys = getAccountKeysDrop(prmAccountKey);
     keys.setSelectedElement(String.valueOf(key));
-    idegaTimestamp today = idegaTimestamp.RightNow();
+    IWTimeStamp today = IWTimeStamp.RightNow();
     DateInput inpFrom = new DateInput(prmDateFrom);
     if(from!=null)
       inpFrom.setDate(new java.sql.Date(from.getTime()));
     else
-      inpFrom.setDate(new idegaTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
+      inpFrom.setDate(new IWTimeStamp(1,today.getMonth(),today.getYear()).getSQLDate());
     inpFrom.setYearRange(today.getYear()-5,today.getYear()+1);
     DateInput inpTo = new DateInput(prmDateTo);
     if(to!=null)

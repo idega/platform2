@@ -210,7 +210,7 @@ private Table myTable;
 
 
 
-        idegaTimestamp date = new idegaTimestamp();
+        IWTimeStamp date = new IWTimeStamp();
 
         String dagur = date.getYear()+"-01-01";
 
@@ -328,7 +328,7 @@ private Table myTable;
 
           if ( scoreCards.length > 0 ) {
 
-            idegaTimestamp scoreTime = new idegaTimestamp(scoreCards[0].getScorecardDate());
+            IWTimeStamp scoreTime = new IWTimeStamp(scoreCards[0].getScorecardDate());
 
             Field fieldId = ((is.idega.idegaweb.golf.entity.FieldHome)com.idega.data.IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKeyLegacy(scoreCards[0].getFieldID());
 
@@ -352,7 +352,7 @@ private Table myTable;
 
           if ( scoreCards2.length > 0 ) {
 
-            idegaTimestamp scoreTime = new idegaTimestamp(scoreCards2[0].getScorecardDate());
+            IWTimeStamp scoreTime = new IWTimeStamp(scoreCards2[0].getScorecardDate());
 
             Field fieldId = ((is.idega.idegaweb.golf.entity.FieldHome)com.idega.data.IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKeyLegacy(scoreCards2[0].getFieldID());
 

@@ -8,7 +8,7 @@ import com.idega.block.text.data.*;
 import com.idega.util.LocaleUtil;
 import com.idega.block.news.data.*;
 import com.idega.block.text.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -81,7 +81,7 @@ public class NewsFinder {
     // USE BETWEEN
     /*
     if(!ignorePublishingDates ){
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       sql.append(" and '");
       sql.append(today.toSQLString());
       sql.append("' between ");
@@ -94,7 +94,7 @@ public class NewsFinder {
     // USE OPERATORS <= AND >=
 
     if(!ignorePublishingDates ){
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       sql.append(" and ");
       sql.append(com.idega.block.text.data.ContentBMPBean.getColumnNamePublishFrom() );
       sql.append(" <= '");
@@ -163,7 +163,7 @@ public class NewsFinder {
     // USE BETWEEN
     /*
     if(!ignorePublishingDates ){
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       sql.append(" and '");
       sql.append(today.toSQLString());
       sql.append("' between ");
@@ -176,7 +176,7 @@ public class NewsFinder {
     // USE OPERATORS <= AND >=
 
     if(!ignorePublishingDates ){
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
       sql.append(" and ");
       sql.append(com.idega.block.text.data.ContentBMPBean.getColumnNamePublishFrom() );
       sql.append(" <= '");
@@ -370,7 +370,7 @@ public class NewsFinder {
       sql.append(" = ");
       sql.append(iCategoryId);
       if(PublishType > 0){
-              String today = idegaTimestamp.RightNow().toSQLString();
+              String today = IWTimeStamp.RightNow().toSQLString();
       switch (PublishType) {
         case UNPUBLISHED :
                         sql.append(" and c.");

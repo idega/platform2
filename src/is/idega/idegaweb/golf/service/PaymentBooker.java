@@ -318,7 +318,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
     private void doList(IWContext iwc) throws SQLException{
 
-      idegaTimestamp toDay = new idegaTimestamp();
+      IWTimeStamp toDay = new IWTimeStamp();
 
       int iToDay = toDay.getDay();
 
@@ -574,7 +574,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
             eP.setStatus(true);
 
-            eP.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+            eP.setLastUpdated(IWTimeStamp.getTimestampRightNow());
 
             eP.setCashierId(this.iCashierID);
 
@@ -582,7 +582,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
             int accountId = TariffService.findAccountID(eP.getMemberId(),Integer.parseInt(sUnionID));
 
-            TariffService.makeAccountEntry(accountId,eP.getPrice(),eP.getName(),"Greiðsla","","","",this.iCashierID,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
+            TariffService.makeAccountEntry(accountId,eP.getPrice(),eP.getName(),"Greiðsla","","","",this.iCashierID,IWTimeStamp.getTimestampRightNow(),IWTimeStamp.getTimestampRightNow());
 
             String sMsg = iwrb.getLocalizedString("pb_msg2","Payments were booked");
 
@@ -656,11 +656,11 @@ import com.idega.idegaweb.IWResourceBundle;
 
               sReturningMatrix[i][3] = String.valueOf(ePayment.getID());
 
-              sReturningMatrix[i][4] = new idegaTimestamp(ePayment.getPaymentDate()).toSQLDateString();
+              sReturningMatrix[i][4] = new IWTimeStamp(ePayment.getPaymentDate()).toSQLDateString();
 
               sReturningMatrix[i][5] = String.valueOf(ePayment.getPrice());
 
-              pElement pe = new pElement(eMember.getID(),eMember.getName(),eMember.getSocialSecurityNumber(),ePayment.getID(),new idegaTimestamp(ePayment.getPaymentDate()),ePayment.getPrice());
+              pElement pe = new pElement(eMember.getID(),eMember.getName(),eMember.getSocialSecurityNumber(),ePayment.getID(),new IWTimeStamp(ePayment.getPaymentDate()),ePayment.getPrice());
 
             }
 
@@ -708,7 +708,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
               eMember = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(ePayment.getMemberId());
 
-              pElement pe = new pElement(eMember.getID(),eMember.getName(),eMember.getSocialSecurityNumber(),ePayment.getID(),new idegaTimestamp(ePayment.getPaymentDate()),ePayment.getPrice());
+              pElement pe = new pElement(eMember.getID(),eMember.getName(),eMember.getSocialSecurityNumber(),ePayment.getID(),new IWTimeStamp(ePayment.getPaymentDate()),ePayment.getPrice());
 
               vector.addElement(pe);
 
@@ -756,11 +756,11 @@ import com.idega.idegaweb.IWResourceBundle;
 
 
 
-      idegaTimestamp today = idegaTimestamp.RightNow();
+      IWTimeStamp today = IWTimeStamp.RightNow();
 
-      idegaTimestamp from = new idegaTimestamp(1,1,today.getYear());
+      IWTimeStamp from = new IWTimeStamp(1,1,today.getYear());
 
-      idegaTimestamp to = new idegaTimestamp(31,12,today.getYear());
+      IWTimeStamp to = new IWTimeStamp(31,12,today.getYear());
 
       if(iwc.isParameterSet("from_date"))
 
@@ -838,7 +838,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
 
 
-    public Table getEntryResultsTable(idegaTimestamp from,idegaTimestamp to){
+    public Table getEntryResultsTable(IWTimeStamp from,IWTimeStamp to){
 
 
 
@@ -1018,7 +1018,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
 
 
-    private String getDateString(idegaTimestamp stamp){
+    private String getDateString(IWTimeStamp stamp){
 
     return stamp.getISLDate(".",true);
 
@@ -1026,9 +1026,9 @@ import com.idega.idegaweb.IWResourceBundle;
 
 
 
-    private idegaTimestamp parseStamp(String sDate){
+    private IWTimeStamp parseStamp(String sDate){
 
-       idegaTimestamp it = new idegaTimestamp();
+       IWTimeStamp it = new IWTimeStamp();
 
        try{
 
@@ -1048,11 +1048,11 @@ import com.idega.idegaweb.IWResourceBundle;
 
         }
 
-        it = new idegaTimestamp(day,month,year);
+        it = new IWTimeStamp(day,month,year);
 
       }
 
-      catch(Exception pe){ it = new idegaTimestamp();}
+      catch(Exception pe){ it = new IWTimeStamp();}
 
       return it;
 
@@ -1070,13 +1070,13 @@ import com.idega.idegaweb.IWResourceBundle;
 
       private int iPaymentId;
 
-      private idegaTimestamp itPayDate;
+      private IWTimeStamp itPayDate;
 
       private int iPrice;
 
 
 
-      public pElement( int iMemberId,String sName,String sSocialSecurityNumber, int iPaymentId,idegaTimestamp itPayDate, int iPrice){
+      public pElement( int iMemberId,String sName,String sSocialSecurityNumber, int iPaymentId,IWTimeStamp itPayDate, int iPrice){
 
         this.iMemberId = iMemberId;
 
@@ -1126,9 +1126,9 @@ import com.idega.idegaweb.IWResourceBundle;
 
       public int getPaymentId(){return iPaymentId;   }
 
-      public void setPayDate(idegaTimestamp i){itPayDate = i;}
+      public void setPayDate(IWTimeStamp i){itPayDate = i;}
 
-      public idegaTimestamp getPayDate(){return itPayDate;   }
+      public IWTimeStamp getPayDate(){return itPayDate;   }
 
       public void setPrice(int i){iPrice = i;}
 
@@ -2012,7 +2012,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
           T.add(Long.toString(Fs[i].length()/1000)+" KB",2,row);
 
-          T.add(new idegaTimestamp(Fs[i].lastModified()).getISLDate(),3,row);
+          T.add(new IWTimeStamp(Fs[i].lastModified()).getISLDate(),3,row);
 
 
 
@@ -2108,7 +2108,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
     private DropdownMenu drpMonth(String name){
 
-      idegaTimestamp Today = new idegaTimestamp();
+      IWTimeStamp Today = new IWTimeStamp();
 
       int iMonth = Today.getMonth();
 
@@ -2132,7 +2132,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
     private DropdownMenu drpYear(String name){
 
-      idegaTimestamp it = new idegaTimestamp();
+      IWTimeStamp it = new IWTimeStamp();
 
       int a = it.getYear();
 
@@ -2302,7 +2302,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
       DecimalFormat monthFormatter = new DecimalFormat("00");
 
-      idegaTimestamp today = new idegaTimestamp();
+      IWTimeStamp today = new IWTimeStamp();
 
       String strMonth = monthFormatter.format(month);
 

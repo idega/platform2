@@ -12,7 +12,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.text.data.TxText;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.util.idegaCalendar;
@@ -318,7 +318,7 @@ public class ServiceDesigner extends TravelManager {
           Text categoryName;
           Text infoText;
           Text counter;
-          idegaTimestamp timestamp;
+          IWTimeStamp timestamp;
 
 //          TextInput maxUsage;
 
@@ -535,7 +535,7 @@ public class ServiceDesigner extends TravelManager {
 
               if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
                 priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
-                pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
+                pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),IWTimeStamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
               }else if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
                 priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
                 if (priceDiscount[i].indexOf(",") > 0) {
@@ -545,7 +545,7 @@ public class ServiceDesigner extends TravelManager {
                 }else {
                   price = (float) Float.parseFloat(priceDiscount[i]);
                 }
-                pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
+                pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),IWTimeStamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
               }
 
               if (pPrice != null) {
@@ -594,8 +594,8 @@ public class ServiceDesigner extends TravelManager {
   }
 
   private Text getTimeframeText(Timeframe timeframe, IWContext iwc) {
-    idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
-    idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
+    IWTimeStamp from = new IWTimeStamp(timeframe.getFrom());
+    IWTimeStamp to = new IWTimeStamp(timeframe.getTo());
     Text text = new Text();
       text.setText(from.getLocaleDate(iwc)+ " - " + to.getLocaleDate(iwc) );
     return text;

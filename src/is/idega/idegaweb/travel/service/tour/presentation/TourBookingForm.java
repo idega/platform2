@@ -42,7 +42,7 @@ public class TourBookingForm extends BookingForm{
 //  private Service _service;
   private Tour _tour;
 //  private Contract _contract;
-//  private idegaTimestamp _stamp;
+//  private IWTimeStamp _stamp;
   private TourBooking _booking;
 //  private Reseller _reseller;
 
@@ -103,9 +103,9 @@ public class TourBookingForm extends BookingForm{
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
     String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
     if (day != null && month != null && year != null) {
-      _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+      _stamp = new IWTimeStamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
     }else {
-      _stamp = new idegaTimestamp(idegaTimestamp.RightNow());
+      _stamp = new IWTimeStamp(IWTimeStamp.RightNow());
     }
   }
 */
@@ -323,7 +323,7 @@ public class TourBookingForm extends BookingForm{
             table.add(manyDaysText, 1, row);
             table.add(manyDays, 2, row);
           }else {
-            table.add(new HiddenInput(parameterFromDate, new idegaTimestamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
+            table.add(new HiddenInput(parameterFromDate, new IWTimeStamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
             GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
             GeneralBooking tempBooking = gbHome.findByPrimaryKey(_booking.getPrimaryKey());
             List bookingsJa = gbHome.getMultibleBookings(tempBooking);
@@ -397,7 +397,7 @@ public class TourBookingForm extends BookingForm{
               try {
                   ++row;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId);
       //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -432,7 +432,7 @@ public class TourBookingForm extends BookingForm{
                         if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                          price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId);
                           currentSum = (int) (currentCount * price);
 
                           totalCount += currentCount;
@@ -618,7 +618,7 @@ public class TourBookingForm extends BookingForm{
       return form;
   }
 
-  public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, FinderException {
+  public Form getPublicBookingForm(IWContext iwc, Product product, IWTimeStamp stamp) throws RemoteException, FinderException {
     int bookings = getTourBooker(iwc).getNumberOfBookings(_productId, this._stamp);
     int max = 0;
     int min = 0;
@@ -657,7 +657,7 @@ public class TourBookingForm extends BookingForm{
     }
   }
 /*
-  private Form getInquiryForm(IWContext iwc, Product product, idegaTimestamp stamp) {
+  private Form getInquiryForm(IWContext iwc, Product product, IWTimeStamp stamp) {
     Form form = new Form();
     Table table = new Table();
       table.setCellpadding(0);
@@ -678,7 +678,7 @@ public class TourBookingForm extends BookingForm{
     return form;
   }*/
 
-  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, idegaTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
+  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, IWTimeStamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
     Form form = new Form();
       form.addParameter(this.parameterOnlineBooking, "true");
     Table table = new Table();
@@ -966,7 +966,7 @@ public class TourBookingForm extends BookingForm{
                   pTable = (Table) pTableToClone.clone();
 //                  ++pRow;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId);
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -1003,7 +1003,7 @@ public class TourBookingForm extends BookingForm{
                         if (entries[j].getProductPriceId() == pPrices[i].getID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId));
+                          currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimeStamp.getTimestampRightNow(), tFrame.getID(), addressId));
 
                           totalCount += currentCount;
                           totalSum += currentSum;
@@ -1450,13 +1450,13 @@ public class TourBookingForm extends BookingForm{
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
     String manyDays = iwc.getParameter(this.parameterManyDays);
-    idegaTimestamp fromStamp = null;
-    idegaTimestamp toStamp = null;
+    IWTimeStamp fromStamp = null;
+    IWTimeStamp toStamp = null;
     int betw = 1;
     int totalSeats = 0;
 
     try {
-      fromStamp = new idegaTimestamp(fromDate);
+      fromStamp = new IWTimeStamp(fromDate);
       int iManyDays = Integer.parseInt(manyDays);
       if (iManyDays < 1) betw = 1;
       else betw = iManyDays;
@@ -1492,7 +1492,7 @@ public class TourBookingForm extends BookingForm{
         for (int r = 0; r < betw ; r++) {
           if (r != 0)
           if (_tour != null) {
-            fromStamp = new idegaTimestamp(getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, fromStamp));
+            fromStamp = new IWTimeStamp(getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, fromStamp));
           }else {
             fromStamp.addDays(1);
           }
@@ -1540,13 +1540,13 @@ public class TourBookingForm extends BookingForm{
       Table table = new Table();
         form.add(table);
       int row = 1;
-      idegaTimestamp temp;
+      IWTimeStamp temp;
 
       table.add(iwrb.getLocalizedString("travel.unavailable_days","Unavailable days"), 1,row);
       for (int i = 0; i < errorDays.size(); i++) {
         try {
           ++row;
-          temp = new idegaTimestamp((idegaTimestamp)errorDays.get(i));
+          temp = new IWTimeStamp((IWTimeStamp)errorDays.get(i));
           table.add(temp.getLocaleDate(iwc), 1,row);
         }catch (NullPointerException npe) {
           npe.printStackTrace(System.err);
@@ -1669,11 +1669,11 @@ public class TourBookingForm extends BookingForm{
 
 
       try {
-        _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+        _stamp = new IWTimeStamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
       }
-      idegaTimestamp _fromDate = new idegaTimestamp(_stamp);
+      IWTimeStamp _fromDate = new IWTimeStamp(_stamp);
 
       String sBookingId = iwc.getParameter(this.parameterBookingId);
 
@@ -1764,7 +1764,7 @@ public class TourBookingForm extends BookingForm{
           if (iBookingId == -1) {
             if (i != 0) {
               if (_tour != null) {
-                _fromDate = new idegaTimestamp(getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, _fromDate));
+                _fromDate = new IWTimeStamp(getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, _fromDate));
               }else {
                 _fromDate.addDays(1);
               }
@@ -1779,7 +1779,7 @@ public class TourBookingForm extends BookingForm{
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
-                getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+                getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new IWTimeStamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
               }
               lbookingId = iBookingId;
 
@@ -1944,8 +1944,8 @@ public class TourBookingForm extends BookingForm{
         iManyDays = Integer.parseInt(manyDays);
       }
 
-      idegaTimestamp fromStamp = new idegaTimestamp(fromDate);
-      idegaTimestamp toStamp = new idegaTimestamp(fromStamp);
+      IWTimeStamp fromStamp = new IWTimeStamp(fromDate);
+      IWTimeStamp toStamp = new IWTimeStamp(fromStamp);
         toStamp.addDays(iManyDays);
 
       if (bookingId == -1) {
@@ -2022,8 +2022,8 @@ public class TourBookingForm extends BookingForm{
     this._booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(booking.getPrimaryKey());
   }
 
-  public void setTimestamp(idegaTimestamp stamp) {
-    this._stamp = new idegaTimestamp(stamp);
+  public void setTimestamp(IWTimeStamp stamp) {
+    this._stamp = new IWTimeStamp(stamp);
   }
 
   private TourBooker getTourBooker(IWApplicationContext iwac) throws RemoteException {

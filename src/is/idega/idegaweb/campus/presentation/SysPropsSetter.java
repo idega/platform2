@@ -18,7 +18,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.idegaCalendar;
 import com.idega.data.EntityFinder;
 import java.sql.SQLException;
@@ -152,7 +152,7 @@ public class SysPropsSetter extends Block{
     T.add(DI,3,row);
     if(SysProps.getContractDate()!=null){
       //DI.setDate(SysProps.getContractDate());
-      T.add(Edit.formatText(new idegaTimestamp(SysProps.getContractDate()).toString()),4,row);
+      T.add(Edit.formatText(new IWTimeStamp(SysProps.getContractDate()).toString()),4,row);
     }
     row++;
     if(SysProps.getAdminEmail()!= null)
@@ -217,7 +217,7 @@ public class SysPropsSetter extends Block{
     SystemProperties SysProps = seekProperties();
     if(SysProps !=null){
       if(contractDate.length() == 10){
-        SysProps.setContractDate(new idegaTimestamp(contractDate).getSQLDate());
+        SysProps.setContractDate(new IWTimeStamp(contractDate).getSQLDate());
       }
       if(contractYears !=null){
          int years = -1;

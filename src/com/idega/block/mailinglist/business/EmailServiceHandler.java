@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeBodyPart;

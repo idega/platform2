@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 import com.idega.data.EntityBulkUpdater;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import is.idega.idegaweb.campus.data.AccountPhone;
 import is.idega.idegaweb.campus.block.phone.data.PhoneFileInfo;
 
@@ -40,7 +40,7 @@ public class PhoneFileHandler {
       String anumber,snumber,bnumber;
       int nightsec,daysec,sec;
       float price;
-      idegaTimestamp stamp;
+      IWTimeStamp stamp;
       int count = 10;
       int linecount = 1;
       Vector V = new Vector();
@@ -61,7 +61,7 @@ public class PhoneFileHandler {
             price = Float.parseFloat(st.nextToken());
 
             ape = ((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
-            ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+            ape.setLastUpdated(IWTimeStamp.getTimestampRightNow());
             ape.setDayDuration(daysec);
             ape.setNightDuration(nightsec);
             ape.setDuration(sec);
@@ -98,7 +98,7 @@ public class PhoneFileHandler {
     return L;
   }
 
-  public idegaTimestamp parseStamp(String stamp){
+  public IWTimeStamp parseStamp(String stamp){
     StringBuffer st = new StringBuffer();
     if(stamp!= null && stamp.length() >= 19){
       st.append(stamp.substring(0,10));
@@ -109,7 +109,7 @@ public class PhoneFileHandler {
       st.append(":");
       st.append(stamp.substring(17,19));
     }
-    return new idegaTimestamp(st.toString());
+    return new IWTimeStamp(st.toString());
   }
 
 
@@ -134,7 +134,7 @@ public class PhoneFileHandler {
 //          String anumber,snumber,bnumber;
 //          int nightsec,daysec,sec;
 //          float price,totPrice = 0;
-//          idegaTimestamp stamp;
+//          IWTimeStamp stamp;
 //          int count = 10;
 //          int linecount = 1, noAccountCount = 0,errorCount = 0,numberCount = 0;
 //          Vector vError = new Vector();
@@ -159,7 +159,7 @@ public class PhoneFileHandler {
 //                daysec = Integer.parseInt(st.nextToken());
 //                sec = Integer.parseInt(st.nextToken());
 //                price = Float.parseFloat(st.nextToken());
-//                ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+//                ape.setLastUpdated(IWTimeStamp.getTimestampRightNow());
 //                ape.setDayDuration(daysec);
 //                ape.setNightDuration(nightsec);
 //                ape.setDuration(sec);
@@ -225,7 +225,7 @@ public class PhoneFileHandler {
 //            linecount++;
 //          }// while
 //          PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
-//          pfi.setDateRead(idegaTimestamp.getTimestampRightNow());
+//          pfi.setDateRead(IWTimeStamp.getTimestampRightNow());
 //          pfi.setLineCount(linecount-1);
 //          pfi.setErrorCount(errorCount );
 //          pfi.setNoAccountCount(noAccountCount );
@@ -296,7 +296,7 @@ public class PhoneFileHandler {
           String anumber,snumber,bnumber;
           int nightsec,daysec,sec;
           float price = 0,totPrice = 0;
-          idegaTimestamp stamp;
+          IWTimeStamp stamp;
           int count = 10;
           int linecount = 1, noAccountCount = 0,errorCount = 0,numberCount = 0;
           Vector vError = new Vector();
@@ -324,7 +324,7 @@ public class PhoneFileHandler {
                 daysec = Integer.parseInt(st.nextToken());
                 sec = Integer.parseInt(st.nextToken());
                 price = Float.parseFloat(st.nextToken());
-                ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+                ape.setLastUpdated(IWTimeStamp.getTimestampRightNow());
                 ape.setDayDuration(daysec);
                 ape.setNightDuration(nightsec);
                 ape.setDuration(sec);
@@ -424,7 +424,7 @@ public class PhoneFileHandler {
           }
 
           PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
-          pfi.setDateRead(idegaTimestamp.getTimestampRightNow());
+          pfi.setDateRead(IWTimeStamp.getTimestampRightNow());
           pfi.setLineCount(linecount-1);
           pfi.setErrorCount(errorCount );
           pfi.setNoAccountCount(noAccountCount );
@@ -506,7 +506,7 @@ public class PhoneFileHandler {
         String anumber,snumber,bnumber;
         int nightsec,daysec,sec;
         float price,totPrice = 0;
-        idegaTimestamp stamp;
+        IWTimeStamp stamp;
         int count = 10;
         int linecount = 1, noAccountCount = 0,errorCount = 0,numberCount = 0;
         Vector vError = new Vector();
@@ -514,8 +514,8 @@ public class PhoneFileHandler {
         Vector vEntries = new Vector();
         Hashtable phoneNumbers = new Hashtable();
         Hashtable phoneEntries = new Hashtable();
-        idegaTimestamp from = idegaTimestamp.RightNow();
-        idegaTimestamp to = idegaTimestamp.RightNow();
+        IWTimeStamp from = IWTimeStamp.RightNow();
+        IWTimeStamp to = IWTimeStamp.RightNow();
         AccountPhoneEntry ape;
         Integer iAccountId;
         Account eAccount;
@@ -536,7 +536,7 @@ public class PhoneFileHandler {
               daysec = Integer.parseInt(st.nextToken());
               sec = Integer.parseInt(st.nextToken());
               price = Float.parseFloat(st.nextToken());
-              ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+              ape.setLastUpdated(IWTimeStamp.getTimestampRightNow());
               ape.setDayDuration(daysec);
               ape.setNightDuration(nightsec);
               ape.setDuration(sec);
@@ -622,7 +622,7 @@ public class PhoneFileHandler {
           System.err.println(" no accounts ");
 
         PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
-        pfi.setDateRead(idegaTimestamp.getTimestampRightNow());
+        pfi.setDateRead(IWTimeStamp.getTimestampRightNow());
         pfi.setLineCount(linecount-1);
         pfi.setErrorCount(errorCount );
         pfi.setNoAccountCount(noAccountCount );

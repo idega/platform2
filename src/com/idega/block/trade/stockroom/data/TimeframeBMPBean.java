@@ -4,7 +4,7 @@ import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 /**
  * Title:        IW Travel
@@ -42,8 +42,8 @@ public class TimeframeBMPBean extends com.idega.data.GenericEntity implements co
     return getTimeframeTableName();
   }
   public String getName(){
-    String stampTxt1 = new idegaTimestamp(this.getFrom()).getLocaleDate(idegaTimestamp.getIceland());
-    String stampTxt2 = new idegaTimestamp(this.getTo()).getLocaleDate(idegaTimestamp.getIceland());
+    String stampTxt1 = new IWTimeStamp(this.getFrom()).getLocaleDate(IWTimeStamp.getIceland());
+    String stampTxt2 = new IWTimeStamp(this.getTo()).getLocaleDate(IWTimeStamp.getIceland());
     return stampTxt1+" - "+stampTxt2;
   }
 

@@ -21,7 +21,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 public class Poll extends Block implements IWBlock{
@@ -55,7 +55,7 @@ private String _pollWidth;
 private int _numberOfShownPolls;
 private boolean _showVotes;
 private boolean _showCollection;
-private idegaTimestamp _date;
+private IWTimeStamp _date;
 private Image _linkImage;
 private Image _linkOverImage;
 private Image _questionImage;
@@ -90,7 +90,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
     _parameterString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
-    _date = new idegaTimestamp();
+    _date = new IWTimeStamp();
 
     PollEntity poll = null;
 
@@ -155,12 +155,12 @@ private int _layout = RADIO_BUTTON_VIEW;
   private PresentationObject getPoll(IWContext iwc, PollEntity poll) {
     LocalizedText locText = null;
     PollQuestion pollQuestion = PollBusiness.getQuestion(poll);
-    idegaTimestamp after;
+    IWTimeStamp after;
     boolean pollByDate = false;
 
     if(pollQuestion != null){
       if ( pollQuestion.getEndTime() != null ) {
-	after = new idegaTimestamp(pollQuestion.getEndTime());
+	after = new IWTimeStamp(pollQuestion.getEndTime());
 	if ( _date.isLaterThan(after) ) {
 	  pollQuestion = PollBusiness.getPollByDate(poll,_date);
 	  pollByDate = true;

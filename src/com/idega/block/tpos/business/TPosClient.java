@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.22 2002/07/04 15:13:58 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.23 2002/08/12 12:15:26 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -17,7 +17,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.block.tpos.business.TPosException;
 import com.idega.block.tpos.business.TPosAuthorisationEntriesHome;
 import com.idega.block.tpos.data.TPosAuthorisationEntries;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 /**
  * @author    <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -476,10 +476,10 @@ public class TPosClient {
   /**
    * Created from getDate() and getTime()
    *
-   * @return   The idegaTimestamp value
+   * @return   The IWTimeStamp value
    */
-  public idegaTimestamp getIdegaTimestamp() {
-    idegaTimestamp stamp = new idegaTimestamp();
+  public IWTimeStamp getIdegaTimestamp() {
+    IWTimeStamp stamp = new IWTimeStamp();
     try {
       String date = getDate();
       String time = getTime();
@@ -492,7 +492,7 @@ public class TPosClient {
       stamp.setSecond(Integer.parseInt(time.substring(4, 6)));
     }
     catch (Exception e) {
-      stamp = idegaTimestamp.RightNow();
+      stamp = IWTimeStamp.RightNow();
     }
 
     return stamp;

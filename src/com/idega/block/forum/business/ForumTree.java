@@ -14,7 +14,7 @@ import com.idega.presentation.ui.AbstractTreeViewer;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.block.forum.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.text.TextSoap;
 
 /**
@@ -138,7 +138,7 @@ public ForumTree() {
 
   private PresentationObject getLastUpdated(ICTreeNode node,IWContext iwc) {
     ForumData thread = (ForumData) node;
-    idegaTimestamp stamp = new idegaTimestamp(thread.getThreadDate());
+    IWTimeStamp stamp = new IWTimeStamp(thread.getThreadDate());
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
     Date date = new Date(stamp.getTimestamp().getTime());
     Text text = formatText(format.format(date));

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.1 2002/04/06 19:07:28 tryggvil Exp $
+ * $Id: ContractBMPBean.java,v 1.2 2002/08/12 12:15:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,7 @@ import com.idega.data.IDOLegacyEntity;
 import java.sql.Date;
 import java.lang.IllegalStateException;
 import java.sql.SQLException;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 /**
  * Title:        idegaclasses
@@ -141,7 +141,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
         (status.equalsIgnoreCase(statusResigned))||
         (status.equalsIgnoreCase(statusPrinted))){
       setColumn(status_,status);
-      setStatusDate(idegaTimestamp.RightNow().getSQLDate());
+      setStatusDate(IWTimeStamp.RightNow().getSQLDate());
     }
     else
       throw new IllegalStateException("Undefined state : " + status);

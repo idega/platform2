@@ -190,7 +190,7 @@ public class CardInsert extends EntityInsert{
 
       if(date != null) {
 
-          idegaTimestamp stamp = new idegaTimestamp(date);
+          IWTimeStamp stamp = new IWTimeStamp(date);
 
           expireMonth = monthDropDown(expireMonthName, String.valueOf(stamp.getMonth()));
 
@@ -330,7 +330,7 @@ public class CardInsert extends EntityInsert{
 
     if(! isInvalid(expireMonthValue) && ! isInvalid(expireYearValue)) {
 
-        idegaTimestamp stamp = new idegaTimestamp("1", expireMonthValue, expireYearValue);
+        IWTimeStamp stamp = new IWTimeStamp("1", expireMonthValue, expireYearValue);
 
         eCard.setExpireDate(stamp.getSQLDate());
 

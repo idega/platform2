@@ -1,7 +1,7 @@
 package com.idega.block.trade.stockroom.business;
 
 import com.idega.util.IsCollator;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.util.*;
 import java.util.Comparator;
 import com.idega.block.trade.stockroom.data.*;
@@ -68,8 +68,8 @@ public class TravelAddressComparator implements Comparator {
     TravelAddress p1 = (TravelAddress) o1;
     TravelAddress p2 = (TravelAddress) o2;
 
-    idegaTimestamp t1 = new idegaTimestamp(p1.getTime());
-    idegaTimestamp t2 = new idegaTimestamp(p2.getTime());
+    IWTimeStamp t1 = new IWTimeStamp(p1.getTime());
+    IWTimeStamp t2 = new IWTimeStamp(p2.getTime());
 
     if (t1.isLaterThan(t2)) {
       return 1;

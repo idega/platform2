@@ -8,7 +8,7 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.data.*;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.data.EntityFinder;
 import java.util.*;
 import java.sql.*;
@@ -91,7 +91,7 @@ public class SupplierManager {
 
 
       UserBusiness uBus = new UserBusiness();
-      User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,idegaTimestamp.RightNow(),null);
+      User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,IWTimeStamp.RightNow(),null);
       LoginDBHandler.createLogin(user.getID(), userName, password);
 
       sGroup.addUser(user);
@@ -127,7 +127,7 @@ public class SupplierManager {
         pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);
         pCategory.setName("Price");
         pCategory.setCountAsPerson(true);
-        pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
+        pCategory.setExtraInfo("PriceCategory created at "+IWTimeStamp.RightNow().toSQLString()+" when creating "+supp.getName());
       pCategory.insert();
 
 

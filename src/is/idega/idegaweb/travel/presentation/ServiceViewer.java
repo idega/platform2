@@ -65,7 +65,7 @@ public class ServiceViewer extends Window {
   private Supplier supplier;
   private Service service;
 
-  private idegaTimestamp dateFrom,dateTo;
+  private IWTimeStamp dateFrom,dateTo;
   private String width,height,color1,color2;
   private int windowWidth = 600;
   private int windowHeight = 600;
@@ -204,8 +204,8 @@ public class ServiceViewer extends Window {
   private String getServiceDurationString(Service serv) throws RemoteException{
     String duration;
 
-    idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
-    idegaTimestamp stamp2 = new idegaTimestamp(serv.getArrivalTime());
+    IWTimeStamp stamp = new IWTimeStamp(serv.getDepartureTime());
+    IWTimeStamp stamp2 = new IWTimeStamp(serv.getArrivalTime());
     int minutes = stamp.getMinutesBetween(stamp,stamp2);
     int hours = (int) minutes/60;
     int minutesleft = minutes % 60;
@@ -463,11 +463,11 @@ public class ServiceViewer extends Window {
     this.service = service;
   }
 
-  public void setDateFrom(idegaTimestamp dateFrom){
+  public void setDateFrom(IWTimeStamp dateFrom){
     this.dateFrom = dateFrom;
   }
 
-  public void setDateTo(idegaTimestamp dateTo){
+  public void setDateTo(IWTimeStamp dateTo){
     this.dateTo = dateTo;
   }
 
@@ -543,7 +543,7 @@ public class ServiceViewer extends Window {
     if (cutOff) {
       prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[0].getID(), depAddresses[0].getID(), true);
       if (prices.length > 0) {
-        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(getTravelStockroomBusiness(iwc).getPrice(prices[0].getID(), ((Integer) service.getPrimaryKey()).intValue(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[0].getID(), depAddresses[0].getID()) ) );
+        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(getTravelStockroomBusiness(iwc).getPrice(prices[0].getID(), ((Integer) service.getPrimaryKey()).intValue(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), IWTimeStamp.getTimestampRightNow(), timeframes[0].getID(), depAddresses[0].getID()) ) );
       }
     }else {
       Currency currency;
@@ -559,8 +559,8 @@ public class ServiceViewer extends Window {
           for (int i = 0; i < timeframes.length; i++) {
             prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
             if (prices.length > 0) {
-              stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
-              stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+              stampTxt1 = new IWTimeStamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+              stampTxt2 = new IWTimeStamp(timeframes[i].getTo()).getLocaleDate(iwc);
               if (timeframes[i].getIfYearly()) {
                 try {
                   stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
@@ -579,7 +579,7 @@ public class ServiceViewer extends Window {
                 nameOfCategory = getText(prices[j].getPriceCategory().getName());
                   nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
                 try {
-                  priceText = getBoldText(df.format(getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                  priceText = getBoldText(df.format(getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimeStamp.getTimestampRightNow()) ) );
                   currencyText = getBoldText(currency.getCurrencyAbbreviation());
                   pTable.add(currencyText,5,pRow);
                 }catch (ProductPriceException p) {

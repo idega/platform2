@@ -1,7 +1,7 @@
 package com.idega.block.trade.stockroom.business;
 
 import com.idega.util.IsCollator;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.util.*;
 import java.util.Comparator;
 import com.idega.block.trade.stockroom.data.*;
@@ -57,8 +57,8 @@ public class TimeframeComparator implements Comparator {
     Timeframe p1 = (Timeframe) o1;
     Timeframe p2 = (Timeframe) o2;
 
-    idegaTimestamp t1 = new idegaTimestamp(p1.getFrom());
-    idegaTimestamp t2 = new idegaTimestamp(p2.getFrom());
+    IWTimeStamp t1 = new IWTimeStamp(p1.getFrom());
+    IWTimeStamp t2 = new IWTimeStamp(p2.getFrom());
 
     if (t1.isLaterThan(t2)) {
       return 1;
@@ -73,8 +73,8 @@ public class TimeframeComparator implements Comparator {
     Timeframe p1 = (Timeframe) o1;
     Timeframe p2 = (Timeframe) o2;
 
-    idegaTimestamp t1 = new idegaTimestamp(p1.getTo());
-    idegaTimestamp t2 = new idegaTimestamp(p2.getTo());
+    IWTimeStamp t1 = new IWTimeStamp(p1.getTo());
+    IWTimeStamp t2 = new IWTimeStamp(p2.getTo());
 
     if (t1.isLaterThan(t2)) {
       return 1;

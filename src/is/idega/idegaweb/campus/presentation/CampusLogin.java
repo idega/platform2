@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusLogin.java,v 1.7 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: CampusLogin.java,v 1.8 2002/08/12 12:17:54 palli Exp $
 
  *
 
@@ -24,7 +24,7 @@ import com.idega.presentation.Block;
 
 import com.idega.presentation.IWContext;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import com.idega.block.login.presentation.Login;
 

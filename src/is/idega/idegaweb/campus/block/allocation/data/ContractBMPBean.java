@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.3 2002/08/07 14:53:30 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.4 2002/08/12 12:17:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.lang.IllegalStateException;
 import java.sql.SQLException;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 /**
  *
@@ -202,12 +202,12 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 
   public void setEnded(){
     setIsRented(false);
-    setReturnTime(idegaTimestamp.getTimestampRightNow());
+    setReturnTime(IWTimeStamp.getTimestampRightNow());
   }
 
    public void setStarted(){
 //    setIsRented(true);
-    setStarted(idegaTimestamp.getTimestampRightNow());
+    setStarted(IWTimeStamp.getTimestampRightNow());
   }
 
    public void setStarted(Timestamp when){
@@ -225,7 +225,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
         (status.equalsIgnoreCase(statusGarbage))||
         (status.equalsIgnoreCase(statusPrinted))){
       setColumn(status_,status);
-      setStatusDate(idegaTimestamp.RightNow().getSQLDate());
+      setStatusDate(IWTimeStamp.RightNow().getSQLDate());
     }
     else
       throw new IllegalStateException("Undefined state : " + status);

@@ -354,9 +354,9 @@ private IWResourceBundle iwrb;
 			if(sStatus == null){
 				Map M = mapOfTagsInResponse(iwc,iCategoryId);
 				sStatus = com.idega.block.contract.data.ContractBMPBean.statusCreated;
-				idegaTimestamp today = idegaTimestamp.RightNow();
-				idegaTimestamp ValFrom = sValFrom!=null ? new idegaTimestamp(sValFrom):today;
-				idegaTimestamp ValTo = sValTo!=null ?new idegaTimestamp(sValTo):today;
+				IWTimeStamp today = IWTimeStamp.RightNow();
+				IWTimeStamp ValFrom = sValFrom!=null ? new IWTimeStamp(sValFrom):today;
+				IWTimeStamp ValTo = sValTo!=null ?new IWTimeStamp(sValTo):today;
 				ContractBusiness.saveContract(iCategoryId ,ValFrom,ValTo,sStatus,M);
 			}
 			else{
@@ -446,7 +446,7 @@ private IWResourceBundle iwrb;
     String sStatus = iwrb.getLocalizedString("status","Status");
 		String sFields = iwrb.getLocalizedString("fields","Fields");
 
-		idegaTimestamp now = idegaTimestamp.RightNow();
+		IWTimeStamp now = IWTimeStamp.RightNow();
     DateInput ValidFrom = new DateInput(prmValFrom,true);
 		setStyle(ValidFrom);
     DateInput ValidTo = new DateInput(prmValTo,true);

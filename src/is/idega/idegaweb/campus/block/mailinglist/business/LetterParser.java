@@ -1,5 +1,5 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.util.text.ContentParsable;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
@@ -119,7 +119,7 @@ public class LetterParser implements ContentParsable {
               } else if (tag.equals(contract_ends)) {
                   return holder.getContract().getValidTo().toString();
               } else if (tag.equals(today)) {
-                  return idegaTimestamp.RightNow().getISLDate();
+                  return IWTimeStamp.RightNow().getISLDate();
               }
             }
 

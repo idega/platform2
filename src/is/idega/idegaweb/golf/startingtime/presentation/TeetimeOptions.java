@@ -15,7 +15,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.Image;
 import is.idega.idegaweb.golf.GolfField;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Tournament;
 import com.idega.data.EntityFinder;
@@ -308,7 +308,7 @@ public TextInput insertEditBox(String name, int size)
 public DropdownMenu insertDropdown(String dropdownName, idegaCalendar funcDate, IWContext iwc)
 {
 
-	idegaTimestamp stamp = new idegaTimestamp();
+	IWTimeStamp stamp = new IWTimeStamp();
 
 	DropdownMenu myDropdown = new DropdownMenu(dropdownName);
 
@@ -372,9 +372,9 @@ public boolean storeConfig(IWContext iwc)throws SQLException, IOException
 		if(OpenTime == null || CloseTime == null)
 			return false;
 
-		idegaTimestamp beginDate = new idegaTimestamp(BeginDate);
-		idegaTimestamp openTime = new idegaTimestamp(OpenTime);
-		idegaTimestamp closeTime = new idegaTimestamp(CloseTime);
+		IWTimeStamp beginDate = new IWTimeStamp(BeginDate);
+		IWTimeStamp openTime = new IWTimeStamp(OpenTime);
+		IWTimeStamp closeTime = new IWTimeStamp(CloseTime);
 
                 //System.err.println("Select * from " + conf.getEntityName() + " WHERE begin_date ='"+beginDate.toSQLDateString()+"'");
                 List oldRecord = EntityFinder.findAll(conf,"Select * from " + conf.getEntityName() + " WHERE begin_date ='"+beginDate.toSQLDateString()+"' and field_id = "+FieldID );

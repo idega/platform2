@@ -9,7 +9,7 @@ import com.idega.idegaweb.IWCacheManager;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBDomain;
 import com.idega.builder.data.IBPage;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 
  //synchronized
@@ -101,7 +101,7 @@ public class TrackerBusiness {
       page.setPreviousPageId(pageId);/**@todo this shit here**/
       page.setLocale(iwc.getCurrentLocaleId());
       page.setUserId(iwc.getUserId());
-      page.setModificationDate(idegaTimestamp.getTimestampRightNow());
+      page.setModificationDate(IWTimeStamp.getTimestampRightNow());
       page.setGenerationTime(200);/**@todo this shit here**/
 
       ArrayList pageLog = (ArrayList) pages.get(sessionId);
@@ -135,7 +135,7 @@ public class TrackerBusiness {
        stats = ((is.idega.idegaweb.tracker.data.ReferrerStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(ReferrerStatistics.class)).createLegacy();
        stats.setReferrerUrl(referer);
        stats.setSessions(1);
-       stats.setModificationDate(idegaTimestamp.getTimestampRightNow());
+       stats.setModificationDate(IWTimeStamp.getTimestampRightNow());
        referers.put(stats.getReferrerUrl(),stats);
       }
       else{
@@ -253,7 +253,7 @@ public class TrackerBusiness {
         stats = ((is.idega.idegaweb.tracker.data.UserAgentStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(UserAgentStatistics.class)).createLegacy();
         stats.setUserAgent(userAgent);
         stats.setSessions(1);
-        stats.setModificationDate(idegaTimestamp.getTimestampRightNow());
+        stats.setModificationDate(IWTimeStamp.getTimestampRightNow());
         agents.put(stats.getUserAgent(),stats);
       }
       else{

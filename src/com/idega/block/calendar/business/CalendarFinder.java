@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import com.idega.block.calendar.data.*;
 import com.idega.data.EntityFinder;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 
@@ -27,7 +27,7 @@ public class CalendarFinder {
     return calendarFinder;
   }
 
-   public CalendarEntry[] getEntries(idegaTimestamp stamp) {
+   public CalendarEntry[] getEntries(IWTimeStamp stamp) {
     try {
       CalendarEntry[] cal = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumnOrdered(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),stamp.toString(),com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(),"=");
       if ( cal.length > 0 )
@@ -40,15 +40,15 @@ public class CalendarFinder {
     }
   }
 
-  public List listOfEntries(idegaTimestamp _stamp,int[] iCategoryIds) {
+  public List listOfEntries(IWTimeStamp _stamp,int[] iCategoryIds) {
     try {
-      idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
+      IWTimeStamp stampPlus = new IWTimeStamp(_stamp.getTimestamp());
 	stampPlus.addDays(1);
 	stampPlus.setMinute(0);
 	stampPlus.setHour(0);
 	stampPlus.setSecond(0);
 
-      idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
+      IWTimeStamp stamp = new IWTimeStamp(_stamp.getTimestamp());
 	stamp.setMinute(0);
 	stamp.setHour(0);
 	stamp.setSecond(0);
@@ -77,15 +77,15 @@ public class CalendarFinder {
     return (CalendarEntry) com.idega.block.calendar.data.CalendarEntryBMPBean.getEntityInstance(CalendarEntry.class,entryID);
   }
 
-  public CalendarEntry[] getWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack) {
+  public CalendarEntry[] getWeekEntries(IWTimeStamp _stamp, int daysAhead, int daysBack) {
     try {
-      idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
+      IWTimeStamp stampPlus = new IWTimeStamp(_stamp.getTimestamp());
 	stampPlus.addDays(daysAhead);
 	stampPlus.setMinute(59);
 	stampPlus.setHour(23);
 	stampPlus.setSecond(59);
 
-      idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
+      IWTimeStamp stamp = new IWTimeStamp(_stamp.getTimestamp());
 	stamp.addDays(-daysBack);
 	stamp.setMinute(0);
 	stamp.setHour(0);
@@ -102,15 +102,15 @@ public class CalendarFinder {
     }
   }
 
-  public List listOfWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack,int[] iCategoryIds) {
+  public List listOfWeekEntries(IWTimeStamp _stamp, int daysAhead, int daysBack,int[] iCategoryIds) {
     try {
-      idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
+      IWTimeStamp stampPlus = new IWTimeStamp(_stamp.getTimestamp());
 	stampPlus.addDays(daysAhead);
 	stampPlus.setMinute(59);
 	stampPlus.setHour(23);
 	stampPlus.setSecond(59);
 
-      idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
+      IWTimeStamp stamp = new IWTimeStamp(_stamp.getTimestamp());
 	stamp.addDays(-daysBack);
 	stamp.setMinute(0);
 	stamp.setHour(0);
@@ -140,7 +140,7 @@ public class CalendarFinder {
 
   public List listOfNextEntries(int[] iCategoryIds) {
     try {
-      idegaTimestamp stamp = new idegaTimestamp();
+      IWTimeStamp stamp = new IWTimeStamp();
 
       StringBuffer sql = new StringBuffer("select * from ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getEntityTableName());
       sql.append(" where ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append(" >= '").append(stamp.toString()).append("'");
@@ -161,16 +161,16 @@ public class CalendarFinder {
     return null;
   }
 
-  public List getMonthEntries(idegaTimestamp stamp,int[] iCategoryIds) {
+  public List getMonthEntries(IWTimeStamp stamp,int[] iCategoryIds) {
     try {
-      idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
+      IWTimeStamp stampPlus = new IWTimeStamp(stamp.getTimestamp());
 	stampPlus.addMonths(1);
 	stampPlus.setDate(1);
 	stampPlus.setMinute(59);
 	stampPlus.setHour(23);
 	stampPlus.setSecond(59);
 
-      idegaTimestamp stampMinus = new idegaTimestamp(stamp.getTimestamp());
+      IWTimeStamp stampMinus = new IWTimeStamp(stamp.getTimestamp());
 	stampMinus.setDate(1);
 	stampMinus.setMinute(0);
 	stampMinus.setHour(0);
@@ -198,16 +198,16 @@ public class CalendarFinder {
     return null;
   }
 
-  public List getMonthEntries(idegaTimestamp stamp) {
+  public List getMonthEntries(IWTimeStamp stamp) {
     try {
-      idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
+      IWTimeStamp stampPlus = new IWTimeStamp(stamp.getTimestamp());
 	stampPlus.addMonths(1);
 	stampPlus.setDate(1);
 	stampPlus.setMinute(59);
 	stampPlus.setHour(23);
 	stampPlus.setSecond(59);
 
-      idegaTimestamp stampMinus = new idegaTimestamp(stamp.getTimestamp());
+      IWTimeStamp stampMinus = new IWTimeStamp(stamp.getTimestamp());
 	stampMinus.setDate(1);
 	stampPlus.setMinute(0);
 	stampPlus.setHour(0);

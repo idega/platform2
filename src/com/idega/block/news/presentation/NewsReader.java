@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.99 2002/07/30 15:47:14 aron Exp $
+ * $Id: NewsReader.java,v 1.100 2002/08/12 12:15:24 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -379,11 +379,11 @@ public class NewsReader extends CategoryBlock implements IWBlock {
     Text tLetters = formatText(String.valueOf(letterCount ),false);
     Text tFiles = formatText(String.valueOf(fileCount ),false);
 
-    idegaTimestamp now = idegaTimestamp.RightNow();
-    idegaTimestamp from = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishFrom());
-    idegaTimestamp to = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishTo());
-    idegaTimestamp created = new idegaTimestamp(newsHelper.getContentHelper().getContent().getCreated());
-    idegaTimestamp updated = new idegaTimestamp(newsHelper.getContentHelper().getContent().getLastUpdated());
+    IWTimeStamp now = IWTimeStamp.RightNow();
+    IWTimeStamp from = new IWTimeStamp(newsHelper.getContentHelper().getContent().getPublishFrom());
+    IWTimeStamp to = new IWTimeStamp(newsHelper.getContentHelper().getContent().getPublishTo());
+    IWTimeStamp created = new IWTimeStamp(newsHelper.getContentHelper().getContent().getCreated());
+    IWTimeStamp updated = new IWTimeStamp(newsHelper.getContentHelper().getContent().getLastUpdated());
 
     Text tFrom = formatText(df.format((java.util.Date)from.getTimestamp()),true);
     Text tTo = formatText(df.format((java.util.Date)to.getTimestamp()),true);

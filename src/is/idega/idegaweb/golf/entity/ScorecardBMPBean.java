@@ -404,7 +404,7 @@ public class ScorecardBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBM
 
 
 
-            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
+            System.out.println(new com.idega.util.IWTimeStamp().getTimestampRightNow().toString());
 
             is.idega.idegaweb.golf.entity.StrokeBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Stroke").deleteMultiple("scorecard_id",Integer.toString(this.getID())); //.findAllByColumn("SCORECARD_ID",this.getID());
 
@@ -418,7 +418,7 @@ public class ScorecardBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBM
 
 
 
-            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
+            System.out.println(new com.idega.util.IWTimeStamp().getTimestampRightNow().toString());
 
             is.idega.idegaweb.golf.entity.StatisticBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Statistic").deleteMultiple("scorecard_id",Integer.toString(this.getID())); //.findAllByColumn("scorecard_id",this.getID());
 
@@ -446,11 +446,11 @@ public class ScorecardBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityBM
 
 
 
-            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
+            System.out.println(new com.idega.util.IWTimeStamp().getTimestampRightNow().toString());
 
             super.delete();
 
-            System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
+            System.out.println(new com.idega.util.IWTimeStamp().getTimestampRightNow().toString());
 
         }
 

@@ -4,7 +4,7 @@ package is.idega.idegaweb.golf.service;
 
 import java.lang.String;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
@@ -24,7 +24,7 @@ public class GolfPaymentMember {
 
   private String sName, sSocialSecurityNumber,sGender, sFamilyStatus;
 
-  private idegaTimestamp RegistrationDate,FirstInstallmentDate;
+  private IWTimeStamp RegistrationDate,FirstInstallmentDate;
 
 
 
@@ -32,7 +32,7 @@ public class GolfPaymentMember {
 
   public GolfPaymentMember(){
 
-    this(0,0,0,0,0,"","","","",new idegaTimestamp(),new idegaTimestamp());
+    this(0,0,0,0,0,"","","","",new IWTimeStamp(),new IWTimeStamp());
 
   }
 
@@ -42,7 +42,7 @@ public class GolfPaymentMember {
 
                             String sName, String sSocialSecurityNumber,String sGender,String sFamilyStatus,
 
-                            idegaTimestamp RegistrationDate, idegaTimestamp FirstInstallmentDate){
+                            IWTimeStamp RegistrationDate, IWTimeStamp FirstInstallmentDate){
 
     this.iMemberId = iMemberId;
 
@@ -198,25 +198,25 @@ public class GolfPaymentMember {
 
   }
 
-  public void setRegistrationDate(idegaTimestamp RegistrationDate){
+  public void setRegistrationDate(IWTimeStamp RegistrationDate){
 
     this.RegistrationDate = RegistrationDate;
 
   }
 
-  public idegaTimestamp getRegistrationDate(){
+  public IWTimeStamp getRegistrationDate(){
 
     return this.RegistrationDate;
 
   }
 
-  public void setFirstInstallmentDate(idegaTimestamp FirstInstallmentDate){
+  public void setFirstInstallmentDate(IWTimeStamp FirstInstallmentDate){
 
     this.FirstInstallmentDate = FirstInstallmentDate;
 
   }
 
-  public idegaTimestamp getFirstInstallmentDate(){
+  public IWTimeStamp getFirstInstallmentDate(){
 
     return this.FirstInstallmentDate;
 

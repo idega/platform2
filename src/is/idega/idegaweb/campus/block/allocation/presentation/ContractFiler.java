@@ -18,7 +18,7 @@ import com.lowagie.text.Font;
 
 import java.util.StringTokenizer;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
@@ -156,7 +156,7 @@ public class ContractFiler extends Block {
 
         /*
 
-        idegaTimestamp it = idegaTimestamp.RightNow();
+        IWTimeStamp it = IWTimeStamp.RightNow();
 
         StringBuffer f = new StringBuffer();
 

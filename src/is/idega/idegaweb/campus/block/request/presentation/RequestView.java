@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.5 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: RequestView.java,v 1.6 2002/08/12 12:17:54 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
 import com.idega.presentation.ui.RadioButton;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
 
@@ -121,8 +121,8 @@ public class RequestView extends Window {
 
     System.out.println("DateOfFailureString = " + dateOfFailureString);
 
-    idegaTimestamp t = new idegaTimestamp();
-    t = idegaTimestamp.RightNow();
+    IWTimeStamp t = new IWTimeStamp();
+    t = IWTimeStamp.RightNow();
 
     boolean insert = RequestBusiness.insertRequest(_eUser.getID(),comment,t.getTimestamp(),type,special);
 

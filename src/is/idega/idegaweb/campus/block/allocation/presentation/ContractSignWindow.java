@@ -18,7 +18,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
@@ -104,8 +104,8 @@ public class ContractSignWindow extends Window{
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),true);
       User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
-      idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
-      idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
+      IWTimeStamp from = new IWTimeStamp(eContract.getValidFrom());
+      IWTimeStamp to = new IWTimeStamp(eContract.getValidTo());
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
       List lFinanceAccounts = FinanceFinder.getInstance().listOfAccountByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);

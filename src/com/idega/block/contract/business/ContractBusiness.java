@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractBusiness.java,v 1.2 2002/04/06 18:52:27 tryggvil Exp $
+ * $Id: ContractBusiness.java,v 1.3 2002/08/12 12:15:27 palli Exp $
 
  *
 
@@ -22,7 +22,7 @@ package com.idega.block.contract.business;
 
 import com.idega.block.contract.data.*;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 import com.idega.core.data.ICObjectInstance;
 
@@ -264,7 +264,7 @@ public  class ContractBusiness {
 
 
 
-	public static void saveContract(int iCategoryId,idegaTimestamp ValFrom,idegaTimestamp ValTo,String sStatus,Map map){
+	public static void saveContract(int iCategoryId,IWTimeStamp ValFrom,IWTimeStamp ValTo,String sStatus,Map map){
 
 	  try {
 

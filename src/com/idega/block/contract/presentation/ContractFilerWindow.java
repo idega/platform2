@@ -34,7 +34,7 @@ import com.lowagie.text.pdf.BaseFont;
 
 import java.util.StringTokenizer;
 
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 
 
 
