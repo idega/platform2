@@ -3,7 +3,6 @@ package com.idega.block.user.data;
 import java.sql.Date;
 import java.sql.SQLException;
 
-import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 
 

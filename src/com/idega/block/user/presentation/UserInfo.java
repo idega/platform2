@@ -7,24 +7,11 @@
 package com.idega.block.user.presentation;
 
 import java.sql.SQLException;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 import com.idega.block.user.business.UserInfoBusiness;
 import com.idega.block.user.business.UserInfoBusinessBean;
 import com.idega.block.user.data.UserExtraInfo;
-import com.idega.business.IBOLookup;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.Phone;
-import com.idega.core.contact.data.PhoneType;
-import com.idega.core.location.data.Address;
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -33,16 +20,8 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.PrintButton;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.business.UserStatusBusiness;
-import com.idega.user.data.Group;
-import com.idega.user.data.GroupRelation;
-import com.idega.user.data.GroupRelationHome;
-import com.idega.user.data.Status;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.sun.rsasign.t;
 
 /**
  * Displays info about a user. Block properties can be user to select what to display.
