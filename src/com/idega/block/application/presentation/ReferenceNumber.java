@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.20 2004/02/05 17:43:37 laddi Exp $
+ * $Id: ReferenceNumber.java,v 1.21 2004/02/05 17:44:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -228,7 +228,6 @@ public class ReferenceNumber extends Block {
     _outerTable = new Table();
     _outerTable.setCellpadding(0);
     _outerTable.setCellspacing(0);
-    _outerTable.setAlignment("left");
 
     _myForm = new Form();
     _myForm.setEventListener(ReferenceNumberHandler.class.getName());
