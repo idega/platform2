@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.17 2001/09/26 23:41:55 aron Exp $
+ * $Id: Tabber.java,v 1.18 2001/09/28 11:14:16 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,8 @@ import is.idegaweb.campus.allocation.CampusAllocation;
 import is.idegaweb.campus.tariffs.CampusFinance;
 import is.idegaweb.campus.templates.CampusPage;
 import com.idega.idegaweb.IWMainApplication;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  *
@@ -234,12 +236,15 @@ public class Tabber extends JModuleObject {
   }
 
   private boolean getUserAccessGroups(ModuleInfo modinfo)throws SQLException{
-    PermissionGroup[] group = com.idega.block.login.business.LoginBusiness.getPermissionGroups(modinfo);
-    int iGroupLen = group.length;
-    PermissionHash = new Hashtable(iGroupLen);
-    for(int i = 0; i < iGroupLen ; i++){
-      PermissionHash.put(new Integer(group[i].getID()),group[i].getName() );
-      return true;
+    List group = com.idega.block.login.business.LoginBusiness.getPermissionGroups(modinfo);
+    PermissionHash = new Hashtable();
+    if(group != null){
+      Iterator iter = group.iterator();
+      while (iter.hasNext()) {
+        com.idega.core.data.GenericGroup item = (com.idega.core.data.GenericGroup)iter.next();
+        PermissionHash.put(new Integer(item.getID()),item.getName() );
+        return true;
+      }
     }
     return false;
   }

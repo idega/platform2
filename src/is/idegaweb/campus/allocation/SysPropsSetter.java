@@ -113,7 +113,18 @@ public class SysPropsSetter extends ModuleObjectContainer{
     DropdownMenu TI = intDrp("contract_years",10);
     TextInput adminEmail = new TextInput("admin_email");
     TextInput emailHost = new TextInput("email_host");
-    DropdownMenu groups = new DropdownMenu(com.idega.core.user.business.UserBusiness.listOfGroups(),"def_group");
+    String[] filter2 = {com.idega.core.accesscontrol.data.PermissionGroup.getStaticPermissionGroupInstance().getGroupTypeValue()};
+    DropdownMenu groups = null;
+    try {
+      String[] filter = new String[1];
+      filter[0] = com.idega.core.accesscontrol.data.PermissionGroup.getStaticPermissionGroupInstance().getGroupTypeValue();
+      groups = new DropdownMenu(com.idega.core.data.GenericGroup.getAllGroups(filter,true),"def_group");
+    }
+    catch (SQLException ex) {
+      groups = new DropdownMenu("def_group");
+    }
+
+
     int row = 1;
     T.add(Edit.formatText(iwrb.getLocalizedString("contract_date","Contract date")),1,row);
     T.add(DI,3,row);
