@@ -78,9 +78,14 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	private String BODY_STYLE = "font-family: Arial,Helvetica,sans-serif; font-size: 10px;";
 	private String DATE_STYLE = "font-family: Arial,Helvetica,sans-serif; font-size: 10px; font-weight: bold;";
 	private String CATEGORY_STYLE = "font-family: Arial,Helvetica,sans-serif; font-size: 10px; font-weight: bold; color: #666666;";
+	private String headlineStyleName;
+	private String bodyStyleName;
+	private String dateStyleName;
+	private String categoryStyleName;
 
 	private int _spaceBetween = 16;
 	private boolean _showCategory;
+	private boolean showBodyText = true;
 
 	public Calendar() {
 		//_stamp = IWTimestamp.getTimestampRightNow();
@@ -112,6 +117,19 @@ public class Calendar extends CategoryBlock implements Builderaware {
 		_iwrb = getResourceBundle(iwc);
 		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		_iwbCalendar = getBundle(iwc);
+		
+		if (headlineStyleName == null) {
+			headlineStyleName = getStyleName(HEADLINE_STYLE_NAME);
+		}
+		if (bodyStyleName == null) {
+			bodyStyleName = getStyleName(BODY_STYLE_NAME);
+		}
+		if (dateStyleName == null) {
+			dateStyleName = getStyleName(DATE_STYLE_NAME);
+		}
+		if (categoryStyleName == null) {
+			categoryStyleName = getStyleName(CATEGORY_STYLE_NAME);
+		}
 
 		iUserId = iwc.getUserId();
 
@@ -408,27 +426,27 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 				if (localeStrings != null) {
 					if (localeStrings[0] != null)
-						headlineText = getStyleText(localeStrings[0],HEADLINE_STYLE_NAME);
+						headlineText = getStyleText(localeStrings[0],headlineStyleName);
 					else
 						headlineText = null;
 
 					if (localeStrings[1] != null)
-						bodyText = getStyleText(localeStrings[1],BODY_STYLE_NAME);
+						bodyText = getStyleText(localeStrings[1],bodyStyleName);
 					else
 						bodyText = null;
 				}
 				int row = 1;
 				if (headlineText != null) {
 					stamp = new IWTimestamp(entry.getDate());
-					Text dateText = getStyleText(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), _dateStyle, _timeStyle), DATE_STYLE_NAME);
-					Text category = getStyleText(CategoryFinder.getInstance().getCategory(entry.getCategoryId()).getName(iwc.getCurrentLocale()), CATEGORY_STYLE_NAME);
+					Text dateText = getStyleText(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), _dateStyle, _timeStyle), dateStyleName);
+					Text category = getStyleText(CategoryFinder.getInstance().getCategory(entry.getCategoryId()).getName(iwc.getCurrentLocale()), categoryStyleName);
 					dateTable.add(dateText, 1, 1);
 					if (_showCategory)
 						dateTable.add(category, 2, 1);
 					entriesTable.add(dateTable, 1, row++);
 					entriesTable.add(headlineText, 1, row++);
 
-					if (bodyText != null && bodyText.getText().length() > 0) {
+					if (bodyText != null && bodyText.getText().length() > 0 && showBodyText) {
 						entriesTable.add(bodyText, 1, row++);
 					}
 					if (hasEdit || hasPref || this.iUserId == entry.getUserID()) {
@@ -725,4 +743,34 @@ public class Calendar extends CategoryBlock implements Builderaware {
 		_timeStyle = timeStyle;
 	}
 
+	/**
+	 * @param bodyStyleName The bodyStyleName to set.
+	 */
+	public void setBodyStyleName(String bodyStyleName) {
+		this.bodyStyleName = bodyStyleName;
+	}
+	/**
+	 * @param categoryStyleName The categoryStyleName to set.
+	 */
+	public void setCategoryStyleName(String categoryStyleName) {
+		this.categoryStyleName = categoryStyleName;
+	}
+	/**
+	 * @param dateStyleName The dateStyleName to set.
+	 */
+	public void setDateStyleName(String dateStyleName) {
+		this.dateStyleName = dateStyleName;
+	}
+	/**
+	 * @param headlineStyleName The headlineStyleName to set.
+	 */
+	public void setHeadlineStyleName(String headlineStyleName) {
+		this.headlineStyleName = headlineStyleName;
+	}
+	/**
+	 * @param showBodyText The showBodyText to set.
+	 */
+	public void setShowBodyText(boolean showBodyText) {
+		this.showBodyText = showBodyText;
+	}
 }
