@@ -726,7 +726,7 @@ public abstract class AbstractSearchForm extends Block{
 		ProductPrice[] prices;
 		Currency currency;
 		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
-		
+		System.out.println("[AbstrackSearchForm] prices.length = "+prices.length);
 		for (int i = 0; i < prices.length; i++) {
 			tmpPriceID = prices[i].getID();
 			table.add(getText(getPriceString(bus, product.getID(), timeframeId, prices[i])), 1, row++);
