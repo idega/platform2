@@ -217,7 +217,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public int ejbHomeGetTotalInvoiceRecordAmountForCurrentMonth() throws IDOException {
 		IDOQuery query = idoQuery();
 		//query.appendSelectCountFrom();
-		query.append("select  round(sum(r.amount)) from cacc_invoice_header h, cacc_invoice_record r where h.status='P' and r.invoice_header = h.cacc_invoice_header_id"); 	
+		query.append("select  sum(round(r.amount)) from cacc_invoice_header h, cacc_invoice_record r where h.status='P' and r.invoice_header = h.cacc_invoice_header_id");
 		//query.appendWhereEquals(COLUMN_STATUS, "'P'");		
 		return idoGetNumberOfRecords(query);
 	}
@@ -227,7 +227,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		Date end = month.getLastDateOfMonth();
 		IDOQuery query = idoQuery();
 		//query.appendSelectCountFrom();
-		query.append("select  round(sum(r.amount)) from cacc_invoice_header h, cacc_invoice_record r where r.invoice_header = h.cacc_invoice_header_id"); 
+		query.append("select  sum(round(r.amount)) from cacc_invoice_header h, cacc_invoice_record r where r.invoice_header = h.cacc_invoice_header_id"); 
 		query.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
 		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);		
 		//query.appendWhereEquals(COLUMN_STATUS, "'P'");		
