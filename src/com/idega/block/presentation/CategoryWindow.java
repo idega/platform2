@@ -130,6 +130,7 @@ public class CategoryWindow extends IWAdminWindow {
 			else if(iwc.isParameterSet(actDelete) || iwc.isParameterSet(actDelete+".x") ){
         try{
 				  CategoryBusiness.getInstance().deleteCategory(iCategoryId);
+          iCategoryId = -1;
         }
         catch(Exception ex){
           ex.printStackTrace();
