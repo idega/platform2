@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.40 2003/11/20 17:02:08 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.41 2003/11/21 12:20:49 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -801,22 +801,22 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			validateString(doublePosting,date);
 		}catch(NullPointerException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.missing_parameter_value", ex.getMessage()); 
+			throw new PostingException("postingException.missing_parameter_value", "[Not localized NullPointerException]"); 
 		}catch(RemoteException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.service_unavailable", ex.getMessage()); 				
+			throw new PostingException("postingException.service_unavailable", "[Not localized RemoteException]"); 				
 		}catch(FinderException ex){			
 			ex.printStackTrace();
-			throw new PostingException("postingException.export_data_mapping", ex.getMessage()); 				
+			throw new PostingException("postingException.export_data_mapping", "[Not localized FinderException]"); 				
 		}catch(PostingException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.posting", ex.getMessage()); 				
+			throw new PostingException("postingException.posting", "[Not localized PostingException]"); 				
 		}catch(MissingMandatoryFieldException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.missing_mandatory_field", ex.getMessage()); 				
+			throw new PostingException("postingException.missing_mandatory_field", "[Not localized MissingMandatoryFieldException]"); 				
 		}catch(PostingParametersException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.posting_parameter", ex.getMessage()); 				
+			throw new PostingException("postingException.posting_parameter", "[Not localized PostingParametersException]"); 				
 		}
 		return new String[] {ownPosting, doublePosting};
 	}	
