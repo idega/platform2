@@ -264,8 +264,11 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		table.add(back, 1, 1);
 		
 		if (showAllButtons) {
-			int numberInQueue = getBusiness().getNumberInQueueByStatus(application);
+			int numberInQueue = 1;
 			boolean hasPriority = application.getHasPriority();
+			boolean isAfterSchoolApplication = getBusiness().isAfterSchoolApplication(application);
+			if (!isAfterSchoolApplication)
+				numberInQueue = getBusiness().getNumberInQueueByStatus(application);
 			char status = application.getApplicationStatus();
 
 			if (status == getBusiness().getStatusSentIn()) {
@@ -293,7 +296,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 				column++;
 
-				if (getBusiness().isAfterSchoolApplication(application)) {
+				if (isAfterSchoolApplication) {
 					GenericButton reject = (GenericButton) getStyledInterface(new GenericButton("reject", localize("child_care.reject_application","Reject application")));
 					reject.setWindowToOpen(ChildCareWindow.class);
 					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
