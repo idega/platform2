@@ -143,8 +143,9 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		
 		if (useTypes) {
 			IDOQuery query = idoQuery();
-			query.append("Select * from ").append(getEntityName())
-			.append(" where ").append(COLUMN_SCHOOL_TYPE).append(" in ( ");
+			query.append("Select s.* from ").append(getEntityName())
+			.append(" s,sch_study_path_sch_school r")
+			.append(" where s.").append(COLUMN_SCHOOL_TYPE).append(" in ( ");
 			Iterator iter = schoolTypePKs.iterator();
 			while (iter.hasNext()) {
 				query.append(iter.next().toString());
@@ -153,10 +154,10 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 				}
 			}
 			query.append(")")
-// To do: now many-to-many relationship to School
-//			.append(" AND ").append(COLUMN_SCHOOL).append(" = ").append(school.getPrimaryKey())
-			.append(" AND (").append(COLUMN_IS_VALID).append(" is null")
-			.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+			.append(" AND r.sch_school_id = ").append(school.getPrimaryKey())
+			.append(" AND r.study_path_id = s.study_path_id")
+			.append(" AND (s.").append(COLUMN_IS_VALID).append(" is null")
+			.append(" OR s.").append(COLUMN_IS_VALID).append(" = 'Y')");
 			
 			return this.idoFindPKsByQuery(query);
 		} else {
