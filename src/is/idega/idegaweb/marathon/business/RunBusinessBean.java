@@ -460,21 +460,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID) {
-		Run run = null;
 		try {
 			RunHome runHome = (RunHome) getIDOHome(Run.class);
-			Collection runObjs = runHome.findByUserIDandDistanceID(userID,distanceID);
-			if(runObjs != null) {
-				Iterator runIt = runObjs.iterator();
-				while(runIt.hasNext()) {
-					Run r = (Run) runIt.next();
-					if(r != null) {
-						Group g = getGroupBiz().getGroupByGroupID(r.getRunID());
-						if(g.getName().equals("Rvk Marathon"))
-							run = r;
-					}
-				}
-			}
+			return runHome.findByUserIDandDistanceID(userID,distanceID);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -483,7 +471,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			e.printStackTrace();
 		}
 		 
-		return run;
+		return null;
 	}
 	
 	public void setParticipantNumber(Run participant) {

@@ -1,5 +1,5 @@
 /*
- * Created on 19.8.2004
+ * Created on 21.8.2004
  */
 package is.idega.idegaweb.marathon.data;
 
@@ -42,11 +42,11 @@ public class RunHomeImpl extends IDOFactory implements RunHome {
 		return theReturn;
 	}
 
-	public Collection findByUserIDandDistanceID(int userID, int distanceID) throws FinderException {
+	public Run findByUserIDandDistanceID(int userID, int distanceID) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((RunBMPBean) entity).ejbFindByUserIDandDistanceID(userID, distanceID);
+		Object pk = ((RunBMPBean) entity).ejbFindByUserIDandDistanceID(userID, distanceID);
 		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public Collection findByUserID(int userID) throws FinderException {

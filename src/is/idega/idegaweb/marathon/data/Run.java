@@ -1,5 +1,5 @@
 /*
- * Created on 19.8.2004
+ * Created on 21.8.2004
  */
 package is.idega.idegaweb.marathon.data;
 

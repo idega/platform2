@@ -1,5 +1,5 @@
 /*
- * Created on 19.8.2004
+ * Created on 21.8.2004
  */
 package is.idega.idegaweb.marathon.data;
 
@@ -33,7 +33,7 @@ public interface RunHome extends IDOHome {
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbFindByUserIDandDistanceID
 	 */
-	public Collection findByUserIDandDistanceID(int userID, int distanceID) throws FinderException;
+	public Run findByUserIDandDistanceID(int userID, int distanceID) throws FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbFindByUserID

@@ -319,11 +319,11 @@ public class RunBMPBean extends GenericEntity implements Run {
 		return idoGetNumberOfRecords(query.toString());
 	}
 	
-	public Collection ejbFindByUserIDandDistanceID(int userID, int distanceID) throws FinderException{
+	public Integer ejbFindByUserIDandDistanceID(int userID, int distanceID) throws FinderException{
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(getColumnNameUserID(),userID);
 		query.appendAndEquals(getColumnNameRunDistanceGroupID(),distanceID);
-		return super.idoFindPKsByQuery(query);
+		return (Integer) super.idoFindOnePKByQuery(query);
 	}
 	public Collection ejbFindByUserID(int userID) throws FinderException{
 		IDOQuery query = idoQueryGetSelect();
