@@ -8,12 +8,13 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import java.util.Collection;
+import java.text.Collator;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
-
+import java.util.List;
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -146,9 +147,9 @@ public class UserStatusTab extends UserTab {
 		_statusField = new SelectDropdown(_statusFieldName);
 
 		IWContext iwc = IWContext.getInstance();
-		Collection status = null;
+		List status = null;
 		try {
-			status = ((StatusHome)IDOLookup.getHome(Status.class)).findAll();
+			status = (List) ((StatusHome)IDOLookup.getHome(Status.class)).findAll();
 		}
 		catch (IDOLookupException e) {
 			e.printStackTrace();
@@ -159,8 +160,16 @@ public class UserStatusTab extends UserTab {
 
 		if (status != null) {
 			if (status.size() > 0) {
-				IWResourceBundle iwrb = getResourceBundle(iwc);
+				final IWResourceBundle iwrb = getResourceBundle(iwc);
 				_statusField.addOption(new SelectOption(" "," "));
+				
+				
+				final Collator collator = Collator.getInstance(iwc.getLocale());
+				Collections.sort(status,new Comparator() {
+					public int compare(Object arg0, Object arg1) {
+						return collator.compare(iwrb.getLocalizedString("usr_stat_" + ((Status) arg0).getStatusKey(), ((Status) arg0).getStatusKey()), iwrb.getLocalizedString("usr_stat_" + ((Status) arg1).getStatusKey(), ((Status) arg1).getStatusKey()));
+					}				
+				});
 				
 				Iterator it = status.iterator();
 				while (it.hasNext()) {
