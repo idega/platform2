@@ -41,7 +41,7 @@ public class ProductItemPrice extends ProductItem {
     if ( _product != null ) {
       ProductPrice pPrice = StockroomBusiness.getPrice(_product);
       if (pPrice != null && pPrice.getPrice() > 0 ) {
-	NumberFormat format = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
+	NumberFormat format = NumberFormat.getInstance(iwc.getCurrentLocale());
 	text.setText(format.format((double)pPrice.getPrice()));
 	if (this.showCurrency) {
 	  try {
