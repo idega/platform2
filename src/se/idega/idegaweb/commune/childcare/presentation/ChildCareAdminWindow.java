@@ -365,6 +365,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(textArea, 1, row++);
 
 		SubmitButton grantPriority = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.grant_priority", "Grant priority"), PARAMETER_ACTION, String.valueOf(ACTION_GRANT_PRIORITY)));
+		form.setToDisableOnSubmit(grantPriority, true);
 		table.add(grantPriority, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -406,6 +407,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		action.setValue(String.valueOf(ACTION_OFFER));
 		table.add(action);
 		SubmitButton offer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer")));
+		form.setToDisableOnSubmit(offer, true);
 		table.add(offer, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -440,6 +442,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(dateInput, 1, row++);
 
 		SubmitButton changeOffer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_offer", "Change offer"), PARAMETER_ACTION, String.valueOf(ACTION_OFFER)));
+		form.setToDisableOnSubmit(changeOffer, true);
 		table.add(changeOffer, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -466,6 +469,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(textArea, 1, row++);
 
 		SubmitButton retract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.retract_offer", "Retract offer"), PARAMETER_ACTION, String.valueOf(ACTION_RETRACT_OFFER)));
+		form.setToDisableOnSubmit(retract, true);
 		table.add(retract, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -578,6 +582,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_placing", "Change placing"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_VALID_FROM_DATE)));
 		else
 			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_date", "Change date"), PARAMETER_ACTION, String.valueOf(ACTION_CHANGE_DATE)));
+		form.setToDisableOnSubmit(changeDate, true);
 		table.add(changeDate, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -635,6 +640,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(dropdownTable, 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.place_in_group", "Place in group"), PARAMETER_ACTION, String.valueOf(ACTION_PLACE_IN_GROUP)));
+		form.setToDisableOnSubmit(placeInGroup, true);
 		table.add(placeInGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -702,6 +708,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(dateInput, 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
+		form.setToDisableOnSubmit(placeInGroup, true);
 		table.add(placeInGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -760,6 +767,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(dateInput, 1, row++);
 	
 			SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
+			form.setToDisableOnSubmit(placeInGroup, true);
 			table.add(placeInGroup, 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
 		}
@@ -822,6 +830,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			localized = localize("child_care.create_group", "Create group");
 
 		SubmitButton createGroup = (SubmitButton) getStyledInterface(new SubmitButton(localized, PARAMETER_ACTION, String.valueOf(ACTION_CREATE_GROUP)));
+		form.setToDisableOnSubmit(createGroup, true);
 		table.add(createGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -848,6 +857,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(groups, 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.move_group", "Move to group"), PARAMETER_ACTION, String.valueOf(ACTION_MOVE_TO_GROUP)));
+		form.setToDisableOnSubmit(placeInGroup, true);
 		table.add(placeInGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -911,6 +921,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(oneYearPriority, 4, row++);
 
 		SubmitButton updatePrognosis = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_prognosis", "Set prognosis"), PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_PROGNOSIS)));
+		form.setToDisableOnSubmit(updatePrognosis, true);
 		table.add(updatePrognosis, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -1039,6 +1050,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		layoutTbl.add(fromDate, 2, row++);
 		
 		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_END_CONTRACT)));
+		form.setToDisableOnSubmit(submit, true);
 		layoutTbl.add(submit, 1, row);
 		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
 		layoutTbl.add(close, 1, row);
@@ -1086,6 +1098,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		row++;
 
 		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_NEW_CARE_TIME)));
+		form.setToDisableOnSubmit(submit, true);
 		layoutTbl.add(submit, 1, row);
 		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
 		layoutTbl.add(close, 1, row);
