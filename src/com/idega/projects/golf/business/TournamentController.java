@@ -356,9 +356,7 @@ public class TournamentController{
         boolean returner = false;
         com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
 //        com.idega.util.idegaTimestamp endStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundEndDate());
-//System.err.println("TournamentController : tournament_id = "+tournament.getID() );
         Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT startingtime.* FROM STARTINGTIME, tournament_STARTINGTIME, tournament WHERE tournament.tournament_id = "+tournament.getID()+" AND tournament.tournament_id = tournament_startingtime.tournament_id AND tournament_startingtime.startingtime_id = startingtime.startingtime_id AND STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
-//System.err.println("TournamentController : startingtimes_length = "+startingtimes.length);
         if (startingtimes.length > 0 ) {
             returner = true;
         }
@@ -794,6 +792,25 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     }
 }
 
+  public static boolean isOnlineRegistration(Tournament tournament) {
+    return isOnlineRegistration(tournament, idegaTimestamp.RightNow());
+  }
+
+  public static boolean isOnlineRegistration(Tournament tournament, idegaTimestamp dateToCheck) {
+      boolean returner = false;
+      if (tournament.getIfRegistrationOnline()) {
+        System.err.println(tournament.getName() + " - er online registration");
+          if (dateToCheck.isLaterThan(new idegaTimestamp(tournament.getFirstRegistrationDate()))) {
+          System.err.println(tournament.getName() + " - "+dateToCheck.toSQLString()+ " > "+new idegaTimestamp(tournament.getFirstRegistrationDate()).toSQLString());
+              if (new idegaTimestamp(tournament.getLastRegistrationDate()).isLaterThan(dateToCheck) ) {
+            System.err.println(tournament.getName() + " - "+new idegaTimestamp(tournament.getLastRegistrationDate()).toSQLString() +" > "+dateToCheck.toSQLString());
+                  returner = true;
+              }
+          }
+      }
+
+      return returner;
+  }
 
 
 
