@@ -860,7 +860,7 @@ public class TeeTimeSearch extends GolfBlock {
 
 	public HiddenInput insertHiddenInput(String inpName, String value, Form theForm) {
 		HiddenInput myObject = new HiddenInput(inpName, value);
-		theForm.addObject(myObject);
+		theForm.getChildren().add(myObject);
 
 		return myObject;
 	}
