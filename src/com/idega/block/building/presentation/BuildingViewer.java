@@ -9,6 +9,7 @@ import java.io.*;
 import com.idega.util.*;
 import com.idega.util.text.TextSoap;
 import com.idega.data.*;
+import com.idega.block.building.business.BuildingFinder;
 import com.idega.data.genericentity.Address;
 import com.idega.block.building.data.*;
 import com.idega.jmodule.object.*;
@@ -69,7 +70,7 @@ public BuildingViewer(int building_id){
 
         Table buildingTable = new Table(3,4);
           buildingTable.mergeCells(2,1,2,4);
-          buildingTable.mergeCells(3,2,3,4);
+          buildingTable.mergeCells(3,2,3,3);
           buildingTable.setVerticalAlignment(3,2,"top");
           buildingTable.setWidth("100%");
           buildingTable.setWidth(2,1,"20");
@@ -139,8 +140,10 @@ public BuildingViewer(int building_id){
     private void getSingleBuilding(ModuleInfo modinfo) throws SQLException {
 
       Building building = new Building(building_id);
+      RoomSubType[] rooms = BuildingFinder.findRoomSubTypesInBuilding(building_id);
 
-      Table buildingTable = new Table();
+      Table buildingTable = new Table(1,rooms.length+1);
+        buildingTable.setWidth("100%");
 
       Text buildingName = new Text(building.getName());
         if ( nameStyle != null ) {
@@ -152,6 +155,42 @@ public BuildingViewer(int building_id){
         }
 
       buildingTable.add(buildingName,1,1);
+
+      for ( int a = 0; a < rooms.length; a++ ) {
+
+        Table roomsTable = new Table(3,3);
+          buildingTable.mergeCells(2,1,2,3);
+          roomsTable.setVerticalAlignment(3,2,"top");
+          roomsTable.setWidth("100%");
+          roomsTable.setWidth(2,1,"20");
+
+        Text roomName = new Text(rooms[a].getName()+" "+rooms[a].getArea()+"m<sup>2</sup>");
+          if ( addressStyle != null ) {
+            roomName.setFontStyle(addressStyle);
+          }
+
+        String roomText = rooms[a].getInfo();
+          roomText = TextSoap.findAndReplace(roomText,"\n","<br>");
+
+        Text roomInfo = new Text(roomText);
+          if ( infoStyle != null ) {
+            roomInfo.setFontStyle(infoStyle);
+          }
+
+        Image roomImage = new Image(rooms[a].getImageId());
+
+        Window roomWindow = new Window("Herbergi",400,550,"/room.jsp");
+          roomWindow.setScrollbar(false);
+        Image moreImage = new Image("/pics/meira.gif");
+        Link roomLink = new Link(moreImage,roomWindow);
+          roomLink.addParameter("room_sub_type_id",rooms[a].getID());
+
+        roomsTable.add(roomName,1,1);
+        roomsTable.add(roomText,1,2);
+        roomsTable.add(roomLink,1,3);
+        roomsTable.add(roomImage,3,2);
+
+      }
 
       add(buildingTable);
 
