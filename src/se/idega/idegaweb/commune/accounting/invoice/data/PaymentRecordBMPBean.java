@@ -287,8 +287,8 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		Date end = month.getLastDateOfMonth();
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
-		query.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
-		query.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		query.appendWhere(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		return query;
 	}
 
@@ -309,8 +309,8 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		IDOQuery sql = idoQuery();
 		sql.append("select r.* from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
-		sql.appendWhere("r."+COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
-		sql.appendAnd().append("r."+COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		sql.appendWhere("r."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append("r."+COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		//sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
 		//sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
 		sql.appendAndEqualsQuoted("h.school_category_id", categoryId);
@@ -329,8 +329,8 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		Date end = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();
 		sql.append("select count(*) from "+getEntityName());
-		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		sql.appendWhere(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		sql.appendAnd().append("(").appendEqualsQuoted(COLUMN_STATUS,""+ConstantStatus.LOCKED);
 		sql.appendOrEqualsQuoted(COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
 
@@ -354,8 +354,8 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		IDOQuery sql = idoQuery();
 		sql.append("select count(r.cacc_payment_record_id) from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
-		sql.appendWhere("r."+COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
-		sql.appendAnd().append("r."+COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		sql.appendWhere("r."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append("r."+COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
 		sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
 		sql.appendAndEqualsQuoted("h.school_category_id", category);
