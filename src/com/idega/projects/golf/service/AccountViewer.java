@@ -1412,11 +1412,13 @@ import java.util.*;
 
     Text[] TableTexts = new Text[5];
     boolean debet = false;
+    int delcount = 0;
     for(int j = 0; j < payments.length; j++){
       TableTexts[0] = new Text(new idegaTimestamp(payments[j].getPaymentDate()).getISLDate(".",true));
       TableTexts[1] = new Text(getPaymentType(payments[j].getPaymentTypeID()));
       TableTexts[2] = new Text(payments[j].getInstallmentNr()+"/"+payments[j].getTotalInstallment());
-      String sOut = payments[j].getStatus()? "Já":"Nei";
+      boolean paid = payments[j].getStatus();
+      String sOut = paid?"Já":"Nei";
       TableTexts[3] = new Text(sOut);
       TableTexts[4] = new Text(NF.format(payments[j].getPrice()));
 
@@ -1424,15 +1426,18 @@ import java.util.*;
         TableTexts[i].setFontSize(fontSize);
         T.add(TableTexts[i],i+1,j+2);
       }
-      CheckBox chkdel = new CheckBox("payment_delchk"+j,String.valueOf(payments[j].getID()));
-      T.add(chkdel,6,j+2);
-      Link L = new Link("B");
-      L.addParameter(this.prmString,"paychange");
-      L.addParameter("payid",payments[j].getID());
-      L.setFontSize(fontSize);
-      T.add(L,7,j+2);
+      if(!paid){
+        CheckBox chkdel = new CheckBox("payment_delchk"+delcount,String.valueOf(payments[j].getID()));
+        T.add(chkdel,6,j+2);
+        Link L = new Link("B");
+        L.addParameter(this.prmString,"paychange");
+        L.addParameter("payid",payments[j].getID());
+        L.setFontSize(fontSize);
+        T.add(L,7,j+2);
+        delcount++;
+      }
     }
-    T.add(new HiddenInput("payment_totalpaydel",String.valueOf(payments.length)));
+    T.add(new HiddenInput("payment_totalpaydel",String.valueOf(delcount)));
     T2.add(T,1,1);
     T2.setAlignment(1,2,"right");
     T2.add(new SubmitButton(new Image("/pics/tarif/small/eyda.gif")),1,2);

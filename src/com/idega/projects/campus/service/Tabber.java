@@ -227,11 +227,13 @@ public class Tabber extends JModuleObject {
 
   private boolean getPermissionHash(ModuleInfo modinfo,int iMemberId)throws SQLException{
     if(modinfo.getParameter("man_perm_hash") != null){
-      PermissionHash = (Hashtable) modinfo.getApplicationAttribute("man_perm_hash");
+      PermissionHash = (Hashtable) modinfo.getSession().getAttribute("man_perm_hash");
       return true;
     }
     else{
-      return getMemberAccessGroups(iMemberId);
+      boolean returner = getMemberAccessGroups(iMemberId);
+      modinfo.getSession().setAttribute("man_perm_hash",PermissionHash);
+      return returner;
     }
     //return false;
   }

@@ -56,6 +56,7 @@ public abstract class CampusTemplate extends MainTemplate{
     addTopRight(login);
 //    addRight(quote);
     addRight(new Image("/pics/titles/IS/poll.gif"));
+
     addRight(poll);
     addRight(Text.getBreak());
     addRight(new Image("/pics/titles/IS/calendar.gif"));

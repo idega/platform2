@@ -9,6 +9,7 @@ import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.util.idegaCalendar;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 
@@ -100,6 +101,32 @@ public class TariffEditor extends KeyEditor{
     }
     return mo;
   }
+  protected idegaTimestamp getDateFrom(){
+    idegaCalendar c = new idegaCalendar();
+    idegaTimestamp now = new idegaTimestamp();
+    idegaTimestamp mo = now;
+    switch (this.period) {
+      case YEAR : mo =  new idegaTimestamp(1,1,now.getYear());     break;
+      case MONTH: mo =  new idegaTimestamp(1,now.getMonth(),now.getYear());     break;
+      case WEEK : mo =  new idegaTimestamp();     break;
+      case DAY  : mo =  new idegaTimestamp();     break;
+      default   : mo =  new idegaTimestamp(1,now.getMonth(),now.getYear());     break;
+    }
+    return mo;
+  }
+  protected idegaTimestamp getDateTo(){
+    idegaCalendar c = new idegaCalendar();
+    idegaTimestamp now = new idegaTimestamp();
+    idegaTimestamp mo = now;
+    switch (this.period) {
+      case YEAR : mo =  new idegaTimestamp(31,12,now.getYear());     break;
+      case MONTH: mo =  new idegaTimestamp(c.getLengthOfMonth(now.getMonth(),now.getYear()),now.getMonth(),now.getYear());     break;
+      case WEEK : mo =  new idegaTimestamp();     break;
+      case DAY  : mo =  new idegaTimestamp();     break;
+      default   : mo =  new idegaTimestamp(c.getLengthOfMonth(now.getMonth(),now.getYear()),now.getMonth(),now.getYear());     break;
+    }
+    return mo;
+  }
   protected void doMain(ModuleInfo modinfo){
     idegaTimestamp today = new idegaTimestamp();
     //Tariff[] tariffs = Finder.findTariffs(today.getMonth(),today.getYear());
@@ -121,9 +148,10 @@ public class TariffEditor extends KeyEditor{
     T.add(formatText("Lýsing"),4,1);
     T.add(formatText("Gjaldliður"),5,1);
     T.add(formatText("Bókunarliður"),6,1);
-
+    idegaTimestamp from = this.getDateFrom();
+    idegaTimestamp to = this.getDateTo();
     if(isAdmin){
-      if(count > 0){
+      if(count != 0){
         for (int i = 0;i < count;i++){
           T.add(formatText( String.valueOf(i+1)),1,i+2);
           T.add(formatText(tariffs[i].getName()),2,i+2);
@@ -135,20 +163,20 @@ public class TariffEditor extends KeyEditor{
           }
           catch(SQLException e){}
         }
+        if(tariffs[0]!=null){
+          from = new idegaTimestamp(tariffs[0].getUseFromDate());
+          to = new idegaTimestamp(tariffs[0].getUseToDate());
+        }
       }
     }
-    idegaTimestamp from = new idegaTimestamp();
-    idegaTimestamp to = new idegaTimestamp();
-    if(tariffs[0]!=null){
-      from = new idegaTimestamp(tariffs[0].getUseFromDate());
-      to = new idegaTimestamp(tariffs[0].getUseToDate());
-    }
-    Table T3 = new Table(3,1);
+
+    Table T3 = new Table(4,1);
     T3.setCellpadding(0);
     T3.setCellspacing(0);
     T3.add(formatText("Tímabil:"),1,1);
     T3.add(formatText(from.getISLDate(".",true)),2,1);
-    T3.add(formatText(to.getISLDate(".",true)),3,1);
+    T3.add(formatText(" til "),3,1);
+    T3.add(formatText(to.getISLDate(".",true)),4,1);
     T2.add(T3,1,1);
     T2.add(T,1,2);
     this.makeView();
@@ -182,7 +210,8 @@ public class TariffEditor extends KeyEditor{
     T.add(formatText("Gjaldliður"),5,1);
     T.add(formatText("Bókunarliður"),6,1);
     T.add(formatText("Eyða"),7,1);
-
+    idegaTimestamp from = this.getDateFrom();
+    idegaTimestamp to = this.getDateTo();
 
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
@@ -231,10 +260,10 @@ public class TariffEditor extends KeyEditor{
       T.add(idInput);
     }
     Table T3 = new Table(4,1);
-    TextInput datefrom = new TextInput("te_datefrom");
+    TextInput datefrom = new TextInput("te_datefrom",from.getISLDate(".",true));
     datefrom.setLength(8);
     setStyle(datefrom);
-    TextInput dateto = new TextInput("te_dateto");
+    TextInput dateto = new TextInput("te_dateto",to.getISLDate(".",true));
     dateto.setLength(8);
     setStyle(dateto);
     T3.add(formatText("Tímabil"));
