@@ -18,10 +18,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/08/27 13:28:31 $ by $Author: staffan $
+ * Last modified: $Date: 2003/08/27 14:33:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -111,7 +111,7 @@ public class InvoiceByCompensationView extends CommuneBlock {
 
         for (int i = 0; i < members.length; i++) {
             int col = 1;
-            int row = i + 1;
+            int row = i + 2;
             table.setRowColor(row, (row % 2 == 0) ? getZebraColor1()
                               : getZebraColor2());
             final SchoolClassMember member = members [i];
@@ -126,8 +126,11 @@ public class InvoiceByCompensationView extends CommuneBlock {
                     = getSchoolNameFromMember (member, classHome, schoolHome);
             table.add (new Text(schoolName), col++, row);
             table.add (new Text(member.getInvoiceInterval ()), col++, row);
-            table.add (new Text(dateFormatter.format
-                                (member.getLatestInvoiceDate ())), col++, row);
+            final Date latestInvoiceDate = member.getLatestInvoiceDate ();
+            if (null != latestInvoiceDate) {
+                table.add (new Text(dateFormatter.format (latestInvoiceDate)),
+                           col++, row);
+            }
         }
         add (table);
     }
