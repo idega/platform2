@@ -205,13 +205,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " ann year : " + year + " creating a new one.");
 			try {
 
-				try {
-					club = this.getGroupBusiness().getGroupByGroupID(groupId); //could be club,regional union or league
-					report = getWorkReportHome().create();
-				}
-				catch (FinderException e2) {
-					e2.printStackTrace();
-				}
+				report = getWorkReportHome().create();
 			}
 			catch (CreateException e1) {
 				e1.printStackTrace();
@@ -221,6 +215,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		//UPDATE ALWAYS UNLESS IS READ ONLY
 		if (report != null) {
+             try {
+              club = this.getGroupBusiness().getGroupByGroupID(groupId); //could be club,regional union or league
+            } catch (FinderException e1) {
+             
+              e1.printStackTrace();
+            }
 			report.setGroupId(groupId);
 			report.setYearOfReport(year);
 	
