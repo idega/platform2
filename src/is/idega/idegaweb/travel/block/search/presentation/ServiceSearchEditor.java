@@ -39,6 +39,7 @@ public class ServiceSearchEditor extends TravelManager {
 	private static final String ACTION_EDIT = "sse_ed";
 	private static final String ACTION_DELETE = "sse_d";
 	private static final String ACTION_SUPPLIERS = "sse_s";
+	private static final String ACTION_CLEAR_CACHE = "sse_cc";
 	private static final String ACTION_UPDATE_SUPPLIERS = "sse_us";
 	
 	private static final String PARAMETER_NAME = "sse_prm_n";
@@ -95,11 +96,16 @@ public class ServiceSearchEditor extends TravelManager {
 		} else if (action.equals(ACTION_UPDATE_SUPPLIERS)) {
 			updateSuppliers(iwc);
 			suppliers(iwc);
+		} else if (action.equals(ACTION_CLEAR_CACHE)) {
+			clearCache(iwc);
+			displaySearchEngineList(iwc);
 		} else {
 			displaySearchEngineList(iwc);
 		}
-		
-		
+	}
+	
+	private void clearCache(IWContext iwc) throws RemoteException {
+		getBusiness(iwc).clearAllEngineCache();
 	}
 	
 	private void displaySearchEngineList(IWContext iwc) throws RemoteException {
@@ -145,7 +151,6 @@ public class ServiceSearchEditor extends TravelManager {
 				delete.addParameter(ACTION, ACTION_DELETE);
 				delete.addParameter(PARAMETER_SSE_ID, engine.getPrimaryKey().toString());
 				
-				
 				table.add(select, 1, row);
 				table.add(getText(engine.getCode()), 2, row);
 				if (engine.getURL() != null && !"".equals(engine.getURL().trim())) {
@@ -169,6 +174,13 @@ public class ServiceSearchEditor extends TravelManager {
 			table.add(bNew, 1, row);
 		}
 		table.setRowColor(row, GRAY);
+		
+		Link clearCache = new Link(iwrb.getLocalizedImageButton("travel.clear_cache", "Clear Cache"));
+		clearCache.addParameter(ACTION, ACTION_CLEAR_CACHE);
+		table.add(clearCache, 5, row);
+		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.mergeCells(5, row, 6, row);
+		
 		add(form);
 	}
 	
