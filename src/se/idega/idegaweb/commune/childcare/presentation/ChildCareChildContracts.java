@@ -408,6 +408,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			IWTimestamp t = new IWTimestamp();
 			t.setDay(1);
 			t.addMonths(3);
+			t.addDays(1);
 			earliestPossibleRemoveDate = t.getDate();
 		} else {
 			PlacementHelper helper = getBusiness().getPlacementHelper(new Integer(getSession().getApplicationID()));
