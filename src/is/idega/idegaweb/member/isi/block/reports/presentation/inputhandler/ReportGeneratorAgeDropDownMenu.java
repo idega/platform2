@@ -36,10 +36,25 @@ public class ReportGeneratorAgeDropDownMenu extends DropdownMenu implements Inpu
 		for (int i = youngest; i <= oldest; i++) {
 			String age = Integer.toString(i);
 			addMenuElement(i, age);
-			_allAges.add(age);
 		}
 		
 		setSelectedElement(" ");
+	}
+	
+	public Collection getAllAgesCollection(){
+		for (int i = youngest; i <= oldest; i++) {
+			IWTimestamp stamp = IWTimestamp.RightNow();
+			stamp.addYears(-i);
+			stamp.setMonth(1);
+			stamp.setDay(1);
+			stamp.setAsDate();
+			
+						
+			_allAges.add(stamp.toString());
+			
+		}
+		
+		return _allAges;
 	}
 
 	/*
@@ -66,20 +81,25 @@ public class ReportGeneratorAgeDropDownMenu extends DropdownMenu implements Inpu
 		if (values != null && values.length > 0) {
 			ages = new ArrayList();
 			if(values.length==1 && values[0].equals(" ")) {
-				ages = _allAges;
-			} else {
+				ages = getAllAgesCollection();
+			} 
+			else {
 				for(int i=0; i<values.length; i++) {
 					int age = Integer.parseInt(values[i]);
 					
 					IWTimestamp stamp = IWTimestamp.RightNow();
 				
 					stamp.addYears(-age);
+					stamp.setMonth(1);
+					stamp.setDay(1);
+					stamp.setAsDate();
+					
 								
 					ages.add(stamp.toString());
 				}
 			}
 		} else {
-			ages = _allAges;
+			ages = getAllAgesCollection();
 		}
 		return ages;
 	}
