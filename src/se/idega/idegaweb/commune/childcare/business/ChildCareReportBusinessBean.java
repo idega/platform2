@@ -105,12 +105,14 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 		removedDate.setLocalizedName(getLocalizedString(FIELD_REMOVED_DATE, "Removed date"), currentLocale);
 		reportCollection.addField(removedDate);
 
+		int numberOfChoices = 0;
 		try {
 			Collection children = getChildCareBusiness().findSentInAndRejectedApplicationsByArea(areaID, numberOfMonths.intValue(), numberOfWeeks.intValue(), firstHandOnly.booleanValue(), getChildCareBusiness().getChildCareCaseCode());
 			if (children != null) {
 				Iterator iter = children.iterator();
 				while (iter.hasNext()) {
 					ChildCareApplication application = (ChildCareApplication) iter.next();
+					numberOfChoices++;
 					/*if (getChildCareBusiness().hasActiveApplications(application.getChildId(), getChildCareBusiness().getChildCareCaseCode(), new IWTimestamp().getDate())) {
 						continue;
 					}*/
@@ -203,6 +205,10 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 		catch (RemoteException re) {
 			log(re);
 		}
+
+		ReportableData count = new ReportableData();
+		count.addData(personalID, getLocalizedString("number_of_choices", "Number of choices:") + " " +  String.valueOf(numberOfChoices));
+		reportCollection.add(count);
 
 		return reportCollection;
 	}
