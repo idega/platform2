@@ -63,6 +63,14 @@ public class GroupInfo extends Block {
 		table.add(nameLabel, 2, row);
 		table.add(name, 3, row++);
 		
+		if(_showShortName) {
+			String shortName = emptyIfNull(group.getShortName());
+			if(_showEmptyFields || (shortName!=null && shortName.length()>0)) {
+				String shortNameLabel = _iwrb.getLocalizedString("shor_name", "Short name: ");
+				addTextToTable(table, row++, shortNameLabel, shortName);
+			}
+		}
+		addBreak();
 		if(_showHomePage) {
 			String homePageURL = emptyIfNull(group.getHomePageURL());
 			if(_showEmptyFields || (homePageURL!=null && homePageURL.length()>0)) {
@@ -73,30 +81,23 @@ public class GroupInfo extends Block {
 				addPOToTable(table, row++, homePageLabel, link);
 			}
 		}
-		if(_showDescription) {
-			String description = emptyIfNull(group.getDescription());
-			if(_showEmptyFields || (description!=null && description.length()>0)) {
-				String descriptionLabel = _iwrb.getLocalizedString("description", "Description: ");
-				addTextToTable(table, row++, descriptionLabel, description);
+		if(_showEmails) {
+			Table emails = getEmailTable(group);
+			if(_showEmptyFields || (emails!=null && emails.getRows()>0)) {
+				Text emailsLabel = new Text(_iwrb.getLocalizedString("email", "Email: "));
+				emailsLabel.setStyle(_textLabelStyle);
+				table.add(emailsLabel, 2, row);
+				if(emails.getRows()>0) {
+					table.add(emails, 3, row++);
+				}
 			}
 		}
-		if(_showExtraInfo) {
-			String extraInfo = emptyIfNull(group.getExtraInfo());
-			if(_showEmptyFields || (extraInfo!=null && extraInfo.length()>0)) {
-				String extraInfoLabel = _iwrb.getLocalizedString("extra_info", "Info: ");
-				addTextToTable(table, row++, extraInfoLabel, extraInfo);
-			}
-		}
-		if(_showShortName) {
-			String shortName = emptyIfNull(group.getShortName());
-			if(_showEmptyFields || (shortName!=null && shortName.length()>0)) {
-				String shortNameLabel = _iwrb.getLocalizedString("shor_name", "Short name: ");
-				addTextToTable(table, row++, shortNameLabel, shortName);
-			}
+		if(_showHomePage || _showEmails) {
+			addBreak();
 		}
 		if(_showPhone) {
 			Collection phones = group.getPhones();
-			String phone = null;
+			String phone = "";
 			if(phones!=null) {
 				Iterator phoneIter = phones.iterator();
 				while(phoneIter.hasNext()) {
@@ -112,19 +113,8 @@ public class GroupInfo extends Block {
 				addTextToTable(table, row++, phoneLabel, phone);
 			}
 		}
-		if(_showEmails) {
-			Table emails = getEmailTable(group);
-			if(_showEmptyFields || (emails!=null && emails.getRows()>0)) {
-				Text emailsLabel = new Text(_iwrb.getLocalizedString("email", "Email: "));
-				emailsLabel.setStyle(_textLabelStyle);
-				table.add(emailsLabel, 2, row);
-				if(emails.getRows()>0) {
-					table.add(emails, 3, row++);
-				}
-			}
-		}
 		if(_showAddress) {
-			String address = null;
+			String address = "";
 			try {
 				Address addr = _biz.getGroupAddress(iwc, group);
 				if(addr!=null) {
@@ -137,6 +127,24 @@ public class GroupInfo extends Block {
 			if(_showEmptyFields || (address!=null && address.length()>0)) {
 				String addressLabel = _iwrb.getLocalizedString("address", "Address: ");
 				addTextToTable(table, row++, addressLabel, address);
+			}
+		}
+		if(_showPhone || _showAddress) {
+			addBreak();
+		}
+		addBreak();
+		if(_showDescription) {
+			String description = emptyIfNull(group.getDescription());
+			if(_showEmptyFields || (description!=null && description.length()>0)) {
+				String descriptionLabel = _iwrb.getLocalizedString("description", "Description: ");
+				addTextToTable(table, row++, descriptionLabel, description);
+			}
+		}
+		if(_showExtraInfo) {
+			String extraInfo = emptyIfNull(group.getExtraInfo());
+			if(_showEmptyFields || (extraInfo!=null && extraInfo.length()>0)) {
+				String extraInfoLabel = _iwrb.getLocalizedString("extra_info", "Info: ");
+				addTextToTable(table, row++, extraInfoLabel, extraInfo);
 			}
 		}
 		
