@@ -123,7 +123,7 @@ public class ReportGenerator extends Block {
 	private boolean _showReportNameInputIfCannotChangeIt = false;
 	private String PRM_REPORT_NAME = "report_name";
 
-	private boolean _generateExcelReport=false;
+	private boolean _generateExcelReport=true;
 	private boolean _generateHTMLReport=true;
 	private boolean _generatePDFReport=true;
 	private boolean _generateSimpleExcelReport=true;
@@ -779,6 +779,7 @@ public class ReportGenerator extends Block {
 	 * @return
 	 */
 	private PresentationObject getReportLink(IWContext iwc) {
+	    IWResourceBundle iwrb = getResourceBundle(iwc);
 		Table reports = new Table();
 		reports.mergeCells(1, 1, 2, 1);
 		reports.add(
@@ -787,7 +788,7 @@ public class ReportGenerator extends Block {
 				1);
 		
 		String formats[] = new String[] {EXCEL_FORMAT,SIMPLE_EXCEL_FORMAT,PDF_FORMAT,HTML_FORMAT};
-		String formatNames[] = new String[] {"Excel : ","Excel : ","PDF : ","HTML : "};
+		String formatNames[] = new String[] {iwrb.getLocalizedString(EXCEL_FORMAT,"Excel"),iwrb.getLocalizedString(SIMPLE_EXCEL_FORMAT,"Excel without template"),iwrb.getLocalizedString(PDF_FORMAT,"PDF"),iwrb.getLocalizedString(HTML_FORMAT,"HTML")};
 		
 		int j = 1;
 		for (int i = 0; i < formats.length; i++) {
@@ -799,7 +800,7 @@ public class ReportGenerator extends Block {
 //				DownloadLink link = new DownloadLink(_reportName);
 //				link.setRelativeFilePath(relativeFilePath);
 //				
-				reports.add(formatNames[i], 1, j);
+				reports.add(formatNames[i]+" : ", 1, j);
 				reports.add(link, 2, j);
 			}
 		}
