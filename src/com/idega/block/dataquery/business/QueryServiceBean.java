@@ -41,7 +41,7 @@ import com.idega.util.xml.XMLFile;
 /**
  * @author aron
  */
-public class QueryServiceBean extends IBOServiceBean implements QueryService {
+public class QueryServiceBean extends IBOServiceBean  implements QueryService {
 
 	public QueryHelper getQueryHelper(XMLFile xmlFile){
 		XMLData data = XMLData.getInstanceForFile(xmlFile);
@@ -170,6 +170,18 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 		return null;	
 	}
 	
+	public List getRelatedEntities(QueryHelper helper, int level) {
+		List resultList = new ArrayList();
+		if(helper.hasSourceEntity()){		
+			QueryEntityPart source = helper.getSourceEntity();
+			QueryEntityPart root = new QueryEntityPart(source.getName(),source.getBeanClassName());
+			resultList.add(root);
+			getRelatedEntities(resultList, root,level-1);
+		}
+		return resultList;	
+	}
+
+	
 	private void generateEntityTree(QueryEntityPart node,int level){
 		if(node !=null){
 			// many-to-may entities
@@ -212,22 +224,72 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 			System.out.println("no object");
 	}
 	
+	private void getRelatedEntities(List resultList, QueryEntityPart node, int level)	{
+		if(node !=null){
+			// many-to-may entities
+			Collection manyToManyEntities = getManyToManyEntityDefinitions(node); 
+			Iterator iter ;
+			if(manyToManyEntities!=null && !manyToManyEntities.isEmpty()){
+				iter = manyToManyEntities.iterator();
+				while (iter.hasNext()) {
+					IDOEntityDefinition entityDef = (IDOEntityDefinition) iter.next();
+					//GenericEntity relatedEntity = getEntity(entityClass);
+          String queryEntityPartName = entityDef.getInterfaceClass().getName();
+					// thi comment QueryEntityPart child2 = new QueryEntityPart (entityDef.getUniqueEntityName(),entityDef.getInterfaceClass().getName());
+          QueryEntityPart child2 = new QueryEntityPart (queryEntityPartName, queryEntityPartName);
+					resultList.add(child2);
+					if(level >0)
+						getRelatedEntities(resultList, child2,level-1);
+					//System.out.println(child2.getNodePath());
+				}
+			}
+			//QueryEntityPart part = (QueryEntityPart) node;
+			Collection attributes = getEntityAttributes(node);
+			iter = attributes.iterator();
+			//IWTreeNode child;
+			while (iter.hasNext()) {
+				EntityAttribute attribute = (EntityAttribute) iter.next();
+				if(attribute.isPartOfManyToOneRelationship()){
+					QueryEntityPart child = new QueryEntityPart(attribute.getName(),attribute.getRelationShipClassName());
+					//child = getTreeNode(entityPart);
+					resultList.add(child);
+					//entityPart.setPath(child.getNodePath());
+					if(level>0){
+						getRelatedEntities(resultList, child,level-1);
+					}	
+				}				
+			}
+			// many to many entities
+			
+		}
+		else {
+			System.out.println("no object");
+		}
+	}
+
+	
 	private IWTreeNode getTreeNode(QueryEntityPart entityPart){
 		return new IWTreeNode(entityPart.getName(),entityPart.encode().hashCode(),entityPart);
 	}
 	
-	public Collection getListOfFieldParts(IWResourceBundle iwrb,QueryEntityPart entityPart){
+	public Collection getListOfFieldParts(IWResourceBundle iwrb,QueryEntityPart entityPart, boolean expertMode){
 		Vector list = new Vector();
 		Iterator iter = getEntityAttributes(entityPart).iterator();
 		while (iter.hasNext()) {
 			EntityAttribute element = (EntityAttribute) iter.next();
-			list.add( createQueryFieldPart(iwrb,entityPart.getBeanClassName(),element));
+			// added by thomas, filter out confusing entities if the query builder does not work in the expert mode
+			if (	expertMode || 
+						! (	element.isOneToNRelationship() || 
+								element.isPartOfManyToOneRelationship() ||
+								element.isPrimaryKey())) {
+				list.add( createQueryFieldPart(iwrb,entityPart.getBeanClassName(), entityPart.getPath(), element));
+			}
 		}
 		return list;
 	}
 	
-	public QueryFieldPart createQueryFieldPart(IWResourceBundle iwrb,String entityName,EntityAttribute attribute){
-		return new QueryFieldPart(attribute.getName(),entityName,attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName());
+	public QueryFieldPart createQueryFieldPart(IWResourceBundle iwrb,String entityName, String path, EntityAttribute attribute){
+		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName());
 	}
 	
 	public QueryResult generateQueryResult(Integer queryID) throws QueryGenerationException{
