@@ -791,37 +791,21 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 				} else {
 					buff.append(getBookingCodeColumnName()+" = '"+booking.getCode()+"'");
 				}
+				buff.append(" AND ");
+				if (booking.getCreditcardAuthorizationNumber() == null) {
+					buff.append(getCreditcardAuthorizationNumberColumnName()+" is null");
+				} else {
+					buff.append(getCreditcardAuthorizationNumberColumnName()+" = '"+booking.getCreditcardAuthorizationNumber()+"'");
+					
+				}
 				buff.append(" ORDER BY "+getBookingDateColumnName());
       //coll = this.idoFindPKsBySQL(buff.toString());
       return this.idoFindPKsBySQL(buff.toString());
-      /*if (coll != null && !coll.isEmpty()) {
-				System.out.println(coll.size()+" generalBookingPks found");
-      	Iterator iter = coll.iterator();
-      	GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
-      	while (iter.hasNext() ) {
-					System.out.println(" - Adding GeneralBooking");
-      		list.add( gbHome.findByPrimaryKey(iter.next()) );
-      	}
-      } else {
-      	System.out.println("no generalBookingPks found");
-      }*/
-      //list = EntityFinder.getInstance().findAll(GeneralBooking.class, buff.toString());
     }catch (FinderException fe) {
       System.err.println("[GeneralBookingBMPBean] Error in sql : getting multiple bookings for bookingId : "+booking.getID());
       fe.printStackTrace(System.err);
-      //list.add(booking);
       return null;
     }
-
-    /*
-    if (list.size() < 2) {
-      return list;
-    }else {
-      int myIndex = list.indexOf(booking);
-      list = cleanList(list, booking, myIndex, numberOfDays);
-    }*/
-
-    //return null;
   }
 
   public void removeAllTravelAddresses() throws IDORemoveRelationshipException{
