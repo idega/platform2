@@ -4,11 +4,8 @@
 package is.idega.idegaweb.golf.legacy.business;
 
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
-import is.idega.idegaweb.golf.block.text.data.TextModule;
 import is.idega.idegaweb.golf.entity.FieldImage;
 import is.idega.idegaweb.golf.entity.FieldImageHome;
-import is.idega.idegaweb.golf.entity.HoleText;
-import is.idega.idegaweb.golf.entity.HoleTextHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.TeeImage;
@@ -26,9 +23,6 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.media.business.MediaBusiness;
-import com.idega.block.text.business.TextService;
-import com.idega.block.text.data.TxText;
-import com.idega.block.text.data.TxTextHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -180,7 +174,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 	}
 	
 	
-	public void copyHoleTextForFieldOverview(IWContext iwc) {
+	/*public void copyHoleTextForFieldOverview(IWContext iwc) {
 		System.out.println("[GOLF] Start: Copy HoldeText...");
 		try {
 			HoleTextHome hth = (HoleTextHome)IDOLookup.getHome(HoleText.class);
@@ -210,7 +204,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 			e.printStackTrace();
 		}
 		System.out.println("[GOLF] Finish: Copy HoldeText...");
-	}
+	}*/
 	
 	public void copyFieldImagesForFieldOverview(IWContext iwc) {
 		System.out.println("[GOLF] Start: Copy FieldImages...");

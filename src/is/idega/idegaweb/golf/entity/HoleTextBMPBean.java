@@ -3,7 +3,7 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
-import is.idega.idegaweb.golf.block.text.data.TextModule;
+//import is.idega.idegaweb.golf.block.text.data.TextModule;
 
 import java.util.Collection;
 
@@ -18,7 +18,7 @@ public class HoleTextBMPBean extends GenericEntity implements HoleText{
 		addAttribute(getIDColumnName());
                 addAttribute("field_id","Númer vallar",true,true,"java.lang.Integer","many-to-one","is.idega.idegaweb.golf.entity.Field");
                 addAttribute("hole_number","Númer holu",true,true,"java.lang.Integer");
-                addManyToOneRelationship("text_id",TextModule.class);  //Old Text
+                //addManyToOneRelationship("text_id",TextModule.class);  //Old Text
 		addManyToOneRelationship("text", TxText.class);
 	}
 
@@ -54,7 +54,7 @@ public class HoleTextBMPBean extends GenericEntity implements HoleText{
         		return idoFindPKsByQuery(idoQueryGetSelect());
         }
         
-        public TextModule getOldText() {
-        		return (TextModule)getColumnValue("text_id");
-        }
+        //public TextModule getOldText() {
+        		//return (TextModule)getColumnValue("text_id");
+        //}
 }
