@@ -1,5 +1,12 @@
 package se.idega.idegaweb.commune.childcare.check.business;
 
+import com.idega.core.data.Address;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import com.idega.user.business.UserBusiness;
+import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
+import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.util.idegaTimestamp;
 import java.util.*;
 
 import com.idega.business.IBOSessionBean;
@@ -18,7 +25,7 @@ import se.idega.idegaweb.commune.childcare.check.data.*;
  * @version 1.0
  */
 
-public class CheckBusinessBean extends IBOSessionBean implements CheckBusiness{
+public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness{
 
   private Check currentCheck = null;
   private boolean rule1Verified = false;
@@ -109,7 +116,8 @@ public class CheckBusinessBean extends IBOSessionBean implements CheckBusiness{
     check.setRule3(checkRule3);
     check.setRule4(checkRule4);
     check.setRule5(checkRule5);
-    check.setStatus("NYTT");
+    check.setCaseStatus(this.getCaseStatusOpen());
+
     check.store();
   }
 
@@ -137,24 +145,24 @@ public class CheckBusinessBean extends IBOSessionBean implements CheckBusiness{
       this.allRulesVerified = false;
     }else{
       for(int i=0; i<selectedRules.length; i++){
-        int rule = Integer.parseInt(selectedRules[i]);
-        switch (rule) {
-          case 1:
-            this.rule1Verified = true;
-            break;
-          case 2:
-            this.rule2Verified = true;
-            break;
-          case 3:
-            this.rule3Verified = true;
-            break;
-          case 4:
-            this.rule4Verified = true;
-            break;
-          case 5:
-            this.rule5Verified = true;
-            break;
-        }
+	int rule = Integer.parseInt(selectedRules[i]);
+	switch (rule) {
+	  case 1:
+	    this.rule1Verified = true;
+	    break;
+	  case 2:
+	    this.rule2Verified = true;
+	    break;
+	  case 3:
+	    this.rule3Verified = true;
+	    break;
+	  case 4:
+	    this.rule4Verified = true;
+	    break;
+	  case 5:
+	    this.rule5Verified = true;
+	    break;
+	}
       }
       // Rule 5 overrides all other rules
       this.allRulesVerified = ((selectedRules.length==4)&&!rule5Verified)||rule5Verified;
@@ -167,19 +175,49 @@ public class CheckBusinessBean extends IBOSessionBean implements CheckBusiness{
     this.currentCheck.setRule5(this.rule5Verified);
   }
 
+  public User getUserById(IWContext iwc,int userId) throws Exception {
+    return getUserBusiness(iwc).getUser(userId);
+  }
+
+  public User getUserByPersonalId(IWContext iwc,String personalID) throws Exception {
+    return getUserBusiness(iwc).getUserHome().findByPersonalID(personalID);
+  }
+
+  public Address getUserAddress(IWContext iwc,User user) {
+    try {
+      return getUserBusiness(iwc).getUserAddress1(((Integer)user.getPrimaryKey()).intValue());
+    }
+    catch (Exception e) {
+      return null;
+    }
+  }
+
+  public String getUserPostalCode(IWContext iwc,User user) {
+    try {
+      return getUserBusiness(iwc).getUserAddress1(((Integer)user.getPrimaryKey()).intValue()).getPostalCode().getPostalCode();
+    }
+    catch (Exception e) {
+      return "";
+    }
+  }
+
   public void commit()throws Exception{
     this.currentCheck.store();
   }
 
   public void approveCheck()throws Exception{
-    this.currentCheck.setStatus("BVJD");
+    this.currentCheck.setCaseStatus(this.getCaseStatusGranted());
   }
 
   public void retrialCheck()throws Exception{
-    this.currentCheck.setStatus("OMPR");
+    this.currentCheck.setCaseStatus(this.getCaseStatusReview());
   }
 
   public void saveCheck()throws Exception{
-    this.currentCheck.setStatus("UBEH");
+    this.currentCheck.setCaseStatus(this.getCaseStatusOpen());
+  }
+
+  private UserBusiness getUserBusiness(IWContext iwc)throws Exception{
+    return (UserBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,UserBusiness.class);
   }
 }
