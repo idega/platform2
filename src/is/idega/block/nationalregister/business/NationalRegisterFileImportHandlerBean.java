@@ -705,7 +705,15 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			}
 			
 			if(FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)){
-				natBiz.updateUserPersonalID(ssn,newSsnOrName);
+				try {
+					User user = uBiz.getUser(ssn);
+					if (user != null) {
+						user.setPersonalID(newSsnOrName);
+					}
+				}
+				catch (FinderException e1) {
+					e1.printStackTrace();
+				}
 				return true;
 			}
 			
@@ -720,11 +728,11 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				}
 				return true;
 			}
-			
+			/*
 			if(FATE_CHANGE_OLD_ID.equalsIgnoreCase(fate)){
 				natBiz.updateUserOldID(oldId,ssn);
 				return true;
-			}
+			}*/
 			
 			if (postalCodeFix) {
 				try {
@@ -774,7 +782,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			group = commune.getGroup();
 			postalToGroupMap.put(po, group);
 		} else {
-			System.out.println("NationalRegisterImport : postalCode not found : '"+po+"'");
+//			System.out.println("NationalRegisterImport : postalCode not found : '"+po+"'");
 			try {
 				group = cBiz.getOtherCommuneCreateIfNotExist().getGroup();
 				if(null!=group) {
