@@ -1,6 +1,7 @@
 package com.idega.block.text.presentation;
 
 
+import com.idega.block.image.presentation.ImageAttributeSetter;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.business.ContentHelper;
@@ -320,7 +321,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
           imageTable.add(immi,1,row);
           //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
-          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),((Integer)f.getPrimaryKey()).intValue(),imageAttributeKey);
+          Link edit = ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),((Integer)f.getPrimaryKey()).intValue(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
           delete.addParameter(prmDeleteFile,((Integer)f.getPrimaryKey()).intValue());
           delete.addParameter(prmUsedTextId,txText.getID());
