@@ -2433,27 +2433,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				int contractID = ((Integer)contract.getPrimaryKey()).intValue();
 				contractFile.addTo(Contract.class,contractID);
 			
-	/*
-			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
-			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, fromDate, false), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			/** TODO Change to a more appropriate method call */
-		/*	Contract contract = ContractBusiness.createContract(application.getChildId(), 2, fromDate, toDate, "C", (Map)null);
-	*/		
-			
-			
-			application.setContractId(contractID);
-			application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
-			if (toDate != null) {
-				application.setApplicationStatus(getStatusCancelled());
-				changeCaseStatus(application, getCaseStatusCancelled().getStatus(), admin);
-			}
-			else {
-				application.setApplicationStatus(getStatusReady());
-				changeCaseStatus(application, getCaseStatusReady().getStatus(), admin);
-			}
-			
-			addContractToArchive(-1, application, contractID, fromDate.getDate());
-			getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), toDate.getTimestamp(), ((Integer)admin.getPrimaryKey()).intValue(), null);
+				application.setContractId(contractID);
+				application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
+				if (toDate != null) {
+					application.setApplicationStatus(getStatusCancelled());
+					changeCaseStatus(application, getCaseStatusCancelled().getStatus(), admin);
+				}
+				else {
+					application.setApplicationStatus(getStatusReady());
+					changeCaseStatus(application, getCaseStatusReady().getStatus(), admin);
+				}
+				
+				addContractToArchive(-1, application, contractID, fromDate.getDate());
+				getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), toDate.getTimestamp(), ((Integer)admin.getPrimaryKey()).intValue(), null);
 			}
 			t.commit();
 		}
