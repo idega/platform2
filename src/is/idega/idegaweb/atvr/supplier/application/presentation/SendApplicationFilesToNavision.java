@@ -19,7 +19,7 @@ import com.idega.presentation.ui.SubmitButton;
 import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
 import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication;
 
-import java.io.File;
+import java.io.FileWriter;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -59,6 +59,54 @@ public class SendApplicationFilesToNavision extends Block {
 					return;	
 				}
 				
+				FileWriter writer = new FileWriter(fileLocation);
+				Iterator it = col.iterator();
+				while (it.hasNext()) {
+					NewProductApplication appl = (NewProductApplication) it.next();
+					StringBuffer line = new StringBuffer();
+					line.append(appl.getApplicationType());   //Tegund umsóknar
+					line.append(";");
+					line.append("1111111119");                //kennitala birgja
+					line.append(";");
+					line.append("9999");                      //vörunúmer
+					line.append(";");
+					line.append("99-9999");                   //vörunúmer gamla
+					line.append(";");
+					line.append(appl.getDescription());       //Lýsing
+					line.append(";");
+					line.append(appl.getDescription2());      //Lýsing 2
+					line.append(";");
+					line.append(appl.getQuantity());          //Magn (ml)
+					line.append(";");
+					line.append(appl.getStrength());          //Styrkur(%)
+					line.append(";");
+					line.append(appl.getProducer());          //Framleiðandi
+					line.append(";");
+					line.append(appl.getCountryOfOrigin());   //Framleiðsluland
+					line.append(";");
+					line.append(appl.getBarCode());           //Strikamerki
+					line.append(";");
+					line.append("01.1");                      //Flokksdeild
+					line.append(";");
+					line.append(appl.getAmount());            //Fjöldi í kassa
+					line.append(";");
+					line.append(appl.getApplicationSent());   //Dags. umsóknar
+					line.append(";");
+					line.append(appl.getAmount());            //Magn tjöru
+					line.append(";");
+					line.append(appl.getWeigth());            //Þyngd tóbaks
+					line.append(";");
+					line.append(appl.getPrice());             //Verð
+					line.append(";");
+					line.append("");                          //Vörunúmer birgja
+					line.append(";");
+					line.append(appl.getCarbonMonoxide());    //Koltvísýringur
+					line.append("\n");
+					
+					writer.write(line.toString());
+				}
+				
+				writer.close();
 			}
 			
 			add("Skrá send");
