@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.15 2001/08/16 10:33:36 tryggvil Exp $
+ * $Id: Page.java,v 1.16 2001/08/26 22:31:55 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -63,6 +63,7 @@ public class Page extends ModuleObjectContainer {
   public Page(String s) {
     super();
     setTitle(s);
+    setAllMargins(0);
   }
 
   public void setBackgroundColor(String color) {
@@ -212,10 +213,10 @@ public class Page extends ModuleObjectContainer {
 
   public boolean doPrint(ModuleInfo modinfo) {
     boolean returnBoole;
-    if (modinfo.getRequest().getParameter("idegaspecialrequesttype") == null) {
+    if (modinfo.getParameter("idegaspecialrequesttype") == null) {
       returnBoole = true;
     }
-    else if (modinfo.getRequest().getParameter("idegaspecialrequesttype").equals("page") && modinfo.getRequest().getParameter("idegaspecialrequestname").equals(this.getName())) {
+    else if (modinfo.getParameter("idegaspecialrequesttype").equals("page") && modinfo.getParameter("idegaspecialrequestname").equals(this.getName())) {
       returnBoole = true;
     }
     else {
@@ -299,7 +300,7 @@ public class Page extends ModuleObjectContainer {
         modinfo.getSession().removeAttribute("idega_special_reload");
       }
       else {
-        setToRedirect(modinfo.getRequest().getRequestURI());
+        setToRedirect(modinfo.getRequestURI());
         modinfo.getSession().setAttribute("idega_special_reload","true");
       }
     }
@@ -369,7 +370,7 @@ public class Page extends ModuleObjectContainer {
         println("<h1>Villa var&eth;!</h1>");
         println("IW Error");
         println("<pre>");
-        ex.printStackTrace(modinfo.getResponse().getWriter());
+        ex.printStackTrace(modinfo.getWriter());
         println("</pre>");
       }
 
@@ -394,7 +395,7 @@ public class Page extends ModuleObjectContainer {
         println("<p>Villa var&eth;!</p>");
         println("<p>IWError</p>");
         println("<p>");
-        ex.printStackTrace(modinfo.getResponse().getWriter());
+        ex.printStackTrace(modinfo.getWriter());
         println("</p>");
       }
 
