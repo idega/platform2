@@ -165,7 +165,7 @@ public class SendApplicationFilesToNavision extends Block {
 						line.append(Float.toString(mono)); //Koltvísýringur
 					else
 						line.append("0");
-					line.append("\n");
+					line.append("\r\n");
 					
 					writer.write(line.toString());
 				}
