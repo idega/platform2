@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.17 2003/04/07 11:20:46 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.18 2003/04/25 10:36:20 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -169,7 +169,10 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 					phone = "";
 				updateTable.add(new TextInput("phone", phone), 2, 1);
 				updateTable.add(new Text(_iwrb.getLocalizedString("email", "Email") + " : "), 1, 2);
-				updateTable.add(new TextInput("email", camApp.getEmail()), 2, 2);
+				String email = camApp.getEmail();
+				if (email == null)
+					email = "";
+				updateTable.add(new TextInput("email", email), 2, 2);
 				updateTable.add(new SubmitButton("updatePhoneEmail", _iwrb.getLocalizedString("update", "Update")), 3, 2);
 
 				refTable.add(updateTable, 1, row);
