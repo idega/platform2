@@ -496,6 +496,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
 
+		table.mergeCells(1, row, 2, row);
 		table.add(getSmallHeader(localize("child_care.prognosis_information","Enter the prognosis information for your childcare.")), 1, row++);
 		
 		TextInput threeMonths = (TextInput) getStyledInterface(new TextInput(PARAMETER_THREE_MONTHS_PROGNOSIS));
@@ -505,9 +506,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (prognosis != null)
 			threeMonths.setContent(String.valueOf(prognosis.getThreeMonthsPrognosis()));
 
+		table.mergeCells(1, row, 2, row);
 		table.add(getSmallHeader(localize("child_care.enter_prognosis", "Enter prognosis:")), 1, row++);
 		table.add(getSmallText(localize("child_care.three_months_prognosis", "Three months prognosis")+":"), 1, row);
-		table.add(threeMonths, 1, row++);
+		table.add(threeMonths, 2, row++);
 		
 		TextInput oneYear = (TextInput) getStyledInterface(new TextInput(PARAMETER_ONE_YEAR_PROGNOSIS));
 		oneYear.setLength(3);
@@ -517,12 +519,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			oneYear.setContent(String.valueOf(prognosis.getOneYearPrognosis()));
 
 		table.add(getSmallText(localize("child_care.one_year_prognosis", "Twelve months prognosis")+":"), 1, row);
-		table.add(oneYear, 1, row++);
+		table.add(oneYear, 2, row++);
 
 		SubmitButton updatePrognosis = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_prognosis", "Set prognosis"), PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_PROGNOSIS)));
 		table.add(updatePrognosis, 1, row);
 		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(close, 1, row);
+		table.mergeCells(1, row, 2, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 
