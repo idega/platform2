@@ -96,7 +96,8 @@ public class HotelBookingForm extends BookingForm {
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
     List addresses;
     try {
-      addresses = _product.getDepartureAddresses(false);
+			addresses = super.getProductBusiness(iwc).getDepartureAddresses(_product, _stamp, false);
+//      addresses = _product.getDepartureAddresses(false);
     }catch (IDOFinderException ido) {
       ido.printStackTrace(System.err);
       addresses = new Vector();
