@@ -26,7 +26,8 @@ public class TournamentAdminLink extends GolfBlock {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		Link link = getStyleLink(getResourceBundle().getLocalizedString("tournament.tournament_admin", "Tournament admin"), _styleName);
+		Link link = new Link(getResourceBundle().getLocalizedString("tournament.tournament_admin", "Tournament admin"));
+		link.setStyleClass(_styleName);
 		link.setWindowToOpen(TournamentAdministratorWindow.class);
 		add(link);
 	}
