@@ -207,6 +207,9 @@ public class SupplierManager {
         sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
       }
     }
+    if (sGroup == null) {
+      System.err.println("supplierStaffGroup == null");
+    }
     return sGroup;
   }
 

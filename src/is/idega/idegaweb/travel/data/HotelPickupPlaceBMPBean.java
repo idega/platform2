@@ -118,8 +118,8 @@ public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implem
       buffer.append(" AND ");
       buffer.append(" smh."+getIDColumnName()+" = h."+getIDColumnName());
       buffer.append(" AND ");
-      buffer.append(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
-      buffer.append(" ORDER BY "+is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getNameColumnName());
+      buffer.append("h."+is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
+      buffer.append(" ORDER BY h."+is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getNameColumnName());
 
 
       returner = this.idoFindPKsBySQL(buffer.toString());
