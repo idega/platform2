@@ -244,7 +244,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     if (files != null) {
       int imageId = _product.getFileId();
       if (imageId != -1) {
-        imageInserter.setImageId(imageId);
+        //imageInserter.setImageId(imageId);
         try {
           files.add(0, new ICFile(imageId));
         }catch (SQLException sql){
@@ -378,7 +378,7 @@ public class ProductEditorWindow extends IWAdminWindow {
           oldP = (int) pPri.getPrice();
         }
         int newP = Integer.parseInt(price);
-        if (oldP != newP) {
+        if (oldP != newP || Integer.parseInt(currencyId) != pPri.getCurrencyId()) {
           ProductPrice pPrice = new ProductPrice();
             pPrice.setIsValid(true);
             pPrice.setPrice(Float.parseFloat(price));
@@ -487,6 +487,9 @@ public class ProductEditorWindow extends IWAdminWindow {
     }
   }
 
+  /**
+   * @todo Fix This Function ... please
+   */
   private void setThumbnail(IWContext iwc) {
     String thumbnailId = iwc.getParameter(this.PAR_IMAGE_THUMBNAIL);
     try {
