@@ -1487,7 +1487,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		SchoolClassMember classMember = archive.getSchoolClassMember();
 		if(schoolTypeId != classMember.getSchoolTypeId() || schoolClassId!= classMember.getSchoolClassId()){
 			// end old placement with the chosen date -1 and create new placement
-			// TODO take care of this
+			getBusiness().createNewPlacement(_applicationID,schoolTypeId,schoolClassId,iwc.getCurrentUser());
 		}
 		close();
 	}
