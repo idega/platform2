@@ -343,7 +343,6 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	}
 
 	//searches the current users top nodes to figure out who he is. 
-	//TODO Eiki CHANGE TO ROLES and optimize?
 	private Integer setUserTypeAndReturnGroupId(IWContext iwc) {
 		User user = iwc.getCurrentUser();
 
