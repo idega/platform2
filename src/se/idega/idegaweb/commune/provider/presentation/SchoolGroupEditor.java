@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -169,15 +168,16 @@ public class SchoolGroupEditor extends ProviderBlock {
 			else
 				table.add(getSmallText("-"), column++, row);
 			
-			Collection years = null;
+			List years = null;
 			try {
-				years = new HashSet(group.findRelatedSchoolYears());
+				years = new ArrayList(group.findRelatedSchoolYears());
 			}
 			catch (IDORelationshipException e) {
-				years = new HashSet();
+				years = new ArrayList();
 			}
 			
 			if (!years.isEmpty()) {
+				Collections.sort(years, new SchoolYearComparator());
 				Iterator iterator = years.iterator();
 				StringBuffer buffer = new StringBuffer();
 				while (iterator.hasNext()) {
@@ -194,10 +194,10 @@ public class SchoolGroupEditor extends ProviderBlock {
 
 			Collection teachers = null;
 			try {
-				teachers = new HashSet(group.findRelatedUsers());
+				teachers = new ArrayList(group.findRelatedUsers());
 			}
 			catch (IDORelationshipException e) {
-				teachers = new HashSet();
+				teachers = new ArrayList();
 			}
 
 			if (!teachers.isEmpty()) {
@@ -318,7 +318,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 				groupYears = _group.findRelatedSchoolYears();
 			}
 			catch (IDORelationshipException e2) {
-				groupYears = new HashSet();
+				groupYears = new ArrayList();
 			}
 		}
 				
