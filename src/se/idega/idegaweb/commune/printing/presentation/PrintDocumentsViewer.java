@@ -24,8 +24,10 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -59,10 +61,19 @@ public class PrintDocumentsViewer extends CommuneBlock {
   private final static String PARAM_PRINT_MSG = "prv_pr_msg";
   private final static String PARAM_LETTER_TYPE = "prv_let_tp";
   
+  private final static String PRM_STAMP_P_FROM = "prv_pfrm";;
+  private final static String PRM_STAMP_U_FROM= "prv_ufrm";
+  private final static String PRM_STAMP_P_TO= "prv_pto";
+  private final static String PRM_STAMP_U_TO= "prv_uto";
+  
+  
   private boolean isBulkType = false;
   private boolean showTypesAsDropdown = false;
   private String currentType = "";
-  private int msgId = -1;
+  private int msgID = -1;
+  private int fileID = -1;
+  private IWTimestamp today = IWTimestamp.RightNow(), pFrom=null,pTo=null,uFrom=null,uTo=null;
+  private int defaultDays = 7;
 
   private Table mainTable = null;
 
@@ -74,10 +85,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
   }
 
   public void main(IWContext iwc){
-  	debugParameters(iwc);
     this.setResourceBundle(getResourceBundle(iwc));
-
+	if ( iwc.isLoggedOn() ) {
     try{
+      initDates(iwc);
       int action = parseAction(iwc);
       switch(action){
       	case ACTION_VIEW_MESSAGE_OVERVIEW:
@@ -85,7 +96,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
       		viewMessages(iwc);
       		break;
         case ACTION_VIEW_MESSAGE_LIST:
-          viewMessageList(iwc);
+          viewMessages(iwc);
           break;
         case ACTION_VIEW_MESSAGE:
           viewMessage(iwc);
@@ -95,15 +106,15 @@ public class PrintDocumentsViewer extends CommuneBlock {
           break;
         case ACTION_DELETE_MESSAGE:
           deleteMessage(iwc);
-          viewMessageList(iwc);
+          viewMessages(iwc);
         	break;
         case ACTION_PRINT_UNPRINTED_MESSAGES:
           printAllUnPrintedMessages(iwc);
-          viewMessageOverview(iwc);
+          viewMessages(iwc);
         	break;
        	case ACTION_PRINT_MESSAGE:
           printMessage(iwc);
-          viewMessageOverview(iwc);
+          viewMessages(iwc);
         	break;
         default:
           break;
@@ -112,6 +123,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
     } catch (Exception e) {
       super.add(new ExceptionWrapper(e,this));
     }
+	}
+    else{
+	    add(getLocalizedHeader("printdoc.not_logged_on", "You must be logged on to use this function"));
+	}
   }
 
   public void add(PresentationObject po){
@@ -153,10 +168,27 @@ public class PrintDocumentsViewer extends CommuneBlock {
     isBulkType=getDocumentBusiness(iwc).isBulkLetterType(currentType);
      
     if(iwc.isParameterSet(PARAM_MESSAGE_ID)){
-    	msgId = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
+    	msgID = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
     }
-
     return action;
+  }
+  
+  private void initDates(IWContext iwc)throws Exception{
+  		pFrom = IWTimestamp.RightNow();
+  		pFrom.addDays(-defaultDays);
+  		pTo = IWTimestamp.RightNow();
+  		uFrom = IWTimestamp.RightNow();
+  		uFrom.addDays(-defaultDays);
+  		uTo = IWTimestamp.RightNow();
+  		if(iwc.isParameterSet(PRM_STAMP_P_FROM))
+  			pFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_FROM));
+  		if(iwc.isParameterSet(PRM_STAMP_U_FROM))
+  			uFrom = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_FROM));
+  		if(iwc.isParameterSet(PRM_STAMP_P_TO))
+  			pTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_P_TO));
+  		if(iwc.isParameterSet(PRM_STAMP_U_TO))
+  			uTo = new IWTimestamp(iwc.getParameter(PRM_STAMP_U_TO));
+  		
   }
 
   private void printAllUnPrintedMessages(IWContext iwc)throws Exception{
@@ -166,22 +198,25 @@ public class PrintDocumentsViewer extends CommuneBlock {
   
   private void printMessage(IWContext iwc) throws Exception {
   	int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
-  	getDocumentBusiness(iwc).writePrintedLetterPDF(msgId,userID);
+  	if(msgID>0){
+  		PrintedLetterMessage msg = (PrintedLetterMessage)getDocumentBusiness(iwc).getPrintedLetterMessageHome().findByPrimaryKey(new Integer(msgID));
+  		fileID = getDocumentBusiness(iwc).writePDF(msg,iwc.getCurrentUser(),"LetterPDF");
+  		//System.err.println("file id written :"+fileID);
+  		//getDocumentBusiness(iwc).writePrintedLetterPDF(msgId,userID);
+  	}
   	
   }
   
   private void viewMessages(IWContext iwc) throws Exception{
-  	if ( iwc.isLoggedOn() ) {
+  
 	    //add(getLocalizedHeader("printdoc.letters", "Letters for printing"));
 	  	addTypeMenu(iwc);
 	  	if(isBulkType)
 	  		addDocumentsList(iwc);
 	  	else
 	  		addMessagesList(iwc);
-	  	}
-	else{
-	    add(getLocalizedHeader("printdoc.not_logged_on", "You must be logged on to use this function"));
-	}
+	  	
+	
   }
   
   private void addTypeMenu(IWContext iwc) throws Exception{
@@ -196,6 +231,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		drp.setSelectedElement(currentType);
   	 	Form F = new Form();
   	 	F.add(drp);
+  	 	F.add(new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString()));
+  	 	F.add(new HiddenInput(PRM_STAMP_P_TO,pTo.toString()));
+  	 	F.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
+  	 	F.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
   	 	add(F);
   	 }  	 
   	 else{
@@ -203,13 +242,56 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	  	 T.setCellpadding(2);
 	  	 int col = 1;
 	  	 for (int i = 0; i < types.length; i++) {
-			Link typeLink = new Link(localize("letter_type_"+types[i],types[i]));	
+			Link typeLink = new Link(getHeader(localize("letter_type_"+types[i],types[i])));	
 			typeLink.addParameter(PARAM_LETTER_TYPE,types[i]);
-			T.add(typeLink,col,1);
+			typeLink.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
+			typeLink.addParameter(PRM_STAMP_U_FROM,uFrom.toString());
+			typeLink.addParameter(PRM_STAMP_P_TO,pTo.toString());
+			typeLink.addParameter(PRM_STAMP_U_TO,uTo.toString());
+			T.add(typeLink,col++,1);
 		}
   	 	add(T);
   	 }
   	
+  }
+  
+  private void addPrintedDatesForm(IWContext iwc){
+  	Form F = new Form();
+  	Table T = new Table();
+  	DateInput from = new DateInput(PRM_STAMP_P_FROM);
+  	DateInput to = new DateInput(PRM_STAMP_P_TO);
+  	from.setDate(pFrom.getSQLDate());
+  	to.setDate(pTo.getSQLDate());
+  	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedImageButton("fetch","Fetch"));
+  	HiddenInput hfrom = new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString());
+  	HiddenInput hto = new HiddenInput(PRM_STAMP_U_TO,uTo.toString());
+  	T.add(from,1,1);
+  	T.add(to,2,1);
+  	T.add(search,3,1);
+  	T.add(hfrom);
+  	T.add(hto);
+  	F.add(T);
+  	add(F);
+  
+  }
+   private void addUnPrintedDatesForm(IWContext iwc){
+  	Form F = new Form();
+  	Table T = new Table();
+  	DateInput from = new DateInput(PRM_STAMP_U_FROM);
+  	DateInput to = new DateInput(PRM_STAMP_U_TO);
+  	from.setDate(uFrom.getSQLDate());
+  	to.setDate(uTo.getSQLDate());
+  	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedImageButton("fetch","Fetch"));
+  	HiddenInput hfrom = new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString());
+  	HiddenInput hto = new HiddenInput(PRM_STAMP_P_TO,pTo.toString());
+  	T.add(from,1,1);
+  	T.add(to,2,1);
+  	T.add(search,3,1);
+  	T.add(hfrom);
+  	T.add(hto);
+  	F.add(T);
+  	add(F);
+  
   }
   
   private void addDocumentsList(IWContext iwc)throws Exception{
@@ -232,8 +314,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		printLink.addParameter(PARAM_LETTER_TYPE,currentType);
 		unPrintedLetterDocs.add(printLink);
 		
-	add(unPrintedLetterDocs);
-	add(Text.getBreak());
+		add(unPrintedLetterDocs);
+		add(Text.getBreak());
 	
 		ColumnList printedLetterDocs = new ColumnList(3);
 		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType);
@@ -259,24 +341,21 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			}
 			
 		}
-	
-	
-	
-  	
   
   }
   
   private void addMessagesList(IWContext iwc)throws Exception{
   	add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"));
+  	addUnPrintedDatesForm(iwc);
   	
   	ColumnList unPrintedLetterDocs = new ColumnList(3);
   	
-  	Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType);
+  	Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,uFrom,uTo);
 		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
-		//messageList.setHeader(localize("printdoc.name","Name"),1);
 		unPrintedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
 		unPrintedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),2);
+		unPrintedLetterDocs.setHeader(localize("printdoc.file","File"),3);
 
 		
 		Iterator iter = unprintedLetters.iterator();
@@ -288,37 +367,50 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			
 			
 			Link printLink = new Link(localize("printdoc.print","Print"));
-			printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
+			printLink.addParameter(PARAM_PRINT_MSG,"true");
 			printLink.addParameter(PARAM_LETTER_TYPE,currentType);
 			printLink.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
+			printLink.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
+			printLink.addParameter(PRM_STAMP_U_FROM,uFrom.toString());
+			printLink.addParameter(PRM_STAMP_P_TO,pTo.toString());
+			printLink.addParameter(PRM_STAMP_U_TO,uTo.toString());
 			
 			unPrintedLetterDocs.add(printLink);
 		}
 		
 		add(unPrintedLetterDocs);
 	
-		Collection printedLetters = getMessageBusiness(iwc).getPrintedLetterMessagesByType(currentType);
-		if(!printedLetters.isEmpty()){
 		ColumnList printedLetterDocs = new ColumnList(3);
-		printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+			printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
+			printedLetterDocs.setBackroundColor("#e0e0e0");
+			//messageList.setHeader(localize("printdoc.name","Name"),1);
+			printedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+			printedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),2);
+			printedLetterDocs.setHeader(localize("printdoc.file","File"),3);
+		Collection printedLetters = getMessageBusiness(iwc).getPrintedLetterMessagesByType(currentType,pFrom,pTo);
 		
-		Iterator iter2 = printedLetters.iterator();
-		while (iter.hasNext()) {
-			PrintedLetterMessage msg = (PrintedLetterMessage) iter2.next();
-			printedLetterDocs.add(msg.getCreated().toString());
-			//messageList.add("-");
-			printedLetterDocs.add(msg.getOwner().getName());
+		if(!printedLetters.isEmpty()){
 			
-			int fileID = msg.getMessageDataFileID();
-			Link viewLink = new Link(localize("printdoc.view","View"));
-			viewLink.setFile(fileID);
-			printedLetterDocs.add(viewLink);
+		
+			Iterator iter2 = printedLetters.iterator();
+			while (iter2.hasNext()) {
+				PrintedLetterMessage msg = (PrintedLetterMessage) iter2.next();
+				
+				printedLetterDocs.add(msg.getCreated().toString());
+				//messageList.add("-");
+				printedLetterDocs.add(msg.getOwner().getName());
+			
+				int fileID = msg.getMessageDataFileID();
+				Link viewLink = new Link(localize("printdoc.view","View"));
+				viewLink.setFile(fileID);
+				printedLetterDocs.add(viewLink);
+			}
 		}
-	
-	add(Text.getBreak());
-	add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
-	add(printedLetterDocs);
-		}
+		add(Text.getBreak());
+		add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
+		addPrintedDatesForm(iwc);
+		add(printedLetterDocs);
+		
   	
   }
 
@@ -326,12 +418,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	if ( iwc.isLoggedOn() ) {
 	   add(getLocalizedHeader("printdoc.letters", "Letters for printing"));
-		
-
 		//messageList.skip();
-
-		
-
 	}
 	else{
 	    add(getLocalizedHeader("printdoc.not_logged_on", "You must be logged on to use this function"));

@@ -4,6 +4,7 @@ import com.idega.core.data.ICFile;
 import com.idega.data.*;
 import com.idega.block.process.data.*;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 import javax.ejb.*;
 
@@ -31,7 +32,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	private static final String CASE_CODE_KEY = "SYMEBRV";
 	private static final String CASE_CODE_DESCRIPTION = "Letter Message";
 	
-	private static final String LETTER_TYPE_DEFAULT="DEFA";
+	public static final String LETTER_TYPE_DEFAULT="DEFA";
 	public static final String LETTER_TYPE_PASSWORD="PASS";
 
 
@@ -352,10 +353,28 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 			throw new IDORuntimeException(e, this);
 		}
 	}
+	
+	protected IDOQuery idoQueryGetPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
+		try {
+			return idoQueryGetLettersByStatusAndType(getCaseStatusReady(), letterType,from,to);
+		}
+		catch (Exception e) {
+			throw new IDORuntimeException(e, this);
+		}
+	}
 
 	protected IDOQuery idoQueryGetUnPrintedLettersByType(String letterType) {
 		try {
 			return idoQueryGetLettersByStatusAndType(getCaseStatusOpen(), letterType);
+		}
+		catch (Exception e) {
+			throw new IDORuntimeException(e, this);
+		}
+	}
+	
+	protected IDOQuery idoQueryGetUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) {
+		try {
+			return idoQueryGetLettersByStatusAndType(getCaseStatusOpen(), letterType,from,to);
 		}
 		catch (Exception e) {
 			throw new IDORuntimeException(e, this);
@@ -367,10 +386,18 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
 		return query;
 	}
+	
+	protected IDOQuery idoQueryGetLettersByStatusAndType(String caseStatus, String letterType,IWTimestamp from, IWTimestamp to) {
+		IDOQuery query = super.idoQueryGetAllCasesByStatus(caseStatus,from,to);
+		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
+		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
+		return query;
+	}
 
 	protected IDOQuery idoQueryGetLettersCountByStatusAndType(String caseStatus, String letterType) {
 		IDOQuery query = super.idoQueryGetCountCasesWithStatus(caseStatus);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
+		System.err.println(query.toString());
 		return query;
 	}
 
@@ -378,9 +405,18 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		return super.idoFindPKsByQuery(idoQueryGetPrintedLettersByType(letterType));
 	}
 	
+	public Collection ejbFindPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) throws FinderException {
+		return super.idoFindPKsByQuery(idoQueryGetPrintedLettersByType(letterType,from,to));
+	}
+	
 	public Collection ejbFindUnPrintedLettersByType(String letterType) throws FinderException {
 		return super.idoFindPKsByQuery(idoQueryGetUnPrintedLettersByType(letterType));
 	}
+	
+	public Collection ejbFindUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to) throws FinderException {
+		return super.idoFindPKsByQuery(idoQueryGetUnPrintedLettersByType(letterType,from,to));
+	}
+	
 
 	public Collection ejbFindUnPrintedPasswordLetters() throws FinderException {
 		String letterType = LETTER_TYPE_PASSWORD;
@@ -401,5 +437,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		String letterType = LETTER_TYPE_DEFAULT;
 		return ejbFindPrintedLettersByType(letterType);
 	}
+
 
 }

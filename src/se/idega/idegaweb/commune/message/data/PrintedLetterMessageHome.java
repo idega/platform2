@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.message.data;
 
+import com.idega.util.IWTimestamp;
+
 
 public interface PrintedLetterMessageHome extends MessageHome
 {
@@ -14,6 +16,8 @@ public interface PrintedLetterMessageHome extends MessageHome
  public java.util.Collection findUnPrintedDefaultLetters()throws javax.ejb.FinderException;
  public java.util.Collection findPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findUnPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException;
+  public java.util.Collection findPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException;
+ public java.util.Collection findUnPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException;
  public int getNumberOfPrintedDefaultLetters();
  public int getNumberOfUnPrintedDefaultLetters();
  public int getNumberOfPrintedPasswordLetters();

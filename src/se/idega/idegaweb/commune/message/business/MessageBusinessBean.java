@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.21 2002/12/23 14:29:44 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.22 2002/12/27 23:11:22 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Anders Lindman , <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -221,6 +222,18 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			throw new IBORuntimeException(e);
 		}
 	}
+	
+	/**
+	 * @return Collection of PrintedLetterMessage that have already been printed, created between dates
+	 */
+	public Collection getPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findPrintedLettersByType(type,from,to);	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
+	}
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
@@ -244,6 +257,19 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			throw new IBORuntimeException(e);
 		}
 	}
+	
+	/**
+	 * @return Collection of PrintedLetterMessage that have not been printed
+	 */	
+	public Collection getUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findUnPrintedLettersByType(type,from,to);	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
+	}
+	
 	/**
 	 * Mark the status of the message so that it is printed.
 	 * @param performer The User that makes the change

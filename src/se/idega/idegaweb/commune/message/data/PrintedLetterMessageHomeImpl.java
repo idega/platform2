@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.message.data;
 
+import com.idega.util.IWTimestamp;
+
 
 public class PrintedLetterMessageHomeImpl extends com.idega.data.IDOFactory implements PrintedLetterMessageHome
 {
@@ -76,6 +78,18 @@ public java.util.Collection findUnPrintedLettersByType(java.lang.String p0)throw
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+ public java.util.Collection findPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException{
+ com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindPrintedLettersByType(p0,from,to);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+ public java.util.Collection findUnPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException{
+ 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindUnPrintedLettersByType(p0,from,to);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
  public Message findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Message) super.findByPrimaryKeyIDO(pk);
  }
