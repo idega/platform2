@@ -284,11 +284,13 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindByInvoiceHeader(InvoiceHeader invoiceHeader) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhereEquals(COLUMN_INVOICE_HEADER,invoiceHeader.getPrimaryKey());
-		return idoFindPKsByQuery(sql);
+	public Collection ejbFindByInvoiceHeader(InvoiceHeader invoiceHeader)
+		throws FinderException {
+		IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (this);
+		sql.appendWhereEquals (COLUMN_INVOICE_HEADER, invoiceHeader);
+		sql.appendOrderBy (COLUMN_ORDER_ID);
+		return idoFindPKsByQuery (sql);
 	}
 
 	public Collection ejbFindByPaymentRecord (PaymentRecord paymentRecord)
