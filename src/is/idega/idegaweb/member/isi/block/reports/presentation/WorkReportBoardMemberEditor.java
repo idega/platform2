@@ -21,12 +21,14 @@ import java.util.TreeMap;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
@@ -58,10 +60,14 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
   private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
+  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
+  
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
+  private static final String CHECK_BOX = "checkBox";
+  // 'protected' because the inner class uses this constant
   protected static final String LEAGUE = "league";
 
   private static final String STATUS = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.STATUS";
@@ -74,6 +80,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private static final String FAX = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.FAX";
   private static final String EMAIL = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.EMAIL";
   
+  // add these columns to this list that should be parsed
   private List fieldList;
   
   { 
@@ -113,8 +120,21 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   }
   
   private String parseAction(IWContext iwc) {
-    // does the user want to edit a new entry?
     String action = "";
+    // does the user want to delete an existings entries?
+    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
+      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
+      if (! entriesToDelete.isEmpty())  {
+        deleteWorkReportBoardMembers(entriesToDelete, iwc);
+        // !! do nothing else !!
+        // do not modify entry
+        // do not create an entry
+        return action;
+      }
+    }
+      
+    // does the user want to edit a new entry?
+
     if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
       action = ACTION_SHOW_NEW_ENTRY;
     }  
@@ -207,9 +227,14 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
+    // add buttons
     PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
       getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
-    mainTable.add(newEntryButton,1,2);
+    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+    Table buttonTable = new Table(2,1);
+    buttonTable.add(newEntryButton,1,1);
+    buttonTable.add(deleteEntriesButton,2,1);
+    mainTable.add(buttonTable,1,2);
     return mainTable;
     
   }
@@ -226,10 +251,18 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
+  }
+  
+  private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
+    String deleteEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_remove_entries", "Remove");
+    SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
   }    
  
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     // define converter
+    CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter statusDropDownMenuConverter = getConverterForStatus(resourceBundle, form);
@@ -237,6 +270,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     
     // define path short keys and map corresponding converters
     Object[] columns = {
+      CHECK_BOX, checkBoxConverter,
       LEAGUE, leagueDropDownMenuConverter,
       STATUS, statusDropDownMenuConverter,
       NAME, textEditorConverter,
@@ -263,6 +297,9 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return browser;
   }
   
+  /**
+   * Converter for status column
+   */
   private EntityToPresentationObjectConverter getConverterForStatus(final IWResourceBundle resourceBundle, Form form) {
     DropDownMenuConverter converter = new DropDownMenuConverter(form);
     OptionProvider optionProvider = new OptionProvider() {
@@ -340,6 +377,32 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return converter;
   }    
   
+  /** business method: delete WorkReportBoardMembers.
+   * @param ids - List of primaryKeys (Integer)
+   */
+  private void deleteWorkReportBoardMembers(List ids, IWContext iwc) {
+    Iterator iterator = ids.iterator();
+    while (iterator.hasNext())  {
+      Integer id = (Integer) iterator.next();
+      WorkReportBoardMember member = findWorkReportBoardMember(id, iwc);
+      if (member != null) {
+        try {
+          member.remove();
+        }
+        catch (RemoveException ex) {
+          System.err.println(
+            "[WorkReportBoardMemberEditor]: Can't remove WorkReportBoardMember. Message is: "
+              + ex.getMessage());
+          ex.printStackTrace(System.err);
+          // do nothing
+        }
+      }
+    }
+    
+  }
+    
+  
+  // business method: create
   private WorkReportBoardMember createWorkReportBoardMember()  {
     WorkReportBoardMember workReportBoardMember = null;
     try {
@@ -357,14 +420,15 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return workReportBoardMember;
   }
   
-  private void updateWorkReportBoardMember(EntityPathValueContainer valueContainer, IWContext iwc)  {
-    // precondition: value container is valid, that is its method isValid() returns true.
-    // get the corresponding entity
-    Integer id = valueContainer.getEntityId();
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+  /** business method: find
+   * @param primaryKey
+   * @return desired WorkReportMember or null if not found
+   */
+  private WorkReportBoardMember findWorkReportBoardMember(Integer primaryKey, IWContext iwc) {
     WorkReportBoardMember member = null;
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     try {
-      member = workReportBusiness.getWorkReportBoardMemberHome().findByPrimaryKey(id);
+      member = workReportBusiness.getWorkReportBoardMemberHome().findByPrimaryKey(primaryKey);
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -378,11 +442,25 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       "[WorkReportBoardMemberEditor]: Can't find WorkReportBoardMember, Message is: "
         + ex.getMessage());
       ex.printStackTrace(System.err);
+    }  
+    return member;
+  }
+  
+  // business method: update
+  private void updateWorkReportBoardMember(EntityPathValueContainer valueContainer, IWContext iwc)  {
+    // precondition: value container is valid, that is its method isValid() returns true.
+    // get the corresponding entity
+    Integer id = valueContainer.getEntityId();
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    WorkReportBoardMember member = findWorkReportBoardMember(id, iwc);
+    if (member == null) {
+      return;
     }
     setValuesOfWorkReportBoardMember(valueContainer, member, workReportBusiness);
     member.store();
   }
 
+  // business method: set values (invoked by 'update' or 'create')
   private void setValuesOfWorkReportBoardMember(EntityPathValueContainer valueContainer, WorkReportBoardMember member, WorkReportBusiness workReportBusiness)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
