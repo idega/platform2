@@ -249,7 +249,6 @@ public class Checkout extends CashierSubWindowTemplate {
 				viewBasket(iwc);
 				break;
 			case STATUS_INSERT_PAYMENT_INFO :
-				//@TODO plugin stuff
 				insertPayment(iwc);
 				break;
 			case STATUS_DONE :
