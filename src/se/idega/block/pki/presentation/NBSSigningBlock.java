@@ -207,7 +207,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		
 		NBSServerFactory serverGenerator = (NBSServerFactory) iwc.getApplicationContext().getApplicationAttribute(SERVER_FACTORY);
 		if (serverGenerator == null){
-			File configFile = new File(getConfigFilePath(iwc));		
+			File configFile = new File(getConfigFilePath());		
 			System.out.println("configFile: "+ configFile);	
 			serverGenerator = new NBSServerFactory();
 			serverGenerator.init(configFile);
@@ -217,7 +217,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		return serverGenerator;
 	}
 	
-	private String getConfigFilePath(IWContext iwc)
+	private String getConfigFilePath()
 	{
 		System.out.println("getConfigFilePath()");
 //		String cbtConfigFile = iwc.getServletContext().getInitParameter("CbtConfigFile");	
