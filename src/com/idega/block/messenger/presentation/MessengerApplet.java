@@ -163,6 +163,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
         messageDialog.addActionListener(this);
 
+        messageDialog.addMessage(aMessage);
+
         messageDialog.setVisible(true);
 
       }
