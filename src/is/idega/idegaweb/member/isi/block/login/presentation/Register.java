@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
-
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -20,7 +19,7 @@ import com.idega.core.contact.data.EmailHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.StyledIWAdminWindow;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -40,7 +39,7 @@ import com.idega.util.SendMail;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class Register extends StyledIWAdminWindow {
+public class Register extends Block {
 	
 	private IWContext _iwc = null;
 	private IWResourceBundle _iwrb;
@@ -87,7 +86,7 @@ public class Register extends StyledIWAdminWindow {
 			po = getStage1Page(null);
 		}
 		
-		add(po, _iwc);
+		add(po);
 	}
 	
 	private PresentationObject getStage1Page(String message) {
