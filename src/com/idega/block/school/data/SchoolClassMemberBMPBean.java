@@ -2,12 +2,14 @@ package com.idega.block.school.data;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Commune;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOEntityDefinition;
@@ -27,8 +29,8 @@ import com.idega.user.data.UserBMPBean;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/03/24 11:27:30 $ by $Author: joakim $
- * @version $Revision: 1.101 $
+ * Last modified: $Date: 2004/03/25 13:58:24 $ by $Author: joakim $
+ * @version $Revision: 1.102 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1190,12 +1192,15 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			
 			IDOEntityField dateOfBirth = usrDef.findFieldByUniqueName(User.FIELD_DATE_OF_BIRTH);
 
+			IDOEntityDefinition addressDef = IDOLookup.getEntityDefinitionForClass(Address.class);
+			IDOEntityDefinition communeDef = IDOLookup.getEntityDefinitionForClass(Commune.class);
+			
 			//relationStatus could be as parameter to this method
 			String[] relationStatus = new String[1];
 			relationStatus[0] = GroupRelation.STATUS_ACTIVE;
 			
-			String[] tables = new String[2];
-			String[] variables = new String[2];
+			String[] tables = new String[5];
+			String[] variables = new String[5];
 			//table name
 			tables[0] = usrDef.getSQLTableName();
 			//	as variable
@@ -1204,7 +1209,16 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			tables[1] = grRelDef.getSQLTableName();
 			//	as variable
 			variables[1] = "gr_rel";
-
+			tables[2] = addressDef.getSQLTableName();
+			//	as variable
+			variables[2] = "a";
+			tables[3] = communeDef.getSQLTableName();
+			//	as variable
+			variables[3] = "c";
+			tables[4] = "IC_USER_ADDRESS";
+			//	as variable
+			variables[4] = "ua";
+			
 			IDOQuery query = this.idoQuery();
 			
 			query.appendSelectCount();
@@ -1251,6 +1265,36 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			query.append(dateOfBirth);
 			query.appendLessThanOrEqualsSign();
 			query.append(lastDateOfBirth);
+			
+			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".IC_USER_ID");
+			query.appendEqualSign();
+			query.append(variables[4]);
+			query.append(".ic_address_id");
+			
+			query.appendAnd();
+			query.append(variables[4]);
+			query.append(".ic_address_id");
+			query.appendEqualSign();
+			query.append(variables[2]);
+			query.append(".ic_address_id");
+			
+			query.appendAnd();
+			query.append(variables[2]);
+			query.append(".ic_commune_id");
+			query.appendEqualSign();
+			query.append(variables[3]);
+			query.append(".ic_commune_id");
+			
+			query.appendAnd();
+			query.append(variables[3]);
+			query.appendEqualsQuoted(".default_commune","Y");
+			
+//			u.IC_USER_ID=ua.ic_user_id
+//			AND ua.ic_address_id=a.ic_address_id
+//			AND a.ic_commune_id=c.ic_commune_id
+//			AND c.default_commune='Y'
 			
 			query.appendAnd();
 			query.append(variables[0]);
