@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/01/13 09:36:42 $ by $Author: staffan $
- * @version $Revision: 1.84 $
+ * Last modified: $Date: 2004/01/26 15:39:26 $ by $Author: joakim $
+ * @version $Revision: 1.85 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -776,7 +776,12 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public Collection ejbFindBySchool(int schoolID, int schoolClassID) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, ic_user u").appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAndEquals("u.ic_user_id", "mb." + MEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, ic_user u").
+		appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).
+		appendAndEquals("u.ic_user_id", "mb." + MEMBER).
+		appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").
+		appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").
+		appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		if (schoolClassID != -1)
 			sql.appendAndEquals("mb." + SCHOOLCLASS, schoolClassID);
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
@@ -789,7 +794,12 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	
 	public Collection ejbFindBySchool(int schoolID, int schoolClassID, String schoolCategory, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, sch_school_type t, ic_user u").appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAndEquals("u.ic_user_id", "mb." + MEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, sch_school_type t, ic_user u").
+		appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).
+		appendAndEquals("u.ic_user_id", "mb." + MEMBER).
+		appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").
+		appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").
+		appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		sql.appendAndEquals("mb." + SCHOOL_TYPE, "t.sch_school_type_id");
 		if (schoolCategory != null)
 			sql.appendAndEqualsQuoted("t.school_category", schoolCategory);
@@ -797,7 +807,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			sql.appendAndEquals("mb." + SCHOOLCLASS, schoolClassID);
 		//sql.appendAnd().appendLeftParenthesis().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date)
 		//.appendOr().append(REGISTER_DATE).append(" is null").appendRightParenthesis();
-		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date).appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date).
+		appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
 		return super.idoFindPKsBySQL(sql.toString());
 	}
