@@ -197,7 +197,7 @@ public String getActionString(ModuleInfo modinfo)throws IOException{
 
 public void handleKeepStatus(ModuleInfo modinfo){
 	if (statusKeptOnAction()){
-		if(modinfo.getRequest().getParameter(this.getName()) != null){
+		if(modinfo.getParameter(this.getName()) != null){
 			//does nothing
 		}
 	}

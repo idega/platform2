@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.7 2001/05/18 14:36:16 gummi Exp $
+ * $Id: ModuleObject.java,v 1.8 2001/05/18 19:48:06 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,12 +23,17 @@ import com.idega.event.IWLinkEvent;
 import com.idega.event.IWSubmitEvent;
 import com.idega.event.IWLinkListener;
 import com.idega.event.IWSubmitListener;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+
 
 /**
  *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  *@version 1.2
  */
 public class ModuleObject extends Object implements Cloneable {
+    private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb";
   private HttpServletRequest Request;
   private HttpServletResponse Response;
   private PrintWriter out;
@@ -560,4 +565,33 @@ public class ModuleObject extends Object implements Cloneable {
 
   public void setProperty(String key, String values[]){
   }
+
+  /**
+   * Needs to be overrided to get the right IWBundle identifier for the object
+   */
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public IWBundle getBundle(ModuleInfo modinfo){
+    IWMainApplication iwma = modinfo.getApplication();
+    return iwma.getBundle(getBundleIdentifier());
+  }
+
+  public IWResourceBundle getResourceBundle(ModuleInfo modinfo){
+    IWBundle bundle = getBundle(modinfo);
+    if(bundle!=null){
+      return bundle.getResourceBundle(modinfo.getCurrentLocale());
+    }
+    return null;
+  }
+
+  public String getLocalizedString(String key,ModuleInfo modinfo){
+    IWResourceBundle bundle = getResourceBundle(modinfo);
+    if(bundle!=null){
+      return bundle.getStringChecked(key);
+    }
+    return null;
+  }
+
 }

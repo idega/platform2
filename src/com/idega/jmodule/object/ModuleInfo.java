@@ -13,6 +13,7 @@ import com.idega.jmodule.object.interfaceobject.*;
 import java.io.*;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
+import com.idega.util.LocaleUtil;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -624,7 +625,7 @@ public IWMainApplicationSettings getApplicationSettings(){
 public Locale getCurrentLocale(){
   Locale theReturn = (Locale)this.getSessionAttribute(LOCALE_ATTRIBUTE);
   if(theReturn==null){
-    theReturn = new Locale("is","IS");
+    theReturn = getApplication().getSettings().getDefaultLocale();
     setCurrentLocale(theReturn);
   }
   return theReturn;

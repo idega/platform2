@@ -7,9 +7,11 @@ package com.idega.jmodule.object;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.image.data.ImageEntity;
+
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -53,7 +55,6 @@ public Image(String name,String url, String overImageUrl){
 	setBorder(0);
 
 	setOverImageURL(overImageUrl);
-
 	Script rollOverScript = new Script();
 	rollOverScript.addFunction("swapImgRestore()","function swapImgRestore() {var i,x,a=document.sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;}");
 	rollOverScript.addFunction("preloadImages()","function preloadImages(){var d=document; if(d.images){ if(!d.p) d.p=new Array(); var i,j=d.p.length,a=preloadImages.arguments; for(i=0; i<a.length; i++)  if (a[i].indexOf(\"#\")!=0){ d.p[j]=new Image; d.p[j++].src=a[i];}}}");
@@ -64,21 +65,37 @@ public Image(String name,String url, String overImageUrl){
 
 }
 
-public Image(String name,int imageId, int overImageUrl){//this does not work
+
+private String getImageURL(int image_id){
+	 String URIString = IWMainApplication.IMAGE_SERVLET_URL;
+            URIString += "?image"+image_id;
+            URIString += "&image_id="+image_id;
+            return URIString;
+}
+
+
+public Image(String name,int image_id, int over_image_id){
 	super();
-        this.imageId = imageId;
-	String URIString = "/servlet/imageModule";
-	URIString = URIString+"?image_id="+imageId;
+
+	//String URIString = "/servlet/imageModule";
+	String URIString = getImageURL(image_id);
+            //URIString += "?image"+image_id;
+            //URIString += "&image_id="+image_id;
+
 	setName(name);
 	setURL(URIString);
 	setBorder(0);
 
-	setOverImageURL(Integer.toString(overImageUrl));
 
-	String URIString2 = "/servlet/imageModule?image_id="+overImageUrl;
+	//setOverImageURL(""+overImageUrl);
 
-	URIString = URIString+"?image_id="+imageId;
-	setURL(URIString);
+
+	String URIString2 = getImageURL(over_image_id);
+	//URIString = URIString+"?image_id="+image_id;
+
+
+	setOverImageURL(URIString2);
+
 	setBorder(0);
 
 	Script rollOverScript = new Script();
@@ -103,6 +120,14 @@ public Image(String url,String name,int width,int height){
 *Fetches an image from the database through the imageservlet
 */
 
+public Image(int image_id) throws SQLException{
+	super();
+	//String URIString = "/servlet/imageModule";
+	//URIString = URIString+"?image_id="+image_id;
+	String URIString = this.getImageURL(image_id);
+            setURL(URIString);
+	setBorder(0);
+/*
 public Image(int imageId) throws SQLException{
   super();
   this.imageId = imageId;
@@ -111,7 +136,8 @@ public Image(int imageId) throws SQLException{
   URIString.append(imageId);
   setURL(URIString.toString());
   setBorder(0);
-
+>>>>>>> 1.6
+*/
 }
 
 public void setBorder(String s){

@@ -103,14 +103,24 @@ public Link(Text text,String url){
 }
 
 //for files
+/**
+ * @deprecated replaced with com.idega.jmodule.object.interfaceobject.FilePresentation
+ */
 public Link(int file_id){
 	this(new Text("File"),"/servlet/FileModule?file_id="+file_id);
 }
 
+/**
+ * @deprecated replaced with com.idega.jmodule.object.interfaceobject.FilePresentation
+ */
 public Link(int file_id,String file_name){
 	this(new Text(file_name),"/servlet/FileModule?file_id="+file_id);
 }
 
+
+/**
+ * @deprecated replaced with com.idega.jmodule.object.interfaceobject.FilePresentation
+ */
 public Link(ModuleObject mo,int file_id){
 	super();
 	obj = mo;
@@ -119,12 +129,16 @@ public Link(ModuleObject mo,int file_id){
 	ObjectType="ModuleObject";
 }
 
+/**
+ * @deprecated replaced with com.idega.jmodule.object.interfaceobject.FilePresentation
+ */
 public Link(int file_id, Window myWindow){
 	//super();
 	this.myWindow = myWindow;
 	myWindow.setParentObject(this);
 	ObjectType="Window";
 }
+
 
 
 public Link(String displayText,Class classToInstanciate){
@@ -137,6 +151,18 @@ public Link(String displayText,String classToInstanciate,String template){
        this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
 }
 
+
+public void setWindow(Window window){
+    myWindow=window;
+    ObjectType="Window";
+    myWindow.setParentObject(this);
+}
+
+public void setModuleObject(ModuleObject object){
+  this.obj=object;
+  ObjectType="ModuleObject";
+  object.setParentObject(this);
+}
 
 //
 

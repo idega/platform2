@@ -10,6 +10,9 @@ import	com.idega.jmodule.object.interfaceobject.*;
 import	com.idega.jmodule.news.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+
 
 /*
 **
@@ -19,6 +22,7 @@ import com.idega.util.text.*;
 
 public class NewsReader extends JModuleObject{
 
+private static final String BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
 private boolean showNewsCollectionButton=true;
 private int categoryId = 0;
@@ -27,8 +31,8 @@ private boolean backbutton = false;
 private boolean cutNews = true;// or default true?
 private boolean showAll = false;
 private Table outerTable = new Table(1,1);
-private String newsReaderURL = "/news/newsreader.jsp";
-private String newsCollectionURL = "/news/newsall.jsp";
+private String newsReaderURL;
+private String newsCollectionURL;
 private boolean showImages = true;
 private boolean showOnlyDates = false;
 private boolean headlineAsLink = false;
@@ -53,6 +57,8 @@ private Image change;
 private Image delete;
 private Image editor;
 private Image collection;
+private Image more;
+private Image back;
 
 private String language = "IS";
 
@@ -139,22 +145,25 @@ private String getColumnString(NewsCategoryAttributes[] attribs){
   else return returnString;
 }
 
-private void setSpokenLanguage(ModuleInfo modinfo){
- String language2 = modinfo.getRequest().getParameter("language");
-    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
-    if ( language2 != null) language = language2;
-}
+
 
 public void main(ModuleInfo modinfo)throws Exception{
 
+  IWResourceBundle iwrb = this.getResourceBundle(modinfo);
+  IWBundle iwb = this.getBundle(modinfo);
+
   this.isAdmin=this.isAdministrator(modinfo);
-  setSpokenLanguage(modinfo);
 
+  newsReaderURL = iwb.getProperty("newsreaderurl");
+  newsCollectionURL = iwb.getProperty("newscollectionurl");
 
-  change = new Image("/pics/jmodules/news/"+language+"/change.gif");
-  delete = new Image("/pics/jmodules/news/"+language+"/delete.gif");
-  editor = new Image("/pics/jmodules/news/"+language+"/newseditor.gif");
-  collection = new Image("/pics/jmodules/news/"+language+"/collection.gif");
+  back = iwrb.getImage("back.gif");
+  more  = iwrb.getImage("more.gif");
+  change = iwrb.getImage("change.gif");
+  delete = iwrb.getImage("delete.gif");
+  editor = iwrb.getImage("newseditor.gif");
+  collection = iwrb.getImage("collection.gif");
+
   boolean byDate=false;
   News[] news = new News[1];
 
@@ -291,7 +300,7 @@ public void main(ModuleInfo modinfo)throws Exception{
     if ( news_id == null){
       Table newsCollection = new Table(1,1);
         if ( showNewsCollectionButton ) {
-        Link collectionLink = new Link( collection, getNewsCollectionURL());
+        Link collectionLink = new Link( collection, newsCollectionURL);
             collectionLink.addParameter("news_category_id",""+this.categoryId);
         newsCollection.add(collectionLink,1,1);
         newsCollection.setAlignment("right");
@@ -374,20 +383,18 @@ System.out.println("limitNumberOfNews: "+ limitNumberOfNews+" numberOfDisplayedN
 
 private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int news_id,int image_id) throws SQLException
 {
-  String btnBackUrl = "/pics/jmodules/news/"+language+"/back.gif";
-  String btnNanarUrl = "/pics/jmodules/news/"+language+"/more.gif";
 
   Text headline = new Text(Headline);
-  boolean more = false;
+  boolean showMore = false;
 
   //cut of news
   if(cutNews){
     if(NewsText.length() >= numberOfLetters){
-            more=true;
+            showMore=true;
             NewsText=NewsText.substring(0,numberOfLetters)+"...";
     }
     else if (NewsText.length()<5) {
-            more=true;
+            showMore=false;
     }
   }
 
@@ -452,14 +459,16 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
 
   if( backbutton ) {
           newsTable.add(Text.getBreak(),1,3);
-          newsTable.add(new BackButton(new Image(btnBackUrl)), 1, 3);
+          newsTable.add(new BackButton(back), 1, 3);
   }
   else {
-    if(more && !headlineAsLink) {
-     if ( !NewsText.equals("") ) newsTable.add(Text.getBreak(),1,3);
-        newsTable.add(insertHyperlink(btnNanarUrl, "news_id", Integer.toString(news_id), getNewsReaderURL() ), 1, 3);
+    if(showMore && !headlineAsLink) {
+      if ( !NewsText.equals("") ) { newsTable.add(Text.getBreak(),1,3); }
+
+      Link moreLink = new Link(more,newsReaderURL);
+      newsTable.add(moreLink, 1, 3);
       }
-    }
+  }
 
 
   if(isAdmin) {
@@ -595,16 +604,6 @@ private Text getInfoText(String Author, String Source, String Category, String T
   return information;
 }
 
-
-private Link insertHyperlink(String imageUrl, String name, String value, String action)
-{
-  Image linkImage = new Image(imageUrl);
-  linkImage.setBorder(0);
-  Link myLink = new Link(linkImage);
-  myLink.setURL(action);
-  myLink.addParameter(name, value);
-  return myLink;
-}
 
 private void addNext(Table table){
  switch (LAYOUT) {
@@ -906,6 +905,11 @@ private Vector createTextLink(String newsString) {
   Vector linkVector = TextSoap.FindAllBetween(newsString,"Link(",")");
 
 return linkVector;
+}
+
+
+public String getBundleIdentifier(){
+  return BUNDLE_IDENTIFIER;
 }
 
 
