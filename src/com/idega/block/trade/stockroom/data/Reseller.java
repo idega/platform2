@@ -16,7 +16,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class Reseller extends GenericEntity {
+public class Reseller extends TreeableEntity {
 
   public Reseller() {
     super();
@@ -141,7 +141,6 @@ public class Reseller extends GenericEntity {
   public List getFaxPhone() throws SQLException {
     return getPhones(Phone.getFaxNumberID());
   }
-
 
   public void delete() throws SQLException{
     this.setIsValid(false);

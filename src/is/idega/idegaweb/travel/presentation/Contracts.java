@@ -51,7 +51,7 @@ public class Contracts extends TravelManager {
   private String parameterViewContract = "parameterViewContract";
   private String parameterViewProducts = "parameterViewProducts";
 
-  Reseller[] resellers = {};
+  Iterator resellers = null;
   Supplier[] suppliers = {};
 
   public Contracts() {
@@ -109,15 +109,22 @@ public class Contracts extends TravelManager {
       supplier = super.getSupplier();
       reseller = super.getReseller();
 
-      if (supplier != null)
-        resellers = getResellers(supplier);
+      //if (supplier != null)
+      resellers = getResellers();
+
       if (reseller != null)
         suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), Supplier.getColumnNameName() );
 
   }
 
-  private Reseller[] getResellers(Supplier supplier) {
-     return ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
+  private Iterator getResellers() {
+    Iterator returner = com.idega.util.ListUtil.getEmptyList().iterator();
+    if (supplier != null) {
+     returner = ResellerManager.getResellers(supplier,Reseller.getColumnNameName());
+    } else if (reseller != null) {
+     returner = ResellerManager.getResellers(reseller,Reseller.getColumnNameName());
+    }
+    return returner;
   }
 
   public void mainMenu(IWContext iwc) {
@@ -143,7 +150,7 @@ public class Contracts extends TravelManager {
         addReseller.addParameter(this.sAction,this.parameterAddReseller);
         linkTable.add(addReseller,1,1);
 
-      if (supplier != null)
+      //if (supplier != null)
       form.add(linkTable);
 
       form.add(Text.BREAK);
@@ -176,18 +183,23 @@ public class Contracts extends TravelManager {
 
 
       String theColor = super.GRAY;
-      if (supplier != null) {
-        for (int i = 0; i < resellers.length; i++) {
+      //if (supplier != null) {
+      Reseller tempReseller = null;
+
+        while (resellers.hasNext()) {
+          tempReseller = (Reseller) resellers.next();
+        //}
+        //for (int i = 0; i < resellers.length; i++) {
             ++row;
             resName = (Text) theText.clone();
               resName.setFontColor(super.BLACK);
-              resName.setText(resellers[i].getName());
+              resName.setText(tempReseller.getName());
             refNum = (Text) theText.clone();
-              refNum.setText(resellers[i].getReferenceNumber());
+              refNum.setText(tempReseller.getReferenceNumber());
               refNum.setFontColor(super.BLACK);
             assign = new Link(iwrb.getImage("buttons/closer.gif"));
               assign.addParameter(this.sAction,this.parameterAssignReseller);
-              assign.addParameter(this.parameterResellerId,resellers[i].getID());
+              assign.addParameter(this.parameterResellerId,tempReseller.getID());
 
             table.add(resName,1,row);
             table.add(refNum,2,row);
@@ -196,7 +208,7 @@ public class Contracts extends TravelManager {
             table.setAlignment(3,row,"right");
 
         }
-      }else if (reseller != null) {
+      /*}else if (reseller != null) {
         for (int i = 0; i < suppliers.length; i++) {
             ++row;
             resName = (Text) theText.clone();
@@ -212,7 +224,7 @@ public class Contracts extends TravelManager {
             table.setAlignment(3,row,"right");
 
         }
-      }
+      }*/
 
       add(form);
   }
@@ -499,7 +511,7 @@ public class Contracts extends TravelManager {
               emailIds[0] = eml.getID();
 
               ResellerManager resMan = new ResellerManager();
-              reseller = resMan.updateReseller(resellerId,name, description, addressIds, phoneIds, emailIds);
+              reseller = resMan.updateReseller(resellerId, this.reseller, name, description, addressIds, phoneIds, emailIds);
 
 
               add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
@@ -543,14 +555,16 @@ public class Contracts extends TravelManager {
                 emailIds[0] = eEmail.getID();
 
                 ResellerManager resellerMan = new ResellerManager();
-                Reseller reseller = resellerMan.createReseller(name, userName, passOne, description, addressIds, phoneIds, emailIds);
-                reseller.addTo(supplier);
+                Reseller tempReseller = resellerMan.createReseller(this.reseller, name, userName, passOne, description, addressIds, phoneIds, emailIds);
+                if (supplier != null) {
+                  tempReseller.addTo(supplier);
+                }
 
                 //add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));
-                resellers = getResellers(supplier);
+                resellers = getResellers();
                 this.mainMenu(iwc);
             }else {
-                add("TEMP - PASSWORDS not the same");
+                add(iwrb.getLocalizedString("travel.passwords_not_the_same","PASSWORDS not the same"));
             }
           }
 
@@ -816,12 +830,12 @@ public class Contracts extends TravelManager {
 
     try {
       Reseller[] tResellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAllOrdered(Reseller.getColumnNameName());
-      Reseller[] myResellers = ResellerManager.getResellers(this.supplier.getID());
-      int[] resellerIds = new int[myResellers.length];
+      Iterator myResellers = this.getResellers();
+/*      int[] resellerIds = new int[myResellers.length];
       for (int i = 0; i < resellerIds.length; i++) {
         resellerIds[i] = myResellers[i].getID();
       }
-
+*/
 
       int row = 1;
       CheckBox box;
@@ -834,6 +848,8 @@ public class Contracts extends TravelManager {
       table.setRowColor(row, super.backgroundColor);
       int resId;
 
+      Reseller tempReseller;
+
       for (int i = 0; i < tResellers.length; i++) {
         resId = tResellers[i].getID();
         ++row;
@@ -842,9 +858,14 @@ public class Contracts extends TravelManager {
           nameText.setFontColor(super.BLACK);
           nameText.setText(tResellers[i].getName());
         box = new CheckBox(this.parameterCheckBox+"_"+resId);
+
+        while (myResellers.hasNext()) {
+          tempReseller = (Reseller) myResellers.next();
+          if (resId == tempReseller.getID()) box.setChecked(true);
+        }/*
         for (int j = 0; j < resellerIds.length; j++) {
           if (resId == resellerIds[j]) box.setChecked(true);
-        }
+        }*/
 
         table.setRowColor(row, super.GRAY);
         table.add(new HiddenInput(this.parameterResellerId,Integer.toString(tResellers[i].getID())));

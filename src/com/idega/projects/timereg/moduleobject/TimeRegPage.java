@@ -54,7 +54,9 @@ private Link link5;
 				myTableHeader.setWidth(4,"320");
 
                                 Image logo = new Image("/pics/timereg/HeaderLogo.gif");
-				myTableHeader.add(new Link(logo,"/index.jsp"),1,1 );
+//				myTableHeader.add(new Link(logo,"/index.jsp"),1,1 );
+
+				myTableHeader.setBackgroundImage(1,1,new Image("/pics/timereg/HeaderVinstriTiler.gif"));
 				myTableHeader.setBackgroundImage(2,1,new Image("/pics/timereg/HeaderVinstriTiler.gif"));
 				myTableHeader.setBackgroundImage(3,1,new Image("/pics/timereg/HeaderSamskeyti.gif"));
 				myTableHeader.setBackgroundImage(4,1,new Image("/pics/timereg/HeaderHaegriTiler.gif"));

@@ -7,8 +7,10 @@ import com.idega.core.user.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.accesscontrol.business.*;
 import com.idega.core.data.*;
+import com.idega.data.*;
 import com.idega.util.CypherText;
 import com.idega.data.SimpleQuerier;
+import java.util.*;
 
 import is.idega.idegaweb.travel.data.Contract;
 
@@ -30,7 +32,7 @@ public class ResellerManager {
       Reseller res = new Reseller(id);
         res.delete();
   }
-
+/*
   public static Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
       return createReseller(resellerId, name, null,null, description, addressIds, phoneIds, emailIds);
   }
@@ -38,12 +40,22 @@ public class ResellerManager {
   public static Reseller createReseller(String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
     return createReseller(-1, name, userName, password, description, addressIds, phoneIds, emailIds);
   }
+*/
+  public static Reseller updateReseller(int resellerId, Reseller parentReseller, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+      return createReseller(resellerId, null, name, null,null, description, addressIds, phoneIds, emailIds);
+  }
 
-  private static Reseller createReseller(int resellerId, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+  public static Reseller createReseller(Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+    return createReseller(-1, null, name, userName, password, description, addressIds, phoneIds, emailIds);
+  }
+
+  private static Reseller createReseller(int resellerId, Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
     boolean isUpdate = false;
     if (resellerId != -1) isUpdate = true;
 
     if (description == null) description = "";
+
+    System.err.println("ResellerManager : isUpdate "+isUpdate);
 
     if (isUpdate) {
       Reseller res = new Reseller(resellerId);
@@ -87,8 +99,14 @@ public class ResellerManager {
       reseller.setGroupId(sGroup.getID());
       reseller.setIsValid(true);
       reseller.setReferenceNumber(key);
-
       reseller.insert();
+
+      if (parentReseller != null) {
+        System.err.println("ResellerManager : Zippeddi");
+        parentReseller.addChild(reseller);
+      }else {
+        System.err.println("ResellerManager : Not zippeddi");
+      }
 
       UserBusiness uBus = new UserBusiness();
       User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,idegaTimestamp.RightNow(),null);
@@ -237,7 +255,7 @@ public class ResellerManager {
 
         StringBuffer sql = new StringBuffer();
           sql.append("Select s.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
-          sql.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
+          sql.append(EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
           sql.append(" WHERE ");
           sql.append(" r."+reseller.getIDColumnName()+" = "+resellerId);
           sql.append(" AND ");
@@ -259,19 +277,30 @@ public class ResellerManager {
     return suppliers;
   }
 
-  public static Reseller[] getResellers(int supplierId) {
-    return getResellers(supplierId,"");
+  public static Iterator getResellers(Reseller reseller) {
+    return getResellers(reseller, "");
   }
 
-  public static Reseller[] getResellers(int supplierId, String orderBy) {
-    Reseller[] resellers = {};
+  public static Iterator getResellers(Reseller reseller, String orderBy) {
+    Iterator iter = reseller.getChildren(orderBy);
+    if (iter == null) iter = com.idega.util.ListUtil.getEmptyList().iterator();
+    return iter;
+  }
+
+  public static Iterator getResellers(Supplier supplier) {
+    return getResellers(supplier,"");
+  }
+
+  public static Iterator getResellers(Supplier supplier, String orderBy) {
+    Iterator iter = null;
     try {
         Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
-        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+//        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+        int supplierId = supplier.getID();
 
         StringBuffer sql = new StringBuffer();
           sql.append("Select r.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
-          sql.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
+          sql.append(EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
           sql.append(" WHERE ");
           sql.append(" s."+supplier.getIDColumnName()+" = "+supplierId);
           sql.append(" AND ");
@@ -284,13 +313,18 @@ public class ResellerManager {
             sql.append(" ORDER BY r."+orderBy);
           }
 
-        resellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAll(sql.toString());
-
+        List list = EntityFinder.findAll(Reseller.getStaticInstance(Reseller.class), sql.toString());
+//        resellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAll(sql.toString());
+        if (list != null) {
+          iter = list.iterator();
+        }else {
+          iter = com.idega.util.ListUtil.getEmptyList().iterator();
+        }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
 
-    return resellers;
+    return iter;
   }
 
   public static Supplier[] getSuppliersWithContracts(int resellerId) {
