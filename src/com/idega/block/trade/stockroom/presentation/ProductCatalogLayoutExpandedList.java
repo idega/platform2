@@ -21,34 +21,29 @@ import com.idega.presentation.*;
 
 public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayout {
 
+  private ProductCatalog productCatalog;
+  private int imageId = -1;
+  private String description;
 
  public ProductCatalogLayoutExpandedList() { }
 
 
  public PresentationObject getCatalog( ProductCatalog productCatalog, IWContext iwc, List productCategories ) {
+  this.productCatalog = productCatalog;
   Table table = new Table();
   table.setWidth("100%");
   int row = 1;
 
+  Product selectedProduct = productCatalog.getSelectedProduct(iwc);
   Product product;
-  boolean expandSelectedOnly = productCatalog._expandSelectedOnly;
-  boolean useAnchor = productCatalog._useAnchor;
 
   boolean addedRow = false;
-  int imageId = -1;
-  String description;
   Link editLink;
+  Text nameText;
 
-  List products = ProductBusiness.getProducts(productCategories);
-  debug("BEFORE SORT "+idegaTimestamp.RightNow().toString());
-  if (productCatalog._orderProductsBy != -1) {
-    Collections.sort(products, new ProductComparator(productCatalog._orderProductsBy, productCatalog._currentLocaleId));
-  }
-  debug("AFTER SORT "+idegaTimestamp.RightNow().toString());
-
+  List products = productCatalog.getProducts(productCategories, true);
 
   for (int i = 0; i < products.size(); i++) {
-    addedRow = false;
     product = (Product) products.get(i);
     ++row;
     if (productCatalog._hasEditPermission) {
@@ -59,41 +54,16 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     if (productCatalog._useAnchor) {
       table.add(productCatalog.getAnchor(product.getID()), 1,row);
     }
-    table.add(productCatalog.getCategoryText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), 1,row);
+
+    table.add(productCatalog.getNamePresentationObject(product, true), 1,row);
     table.mergeCells(1, row, 3, row);
-    if (!productCatalog._expandSelectedOnly) {
 
-      if (productCatalog._showNumber) {
+    if (productCatalog._expandSelectedOnly) {
+      if (selectedProduct != null && (selectedProduct.getID() == product.getID())) {
+        row = expand(product, table ,row);
       }
-      if (productCatalog._showTeaser) {
-      }
-      if (productCatalog._showPrice) {
-      }
-
-      if (productCatalog._showDescription) {
-        if (!addedRow){
-          ++row;
-          addedRow = true;
-        }
-        description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
-        description = TextFormatter.formatText(description, -1, null);
-        table.add(productCatalog.getText(description), 2, row);
-        table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
-      }
-      if (productCatalog._showImage) {
-        if (!addedRow){
-          ++row;
-          addedRow = true;
-        }
-        imageId = product.getFileId();
-        if (imageId != -1) {
-          try {
-            table.add(new Image(imageId), 3, row);
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
-          }
-        }
-      }
+    }else {
+      row = expand(product, table, row);
     }
 
   }
@@ -102,4 +72,40 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 
   return table;
  }
+
+  private int expand(Product product, Table table, int row) {
+    boolean addedRow = false;
+    if (productCatalog._showNumber) {
+    }
+    if (productCatalog._showTeaser) {
+    }
+    if (productCatalog._showPrice) {
+    }
+
+    if (productCatalog._showDescription) {
+      if (!addedRow){
+        ++row;
+        addedRow = true;
+      }
+      description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
+      description = TextFormatter.formatText(description, -1, null);
+      table.add(productCatalog.getText(description), 2, row);
+      table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+    }
+    if (productCatalog._showImage) {
+      if (!addedRow){
+        ++row;
+        addedRow = true;
+      }
+      imageId = product.getFileId();
+      if (imageId != -1) {
+        try {
+          table.add(new Image(imageId), 3, row);
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }
+      }
+    }
+    return row;
+  }
 }

@@ -279,8 +279,6 @@ public class ProductEditorWindow extends IWAdminWindow {
         return true;
       }
     }catch (Exception e) {
-      e.printStackTrace(System.err);
-      debug("Villa, returna false");
       return false;
     }
   }

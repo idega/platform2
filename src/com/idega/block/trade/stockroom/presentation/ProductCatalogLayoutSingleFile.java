@@ -69,6 +69,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
         }
 
         catProducts = ProductBusiness.getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
+        productCatalog.sortList(catProducts);
         for (int j = 0; j < catProducts.size(); j++) {
           ++row;
           table.mergeCells(1, row, 3, row);
@@ -81,8 +82,9 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
             if (productCatalog._useAnchor) {
               table.add(productCatalog.getAnchor(product.getID()),1,row);
             }
-            nameText.setName(Integer.toString(product.getID()));
 
+            /*
+            nameText.setName(Integer.toString(product.getID()));
             if (productCatalog._productIsLink) {
               if (productCatalog._useAnchor) {
                 productLink = new AnchorLink(nameText, productCatalog.getAnchorString(product.getID()));
@@ -92,13 +94,14 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
               productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
               if (productCatalog._productLinkPage != null) {
                 productLink.setPage(productCatalog._productLinkPage);
-              }else {
+              }else if (productCatalog._viewerInWindow) {
                 productLink.setWindowToOpen(ProductViewerWindow.class);
               }
               table.add(productLink, 1,row);
             }else {
               table.add(nameText, 1,row);
-            }
+            }*/
+            table.add(productCatalog.getNamePresentationObject(product), 1, row);
 
             if (fileId != -1) {
 

@@ -45,16 +45,14 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
   private Form toEMM(List productCategories) {
     Form form = new Form();
 
-    debug("Getting products..."+idegaTimestamp.RightNow().toString());
     List products = new Vector();
 
     /**
      * @todo hondla ad ekkert category sé valið
-     * @todo birta ekki sama product 2svar (eða oftar)
      */
 
     if (productCategories != null && productCategories.size() > 0) {
-      products = ProductBusiness.getProducts(productCategories);
+      products = _productCatalog.getProducts(productCategories, false);
     }else {
       products = ProductBusiness.getProducts();
     }
@@ -120,9 +118,10 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
         if (_productCatalog._useAnchor) {
           table.add(_productCatalog.getAnchor(product.getID()), 1, row);
         }
-        nameText = _productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId));
 
         table.add(_productCatalog.getText(product.getNumber()), 1,row);
+/*
+        nameText = _productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId));
 
         if (_productCatalog._productIsLink) {
           if (_productCatalog._useAnchor) {
@@ -134,13 +133,14 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
           if (_productCatalog._productLinkPage != null) {
             productLink.setPage(_productCatalog._productLinkPage);
-          }else {
+          }else if (_productCatalog._viewerInWindow) {
             productLink.setWindowToOpen(ProductViewerWindow.class);
           }
           table.add(productLink, 2,row);
         }else {
           table.add(nameText, 2,row);
-        }
+        }*/
+          table.add(_productCatalog.getNamePresentationObject(product), 2, row);
 //        table.add(ProductCatalog.getText(ProductBusiness.getProductName(product)), 2,row);
 
         if (fileId != -1) {

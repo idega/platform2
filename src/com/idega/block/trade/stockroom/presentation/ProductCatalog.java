@@ -50,6 +50,7 @@ public class ProductCatalog extends CategoryBlock{
 
   String _width = null;
   IBPage _productLinkPage = null;
+  boolean _viewerInWindow = false;
   boolean _productIsLink = false;
   boolean _showCategoryName = true;
   boolean _showImage = false;
@@ -210,31 +211,6 @@ public class ProductCatalog extends CategoryBlock{
     return pagesTable;
   }
 
-  Text getText(String content) {
-    Text text = new Text(content);
-    if (_fontStyle != null) {
-      text.setFontStyle(_fontStyle);
-    }
-    return text;
-  }
-
-  Text getCategoryText(String content) {
-    Text text = new Text(content);
-    if (_catFontStyle != null) {
-      text.setFontStyle(_catFontStyle);
-    }
-    return text;
-  }
-
-  String getAnchorString(int productId) {
-    return this._anchorString+productId;
-  }
-
-  Anchor getAnchor(int productId) {
-    Anchor anchor = new Anchor(getAnchorString(productId));
-    return anchor;
-  }
-
   public void setFontStyle(String fontStyle) {
     this._fontStyle = fontStyle;
   }
@@ -284,6 +260,11 @@ public class ProductCatalog extends CategoryBlock{
     this._useAnchor = useAnchor;
   }
 
+  public void setViewerToOpenInWindow(boolean openInWindow) {
+    this._viewerInWindow = openInWindow;
+    setProductAsLink(true);
+  }
+
   public void setExpandSelectedOnyl(boolean expaneSelectedOnly) {
     this._expandSelectedOnly = expaneSelectedOnly;
   }
@@ -321,4 +302,94 @@ public class ProductCatalog extends CategoryBlock{
     this._orderProductsBy = orderProductsBy;
   }
 
+
+  Text getText(String content) {
+    Text text = new Text(content);
+    if (_fontStyle != null) {
+      text.setFontStyle(_fontStyle);
+    }
+    return text;
+  }
+
+  Text getCategoryText(String content) {
+    Text text = new Text(content);
+    if (_catFontStyle != null) {
+      text.setFontStyle(_catFontStyle);
+    }
+    return text;
+  }
+
+  String getAnchorString(int productId) {
+    return this._anchorString+productId;
+  }
+
+  Anchor getAnchor(int productId) {
+    Anchor anchor = new Anchor(getAnchorString(productId));
+    return anchor;
+  }
+
+  PresentationObject getNamePresentationObject(Product product) {
+    return getNamePresentationObject(product, false);
+  }
+  PresentationObject getNamePresentationObject(Product product, boolean useCategoryStyle) {
+    Text nameText = null;
+    if (useCategoryStyle) {
+      nameText = getCategoryText(ProductBusiness.getProductName(product,_currentLocaleId));
+    }else {
+      nameText = getText(ProductBusiness.getProductName(product,_currentLocaleId));
+    }
+    Link productLink;
+    if (_productIsLink) {
+      if (_useAnchor) {
+        productLink = new AnchorLink(nameText, getAnchorString(product.getID()));
+      }else {
+        productLink = new Link(nameText);
+      }
+
+      productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
+
+      if (_productLinkPage != null) {
+        productLink.setPage(_productLinkPage);
+      }else if (_viewerInWindow) {
+        productLink.setWindowToOpen(ProductViewerWindow.class);
+      }
+      return productLink;
+    }else {
+      return nameText;
+    }
+
+  }
+
+  Product getSelectedProduct(IWContext iwc) {
+    String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
+    if (sProductId != null) {
+      try {
+        Product product = ProductBusiness.getProduct(Integer.parseInt(sProductId));
+        return product;
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+    }
+    return null;
+  }
+
+  List getProducts(List productCategories) {
+    return getProducts(productCategories, true);
+  }
+
+  List getProducts(List productCategories, boolean order) {
+    List list = ProductBusiness.getProducts(productCategories);
+    if (order) {
+      sortList(list);
+    }
+    return list;
+  }
+
+  void sortList(List products) {
+    if (this._orderProductsBy != -1) {
+      debug("BEFORE SORT , orderBy : "+this._orderProductsBy+" ... "+idegaTimestamp.RightNow().toString());
+      Collections.sort(products, new ProductComparator(this._orderProductsBy, this._currentLocaleId));
+      debug("AFTER SORT "+idegaTimestamp.RightNow().toString());
+    }
+  }
 }
