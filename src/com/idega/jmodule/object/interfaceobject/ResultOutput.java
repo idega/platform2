@@ -23,10 +23,14 @@ public class ResultOutput extends ModuleObjectContainer {
   TextInput resultOutput;
   List moduleObjects = new Vector();
   List onChangeVector = new Vector();
+  List extraTextVector = new Vector();
   private int size = -1;
   private String content = "";
   private String name;
   private String theOperator = "+";
+
+  private String extraForTotal = "";
+  private String extraForEach = "";
 
   public ResultOutput() {
     this("unspecified","");
@@ -49,24 +53,33 @@ public class ResultOutput extends ModuleObjectContainer {
       resultOutput = new TextInput(name, content);
 
       ModuleObject moduleObject = null;
+      String extraTxt = "";
 
-      StringBuffer theScript = new StringBuffer();
-        theScript.append("function "+functionName+"(myForm) {");
-        theScript.append("\n          myForm."+resultOutput.getName()+".value=(");
-        for (int i = 0; i < moduleObjects.size(); i++) {
-            if (i != 0) theScript.append(theOperator);
-            if (moduleObjects.get(i) instanceof TextInput)
-              moduleObject = (TextInput) moduleObjects.get(i);
-            else if (moduleObjects.get(i) instanceof ResultOutput)
-              moduleObject = (ResultOutput) moduleObjects.get(i);
-            theScript.append("(1*myForm."+moduleObject.getName()+".value)");
-        }
-        theScript.append(");");
+      if (moduleObjects.size() > 0) {
+        StringBuffer theScript = new StringBuffer();
+          theScript.append("function "+functionName+"(myForm) {");
+          theScript.append("\n          myForm."+resultOutput.getName()+".value=(");
+          for (int i = 0; i < moduleObjects.size(); i++) {
+              if (i != 0) theScript.append(theOperator);
+              if (moduleObjects.get(i) instanceof TextInput)
+                moduleObject = (TextInput) moduleObjects.get(i);
+              else if (moduleObjects.get(i) instanceof ResultOutput)
+                moduleObject = (ResultOutput) moduleObjects.get(i);
+              extraTxt = (String) extraTextVector.get(i);
+              theScript.append("(1*myForm."+moduleObject.getName()+".value");
+              theScript.append(")");
+              theScript.append(extraForEach);
+              theScript.append(extraTxt);
+          }
+          theScript.append(")");
+          theScript.append(extraForTotal);
+          theScript.append(";");
 
 
-        theScript.append("\n}");
+          theScript.append("\n}");
 
-      script.addFunction(functionName, theScript.toString());
+        script.addFunction(functionName, theScript.toString());
+      }
 
       resultOutput.setDisabled(true);
       if (this.size > 0) resultOutput.setSize(size);
@@ -98,22 +111,42 @@ public class ResultOutput extends ModuleObjectContainer {
     this.theOperator = operatori;
   }
 
+  public void setExtraForEach(String s) {
+    this.extraForEach = s;
+  }
+
+  public void setExtraForTotal(String s) {
+    this.extraForTotal = s;
+  }
+
   public void add(ModuleObject mo) {
+    add(mo, "");
+  }
+
+  public void add(ModuleObject mo, String extraText) {
     if (mo instanceof TextInput) {
       TextInput temp = (TextInput) mo;
         temp.setOnChange(functionName+"(this.form)");
         moduleObjects.add(temp);
+        extraTextVector.add(extraText);
     }
     else if (mo instanceof ResultOutput) {
-      ResultOutput temp = (ResultOutput) mo;
-      List list = temp.getAddedObjects();
-      for ( int a = 0; a < list.size(); a++ ) {
-        TextInput text = (TextInput) list.get(a);
-          text.setOnChange(functionName+"(this.form)");
-      }
-      moduleObjects.add(temp);
+      handleAddResultOutput((ResultOutput) mo);
     }
   }
 
+
+  private void handleAddResultOutput(ResultOutput resOut) {
+      List list = resOut.getAddedObjects();
+      for ( int a = 0; a < list.size(); a++ ) {
+        if (list.get(a) instanceof TextInput) {
+          TextInput text = (TextInput) list.get(a);
+            text.setOnChange(functionName+"(this.form)");
+        }else if (list.get(a) instanceof  ResultOutput) {
+            handleAddResultOutput((ResultOutput) list.get(a) );
+        }
+      }
+      moduleObjects.add(resOut);
+  }
 
 }
