@@ -27,6 +27,7 @@ import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -191,9 +192,38 @@ public class SchoolUserEditor extends Block {
 		Table contTable = new Table();
 		try {
 			UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+			int cRow = 0;
+			Collection suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
+			if (suTypes != null && !suTypes.isEmpty()) {
+				String[] userType;
+				Iterator iter = suTypes.iterator();
+				while (iter.hasNext()) {
+					userType = (String[]) iter.next();
+					++cRow;	
 
+					contTable.add(getTextTitle(_iwrb.getLocalizedString(userType[0],userType[1])), 1, cRow);
+					Collection users = getSchoolUserBusiness(iwc).getUsers(school, Integer.parseInt(userType[2]));
+					if (users != null && users.size() > 0) {
+						Iterator userIter = users.iterator();
+						Table table = new Table();
+						int row = 1;
+						while (userIter.hasNext()) {
+							User hm = uHome.findByPrimaryKey(userIter.next());
+							int userId = ((Integer) hm.getPrimaryKey()).intValue();
+							if (userId == userToEdit) {
+								row = insertEditableUserIntoTable(table, hm, Integer.parseInt(userType[2]), row);
+							}else {
+								row = insertUserIntoTable(table, hm, row);
+							}
+						}
+						contTable.add(table, 1, ++cRow);
+					}
+				}
+			}else {
+				cRow = 1;	
+			}
+/*
 			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.headmaster","Headmaster")), 1, 1);
-
 			Collection users = getSchoolUserBusiness(iwc).getHeadmasters(school);
 			if (users != null && users.size() > 0) {
 				Iterator iter = users.iterator();
@@ -267,7 +297,7 @@ public class SchoolUserEditor extends Block {
 				}
 				contTable.add(table, 1, 7);
 			}
-			
+			*/
 			/** ATH SETJA USERA I GROUPUR, SEM HAEGT ER AD SETJA IB_PAGE_ID A.... EKKI GLEYMA THESSU */
 			/** VIRKAR !!! HURRA  
 			String rui = iwc.getParameter("repp_user_id");
@@ -280,14 +310,16 @@ public class SchoolUserEditor extends Block {
 			/** Empty User field */
 			Table table = this.getUserForm();
 
-			contTable.add(table, 1, 8);
+			contTable.add(table, 1, cRow);
 
 			if (addSubmitButton) {
 				SubmitButton update = new SubmitButton(_iwrb.getLocalizedImageButton("school.save","Save"), PARAMETER_ACTION, ACTION_UPDATE);
-				contTable.add(update, 1, 9);
+				contTable.add(update, 1, cRow);
 			}
 			
 		} catch (FinderException e) {
+			e.printStackTrace(System.err);
+		} catch (IDORelationshipException e) {
 			e.printStackTrace(System.err);
 		}
 		return contTable;
