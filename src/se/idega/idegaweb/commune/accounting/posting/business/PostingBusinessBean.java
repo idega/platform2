@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.20 2003/09/12 00:15:07 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.21 2003/09/17 16:18:01 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,25 +10,24 @@
 package se.idega.idegaweb.commune.accounting.posting.business;
 
 import java.rmi.RemoteException;
-import javax.ejb.FinderException;
-import javax.ejb.CreateException;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.idega.data.IDOLookup;
-import com.idega.util.IWTimestamp;
-
-import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldHome;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingString;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingStringHome;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParametersHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingString;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingStringHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
+import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
+
+import com.idega.data.IDOLookup;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Joakim
@@ -54,7 +53,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @return the merged posting strings
 	 * @throws RemoteException
 	 */
-	public String generateString(String first, String second, Date date) throws RemoteException {
+	public String generateString(String first, String second, Date date) throws RemoteException, PostingException {
 		StringBuffer ret = new StringBuffer();		//used to build together returnstring
 		String temp;
 		int readPointer = 0;						//Pointer to place where next field is
@@ -90,8 +89,53 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			System.out.println("Second posting string:'"+second+"'");
 			System.out.println("Date for posting rule: "+date.toString());
 			e.printStackTrace();
+			throw new PostingException("posting.exception","malformated posting field encountered");
 		}
 		return ret.toString();
+	}
+	
+	/**
+	 * Validates that all the required fields have been set. If they are not set, a
+	 * MissingMandatoryFieldException will be thrown.
+	 * 
+	 * @param postingString
+	 * @param date
+	 * @throws MissingMandatoryFieldException
+	 * @throws PostingException
+	 */
+	public void validateString(String postingString, Date date) throws MissingMandatoryFieldException, PostingException{
+		int fieldLength, readPointer = 0;
+		try {
+			PostingStringHome ksHome = getPostingStringHome();
+			PostingFieldHome kfHome = getPostingFieldHome();
+			PostingString posting = ksHome.findPostingStringByDate(date);
+			Collection list = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));
+			Iterator iter = list.iterator();
+			while (iter.hasNext()) 
+			{
+				PostingField field = (PostingField)iter.next();
+				fieldLength = field.getLen();
+				if(field.getIsMandatory()){
+					if (trim(postingString.substring(readPointer,readPointer+fieldLength),field).length()==0)
+					{
+						throw new MissingMandatoryFieldException(field.getFieldTitle());
+					}
+				}
+				readPointer += fieldLength;
+			}
+		} catch (RemoteException e) {
+			System.out.println("Error: The postingt definition and the posting strings did not match.");
+			System.out.println("First posting string: '"+postingString+"'");
+			System.out.println("Date for posting rule: "+date.toString());
+			e.printStackTrace();
+			throw new PostingException("posting.exception","malformated posting field encountered");
+		} catch (FinderException e) {
+			System.out.println("Error: The postingt definition and the posting strings did not match.");
+			System.out.println("First posting string: '"+postingString+"'");
+			System.out.println("Date for posting rule: "+date.toString());
+			e.printStackTrace();
+			throw new PostingException("posting.exception","malformated posting field encountered");
+		}
 	}
 	
 	
