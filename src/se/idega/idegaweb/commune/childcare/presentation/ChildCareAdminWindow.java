@@ -604,8 +604,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		    
 		    if (oldTerminationDate != null) {
 		    		if (oldTerminationDate.isLaterThan(deadlinePeriod.getFirstTimestamp())) {
-			        dateInput.setEarliestPossibleDate(oldTerminationDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
-			        dateInput.setDate(oldTerminationDate.getDate());
+		    			oldTerminationDate.addDays(1);
+		        dateInput.setEarliestPossibleDate(oldTerminationDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+		        dateInput.setDate(oldTerminationDate.getDate());
 		    		}
 		    }
 		}
@@ -615,6 +616,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		    if (oldTerminationDate != null) {
 	    		if (oldTerminationDate.isLaterThan(stamp)) {
+	    			oldTerminationDate.addDays(1);
 		        dateInput.setEarliestPossibleDate(oldTerminationDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
 		        dateInput.setDate(oldTerminationDate.getDate());
 	    		}
