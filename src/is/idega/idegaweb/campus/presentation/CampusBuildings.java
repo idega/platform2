@@ -13,7 +13,7 @@ import com.idega.block.building.presentation.BuildingViewer;
  * @version 1.0
  */
 
-public class CampusBuildings extends Block {
+public class CampusBuildings extends CampusBlock {
 
   public void main(IWContext iwc){
     BuildingViewer fin = new BuildingViewer();

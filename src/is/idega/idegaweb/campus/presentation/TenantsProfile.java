@@ -1,6 +1,7 @@
 package is.idega.idegaweb.campus.presentation;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.presentation.ContractReSignWindow;
 import is.idega.idegaweb.campus.block.allocation.presentation.ContractResignWindow;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
@@ -30,7 +31,6 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -58,7 +58,7 @@ import com.idega.util.text.TextStyler;
  * @version 1.0
  */
 
-public class TenantsProfile extends Block {
+public class TenantsProfile extends CampusBlock {
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
   protected IWResourceBundle _iwrb;
   protected IWBundle _iwb;
@@ -86,11 +86,12 @@ public class TenantsProfile extends Block {
   private boolean _isAdmin = false;
   private boolean _isLoggedOn = false;
   private int _userID = -1;
-  private int _campusID = -1;
+ 
   private boolean _update = false;
 
   private Contract _contract;
   private Applicant _applicant;
+  
   private Applicant spouse;
   private Vector children;
   private CampusApplication _campusApplication;
@@ -149,6 +150,7 @@ public class TenantsProfile extends Block {
           _userID = -1;
         }
       }
+      
 
 
       try {
@@ -352,8 +354,13 @@ public class TenantsProfile extends Block {
     row++;
 
     Link resignLink = new Link(_iwrb.getImage("resign.gif"));
-      resignLink.addParameter("contract_id",_contract.getID());
+
+      resignLink.addParameter("contract_id",_contract.getPrimaryKey().toString());
+      resignLink.setWindowToOpen(ContractReSignWindow.class);
+
+      resignLink.addParameter("contract_id",_contract.getPrimaryKey().toString());
       resignLink.setWindowToOpen(ContractResignWindow.class);
+
     table.mergeCells(1,row,3,row);
     table.setAlignment(1,row,"right");
     table.add(resignLink,1,row);

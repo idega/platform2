@@ -16,16 +16,12 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.util.TextFormat;
 
 /**
  * <p>Title: </p>
@@ -36,13 +32,11 @@ import com.idega.presentation.util.TextFormat;
  * @version 1.0
  */
 
-public class PersonalNumberResult extends Block implements Campus {
+public class PersonalNumberResult extends CampusBlock{
 
-  private IWBundle iwb;
-  private IWResourceBundle iwrb;
   private String SSN = null;
   private Integer applicantID = null;
-  private TextFormat tf;
+  
   private DateFormat df;
 
   public PersonalNumberResult() {
@@ -53,9 +47,6 @@ public class PersonalNumberResult extends Block implements Campus {
     add(getSSNResult(iwc));
   }
 
-  public String getBundleIdentifier(){
-    return CAMPUS_BUNDLE_IDENTIFIER;
-  }
 
   public void parse(IWContext iwc){
     if(iwc.isParameterSet(PersonalNumberSearch.PERSONAL_NUMBER))
@@ -82,7 +73,7 @@ public class PersonalNumberResult extends Block implements Campus {
       }
       catch(com.idega.data.IDOFinderException ex){
         ex.printStackTrace();
-        T.add(iwrb.getLocalizedString("error_finding_from_ssn","Error in ssn search"),col,row);
+        T.add(getErrorText(localize("error_finding_from_ssn","Error in ssn search")),col,row);
       }
       catch(java.sql.SQLException ex){
         ex.printStackTrace();
@@ -98,45 +89,45 @@ public class PersonalNumberResult extends Block implements Campus {
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
-			T.add(iwrb.getLocalizedString("error_finding_from_id","Error in id search"),col,row);
+			T.add(getErrorText(localize("error_finding_from_id","Error in id search")),col,row);
 		}
     }
     else
-      T.add(iwrb.getLocalizedString("warning_no_ssn_provided","No ssn provided"),col,row);
+      T.add(getErrorText(localize("warning_no_ssn_provided","No ssn provided")),col,row);
 
     return T;
   }
 
   private PresentationObject getNonContractApplicantInfo(List applicants){
-    DataTable T = new DataTable();
+    DataTable T = getDataTable();
     T.setUseBottom(false);
     T.setUseTop(false);
-    T.addTitle(iwrb.getLocalizedString("applicants_without_contracts","Applicants without contracts"));
+    T.addTitle(localize("applicants_without_contracts","Applicants without contracts"));
     T.setTitlesHorizontal(true);
     int col = 1;
     int row = 1;
-    T.add(tf.format(iwrb.getLocalizedString("id","ID"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("ssn","SSN"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),col++,row);
-	//T.add(tf.format(iwrb.getLocalizedString("legal_residence","Legal residence"),tf.HEADER),col++,row);
-    //T.add(tf.format(iwrb.getLocalizedString("residence","Residence"),tf.HEADER),col++,row);
-	//T.add(tf.format(iwrb.getLocalizedString("zip","Zip"),tf.HEADER),col++,row);
-	//T.add(tf.format(iwrb.getLocalizedString("phone","Phone"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("mobile","Mobile"),tf.HEADER),col++,row);
+    T.add(getHeader(localize("id","ID")),col++,row);
+    T.add(getHeader(localize("ssn","SSN")),col++,row);
+    T.add(getHeader(localize("name","Name")),col++,row);
+	//T.add(getHeader(localize("legal_residence","Legal residence")),col++,row);
+    //T.add(getHeader(localize("residence","Residence")),col++,row);
+	//T.add(getHeader(localize("zip","Zip")),col++,row);
+	//T.add(getHeader(localize("phone","Phone")),col++,row);
+    T.add(getHeader(localize("mobile","Mobile")),col++,row);
 
     Iterator iter = applicants.iterator();
     while(iter.hasNext()){
       col = 1;
       row++;
       Applicant applicant = (Applicant) iter.next();
-      T.add(getApplicantInfoLink(tf.format(applicant.getPrimaryKey().toString()),(Integer)applicant.getPrimaryKey()),col++,row);
-      T.add(tf.format(applicant.getSSN()),col++,row);
-      T.add(tf.format(applicant.getFullName()),col++,row);
-      T.add(tf.format(applicant.getLegalResidence()),col++,row);
-	  T.add(tf.format(applicant.getResidence()),col++,row);
-	  T.add(tf.format(applicant.getPO()),col++,row);
-	  T.add(tf.format(applicant.getResidencePhone()),col++,row);
-      T.add(tf.format(applicant.getMobilePhone()),col++,row);
+      T.add(getApplicantInfoLink(getText(applicant.getPrimaryKey().toString()),(Integer)applicant.getPrimaryKey()),col++,row);
+      T.add(getText(applicant.getSSN()),col++,row);
+      T.add(getText(applicant.getFullName()),col++,row);
+      T.add(getText(applicant.getLegalResidence()),col++,row);
+	  T.add(getText(applicant.getResidence()),col++,row);
+	  T.add(getText(applicant.getPO()),col++,row);
+	  T.add(getText(applicant.getResidencePhone()),col++,row);
+      T.add(getText(applicant.getMobilePhone()),col++,row);
     }
     return T;
   }
@@ -145,19 +136,19 @@ public class PersonalNumberResult extends Block implements Campus {
     DataTable T = new DataTable();
      T.setUseBottom(false);
     T.setUseTop(false);
-    T.addTitle(iwrb.getLocalizedString("applicants_with_contracts","Applicants with contracts"));
+    T.addTitle(localize("applicants_with_contracts","Applicants with contracts"));
     T.setTitlesHorizontal(true);
     int col = 1;
     int row = 1;
-    T.add(tf.format(iwrb.getLocalizedString("id","ID"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("ssn","SSN"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),col++,row);
-    //T.add(tf.format(iwrb.getLocalizedString("address","Address"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("mobile","Mobile"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("apartment","Apartment"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("from","From"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("to","To"),tf.HEADER),col++,row);
-    T.add(tf.format(iwrb.getLocalizedString("status","Status"),tf.HEADER),col++,row);
+    T.add(getHeader(localize("id","ID")),col++,row);
+    T.add(getHeader(localize("ssn","SSN")),col++,row);
+    T.add(getHeader(localize("name","Name")),col++,row);
+    //T.add(getHeader(localize("address","Address")),col++,row);
+    T.add(getHeader(localize("mobile","Mobile")),col++,row);
+    T.add(getHeader(localize("apartment","Apartment")),col++,row);
+    T.add(getHeader(localize("from","From")),col++,row);
+    T.add(getHeader(localize("to","To")),col++,row);
+    T.add(getHeader(localize("status","Status")),col++,row);
 
     ApplicantHome ahome = (ApplicantHome)IDOLookup.getHomeLegacy(Applicant.class);
     Iterator iter = contracts.iterator();
@@ -167,15 +158,15 @@ public class PersonalNumberResult extends Block implements Campus {
       Contract contract = (Contract) iter.next();
       Applicant applicant = ahome.findByPrimaryKeyLegacy(contract.getApplicantId().intValue());
       Apartment apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
-      T.add(getApplicantInfoLink(tf.format(applicant.getPrimaryKey().toString()),(Integer)applicant.getPrimaryKey()),col++,row);
-      T.add(tf.format(applicant.getSSN()),col++,row);
-      T.add(tf.format(applicant.getFullName()),col++,row);
-      //T.add(tf.format(applicant.getLegalResidence()),col++,row);
-      T.add(tf.format(applicant.getMobilePhone()),col++,row);
-      T.add(tf.format(BuildingCacher.getApartmentString(apartment.getID())),col++,row);
-      T.add(tf.format(df.format(contract.getValidFrom())),col++,row);
-      T.add(tf.format(df.format(contract.getValidTo())),col++,row);
-      T.add(tf.format(ContractBusiness.getLocalizedStatus(iwrb,contract.getStatus())),col++,row);
+      T.add(getApplicantInfoLink(getText(applicant.getPrimaryKey().toString()),(Integer)applicant.getPrimaryKey()),col++,row);
+      T.add(getText(applicant.getSSN()),col++,row);
+      T.add(getText(applicant.getFullName()),col++,row);
+      //T.add(getText(applicant.getLegalResidence()),col++,row);
+      T.add(getText(applicant.getMobilePhone()),col++,row);
+      T.add(getText(BuildingCacher.getApartmentString(apartment.getID())),col++,row);
+      T.add(getText(df.format(contract.getValidFrom())),col++,row);
+      T.add(getText(df.format(contract.getValidTo())),col++,row);
+      T.add(getText(ContractBusiness.getLocalizedStatus(getResourceBundle(),contract.getStatus())),col++,row);
     }
     return T;
   }
@@ -184,30 +175,30 @@ public class PersonalNumberResult extends Block implements Campus {
 	DataTable T = new DataTable();
 		T.setUseBottom(false);
 		T.setUseTop(false);
-		T.addTitle(iwrb.getLocalizedString("applicant_info","Applicant info"));
+		T.addTitle(localize("applicant_info","Applicant info"));
 		T.setTitlesHorizontal(false);
 		int col = 1;
 		int row = 1;
-		T.add(tf.format(iwrb.getLocalizedString("id","ID"),tf.HEADER),col,row++);
-		T.add(tf.format(iwrb.getLocalizedString("ssn","SSN"),tf.HEADER),col,row++);
-		T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),col,row++);
-		T.add(tf.format(iwrb.getLocalizedString("legal_residence","Legal residence"),tf.HEADER),col,row++);
-		T.add(tf.format(iwrb.getLocalizedString("residence","Residence"),tf.HEADER),col,row++);
-		T.add(tf.format(iwrb.getLocalizedString("zip","Zip"),tf.HEADER),col,row++);
-		T.add(tf.format(iwrb.getLocalizedString("phone","Phone"),tf.HEADER),col,row++);
-		T.add(tf.format(iwrb.getLocalizedString("mobile","Mobile"),tf.HEADER),col,row++);
+		T.add(getHeader(localize("id","ID")),col,row++);
+		T.add(getHeader(localize("ssn","SSN")),col,row++);
+		T.add(getHeader(localize("name","Name")),col,row++);
+		T.add(getHeader(localize("legal_residence","Legal residence")),col,row++);
+		T.add(getHeader(localize("residence","Residence")),col,row++);
+		T.add(getHeader(localize("zip","Zip")),col,row++);
+		T.add(getHeader(localize("phone","Phone")),col,row++);
+		T.add(getHeader(localize("mobile","Mobile")),col,row++);
 
 		if(applicant!=null){
 		  row = 1;
 		  col++;
-		  T.add(tf.format(applicant.getID()),col,row++);
-		  T.add(getSSNLink(tf.format(applicant.getSSN()),applicant.getSSN()),col,row++);
-		  T.add(tf.format(applicant.getFullName()),col,row++);
-		  T.add(tf.format(applicant.getLegalResidence()),col,row++);
-		  T.add(tf.format(applicant.getResidence()),col,row++);
-		  T.add(tf.format(applicant.getPO()),col,row++);
-		  T.add(tf.format(applicant.getResidencePhone()),col,row++);
-		  T.add(tf.format(applicant.getMobilePhone()),col,row++);
+		  T.add(getText(String.valueOf(applicant.getID())),col,row++);
+		  T.add(getSSNLink(getText(applicant.getSSN()),applicant.getSSN()),col,row++);
+		  T.add(getText(applicant.getFullName()),col,row++);
+		  T.add(getText(applicant.getLegalResidence()),col,row++);
+		  T.add(getText(applicant.getResidence()),col,row++);
+		  T.add(getText(applicant.getPO()),col,row++);
+		  T.add(getText(applicant.getResidencePhone()),col,row++);
+		  T.add(getText(applicant.getMobilePhone()),col,row++);
 		}
 		return T;
   }
@@ -225,9 +216,7 @@ public class PersonalNumberResult extends Block implements Campus {
    }
 
   public void main(IWContext iwc){
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-    tf = TextFormat.getInstance();
+   
     df = DateFormat.getDateInstance(df.SHORT,iwc.getCurrentLocale());
     control(iwc);
   }

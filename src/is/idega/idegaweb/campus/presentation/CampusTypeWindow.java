@@ -1,5 +1,7 @@
 package is.idega.idegaweb.campus.presentation;
 
+import is.idega.idegaweb.campus.business.CampusSettings;
+
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -36,7 +38,7 @@ public class CampusTypeWindow extends Window {
   }
 
   public String getBundleIdentifier(){
-    return Campus.CAMPUS_BUNDLE_IDENTIFIER;
+    return CampusSettings.IW_BUNDLE_IDENTIFIER;
   }
 
   public void main(IWContext iwc) throws Exception{

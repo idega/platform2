@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApartments.java,v 1.3 2004/05/24 14:21:41 palli Exp $
+ * $Id: CampusApartments.java,v 1.4 2004/06/04 17:31:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,7 +46,6 @@ public class CampusApartments extends Block{
    public void main(IWContext iwc){
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    SysPropsSetter.isSysPropsInMemoryElseLoad(iwc);
 
     BlockMenu menu = new BlockMenu();
     menu.setClassParameterName(prmClass);

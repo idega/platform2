@@ -20,12 +20,13 @@ import com.idega.presentation.text.Text;
  * @author aron 
  * @version 1.0
  */
-public class LoggedInUsers extends Block {
+public class LoggedInUsers extends com.idega.block.login.presentation.OnlineUsers {
 	
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
+	/*
 	public void main(IWContext iwc) throws Exception {
 		add(getLoggedInUsers(iwc));
 	}
@@ -51,5 +52,5 @@ public class LoggedInUsers extends Block {
 		
 		return table;
 	}
-
+*/
 }

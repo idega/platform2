@@ -47,7 +47,7 @@ public abstract class CampusBlock extends Block {
 	
 	private String _width = "600";
 	
-	public final static String IW_BUNDLE_IDENTIFIER ="is.idega.idegaweb.campus";
+	public final static String IW_BUNDLE_IDENTIFIER =CampusSettings.IW_BUNDLE_IDENTIFIER;
 	
 	protected static String LOCALIZATION_SAVE_KEY="save";
 	protected static String PARAM_SAVE="cb_save";

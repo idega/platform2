@@ -239,7 +239,7 @@ public class TenantsHabitants extends Block implements Campus{
     else if(!_isAdmin && !_isPublic){
       BuildingCacher bc = new BuildingCacher();
       Contract C = ContractFinder.findByUser(_userID);
-      if(C!=null && C.getID() >0)
+      if(C!=null )
         complex = bc.getComplex(bc.getBuilding(bc.getFloor(bc.getApartment(C.getApartmentId().intValue()).getFloorId()).getBuildingId()).getComplexId() );
     }
     else {
@@ -294,7 +294,7 @@ public class TenantsHabitants extends Block implements Campus{
       if ( _isAdmin ) {
         adminLink = new Link(formatText(collected.getName()));
           adminLink.addParameter(TenantsProfile.getUserParameter(collected.getUserID()));
-          adminLink.addParameter(CampusFactory.getParameter(CampusFactory.TEN_PROFILE));
+          //adminLink.addParameter(CampusFactory.getParameter(CampusFactory.TEN_PROFILE));
         table.add(adminLink,column++,row);
       }
       else
