@@ -33,9 +33,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String SPECIALLY_PLACED = "SPECIALLY_PLACED";
 	public final static String LANGUAGE = "LANGUAGE";
 	//Added for the kompliterings project
-	public final static String CONTRACT_COMPENSATION = "contract_comp";
-	public final static String FACTORING_INTERVAL = "fact_int";
-	public final static String LATEST_FACTORING_DATE = "latest_fact_date";
+	public final static String COMPENSATION_BY_INVOICE = "comp_by_invoice";
+	public final static String INVOICE_INTERVAL = "invoice_int";
+	public final static String LATEST_INVOICE_DATE = "latest_invoice_date";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -48,9 +48,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.addAttribute(NEEDS_SPECIAL_ATTENTION, "Needs special attention", true, true, Boolean.class);
 		this.addAttribute(SPECIALLY_PLACED, "Specially placed", true, true, Boolean.class);
 		this.addAttribute(LANGUAGE, "Language", true, true, String.class);
-		this.addAttribute(CONTRACT_COMPENSATION, "Contract compensation", true, true, Boolean.class);
-		this.addAttribute(FACTORING_INTERVAL, "Factoring interval", true, true, String.class);
-		this.addAttribute(LATEST_FACTORING_DATE, "Latest factoring date", true, true, Timestamp.class);
+		this.addAttribute(COMPENSATION_BY_INVOICE, "Compensation by invoice", true, true, Boolean.class);
+		this.addAttribute(INVOICE_INTERVAL, "Invoice interval", true, true, String.class);
+		this.addAttribute(LATEST_INVOICE_DATE, "Latest invoice date", true, true, Timestamp.class);
 	}
 	public String getEntityName() {
 		return SCHOOLCLASSMEMBER;
@@ -120,28 +120,28 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return this.getStringColumnValue(LANGUAGE);
 	}
 
-	public boolean getHasContractCompensation() {
-		return getBooleanColumnValue(CONTRACT_COMPENSATION,false);
+	public boolean getHasCompensationByInvoice() {
+		return getBooleanColumnValue(COMPENSATION_BY_INVOICE,false);
 	}
 	
-	public void setHasContractCompensation(boolean hasCompensation) {
-		setColumn(CONTRACT_COMPENSATION,hasCompensation);
+	public void setHasCompensationByInvoice(boolean hasCompensation) {
+		setColumn(COMPENSATION_BY_INVOICE,hasCompensation);
 	}
 	
-	public String getFactoringInterval() {
-		return getStringColumnValue(FACTORING_INTERVAL);
+	public String getInvoiceInterval() {
+		return getStringColumnValue(INVOICE_INTERVAL);
 	}
 	
-	public void setFactoringInterval(String interval) {
-		setColumn(FACTORING_INTERVAL,interval);
+	public void setInvoiceInterval(String interval) {
+		setColumn(INVOICE_INTERVAL,interval);
 	}
 	
-	public Timestamp getLatestFactoringDate() {
-		return (Timestamp)getColumnValue(LATEST_FACTORING_DATE);
+	public Timestamp getLatestInvoiceDate() {
+		return (Timestamp)getColumnValue(LATEST_INVOICE_DATE);
 	}
 	
-	public void setLatestFactoringDate(Timestamp date) {
-		setColumn(LATEST_FACTORING_DATE,date);
+	public void setLatestInvoiceDate(Timestamp date) {
+		setColumn(LATEST_INVOICE_DATE,date);
 	}
 
 	public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException, RemoteException {
@@ -233,6 +233,20 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		return idoFindPKsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindAllBySeasonAndInvoiceInterval(int seasonID, int invoiceInterval) throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendWhere().append(" mb." + INVOICE_INTERVAL).appendEqualSign().append(invoiceInterval);
+		sql.appendAnd();
+		sql.append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID);
+		sql.appendAnd();
+		sql.append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y");
+		sql.appendOr();
+		sql.append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
+		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		return idoFindPKsBySQL(sql.toString());		
 	}
 
 	public Integer ejbFindByUserAndSchoolAndSeason(int userID, int schoolID, int seasonID) throws FinderException {
