@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersTester.java,v 1.1 2003/08/27 14:04:19 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.2 2003/08/28 12:55:03 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * PostingParametersTest is an idegaWeb block that is used to test the Posting parameters retrieval 
  *  
  * <p>
- * $Id: PostingParametersTester.java,v 1.1 2003/08/27 14:04:19 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.2 2003/08/28 12:55:03 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version $Version$
@@ -98,40 +98,13 @@ public class PostingParametersTester extends AccountingBlock {
 		}
 		
 		table.add(getSmallText(""),1 ,row);
-		table.add(getSmallText("Egen kontering"),2 ,row);
-		table.add(getSmallText("Mot kontering"),3 ,row++);
 		
-		table.add(getSmallText("Konto"),1 ,row);
-		table.add(getSmallText(pp.getPostingAccount()),2 ,row);
-		table.add(getSmallText(pp.getDoublePostingAccount()),3 ,row++);
+		table.add(getSmallText("Egen konteringssträng"),1 ,row);
+		table.add(getSmallText(pp.getPostingString()),2 ,row);
 
-		table.add(getSmallText("Ansvar"),1 ,row);
-		table.add(getSmallText(pp.getPostingLiability()),2 ,row);
-		table.add(getSmallText(pp.getDoublePostingLiability()),3 ,row++);
-		
-		table.add(getSmallText("Resurs"),1 ,row);
-		table.add(getSmallText(pp.getPostingResource()),2 ,row);
-		table.add(getSmallText(pp.getDoublePostingResource()),3 ,row++);
+		table.add(getSmallText("Motkonteringsträng"),1 ,row);
+		table.add(getSmallText(pp.getDoublePostingString()),2 ,row);
 
-		table.add(getSmallText("Verksamhet"),1 ,row);
-		table.add(getSmallText(pp.getPostingActivityCode()),2 ,row);
-		table.add(getSmallText(pp.getPostingActivityCode()),3 ,row++);
-		
-		table.add(getSmallText("Motpart"),1 ,row);
-		table.add(getSmallText(pp.getPostingDoubleEntry()),2 ,row);
-		table.add(getSmallText(pp.getDoublePostingDoubleEntry()),3 ,row++);
-		
-		table.add(getSmallText("Aktivitet"),1 ,row);
-		table.add(getSmallText(pp.getPostingActivity()),2 ,row);
-		table.add(getSmallText(pp.getDoublePostingActivity()),3 ,row++);
-
-		table.add(getSmallText("Projekt"),1 ,row);
-		table.add(getSmallText(pp.getPostingProject()),2 ,row);
-		table.add(getSmallText(pp.getDoublePostingProject()),3 ,row++);
-
-		table.add(getSmallText("Objekt"),1 ,row);
-		table.add(getSmallText(pp.getPostingObject()),2 ,row);
-		table.add(getSmallText(pp.getPostingObject()),3 ,row++);
 		mainForm.add(table);
 	}
 	
