@@ -364,7 +364,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	  	          		System.out.println("StockroomBusiness : coll i ruglinu");
 	        			}
 	        		} catch (FinderException fe) {
-	        			
+	        			fe.printStackTrace();
 	        		}
 	        		
 	          IDOLegacyEntity[] supp = ((Supplier) SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(SupplierBMPBean.getColumnNameGroupID(),item.getID());
@@ -383,6 +383,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	    }
 	    throw new RuntimeException("Does not belong to any supplier");
   	} catch (IDOLookupException e) {
+  		e.printStackTrace();
   		throw new RuntimeException("Does not belong to any supplier");
   	}
   }
