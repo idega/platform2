@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.7 2003/08/23 21:02:38 anders Exp $
+ * $Id: ButtonPanel.java,v 1.8 2003/08/24 06:50:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,16 +18,14 @@ import com.idega.builder.data.IBPage;
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/23 21:02:38 $
+ * Last modified: $Date: 2003/08/24 06:50:02 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
 
-//	private final static int COLUMN_WIDTH = 40;
-	
 	private Table table = null;
 	private int buttonColumn = 1; 
 
@@ -48,7 +46,7 @@ public class ButtonPanel extends AccountingBlock {
 	 * @param textKey the text to localize
 	 * @param defaultText the default localized text
 	 */
-	public void addButton(String parameter, String textKey, String defaultText) {
+	public void addLocalizedButton(String parameter, String textKey, String defaultText) {
 		SubmitButton button = new SubmitButton(parameter, localize(textKey, defaultText));
 		addButton(button);
 	}
@@ -61,7 +59,7 @@ public class ButtonPanel extends AccountingBlock {
 	 * @param defaultText the default localized text
 	 * @param windowClass the class of the window to open when clicked
  	 */
-	public void addButton(String parameter, String textKey, String defaultText, Class windowClass) {
+	public void addLocalizedButton(String parameter, String textKey, String defaultText, Class windowClass) {
 		GenericButton button = new GenericButton(parameter, localize(textKey, defaultText));
 		button.setWindowToOpen(windowClass);
 		addButton (button);
@@ -76,7 +74,7 @@ public class ButtonPanel extends AccountingBlock {
 	 * @param page an IBPage to be opened when clicked
 	 * @author <a href="http://www.lindman.se">Kjell Lindman</a>
 	 */
-	public void addButton(String parameter, String textKey, String defaultText, IBPage page) {
+	public void addLocalizedButton(String parameter, String textKey, String defaultText, IBPage page) {
 		GenericButton button = new GenericButton(parameter, localize(textKey, defaultText));
 		button.setPageToOpen(page);
 		addButton(button);
@@ -89,6 +87,5 @@ public class ButtonPanel extends AccountingBlock {
 		button = getButton(button);
 		table.add(button, buttonColumn , 1);
 		buttonColumn++;
-//		table.setWidth(buttonColumn * COLUMN_WIDTH);
 	}
 }

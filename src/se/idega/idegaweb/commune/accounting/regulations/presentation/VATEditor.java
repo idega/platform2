@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.6 2003/08/23 21:02:38 anders Exp $
+ * $Id: VATEditor.java,v 1.7 2003/08/24 06:50:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/23 21:02:38 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/24 06:50:02 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -87,16 +87,16 @@ public class VATEditor extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_DEFAULT :
-					viewDefaultForm(iwc);
+					handleDefaultAction(iwc);
 					break;
 				case ACTION_SEARCH :
-					viewSearchResult(iwc);
+					handleSearchAction(iwc);
 					break;
 				case ACTION_NEW :
-					viewAddForm(iwc);
+					handleNewAction(iwc);
 					break;
 				case ACTION_SAVE :
-					save(iwc);
+					handleSaveAction(iwc);
 					break;
 			}
 		}
@@ -124,11 +124,11 @@ public class VATEditor extends AccountingBlock {
 	}
 
 	/*
-	 * Views the default application form.
+	 * Handles the default action for this block.
 	 */	
-	private void viewDefaultForm(IWContext iwc) {
+	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
-		app.setTitle(KEY_TITLE, "Momssats");
+		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getSearchList(iwc, false));
 		app.setButtonPanel(getButtonPanel());
@@ -136,11 +136,11 @@ public class VATEditor extends AccountingBlock {
 	}
 
 	/*
-	 * Views the search result.
+	 * Handles the search action for this block.
 	 */	
-	private void viewSearchResult(IWContext iwc) {		
+	private void handleSearchAction(IWContext iwc) {		
 		ApplicationForm app = new ApplicationForm();
-		app.setTitle(KEY_TITLE, "Momssats");
+		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getSearchList(iwc, true));
 		app.setButtonPanel(getButtonPanel());
@@ -148,16 +148,16 @@ public class VATEditor extends AccountingBlock {
 	}
 
 	/*
-	 * Views the search result.
+	 * Handles the new action for this block.
 	 */	
-	private void viewAddForm(IWContext iwc) {
+	private void handleNewAction(IWContext iwc) {
 		add(getAddForm(iwc, null));
 	}
 
 	/*
-	 * Save a new VAT regulation.
+	 * Handles the save action for this block.
 	 */
-	private void save(IWContext iwc) {
+	private void handleSaveAction(IWContext iwc) {
 		String errorMessage = null;
 
 		try {
@@ -181,7 +181,7 @@ public class VATEditor extends AccountingBlock {
 		if (errorMessage != null) {
 			add(getAddForm(iwc, errorMessage));
 		} else {
-			viewDefaultForm(iwc);
+			handleDefaultAction(iwc);
 		}
 		
 	}
@@ -191,13 +191,13 @@ public class VATEditor extends AccountingBlock {
 	 */
 	private Table getSearchPanel() {
 		Table table = new Table();
-		table.add(getFormLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
-		table.add(getFormText(KEY_SCHOOL, "Skola"), 2, 1);
-		table.add(getFormLabel(KEY_PERIOD, "Period"), 1, 2);
-		table.add(getFormTextInput(PARAMETER_PERIOD_FROM, "", 60), 2, 2);
-		table.add(getSmallText(" - "), 2, 2);
-		table.add(getFormTextInput(PARAMETER_PERIOD_TO, "", 60), 2, 2);
-		table.add(getFormButton(PARAMETER_SEARCH, KEY_SEARCH, "Sök"), 5, 2);
+		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
+		table.add(getLocalizedText(KEY_SCHOOL, "Skola"), 2, 1);
+		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 2);
+		table.add(getTextInput(PARAMETER_PERIOD_FROM, "", 60), 2, 2);
+		table.add(getText(" - "), 2, 2);
+		table.add(getTextInput(PARAMETER_PERIOD_TO, "", 60), 2, 2);
+		table.add(getLocalizedButton(PARAMETER_SEARCH, KEY_SEARCH, "Sök"), 5, 2);
 		return table;
 	}	
 	
@@ -230,11 +230,11 @@ public class VATEditor extends AccountingBlock {
 		}
 
 		ListTable list = new ListTable(5);
-		list.setHeader(KEY_PERIOD, "Period", 1);
-		list.setHeader(KEY_DESCRIPTION, "Benämning", 2);
-		list.setHeader(KEY_VAT_PERCENT, "Procentsats", 3);
-		list.setHeader(KEY_PAYMENT_FLOW_TYPE, "Ström", 4);
-		list.setHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
+		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
+		list.setLocalizedHeader(KEY_DESCRIPTION, "Benämning", 2);
+		list.setLocalizedHeader(KEY_VAT_PERCENT, "Procentsats", 3);
+		list.setLocalizedHeader(KEY_PAYMENT_FLOW_TYPE, "Ström", 4);
+		list.setLocalizedHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
 
 		if (vatRegulations != null) {
 			Iterator iter = vatRegulations.iterator();
@@ -273,7 +273,7 @@ public class VATEditor extends AccountingBlock {
 	 */
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel();
-		bp.addButton(PARAMETER_NEW, KEY_NEW, "Ny");
+		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
 		return bp;
 	}
 	
@@ -282,23 +282,23 @@ public class VATEditor extends AccountingBlock {
 	 */
 	private ApplicationForm getAddForm(IWContext iwc, String errorMessage) {
 		ApplicationForm app = new ApplicationForm();
-		app.setTitle(KEY_TITLE_ADD, "Skapa ny momssats");
+		app.setLocalizedTitle(KEY_TITLE_ADD, "Skapa ny momssats");
 		
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.add(getFormLabel(KEY_PERIOD, "Period"));
-		table.add(getFormTextInput(PARAMETER_PERIOD_FROM, getParameter(iwc, PARAMETER_PERIOD_FROM), 60), 2, 1);
-		table.add(getSmallText(" - "), 2, 1);
-		table.add(getFormTextInput(PARAMETER_PERIOD_TO, getParameter(iwc, PARAMETER_PERIOD_TO), 60), 2, 1);
-		table.add(getFormLabel(KEY_DESCRIPTION, "Benämning"), 1, 2);
-		table.add(getFormTextInput(PARAMETER_DESCRIPTION, getParameter(iwc, PARAMETER_DESCRIPTION), 120), 2, 2);
-		table.add(getFormLabel(KEY_VAT_PERCENT, "Procentsats"), 1, 3);
-		table.add(getFormTextInput(PARAMETER_VAT_PERCENT, getParameter(iwc, PARAMETER_VAT_PERCENT), 40), 2, 3);
-		table.add(getFormLabel(KEY_PAYMENT_FLOW_TYPE, "Ström"), 1, 4);
+		table.add(getLocalizedLabel(KEY_PERIOD, "Period"));
+		table.add(getTextInput(PARAMETER_PERIOD_FROM, getParameter(iwc, PARAMETER_PERIOD_FROM), 60), 2, 1);
+		table.add(getText(" - "), 2, 1);
+		table.add(getTextInput(PARAMETER_PERIOD_TO, getParameter(iwc, PARAMETER_PERIOD_TO), 60), 2, 1);
+		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Benämning"), 1, 2);
+		table.add(getTextInput(PARAMETER_DESCRIPTION, getParameter(iwc, PARAMETER_DESCRIPTION), 120), 2, 2);
+		table.add(getLocalizedLabel(KEY_VAT_PERCENT, "Procentsats"), 1, 3);
+		table.add(getTextInput(PARAMETER_VAT_PERCENT, getParameter(iwc, PARAMETER_VAT_PERCENT), 40), 2, 3);
+		table.add(getLocalizedLabel(KEY_PAYMENT_FLOW_TYPE, "Ström"), 1, 4);
 		table.add(getPaymentFlowTypeDropdownMenu(iwc, PARAMETER_PAYMENT_FLOW_TYPE_ID,
 				getIntParameter(iwc, PARAMETER_PAYMENT_FLOW_TYPE_ID)), 2, 4);
-		table.add(getFormLabel(KEY_PROVIDER_TYPE, "Anordnartyp"), 1, 5);
+		table.add(getLocalizedLabel(KEY_PROVIDER_TYPE, "Anordnartyp"), 1, 5);
 		table.add(getProviderTypeDropdownMenu(iwc, PARAMETER_PROVIDER_TYPE_ID, 
 				getIntParameter(iwc, PARAMETER_PROVIDER_TYPE_ID)), 2, 5); 
 
@@ -320,8 +320,8 @@ public class VATEditor extends AccountingBlock {
 		app.setMainPanel(mainPanel);	
 		
 		ButtonPanel bp = new ButtonPanel();
-		bp.addButton(PARAMETER_SAVE, KEY_SAVE, "Spara");
-		bp.addButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
+		bp.addLocalizedButton(PARAMETER_SAVE, KEY_SAVE, "Spara");
+		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 		app.setButtonPanel(bp);
 		
 		return app;		

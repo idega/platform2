@@ -69,7 +69,7 @@ public class AccountingBlock extends CommuneBlock {
 	 * @param defaultText the default localized text
 	 * @author anders
 	 */
-	protected Text getFormLabel(String textKey, String defaultText) {
+	protected Text getLocalizedLabel(String textKey, String defaultText) {
 		return getSmallHeader(localize(textKey, defaultText) + ":");
 	}
 	
@@ -79,8 +79,17 @@ public class AccountingBlock extends CommuneBlock {
 	 * @param defaultText the default localized text
 	 * @author anders
 	 */
-	protected Text getFormText(String textKey, String defaultText) {
+	public Text getLocalizedText(String textKey, String defaultText) {
 		return getSmallText(localize(textKey, defaultText));
+	}
+	
+	/**
+	 * Returns a formatted and form text.
+	 * @param text the text string for the Text object
+	 * @author anders
+	 */
+	public Text getText(String text) {
+		return getSmallText(text);
 	}
 	
 	/**
@@ -89,7 +98,7 @@ public class AccountingBlock extends CommuneBlock {
 	 * @param text the text to set
 	 * @author anders
 	 */
-	protected TextInput getFormTextInput(String parameter, String text) {
+	protected TextInput getTextInput(String parameter, String text) {
 		return (TextInput) getStyledInterface(new TextInput(parameter, text));
 	}
 	
@@ -100,8 +109,8 @@ public class AccountingBlock extends CommuneBlock {
 	 * @param width the width of the text input
 	 * @author anders
 	 */
-	protected TextInput getFormTextInput(String parameter, String text, int width) {
-		TextInput ti = getFormTextInput(parameter, text);
+	protected TextInput getTextInput(String parameter, String text, int width) {
+		TextInput ti = getTextInput(parameter, text);
 		ti.setWidth("" + width);
 		return ti;
 	}
@@ -114,8 +123,8 @@ public class AccountingBlock extends CommuneBlock {
 	 * @param size the number of character in the text input
 	 * @author anders
 	 */
-	protected TextInput getFormTextInput(String parameter, String text, int width, int size) {
-		TextInput ti = getFormTextInput(parameter, text, width);
+	protected TextInput getTextInput(String parameter, String text, int width, int size) {
+		TextInput ti = getTextInput(parameter, text, width);
 		ti.setSize(width);
 		return ti;
 	}
@@ -127,7 +136,7 @@ public class AccountingBlock extends CommuneBlock {
 	 * @param defaultText the default localized text
 	 * @author anders
 	 */
-	protected SubmitButton getFormButton(String parameter, String textKey, String defaultText) {
+	protected SubmitButton getLocalizedButton(String parameter, String textKey, String defaultText) {
 		return getSubmitButton(new SubmitButton(parameter, localize(textKey, defaultText)));
 	}
 

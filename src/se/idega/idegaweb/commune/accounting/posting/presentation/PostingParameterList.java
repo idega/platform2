@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.5 2003/08/21 15:58:22 anders Exp $
+ * $Id: PostingParameterList.java,v 1.6 2003/08/24 06:50:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.5 2003/08/21 15:58:22 anders Exp $
+ * $Id: PostingParameterList.java,v 1.6 2003/08/24 06:50:02 anders Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -141,7 +141,7 @@ public class PostingParameterList extends AccountingBlock {
 		}
 			 		
 		
-		app.setTitle(KEY_HEADER, "Konteringlista");
+		app.setLocalizedTitle(KEY_HEADER, "Konteringlista");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getPostingTable(iwc));
 		app.setButtonPanel(getButtonPanel());
@@ -150,10 +150,10 @@ public class PostingParameterList extends AccountingBlock {
 
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel();
-		buttonPanel.addButton(PARAM_COPY, KEY_COPY, "Kopiera");
-		buttonPanel.addButton(PARAM_NEW, KEY_NEW, "Ny", editPage);
-		buttonPanel.addButton(PARAM_REMOVE, KEY_REMOVE, "Ta bort");
-		buttonPanel.addButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
+		buttonPanel.addLocalizedButton(PARAM_COPY, KEY_COPY, "Kopiera");
+		buttonPanel.addLocalizedButton(PARAM_NEW, KEY_NEW, "Ny", editPage);
+		buttonPanel.addLocalizedButton(PARAM_REMOVE, KEY_REMOVE, "Ta bort");
+		buttonPanel.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
 		return buttonPanel;
 	}
 	
@@ -165,13 +165,13 @@ public class PostingParameterList extends AccountingBlock {
 		PostingBusiness pBiz;
 		ListTable list = new ListTable(7);
 
-		list.setHeader(KEY_PERIOD, "Period", 1);
-		list.setHeader(KEY_ACTIVITY, "Verksamhet", 2);
-		list.setHeader(KEY_REG_SPEC, "Regelspec. typ", 3);
-		list.setHeader(KEY_COMPANY_TYPE, "Bolagstyp", 4);
-		list.setHeader(KEY_COMMUNE_BELONGING, "Kommuntillhörighet", 5);
-		list.setHeader(KEY_OWN_ENTRY, "Egen kontering", 6);
-		list.setHeader(KEY_DOUBLE_ENTRY, "Motkontering", 7);
+		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
+		list.setLocalizedHeader(KEY_ACTIVITY, "Verksamhet", 2);
+		list.setLocalizedHeader(KEY_REG_SPEC, "Regelspec. typ", 3);
+		list.setLocalizedHeader(KEY_COMPANY_TYPE, "Bolagstyp", 4);
+		list.setLocalizedHeader(KEY_COMMUNE_BELONGING, "Kommuntillhörighet", 5);
+		list.setLocalizedHeader(KEY_OWN_ENTRY, "Egen kontering", 6);
+		list.setLocalizedHeader(KEY_DOUBLE_ENTRY, "Motkontering", 7);
 		
 		
 		try {
@@ -212,17 +212,17 @@ public class PostingParameterList extends AccountingBlock {
 		table.setCellspacing(getCellspacing());
 		table.setWidth("75%");
 
-		table.add(getFormLabel(KEY_PERIOD_SEARCH, "Period"), 1, 1);
+		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 1);
 		table.add(getFromToDatePanel(PARAM_FROM, currentFromDate, PARAM_TO, currentToDate), 2, 1);
-		table.add(getFormButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 1);
+		table.add(getLocalizedButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 1);
 
 		return table;
 	}
 
 	private Table getFromToDatePanel(String param_from, Date date_from, String param_to, Date date_to) {
 		Table table = new Table();
-		TextInput fromDate = getFormTextInput(param_from, formatDateTemp(date_from, 6),  100, 10);
-		TextInput toDate = getFormTextInput(param_from, formatDateTemp(date_to, 6),  100, 10);
+		TextInput fromDate = getTextInput(param_from, formatDateTemp(date_from, 6),  100, 10);
+		TextInput toDate = getTextInput(param_from, formatDateTemp(date_to, 6),  100, 10);
 		table.add(fromDate, 1, 1);
 		table.add(new String("-"), 2, 1);
 		table.add(toDate, 3, 1);

@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.7 2003/08/21 15:58:22 anders Exp $
+ * $Id: VATRegulations.java,v 1.8 2003/08/24 06:50:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * VAT regulations for providers. 
  * This class is replaced by VATEditor.
  * <p>
- * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/24 06:50:02 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class VATRegulations extends AccountingBlock {
 
@@ -73,7 +73,7 @@ public class VATRegulations extends AccountingBlock {
 	 */	
 	private void viewDefaultForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
-		app.setTitle(KEY_TITLE, "Momssats");
+		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setMainPanel(getVATList());
 		app.setButtonPanel(getButtonPanel());
 		add(app);
@@ -84,11 +84,11 @@ public class VATRegulations extends AccountingBlock {
 	 */
 	private ListTable getVATList() {
 		ListTable list = new ListTable(5);
-		list.setHeader(KEY_PERIOD, "Period", 1);
-		list.setHeader(KEY_DESCRIPTION, "Benämning", 2);
-		list.setHeader(KEY_VAT_PERCENT, "Procentsats", 3);
-		list.setHeader(KEY_DIRECTION, "Ström", 4);
-		list.setHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
+		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
+		list.setLocalizedHeader(KEY_DESCRIPTION, "Benämning", 2);
+		list.setLocalizedHeader(KEY_VAT_PERCENT, "Procentsats", 3);
+		list.setLocalizedHeader(KEY_DIRECTION, "Ström", 4);
+		list.setLocalizedHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
 		
 		list.add("0301-");
 		list.add("Grundmoms");

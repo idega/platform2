@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.6 2003/08/21 15:58:22 anders Exp $
+ * $Id: PostingParameterListEditor.java,v 1.7 2003/08/24 06:50:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -38,10 +38,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.6 2003/08/21 15:58:22 anders Exp $
+ * $Id: PostingParameterListEditor.java,v 1.7 2003/08/24 06:50:02 anders Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -154,10 +154,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Table postingForm = getPostingForm(iwc, pp);
 					
 		ButtonPanel buttonPanel = new ButtonPanel();
-		buttonPanel.addButton(PARAM_SAVE, KEY_SAVE, "Spara");
-		buttonPanel.addButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
+		buttonPanel.addLocalizedButton(PARAM_SAVE, KEY_SAVE, "Spara");
+		buttonPanel.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
 		
-		app.setTitle(KEY_HEADER, "Skapa/Ändra konteringlista");
+		app.setLocalizedTitle(KEY_HEADER, "Skapa/Ändra konteringlista");
 		app.setSearchPanel(topPanel);
 		app.setMainPanel(postingForm);
 		app.setButtonPanel(buttonPanel);
@@ -177,17 +177,17 @@ public class PostingParameterListEditor extends AccountingBlock {
 		table.setWidth("75%");
 		Date dd = Date.valueOf("2003-01-01");
 		
-		table.add(getFormLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
-		table.add(getSmallText(formatDateTemp(pp != null ? pp.getPeriodeFrom() : dd, 4)), 2, 1);
+		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
+		table.add(getText(formatDateTemp(pp != null ? pp.getPeriodeFrom() : dd, 4)), 2, 1);
 	
-		table.add(getFormLabel(KEY_TO_DATE, "Tom datum"),3 ,1);
-		table.add(getSmallText(formatDateTemp(pp != null ? pp.getPeriodeTo(): dd, 4)), 4, 1);
+		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,1);
+		table.add(getText(formatDateTemp(pp != null ? pp.getPeriodeTo(): dd, 4)), 4, 1);
 
-		table.add(getFormLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,2);
-		table.add(getSmallText(formatDateTemp(pp != null ? pp.getChangedDate(): dd, 6)), 2, 2);
+		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,2);
+		table.add(getText(formatDateTemp(pp != null ? pp.getChangedDate(): dd, 6)), 2, 2);
 	
-		table.add(getFormLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
-		table.add(getSmallText(pp != null ? pp.getChangedSign(): ""), 4, 2);
+		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
+		table.add(getText(pp != null ? pp.getChangedSign(): ""), 4, 2);
 		
 		return table;	
 	}
@@ -234,58 +234,58 @@ public class PostingParameterListEditor extends AccountingBlock {
 		ListTable list1 = new ListTable(8);
 		ListTable list2 = new ListTable(8);
 
-		list1.setHeader(KEY_POST_ACCOUNT, "Konto", 1);
-		list1.setHeader(KEY_POST_LIABILITY, "Ansvar", 2);
-		list1.setHeader(KEY_POST_RESOURCE, "Resurs", 3);
-		list1.setHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
-		list1.setHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
-		list1.setHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
-		list1.setHeader(KEY_POST_PROJECT, "Projekt", 7);
-		list1.setHeader(KEY_POST_OBJECT, "Objekt", 8);
+		list1.setLocalizedHeader(KEY_POST_ACCOUNT, "Konto", 1);
+		list1.setLocalizedHeader(KEY_POST_LIABILITY, "Ansvar", 2);
+		list1.setLocalizedHeader(KEY_POST_RESOURCE, "Resurs", 3);
+		list1.setLocalizedHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
+		list1.setLocalizedHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
+		list1.setLocalizedHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
+		list1.setLocalizedHeader(KEY_POST_PROJECT, "Projekt", 7);
+		list1.setLocalizedHeader(KEY_POST_OBJECT, "Objekt", 8);
 
-		list2.setHeader(KEY_POST_ACCOUNT, "Konto", 1);
-		list2.setHeader(KEY_POST_LIABILITY, "Ansvar", 2);
-		list2.setHeader(KEY_POST_RESOURCE, "Resurs", 3);
-		list2.setHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
-		list2.setHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
-		list2.setHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
-		list2.setHeader(KEY_POST_PROJECT, "Projekt", 7);
-		list2.setHeader(KEY_POST_OBJECT, "Objekt", 8);
+		list2.setLocalizedHeader(KEY_POST_ACCOUNT, "Konto", 1);
+		list2.setLocalizedHeader(KEY_POST_LIABILITY, "Ansvar", 2);
+		list2.setLocalizedHeader(KEY_POST_RESOURCE, "Resurs", 3);
+		list2.setLocalizedHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
+		list2.setLocalizedHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
+		list2.setLocalizedHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
+		list2.setLocalizedHeader(KEY_POST_PROJECT, "Projekt", 7);
+		list2.setLocalizedHeader(KEY_POST_OBJECT, "Objekt", 8);
 		
-		list1.add(getFormTextInput(PARAM_ACCOUNT, pp != null ? pp.getPostingAccount() : "", 60, 6));
-		list1.add(getFormTextInput(PARAM_LIABILITY, pp != null ? pp.getPostingLiability() : "", 60, 10));
-		list1.add(getFormTextInput(PARAM_RESOURCE, pp != null ? pp.getPostingResource() : "", 60, 6));
-		list1.add(getFormTextInput(PARAM_ACTIVITY_CODE, pp != null ? pp.getPostingActivityCode() : "", 60, 4));
-		list1.add(getFormTextInput(PARAM_DOUBLE_ENTRY_CODE, pp != null ? pp.getPostingDoubleEntry() : "", 60, 6));
-		list1.add(getFormTextInput(PARAM_ACTIVITY_FIELD, pp != null ? pp.getPostingActivity() : "", 80, 20));
-		list1.add(getFormTextInput(PARAM_PROJECT, pp != null ? pp.getPostingProject() : "", 80, 20));
-		list1.add(getFormTextInput(PARAM_OBJECT, pp != null ? pp.getPostingProject() : "", 80, 20));
+		list1.add(getTextInput(PARAM_ACCOUNT, pp != null ? pp.getPostingAccount() : "", 60, 6));
+		list1.add(getTextInput(PARAM_LIABILITY, pp != null ? pp.getPostingLiability() : "", 60, 10));
+		list1.add(getTextInput(PARAM_RESOURCE, pp != null ? pp.getPostingResource() : "", 60, 6));
+		list1.add(getTextInput(PARAM_ACTIVITY_CODE, pp != null ? pp.getPostingActivityCode() : "", 60, 4));
+		list1.add(getTextInput(PARAM_DOUBLE_ENTRY_CODE, pp != null ? pp.getPostingDoubleEntry() : "", 60, 6));
+		list1.add(getTextInput(PARAM_ACTIVITY_FIELD, pp != null ? pp.getPostingActivity() : "", 80, 20));
+		list1.add(getTextInput(PARAM_PROJECT, pp != null ? pp.getPostingProject() : "", 80, 20));
+		list1.add(getTextInput(PARAM_OBJECT, pp != null ? pp.getPostingProject() : "", 80, 20));
 
-		list2.add(getFormTextInput(PARAM_DOUBLE_ACCOUNT, pp != null ? pp.getDoublePostingAccount() : "", 60, 6));
-		list2.add(getFormTextInput(PARAM_DOUBLE_LIABILITY, pp != null ? pp.getDoublePostingLiability() : "", 60, 10));
-		list2.add(getFormTextInput(PARAM_DOUBLE_RESOURCE, pp != null ? pp.getDoublePostingResource() : "", 60, 6));
-		list2.add(getFormTextInput(PARAM_DOUBLE_ACTIVITY_CODE, pp != null ? pp.getDoublePostingActivityCode() : "", 60, 4));
-		list2.add(getFormTextInput(PARAM_DOUBLE_DOUBLE_ENTRY_CODE, pp != null ? pp.getDoublePostingDoubleEntry() : "", 60, 6));
-		list2.add(getFormTextInput(PARAM_DOUBLE_ACTIVITY_FIELD, pp != null ? pp.getDoublePostingActivity() : "", 80, 20));
-		list2.add(getFormTextInput(PARAM_DOUBLE_PROJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
-		list2.add(getFormTextInput(PARAM_DOUBLE_OBJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
+		list2.add(getTextInput(PARAM_DOUBLE_ACCOUNT, pp != null ? pp.getDoublePostingAccount() : "", 60, 6));
+		list2.add(getTextInput(PARAM_DOUBLE_LIABILITY, pp != null ? pp.getDoublePostingLiability() : "", 60, 10));
+		list2.add(getTextInput(PARAM_DOUBLE_RESOURCE, pp != null ? pp.getDoublePostingResource() : "", 60, 6));
+		list2.add(getTextInput(PARAM_DOUBLE_ACTIVITY_CODE, pp != null ? pp.getDoublePostingActivityCode() : "", 60, 4));
+		list2.add(getTextInput(PARAM_DOUBLE_DOUBLE_ENTRY_CODE, pp != null ? pp.getDoublePostingDoubleEntry() : "", 60, 6));
+		list2.add(getTextInput(PARAM_DOUBLE_ACTIVITY_FIELD, pp != null ? pp.getDoublePostingActivity() : "", 80, 20));
+		list2.add(getTextInput(PARAM_DOUBLE_PROJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
+		list2.add(getTextInput(PARAM_DOUBLE_OBJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
 
 		try {
-			selectors.add(getFormLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
+			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
 			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, 
 				Integer.parseInt(pp != null ? pp.getActivity().getPrimaryKey().toString() : "0")), 2, 1);
 						
-			selectors.add(getFormLabel(KEY_REG_SPEC, "Regelspec.typ"), 1, 2);
+			selectors.add(getLocalizedLabel(KEY_REG_SPEC, "Regelspec.typ"), 1, 2);
 			selectors.add(regSpecSelector(iwc, PARAM_SELECTOR_REGSPEC, 
 											Integer.parseInt(pp != null ? 
 											pp.getRegSpecType().getPrimaryKey().toString() : "0")), 2, 2);
 	
-			selectors.add(getFormLabel(KEY_COMPANY_TYPE, "Bolagstyp"), 1, 3);
+			selectors.add(getLocalizedLabel(KEY_COMPANY_TYPE, "Bolagstyp"), 1, 3);
 			selectors.add(companyTypeSelector(iwc, PARAM_SELECTOR_COMPANY_TYPE, 
 											Integer.parseInt(pp != null ? 
 											pp.getCompanyType().getPrimaryKey().toString() : "0")), 2, 3);
 	
-			selectors.add(getFormLabel(KEY_COMMUNE_BELONGING, "Kommuntillhörighet:"), 1, 4);
+			selectors.add(getLocalizedLabel(KEY_COMMUNE_BELONGING, "Kommuntillhörighet:"), 1, 4);
 			selectors.add(communeBelongingSelector(iwc, PARAM_SELECTOR_COM_BELONGING, 
 											Integer.parseInt(pp != null ? 
 											pp.getCompanyType().getPrimaryKey().toString() : "0")), 2, 4);
@@ -293,12 +293,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}	
 
-		accounts.add(getFormText(KEY_OWN_ENTRY, "Egen kontering"), 1, 1);
+		accounts.add(getLocalizedText(KEY_OWN_ENTRY, "Egen kontering"), 1, 1);
 		accounts.add(list1, 1, 2);
-		accounts.add(getFormText(KEY_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
+		accounts.add(getLocalizedText(KEY_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
 		accounts.add(list2, 1, 4);
 		
-		table.add(getFormLabel(KEY_CONDITIONS, "Villkor"), 1, 1);
+		table.add(getLocalizedLabel(KEY_CONDITIONS, "Villkor"), 1, 1);
 		table.add(selectors, 1, 2);
 		table.add(accounts, 1, 3);
 		
