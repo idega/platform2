@@ -21,6 +21,7 @@ import com.idega.xml.XMLElement;
 public class QueryConditionPart implements QueryPart {
 
 	private String field = null;
+	private String entity = null;
 	private String type = null;
 	private String pattern = null;
 	private boolean lock = false;
@@ -39,13 +40,15 @@ public class QueryConditionPart implements QueryPart {
 		return   TYPES;
 	}
 	
-	public QueryConditionPart(String field, String type, String pattern){
+	public QueryConditionPart(String entity,String field, String type, String pattern){
+		this.entity = entity;
 		this.field = field;
 		this.type = type;
 		this.pattern = pattern;
 	}
 	
 	public QueryConditionPart(XMLElement xml){
+		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
 		field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
 		type = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
 		if(xml.hasChildren()){
@@ -60,6 +63,7 @@ public class QueryConditionPart implements QueryPart {
 	
 	public XMLElement getQueryElement() {
 		XMLElement el = new XMLElement(QueryXMLConstants.CONDITION);
+		el.setAttribute(QueryXMLConstants.ENTITY,entity);
 		el.setAttribute(QueryXMLConstants.FIELD,field);
 		el.setAttribute(QueryXMLConstants.TYPE,type);
 		XMLElement xmlPattern = new XMLElement(QueryXMLConstants.PATTERN);
@@ -71,6 +75,13 @@ public class QueryConditionPart implements QueryPart {
 		if(dynamic)
 			el.addContent(new XMLElement(QueryXMLConstants.DYNAMIC));
 		return el;
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getEntity() {
+		return field;
 	}
 
 	/**
@@ -94,6 +105,14 @@ public class QueryConditionPart implements QueryPart {
 		return type;
 	}
 
+
+	/**
+	* @param string
+	*/
+	public void setEntity(String string) {
+	  entity = string;
+	}
+	
 	/**
 	 * @param string
 	 */
@@ -116,13 +135,13 @@ public class QueryConditionPart implements QueryPart {
 	}
 	
 	public String encode(){
-		return this.field+";"+this.type+";"+this.pattern;
+		return this.entity+";"+this.field+";"+this.type+";"+this.pattern;
 	}
 	
 	public static QueryConditionPart decode(String encoded){
 		StringTokenizer toker = new StringTokenizer(encoded,";");
-		if(toker.countTokens()==3){
-			return new QueryConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken());
+		if(toker.countTokens()==4){
+			return new QueryConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken());
 		}
 		return null;
 	}
