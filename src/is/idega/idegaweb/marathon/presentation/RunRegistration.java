@@ -700,7 +700,9 @@ public class RunRegistration extends Block {
 					showPayment = false;
 				}
 				payBlue.setURL(URL);
+				payBlue.setTarget(Link.TARGET_NEW_WINDOW);
 				payGreen.setURL(URL);
+				payGreen.setTarget(Link.TARGET_NEW_WINDOW);
 			}
 	
 			buttonTable.add(backBlue, 1, 1);
