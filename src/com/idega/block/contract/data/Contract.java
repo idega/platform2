@@ -10,6 +10,9 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public java.lang.Integer getUserId();
  public java.sql.Date getValidFrom();
  public java.sql.Date getValidTo();
+ public java.lang.String getText();
+ public java.lang.String getXmlSignedData();
+ public java.lang.Boolean getSignedFlag();
  public void setCategoryId(java.lang.Integer p0);
  public void setCategoryId(int p0);
  public void setCreationDate(java.sql.Date p0);
@@ -26,4 +29,7 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public void setUserId(java.lang.Integer p0);
  public void setValidFrom(java.sql.Date p0);
  public void setValidTo(java.sql.Date p0);
+ public void setXmlSignedData(java.lang.String p0);
+ public void setText(java.lang.String p0);
+ public void setSignedFlag(Boolean p0);
 }
