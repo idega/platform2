@@ -22,7 +22,12 @@ public class MessageListener implements Runnable{
   private long threadSleep = 5000;//5 seconds
   private boolean runThread = false;
 
+  public MessageListener() {
+    start();
+  }
+
   public MessageListener(long interval) {
+    this();
     setInterval(interval);
   }
 
