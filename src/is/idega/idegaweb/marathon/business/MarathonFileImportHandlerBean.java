@@ -230,6 +230,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 				prm_sm
 				prm_
 				*/
+				
 				if ("S".equals(bolur)) {
 					bolur = IWMarathonConstants.PARAMETER_TSHIRT_S;
 				} else if ("M".equals(bolur)) {
@@ -244,8 +245,17 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 					System.out.println("Unknown tshirt size : "+bolur+" ("+nr+")");
 				}
 				
-				if (chip.length() < 5) {
+				String chipOwnership = "";
+				if ("2".equals(chip)) {
+					chipOwnership = IWMarathonConstants.PARAMETER_BUY_CHIP;
+				} else if ("1".equals(chip)) {
+					chipOwnership = IWMarathonConstants.PARAMETER_OWN_CHIP;
+				} else if ("3".equals(chip)) {
+					chipOwnership = IWMarathonConstants.PARAMETER_RENT_CHIP;
+				} else if (chip.length() < 5) {
 					chip = "";
+				} else {
+					chipOwnership = IWMarathonConstants.PARAMETER_OWN_CHIP;
 				}
 				
 
@@ -253,7 +263,7 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 					if (validLine) {
 						int userID = business.saveUser(nafn, kt, birth, gender, hfang, pnr, sveitarfelag, countryPK, simi, "", netfang);
 						if (!business.isRegisteredInRun(runID, userID)) {
-							business.saveRun(userID, Integer.toString(runID), Integer.toString(distanceID), Integer.toString(yearID), thoderni, bolur, chip, sveit, best, goal, locale);
+							business.saveRun(userID, Integer.toString(runID), Integer.toString(distanceID), Integer.toString(yearID), thoderni, bolur, chipOwnership, chip, sveit, best, goal, locale);
 						}
 						return true;
 					}
