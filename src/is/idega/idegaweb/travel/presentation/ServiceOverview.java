@@ -261,8 +261,10 @@ public class ServiceOverview extends TravelManager {
               delete.addParameter(actionParameter,"delete");
               delete.addParameter(deleteParameter,product.getID());
 
-            book = (Link) bookClone.clone();
-              book.addParameter(Booking.parameterProductId,product.getID());
+            book = LinkGenerator.getLink(iwc, product.getID(), Booking.class);
+              book.setImage(iwrb.getImage("buttons/book.gif"));
+            /* bookClone.clone();
+              book.addParameter(Booking.parameterProductId,product.getID());*/
 
             edit = (Link) editClone.clone();
               edit.addParameter(ServiceDesigner.parameterUpdateServiceId, product.getID());

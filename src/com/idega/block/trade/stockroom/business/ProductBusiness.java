@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.business;
 
+import com.idega.block.trade.stockroom.presentation.ProductCatalog;
 import is.idega.idegaweb.travel.presentation.ServiceViewer;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -374,6 +375,8 @@ public class ProductBusiness {
   public static void removeProductApplication(IWContext iwc, int supplierId) {
     iwc.removeApplicationAttribute(productsApplication+supplierId);
     iwc.getApplication().getIWCacheManager().invalidateCache(ServiceViewer.CACHE_KEY+supplierId);
+    System.err.println("productBusiness...invalidating...");
+    iwc.getApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
   }
 
   public static List getProducts(IWContext iwc, int supplierId) {

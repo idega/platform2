@@ -759,8 +759,10 @@ public class Booking extends TravelManager {
 
       int returner = tbf.handleInsert(iwc);
 
-      if (returner < 1) {
+      if (returner < 0) {
         displayForm(iwc, tbf.getErrorForm(iwc, returner));
+      }else if (returner == 0) {
+        displayForm(iwc);
       }else if (displayForm) {
         add(Text.BREAK);
         add(bookingInformation(iwc, returner));

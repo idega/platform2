@@ -56,9 +56,11 @@ public class DailyReport extends TravelManager {
   private String parameterBookingReport ="dailyBookingReport";
   private String parameterBookingReportType ="dailyBookingReportType";
   private String parameterHotelPickupPlaceReport ="dailyHotelPickupPlaceReport";
+  private String parameterUserReport ="dailyUserReport";
 
   private boolean viewAllProducts = false;
   private boolean hotelPickupReport = false;
+  private boolean userReport = false;
 
   private boolean closerLook = false;
 
@@ -104,6 +106,8 @@ public class DailyReport extends TravelManager {
       if (hppr != null) {
         if (hppr.equals(this.parameterHotelPickupPlaceReport)) {
           this.hotelPickupReport = true;
+        }else if (hppr.equals(this.parameterUserReport)) {
+          this.userReport = true;
         }
       }
 
@@ -151,21 +155,13 @@ public class DailyReport extends TravelManager {
 
       if (this.viewAllProducts) {
         if (products != null) {
-/*          UserBookingReporter ubr = new UserBookingReporter();
-            form.add("TEMP<br>");
-            form.add(ubr.getReport(iwc, this.supplier, this.stamp));
-            form.add("<br>/TEMP<br><br>");
-*/          Table table = getFullReport(iwc);
+          Table table = getFullReport(iwc);
           form.add(Text.BREAK);
           form.add(table);
         }
       }else {
         if (product != null) {
-/*            UserBookingReporter ubr = new UserBookingReporter();
-              form.add("TEMP<br>");
-              form.add(ubr.getReport(iwc, product, this.stamp));
-              form.add("<br>/TEMP<br><br>");
-*/            form.add(getContentHeader(iwc));
+            form.add(getContentHeader(iwc));
           Table table = getContentTable(iwc);
             form.add(table);
 
@@ -212,7 +208,7 @@ public class DailyReport extends TravelManager {
 
 
   public Table getTopTable(IWContext iwc) {
-      Table topTable = new Table(5,2);
+      Table topTable = new Table(5,3);
         topTable.setBorder(0);
         topTable.setWidth("90%");
 
@@ -249,10 +245,17 @@ public class DailyReport extends TravelManager {
           hotelPickupPlaceReportText.setText(iwrb.getLocalizedString("travel.hotel_pickup_list","Hotel pick-up list"));
           hotelPickupPlaceReportText.addToText(": ");
 
+      Text userReportText = (Text) theText.clone();
+          userReportText.setText(iwrb.getLocalizedString("travel.user_report","User report"));
+          userReportText.addToText(": ");
+
       RadioButton bookingReport = new RadioButton(parameterBookingReportType, parameterBookingReport);
       RadioButton hotelPickupPlaceReport = new RadioButton(parameterBookingReportType, parameterHotelPickupPlaceReport);
+      RadioButton userReport = new RadioButton(parameterBookingReportType, parameterUserReport);
       if (this.hotelPickupReport) {
         hotelPickupPlaceReport.setSelected();
+      } else if (this.userReport) {
+        userReport.setSelected();
       }else {
         bookingReport.setSelected();
       }
@@ -274,9 +277,11 @@ public class DailyReport extends TravelManager {
       topTable.add(bookingReport, 1, 2);
       topTable.add(hotelPickupPlaceReportText, 3, 2);
       topTable.add(hotelPickupPlaceReport, 3, 2);
+      topTable.add(userReportText, 1, 3);
+      topTable.add(userReport, 1, 3);
 
-      topTable.setAlignment(5,1,"right");
-      topTable.add(new SubmitButton(iwrb.getImage("/buttons/get.gif")),5,2);
+      topTable.setAlignment(5,3,"right");
+      topTable.add(new SubmitButton(iwrb.getImage("/buttons/get.gif")),5,3);
 
       return topTable;
   }
@@ -318,7 +323,10 @@ public class DailyReport extends TravelManager {
   }
 
   private Table getContentTable(IWContext iwc) {
-    if (this.hotelPickupReport) {
+    if (this.userReport) {
+      UserBookingReporter ubr = new UserBookingReporter();
+      return ubr.getReport(iwc, product, this.stamp);
+    }else if (this.hotelPickupReport) {
       HotelPickupReporter hpr = new HotelPickupReporter();
       return hpr.getHotelPickupReport(iwc, this.product, this.stamp);
     }else {
@@ -926,7 +934,10 @@ public class DailyReport extends TravelManager {
   }
 
   private Table getFullReport(IWContext iwc) {
-    if (this.hotelPickupReport) {
+    if (this.userReport) {
+      UserBookingReporter ur = new UserBookingReporter();
+      return ur.getReport(iwc, products, stamp);
+    }else if (this.hotelPickupReport) {
       HotelPickupReporter htp = new HotelPickupReporter();
       Collections.sort(products, new ProductComparator(ProductComparator.NUMBER));
       return htp.getHotelPickupReport(iwc, this.products, this.stamp);

@@ -111,7 +111,7 @@ public class HotelPickupReporter extends TravelManager {
       prod = (Product) products.get(j);
       bookings = TourBooker.getBookings(prod.getID(), stamp, true);
       bookingsList = getBookingList(bookings);
-      Collections.sort(bookingsList, new BookingComparator(BookingComparator.HOTELPICKUP_NAME));
+      Collections.sort(bookingsList, new BookingComparator(iwc, BookingComparator.HOTELPICKUP_NAME));
 
 
       try {

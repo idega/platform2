@@ -442,7 +442,7 @@ public class TourDesigner extends TravelManager {
             active_yearly.setSelected(timeframe.getIfYearly());
           }
 
-          name.setContent(ProductBusiness.getProductName(product));
+          name.setContent(ProductBusiness.getProductName(product, super._localeId));
           number.setContent(product.getNumber());
           description.setContent(ProductBusiness.getProductDescription(product, iwc));
 
@@ -551,6 +551,7 @@ public class TourDesigner extends TravelManager {
       String discountType = iwc.getParameter("discountType");
 
       String useImageId = iwc.getParameter("use_image_id");
+
 /*
       if (hotelPickup != null) {
         if (hotelPickup.equals("N")) hotelPickupAddress = "";

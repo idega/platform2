@@ -37,7 +37,6 @@ public class TourBusiness extends TravelStockroomBusiness {
   }
 
   private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String number,  String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats,Integer numberOfDays, Float kilometers, int estimatedSeatsUsed, int discountTypeId) throws Exception {
-
       boolean isError = false;
 
       /**
@@ -129,8 +128,9 @@ public class TourBusiness extends TravelStockroomBusiness {
       }
 
 //      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
-      if (serviceId == -1)
-//      System.err.println("Tour Business : UpdateTour() - serviceID == -1");
+//      if (serviceId == -1) {
+//        System.err.println("Tour Business : UpdateTour() - serviceID == -1");
+//      }
 
       if (serviceId != -1)
       try {
@@ -145,6 +145,7 @@ public class TourBusiness extends TravelStockroomBusiness {
           }else {
             tour = new Tour(tourId);
           }
+
           if (numberOfSeats != null)
             tour.setTotalSeats(numberOfSeats.intValue());
           if (minNumberOfSeats != null)

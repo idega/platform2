@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.presentation.IWContext;
 import com.idega.core.user.data.User;
 import com.idega.util.IsCollator;
 import com.idega.util.idegaTimestamp;
@@ -29,16 +30,20 @@ public class BookingComparator implements Comparator {
   public static final int USER = 105;
   public static final int OWNER = 106;
   public static final int DATE = 107;
+  public static final int AMOUNT = 108;
 
 
   private int sortBy;
+  private IWContext iwc;
 
-  public BookingComparator() {
+  public BookingComparator(IWContext iwc) {
       sortBy = NAME;
+      this.iwc = iwc;
   }
 
-  public BookingComparator(int toSortBy) {
+  public BookingComparator(IWContext iwc, int toSortBy) {
       sortBy = toSortBy;
+      this.iwc = iwc;
   }
 
   public void sortBy(int toSortBy) {
@@ -64,6 +69,8 @@ public class BookingComparator implements Comparator {
         case OWNER   : result = ownerSort(o1, o2);
         break;
         case DATE   : result = dateSort(o1, o2);
+        break;
+        case AMOUNT   : result = amountSort(o1, o2);
         break;
       }
 
@@ -93,6 +100,18 @@ public class BookingComparator implements Comparator {
 
     int one = p1.getTotalCount();
     int two = p2.getTotalCount();
+
+    if (one > two) return -1;
+    else if (one < two) return 1;
+    else return 0;
+  }
+
+  private int amountSort(Object o1, Object o2) {
+    Booking p1 = (Booking) o1;
+    Booking p2 = (Booking) o2;
+
+    float one = Booker.getBookingPrice(iwc, p1);
+    float two = Booker.getBookingPrice(iwc, p2);
 
     if (one > two) return -1;
     else if (one < two) return 1;

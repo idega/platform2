@@ -133,6 +133,7 @@ public class TourBookingForm extends TravelManager {
       if (tFrame != null) {
         pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
       }
+
       if (pPrices.length > 0) {
           int row = 1;
           int textInputSizeLg = 38;
@@ -367,10 +368,11 @@ public class TourBookingForm extends TravelManager {
                   if (_booking != null) {
                     if (entries != null) {
                       for (int j = 0; j < entries.length; j++) {
-                        if (entries[j].getProductPriceId() == pPrices[i].getID()) {
+                        if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          currentSum = (int) (currentCount * tsb.getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId));
+                          price = (int) tsb.getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
+                          currentSum = (int) (currentCount * price);
 
                           totalCount += currentCount;
                           totalSum += currentSum;
@@ -1276,6 +1278,9 @@ public class TourBookingForm extends TravelManager {
   }
 
 
+  /**
+   * return bookingId, 0 if nothing is done
+   */
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
@@ -1294,7 +1299,7 @@ public class TourBookingForm extends TravelManager {
         return -1;
       }
     }else {
-      return 1;
+      return 0;
     }
 
   }

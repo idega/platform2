@@ -341,6 +341,9 @@ public class Booker {
     return getBookings(products, stamp, null);
   }
   public static Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+    return getBookings(products, fromStamp, toStamp, null, null);
+  }
+  public static Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp, String columnName, String columnValue) {
     if (products != null) {
       int[] ids = new int[products.size()];
       Product prod;
@@ -348,7 +351,7 @@ public class Booker {
         prod = (Product) products.get(i);
         ids[i] = prod.getID();
       }
-      return getBookings(ids, fromStamp, toStamp,new int[]{});
+      return getBookings(ids, fromStamp, toStamp,new int[]{}, columnName, columnValue);
     }
     return new Booking[]{};
   }
@@ -370,6 +373,9 @@ public class Booker {
   }
 
   public static Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds) {
+    return getBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null, null);
+  }
+  public static Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue) {
     Booking[] returner = {};
     StringBuffer sql = new StringBuffer();
     try {
@@ -403,6 +409,10 @@ public class Booker {
             sql.append(") ");
           }
         }
+        if (columnName != null && columnValue != null) {
+          sql.append(" and ").append(columnName).append(" = '").append(columnValue).append("'");
+        }
+
         sql.append(" order by "+GeneralBooking.getBookingDateColumnName());
 
         returner = (GeneralBooking[]) (new GeneralBooking()).findAll(sql.toString());

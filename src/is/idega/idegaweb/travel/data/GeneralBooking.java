@@ -47,6 +47,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
     addAttribute(getReferenceNumberColumnName(), "reference number", true, true, String.class);
     addAttribute(getOwnerIdColumnName(), "owner id", true, true, Integer.class);
     addAttribute(getUserIdColumnName(), "user id", true, true, Integer.class);
+    addAttribute(getCreditcardAuthorizationNumberColumnName(), "cc auth", true, true, String.class);
 
     this.addManyToManyRelationShip(Reseller.class);
     this.addManyToManyRelationShip(Address.class);
@@ -218,6 +219,15 @@ public class GeneralBooking extends GenericEntity implements Booking{
     setColumn(getOwnerIdColumnName(), ownerId);
   }
 
+  public String getCreditcardAuthorizationNumber() {
+    return getStringColumnValue(getCreditcardAuthorizationNumberColumnName());
+  }
+
+  public void setCreditcardAuthorizationNumber(String number) {
+    setColumn(getCreditcardAuthorizationNumberColumnName(), number);
+  }
+
+
   public void insert() throws SQLException {
     CypherText cyph = new CypherText();
     String key = cyph.getKey(8);
@@ -249,6 +259,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public static String getReferenceNumberColumnName() {return "REFERENCE_NUMBER";}
   public static String getOwnerIdColumnName() {return "OWNER_ID";}
   public static String getUserIdColumnName() {return "IC_USER_ID";}
+  public static String getCreditcardAuthorizationNumberColumnName() {return "CC_AUTH_NUMBER";}
 
 
 }

@@ -182,6 +182,8 @@ public class ProductCategoryEditor extends IWAdminWindow {
       }
 
       tm.commit();
+      System.err.println("productCategoryEditor...invalidating...");
+      iwc.getApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
     }catch (Exception e) {
       e.printStackTrace(System.err);
       try {

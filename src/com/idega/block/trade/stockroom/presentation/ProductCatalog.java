@@ -30,6 +30,7 @@ public class ProductCatalog extends CategoryBlock{
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   private static final String _VIEW_PAGE = "prod_cat_view_page";
   private static final String _ORDER_BY ="prod_cat_order_by";
+  public static final String CACHE_KEY ="prod_cat_cache_key";
 
 
   int productsPerPage = 10;
@@ -71,9 +72,8 @@ public class ProductCatalog extends CategoryBlock{
 
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
 
-
-
   public ProductCatalog() {
+    super.setCacheable(CACHE_KEY, 999999999);
     super.setAutoCreate(false);
   }
 
@@ -85,6 +85,8 @@ public class ProductCatalog extends CategoryBlock{
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
+
+
 
   private void init(IWContext iwc) {
     bundle = getBundle(iwc);
@@ -450,4 +452,9 @@ public class ProductCatalog extends CategoryBlock{
       Collections.sort(products, new ProductComparator(orderBy, this._currentLocaleId));
     }
   }
+/*
+  protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
+    return cacheStatePrefix+getICObjectInstanceID();
+  }
+  */
 }

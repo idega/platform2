@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.transaction.IdegaTransactionManager;
+import javax.transaction.TransactionManager;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -260,7 +262,7 @@ public class PublicBooking extends Block  {
       table.setBorder(0);
 
       idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
-      TravelAddress[] depAddresses = ProductBusiness.getDepartureAddresses(product);
+      List depAddresses = ProductBusiness.getDepartureAddresses(product, true);
       TravelAddress depAddress = ProductBusiness.getDepartureAddress(product);
       Currency currency;
 
@@ -293,7 +295,7 @@ public class PublicBooking extends Block  {
       Text priceText = getBoldText("");
       Text currencyText = getBoldText("");
 
-      nameTextBold.setText(ProductBusiness.getProductName(product));
+      nameTextBold.setText(ProductBusiness.getProductName(product, iwc.getCurrentLocaleId()));
       supplierTextBold.setText(supplier.getName());
       departureFromTextBold.setText(depAddress.getName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
@@ -342,12 +344,13 @@ public class PublicBooking extends Block  {
         pTable.setCellspacing(0);
 
       int pRow = 1;
-      for (int l = 0; l < depAddresses.length; l++) {
-        departureFromTextBold = getBoldText(depAddresses[l].getName());
+      for (int l = 0; l < depAddresses.size(); l++) {
+        depAddress = (TravelAddress) depAddresses.get(l);
+        departureFromTextBold = getBoldText(depAddress.getName());
           departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
         pTable.add(departureFromTextBold, 1, pRow);
         for (int i = 0; i < timeframes.length; i++) {
-          prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
+          prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
           stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
           stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
           if (timeframes[i].getIfYearly()) {
@@ -368,7 +371,7 @@ public class PublicBooking extends Block  {
             nameOfCategory = getText(prices[j].getPriceCategory().getName());
               nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
             try {
-              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddresses[l].getID()) ) );
+              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
               currencyText = getBoldText(currency.getCurrencyAbbreviation());
               pTable.add(currencyText,5,pRow);
             }catch (ProductPriceException p) {
@@ -543,7 +546,7 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
-      table.add(getBoldTextWhite(ProductBusiness.getProductName(product)),2,row);
+      table.add(getBoldTextWhite(ProductBusiness.getProductName(product, iwc.getCurrentLocaleId())),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -762,7 +765,12 @@ public class PublicBooking extends Block  {
       String heimild = "";
 
       com.idega.block.tpos.business.TPosClient t = null;
+      GeneralBooking  gBooking = null;
+
+      TransactionManager tm = IdegaTransactionManager.getInstance();
       try {
+        tm.begin();
+
         float price = 0;
         int total = 0;
         int current = 0;
@@ -792,133 +800,131 @@ public class PublicBooking extends Block  {
           }
         }
 
+        TourBookingForm tbf = new TourBookingForm(iwc,product);
+        int bookingId = tbf.handleInsert(iwc);
 
-        System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
-        t = new com.idega.block.tpos.business.TPosClient(iwc);
-        System.err.println("price : "+price);
-        heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
-        //System.out.println("heimild = " + heimild);
-        System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());
-        success = true;
-      }
-      catch(com.idega.block.tpos.business.TPosException e) {
-        System.out.println("TPOS errormessage = " + e.getErrorMessage());
-        System.out.println("number = " + e.getErrorNumber());
-        System.out.println("display = " + e.getDisplayError());
-        int number = Integer.parseInt(e.getErrorNumber());
-        switch (number) {
-          case 6:
-          case 12:
-          case 19:
-            display.setText(iwrb.getLocalizedString("travel.creditcard_number_incorrect","Creditcard number incorrect"));
-            break;
-          case 10:
-          case 22:
-          case 74:
-            display.setText(iwrb.getLocalizedString("travel.creditcard_type_not_accepted","Creditcard type not accepted"));
-            break;
-          case 17:
-          case 18:
-            display.setText(iwrb.getLocalizedString("travel.creditcard_is_expired","Creditcard is expired"));
-            break;
-          case 48:
-          case 49:
-          case 50:
-          case 51:
-          case 56:
-          case 57:
-          case 76:
-          case 79:
-          case 2002:
-          case 2010:
-            display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
-            break;
-          case 7:
-          case 37:
-          case 69:
-          case 75:
-            display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
-            break;
-          /*case 69:
-            display.setText(e.getErrorMessage());
-            break;*/
-          case 20:
-          case 31:
-            display.setText(iwrb.getLocalizedString("travel.transaction_not_permitted","Transaction not permitted"));
-            break;
-          case 99999:
-            display.setText(iwrb.getLocalizedString("travel.booking_was_not_confirmed_try_again_later","Booking was not confirmed. Please try again later"));
-            break;
-          default:
-            display.setText(iwrb.getLocalizedString("travel.cannot_connect","Cannot communicate with server"));
-            break;
-        }
-
-        display.addToText(" ( "+e.getErrorNumber()+" )");
-      }
-      catch (Exception e) {
-        /**
-         * //@todo commenta út success= true
-         */
-        //success = true;
-        //debug("error : success er on");
-        //display.addToText("error : success er on");
-        e.printStackTrace(System.err);
-      }
-
-      if (success) {
         try {
-          int bookingId = -1;
-          TourBookingForm tbf = new TourBookingForm(iwc,product);
-          bookingId = tbf.handleInsert(iwc);
-
-          GeneralBooking gBooking = new GeneralBooking(bookingId);
-
-          table.add(getBoldTextWhite(gBooking.getName()));
-          table.add(getBoldTextWhite(", "));
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
-          table.add(Text.BREAK);
-          table.add(Text.BREAK);
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
-          table.add(getBoldTextWhite(" : "));
-          table.add(getBoldTextWhite(heimild));
-          table.add(Text.BREAK);
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
-          table.add(getBoldTextWhite(" : "));
-          table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
-          table.add(Text.BREAK);
-          //table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
-          //table.add(Text.BREAK);
-          table.add(Text.BREAK);
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
-
-
-
-          Link printVoucher = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
-            printVoucher.addParameter(VoucherWindow.parameterBookingId, bookingId);
-            printVoucher.setWindowToOpen(VoucherWindow.class);
-
-          if (t != null) {
-            com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(t, supplier);
-            iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
-
-            Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
-              printCCReceipt.setWindowToOpen(ReceiptWindow.class);
-            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
-            table.add(printCCReceipt, 1, 2);
+          System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
+          t = new com.idega.block.tpos.business.TPosClient(iwc);
+          heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
+          //System.out.println("heimild = " + heimild);
+          System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());
+        }catch(com.idega.block.tpos.business.TPosException e) {
+          System.out.println("TPOS errormessage = " + e.getErrorMessage());
+          System.out.println("number = " + e.getErrorNumber());
+          System.out.println("display = " + e.getDisplayError());
+          int number = Integer.parseInt(e.getErrorNumber());
+          switch (number) {
+            case 6:
+            case 12:
+            case 19:
+              display.setText(iwrb.getLocalizedString("travel.creditcard_number_incorrect","Creditcard number incorrect"));
+              break;
+            case 10:
+            case 22:
+            case 74:
+              display.setText(iwrb.getLocalizedString("travel.creditcard_type_not_accepted","Creditcard type not accepted"));
+              break;
+            case 17:
+            case 18:
+              display.setText(iwrb.getLocalizedString("travel.creditcard_is_expired","Creditcard is expired"));
+              break;
+            case 48:
+            case 49:
+            case 50:
+            case 51:
+            case 56:
+            case 57:
+            case 76:
+            case 79:
+            case 2002:
+            case 2010:
+              display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
+              break;
+            case 7:
+            case 37:
+            case 69:
+            case 75:
+              display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
+              break;
+            /*case 69:
+              display.setText(e.getErrorMessage());
+              break;*/
+            case 20:
+            case 31:
+              display.setText(iwrb.getLocalizedString("travel.transaction_not_permitted","Transaction not permitted"));
+              break;
+            case 99999:
+              display.setText(iwrb.getLocalizedString("travel.booking_was_not_confirmed_try_again_later","Booking was not confirmed. Please try again later"));
+              break;
+            default:
+              display.setText(iwrb.getLocalizedString("travel.cannot_connect","Cannot communicate with server"));
+              break;
           }
 
-          table.add(printVoucher,1,3);
-          table.setAlignment(1,1,"left");
-          table.setAlignment(1,2,"right");
-          table.setAlignment(1,3,"right");
-        }catch (Exception e) {
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.booking_not_successful_try_again_later","Booking not successful. Please try again later.")));
-          e.printStackTrace(System.err);
+          throw new Exception(e.getErrorMessage());
         }
 
+        gBooking = new GeneralBooking(bookingId);
+        gBooking.setCreditcardAuthorizationNumber(heimild);
+        gBooking.update();
+
+        tm.commit();
+        success = true;
+      }catch (Exception e) {
+        display.addToText(" ( "+e.getMessage()+" )");
+        e.printStackTrace(System.err);
+        try {
+          tm.rollback();
+        }catch (javax.transaction.SystemException se) {
+          se.printStackTrace(System.err);
+        }
+      }
+
+      if (success && gBooking != null) {
+        table.add(getBoldTextWhite(gBooking.getName()));
+        table.add(getBoldTextWhite(", "));
+        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
+        table.add(Text.BREAK);
+        table.add(Text.BREAK);
+        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
+        table.add(getBoldTextWhite(" : "));
+        table.add(getBoldTextWhite(heimild));
+        table.add(Text.BREAK);
+        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
+        table.add(getBoldTextWhite(" : "));
+        table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
+        table.add(Text.BREAK);
+        //table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
+        //table.add(Text.BREAK);
+        table.add(Text.BREAK);
+        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
+
+
+
+        Link printVoucher = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
+          printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
+          printVoucher.setWindowToOpen(VoucherWindow.class);
+
+        if (t != null) {
+          com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(t, supplier);
+          iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
+
+          Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
+            printCCReceipt.setWindowToOpen(ReceiptWindow.class);
+          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
+          table.add(printCCReceipt, 1, 2);
+        }
+
+        table.add(printVoucher,1,3);
+        table.setAlignment(1,1,"left");
+        table.setAlignment(1,2,"right");
+        table.setAlignment(1,3,"right");
       }else {
-        table.add(display);
+        add(display);
+        if (gBooking == null) {
+          debug("gBooking == null");
+        }
       }
 
     return table;
