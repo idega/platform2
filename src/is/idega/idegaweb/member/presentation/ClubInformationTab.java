@@ -179,7 +179,7 @@ public class ClubInformationTab extends UserGroupTab {
 	public void initializeFields() {
 		_numberField = new TextInput(_numberFieldName);
 		_ssnField = new TextInput(_ssnFieldName);
-		_ssnField.setAsIcelandicSSNumber("Vartöluprófun stemmir ekki");
+//		_ssnField.setAsIcelandicSSNumber("Vartöluprófun stemmir ekki");
 		_abbreviationField = new TextInput(_abrvFieldName);
 		_shortNameField = new TextInput(_shortNameFieldName);
 		_nameField = new TextInput(_nameFieldName);
