@@ -26,6 +26,8 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 
 	private String iWidth = Table.HUNDRED_PERCENT;
 	private int iCellpadding = 3;
+	private int iInputLength = 24;
+	private int iMaximumLength = 32;
 
 	public void present(IWContext iwc) {
 		if (iwc.isLoggedOn()) {
@@ -73,6 +75,8 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 				if (favorite != null) {
 					linkName.setContent(favorite.getName());
 				}
+				linkName.setLength(iInputLength);
+				linkName.setMaxlength(iMaxLength);
 				
 				TextInput URL = (TextInput) getInput(new TextInput(PARAMETER_URL));
 				if (favorite != null) {
@@ -82,6 +86,7 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 					}
 				}
 				URL.setDisabled(!canEdit);
+				URL.setLength(iInputLength);
 				
 				CheckBox quickLink = getCheckBox(PARAMETER_QUICK_LINK, "true");
 				if (favorite != null) {
@@ -165,5 +170,17 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 			log(ce);
 		}
 		return false;
+	}
+	/**
+	 * @param inputLength The inputLength to set.
+	 */
+	public void setInputLength(int inputLength) {
+		iInputLength = inputLength;
+	}
+	/**
+	 * @param maximumLength The maximumLength to set.
+	 */
+	public void setMaximumLength(int maximumLength) {
+		iMaximumLength = maximumLength;
 	}
 }
