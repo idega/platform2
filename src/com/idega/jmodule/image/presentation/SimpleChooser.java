@@ -91,8 +91,8 @@ import com.idega.util.idegaTimestamp;
     }
 
     public Link getNewImageLink(String mo){
-      Link L = new Link(mo,"/image/insertimage.jsp");
-      //Link L = new Link(mo,SimpleUploaderWindow.class);
+      //Link L = new Link(mo,"/image/insertimage.jsp");
+      Link L = new Link(mo,SimpleUploaderWindow.class);
       L.addParameter("submit","new");
       L.addParameter(sessImageParameterName,sessImageParameter);
       L.setTarget(target2);
