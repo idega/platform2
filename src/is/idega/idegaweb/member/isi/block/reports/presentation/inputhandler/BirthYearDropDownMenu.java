@@ -30,7 +30,7 @@ public class BirthYearDropDownMenu extends DropdownMenu implements InputHandler 
 		int beginningYear = 1900;				
 
 		addMenuElement(" ",iwrb.getLocalizedString("BirthYearsDropdownmenu.all_ages", "All birthYears"));
-		for (int i = beginningYear; i <= currentYear; i++) {
+		for (int i = currentYear; i >= beginningYear; i--) {
 			addMenuElement(i, Integer.toString(i));
 		}
 		
