@@ -97,6 +97,17 @@ public class ProductViewer extends Block {
       e.printStackTrace(System.err);
     }
 
+    if ( _product == null && _showRandom ) {
+      if ( categoryList != null ) {
+	List products = ProductBusiness.getProducts(categoryList);
+	if ( products != null && products.size() > 0 ) {
+	  int random = (int) Math.round(Math.random() * (products.size() - 1));
+	  this._product = (Product) products.get(random);
+	  this._productId = _product.getID();
+	}
+      }
+    }
+
     IWBundle coreBundle = iwc.getApplication().getCoreBundle();
     iEdit = coreBundle.getImage("shared/edit.gif");
   }
@@ -107,16 +118,6 @@ public class ProductViewer extends Block {
     try {
       AbstractProductViewerLayout layout = (AbstractProductViewerLayout) this._viewerLayoutClass.newInstance();
       PresentationObject po = null;
-
-      if ( _product == null && _showRandom ) {
-	if ( categoryList != null ) {
-	  List products = ProductBusiness.getProducts(categoryList);
-	  if ( products != null && products.size() > 0 ) {
-	    int random = (int) Math.round(Math.random() * (products.size() - 1));
-	    this._product = (Product) products.get(random);
-	  }
-	}
-      }
 
       if (this._product == null) {
 	po = layout.getDemo(this, iwc);
