@@ -23,6 +23,8 @@ import java.sql.*;
 
 public class SupplierManager {
 
+  public static String PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME = "default full price";
+
   public SupplierManager(){
   }
 
@@ -79,6 +81,14 @@ public class SupplierManager {
       }
     }
 
+    PriceCategory pCategory = new PriceCategory();
+      pCategory.setSupplierId(supp.getID());
+      pCategory.setType(PriceCategory.PRICETYPE_PRICE);
+      pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);
+      pCategory.setName("Full price");
+      pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
+    pCategory.insert();
+
     return supp;
 
   }
@@ -97,6 +107,9 @@ public class SupplierManager {
     supplier.setName(name);
     supplier.setDescription(description);
     supplier.update();
+    /**
+     * implementa
+     */
 /*
     supplier.reverseRemoveFrom(Address.getStaticInstance(Address.class));
 

@@ -54,6 +54,13 @@ public class ServiceDesigner extends TravelManager {
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
 
+      Window window = new Window("gimmi",PriceCategoryDesigner.class,TravelWindow.class);
+
+      Link link = new Link(window);
+        link.setText("gimmi");
+
+        add(link);
+
       if (supplier != null) {
 
         String action = modinfo.getParameter(ServiceAction);
@@ -669,17 +676,13 @@ public class ServiceDesigner extends TravelManager {
                 bOnline = false;
               }
 
-              System.err.println("TYPE = "+type[i]);
               if (type[i].equals(PriceCategory.PRICETYPE_DISCOUNT)) {
                 parentId = categoryIds[Integer.parseInt(discountOf[i])-1];
-                System.err.println("Reyni að nota parentId = "+parentId);
                 priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline, parentId);
-                System.err.println("...TOKST of fekk category = "+priceCategoryId);
                 sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
               }else if (type[i].equals(PriceCategory.PRICETYPE_PRICE)) {
                 priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline);
                 sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
-                System.err.println("Setti in category = "+priceCategoryId);
               }
 
               categoryIds[i] = priceCategoryId;
