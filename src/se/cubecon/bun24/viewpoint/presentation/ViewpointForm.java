@@ -23,16 +23,17 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2002/10/24 12:44:25 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
  * @see com.idega.presentation.ui
  * @see com.idega.user.business
  * @see com.idega.user.data
+ * @see javax.ejb
  * @see se.cubecon.bun24.viewpoint.business
  * @see se.cubecon.bun24.viewpoint.data
  */
