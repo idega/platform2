@@ -13,5 +13,6 @@ public abstract class QueryConstants {
 
 	public final static String PERMISSION_PRIVATE_QUERY = "private";
 	public final static String PERMISSION_PUBLIC_QUERY = "public";
+	public final static String ENTITY_PATH_DELIMITER = "#";
 
 }
