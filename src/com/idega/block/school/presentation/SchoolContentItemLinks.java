@@ -43,7 +43,6 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				
 		String manType = getSchoolBusiness(_iwc).getSchoolManagementTypeString(_school.getSchoolManagermentType());
 		if (manType != null) {
-			++row;
 			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
 			++row;
 			table.add(getText(_iwrb.getLocalizedString(manType)), 1, row);
