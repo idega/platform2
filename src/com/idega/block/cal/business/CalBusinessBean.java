@@ -1,0 +1,756 @@
+/*
+ * Created on Feb 4, 2004
+ */
+package com.idega.block.cal.business;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+
+import com.idega.block.cal.data.AttendanceEntity;
+import com.idega.block.cal.data.AttendanceEntityHome;
+import com.idega.block.cal.data.AttendanceMark;
+import com.idega.block.cal.data.AttendanceMarkHome;
+import com.idega.block.cal.data.CalendarEntry;
+import com.idega.block.cal.data.CalendarEntryHome;
+import com.idega.block.cal.data.CalendarEntryType;
+import com.idega.block.cal.data.CalendarEntryTypeHome;
+import com.idega.block.cal.data.CalendarLedger;
+import com.idega.block.cal.data.CalendarLedgerHome;
+import com.idega.block.cal.presentation.CalendarEntryCreator;
+import com.idega.block.category.business.CategoryBusiness;
+import com.idega.business.IBOServiceBean;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.presentation.IWContext;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
+
+/**
+ * Description: <br>
+ * Copyright: Idega Software 2004 <br>
+ * Company: Idega Software <br>
+ * @author 
+ */
+public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
+
+	//GET methods for Entries
+	/**
+	 * @return a calendar entry with the specific entryID
+	 */
+	public CalendarEntry getEntry(int entryID) {
+		CalendarEntry entry = null;
+		Integer id = new Integer(entryID);
+		try {
+			CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+			entry = entryHome.findByPrimaryKey(id);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return entry;		
+	}
+	/**
+	 * 
+	 */
+	public Collection getEntriesByTimestamp(Timestamp stamp) {
+		List list = null;
+		try {
+			CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+			list = new ArrayList(entryHome.findEntryByTimestamp(stamp));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;		
+	}
+	public Collection getEntriesBetweenTimestamps(Timestamp fromStamp, Timestamp toStamp) {
+		List list = null; 
+		try {
+			CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+			list = new ArrayList(entryHome.findEntriesBetweenTimestamps(fromStamp,toStamp));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	public Collection getEntriesByLedgerID(int ledgerID) {
+		List list = null;
+		try {
+			CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+			list = new ArrayList(entryHome.findEntriesByLedgerID(ledgerID));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	//GET methods for EntryTypes
+	/**
+	 * gets a CalendarEntryType with the name <code>entryTypeName</code>
+	 */
+	public CalendarEntryType getEntryTypeByName(String entryTypeName) {
+		CalendarEntryType entryType = null;
+//		CalendarEntryType tempEntry = null;
+		List list = null;
+		try {
+			CalendarEntryTypeHome typeHome = (CalendarEntryTypeHome) getIDOHome(CalendarEntryType.class);
+			list = new ArrayList(typeHome.findTypeByName(entryTypeName));
+			entryType = (CalendarEntryType) list.get(0);
+			return entryType;
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	/**
+	 * 
+	 */
+	public List getAllEntryTypes() {
+		List types = null;
+		try {
+			CalendarEntryTypeHome typeHome = (CalendarEntryTypeHome) getIDOHome(CalendarEntryType.class);
+			types = new ArrayList(typeHome.findTypes());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return types;
+	}
+	
+	//GET methods for Ledger
+	/**
+	 * 
+	 * @param entryID
+	 * @return
+	 */
+	public CalendarLedger getLedger(int entryID) {
+		CalendarLedger ledger = null;
+		Integer id = new Integer(entryID);
+		try {
+			CalendarLedgerHome ledgerHome = (CalendarLedgerHome) getIDOHome(CalendarLedger.class);
+			ledger = ledgerHome.findByPrimaryKey(id);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return ledger;
+	}
+	
+	public int getLedgerIDByName(String name) {
+
+		CalendarLedger ledger =null;
+		int ledgerID = 0;
+		try {
+			CalendarLedgerHome ledgerHome = (CalendarLedgerHome) getIDOHome(CalendarLedger.class);
+			ledger = ledgerHome.findLedgerByName(name);			
+			ledgerID = ledger.getLedgerID();
+			return ledgerID;
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+	}
+	/**
+	 * 
+	 */
+	public List getAllLedgers() {
+		List ledgers = null;
+		try {
+			CalendarLedgerHome ledgerHome = (CalendarLedgerHome) getIDOHome(CalendarLedger.class);
+			ledgers = new ArrayList(ledgerHome.findLedgers()); 
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return ledgers;
+	}
+	//GET methods for Attendance
+	public AttendanceEntity getAttendanceEntity(int attendanceID) {
+		AttendanceEntity attendance = null;
+		Integer id = new Integer(attendanceID);
+		try {
+			AttendanceEntityHome attendanceHome = (AttendanceEntityHome) getIDOHome(AttendanceEntity.class);
+			attendance = attendanceHome.findByPrimaryKey(id);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return attendance;		
+	}
+	public AttendanceEntity getAttendanceByUserIDandEntry(int userID, CalendarEntry entry) {
+		AttendanceEntity attendance = null;
+		Timestamp stamp = entry.getDate();
+//		List list = null;
+		try {
+			AttendanceEntityHome attendanceHome = (AttendanceEntityHome) getIDOHome(AttendanceEntity.class);
+			attendance = attendanceHome.findAttendanceByUserIDandTimestamp(userID,stamp);
+//			attendance = (AttendanceEntity) list.get(0);
+			return attendance;
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+	public List getAttendancesByLedgerID(int ledgerID) {
+
+		List attendances = null;
+		try {
+			AttendanceEntityHome attendanceHome = (AttendanceEntityHome) getIDOHome(AttendanceEntity.class);
+			attendances = new ArrayList(attendanceHome.findAttendancesByLedgerID(ledgerID)); 
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return attendances;		
+	}
+	public int getNumberOfPractices(int ledgerID) {
+		List attendances = getAttendancesByLedgerID(ledgerID);
+		return attendances.size();
+	}
+	public List getAttendanceMarks(int userID, int ledgerID, String mark) {
+		List marks = null;
+		try {
+			AttendanceEntityHome attendanceHome = (AttendanceEntityHome) getIDOHome(AttendanceEntity.class);
+			marks = new ArrayList(attendanceHome.findAttendanceByMark(userID,ledgerID,mark));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return marks;
+	}
+	public List getAllMarks() {
+
+		List marks = null;
+		try {
+			AttendanceMarkHome markHome = (AttendanceMarkHome) getIDOHome(AttendanceMark.class);
+			marks = new ArrayList(markHome.findMarks()); 
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return marks;
+		
+	}
+	
+	public void deleteEntry(int entryID) {
+		CalendarEntry cal = getEntry(entryID);
+		if (cal != null) {
+			try {
+				cal.remove();
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+	}
+
+
+	/**
+	 * creates a new CalendarEntryType 
+	 * @param typeName
+	 */
+	public boolean createNewEntryType(String typeName) {
+
+		Iterator typeIter = getAllEntryTypes().iterator();
+		while(typeIter.hasNext()) {
+			CalendarEntryType type = (CalendarEntryType) typeIter.next();
+			if(type.getName().equals(typeName)) {
+				return false;
+			}
+		}
+		CalendarEntryType type = null;
+		try {
+			CalendarEntryTypeHome typeHome = (CalendarEntryTypeHome) getIDOHome(CalendarEntryType.class);
+			type = typeHome.create();
+			type.setName(typeName);
+			type.store();			
+		}
+		catch(Exception e) {
+			System.out.println("Couldn't add type: " + typeName);
+			return false;
+		}
+		return true;
+	
+		
+	}
+	/**
+	 * startDate and endDate have to be of the form  yyyy-MM-dd hh:mm:ss.S
+	 */
+	public void createNewEntry(String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description) {
+		Timestamp startTime = Timestamp.valueOf(startDate);		
+		//modifications of the time properties of the start timestamp
+		if(startHour != null || !startHour.equals("")) {
+			Integer sH =new Integer(startHour);		
+			startTime.setHours(sH.intValue());
+		}
+		if(startMinute != null || !startMinute.equals("")) {
+			Integer sM = new Integer(startMinute);
+			startTime.setMinutes(sM.intValue());
+		}
+		startTime.setSeconds(0);
+//		startTime.setNanos(0);
+		
+		Timestamp endTime = Timestamp.valueOf(endDate);
+		//modifications of the time properties of the end timestamp
+		if(endHour != null || !endHour.equals("")) {
+			Integer eH =new Integer(endHour);
+			endTime.setHours(eH.intValue());
+		}
+		if(endMinute != null || !endMinute.equals("")) {
+			Integer eM =new Integer(endMinute);
+			endTime.setMinutes(eM.intValue());
+		}
+		endTime.setSeconds(0);
+//		endTime.setNanos(0);
+		
+		GregorianCalendar startCal = new GregorianCalendar(startTime.getYear(),startTime.getMonth(),startTime.getDate(),startTime.getHours(),startTime.getMinutes());
+		GregorianCalendar endCal = new GregorianCalendar(endTime.getYear(),endTime.getMonth(),endTime.getDate(),endTime.getHours(),endTime.getMinutes());
+				
+		long start = startCal.getTimeInMillis();
+		long end = endCal.getTimeInMillis();
+		
+
+		long year365 = 365L*24L*60L*60L*1000L;
+		long year366 = 366L*24L*60L*60L*1000L;
+		long month31 = 31L*24L*60L*60L*1000L;
+		long month30 = 30L*24L*60L*60L*1000L;
+		long month29 = 29L*24L*60L*60L*1000L;
+		long month28 = 28L*24L*60L*60L*1000L;
+		long day = 24L*60L*60L*1000L;
+		
+	
+			while(start < end) {				
+				try {
+					CalendarEntryType entryType = getEntryTypeByName(type);
+					Integer entryTypePK = (Integer) entryType.getPrimaryKey();
+					Integer ledgerID = new Integer(ledger);
+					CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+					CalendarEntry entry = entryHome.create();
+					entry.setName(headline);
+					entry.setEntryTypeID(entryTypePK.intValue());
+					entry.setRepeat(repeat);
+					entry.setDate(startTime);
+					entry.setEndDate(endTime);
+//			entry.setAttendees(attendees);
+					entry.setLedgerID(ledgerID.intValue());
+					entry.setDescription(description);
+					entry.store();
+					
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+				if(repeat.equals(CalendarEntryCreator.yearlyFieldParameterName)) {
+					if(startTime.getYear()%4 == 0) {
+						start += year366;
+					}
+					else {
+						start += year365; //start up one year = 31536000000 milliseconds
+					}
+					startCal.set(startTime.getYear()+1,startTime.getMonth(),startTime.getDate());
+					
+				}
+				
+				else if(repeat.equals(CalendarEntryCreator.monthlyFieldParameterName)) {
+					//if December
+					if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
+						//add 1 to the year and set the month to January
+						startCal.set(startTime.getYear()+1,Calendar.JANUARY,startTime.getDate());
+					}
+					else {
+						int month = startTime.getMonth();
+						//if the month has 31 days
+						if(month == Calendar.JANUARY ||
+								month == Calendar.MARCH ||
+								month == Calendar.MAY ||
+								month == Calendar.AUGUST ||
+								month == Calendar.OCTOBER) {						
+							//and the date is the 31st
+							if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
+								//in this case the 2 months are added because the next months after
+								//January, March, May, August and October do not have the 31st!
+								startCal.set(startTime.getYear(),startTime.getMonth()+2,startTime.getDate());
+								start += month31*2L; //start up two 31 day months
+							}
+							else {
+								startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+								start += month31; //start up one 31 day month
+							}
+							
+						}
+						else if(startTime.getMonth() == Calendar.JULY) {	
+							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+							start += month31;//start up one 31 day month
+						}
+						
+						else if(startTime.getMonth() == Calendar.FEBRUARY) {							 
+							//leap year
+							if(startTime.getYear()%4 == 0) {
+								start += month29;//start up 29 day month
+							}
+							else {
+								//"ordinary" February
+								start += month28;//start up 28 day month
+							}
+							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+						}						
+						else {
+							//this case is for months APRIL, JUNE, SEPTEMBER and NOVEMBER
+							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+							start += month30;	//start up 30 day month						
+						}													
+					}					
+				}
+				else if(repeat.equals(CalendarEntryCreator.weeklyFieldParameterName)) {
+					
+				}
+				//if the last day of the month
+				else if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
+					//if the the last day of month and last month of year
+					if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
+						//add one to year, set month = January and day = 1
+						startCal.set(startTime.getYear()+1,Calendar.JANUARY,1);
+					}
+					else {
+						//if last day of month and not last month of year
+						//year is same, add 1 to month and day = 1
+						startCal.set(startTime.getYear(),startTime.getMonth()+1,1);
+					}		
+					start += day; //start up one day = 86400000 milliseconds
+				}
+				else {
+					//if not the last day of month
+					//and not the last month of year
+					//year is the same, month is the same, 1 added to day
+					startCal.set(startTime.getYear(),startTime.getMonth(),startTime.getDate()+1);
+					start += day; //start up one day = 86400000 milliseconds
+				}
+				
+				Date sd = startCal.getTime();
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
+				String f = format.format(sd);
+				
+				startTime = Timestamp.valueOf(f);
+				int year = sd.getYear() + 1900;
+				startTime.setYear(year);	
+				
+				
+			}			
+		
+	}
+	public void updateEntry(String entryID, String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String description) {
+
+		Timestamp startTime = Timestamp.valueOf(startDate);		
+		//modifications of the time properties of the start timestamp
+		if(startHour != null || !startHour.equals("")) {
+			Integer sH =new Integer(startHour);		
+			startTime.setHours(sH.intValue());
+		}
+		if(startMinute != null || !startMinute.equals("")) {
+			Integer sM = new Integer(startMinute);
+			startTime.setMinutes(sM.intValue());
+		}
+		startTime.setSeconds(0);
+//		startTime.setNanos(0);
+		
+		Timestamp endTime = Timestamp.valueOf(endDate);
+		//modifications of the time properties of the end timestamp
+		if(endHour != null || !endHour.equals("")) {
+			Integer eH =new Integer(endHour);
+			endTime.setHours(eH.intValue());
+		}
+		if(endMinute != null || !endMinute.equals("")) {
+			Integer eM =new Integer(endMinute);
+			endTime.setMinutes(eM.intValue());
+		}
+		endTime.setSeconds(0);
+//		endTime.setNanos(0);
+		
+		GregorianCalendar startCal = new GregorianCalendar(startTime.getYear(),startTime.getMonth(),startTime.getDate(),startTime.getHours(),startTime.getMinutes());
+		GregorianCalendar endCal = new GregorianCalendar(endTime.getYear(),endTime.getMonth(),endTime.getDate(),endTime.getHours(),endTime.getMinutes());
+		
+		long start = startCal.getTimeInMillis();
+		long end = endCal.getTimeInMillis();
+		
+
+		long year365 = 365L*24L*60L*60L*1000L;
+		long year366 = 366L*24L*60L*60L*1000L;
+		long month31 = 31L*24L*60L*60L*1000L;
+		long month30 = 30L*24L*60L*60L*1000L;
+		long month29 = 29L*24L*60L*60L*1000L;
+		long month28 = 28L*24L*60L*60L*1000L;
+		long day = 24L*60L*60L*1000L;
+		
+		Integer id = new Integer(entryID);
+		while(start < end) {				
+			try {
+				CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+				CalendarEntry entry = entryHome.findByPrimaryKey(id);
+				CalendarEntryType entryType = getEntryTypeByName(type);
+				Integer entryTypePK = (Integer) entryType.getPrimaryKey();
+				entry.setName(headline);
+				entry.setEntryTypeID(entryTypePK.intValue());
+				entry.setRepeat(repeat);
+				entry.setDate(startTime);
+				entry.setEndDate(endTime);
+//			entry.setAttendees(attendees);
+				entry.setDescription(description);
+				entry.store();
+				
+							
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			if(repeat.equals(CalendarEntryCreator.yearlyFieldParameterName)) {
+				if(startTime.getYear()%4 == 0) {
+					start += year366;
+				}
+				else {
+					start += year365; //start up one year = 31536000000 milliseconds
+				}
+				startCal.set(startTime.getYear()+1,startTime.getMonth(),startTime.getDate());
+				
+			}
+			
+			else if(repeat.equals(CalendarEntryCreator.monthlyFieldParameterName)) {
+				//if December
+				if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
+					//add 1 to the year and set the month to January
+					startCal.set(startTime.getYear()+1,Calendar.JANUARY,startTime.getDate());
+				}
+				else {
+					int month = startTime.getMonth();
+					//if the month has 31 days
+					if(month == Calendar.JANUARY ||
+							month == Calendar.MARCH ||
+							month == Calendar.MAY ||
+							month == Calendar.AUGUST ||
+							month == Calendar.OCTOBER) {						
+						//and the date is the 31st
+						if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
+							//in this case the 2 months are added because the next months after
+							//January, March, May, August and October do not have the 31st!
+							startCal.set(startTime.getYear(),startTime.getMonth()+2,startTime.getDate());
+							start += month31*2L; //start up two 31 day months
+						}
+						else {
+							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+							start += month31; //start up one 31 day month
+						}
+						
+					}
+					else if(startTime.getMonth() == Calendar.JULY) {	
+						startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+						start += month31;//start up one 31 day month
+					}
+					
+					else if(startTime.getMonth() == Calendar.FEBRUARY) {							 
+						//leap year
+						if(startTime.getYear()%4 == 0) {
+							start += month29;//start up 29 day month
+						}
+						else {
+							//"ordinary" February
+							start += month28;//start up 28 day month
+						}
+						startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+					}						
+					else {
+						//this case is for months APRIL, JUNE, SEPTEMBER and NOVEMBER
+						startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+						start += month30;	//start up 30 day month						
+					}													
+				}					
+			}
+			else if(repeat.equals(CalendarEntryCreator.weeklyFieldParameterName)) {
+				
+			}
+			//if the last day of the month
+			else if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
+				//if the the last day of month and last month of year
+				if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
+					//add one to year, set month = January and day = 1
+					startCal.set(startTime.getYear()+1,Calendar.JANUARY,1);
+				}
+				else {
+					//if last day of month and not last month of year
+					//year is same, add 1 to month and day = 1
+					startCal.set(startTime.getYear(),startTime.getMonth()+1,1);
+				}		
+				start += day; //start up one day = 86400000 milliseconds
+			}
+			else {
+				//if not the last day of month
+				//and not the last month of year
+				//year is the same, month is the same, 1 added to day
+				startCal.set(startTime.getYear(),startTime.getMonth(),startTime.getDate()+1);
+				start += day; //start up one day = 86400000 milliseconds
+			}
+			
+			Date sd = startCal.getTime();
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
+			String f = format.format(sd);
+			
+			startTime = Timestamp.valueOf(f);
+			int year = sd.getYear() + 1900;
+			startTime.setYear(year);	
+			
+			
+		}			
+		
+		
+		try {
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	public void createNewLedger(String name, int groupID, String coachName) {
+		IWContext iwc = IWContext.getInstance();
+		Collection users = null;
+		Group group = null;
+		User user = null;
+		User coach = null;
+		
+		
+		try {
+			group = getGroupBusiness(iwc).getGroupByGroupID(groupID);
+			users = this.getUserBusiness(iwc).getUsersInGroup(group);
+			coach = iwc.getCurrentUser();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		
+		try {
+			Integer coachID = (Integer) coach.getPrimaryKey();
+			CalendarLedgerHome ledgerHome = (CalendarLedgerHome) getIDOHome(CalendarLedger.class);
+			CalendarLedger ledger = ledgerHome.create();
+			ledger.setName(name);
+			ledger.setGroupID(groupID);
+			ledger.setCoachID(coachID.intValue());
+			ledger.store();
+			Iterator userIter = users.iterator();
+			while(userIter.hasNext()) {
+				user = (User) userIter.next();
+				ledger.addUser(user);
+			}
+			
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public void createNewMark(String markName, String description) {
+		try {
+			AttendanceMarkHome markHome = (AttendanceMarkHome) getIDOHome(AttendanceMark.class);
+			AttendanceMark mark = markHome.create();
+			mark.setMark(markName);
+			mark.setMarkDescription(description);
+			mark.store();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public Collection getUsersInLedger(int ledgerID) {
+		CalendarLedger ledger = getLedger(ledgerID);
+		Collection users = ledger.getUsers();
+//		User user = null;
+//		Iterator userIter = users.iterator();
+//		while(userIter.hasNext()) {
+//			user = (User) userIter.next();
+//		}	
+		return users;
+	}
+	
+	public void saveAttendance(int userID, int ledgerID, CalendarEntry entry, String mark) {
+		
+		try {
+			AttendanceEntity attendance = getAttendanceByUserIDandEntry(userID,entry);
+			if(attendance == null) {
+				AttendanceEntityHome attendanceHome = (AttendanceEntityHome) getIDOHome(AttendanceEntity.class);
+				attendance = attendanceHome.create();
+			}
+			Timestamp date = entry.getDate();
+			attendance.setUserID(userID);
+			attendance.setLedgerID(ledgerID);
+			attendance.setAttendanceDate(date);
+			attendance.setAttendanceMark(mark);
+			attendance.store();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public void updateAttendance(int attendanceID, int userID, int ledgerID, CalendarEntry entry, String mark) {
+		AttendanceEntity attendance = getAttendanceEntity(attendanceID);
+		try {
+			Timestamp date = entry.getDate();
+			attendance.setUserID(userID);
+			attendance.setLedgerID(ledgerID);
+			attendance.setAttendanceDate(date);
+			attendance.setAttendanceMark(mark);
+			attendance.store();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+
+	public void deleteEntryType(int typeID) {
+		CalendarEntryType type = CalendarFinder.getInstance().getEntryType(typeID);
+		if (type != null) {
+			try {
+				CalendarEntry[] entries = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumn(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(), typeID);
+				if (entries != null)
+					for (int a = 0; a < entries.length; a++) {
+//						entries[a].removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+						entries[a].remove();
+					}
+//				type.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+				type.remove();
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+	}
+
+
+
+	public boolean deleteBlock(int iObjectInstanceId) {
+		return CategoryBusiness.getInstance().deleteBlock(iObjectInstanceId);
+	}
+	public GroupBusiness getGroupBusiness(IWApplicationContext iwc) {
+		GroupBusiness groupBiz = null;
+		if (groupBiz == null) {
+			try {
+				groupBiz = (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return groupBiz;
+	}
+	protected UserBusiness getUserBusiness(IWApplicationContext iwc) {
+		UserBusiness userBusiness = null;
+		if (userBusiness == null) {
+			try {
+				userBusiness = (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return userBusiness;
+	}
+	
+
+	
+
+}
