@@ -1,6 +1,7 @@
 package is.idega.idegaweb.marathon.business;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -16,6 +17,6 @@ public interface RunBusiness extends com.idega.business.IBOService{
     public Collection getRuns();
     public Collection getYears(Group run);
     public Map getYearsMap(Group run);
-    public Collection getDistancesMap(Group run, String year);
+    public List getDistancesMap(Group run, String year);
     public Collection getCountries();
 }

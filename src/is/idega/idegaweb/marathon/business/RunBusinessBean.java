@@ -12,8 +12,10 @@ import java.sql.Date;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -556,10 +558,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 *            the year of the run
 	 * @return Collection of all distances for a specific run on a specific year
 	 */
-	public Collection getDistancesMap(Group run, String year) {
+	public List getDistancesMap(Group run, String year) {
 		IWContext iwc = IWContext.getInstance();
 		Map disMap = new LinkedHashMap();
-		Collection distances = null;
+		List distances = null;
 		Collection type = new ArrayList();
 		type.add(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
 		Iterator yearsIter = getYears(run).iterator();
@@ -567,13 +569,14 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			Group y = (Group) yearsIter.next();
 			if (y.getName().equals(year)) {
 				try {
-					distances = getGroupBiz().getChildGroupsRecursiveResultFiltered(y, type, true);
+					distances = new ArrayList(getGroupBiz().getChildGroupsRecursiveResultFiltered(y, type, true));
 				}
 				catch (Exception e) {
 					distances = null;
 				}
 			}
 		}
+		Collections.sort(distances, new RunDistanceComparator());
 		return distances;
 	}
 
