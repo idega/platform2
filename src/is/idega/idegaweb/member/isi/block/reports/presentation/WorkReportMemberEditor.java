@@ -634,28 +634,28 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
     
-    if (pathShortKey.equals(PERSONAL_ID))  {
-      String socialSecurityNumber = value.toString();
-      User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
-      // there are some users in the system without any social security number
-      if (socialSecurityNumber.length() == 0 || user == null) {
-        personalIdnotCorrect = true;
-        return;
-      }
-      WorkReportMember wrMember = findWorkReportMember(socialSecurityNumber, iwac);
-      // if you have found the member that you are currently editing do not complain please
-      if (wrMember != null &&
-          ! (member.getPrimaryKey().equals(wrMember.getPrimaryKey())) ) {
-        memberAlreadyExist = true;
-        return;
-      }
-
-      member.setName(user.getName());
-      member.setUserId(((Integer) user.getPrimaryKey()).intValue());
-      member.setPersonalId(value.toString());
-      
-    }
-    else if (pathShortKey.equals(STREET_NAME))  {
+//    if (pathShortKey.equals(PERSONAL_ID))  {
+//      String socialSecurityNumber = value.toString();
+//      User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
+//      // there are some users in the system without any social security number
+//      if (socialSecurityNumber.length() == 0 || user == null) {
+//        personalIdnotCorrect = true;
+//        return;
+//      }
+//      WorkReportMember wrMember = findWorkReportMember(socialSecurityNumber, iwac);
+//      // if you have found the member that you are currently editing do not complain please
+//      if (wrMember != null &&
+//          ! (member.getPrimaryKey().equals(wrMember.getPrimaryKey())) ) {
+//        memberAlreadyExist = true;
+//        return;
+//      }
+//
+//      member.setName(user.getName());
+//      member.setUserId(((Integer) user.getPrimaryKey()).intValue());
+//      member.setPersonalId(value.toString());
+//      
+//    }
+    if (pathShortKey.equals(STREET_NAME))  {
       member.setStreetName(value.toString());
     }
     else if(pathShortKey.equals(POSTAL_CODE_ID))  {
