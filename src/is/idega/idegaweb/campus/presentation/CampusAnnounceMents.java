@@ -35,7 +35,7 @@ public class CampusAnnounceMents extends PresentationObjectContainer {
       news.setWidth("100%");
       news.setShowOnlyDates(true);
       news.setHeadlineAsLink(true);
-      news.setHeadlineImageURL("/pics/news_icon.gif");
+      news.setHeadlineImageURL("/shared/news_icon.gif");
       news.setShowMoreButton(true);
     add(news);
 
