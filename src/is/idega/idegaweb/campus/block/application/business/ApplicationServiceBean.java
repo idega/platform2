@@ -15,6 +15,7 @@ import is.idega.idegaweb.campus.block.application.data.CurrentResidencyHome;
 import is.idega.idegaweb.campus.block.application.data.SpouseOccupation;
 import is.idega.idegaweb.campus.block.application.data.SpouseOccupationHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
@@ -926,6 +927,39 @@ import com.idega.util.IWTimestamp;
 				r = iwrb.getLocalizedString("garbage", "Garbage");
 			
 			return r;
+		}
+		
+		public boolean confirmOnWaitingList(Integer waitingListId, boolean stayOnList) {
+		    try {
+		      WaitingList li = ((WaitingListHome)IDOLookup.getHome(WaitingList.class)).findByPrimaryKey((waitingListId));
+		      if (stayOnList) {
+		        li.setRemovedFromList(WaitingListBMPBean.NO);
+		        li.setLastConfirmationDate(IWTimestamp.getTimestampRightNow());
+		      }
+		      else
+		        li.setRemovedFromList(WaitingListBMPBean.YES);
+		      li.store();
+		      return(true);
+		    }
+		    catch(Exception e) {
+		      e.printStackTrace();
+		      return(false);
+		    }
+		  }
+		
+		public void storePhoneAndEmail(Integer campusApplicationID,String phone,String email){
+			
+			try {
+				CampusApplication app = getCampusApplicationHome().findByPrimaryKey(campusApplicationID);
+			
+				Applicant applicant = app.getApplication().getApplicant();
+				applicant.setResidencePhone(phone);
+				app.setEmail(email);
+				applicant.store();
+				app.store();
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 		}
 	}
 	

@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.40 2004/06/29 18:52:11 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.41 2004/07/05 14:50:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,7 +16,6 @@ import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
-import is.idega.idegaweb.campus.block.application.business.CampusReferenceNumberInfoHelper;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
@@ -580,34 +579,40 @@ public class ReferenceNumberInfo extends CampusBlock {
 		
 		if (confirm1 == null) {
 			if (wl1 != null) {
-				CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl1), false);
+				applicationService.confirmOnWaitingList(Integer.valueOf(wl1),false);
+				//CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl1), false);
 			}
 		}
 		else {
 			if (wl1 != null) {
-				CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl1), true);
+				applicationService.confirmOnWaitingList(Integer.valueOf(wl1),true);
+				//CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl1), true);
 			}
 		}
 		
 		if (confirm2 == null) {
 			if (wl2 != null) {
-				CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl2), false);
+				applicationService.confirmOnWaitingList(Integer.valueOf(wl2),false);
+				//CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl2), false);
 			}
 		}
 		else {
 			if (wl2 != null) {
-				CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl2), true);
+				applicationService.confirmOnWaitingList(Integer.valueOf(wl2),true);
+				//CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl2), true);
 			}
 		}
 		
 		if (confirm3 == null) {
 			if (wl3 != null) {
-				CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl3), false);
+				applicationService.confirmOnWaitingList(Integer.valueOf(wl3),false);
+				//CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl3), false);
 			}
 		}
 		else {
 			if (wl3 != null) {
-				CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl3), true);
+				applicationService.confirmOnWaitingList(Integer.valueOf(wl3),true);
+				//CampusReferenceNumberInfoHelper.stayOnWaitingList(Integer.parseInt(wl3), true);
 			}
 		}
 		
@@ -615,11 +620,12 @@ public class ReferenceNumberInfo extends CampusBlock {
 		return holder;
 	}
 
-	private void updateApplicantInfo(IWContext iwc, CampusApplicationHolder holder) {
+	private void updateApplicantInfo(IWContext iwc, CampusApplicationHolder holder)throws RemoteException {
 		String phone = iwc.getParameter("phone");
 		String email = iwc.getParameter("email");
-		if(email!=null && email.length()> 0 &&  email.indexOf("@")>0)				
-			CampusReferenceNumberInfoHelper.updatePhoneAndEmail(holder, phone, email);
+		if(email!=null && email.length()> 0 &&  email.indexOf("@")>0)	
+			applicationService.storePhoneAndEmail((Integer)holder.getCampusApplication().getPrimaryKey(),phone,email);
+			//CampusReferenceNumberInfoHelper.updatePhoneAndEmail(holder, phone, email);
 	}
 
 	private void addPersonalIDLookupResults(IWContext iwc) {

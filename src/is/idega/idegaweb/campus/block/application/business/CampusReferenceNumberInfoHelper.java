@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.20 2004/06/29 12:48:26 aron Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.21 2004/07/05 14:50:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,30 +9,11 @@
  */
 package is.idega.idegaweb.campus.block.application.business;
 
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
-
 import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
-import com.idega.block.application.data.Applicant;
-import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.contract.business.ContractService;
 import com.idega.business.IBOLookup;
-import com.idega.core.accesscontrol.business.LoginCreator;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.user.data.User;
-import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
-import com.idega.util.IWTimestamp;
 
 
 /**
@@ -40,6 +21,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class CampusReferenceNumberInfoHelper {
+	/*
   public static void updatePhoneAndEmail(CampusApplicationHolder holder, String phone, String email) {
     Applicant applicant = (Applicant)holder.getApplicant();
     applicant.setResidencePhone(phone);
@@ -59,7 +41,8 @@ public class CampusReferenceNumberInfoHelper {
       e.printStackTrace();
     }
   }
-
+  */
+/*
   public static boolean stayOnWaitingList(int waitingListId, boolean stayOnList) {
     try {
       WaitingList li = ((WaitingListHome)IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(new Integer(waitingListId));
@@ -77,7 +60,9 @@ public class CampusReferenceNumberInfoHelper {
       return(false);
     }
   }
+  */
 
+  /*
   public static List getUserLogin(String ssn) {
     String ref = ssn;
     Vector l = new Vector();
@@ -145,7 +130,7 @@ public class CampusReferenceNumberInfoHelper {
 
     return(l);
   }
-  
+  */
 	public ContractService getContractService(IWContext iwc) throws RemoteException{
 		return (ContractService) IBOLookup.getServiceInstance(iwc.getApplicationContext(),ContractService.class);
 	}

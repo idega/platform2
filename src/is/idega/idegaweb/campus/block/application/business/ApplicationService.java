@@ -56,5 +56,7 @@ public interface ApplicationService extends com.idega.business.IBOService
 	public CampusApplicationHolder getApplicationInfo(int applicationId);
 	public void storeApplicationSubject(String description,IWTimestamp expires) throws CreateException,RemoteException;
 	public String getStatus(String status,IWResourceBundle iwrb) throws RemoteException;
+	public boolean confirmOnWaitingList(Integer waitingListId, boolean stayOnList)throws RemoteException;
+	public void storePhoneAndEmail(Integer campusApplicationID,String phone,String email) throws RemoteException;
 	
 }
