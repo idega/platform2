@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
@@ -107,7 +109,7 @@ public class QueryResultViewer extends Block {
 		}
 	}
 	
-	private String initializeByParsing(IWContext iwc, IWResourceBundle resourceBundle) throws RemoteException {
+	private String initializeByParsing(IWContext iwc, IWResourceBundle resourceBundle) throws RemoteException, FinderException {
 		// request from self
 		if (iwc.isParameterSet(QUERY_ID_KEY)) {
 			queryId = Integer.parseInt(iwc.getParameter(QUERY_ID_KEY));
@@ -145,7 +147,7 @@ public class QueryResultViewer extends Block {
 			}
 		}
 		QueryService queryService = getQueryService();
-    QueryHelper queryHelper = queryService.getQueryHelper(queryId);
+    QueryHelper queryHelper = queryService.getQueryHelper(queryId, iwc);
     bridge = getQueryToSQLBridge(); 
     query = null;
     try {
@@ -404,10 +406,12 @@ public class QueryResultViewer extends Block {
 		while ( iterator.hasNext())	{
 			Group topGroup = (Group) iterator.next();
 			Collection childGroups = groupBusiness.getChildGroupsRecursive(topGroup);
-			Iterator childGroupsIterator = childGroups.iterator();
-			while (childGroupsIterator.hasNext())	{
-				Group group = (Group) childGroupsIterator.next();
-				groupIds.add(group.getPrimaryKey());
+			if (childGroups != null) {
+				Iterator childGroupsIterator = childGroups.iterator();
+				while (childGroupsIterator.hasNext())	{
+					Group group = (Group) childGroupsIterator.next();
+					groupIds.add(group.getPrimaryKey());
+				}
 			}
 		}
 		// create the where condition for user view

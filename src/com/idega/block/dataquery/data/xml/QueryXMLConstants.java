@@ -19,6 +19,7 @@ public abstract class QueryXMLConstants {
 	
 public final static String ID = "ID";
 public final static String ROOT = "query";
+public final static String SOURCE_QUERY = "source_query";
 public final static String SOURCE_ENTITY = "source_entity";
 public final static String RELATED_ENTITIES = "related_entities";
 public final static String ENTITY	= "entity";
@@ -72,6 +73,8 @@ public final static String SQL_RESULT = "result";
 public final static String SQL_RESULT_FIELD = "resultField";
 public final static String SQL_RESULT_TYPE = "resultType";
 public final static String SQL_RESULT_DESCRIPTION = "resultDescription";
+
+
 
 
 }
