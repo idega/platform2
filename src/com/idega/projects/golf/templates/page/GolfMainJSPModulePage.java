@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.6 2001/05/23 19:01:09 haffi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.7 2001/05/24 03:11:31 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,8 @@ public class GolfMainJSPModulePage extends MainPage {
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
+
+  protected boolean isAdmin = false;
 
   public GolfMainJSPModulePage() {
     super();
@@ -115,7 +117,6 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.add(getChat(),1,7);
     leftTable.add(getLinks(modinfo),1,9);
     leftTable.add(idega(),1,11);
-    //leftTable.add( getPollVoter() ,1,6);
 
     return leftTable;
   }
@@ -292,23 +293,12 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
 		public BoxReader getLinks(ModuleInfo modinfo){
-			/*LinkGroup group = new LinkGroup("#99CC99",new Image("/pics/templates/tenglar.gif"));
-			group.addLink("Samvinnuferða Landsýnarmótið - staða","http://www.oddur.is/toyota/toyota.htm");
-						//excel skjöl
-			group.addLink("Toyota Mótaröðinni: Karlar (excel)","/files/TOYOTAkarlar.xls");
-			group.addLink("Toyota Mótaröðinni: Konur (excel)","/files/TOYOTAkonur.xls");
-
-			group.addLink("Stigamót unglinga 2000: Piltar (excel)","/files/Piltar.xls");
-			group.addLink("Stigamót unglinga 2000: Stúlkur (excel)","/files/Stulkur.xls");
-			group.addLink("Stigamót unglinga 2000: Drengir (excel)","/files/Drengir.xls");
-			return group;*/
 
 			BoxReader box_office= new BoxReader("1",isAdmin(modinfo),3);
 				box_office.setBoxBorder(0);
 				box_office.setInnerBoxBorder(0);
 				box_office.setBoxWidth(148);
 				box_office.setNoIcons(true);
-				//box_office.setHeaderImage(new Image("/pics/uppl.gif"));
 				box_office.setBoxOutline(1);
 				box_office.setOutlineColor("8ab490");
 				box_office.setInBoxColor("FFFFFF");
@@ -332,15 +322,6 @@ public class GolfMainJSPModulePage extends MainPage {
 
         protected Login getLogin(){
           return new Login();
-        /*
-          if (getServletContext().getAttribute("login_module") != null)
-            return (Login)getServletContext().getAttribute("login_module");
-          else{
-            Login log = new Login();
-            getServletContext().setAttribute("login_module", log);
-            return log;
-            }
-           */
         }
 
         protected HeaderTable getGSIAssociates() {
@@ -351,7 +332,7 @@ public class GolfMainJSPModulePage extends MainPage {
             table.setHeadlineColor("#FFFFFF");
             table.setHeadlineLeft();
             table.setWidth(148);
-            table.setHeaderText(iwrb.getLocalizedString("arePartOf","We are part of"));
+            table.setHeaderText(iwrb.getLocalizedString("arePartOf","GSI is part of"));
 
 
 
@@ -385,15 +366,14 @@ public class GolfMainJSPModulePage extends MainPage {
       BasicPollVoter poll = new BasicPollVoter("/poll/results.jsp",true);
         poll.setConnectionAttributes("union_id",3);
         poll.setHeaderColor("#8ab490");
-//        poll.setColor1("#d6f1d6");
         poll.setColor1("#FFFFFF");
         poll.setHeadlineColor("#FFFFFF");
 	poll.setHeadlineSize(1);
         poll.setNumberOfShownPolls(3);
         poll.setHeadlineLeft();
-        poll.setAdminButtonURL("/pics/poll/pollstjori.gif");
-        poll.setSubmitButtonURL("/pics/formtakks/kjosa.gif");
-        poll.setOtherPollsImage(iwrb.getImage("tabs/formerresults.gif"));
+        poll.setAdminButtonURL("/pollmanager.gif");
+        poll.setSubmitButtonURL("/vote.gif");
+        poll.setOtherPollsImage(iwrb.getImage("buttons/formerresults.gif"));
 
         HeaderTable pollTable = new HeaderTable();
             pollTable.setBorderColor("#8ab490");
@@ -406,26 +386,7 @@ public class GolfMainJSPModulePage extends MainPage {
         pollTable.add(poll);
 
           return pollTable;
-        /*
-          if (isAdmin()){
-            if (getServletContext().getAttribute("admin_pollvoter_module") != null){
-              return (PollVoter)getServletContext().getAttribute("admin_pollvoter_module");
-            } else{
-                PollVoter poll = new PollVoter("/poll/results.jsp",true);
-                getServletContext().setAttribute("admin_pollvoter_module", poll);
-                return poll;
-              }
-          }else{
-              if (getServletContext().getAttribute("pollvoter_module") != null){
-               return (PollVoter)getServletContext().getAttribute("pollvoter_module");
-              } else{
-                 PollVoter poll2 = new PollVoter("/poll/results.jsp",false);
-                 getServletContext().setAttribute("pollvoter_module", poll2);
-                 return poll2;
-               }
-           }
-           */
-        }
+       }
 
 
         protected Table Center(){
@@ -435,26 +396,18 @@ public class GolfMainJSPModulePage extends MainPage {
         protected void initCenter(){
 
           centerTable = new Table(1,1);
-          //centerTable.setBorder(1);
-
           centerTable.setWidth("100%");
           centerTable.setHeight("100%");
           centerTable.setCellpadding(0);
           centerTable.setCellspacing(0);
-//          centerTable.setVerticalAlignment(1,1,"middle");
           centerTable.setAlignment(1,1, "center");
-//          centerTable.setAlignment(1,2, "center");
-//          centerTable.add(getHBanner(modinfo),1,1);
-
           setVerticalAlignment( "top" );
         }
 
 
         protected Table Right(ModuleInfo modinfo) throws SQLException,IOException{
-	        //getModuleInfo().getSession().setAttribute("union_id","3");
           Table rightTable = new Table(1,10);
           rightTable.setWidth("" + RIGHTWIDTH);
-//          rightTable.setHeight("100%");
           rightTable.setCellpadding(0);
           rightTable.setCellspacing(0);
 
@@ -471,32 +424,13 @@ public class GolfMainJSPModulePage extends MainPage {
 
           rightTable.setColumnAlignment(1, "center");
 
-          //
-//         rightTable.add(new Image("/pics/templates/toyotalogo.gif"),1,1);
-          //rightTable.add(new Image("/pics/templates/right2.gif","right"), 1,1);
-            rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt",148,288),1,1);
-          //poll
-         // rightTable.add(new Image("/pics/templates/samstarf.gif"),1,5);
-//		 rightTable.add(Sponsors(),1,5);
-
-//          rightTable.setHeight(3,"40");
-/*			Table pollBackTable = new Table(1,2);
-				pollBackTable.setWidth(RIGHTWIDTH);
-				pollBackTable.setBorder(0);
-				pollBackTable.setCellpadding(0);
-				pollBackTable.setCellspacing(0);
-				pollBackTable.setHeight(1,"22");
-				pollBackTable.setBackgroundImage(1,1,new Image("/pics/templates/pollHaegri.gif"));
-				pollBackTable.setColor(1,2,"#99CC99");
-				pollBackTable.setAlignment(1,2,"center");
-  */       rightTable.add( getPollVoter() ,1,3);
-//		  rightTable.add("&nbsp;",1,3);
-//          rightTable.add(idega(), 1, 6);
+          rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,1);
+          rightTable.add( getPollVoter() ,1,3);
 
           rightTable.add( getGSIAssociates(),1,5);
           rightTable.add(getGolfLinks(),1,7);
           rightTable.add(getYellowLine(),1,9);
-	  //rightTable.add(new PollVoter("/poll/results.jsp"),1,7);
+
 
           return rightTable;
         }
@@ -565,8 +499,6 @@ public class GolfMainJSPModulePage extends MainPage {
 
           Table linkTable = new Table(8,1);
 
-//          golfHeader.setBorder(1);
-//          linkTable.setBorder(1);
 
           golfHeader.setHeight( 1, "68");
           golfHeader.setHeight( 2, "16");
@@ -575,7 +507,7 @@ public class GolfMainJSPModulePage extends MainPage {
           golfHeader.setCellpadding(0);
           golfHeader.setCellspacing(0);
 
-        Image banBg = iwrb.getImage("banners/banner.gif");
+        Image banBg = iwrb.getImage("/mainpage/banner.gif");
          banBg.setWidth(720);
          banBg.setHeight(68);
 
@@ -590,37 +522,52 @@ public class GolfMainJSPModulePage extends MainPage {
           linkTable.setRowVerticalAlignment(1,"top");
 
           //Set inn linka
-//          Link club = new Link(new Image("/pics/templates/klubbar.gif"), "/clubs");
-          Link club = new Link(new Image("/pics/templates/klubbar.gif","Klúbbar",101,15), "/clubs/");
-//          Image club = new Image("/pics/templates/klubbar.gif","Klúbbar");
+          Image clubImage = iwrb.getImage("/mainpage/clubs.gif");
+         // clubImage.setWidth(101);
+          //clubImage.setHeight(15);
+         Link club = new Link(clubImage, "/clubs/");
           linkTable.add(club, 1, 1);
 
-         Link startingtimes = new Link(new Image("/pics/templates/rastimar.gif","Rástímar",85,15), "/start/search.jsp");
-         // Image startingtimes = new Image("/pics/templates/rastimar.gif","Rástímar");
+         Image startingtimesImage = iwrb.getImage("/mainpage/teetimes.gif");
+         // startingtimesImage.setWidth(85);
+          //startingtimesImage.setHeight(15);
+         Link startingtimes = new Link(startingtimesImage, "/start/search.jsp");
          linkTable.add(startingtimes, 2, 1);
 
-         Link handicap = new Link(new Image("/pics/templates/forgjof.gif","Forgjöf",85,15), "/handicap/");
-     //     Image handicap = new Image("/pics/templates/forgjof.gif","Forgjöf");
-          linkTable.add(handicap, 3, 1);
+         Image handicapImage = iwrb.getImage("/mainpage/handicap.gif");
+          //handicapImage.setWidth(85);
+          //handicapImage.setHeight(15);
+         Link handicap = new Link(handicapImage, "/handicap/");
+           linkTable.add(handicap, 3, 1);
 
-        Link motaskra = new Link(new Image("/pics/templates/motaskra.gif","Mótaskrá",85,15), "/tournament/");
-         //Image motaskra = new Image("/pics/templates/motaskra.gif","Mótaskrá");
+        Image modtaskraImage = iwrb.getImage("/mainpage/tournaments.gif");
+          //modtaskraImage.setWidth(85);
+          //modtaskraImage.setHeight(15);
+        Link motaskra = new Link(modtaskraImage, "/tournament/");
           linkTable.add(motaskra, 4, 1);
 
-//          Link sidanMin = new Link(new Image("/pics/templates/sidanmin.gif"), "/mypage/");
-//          linkTable.add(sidanMin, 5, 1);
-
-          Link umGSI = new Link(new Image("/pics/templates/umgsi.gif","um GSÍ",73,15), "/gsi/index.jsp");
-//          umGSI.setTarget("_blank");
+          Image umGSIImage = iwrb.getImage("/mainpage/aboutgsi.gif");
+          //umGSIImage.setWidth(73);
+          //umGSIImage.setHeight(15);
+          Link umGSI = new Link(umGSIImage, "/gsi/index.jsp");
           linkTable.add(umGSI, 5, 1);
 
-          Link spjallid = new Link(new Image("/pics/templates/spjallid.gif", "Spjallið",85,15), "/forum/index.jsp");
+          Image spjallidImage = iwrb.getImage("/mainpage/forums.gif");
+          //spjallidImage.setWidth(85);
+          //spjallidImage.setHeight(15);
+          Link spjallid = new Link(spjallidImage, "/forum/index.jsp");
           linkTable.add(spjallid, 6, 1);
 
-          Link index = new Link(new Image("/pics/templates/forsida.gif","Forsíða",85,15), "/index.jsp");
+          Image indexImage = iwrb.getImage("/mainpage/home.gif");
+          //indexImage.setWidth(85);
+          //indexImage.setHeight(15);
+          Link index = new Link(indexImage, "/index.jsp");
           linkTable.add(index, 7, 1);
 
-          linkTable.add( new Image("/pics/templates/takkaend2.gif", "",121,15), 8, 1 );
+          Image endImage = iwrb.getImage("/mainpage/linkend.gif");
+          //endImage.setWidth(121);
+          //endImage.setHeight(15);
+          linkTable.add( endImage, 8, 1 );
 
           golfHeader.setAlignment(1,2, "top");
           golfHeader.add(linkTable, 1, 2 );
@@ -637,14 +584,14 @@ public class GolfMainJSPModulePage extends MainPage {
           golfFooter.setCellpadding(0);
           golfFooter.setCellspacing(0);
 
-          golfFooter.add(new Image("/pics/templates/botn1.gif"),1,1);
-          golfFooter.add(new Link (new Image("/pics/templates/botn2.gif", "Heim"), "/index.jsp"),2,1);
-          golfFooter.add(new Image("/pics/templates/botn3.gif"),3,1);
-          Image back = new Image("/pics/templates/botn4.gif", "til baka");
+          golfFooter.add(iwrb.getImage("/mainpage/bottom1.gif"),1,1);
+          golfFooter.add(new Link (iwrb.getImage("/mainpage/bottom2.gif"), "/index.jsp"),2,1);
+          golfFooter.add(iwrb.getImage("/mainpage/bottom3.gif"),3,1);
+          Image back = iwrb.getImage("/mainpage/bottom4.gif");
           back.setAttribute("OnClick", "history.go(-1)");
           golfFooter.add(back,4,1);
-          golfFooter.add(new Image("/pics/templates/botn5.gif"),5,1);
-          golfFooter.add(new Link (new Image("/pics/templates/botn6.gif", "golf@idega.is"), "mailto: golf@idega.is"),6,1);
+          golfFooter.add(iwrb.getImage("/mainpage/bottom5.gif"),5,1);
+          golfFooter.add(new Link (iwrb.getImage("/mainpage/bottom6.gif"), "mailto: golf@idega.is"),6,1);
 
           return golfFooter;
       }
@@ -654,35 +601,13 @@ public class GolfMainJSPModulePage extends MainPage {
           Table bannerTable = new Table(1,1);
           bannerTable.setAlignment("center");
           bannerTable.setAlignment(1,1,"middle");
-          //bannerTable.setHeight(90);
           bannerTable.setCellpadding(10);
           bannerTable.setCellspacing(0);
 
 
-          //Link Hbanner = new Link(new Image("/pics/templates/auglsjova.gif", "Sjóvá Almennar"), "http://www.sjova.is");
-          //Hbanner.setTarget("_blank");
-          //bannerTable.add(Hbanner, 1, 1);
-
-/*          Link ISbanner = new Link(new Image("/pics/banners/golfkort.gif", "Íslandsbanki-FBA"), "http://www.isbank.is");
-		  ISbanner.setTarget("_blank");
-          bannerTable.add(ISbanner, 1, 1);
-*/
-//	boolean joe = isAdmin();
-		InsertBanner ib = new InsertBanner(3, isAdmin(modinfo));
+ 		InsertBanner ib = new InsertBanner(3, isAdmin(modinfo));
                   ib.setAdminButtonURL("/pics/jmodules/banner/bannerstjori.gif");
 		bannerTable.add(ib,1,1);
-/*
-			Table linkTable = new Table(3,1);
-			linkTable.setHeight("100");
-			linkTable.setWidth("100%");
-			linkTable.setVerticalAlignment("top");
-			.linkTable.setRowAlignment(1,"center");
-			linkTable.add(new Link(new Image("/pics/templates/akureyri.gif",""),"http://notendur.centrum.is/~gagolf/landsmot/index.html"),1,1);
-			linkTable.add(new Link(new Image("/pics/templates/husavik.gif",""),"http://golfhus.nett.is/landsmot1dagur.htm"),2,1);
-			linkTable.add(new Link(new Image("/pics/templates/saudarkroki.gif",""),"http://www.krokur.is/~gss/3flokkur.htm"),3,1);
-
-		  bannerTable.add(linkTable,1,1);
-*/
           return bannerTable;
       }
 
@@ -695,19 +620,19 @@ public class GolfMainJSPModulePage extends MainPage {
             table.setRightHeader(false);
             table.setHeadlineAlign("left");
             table.setWidth(148);
-            table.setHeaderText(iwb.getProperty("associates","Associates"));
+            table.setHeaderText(iwrb.getLocalizedString("associates","Associates"));
 
                 Table innerTable = new Table(1,7);
                   innerTable.setWidth("100%");
                   innerTable.setColumnAlignment(1,"center");
 
-                        Link one = new Link(new Image("/pics/templates/sjova.gif","Sjóvá Almennar"),"http://www.sjova.is");
-			Link two = new Link(new Image("/pics/templates/isbank.gif","Íslandsbanki"),"http://www.isbank.is");
-			Link four = new Link(new Image("/pics/templates/toyota.gif","Toyota"),"http://www.toyota.is");
-			Link six = new Link(new Image("/pics/templates/samvinn.gif","Samvinnuferðir"),"http://www.samvinn.is");
-			Link five = new Link(new Image("/pics/templates/ecco.gif","ecco"),"http://www.ecco.com");
-			Link three = new Link(new Image("/pics/templates/opinkerfi.gif","Opin Kerfi"),"http://www.opinkerfi.is");
-			Link seven = new Link(new Image("/pics/templates/euro.gif","Eurocard"),"http://www.europay.is");
+                        Link one = new Link(iwrb.getImage("/banners/sjova.gif"),"http://www.sjova.is");
+			Link two = new Link(iwrb.getImage("/banners/isbank.gif"),"http://www.isbank.is");
+			Link four = new Link(iwrb.getImage("/banners/toyota.gif"),"http://www.toyota.is");
+			Link six = new Link(iwrb.getImage("/banners/samvinn.gif"),"http://www.samvinn.is");
+			Link five = new Link(iwrb.getImage("/banners/ecco.gif"),"http://www.ecco.com");
+			Link three = new Link(iwrb.getImage("/banners/opinkerfi.gif"),"http://www.opinkerfi.is");
+			Link seven = new Link(iwrb.getImage("/banners/euro.gif"),"http://www.europay.is");
 
 			one.setTarget("_blank");
 			two.setTarget("_blank");
@@ -741,8 +666,7 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
 	public void add(ModuleObject objectToAdd) {
-		//centerTable.add(objectToAdd,1,2);
-			Center().add(objectToAdd,1,1);
+  	  Center().add(objectToAdd,1,1);
         }
 
 
@@ -817,6 +741,8 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
   public void main(ModuleInfo modinfo) throws Exception {
+    isAdmin = isAdmin(modinfo);
+
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
 
