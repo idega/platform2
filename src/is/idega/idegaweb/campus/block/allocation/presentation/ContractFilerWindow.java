@@ -86,14 +86,7 @@ import java.io.*;
 
 			if(fileId > 0){
 				String url = MediaBusiness.getMediaURL(fileId,iwc.getApplication());
-				/*System.err.println("Contract file url"+url);
-				Link L = new Link("pdf");
-				L.setURL("/servlet/MediaServlet");
-				L.addParameter(MediaServlet.getParameter(fileId));
-				add(L);
-				*/
 				p.setToRedirect(url,1);
-//			  p.setToRedirect("/servlet/pdf?&dir="+path+filename,1);
 				p.setParentToReload();
 			}
 			else{
