@@ -4272,7 +4272,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 				if (schoolTypeID == -1)
 					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
-				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
+				if (finalize)
+					getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
 			}
 
 			if (finalize) {
