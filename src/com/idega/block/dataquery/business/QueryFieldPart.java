@@ -7,6 +7,8 @@
 package com.idega.block.dataquery.business;
 
 import java.util.StringTokenizer;
+
+import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 
 /**
@@ -45,8 +47,10 @@ public class QueryFieldPart implements QueryPart {
 		name = xml.getAttribute(QueryXMLConstants.NAME).getValue();
 		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
 		columns = xml.getAttribute(QueryXMLConstants.PROPERTIES).getValue();
-		function = xml.getAttribute(QueryXMLConstants.FUNCTION).getValue();
-		function = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
+		XMLAttribute func =  xml.getAttribute(QueryXMLConstants.FUNCTION);
+		if(func!=null)
+			function = func.getValue();
+		typeClass = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
 		if(xml.hasChildren()){
 			XMLElement xmlDisplay = xml.getChild(QueryXMLConstants.DISPLAY);
 			display = xmlDisplay.getTextTrim();
