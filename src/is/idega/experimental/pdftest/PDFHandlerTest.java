@@ -54,6 +54,12 @@ public class PDFHandlerTest {
 		HashMap tagmap = new HashMap();
 		XmlPeer peer = new XmlPeer(ElementTags.ITEXT, "template");
 		tagmap.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "caretime");
+		peer.setContent("<caretime/> ");
+		tagmap.put(peer.getAlias(), peer);
+		
+				
 		peer = new XmlPeer(ElementTags.CHUNK, "name");
 		peer.setContent("<dummy /> ");
 		tagmap.put(peer.getAlias(), peer);
@@ -79,7 +85,8 @@ public class PDFHandlerTest {
 		System.out.println("Buffer " + fileName + " length: " + buffer.length());
 		MemoryInputStream in = new MemoryInputStream(buffer);
 		//FileUtil.createFile("/home/aron/javatest/"+fileName);
-		FileOutputStream out = new FileOutputStream(new File("/home/aron/javatest/" + fileName));
+//		FileOutputStream out = new FileOutputStream(new File("/home/aron/javatest/" + fileName));
+		FileOutputStream out = new FileOutputStream(new File("C:/Documents and Settings/Roar.GALILEO/My Documents/Work/Nacka/PKI/" + fileName));
 		int c;
 		while ((c = in.read()) != -1)
 			out.write(c);
@@ -91,16 +98,25 @@ public class PDFHandlerTest {
 		String newline = "\n";
 		xml.append("<template> ").append(newline);
 		xml.append("<name/> <newline/>").append(newline);;
-		xml.append("<name1/>: How do you do my friend <newline />").append(newline);;
+		xml.append("<name1/>: How do you do my friend <newline /><newline /><newline />").append(newline);;
 		xml.append("<name2/>: Im fine, and you ? <newline />").append(newline);;
-		xml.append("<name1/>: Yeah I'm hanging inthere ! <newline />").append(newline);;
+		xml.append("<name1/>: Yeah I'm hanging inthere         ! <newline />").append(newline);;
 		xml.append("<paragraph leading=\"18.0\" font=\"unknown\" align=\"Default\">").append(newline);;
+		xml.append("<list>");
+		xml.append("<listitem>Punkt 1</listitem>");
+		xml.append("<listitem>Punkt 2</listitem>");
+		xml.append("<listitem>Punkt 3</listitem>");
+		xml.append("</list>");		
 		xml.append("<name2/>: This is funky shit funking down town").append(newline);;
+		xml.append("Care time: <caretime/><newline/><newline/>").append(newline);;
 		xml.append("</paragraph>").append(newline);;
 		xml.append("<chunk font=\"Helvetica\" size=\"18.0\" fontstyle=\"normal\" red=\"0\" green=\"64\" blue=\"64\">").append(newline);;
 		xml.append("<name1/>: Heavy chunk of funk").append(newline);;
 		xml.append("</chunk>").append(newline);;
 		xml.append("</template>").append(newline);;
 		return xml.toString();
+	}
+	public String getXMLTemplate2() {
+		return "<template> <name/> <newline/><name1/>: How do you do my friend <newline /><name2/>: Im fine, and you ? <newline /><name1/>: Yeah I'm hanging inthere         ! <newline /><paragraph leading=\"18.0\" font=\"unknown\" align=\"Default\"><name2/>: This is funky shit funking down town</paragraph>Care time: <caretime/><chunk font=\"Helvetica\" size=\"18.0\" fontstyle=\"normal\" red=\"0\" green=\"64\" blue=\"64\"></chunk></template>";
 	}
 }
