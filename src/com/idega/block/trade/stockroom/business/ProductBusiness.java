@@ -16,6 +16,10 @@ import java.util.List;
 import com.idega.util.*;
 
 import com.idega.block.trade.stockroom.data.*;
+/**
+ * @todo losa við service;
+ */
+import is.idega.idegaweb.travel.data.Service;
 
 
 /**
@@ -34,6 +38,8 @@ public class ProductBusiness {
 
   public static String PARAMETER_LOCALE_DROP = "product_locale_drop";
   public static int defaultLocaleId = 1;
+
+  private static String productsApplication = "productsApplication_";
 
   public ProductBusiness() {
   }
@@ -177,6 +183,25 @@ public class ProductBusiness {
     return localeDrop;
   }
 
+
+  public static void removeProductApplication(IWContext iwc, int supplierId) {
+    iwc.removeApplicationAttribute(productsApplication+supplierId);
+  }
+
+  public static List getProducts(IWContext iwc, int supplierId) {
+    List temp = (List) iwc.getApplicationAttribute(productsApplication+supplierId);
+    if (temp == null) {
+      temp = getProducts(supplierId);
+      iwc.setApplicationAttribute(productsApplication+supplierId, temp);
+      return temp;
+    }else {
+      return temp;
+    }
+  }
+
+  /**
+   * @deprecated
+   */
   public static List getProducts(int supplierId) {
       List products = null;
 
@@ -184,12 +209,12 @@ public class ProductBusiness {
         String pTable = Product.getProductEntityName();
 
         StringBuffer sqlQuery = new StringBuffer();
-          sqlQuery.append("SELECT * FROM "+pTable);
+          sqlQuery.append("SELECT * FROM ").append(pTable);
           sqlQuery.append(" WHERE ");
-          sqlQuery.append(pTable+"."+Product.getColumnNameIsValid()+" = 'Y'");
+          sqlQuery.append(pTable).append(".").append(Product.getColumnNameIsValid()).append(" = 'Y'");
           if (supplierId != -1)
-          sqlQuery.append(" AND "+pTable+"."+Product.getColumnNameSupplierId()+" = "+supplierId);
-          sqlQuery.append(" order by "+Product.getColumnNameNumber());
+          sqlQuery.append(" AND ").append(pTable).append(".").append(Product.getColumnNameSupplierId()).append(" = ").append(supplierId);
+          sqlQuery.append(" order by ").append(Product.getColumnNameNumber());
 
         products =EntityFinder.findAll(Product.getStaticInstance(Product.class),sqlQuery.toString());
       }catch(SQLException sql) {
@@ -201,70 +226,8 @@ public class ProductBusiness {
 
 
   public static List getProducts(int supplierId, idegaTimestamp stamp) {
-/*    List products = null;
-
-      try {
-           //@todo Oracle support...
-
-System.err.println("getProducts 1");
-            idegaCalendar calendar = new idegaCalendar();
-
-            int dayOfWeek = calendar.getDayOfWeek(stamp.getYear(),stamp.getMonth(),stamp.getDay());
-            Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
-            Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
-            Product producter = (Product) Product.getStaticInstance(Product.class);
-
-            String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);
-            String Ttable = Timeframe.getTimeframeTableName();
-            String Ptable = Product.getProductEntityName();
-            String Stable = Supplier.getSupplierTableName();
-System.err.println("getProducts 2");
-
-            StringBuffer timeframeSQL = new StringBuffer();
-              timeframeSQL.append("SELECT "+Ptable+".* FROM  "+Ttable+", "+Ptable+","+middleTable);
-              timeframeSQL.append(" WHERE ");
-              timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Ptable+"."+producter.getIDColumnName()+" = "+middleTable+"."+producter.getIDColumnName());
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Ptable+"."+supplier.getIDColumnName()+" = "+supplierId);
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(" ( ");
-              timeframeSQL.append(Ttable+"."+timeframe.getYearlyColumnName()+" = 'N'");
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" <= '"+stamp.toSQLDateString()+"'");
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" >= '"+stamp.toSQLDateString()+"'");
-              timeframeSQL.append(" ) ");
-              timeframeSQL.append(" OR ");
-              timeframeSQL.append(" ( ");
-              timeframeSQL.append(Ttable+"."+timeframe.getYearlyColumnName()+" = 'Y'");
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" containing '-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" containing '-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
-              timeframeSQL.append(" ) ");
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
-              timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName());
-//              timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName()+","+Ptable+"."+Product.getColumnNameProductName());
-
-            System.err.println(timeframeSQL.toString());
-System.err.println("getProducts 3");
-            products = EntityFinder.findAll(Product.getStaticInstance(Product.class),timeframeSQL.toString());
-System.err.println("getProducts 4");
-
-
-      }catch(SQLException sql) {
-        sql.printStackTrace(System.err);
-      }
-
-    return products;
-*/
     return getProducts(supplierId, stamp, new idegaTimestamp(stamp));
-
   }
-
 
   public static List getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
     List products = null;
@@ -341,6 +304,16 @@ System.err.println("getProducts 4");
     return returner;
   }
 
+  public static idegaTimestamp getDepartureTime(Product product) throws SQLException {
+    return getDepartureTime(product.getID());
+  }
+
+  public static idegaTimestamp getDepartureTime(int productId) throws SQLException {
+    Service service = new Service(productId);
+    idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
+    return tempStamp;
+  }
+
   public static Address[] getDepartureAddresses(Product product) throws SQLException {
     Address[] tempAddresses = (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(uniqueDepartureAddressType))));
     return tempAddresses;
@@ -368,8 +341,9 @@ System.err.println("getProducts 4");
     }
   }
 
-  public static DropdownMenu getDropdownMenuWithProducts(int supplierId) {
-    List list = getProducts(supplierId);
+
+  public static DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int supplierId) {
+    List list = getProducts(iwc, supplierId);
     DropdownMenu menu = new DropdownMenu(((Product)Product.getStaticInstance(Product.class)).getEntityName());
     Product product;
     if (list != null && list.size() > 0) {

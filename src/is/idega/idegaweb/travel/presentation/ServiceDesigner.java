@@ -54,7 +54,7 @@ public class ServiceDesigner extends TravelManager {
   public static String NAME_OF_FORM = "service_designer_form";
   public static String NAME_OF_PRICE_CATEGORY_FORM = "service_price_category_form";
 
-  private static Boolean priceCategoryCreation;
+  private Boolean priceCategoryCreation;
   private String sessionNameServiceId = "tourDesignerSessionTourId";
 
 
@@ -143,8 +143,8 @@ public class ServiceDesigner extends TravelManager {
   }
 
   private void setService(IWContext iwc,int serviceId) throws SQLException{
-      service = new Service(serviceId);
-      iwc.setSessionAttribute(this.ServiceSessionAttribute, service);
+    service = new Service(serviceId);
+    iwc.setSessionAttribute(this.ServiceSessionAttribute, service);
   }
 
   private Service getService(IWContext iwc) {
@@ -164,9 +164,6 @@ public class ServiceDesigner extends TravelManager {
   private void priceCategoryCreation(IWContext iwc) throws SQLException {
       this.priceCategoryCreation = new Boolean(true);
       if (this.getService(iwc) != null) {
-
-
-
 
           Form form = new Form();
             form.setName(this.NAME_OF_PRICE_CATEGORY_FORM);

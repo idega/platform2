@@ -201,17 +201,12 @@ public class Booking extends TravelManager {
           dateText.addToText(":");
 
       DropdownMenu trip = null;
-      try {
-        if (supplier != null) {
-          trip = ProductBusiness.getDropdownMenuWithProducts(supplierId);
-        }else if (reseller != null) {
-          trip = new DropdownMenu(ResellerManager.getProductsForReseller(resellerId ));
-        }else if (product == null) {
-          trip = new DropdownMenu(ProductBusiness.getProducts(-1));
-        }
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-        trip = new DropdownMenu(Product.getProductEntityName());
+      if (supplier != null) {
+        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplierId);
+      }else if (reseller != null) {
+        trip = ResellerManager.getDropdownMenuWithProducts(iwc, resellerId);
+      }else if (product == null) {
+        trip = new DropdownMenu(ProductBusiness.getProducts(iwc, -1));
       }
 
       if (trip != null)

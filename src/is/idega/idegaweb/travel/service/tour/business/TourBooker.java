@@ -7,6 +7,7 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.service.tour.data.*;
 
 import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Title:        idegaWeb Travel
@@ -63,6 +64,26 @@ public class TourBooker extends Booker {
     }
 
 
+  }
+
+  public static Booking[] getBookings(int serviceId, idegaTimestamp stamp, boolean withHotelPickup) {
+    Booking[] bookings = getBookings(serviceId, stamp);
+    try {
+      List bings = new Vector();
+      TourBooking tb;
+      for (int i = 0; i < bookings.length; i++) {
+        tb = new TourBooking(bookings[i].getID());
+        if (tb.getHotelPickupPlaceID() != -1) {
+          bings.add(bookings[i]);
+        }
+      }
+      if (bookings.length > 0) {
+        bookings = (Booking[]) bings.toArray(new Booking[]{});
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return bookings;
   }
 
 }

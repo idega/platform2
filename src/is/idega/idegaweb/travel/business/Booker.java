@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.*;
 import java.sql.*;
 import com.idega.data.EntityControl;
@@ -29,6 +30,9 @@ import is.idega.idegaweb.travel.service.tour.data.*;
  */
 
 public class Booker {
+
+  private static String bookingPriceApplication = "bookingPriceApplication_";
+  private static String bookingEntryPriceApplication = "bookingEntryPriceApplication_";
 
   public Booker() {
   }
@@ -395,45 +399,70 @@ public class Booker {
     return returner;
   }
 
-  public static float getBookingEntryPrice(BookingEntry entry, Booking booking) {
+  public static float getBookingEntryPrice(IWContext iwc, BookingEntry entry, Booking booking) {
+    String applName = bookingEntryPriceApplication+booking.getID();
       float total = 0;
 
       try {
         ProductPrice pPrice;
-
-        pPrice = entry.getProductPrice();
-        total = entry.getCount() * TravelStockroomBusiness.getPrice(pPrice.getID(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), idegaTimestamp.getTimestampRightNow());
+        Float temp = (Float) iwc.getApplicationAttribute(applName);
+        if (temp == null) {
+          pPrice = entry.getProductPrice();
+          total = entry.getCount() * TravelStockroomBusiness.getPrice(pPrice.getID(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
+          iwc.setApplicationAttribute(applName, new Float(total));
+        }else {
+          total = temp.floatValue();
+          System.err.println("Booker.java : getting entry price from application, bookingEntryId = "+entry.getID());
+        }
 
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
       }catch (com.idega.block.trade.stockroom.business.ProductPriceException ppe) {
         ppe.printStackTrace(System.err);
       }
-
-
       return total;
   }
 
-  public static float getBookingPrice(Booking booking) {
+  public static float getBookingPrice(IWContext iwc, Booking[] bookings) {
+    float price = 0;
+    for (int i = 0; i < bookings.length; i++) {
+      price += getBookingPrice(iwc, bookings[i]);
+    }
+    return price;
+  }
+
+  public static float getBookingPrice(IWContext iwc, Booking booking) {
       float total = 0;
+      String applName = bookingPriceApplication+booking.getID();
 
       try {
+        Float temp = (Float) iwc.getApplicationAttribute(applName);
+        if (temp == null) {
+          BookingEntry[] entries = booking.getBookingEntries();
 
-        BookingEntry[] entries = booking.getBookingEntries();
+          float price;
+          ProductPrice pPrice;
 
-        float price;
-        ProductPrice pPrice;
-
-        for (int i = 0; i < entries.length; i++) {
-          total += getBookingEntryPrice(entries[i], booking);
+          for (int i = 0; i < entries.length; i++) {
+            total += getBookingEntryPrice(iwc, entries[i], booking);
+          }
+          iwc.setApplicationAttribute(applName, new Float(total));
+        }else {
+          total = temp.floatValue();
+          System.err.println("Booker.java : getting price from application, bookingId = "+booking.getID());
         }
 
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
       }
-
-
       return total;
+  }
+
+  public static void removeBookingPriceApplication(IWContext iwc, Booking booking) {
+    String applName = bookingPriceApplication+booking.getID();
+    String applNameEnt = bookingEntryPriceApplication+booking.getID();
+    iwc.removeApplicationAttribute(applName);
+    iwc.removeApplicationAttribute(applNameEnt);
   }
 
   public static BookingEntry[] getBookingEntries(Booking booking) {

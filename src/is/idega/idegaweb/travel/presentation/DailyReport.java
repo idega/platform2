@@ -9,8 +9,8 @@ import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.calendar.presentation.SmallCalendar;
-import com.idega.util.idegaTimestamp;
-import com.idega.util.idegaCalendar;
+import com.idega.util.text.TextSoap;
+import com.idega.util.*;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
 import java.util.*;
@@ -53,8 +53,12 @@ public class DailyReport extends TravelManager {
   private String parameterToggleCloser = "dailyReportCloser";
   private String parameterYes = "yes";
   private String parameterNo = "no";
+  private String parameterBookingReport ="dailyBookingReport";
+  private String parameterBookingReportType ="dailyBookingReportType";
+  private String parameterHotelPickupPlaceReport ="dailyHotelPickupPlaceReport";
 
   private boolean viewAllProducts = false;
+  private boolean hotelPickupReport = false;
 
   private boolean closerLook = false;
 
@@ -67,8 +71,10 @@ public class DailyReport extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception {
+    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " BEGIN");
       super.main(iwc);
       initialize(iwc);
+    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " init done");
 
       if (super.isLoggedOn(iwc)) {
         String action = iwc.getParameter(sAction);
@@ -95,6 +101,13 @@ public class DailyReport extends TravelManager {
 
       supplier = super.getSupplier();
       stamp = getFromIdegaTimestamp(iwc);
+
+      String hppr = iwc.getParameter(this.parameterBookingReportType);
+      if (hppr != null) {
+        if (hppr.equals(this.parameterHotelPickupPlaceReport)) {
+          this.hotelPickupReport = true;
+        }
+      }
 
       String productId = iwc.getParameter(Product.getProductEntityName());
       try {
@@ -132,16 +145,19 @@ public class DailyReport extends TravelManager {
   }
 
   public void displayForm(IWContext iwc) {
+    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " displayForm begins");
 
       Form form = new Form();
       Table topTable = getTopTable(iwc);
         form.add(topTable);
+    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " topTable done");
 
       if (this.viewAllProducts) {
         if (products != null) {
           Table table = getFullReport(iwc);
           form.add(Text.BREAK);
           form.add(table);
+    System.err.println(idegaTimestamp.RightNow().toSQLTimeString() + " getFullReport done");
         }
       }else {
         if (product != null) {
@@ -200,12 +216,14 @@ public class DailyReport extends TravelManager {
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
           tframeText.addToText(":");
 
+      System.err.println(idegaTimestamp.RightNow()+" dropdownCreation starts");
       DropdownMenu trip = null;
-        trip = ProductBusiness.getDropdownMenuWithProducts(supplier.getID());
+        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
         if (product != null) {
             trip.setSelectedElement(Integer.toString(product.getID()));
         }
         trip.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.all_services","All services"));
+      System.err.println(idegaTimestamp.RightNow().toSQLTimeString()+" dropdownCreation ends");
 
 
       DateInput active_from = new DateInput("active_from");
@@ -221,19 +239,43 @@ public class DailyReport extends TravelManager {
 
 
 
-      topTable.setColumnAlignment(1,"right");
-      topTable.setColumnAlignment(2,"left");
-      topTable.setColumnAlignment(3,"right");
-      topTable.setColumnAlignment(4,"left");
+      Text bookingReportText = (Text) theText.clone();
+          bookingReportText.setText(iwrb.getLocalizedString("travel.booking_report","Booking Report"));
+          bookingReportText.addToText(":");
+
+      Text hotelPickupPlaceReportText = (Text) theText.clone();
+          hotelPickupPlaceReportText.setText(iwrb.getLocalizedString("travel.hotel_pickup_list","Hotel pick-up list"));
+          hotelPickupPlaceReportText.addToText(": ");
+
+      RadioButton bookingReport = new RadioButton(parameterBookingReportType, parameterBookingReport);
+      RadioButton hotelPickupPlaceReport = new RadioButton(parameterBookingReportType, parameterHotelPickupPlaceReport);
+      if (this.hotelPickupReport) {
+        hotelPickupPlaceReport.setSelected();
+      }else {
+        bookingReport.setSelected();
+      }
+
+
+
+      topTable.setAlignment(1,1, "right");
+      topTable.setAlignment(2,1, "left");
+      topTable.setAlignment(3,1, "right");
+      topTable.setAlignment(4,1, "left");
       topTable.add(nameText,1,1);
       topTable.add(trip,2,1);
       topTable.add(timeframeText,3,1);
       topTable.add(active_from,4,1);
-//      topTable.mergeCells(2,1,4,1);
-//     topTable.mergeCells(2,2,4,2);
+
+      topTable.mergeCells(1,2,2,2);
+      topTable.mergeCells(3,2,4,2);
+
+      topTable.add(bookingReportText, 1, 2);
+      topTable.add(bookingReport, 1, 2);
+      topTable.add(hotelPickupPlaceReportText, 3, 2);
+      topTable.add(hotelPickupPlaceReport, 3, 2);
 
       topTable.setAlignment(5,1,"right");
-      topTable.add(new SubmitButton(iwrb.getImage("/buttons/get.gif")),5,1);
+      topTable.add(new SubmitButton(iwrb.getImage("/buttons/get.gif")),5,2);
 
       return topTable;
   }
@@ -401,7 +443,7 @@ public class DailyReport extends TravelManager {
 
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = Booker.getBookingPrice(bookings[i]);
+          amount = Booker.getBookingPrice(iwc, bookings[i]);
 
           totalBookings += ibookings;
           if (attendance != -1000)
@@ -458,7 +500,7 @@ public class DailyReport extends TravelManager {
               ++row;
               table.setRowColor(row, theColor);
               price = entries[j].getProductPrice();
-              iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
+              iEntryCount = (int) Booker.getBookingEntryPrice(iwc, entries[j], bookings[i]);
 
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -519,7 +561,7 @@ public class DailyReport extends TravelManager {
           addTable.setAlignment(2,addRow,"center");
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = Booker.getBookingPrice(bookings[i]);
+          amount = Booker.getBookingPrice(iwc, bookings[i]);
 
           totalBookings += ibookings;
           if (attendance != -1000)
@@ -576,7 +618,7 @@ public class DailyReport extends TravelManager {
               ++addRow;
               addTable.setRowColor(addRow, theColor);
               price = entries[j].getProductPrice();
-              iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
+              iEntryCount = (int) Booker.getBookingEntryPrice(iwc, entries[j], bookings[i]);
 
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -636,7 +678,7 @@ public class DailyReport extends TravelManager {
           correctionTable.setAlignment(2,corrRow,"center");
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = Booker.getBookingPrice(bookings[i]);
+          amount = Booker.getBookingPrice(iwc, bookings[i]);
 
           totalBookings += ibookings;
           if (attendance != -1000)
@@ -686,7 +728,7 @@ public class DailyReport extends TravelManager {
               ++corrRow;
               correctionTable.setRowColor(corrRow, theColor);
               price = entries[j].getProductPrice();
-              iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
+              iEntryCount = (int) Booker.getBookingEntryPrice(iwc, entries[j], bookings[i]);
 
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -871,158 +913,122 @@ public class DailyReport extends TravelManager {
   }
 
   private Table getFullReport(IWContext iwc) {
-    Table table = new Table();
-      table.setColor(super.WHITE);
-      table.setCellspacing(1);
-      table.setCellpadding(2);
-      table.setWidth("90%");
-    int row = 1;
-    int count = 0;
-    int totalCount = 0;
-    int productCount = 0;
+    if (this.hotelPickupReport) {
+      HotelPickupReporter htp = new HotelPickupReporter();
+      Collections.sort(products, new ProductComparator(ProductComparator.NUMBER));
+      return htp.getHotelPickupReport(iwc, this.products, this.stamp);
+    }else {
+      Table table = new Table();
+        table.setColor(super.WHITE);
+        table.setCellspacing(1);
+        table.setCellpadding(2);
+        table.setWidth("90%");
+      int row = 1;
+      int count = 0;
+      int totalCount = 0;
+      float price = 0;
+      float totalPrice = 0;
 
-    Product prod;
-    Booking[] bookings;
-    Tour tour;
-    TourBooking tBooking;
-    HotelPickupPlace hpp;
-
-
-    String sOrderBy = iwc.getParameter("dayRepOrderBy");
-    int iOrderBy = ProductComparator.NUMBER;
-    if (sOrderBy != null) iOrderBy = Integer.parseInt(sOrderBy);
-
-
-    Text servNameTxt = (Text) super.theBoldText.clone();
-       servNameTxt.setText(iwrb.getLocalizedString("travel.service_name","Service name"));
-    Text servNumTxt = (Text) super.theBoldText.clone();
-      servNumTxt.setText(iwrb.getLocalizedString("travel.nr","Nr."));
-    Text nameTxt = (Text) super.theBoldText.clone();;
-      nameTxt.setText(iwrb.getLocalizedString("travel.name","Name"));
-    Text hppTxt = (Text) super.theBoldText.clone();
-      hppTxt.setText(iwrb.getLocalizedString("travel.hotel_pick-up","Hotel pick-up"));
-    Text countTxt = (Text) super.theBoldText.clone();
-      countTxt.setText(iwrb.getLocalizedString("travel.count","Count"));
-    Text productCountTxt;
-
-      servNameTxt.setFontColor(super.WHITE);
-      servNumTxt.setFontColor(super.WHITE);
-      nameTxt.setFontColor(super.WHITE);
-      hppTxt.setFontColor(super.WHITE);
-      countTxt.setFontColor(super.WHITE);
+      Product prod;
+      Booking[] bookings;
+      Tour tour;
+      TourBooking tBooking;
+      HotelPickupPlace hpp;
+      idegaTimestamp depTime;
 
 
-    Link servNameLnk = new Link(servNameTxt);
-      servNameLnk.addParameter("dayRepOrderBy",ProductComparator.NAME);
-    Link servNumLnk = new Link(servNumTxt);
-      servNumLnk.addParameter("dayRepOrderBy",ProductComparator.NUMBER);
-    Link nameLnk = new Link(nameTxt);
-      nameLnk.addParameter("dayRepOrderBy",BookingComparator.NAME);
-    Link hppLnk = new Link(hppTxt);
-      hppLnk.addParameter("dayRepOrderBy",BookingComparator.HOTELPICKUP_NAME);
-    Link countLnk = new Link(countTxt);
-      countLnk.addParameter("dayRepOrderBy",BookingComparator.TOTALCOUNT);
-
-    addDateParameters(servNameLnk);
-    addDateParameters(servNumLnk);
-    addDateParameters(nameLnk);
-    addDateParameters(countLnk);
-    addDateParameters(hppLnk);
+      String sOrderBy = iwc.getParameter("dayRepOrderBy");
+      int iOrderBy = ProductComparator.NUMBER;
+      if (sOrderBy != null) iOrderBy = Integer.parseInt(sOrderBy);
 
 
-    table.add(servNumLnk, 1, row);
-    table.add(servNameLnk, 2, row);
-    table.add(nameLnk, 3, row);
-    table.add(countLnk, 4, row);
-    table.add(hppLnk, 5, row);
-    table.setRowColor(row, super.backgroundColor);
+      Text servNameTxt = (Text) super.theBoldText.clone();
+         servNameTxt.setText(iwrb.getLocalizedString("travel.service_name","Service name"));
+      Text servNumTxt = (Text) super.theBoldText.clone();
+        servNumTxt.setText(iwrb.getLocalizedString("travel.nr","Nr."));
+      Text timeTxt = (Text) super.theBoldText.clone();;
+        timeTxt.setText(iwrb.getLocalizedString("travel.time","Time"));
+      Text priceTxt = (Text) super.theBoldText.clone();
+        priceTxt.setText(iwrb.getLocalizedString("travel.price","Price"));
+      Text countTxt = (Text) super.theBoldText.clone();
+        countTxt.setText(iwrb.getLocalizedString("travel.count","Count"));
+      Text productCountTxt;
+      Text productPriceTxt;
+
+        servNameTxt.setFontColor(super.WHITE);
+        servNumTxt.setFontColor(super.WHITE);
+        timeTxt.setFontColor(super.WHITE);
+        priceTxt.setFontColor(super.WHITE);
+        countTxt.setFontColor(super.WHITE);
 
 
-    if (iOrderBy == ProductComparator.NUMBER || iOrderBy == ProductComparator.NAME) {
-        Collections.sort(products, new ProductComparator(iOrderBy));
-        for (int i = 0; i < products.size(); i++) {
-          ++row;
-          table.setRowColor(row, super.GRAY);
-          prod = (Product) products.get(i);
-          productCount = 0;
+      Link servNameLnk = new Link(servNameTxt);
+        servNameLnk.addParameter("dayRepOrderBy",ProductComparator.NAME);
+      Link servNumLnk = new Link(servNumTxt);
+        servNumLnk.addParameter("dayRepOrderBy",ProductComparator.NUMBER);
+      Link timeLnk = new Link(timeTxt);
+        timeLnk.addParameter("dayRepOrderBy",ProductComparator.DEPARTURETIME_NAME);
 
-          table.add(prod.getNumber(), 1,row);
-          table.add(ProductBusiness.getProductName(prod),2, row);
+      addDateParameters(servNameLnk);
+      addDateParameters(servNumLnk);
+      addDateParameters(timeLnk);
 
-          bookings = Booker.getBookings(prod.getID(), stamp);
-          for (int j = 0; j < bookings.length; j++) {
-            ++row;
-            count = bookings[j].getTotalCount();
-            table.setRowColor(row, super.LIGHTBLUE);
-            table.add(bookings[j].getName(), 3, row);
-            table.add(Integer.toString(count), 4, row);
-            totalCount += count;
-            productCount += count;
 
-            try {
-              tour = new Tour(prod.getID());
-              tBooking = new TourBooking(bookings[j].getID());
-              hpp = tBooking.getHotelPickupPlace();
-              if (hpp != null) {
-                table.add(hpp.getName(), 5, row);
-                if (tBooking.getRoomNumber() != null) {
-                  table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 5, row);
-                  table.add(tBooking.getRoomNumber(), 5, row);
-                }
-              }
-            }catch (SQLException sql) {
-              sql.printStackTrace(System.err);
-            }
-          }
-          productCountTxt = (Text) super.theBoldText.clone();
-            productCountTxt.setText(Integer.toString(productCount));
-            productCountTxt.setFontColor(super.BLACK);
-          table.add(productCountTxt, 4, (row - bookings.length));
-        }
-    }else if (iOrderBy == BookingComparator.HOTELPICKUP || iOrderBy == BookingComparator.NAME || iOrderBy == BookingComparator.HOTELPICKUP_NAME || iOrderBy == BookingComparator.TOTALCOUNT) {
+      table.add(servNumLnk, 1, row);
+      table.add(servNameLnk, 2, row);
+      table.add(timeLnk, 3, row);
+      table.add(countTxt, 4, row);
+      table.add(priceTxt, 5, row);
+      table.setRowColor(row, super.backgroundColor);
 
-      bookings = Booker.getBookings(products, stamp);
-      List bookingsList = getBookingList(bookings);;
-      Booking booking;
-      Collections.sort(bookingsList, new BookingComparator(iOrderBy));
-
-      for (int i = 0; i < bookingsList.size(); i++) {
+      Collections.sort(products, new ProductComparator(iOrderBy));
+      for (int i = 0; i < products.size(); i++) {
+        try {
         ++row;
         table.setRowColor(row, super.GRAY);
-        booking = (Booking) bookingsList.get(i);
+        prod = (Product) products.get(i);
 
-        table.add(booking.getName(), 3, row);
-        table.add(Integer.toString(booking.getTotalCount()), 4, row);
-        totalCount += booking.getTotalCount();
-        try {
-          tBooking = new TourBooking(booking.getID());
-          prod = new Product(booking.getServiceID());
-          table.add(prod.getNumber(), 1,row);
-          table.add(ProductBusiness.getProductName(prod), 2, row);
-          hpp = tBooking.getHotelPickupPlace();
-          if (hpp != null) {
-            table.add(hpp.getName(), 5, row);
-            if (tBooking.getRoomNumber() != null) {
-              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 5, row);
-              table.add(tBooking.getRoomNumber(), 5, row);
-            }
-          }
+        table.add(prod.getNumber(), 1,row);
+        table.add(ProductBusiness.getProductName(prod),2, row);
+
+        bookings = Booker.getBookings(prod.getID(), stamp);
+        count = Booker.getNumberOfBookings(prod.getID(), stamp);
+        price =  Booker.getBookingPrice(iwc, bookings);
+        depTime = ProductBusiness.getDepartureTime(prod);
+        totalCount += count;
+        totalPrice += price;
+
+
+        table.add(TextSoap.addZero(depTime.getHour())+":"+TextSoap.addZero(depTime.getMinute()), 3, row);
+        table.add(Integer.toString(count), 4, row);
+        table.add(TextSoap.decimalFormat(price, 2), 5, row);
+
         }catch (SQLException sql) {
           sql.printStackTrace(System.err);
         }
       }
 
+      ++row;
+      table.setRowColor(row, super.backgroundColor);
+      Text totalCountTxt = (Text) super.theBoldText.clone();
+        totalCountTxt.setText(Integer.toString(totalCount));
+      Text totalPriceTxt = (Text) super.theBoldText.clone();
+        totalPriceTxt.setText(TextSoap.decimalFormat(totalPrice, 2));
+      table.add(totalCountTxt, 4, row);
+      table.add(totalPriceTxt, 5, row);
+      table.setColumnAlignment(1, "center");
+      table.setColumnAlignment(3, "center");
+      table.setColumnAlignment(4, "center");
+      table.setColumnAlignment(5, "right");
+
+      table.setWidth(1, "70");
+      table.setWidth(3, "70");
+      table.setWidth(4, "70");
+      table.setWidth(5, "70");
+      return table;
     }
-    ++row;
-    table.setRowColor(row, super.backgroundColor);
-    Text totalCountTxt = (Text) super.theBoldText.clone();
-      totalCountTxt.setText(Integer.toString(totalCount));
-    table.add(totalCountTxt, 4, row);
-    table.setColumnAlignment(1, "center");
-    table.setColumnAlignment(4, "center");
 
 
-    return table;
   }
 
   private void addDateParameters(Link link) {

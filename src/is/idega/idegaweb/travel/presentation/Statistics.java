@@ -180,7 +180,7 @@ public class Statistics extends TravelManager {
 
 
       DropdownMenu trip = null;
-        trip = ProductBusiness.getDropdownMenuWithProducts(supplier.getID());
+        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
 //        trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
 
       if (product != null) {

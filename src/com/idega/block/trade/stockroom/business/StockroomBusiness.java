@@ -125,11 +125,11 @@ public class StockroomBusiness /* implements SupplyManager */ {
             buffer.append(" and ");
             buffer.append("p."+ProductPrice.getColumnNameCurrencyId()+" = "+currencyId);
             buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+            buffer.append("p."+ProductPrice.getColumnNamePriceDate()+" <= '"+time.toString()+"'");
             buffer.append(" and ");
             buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE);
-            buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
+            //buffer.append(" and ");
+            //buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
             buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate());
           List result = EntityFinder.findAll(ppr,buffer.toString());
 
@@ -384,9 +384,8 @@ public class StockroomBusiness /* implements SupplyManager */ {
       }
     }
 
-
+    ProductBusiness.removeProductApplication(IWContext.getInstance(), supplierId);
     return product.getID();
-
   }
 
 

@@ -53,7 +53,7 @@ public class VoucherWindow extends Window {
 
     if (sBookingId != null) {
       Voucher voucher = new Voucher(iwc, Integer.parseInt(sBookingId));
-      add(voucher.getVoucher());
+      add(voucher.getVoucher(iwc));
     }else if (searchAction != null){
       if (searchAction.equals(searchMethodReferenceNumber)) {
         String refMethod = iwc.getParameter(this.parameterReferenceNumber);
@@ -61,7 +61,7 @@ public class VoucherWindow extends Window {
           GeneralBooking[] gBooking = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAllByColumn(GeneralBooking.getReferenceNumberColumnName(), refMethod);
           if (gBooking.length > 0) {
             Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-            add(voucher.getVoucher());
+            add(voucher.getVoucher(iwc));
           }else {
             error = true;
           }
@@ -74,7 +74,7 @@ public class VoucherWindow extends Window {
           GeneralBooking[] gBooking = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAllByColumn(GeneralBooking.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
           if (gBooking.length > 0) {
             Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-            add(voucher.getVoucher());
+            add(voucher.getVoucher(iwc));
           }else {
             error = true;
           }

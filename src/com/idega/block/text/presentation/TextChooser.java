@@ -26,7 +26,7 @@ public class TextChooser extends AbstractChooser {
     addForm(false);
     addTextInput(false);
     setChooserParameter(chooserName);
-    super.setParameterValue("","");
+    super.setParameterValue("a","b");
   }
 
   public TextChooser(String chooserName,String style) {
@@ -47,6 +47,7 @@ public class TextChooser extends AbstractChooser {
     }
     iwc.setSessionAttribute(RELOAD_PARENT_PARAMETER, "true");
     if( getChooserValue()!= null ){
+      super.setParameterValue(getChooserParameter(), getChooserValue());
 //      iwc.setSessionAttribute(MediaBusiness.getMediaParameterNameInSession(iwc),getChooserValue());
     }
   }

@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.Comparator;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.service.tour.data.TourBooking;
+import is.idega.idegaweb.travel.data.HotelPickupPlace;
 
 import java.sql.SQLException;
 
@@ -112,7 +113,11 @@ public class BookingComparator implements Comparator {
     else if (err1 && !err2) return 1;
     else if (!err1 && err2) return -1;
 
-    if (tp1.getHotelPickupPlace() != null && tp2.getHotelPickupPlace() != null) {
+    HotelPickupPlace hp1 = tp1.getHotelPickupPlace();
+    HotelPickupPlace hp2 = tp2.getHotelPickupPlace();
+
+
+    if (hp1 != null && hp1 != null) {
       String one = tp1.getHotelPickupPlace().getName()!=null?tp1.getHotelPickupPlace().getName():"";
       String two = tp2.getHotelPickupPlace().getName()!=null?tp2.getHotelPickupPlace().getName():"";
       return IsCollator.getIsCollator().compare(one,two);

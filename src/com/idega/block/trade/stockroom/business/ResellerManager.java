@@ -13,6 +13,8 @@ import com.idega.data.*;
 import com.idega.util.CypherText;
 import com.idega.data.SimpleQuerier;
 import java.util.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 
 import is.idega.idegaweb.travel.data.Contract;
 
@@ -234,8 +236,29 @@ public class ResellerManager {
 
   }
 
-  public static Product[] getProductsForReseller(int resellerId) throws SQLException {
+  public static DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int resellerId) {
+    try {
+      Product[] list = getProductsForReseller(iwc, resellerId);
+      DropdownMenu menu = new DropdownMenu(((Product)Product.getStaticInstance(Product.class)).getEntityName());
+      Product product;
+      if (list != null && list.length > 0) {
+        for (int i = 0; i < list.length; i++) {
+          menu.addMenuElement(list[i].getID(), ProductBusiness.getProductNameWithNumber(list[i]));
+        }
+      }
+      return menu;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return new DropdownMenu(Product.getProductEntityName());
+    }
+  }
+
+
+  public static Product[] getProductsForReseller(IWContext iwc, int resellerId) throws SQLException {
     Product[] products = {};
+    /**
+     * @todo Cache...
+     */
 
     try {
         Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));

@@ -101,7 +101,7 @@ public class Voucher extends TravelManager {
     return _booking.getID() + voucherNumberChanger;
   }
 
-  public Table getVoucher() {
+  public Table getVoucher(IWContext iwc) {
     Table bigTable = new Table();
       bigTable.setColor(BLACK);
       bigTable.setCellspacing(0);
@@ -201,7 +201,7 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
         table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
         table.add(getText(" : "),1,2);
-        table.add(getText(df.format(Booker.getBookingPrice(_booking))),1,2);
+        table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
         table.add(getText(" "),1,2);
         Currency currency = Booker.getCurrency(_booking);
         if (currency != null)

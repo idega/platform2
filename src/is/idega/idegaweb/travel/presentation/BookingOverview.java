@@ -216,15 +216,10 @@ public class BookingOverview extends TravelManager {
 
       DropdownMenu trip = null;
         if (supplier != null) {
-          trip = ProductBusiness.getDropdownMenuWithProducts(supplier.getID());
+          trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
           // new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
         }else if (reseller != null){
-          try {
-            trip = new DropdownMenu(ResellerManager.getProductsForReseller(reseller.getID()));
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
-            trip = new DropdownMenu();
-          }
+          trip = ResellerManager.getDropdownMenuWithProducts(iwc, reseller.getID());
         }
 
 

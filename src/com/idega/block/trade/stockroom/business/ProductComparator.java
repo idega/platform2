@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.Comparator;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
-
+import java.sql.SQLException;
 
 /**
  * Title:
@@ -21,8 +21,9 @@ public class ProductComparator implements Comparator {
 
   public static final int NAME = 1;
   public static final int NUMBER = 2;
-//  public static final int YEARFROMDATE = 3;
-//  public static final int TOFROMDATE = 3;
+  public static final int DEPARTURETIME = 3;
+  public static final int DEPARTURETIME_NAME = 4;
+//  public static final int TOFROMDATE = 4;
 
 
   private int sortBy;
@@ -49,6 +50,10 @@ public class ProductComparator implements Comparator {
         break;
         case NUMBER   : result = numberSort(o1, o2);
         break;
+        case DEPARTURETIME   : result = departureTimeSort(o1, o2);
+        break;
+        case DEPARTURETIME_NAME   : result = departureTimeNameSort(o1, o2);
+        break;
       }
 
       return result;
@@ -73,6 +78,38 @@ public class ProductComparator implements Comparator {
 
     return IsCollator.getIsCollator().compare(one,two);
   }
+
+  private int departureTimeNameSort(Object o1, Object o2) {
+    int result = departureTimeSort(o1, o2);
+    if (result == 0) {
+      return nameSort(o1, o2);
+    }else {
+      return result;
+    }
+  }
+
+  private int departureTimeSort(Object o1, Object o2) {
+    Product p1 = (Product) o1;
+    Product p2 = (Product) o2;
+
+    try {
+      idegaTimestamp s1 = ProductBusiness.getDepartureTime(p1);
+      idegaTimestamp s2 = ProductBusiness.getDepartureTime(p2);
+
+      if (s1.isLaterThan(s2)) {
+        return 1;
+      }else if (s2.isLaterThan(s1)){
+        return -1;
+      }else {
+        return 0;
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return 0;
+    }
+
+  }
+
 
   public boolean equals(Object obj) {
     /**@todo: Implement this java.util.Comparator method*/

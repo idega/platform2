@@ -949,7 +949,6 @@ public class TourBookingForm extends TravelManager {
     User usr = null;
     for (int i = 0; i < users.size(); i++) {
       if (users.get(i) ==null) {
-        System.err.println("User == null");
         if (i != (users.size() -1)) {
           usr = (User) users.get(i+1);
           try {
@@ -1082,7 +1081,6 @@ public class TourBookingForm extends TravelManager {
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
-    System.err.println("Check : "+check);
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {

@@ -1,0 +1,210 @@
+package is.idega.idegaweb.travel.presentation;
+
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.util.idegaTimestamp;
+import com.idega.util.text.TextSoap;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
+import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.service.tour.data.TourBooking;
+import is.idega.idegaweb.travel.service.tour.business.TourBooker;
+
+import java.util.*;
+import java.sql.SQLException;
+
+/**
+ * Title:        idegaWeb TravelBooking
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega
+ * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
+ * @version 1.0
+ */
+
+public class HotelPickupReporter extends TravelManager {
+
+  private IWBundle bundle;
+  private IWResourceBundle iwrb;
+
+  public HotelPickupReporter() {
+  }
+
+  public void main(IWContext iwc) throws Exception{
+    super.main(iwc);
+    initialize(iwc);
+  }
+
+  private void initialize(IWContext iwc) {
+    if (bundle == null && iwrb == null) {
+      try {
+        super.main(iwc);
+      }catch (Exception e) {e.printStackTrace(System.err);}
+      bundle = super.getBundle(iwc);
+      iwrb = super.getResourceBundle();
+    }
+  }
+
+  public Table getHotelPickupReport(IWContext iwc, Supplier supplier, idegaTimestamp stamp) {
+    List products = ProductBusiness.getProducts(supplier.getID(), stamp);
+    return getHotelPickupReport(iwc, products, stamp);
+  }
+
+  public Table getHotelPickupReport(IWContext iwc, List products, idegaTimestamp stamp) {
+    initialize(iwc);
+    Table table = new Table();
+      table.setColor(super.WHITE);
+      table.setCellspacing(1);
+      table.setCellpadding(3);
+      table.setWidth("50%");
+      table.setBorder(0);
+    int row = 0;
+    int bookingCounter = 0;
+    int count = 0;
+    int totalCount = 0;
+    int productCount = 0;
+    int hotelCount = 0;
+    boolean expand = false;
+
+
+    Booking[] bookings = {};// = Booker.getBookings(products, stamp);
+    List bookingsList = getBookingList(bookings);;
+    Booking booking;
+    TourBooking tBooking;
+    Product prod;
+    HotelPickupPlace hpp;
+    int oldHppNumber = -100;
+    Text hotelCountText = (Text) super.theBoldText.clone();
+    Text hotelNameText = (Text) super.theBoldText.clone();
+    Text headerCountTxt = new Text();
+      headerCountTxt.setFontStyle(super.theBoldTextStyle+";text-decoration: underline");
+      headerCountTxt.setText(iwrb.getLocalizedString("travel.count","Count"));
+      headerCountTxt.setFontColor(super.WHITE);
+    Text headerRoomTxt = new Text();
+      headerRoomTxt.setFontStyle(super.theBoldTextStyle+";text-decoration: underline");
+      headerRoomTxt.setText(iwrb.getLocalizedString("travel.room","Room"));
+      headerRoomTxt.setFontColor(super.WHITE);
+
+    idegaTimestamp tempStamp;
+    Text productNameTxt;
+    Text productTimeTxt;
+    Text bookingNameTxt;
+    Text bookingCountTxt;
+    Text bookingRoomNumberTxt;
+
+
+
+    for (int j = 0; j < products.size(); j++) {
+      hotelCountText = (Text) super.theBoldText.clone();
+        hotelCountText.setText("0");
+      oldHppNumber = -100;
+      prod = (Product) products.get(j);
+      bookings = TourBooker.getBookings(prod.getID(), stamp, true);
+      bookingsList = getBookingList(bookings);
+      Collections.sort(bookingsList, new BookingComparator(BookingComparator.HOTELPICKUP_NAME));
+
+
+      try {
+        if (bookings.length > 0) {
+          ++row;
+          tempStamp = ProductBusiness.getDepartureTime(prod);
+          table.mergeCells(1,row,3,row);
+          productNameTxt = new Text();
+            productNameTxt.setFontStyle(super.theBoldTextStyle+";text-decoration: underline");
+            productNameTxt.setText(ProductBusiness.getProductNameWithNumber(prod, true) );
+            productNameTxt.setFontColor(super.WHITE);
+          productTimeTxt = new Text();
+            productTimeTxt.setFontStyle(super.theBoldTextStyle+";text-decoration: underline");
+            productTimeTxt.setText(TextSoap.addZero(tempStamp.getHour())+":"+TextSoap.addZero(tempStamp.getMinute()));
+            productTimeTxt.setFontColor(super.WHITE);
+          table.add(productNameTxt, 1, row);
+          table.add(headerCountTxt, 4, row);
+          table.add(headerRoomTxt, 5, row);
+          table.add(productTimeTxt, 6, row);
+          table.setAlignment(6, row, "right");
+          table.setRowColor(row, super.backgroundColor);
+
+            for (int i = 0; i < bookingsList.size(); i++) {
+              booking = (Booking) bookingsList.get(i);
+
+              ++row;
+              table.setRowColor(row, super.GRAY);
+              tBooking = new TourBooking(booking.getID());
+              ++bookingCounter;
+              hpp = tBooking.getHotelPickupPlace();
+              if (hpp.getID() != oldHppNumber) {
+                hotelNameText = (Text) super.theBoldText.clone();
+                  hotelNameText.setText(hpp.getName());
+                  hotelNameText.setFontColor(super.BLACK);
+                table.add(hotelNameText, 2, row);
+                table.mergeCells(2,row,3,row);
+
+                hotelCountText = (Text) super.theBoldText.clone();
+                  hotelCountText.setText("0");
+                  hotelCountText.setFontColor(super.BLACK);
+                table.add(hotelCountText, 4, row);
+                table.setAlignment(5, row, "right");
+
+                oldHppNumber = hpp.getID();
+                bookingCounter = 1;
+                hotelCount = 0;
+                ++row;
+              }
+
+              if (tBooking.getRoomNumber() != null) {
+                bookingRoomNumberTxt = (Text) super.smallText.clone();
+                  bookingRoomNumberTxt.setFontColor(super.BLACK);
+                table.add(tBooking.getRoomNumber(), 5, row);
+              }else {
+                table.add(Text.NON_BREAKING_SPACE, 5, row);
+              }
+
+              table.setRowColor(row, super.GRAY);
+              count = booking.getTotalCount();
+
+              totalCount += count;
+              hotelCount += count;
+              productCount += count;
+
+//              table.mergeCells(1,row,2,row);
+              bookingNameTxt = (Text) super.smallText.clone();
+                bookingNameTxt.setText(booking.getName());
+                bookingNameTxt.setFontColor(super.BLACK);
+              bookingCountTxt = (Text) super.smallText.clone();
+                bookingCountTxt.setText(Integer.toString(count));
+                bookingCountTxt.setFontColor(super.BLACK);
+
+              table.add(bookingNameTxt, 3, row);
+              table.add(bookingCountTxt, 4, row);
+
+              hotelCountText.setText(""+hotelCount);
+            }
+          if (expand) {
+            table.add("EXPAND");
+          }
+        }
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+    }
+
+    table.setColumnAlignment(4, "right");
+    table.setColumnAlignment(5, "right");
+
+    return table;
+  }
+
+  private List getBookingList(Booking[] bookings) {
+    List list = new Vector(bookings.length);
+    for (int i = 0; i < bookings.length; i++) {
+      list.add(bookings[i]);
+    }
+    return list;
+  }
+
+
+}
