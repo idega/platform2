@@ -161,6 +161,7 @@ public class SchoolEditor extends Block {
       }
       catch(Exception ex){}
       row++;
+      col = 1;
     }
     return T;
   }
