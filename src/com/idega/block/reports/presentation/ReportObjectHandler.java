@@ -40,7 +40,31 @@ public class ReportObjectHandler extends JModuleObject{
     }
     else if(Type.equalsIgnoreCase("S"))
       mo =  drpEntity(Name,RC.getItem().getEntity(),RC.getItem().getField(),selected,false);
+    else if(Type.equalsIgnoreCase("C"))
+      mo = drpValues(RC,Name,selected);
     return mo;
+  }
+
+  public static DropdownMenu drpValues(ReportCondition RC,String Name,String selected){
+    DropdownMenu drp = new DropdownMenu(Name);
+    String[][] data = RC.getItem().getData();
+    if(data != null){
+      if(data.length ==1 && data[0] != null){
+        int len = data[0].length;
+        for (int i = 0; i < len; i++) {
+          drp.addMenuElement(data[0][i]);
+        }
+      }
+      else if(data.length == 2 && data[0] != null && data[1] != null){
+        int len = data[1].length;
+        for (int i = 0; i < len; i++) {
+          drp.addMenuElement(data[0][i],data[1][i]);
+        }
+      }
+      if(!selected.equalsIgnoreCase(""))
+        drp.setSelectedElement(selected);
+    }
+    return drp;
   }
 
   public static DropdownMenu drpInteger(String Name,String selected,int f,int l){

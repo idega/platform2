@@ -4,8 +4,10 @@ import com.idega.block.reports.data.*;
 import com.idega.block.reports.business.*;
 import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.data.EntityFinder;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Collections;
 import com.idega.jmodule.object.Editor;
@@ -25,7 +27,11 @@ public class ReportEditor extends Editor{
   private String prefix = "reed_";
   private String sLastOrder = "0";
   private int iCategory;
+  private int iSaveCategory = -1;
   private int iReportId = -1;
+  private boolean sqlEditAdmin = false;
+  private String sMainCategoryAttribute = null,sViewCategoryAttribute = null;
+  private int iMainCategoryAttributeId = 0, iViewCategoryAttributeId= 0;
 
 
   public ReportEditor(){
@@ -34,35 +40,107 @@ public class ReportEditor extends Editor{
 
   public ReportEditor(int iCategory){
     this.iCategory = iCategory;
+    this.iSaveCategory = iCategory;
+  }
+
+  public void setSQLEdit(boolean value){
+    sqlEditAdmin = value;
+  }
+
+  public void setSaveCategory(int iSaveCategory){
+    this.iSaveCategory = iSaveCategory;
+  }
+
+  public void setMainCategoryAttribute(String name,int id){
+    sMainCategoryAttribute = name;
+    iMainCategoryAttributeId = id;
+  }
+  public void setMainCategoryAttribute(String name){
+    sMainCategoryAttribute = name;
+  }
+  public void setMainCategoryAttributeId(int id){
+    iMainCategoryAttributeId = id;
+  }
+  public void setViewCategoryAttribute(String name,int id){
+    sViewCategoryAttribute = name;
+    iViewCategoryAttributeId = id;
+  }
+  public void setViewCategoryAttribute(String name){
+    sViewCategoryAttribute = name;
+  }
+  public void setViewCategoryAttributeId(int id){
+    iViewCategoryAttributeId = id;
+  }
+
+  private void checkCategories(ModuleInfo modinfo){
+    ReportCategoryAttribute RCA = null;
+    if(sMainCategoryAttribute != null){
+      List L = null;
+      try{
+        if(iMainCategoryAttributeId!= 0){
+          L = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sMainCategoryAttribute,"ATTRIBUTE_ID",String.valueOf(iMainCategoryAttributeId));
+        }
+        else
+          L = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sMainCategoryAttribute);
+      }
+      catch(SQLException sql){sql.printStackTrace();}
+
+      if(L != null){
+        RCA = (ReportCategoryAttribute)L.get(0);
+        iSaveCategory = RCA.getReportCategoryId();
+      }
+    }
+    if(sViewCategoryAttribute != null){
+      List K = null;
+      try{
+        if(iViewCategoryAttributeId!= 0){
+          K = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sViewCategoryAttribute,"ATTRIBUTE_ID",String.valueOf(iViewCategoryAttributeId));
+        }
+        else
+          K = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sViewCategoryAttribute);
+      }
+      catch(SQLException sql){sql.printStackTrace();}
+
+      if(K!= null){
+        RCA = (ReportCategoryAttribute)K.get(0);
+        iCategory = RCA.getReportCategoryId();
+      }
+    }
   }
 
   protected void control(ModuleInfo modinfo){
     try{
         this.makeView();
-        //iCategory = ReportService.getSessionCategory(modinfo);
+        if(isAdmin){
+          if(iSaveCategory != -1 && modinfo.getParameter("category_id")!=null){
+            iSaveCategory = Integer.parseInt(modinfo.getParameter("category_id"));
+          }
+          checkCategories(modinfo);
 
-        if(modinfo.getParameter(sAction) != null)
-          sActPrm = modinfo.getParameter(sAction);
-        else if(modinfo.getParameter("report")!=null){
-          iReportId = Integer.parseInt(modinfo.getParameter("report"));
-          sActPrm = "2";
-        }
-        else
-          sActPrm = "0";
-        try{
-          iAction = Integer.parseInt(sActPrm);
-          switch(iAction){
-            case ACT1: doSave(modinfo);   break;
-            case ACT2: doAdmin(modinfo); break;
-            case ACT3: doChange(modinfo); break;
-            case ACT4: doUpdate(modinfo); break;
-            default : doMain(modinfo);           break;
+          if(modinfo.getParameter(sAction) != null)
+            sActPrm = modinfo.getParameter(sAction);
+          else if(modinfo.getParameter("report")!=null){
+            iReportId = Integer.parseInt(modinfo.getParameter("report"));
+            sActPrm = "2";
+          }
+          else
+            sActPrm = "0";
+          try{
+            iAction = Integer.parseInt(sActPrm);
+            switch(iAction){
+              case ACT1: doSave(modinfo);   break;
+              case ACT2: doAdmin(modinfo);  break;
+              case ACT3: doChange(modinfo); break;
+              case ACT4: doUpdate(modinfo); break;
+              default : doMain(modinfo);    break;
+            }
+          }
+          catch(Exception e){
+            e.printStackTrace();
           }
         }
-        catch(Exception e){
-          e.printStackTrace();
-        }
-
+        else
+          addMain(formatText("Ekki réttindi"));
     }
     catch(Exception S){
       S.printStackTrace();
@@ -156,20 +234,19 @@ public class ReportEditor extends Editor{
       box2.selectAllOnSubmit();
       B.add(new SubmitButton(new Image("/reports/pics/ok.gif")));
       B.add(new HiddenInput(sAction, String.valueOf(ACT4)));
-
+      form.add(new HiddenInput("reportcategory_id",String.valueOf(iSaveCategory)));
       addMain(form);
     }
     else
       addMain(new Text("Nothing to show"));
     Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     this.addToHeader(back);
-    if(isAdmin){
-      Link admin = new Link(new Image("/reports/pics/admin.gif"));
+    if(sqlEditAdmin){
+      Link admin = new Link(new Image("/reports/pics/admin.gif"),"/reports/reportedit.jsp");
       admin.addParameter(sAction,String.valueOf(ACT2));
+      admin.addParameter("reportcategory_id",String.valueOf(iSaveCategory));
       this.addToHeader(admin);
     }
-
-
     this.addLinks(formatText("Report Editor"));
   }
   protected void doChange(ModuleInfo modinfo) throws SQLException{
@@ -221,6 +298,7 @@ public class ReportEditor extends Editor{
     form.add(T);
     Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     this.addToHeader(back);
+    form.add(new HiddenInput("reportcategory_id",String.valueOf(iSaveCategory)));
     addMain(form);
   }
 
@@ -238,7 +316,7 @@ public class ReportEditor extends Editor{
         try{
           if(sReportId==null){
             Report R = new Report();
-            R.setCategory(iCategory);
+            R.setCategory(iSaveCategory);
             R.setName(sName);
             R.setInfo(sInfo);
             R.setSQL(sSql);
@@ -248,7 +326,7 @@ public class ReportEditor extends Editor{
           }
           else{
             Report R = new Report(Integer.parseInt(sReportId));
-            R.setCategory(iCategory);
+            //R.setCategory(iSaveCategory);
             R.setName(sName);
             R.setInfo(sInfo);
             R.setSQL(sSql);
@@ -293,8 +371,9 @@ public class ReportEditor extends Editor{
       if(!"".equalsIgnoreCase(temp) && !"0".equals(temp)){
         //add(" check "+i);
         ReportCondition rc = RC[i];
-        rc.setVariable("'"+temp+"'");
+        rc.setVariable(temp);
         vRC.addElement(rc);
+
       }
     }
     modinfo.removeSessionAttribute(prefix+"force");
@@ -307,26 +386,29 @@ public class ReportEditor extends Editor{
 
     ReportMaker rm = new ReportMaker();
 
-    //// Golf union case ////////////////////////////////////
+    /////////////// Golf union Case ////////////////////////////////////
 
     if(modinfo.getSessionAttribute("golf_union_id")!= null){
       String sUnionId = ((String) modinfo.getSessionAttribute("golf_union_id"));
-
-      ReportItem RIx = new ReportItem();
-      RIx.setMainTable("union_member_info");
-      RIx.setJoinTables("member");
-      RIx.setJoin("union_member_info.member_id = member.member_id and union_member_info.union_id = "+sUnionId);
-      ReportCondition RCx = new ReportCondition(RIx);
-      RCx.setIsSelect();
-      vRC.addElement(RCx);
+      int id = 1;
+      try{ id = Integer.parseInt(sUnionId);}
+      catch(NumberFormatException e){}
+      if(id > 1){
+        ReportItem RIx = new ReportItem();
+        RIx.setMainTable("union_member_info");
+        RIx.setJoinTables("member");
+        RIx.setJoin("union_member_info.member_id = member.member_id,union_member_info.union_id = "+sUnionId);
+        ReportCondition RCx = new ReportCondition(RIx);
+        RCx.setIsSelect();
+        vRC.addElement(RCx);
+      }
 
     }
-
     //////////////////////////////////////////////////////////////////
 
     String sql = rm.makeSQL(vRC);
     Report R = new Report();
-    R.setCategory(iCategory);
+    R.setCategory(iSaveCategory);
     R.setName(name);
     R.setInfo(info);
     R.setSQL(sql);
@@ -337,7 +419,6 @@ public class ReportEditor extends Editor{
     catch(SQLException ex){
 
     }
-
     ReportService.setSessionReport(modinfo,R);
     makeAnswer(R);
   }
@@ -351,10 +432,10 @@ public class ReportEditor extends Editor{
     }
     return array;
   }
-  public void makeAnswer(Report R){
-    Link L = new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
-    add(L);
-    add("<br>");
-    add(R.getSQL());
+   public void makeAnswer(Report R){
+    Link L = new Link(new Image("/reports/pics/newlist.gif"),"/reports/reportview.jsp");
+    L.addParameter("report",R.getID());
+    addMain(L);
+    addMain(formatText("View the results"));
   }
 }

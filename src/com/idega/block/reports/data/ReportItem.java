@@ -134,12 +134,19 @@ public class ReportItem extends GenericEntity {
   }
 
   public String[][] getData(){
+    String[][] sA = null;
+
     String s = this.getConditionData();
+    System.err.println(s);
+    if(s != null){
     String[] sB = ms(s,";");
-    String[][] sA = new String[sB.length][];
-    for (int i = 0; i < sB.length; i++) {
-      sA[i] = ms(sB[i],",");
+      sA = new String[sB.length][];
+      for (int i = 0; i < sB.length; i++) {
+          sA[i] = ms(sB[i],",");
+      }
     }
+    else
+       System.err.println("data is null");
     return sA;
   }
   public void setData(String[][] s){
@@ -157,10 +164,14 @@ public class ReportItem extends GenericEntity {
   }
   private String[] ms(String s,String delim){
     StringTokenizer st = new StringTokenizer(s,delim);
-    String[] sArray = new String[st.countTokens()];
-    int i = 0;
+    Vector v = new Vector();
     while(st.hasMoreTokens()){
-      sArray[i] = st.nextToken();
+      v.addElement(st.nextToken());
+    }
+    int len = v.size();
+    String[] sArray = new String[len];
+    for (int i = 0; i < len; i++) {
+      sArray[i] = (String)v.get(i);
     }
     return sArray;
   }

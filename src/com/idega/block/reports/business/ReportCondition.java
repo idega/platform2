@@ -1,6 +1,7 @@
 package com.idega.block.reports.business;
 
 import com.idega.block.reports.data.*;
+import java.util.StringTokenizer;
 import java.sql.SQLException;
  /**
   * Title:
@@ -18,6 +19,7 @@ import java.sql.SQLException;
   private String[] sOps,sVars;
   private String sCondition="";
   private boolean bCondition,bSelect,bField = false;
+  private boolean bBetween = false;
 
   public ReportCondition(ReportItem Item) {
    this.Item = Item;
@@ -53,15 +55,27 @@ import java.sql.SQLException;
   public String getCondition(){
     StringBuffer sb = new StringBuffer("");
     if(bCondition && bField){
-      int len = this.Item.getOps().length;
-      for (int i = 0; i < len; i++) {
+      if(bBetween){
         sb.append(this.sJoin);
         sb.append(" ");
-        sb.append(this.sOps[i]);
-        sb.append(" ");
-        if(sVars != null){
-          sb.append(this.sVars[i]);
+        sb.append(" between '");
+        sb.append(sVars[0]);
+        sb.append("' and '");
+        sb.append(sVars[1]);
+        sb.append("'");
+      }
+      else{
+        int len = this.Item.getOps().length;
+        for (int i = 0; i < len; i++) {
+          sb.append(this.sJoin);
           sb.append(" ");
+          sb.append(this.sOps[i]);
+          sb.append(" ");
+          if(sVars != null){
+            sb.append("'");
+            sb.append(this.sVars[i]);
+            sb.append("' ");
+          }
         }
       }
     }
@@ -72,8 +86,17 @@ import java.sql.SQLException;
     this.sOps = sOps;
   }
   public void setVariable(String sVar){
-    this.sVars = new String[1];
-    sVars[0] = sVar;
+    StringTokenizer st = new StringTokenizer(sVar,":");
+    if(st.countTokens() == 2){
+      bBetween = true;
+      sVars = new String[2];
+      sVars[0] = st.nextToken();
+      sVars[1] = st.nextToken();
+    }
+    else{
+      this.sVars = new String[1];
+      sVars[0] = sVar;
+    }
     this.bCondition = true;
   }
   public void setVariables(String[] sVars){
