@@ -29,6 +29,7 @@ public class RoomSubType extends GenericEntity {
     addAttribute("name","Heiti",true,true,"java.lang.String");
     addAttribute("info","Upplýsingar",true,true,"java.lang.String");
     addAttribute("image_id","Mynd",true,true,"java.lang.Integer");
+    addAttribute("floorplan_id","Teikning",true,true,"java.lang.Integer");
     addAttribute("room_count","Fjöldi herbergja",true,true,"java.lang.Integer");
     addAttribute("area","Flatarmál",true,true,"java.lang.Float");
     addAttribute("kitchen","Eldhús",true,true,"java.lang.Boolean");
@@ -61,6 +62,15 @@ public class RoomSubType extends GenericEntity {
   }
   public void setImageId(Integer image_id){
     setColumn("image_id",image_id);
+  }
+  public int getFloorPlanId(){
+    return getIntColumnValue("floorplan_id");
+  }
+  public void setFloorPlanId(int floorplan_id){
+    setColumn("floorplan_id",floorplan_id);
+  }
+  public void setFloorPlanId(Integer floorplan_id){
+    setColumn("floorplan_id",floorplan_id);
   }
   public int getRoomCount(){
     return getIntColumnValue("room_count");
