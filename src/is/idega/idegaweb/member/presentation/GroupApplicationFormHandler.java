@@ -8,6 +8,8 @@ import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Block;
+import com.idega.user.data.Group;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
@@ -21,6 +23,14 @@ public class GroupApplicationFormHandler extends Block {
 	private static final String ADDRESS_PARAM = "address";
 	private static final String EMAIL_PARAM = "email";
 	private static final String COMMENT_PARAM = "comment";
+	private static final String GROUPS_PARAM = "groups";
+	private static final String GENDER_PARAM = "gender";
+	
+	private static final String GENDER_MALE = "m";
+	private static final String GENDER_FEMALE = "f";
+		
+
+	private Group applicationGroup = null;
 	
 		
 	public GroupApplicationFormHandler(){
@@ -34,10 +44,39 @@ public class GroupApplicationFormHandler extends Block {
 	 */
 	public void main(IWContext iwc) throws Exception {
 	
-		if( iwc.isParameterSet(USER_NAME_PARAM) ){
+		if( applicationGroup!=null ){
+			if( iwc.isParameterSet(USER_NAME_PARAM) && iwc.isParameterSet(PIN_PARAM) ){
+				
+				GroupApplicationBusiness biz = this.getGroupApplicationBusiness(iwc);
+
+				
+				String name = iwc.getParameter(USER_NAME_PARAM);
+				String pin = iwc.getParameter(PIN_PARAM);
+				String phone = iwc.getParameter(PHONE_PARAM);
+				String address = iwc.getParameter(ADDRESS_PARAM);
+				String email = iwc.getParameter(EMAIL_PARAM);
+				String comment = iwc.getParameter(COMMENT_PARAM);
+				String gender = iwc.getParameter(GENDER_PARAM);
+				
+				String[] groups = iwc.getParameterValues(GROUPS_PARAM);
+				
+				biz.createGroupApplication(name,pin,gender);
+				
+
+			
+			}
+			else add("Error : No name and PIN!");
+			
 					
+		}
+		else{
+			add("The application group parameter has not been set");	
 		}		
 			
+	}
+	
+	public void setApplicationGroup(Group group){
+		this.applicationGroup = group;	
 	}
 		
 		
@@ -45,5 +84,7 @@ public class GroupApplicationFormHandler extends Block {
 	private GroupApplicationBusiness getGroupApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (GroupApplicationBusiness) IBOLookup.getServiceInstance(iwac, GroupApplicationBusiness.class);	
 	}
+	
 
+	  
 }
