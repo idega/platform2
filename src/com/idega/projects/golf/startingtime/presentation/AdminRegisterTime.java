@@ -265,8 +265,10 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     FloatInput handycapInput = new FloatInput(handycapParameterString);
     handycapInput.setSize(3);
 
-    DropdownMenu unionMenu = GolfCacher.getUnionAbbreviationDropdown(unionParameterString);
-    unionMenu.setSelectedElement(currentUnion);
+    //DropdownMenu unionMenu = GolfCacher.getUnionAbbreviationDropdown(unionParameterString);
+    //unionMenu.setSelectedElement(currentUnion);
+    TextInput unionMenu = new TextInput(unionParameterString,GolfCacher.getCachedUnion(currentUnion).getAbbrevation());
+    unionMenu.setLength(3);
     boolean firstColor = true;
     int count = 0;
     int min = 0;
@@ -505,10 +507,12 @@ public class AdminRegisterTime extends ModuleObjectContainer {
 //              Member tempMemb = (Member)lMember.get(0);
               business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, Integer.toString(tempMemb.getID()), MemberID, tempMemb.getName(), Float.toString(tempMemb.getHandicap()), GolfCacher.getCachedUnion(tempMemb.getMainUnionID()).getAbbrevation(), null, null);
             }else{
-              business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
+              //business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
+              business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], sentUnions[i], null, null);
             }
           }else{
-            business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
+            //business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
+            business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], sentUnions[i], null, null);
           }
         }
       }
