@@ -15,11 +15,14 @@ import com.idega.core.data.Phone;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceComparator;
+import se.idega.idegaweb.commune.school.business.SchoolFreetimeWriter;
 import se.idega.idegaweb.commune.school.data.SchoolChoice;
 
 import java.rmi.RemoteException;
@@ -64,6 +67,19 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 		add(table);
 
 		int row = 1;		
+
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.mergeCells(1,row,4,row);
+		Link pdfLink = getPDFLink(SchoolFreetimeWriter.class,getBundle().getImage("shared/pdf.gif"));
+		pdfLink.addParameter(SchoolFreetimeWriter.prmSchoolId, getSchoolID());
+		pdfLink.addParameter(SchoolFreetimeWriter.prmSchoolSeasonID, getSchoolSeasonID());
+		table.add(pdfLink, 1, row);
+		Link excelLink = getXLSLink(SchoolFreetimeWriter.class,getBundle().getImage("shared/xls.gif"));
+		excelLink.addParameter(SchoolFreetimeWriter.prmSchoolId, getSchoolID());
+		excelLink.addParameter(SchoolFreetimeWriter.prmSchoolSeasonID, getSchoolSeasonID());
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(excelLink, 1, row++);
+
 		table.setRowColor(row, getHeaderColor());
 		table.add(getSmallHeader(localize("freetime.name", "Name")),1,row);
 		table.add(getSmallHeader(localize("freetime.pid", "PID")),2,row);	
