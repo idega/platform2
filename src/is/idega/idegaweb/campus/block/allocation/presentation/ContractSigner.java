@@ -246,7 +246,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
       CloseButton close = new CloseButton(iwrb.getLocalizedString("close","Close"));
 
-      PrintButton PB = new PrintButton(iwrb.getLocalizedString("school.print","Print"));
+      PrintButton PB = new PrintButton(iwrb.getLocalizedString("print","Print"));
 
       TextInput email = new TextInput("new_email");
 
