@@ -22,13 +22,15 @@ private Table listTable;
 private String style = "";
 
   public FrameList() {
+    initializeTable();
   }
 
-  public void _main(ModuleInfo modinfo) {
+  public void _main(ModuleInfo modinfo) throws Exception {
     getParentPage().setAllMargins(0);
     initializeTable();
 
     add(listTable);
+    super._main(modinfo);
   }
 
   public void main(ModuleInfo modinfo) {
@@ -39,7 +41,7 @@ private String style = "";
       listTable.setCellpadding(3);
       listTable.setCellspacing(0);
       listTable.setWidth("100%");
-      listTable.setHeight("100%");
+      //listTable.setHeight("100%");
   }
 
   public void addToList(ModuleObject obj, Image displayImage) {

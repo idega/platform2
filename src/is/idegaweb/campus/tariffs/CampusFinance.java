@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.9 2001/10/01 13:07:28 aron Exp $
+ * $Id: CampusFinance.java,v 1.10 2001/10/02 00:13:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package is.idegaweb.campus.tariffs;
 
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.IFrame;
+import is.idegaweb.campus.phone.presentation.PhoneFiles;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
@@ -28,14 +29,19 @@ import is.idegaweb.campus.tariffs.CampusFinanceMenu;
 public class CampusFinance extends JModuleObject {
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
-  public final static String FRAME_NAME = "rightFrame";
+  public final static String FRAME_NAME = "fin_rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
   public CampusFinance() {
   }
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
   public void main(ModuleInfo modinfo){
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
 
     Table myTable = new Table(2,2);
       myTable.setBorderColor("#000000");
@@ -52,29 +58,52 @@ public class CampusFinance extends JModuleObject {
       myTable.setVerticalAlignment(2,1,"top");
       myTable.setVerticalAlignment(1,2,"top");
 
+      /*
     IFrame iFrame = new IFrame("menuFrame");
       iFrame.setSrc(CampusFinanceMenu.class);
       iFrame.setWidth(120);
-      iFrame.setHeight(150);
-      iFrame.setBorder(IFrame.FRAMEBORDER_ON);
+      iFrame.setHeight(200);
+      iFrame.setBorder(IFrame.FRAMEBORDER_OFF);
       iFrame.setScrolling(IFrame.SCROLLING_YES);
       iFrame.setStyle("border: 1 solid #000000");
       //iFrame.setAlignment(IFrame.ALIGN_LEFT);
 
       myTable.add(iFrame,1,1);
 
+    */
+    myTable.add(getLinkTable() ,1,1);
 
     IFrame iFrame2 = new IFrame(FRAME_NAME);
      iFrame2.setSrc(CampusFinanceIndex.class);
       iFrame2.setWidth("100%");
       iFrame2.setHeight("100%");
-      iFrame2.setBorder(IFrame.FRAMEBORDER_ON);
+      iFrame2.setBorder(IFrame.FRAMEBORDER_OFF);
       iFrame2.setScrolling(IFrame.SCROLLING_YES);
       iFrame2.setAlignment(IFrame.ALIGN_LEFT);
       iFrame2.setStyle("border: 1 solid #000000");
       myTable.add(iFrame2,2,1);
 
+
     add(myTable);
+  }
+
+  public ModuleObject getLinkTable(){
+      Table FL = new Table();
+      //FL.setListpadding(1);
+      FL.add(getLink(TariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys"),CampusFinance.FRAME_NAME),1,1);
+      FL.add(getLink(AccountKeyEditor.class,iwrb.getLocalizedString("account_keys","Account keys"),CampusFinance.FRAME_NAME),1,2);
+      FL.add(getLink(TariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes"),CampusFinance.FRAME_NAME),1,3);
+      FL.add(getLink(CampusTariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs"),CampusFinance.FRAME_NAME),1,4);
+      FL.add(getLink(CampusTariffer.class,iwrb.getLocalizedString("assessment","Assessment"),CampusFinance.FRAME_NAME),1,5);
+      FL.add(getLink(PhoneFiles.class,iwrb.getLocalizedString("phonefiles","Phone files"),CampusFinance.FRAME_NAME),1,6);
+      return FL;
+  }
+
+  public Link getLink(Class cl,String name,String target){
+    Link L = new Link(name,cl);
+    L.setTarget(target );
+    L.setFontSize(2);
+    return L;
   }
 
 

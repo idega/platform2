@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.3 2001/10/01 13:07:20 aron Exp $
+ * $Id: ContractBusiness.java,v 1.4 2001/10/02 00:13:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,11 +42,12 @@ import com.idega.util.SendMail;
  * @version 1.0
  */
 public  class ContractBusiness {
-
+/*
    public static String signContract(int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
-                boolean newAccount,boolean newPhoneAccount,boolean newLogin,IWResourceBundle iwrb,String login,String passwd){
+                boolean newAccount,boolean newPhoneAccount,boolean newLogin ,boolean generatePasswd,IWResourceBundle iwrb,String login,String passwd){
     Contract eContract = null;
     String pass = null;
+
     try {
       eContract = new Contract(iContractId );
     }
@@ -75,7 +76,10 @@ public  class ContractBusiness {
           //gg.addTo(eUser);
           login = LoginCreator.createLogin(eUser.getName());
           //passwd = LoginCreator.createPasswd(8);
-          pass = LoginCreator.createPasswd(8);
+          if( generatePasswd )
+            pass = LoginCreator.createPasswd(8);
+          else
+            pass = login;
 
           //idegaTimestamp today = idegaTimestamp.RightNow();
           //int validDays = today.getDaysBetween(today,new idegaTimestamp(eContract.getValidTo()));
@@ -146,5 +150,131 @@ public  class ContractBusiness {
       }
     }
     return pass;
+  }
+*/
+  public static String signCampusContract(int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
+                boolean newAccount,boolean newPhoneAccount,boolean newLogin ,boolean generatePasswd,IWResourceBundle iwrb,String login,String passwd){
+    Contract eContract = null;
+    String pass = null;
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
+    try{
+     t.begin();
+
+      eContract = new Contract(iContractId );
+      if(eContract != null ){
+        int iUserId = eContract.getUserId().intValue();
+        if(sEmail !=null && sEmail.trim().length() >0){
+          UserBusiness.addNewUserEmail(iUserId,sEmail);
+        }
+        if(newAccount){
+          String prefix = iwrb.getLocalizedString("finance","Finance");
+          AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
+        }
+        if(newPhoneAccount){
+          String prefix = iwrb.getLocalizedString("phone","Phone");
+          AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
+        }
+        if(newLogin  && iGroupId > 0){
+          createLogin( iUserId,iGroupId,login,pass,generatePasswd );
+        }
+
+        deleteFromWaitingList(eContract);
+
+        if(sendMail){
+          sendMail(iUserId,login,pass,iwrb);
+        }
+
+        eContract.setStatusSigned();
+        eContract.update();
+      }
+
+
+     t.commit();
+
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
+
+    }
+    return pass;
+  }
+
+  public static void createLogin(int iUserId,int iGroupId,String login,String pass,boolean generatePasswd) throws Exception{
+
+    User eUser = new User(iUserId);
+    //GenericGroup gg = new GenericGroup(iGroupId);
+    PermissionGroup pg = new PermissionGroup(iGroupId);
+    AccessControl.addUserToPermissionGroup(pg,eUser.getID());
+    //gg.addTo(eUser);
+    login = LoginCreator.createLogin(eUser.getName());
+    //passwd = LoginCreator.createPasswd(8);
+    if( generatePasswd )
+      pass = LoginCreator.createPasswd(8);
+    else
+      pass = login;
+
+    //System.err.println(login+" "+pass);
+
+    //idegaTimestamp today = idegaTimestamp.RightNow();
+    //int validDays = today.getDaysBetween(today,new idegaTimestamp(eContract.getValidTo()));
+    LoginDBHandler.createLogin(iUserId,login,pass);
+    //LoginDBHandler.createLogin(iUserId,login,passwd,new Boolean(true),today,validDays,new Boolean(false),new Boolean(true),new Boolean(false),"");
+  }
+
+  public static void deleteFromWaitingList(Contract eContract){
+    List L = WaitingListFinder.listOfWaitingList(WaitingListFinder.APPLICANT,eContract.getApplicantId().intValue(),0,0);
+      if(L!=null){
+        Iterator I = L.iterator();
+        while(I.hasNext()){
+          try{
+          ((WaitingList) I.next()).delete();
+          }
+          catch(SQLException ex){
+           ex.printStackTrace();
+          }
+        }
+      }
+  }
+
+  public static void sendMail(int iUserId,String login,String pass,IWResourceBundle iwrb){
+    SystemProperties sp = SysPropsSetter.seekProperties();
+    List lEmails = UserBusiness.listOfUserEmails(iUserId);
+    if(lEmails != null){
+      String address = ((Email)lEmails.get(0)).getEmailAddress();
+      try {
+        String body = iwrb.getLocalizedString("signed_contract_body","You have a signed contract to a apartment");
+        StringBuffer sbody = new StringBuffer(body);
+        sbody.append("\n");
+        sbody.append(" Login  :");
+        sbody.append(login );
+        sbody.append("\n");
+        sbody.append(" Passwd :");
+        sbody.append(pass );
+        //System.err.println("passwd "+pass);
+        sbody.append("\n");
+        String header = iwrb.getLocalizedString("signed_contract","Signed Contract");
+        String from = sp!=null?sp.getAdminEmail():"admin@campus.is";
+        if(from==null || "".equals(from))
+          from = "admin@campus.is";
+        String host = sp != null?sp.getEmailHost():"mail.idega.is";
+        if(host ==null || "".equals(host))
+          host = "mail.idega.is";
+        if(address == null || "".equals(address))
+          address = "aron@idega.is";
+        SendMail.send(from,address,"","aron@idega.is",host,header,sbody.toString());
+
+        //SendMail.send("admin@campus.is","aron@idega.is","","","mail.idega.is",header,sbody.toString());
+      }
+      catch (Exception ex) {
+        ex.printStackTrace();
+      }
+    }
   }
 }

@@ -208,7 +208,7 @@ public class AccountManager {
     else
       return null;
   }
-  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type){
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type)throws SQLException{
     Account A = new Account();
     A.setBalance(0);
     A.setCreationDate(idegaTimestamp.getTimestampRightNow() );
@@ -219,22 +219,22 @@ public class AccountManager {
     A.setCashierId(iCashierId);
     A.setValid(true);
     A.setType(type);
-    try{
-      A.insert();
-    }
-    catch(SQLException sql){A = null;}
+
+    A.insert();
+    //System.err.println("account id "+A.getID());
+
     return A;
   }
 
-  public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId){
+  public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId)throws SQLException{
     return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typeFinancial);
   }
 
-  public static Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId){
+  public static Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId)throws SQLException{
     return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typePhone);
   }
 
-  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId){
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId)throws SQLException{
    return makeNewAccount(iUserId,sName,sExtra,iCashierId,"");
   }
 }

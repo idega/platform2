@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListFinder.java,v 1.1 2001/09/27 11:50:36 aron Exp $
+ * $Id: WaitingListFinder.java,v 1.2 2001/10/02 00:13:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -75,7 +75,7 @@ public abstract class WaitingListFinder {
         count++;
       }
     }
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     return sql.toString();
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinanceMenu.java,v 1.6 2001/09/24 13:02:12 aron Exp $
+ * $Id: CampusFinanceMenu.java,v 1.7 2001/10/02 00:13:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ public class CampusFinanceMenu extends FrameList{
   }
 
   public void makeLinkTable(){
-
+      setListpadding(1);
       addToList(TariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys"),CampusFinance.FRAME_NAME);
       addToList(AccountKeyEditor.class,iwrb.getLocalizedString("account_keys","Account keys"),CampusFinance.FRAME_NAME);
       addToList(TariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes"),CampusFinance.FRAME_NAME);

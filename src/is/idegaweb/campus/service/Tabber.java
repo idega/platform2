@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.20 2001/10/01 13:07:28 aron Exp $
+ * $Id: Tabber.java,v 1.21 2001/10/02 00:13:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -238,12 +238,12 @@ public class Tabber extends JModuleObject {
   private boolean getUserAccessGroups(ModuleInfo modinfo)throws SQLException{
     List group = com.idega.block.login.business.LoginBusiness.getPermissionGroups(modinfo);
     PermissionHash = new Hashtable();
-    System.err.println("getUserAccessGroups in Tabber");
+    //System.err.println("getUserAccessGroups in Tabber");
     if(group != null){
       Iterator iter = group.iterator();
       while (iter.hasNext()) {
         com.idega.core.data.GenericGroup item = (com.idega.core.data.GenericGroup)iter.next();
-        System.err.println(item.getName());
+        //System.err.println(item.getName());
         PermissionHash.put(new Integer(item.getID()),item.getName() );
         return true;
       }
