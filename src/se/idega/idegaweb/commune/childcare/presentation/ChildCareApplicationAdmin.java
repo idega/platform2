@@ -67,15 +67,15 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String ERROR_MUST_BE_INTEGER	 = "ccaa_must_be_integer";
 	
 	protected User _user = null;
-	protected IWBundle _iwb;
-	protected IWResourceBundle _iwrb;
+//	protected IWBundle _iwb;
+//	protected IWResourceBundle _iwrb;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		_iwb = getBundle(iwc);
-		_iwrb = getResourceBundle(iwc);
+//		_iwb = getBundle(iwc);
+//		_iwrb = getResourceBundle(iwc);
 
 		if (iwc.getUser() != null)
 			_user = Converter.convertToNewUser(iwc.getUser());
@@ -83,6 +83,8 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			_user = null;
 
 		if (_user != null) {
+			setResourceBundle(getResourceBundle(iwc));
+			
 			try {
 				int action = parseAction(iwc);				
 					control(iwc,action);
