@@ -146,6 +146,9 @@ private void getImage(ModuleInfo modinfo) throws SQLException{
     else if (key.equalsIgnoreCase("border")) {
       setHeight(Integer.parseInt(values[0]));
     }
+    else if (key.equalsIgnoreCase("image_id")) {
+      this.setImageID(Integer.parseInt(values[0]));
+    }
   }
 
 
@@ -184,6 +187,10 @@ public void setHeight(String height){
 
 }
 
+public void setImageID(int imageID){
+  this.imageId=imageID;
+}
+
 public void setVerticalSpacing(int spacing){
   setAttribute("vspace",Integer.toString(spacing));
 }
@@ -208,6 +215,12 @@ public String getURL(){
 	return this.getAttribute("src");
 }
 
+/**
+ * Returns true if the image has been set to a source, else false
+ */
+public boolean hasSource(){
+  return ((getURL()==null)&&this.imageId!=-1);
+}
 
 
 public void setOverImageURL(String overImageURL){
@@ -276,7 +289,9 @@ private String getHTMLString(){
   }
 }
 
-
+public static String getNoImageSource(){
+  return "/idegaweb/bundles/core.bundle/resources/noimage.gif";
+}
 
 private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
   try{
