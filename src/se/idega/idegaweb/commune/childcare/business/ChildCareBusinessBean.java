@@ -2155,7 +2155,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				validFrom = new IWTimestamp(application.getFromDate());
 			int oldArchiveID = archiveID;
 			if (oldArchiveID <= 0) {
-				ChildCareContract con = getValidContractByChild(application.getChildId());// getLatestContract(application.getChildId());
+				ChildCareContract con = getLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());// getLatestContract(application.getChildId());
 				oldArchiveID = con != null ? ((Integer) con.getPrimaryKey()).intValue() : -1;
 
 			}
@@ -4879,7 +4879,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			helper = new DefaultPlacementHelper();
 		}
 		helper.setApplication(application);
-		helper.setContract(getValidContract(applicationID.intValue()));
+		helper.setContract(getLatestContractByApplication(applicationID.intValue()));
 		return helper;
 	}
 
