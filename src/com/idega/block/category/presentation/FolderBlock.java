@@ -156,7 +156,7 @@ public class FolderBlock extends Block {
 				ICLocale locale = ICLocaleBusiness.getICLocale(getContentLocaleIdentifier());
 				//getContentLocaleIdentifier();
 				if (locale != null) {
-					localeId = locale.getID();
+					localeId = locale.getLocaleID();
 				}
 			}
 			if (localeId == -1) {

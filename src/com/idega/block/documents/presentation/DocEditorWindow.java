@@ -288,7 +288,7 @@ public class DocEditorWindow extends IWAdminWindow {
 			} catch (NumberFormatException e) {
 				ICLocale locale = ICLocaleBusiness.getICLocale(sLocale);
 				if (locale != null) {
-					_contentLocaleId = locale.getID();
+					_contentLocaleId = locale.getLocaleID();
 					this.addHiddenInput(new HiddenInput(_PRM_CONTENT_LOCALE_IDENTIFIER, Integer.toString(_contentLocaleId)));
 				} else {
 					_contentLocaleId = -1;
