@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.data;
 
+import javax.ejb.FinderException;
+import com.idega.util.IWTimestamp;
+
 
 public interface GeneralBookingHome extends com.idega.data.IDOHome
 {
@@ -25,5 +28,5 @@ public interface GeneralBookingHome extends com.idega.data.IDOHome
  public java.util.Collection getMultibleBookings(is.idega.idegaweb.travel.data.GeneralBooking p0)throws java.rmi.RemoteException,javax.ejb.FinderException;
  public int getNumberOfBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2,java.util.Collection p3);
  public int getNumberOfBookings(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3);
-
+ public GeneralBooking findByAuthorizationNumber(String number, IWTimestamp stamp) throws FinderException;
 }

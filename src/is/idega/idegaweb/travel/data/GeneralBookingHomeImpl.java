@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.data;
 
+import javax.ejb.FinderException;
+import com.idega.util.IWTimestamp;
+
 
 public class GeneralBookingHomeImpl extends com.idega.data.IDOFactory implements GeneralBookingHome
 {
@@ -158,5 +161,10 @@ public int getNumberOfBookings(int p0,com.idega.util.IWTimestamp p1,com.idega.ut
 	return theReturn;
 }
 
-
+public GeneralBooking findByAuthorizationNumber(String number, IWTimestamp stamp) throws FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((GeneralBookingBMPBean)entity).ejbFindByAuthorizationNumber(number, stamp);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
 }

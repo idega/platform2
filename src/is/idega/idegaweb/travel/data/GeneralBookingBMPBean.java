@@ -30,6 +30,11 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.data.SimpleQuerier;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.presentation.IWContext;
 import com.idega.util.CypherText;
 import com.idega.util.IWTimestamp;
@@ -864,7 +869,27 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   		query.appendSelectAllFrom(this).appendWhereEqualsWithSingleQuotes(getReferenceNumberColumnName(), refNum)
 			.appendAndEquals(getIsValidColumnName(), true);
 		return this.idoFindPKsByQuery(query);
-}
+  }
+  
+	public Object ejbFindByAuthorizationNumber(String number, IWTimestamp stamp) throws FinderException {
+		stamp.addDays(-1);
+		IWTimestamp lessStamp = new IWTimestamp(stamp);
+		stamp.addDays(2);
+		IWTimestamp moreStamp = new IWTimestamp(stamp);
+		
+		Table table = new Table(this);
+		Column auth = new Column(table, getCreditcardAuthorizationNumberColumnName());
+		Column date = new Column(table, getDateOfBookingColumnName());
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(auth, MatchCriteria.EQUALS, number));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATER, lessStamp.getDate().toString()));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESS, moreStamp.getDate().toString()));
+		return this.idoFindOnePKBySQL(query.toString());
+		
+	}
+
   
 }
 
