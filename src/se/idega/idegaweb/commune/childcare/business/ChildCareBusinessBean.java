@@ -78,6 +78,11 @@ import com.lowagie.text.xml.XmlPeer;
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
 
+	final int DBV_WITH_PLACE = 0;
+	final int DBV_WITHOUT_PLACE = 1;
+	final int FS_WITH_PLACE = 2;
+	final int FS_WITHOUT_PLACE = 3;
+
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	public final static char STATUS_SENT_IN = 'A';
 	private final static char STATUS_PRIORITY = 'B';
@@ -257,7 +262,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			ChildCareApplication appl = null;
-			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			User child = getUserBusiness().getUser(childId);
 			IWTimestamp now;
 			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
@@ -315,9 +319,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if (checkId != -1)
 							appl.setCheckId(checkId);
 						if (freetimeApplication)
-							caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
+							changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
 						else {
-							caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
+							changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
 							if (sendMessages)
 								sendMessageToParents(appl, subject, body);
 							updateQueue(appl);
@@ -1866,6 +1870,82 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			catch (NullPointerException e) {
 				return null;
 			}
+		}
+	}
+	
+	public void convertOldQueue(User performer) {
+		try {
+			Collection childIDs = getChildCareQueueHome().getDistinctNotExportedChildIds();
+			int size = childIDs.size();
+			int a = 1;
+			Iterator iter = childIDs.iterator();
+			while (iter.hasNext()) {
+				Integer element = (Integer) iter.next();
+				System.out.println("Working on child " + a++ + " of " + size + " (id = " + element+")");
+				convertQueueToApplications(performer, element.intValue());
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+	}
+	
+	public void convertQueueToApplications(User performer, int childID) {
+		try {
+			int length = 0;
+			int[] provider = null;
+			String[] dates = null;
+			Date[] queueDates = null;
+			boolean[] hasPriority = null;
+
+			Collection choices = getQueueChoices(childID);
+			if (choices != null) {
+				Iterator iter = choices.iterator();
+				int a = 0;
+				while (iter.hasNext()) {
+					ChildCareQueue queue = (ChildCareQueue) iter.next();
+					if (a == 0) {
+						switch (queue.getQueueType()) {
+							case DBV_WITH_PLACE :
+								length = 4;
+								break;
+							case DBV_WITHOUT_PLACE :
+								length = 5;
+								break;
+							case FS_WITH_PLACE :
+								length = 4;
+								break;
+							case FS_WITHOUT_PLACE :
+								length = 5;
+								break;
+						}
+						if (choices.size() < length)
+							length = choices.size();
+
+						provider = new int[length];
+						dates = new String[length];
+						queueDates = new Date[length];
+						hasPriority = new boolean[length];
+					}
+					if (a < length) {
+						provider[a] = queue.getProviderId();
+						dates[a] = new IWTimestamp(queue.getStartDate()).toString();
+						queueDates[a] = queue.getQueueDate();
+						if (queue.getPriority() != null)
+							hasPriority[a] = true;
+						else
+							hasPriority[a] = false;
+					}
+					a++;
+				}
+
+				boolean success = insertApplications(performer, provider, dates, null, childID, queueDates, hasPriority);
+				if (success)
+					exportQueue(choices);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
 		}
 	}
 }

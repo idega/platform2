@@ -1,5 +1,10 @@
 package se.idega.idegaweb.commune.childcare.data;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
 
 public class ChildCareQueueHomeImpl extends com.idega.data.IDOFactory implements ChildCareQueueHome
 {
@@ -74,10 +79,35 @@ public int getTotalCount(java.lang.String[] p0,boolean p1)throws com.idega.data.
 	return theReturn;
 }
 
-public Integer[] getDistinctNotExportedChildIds()throws com.idega.data.IDOException {
+public Collection getDistinctNotExportedChildIds()throws com.idega.data.IDOException {
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Integer theReturn[] = ((ChildCareQueueBMPBean)entity).ejbHomeGetDistinctNotExportedChildIds();
+	Collection ids = null;
+	Collection col = null;
+	try {
+		ids = ((ChildCareQueueBMPBean) entity).ejbHomeGetDistinctNotExportedChildIds();
+		col = this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	catch (javax.ejb.FinderException e) {
+		this.idoCheckInPooledEntity(entity);
+		return null;
+	}
 	this.idoCheckInPooledEntity(entity);
-	return theReturn;
+		
+	HashMap childIds = new HashMap();
+	if (col != null) {
+		System.out.println("Found "+col.size()+" old queue positions.");
+		Iterator iter = col.iterator();
+		while (iter.hasNext()) {
+			ChildCareQueue q = (ChildCareQueue) iter.next();
+			childIds.put(new Integer(q.getChildId()),null);
+		}
+	}
+	System.out.println("Placed "+childIds.size()+" children in map.");
+		
+	Set keys = childIds.keySet();
+	if (keys != null)
+		return childIds.keySet();
+	else
+		return null;
 }
 }
