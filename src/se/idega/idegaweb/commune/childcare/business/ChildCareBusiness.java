@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 9.9.2004 aron Exp $
- * Created on 9.9.2004
+ * $Id: ChildCareBusiness.java 1.1 5.10.2004 aron Exp $
+ * Created on 5.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 9.9.2004 12:48:44 $ by $Author: aron $
+ *  Last modified: $Date: 5.10.2004 10:21:52 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
  * @version $Revision: 1.1 $
@@ -283,7 +283,14 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#cleanQueue
      */
     public boolean cleanQueue(int providerID, User performer, IWUserContext iwuc)
-            throws FinderException, java.rmi.RemoteException;
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#cleanQueueInThread
+     */
+    public boolean cleanQueueInThread(int providerID, User performer,
+            IWUserContext iwuc) throws FinderException,
+            java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasActiveApplications
@@ -1338,5 +1345,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
      */
     public Collection getProviderStats(Locale sortLocale)
             throws FinderException, java.rmi.RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getPlacementDateHelper
+     */
+    public PlacementHelper getPlacementHelper(
+            Integer applicationID) throws java.rmi.RemoteException;
 
 }

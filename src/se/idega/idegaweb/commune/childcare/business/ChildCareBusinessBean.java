@@ -126,6 +126,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private final static String STATUS_NOT_PROCESSED = String.valueOf(ChildCareConstants.STATUS_SENT_IN);
 	private final static String[] STATUS_IN_QUEUE = { String.valueOf(ChildCareConstants.STATUS_SENT_IN), String.valueOf(ChildCareConstants.STATUS_PRIORITY), String.valueOf(ChildCareConstants.STATUS_ACCEPTED), String.valueOf(ChildCareConstants.STATUS_PARENTS_ACCEPT), String.valueOf(ChildCareConstants.STATUS_CONTRACT)};
+    private static final String PLACEMENT_HELPER = "PlacementHelper";
 
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
@@ -769,8 +770,29 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 	}
+	
+	public boolean cleanQueue(int providerID, User performer, IWUserContext iwuc) {
+	    final int providID = providerID;
+	    final User perf = performer;
+	    final IWUserContext iw = iwuc;
+	    if (iwuc.getSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING) == null) {
+		    new Thread () {
+				public void run () {
+				    try {
+                        cleanQueueInThread( providID,  perf,  iw);
+                    } catch (FinderException e) {
+                        e.printStackTrace();
+                    }
+				}
+			}.start ();
+			return true;
+	    }
+	    else
+	        return false;
+	    
+	}
 
-	public boolean cleanQueue(int providerID, User performer, IWUserContext iwuc) throws FinderException {
+	public boolean cleanQueueInThread(int providerID, User performer, IWUserContext iwuc) throws FinderException {
 		iwuc.setSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING, "TRUE");
 		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(PROPERTIES_CHILD_CARE);
 		int monthsInQueue = Integer.parseInt(properties.getProperty(PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
@@ -4172,6 +4194,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 		Collections.sort(vector, new ProviderStatComparator(sortLocale));
 	 		return vector;
 	 		
+	     }
+	     
+	     
+	     public PlacementHelper getPlacementHelper(Integer applicationID){
+	         ChildCareApplication application = getApplication(applicationID.intValue());
+	         IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+	         String className = bundle.getProperty(PLACEMENT_HELPER,DefaultPlacementHelper.class.getName());
+	         PlacementHelper helper = null;
+	         if(className!=null){
+	             try {
+                    helper = (PlacementHelper)Class.forName(className).newInstance();
+                } catch (Exception e) {
+                    helper = new DefaultPlacementHelper();
+                }
+	         }
+	         else{
+	             helper = new DefaultPlacementHelper();
+	         }
+	         helper.setApplication(application);
+	         helper.setContract(getValidContract(applicationID.intValue()));
+             return helper;
 	     }
 
 	

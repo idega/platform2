@@ -20,8 +20,8 @@ import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
+import se.idega.idegaweb.commune.childcare.business.PlacementHelper;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
@@ -31,7 +31,6 @@ import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
-import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
@@ -560,12 +559,23 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 		
-		ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		///ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		PlacementHelper helper = getPlacementHelper();
 
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
-		IWTimestamp stampNow = new IWTimestamp();
-		boolean oldPlacementTerminated = false;
-		IWTimestamp terminationDate = null;
+		if(helper.hasEarliestPlacementDate()){
+		    dateInput.setDate((java.sql.Date)helper.getEarliestPlacementDate());
+		    dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(),localize(helper.getEarliestPlacementMessage()));
+		}
+		if(helper.hasLatestPlacementDate()){
+		    dateInput.setLatestPossibleDate(helper.getLatestPlacementDate(),localize(helper.getLatestPlacementMessage()));
+		}
+		
+		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+		///IWTimestamp stampNow = new IWTimestamp();
+		///boolean oldPlacementTerminated = false;
+		///IWTimestamp terminationDate = null;
+		/*///
 		if (restrictDates) {
 			if (earliestDate != null) {
 				dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
@@ -606,6 +616,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		else {
 			dateInput.setDate(stampNow.getDate());
 		}
+		*/
 		
 		String dateHeader = null;
 		if (isAlteration) {
@@ -615,18 +626,19 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		table.add(getSmallHeader(dateHeader), 1, row++);
 		table.add(dateInput, 1, row++);
+		/*
 		if (oldPlacementTerminated) {
 			table.add(getSmallHeader(localize("child_care.old_placement_terminated", "Old placement terminated") + ":"), 1, row);
 			table.add(Text.NON_BREAKING_SPACE, 1, row);
 			table.add(getSmallErrorText(terminationDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 1, row);
 			table.add(new Break(2), 1, row);
-		}
+		}*/
 
 		if (isAlteration) {
 			TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 			textInput.setLength(2);
-			if (application != null)
-				textInput.setContent(String.valueOf(application.getCareTime()));
+			if(helper.getCurrentCareTimeHours()!=null)
+			    textInput.setContent(helper.getCurrentCareTimeHours().toString());
 			textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
 			textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
 	
@@ -637,12 +649,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		
 		//Pre-school
-		if (!getBusiness().isAfterSchoolApplication(application)) {
+		if (!getBusiness().isAfterSchoolApplication(helper.getApplication())) {
 			table.add(getSmallHeader(localize("child_care.pre_school", "Specify pre-school:")), 1, row++);
 			TextInput preSchool = (TextInput) getStyledInterface(new TextInput(PARAMETER_PRE_SCHOOL));
 			preSchool.setLength(40);
-			if (application.getPreSchool() != null)
-				preSchool.setContent(application.getPreSchool());
+			if (helper.getApplication().getPreSchool() != null)
+				preSchool.setContent(helper.getApplication().getPreSchool());
 			table.add(preSchool, 1, row++);
 		}
 		
@@ -683,6 +695,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		} else {
 			TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 			textInput.setLength(2);
+			textInput.setMaxlength(2);
 			textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
 			textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
 
@@ -728,29 +741,31 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			}
 		}
 
-		Table dropdownTable = new Table(2, 3);
+		Table dropdownTable = new Table();
 		int dropRow = 1;
+		
+//		DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
+		//DropdownMenu schoolTypes = schoolClasses.getPrimaryDropdown();
+		schoolClasses.getPrimaryDropdown().addMenuElementFirst("-1",localize("child_care.choose_schooltype","Choose here"));
+		schoolClasses.getPrimaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
+		
+		dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
+		dropdownTable.add(schoolClasses.getPrimaryDropdown(), 2, dropRow++);
+		//dropdownTable.add(schoolClasses);
 		
 		//DropdownMenu groups = getGroups(-1, -1)
 		//DropdownMenu groups = schoolClasses.getSecondaryDropdown();
 		schoolClasses.getSecondaryDropdown().addMenuElementFirst("-1",localize("child_care.choose_schoolgroup","Choose here"));
 		schoolClasses.getSecondaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
 		
-		//dropdownTable.add(getSmallText(localize("child_care.group", "Group")+":"), 1, dropRow);
-		//dropdownTable.add(schoolClasses.getSecondaryDropdown(), 2, dropRow++);
+		dropdownTable.add(getSmallText(localize("child_care.group", "Group")+":"), 1, dropRow);
+		dropdownTable.add(schoolClasses.getSecondaryDropdown(), 2, dropRow++);
 		
-		//DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
-		//DropdownMenu schoolTypes = schoolClasses.getPrimaryDropdown();
-		schoolClasses.getPrimaryDropdown().addMenuElementFirst("-1",localize("child_care.choose_schooltype","Choose here"));
-		schoolClasses.getPrimaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
 		
-		//dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
-		//dropdownTable.add(schoolClasses.getPrimaryDropdown(), 2, dropRow++);
-		//dropdownTable.add(schoolClasses);
 		
-		dropdownTable.add(getSmallText(localize("child_care.school_type_and_school_class", "School type and class")+":"), 1, dropRow);
+		//dropdownTable.add(getSmallText(localize("child_care.school_type_and_school_class", "School type and class")+":"), 1, dropRow);
 		//table.add(mSchoolType, 2, row++);
-		dropdownTable.add(schoolClasses,2,dropRow++);
+		dropdownTable.add(schoolClasses,2,dropRow);
 		
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
 		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
@@ -778,28 +793,46 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 		
-		ChildCareApplication application = getBusiness().getApplication(_applicationID);
-		ChildCareContract archive = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue()); 
-			//getBusiness().getContractFile(application.getContractFileId());
+		//ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		//ChildCareContract archive = getBusiness().getValidContract(_applicationID);
+		
+		//getBusiness().getContractFile(application.getContractFileId());
+		PlacementHelper helper = getPlacementHelper();
 
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
-		textInput.setLength(2);
+		textInput.setLength(helper.getMaximumCareTimeHours().toString().length());
+		textInput.setMaxlength(helper.getMaximumCareTimeHours().toString().length());
 		textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
 		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
-		if(archive.getCareTime()>0)
-			textInput.setContent(String.valueOf(archive.getCareTime()));
-		table.add(new HiddenInput("ccc_old_archive_id",archive.getPrimaryKey().toString()));
+		///if(archive.getCareTime()>0)
+		///	textInput.setContent(String.valueOf(archive.getCareTime()));
+		if(helper.getCurrentCareTimeHours()!=null)
+		    textInput.setContent(helper.getCurrentCareTimeHours().toString());
+		    
+		///table.add(new HiddenInput("ccc_old_archive_id",archive.getPrimaryKey().toString()));
+		table.add(new HiddenInput("ccc_old_archive_id",helper.getContract().getPrimaryKey().toString()));
 
 		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
 		table.add(textInput, 1, row++);
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		if(helper.hasEarliestPlacementDate()){
+		    dateInput.setDate((java.sql.Date)helper.getEarliestPlacementDate());
+		    dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(),localize(helper.getEarliestPlacementMessage()));
+		}
+		if(helper.hasLatestPlacementDate()){
+		    dateInput.setLatestPossibleDate(helper.getLatestPlacementDate(),localize(helper.getLatestPlacementMessage()));
+		}
 		
-		IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
+		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
+		table.add(dateInput, 1, row++);
+		///IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
 		//validFrom.addDays(1);
-		dateInput.setDate(validFrom.getDate());
+		///dateInput.setDate(validFrom.getDate());
 		
+		/*
 		if (restrictDates) {
 			IWTimestamp stamp = new IWTimestamp();
 			if (archive != null) {
@@ -831,12 +864,20 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
 			}
 		}
-		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
-		IWTimestamp earliestDate = IWTimestamp.RightNow();
-		dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
 		
-		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
-		table.add(dateInput, 1, row++);
+		IWTimestamp earliestDate = IWTimestamp.RightNow();
+		earliestDate.addWeeks(-2);
+		
+		if (archive != null && archive.getTerminatedDate()!=null) {
+		    IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
+			dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
+		}
+		else{
+		//dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+		    dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.not_a_valid_date_more_than_two_weeks", "You can not choose a date more than 2 weeks back in time."));
+		}
+		
+		
 		
 		/* New requirements: Add Schooltype and Group dropdowns */
 		
@@ -846,7 +887,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		//DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPES);
 		Collection types = null;
 		try {
-			types = application.getProvider().findRelatedSchoolTypes();
+			types = helper.getApplication().getProvider().findRelatedSchoolTypes();
 			
 		} catch (IDORelationshipException e) {
 			e.printStackTrace();
@@ -869,7 +910,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 			if (!types.isEmpty()) {
 				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
-				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
+				Map typeGroupMap = sb.getSchoolTypeClassMap(types,helper.getApplication().getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
@@ -880,16 +921,20 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			}
 		}
 		
-		SchoolClassMember currentClassMember = archive.getSchoolClassMember();
-		if (currentClassMember !=null)
-			schoolClasses.setSelectedValues(String.valueOf(currentClassMember.getSchoolTypeId()),String.valueOf(currentClassMember.getSchoolClassId()));
+		///SchoolClassMember currentClassMember = archive.getSchoolClassMember();
+		///if (currentClassMember !=null)
+		///	schoolClasses.setSelectedValues(String.valueOf(currentClassMember.getSchoolTypeId()),String.valueOf(currentClassMember.getSchoolClassId()));
+		if(helper.getCurrentClassID()!=null)
+		    schoolClasses.setSelectedValues(helper.getCurrentSchoolTypeID().toString(),helper.getCurrentClassID().toString());
 		
 		table.add(schoolClasses, 1, row++);
 		
 
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
-		if(archive.getEmploymentTypeId()>0)
-			employmentTypes.setSelectedElement(archive.getEmploymentTypeId());
+		///if(archive.getEmploymentTypeId()>0)
+		///	employmentTypes.setSelectedElement(archive.getEmploymentTypeId());
+		if(helper.getCurrentEmploymentID()!=null)
+		    employmentTypes.setSelectedElement(helper.getCurrentEmploymentID().toString());
 		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
 		employmentTypes = (DropdownMenu) getStyledInterface(employmentTypes);
 		
@@ -1934,5 +1979,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				
 		Object[] arguments = { child.getName(), user.getName(), email, workphone, new IWTimestamp(application.getFromDate()).getLocaleDate(iwc.getCurrentLocale()), application.getProvider().getName()};
 		return arguments;
+	}
+	
+	private PlacementHelper getPlacementHelper()throws RemoteException{
+	    return getBusiness().getPlacementHelper(new Integer(_applicationID));
 	}
 }
