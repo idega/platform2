@@ -7,27 +7,43 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.sql.Date;
-import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.ejb.CreateException;
-import javax.ejb.EJBException; 
+import javax.ejb.EJBException;
 import javax.ejb.EJBLocalHome;
 import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+
+import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntryHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
-
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -44,23 +60,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-
-
-import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntryHome;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
-import se.idega.idegaweb.commune.accounting.presentation.ListTable;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
  * @author Roar
@@ -705,8 +704,16 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		Regulation reg = searchPanel.getRegulation(); 
 		
+		
+		String[] posting = new String[]{"",""};
+		String postingError = null;
+		try{
+			posting = searchPanel.getPosting();
+		}catch (PostingException ex){
+			postingError = ex.getMessage();
+		}
 		if (reg != null){
-			entry = getNotStoredEntry(iwc, reg, searchPanel.getPosting());
+			entry = getNotStoredEntry(iwc, reg, posting);
 		}
 
 
@@ -743,7 +750,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_EMPTY)), 2, row++);			
 		}
 		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, "" + entry.getAmount(), 1, row++);
-		//Vat is curremntly set to 0
+		//Vat is currently set to 0
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
@@ -761,17 +768,12 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		if (errorMessages.get(ERROR_OWNPOSTING_EMPTY) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_OWNPOSTING_EMPTY)), 2, row++);			
+		} else if (postingError != null){
+			table.add(getErrorText(postingError), 2, row++);				
 		}
 		
 		table.mergeCells(1, row, 10, row);
 		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
-		if (entry.getOwnPosting() == null && entry.getDoublePosting() == null){
-			try{
-				postingBlock.generateStrings(iwc);
-			}catch(Exception ex){
-				ex.printStackTrace();
-			}
-		}
 		table.add(postingBlock, 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);

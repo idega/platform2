@@ -9,10 +9,10 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
@@ -22,13 +22,27 @@ import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
-
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -45,21 +59,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-
-
-import se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
-import se.idega.idegaweb.commune.accounting.presentation.ListTable;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 /**
  * @author Roar
@@ -699,8 +698,15 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		Regulation reg = regSearchPanel.getRegulation(); 
 		
+		String[] posting = new String[]{"",""};
+		String postingError = null;
+		try{
+			posting = regSearchPanel.getPosting();
+		}catch (PostingException ex){
+			postingError = ex.getMessage();
+		}		
 		if (reg != null){
-			entry = getNotStoredEntry(iwc, reg, regSearchPanel.getPosting());
+			entry = getNotStoredEntry(iwc, reg, posting);
 		}
 		
 
@@ -744,7 +750,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-
+		if (postingError != null){
+			table.add(getErrorText(postingError), 2, row++);				
+		}
+		table.mergeCells(1, row, 10, row);
+		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
+		table.add(postingBlock, 1, row++);
+						
 		
 //		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 //		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
