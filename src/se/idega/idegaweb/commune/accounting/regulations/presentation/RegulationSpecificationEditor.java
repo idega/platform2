@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.5 2003/09/02 23:43:27 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.6 2003/09/02 23:48:23 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/09/02 23:43:27 $
+ * $Date: 2003/09/02 23:48:23 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -296,7 +296,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 			while (iter.hasNext()) {
 				RegulationSpecType rst = (RegulationSpecType) iter.next();
 				list.add(rst.getLocalizationKey(), rst.getRegSpecType());
-				list.add(rst.getMainRule().getTextKey(),rst.getMainRule().getMainRule());
+				list.add(rst.getMainRule().getLocalizationKey(),rst.getMainRule().getMainRule());
 
 				Link edit = new Link(getEditIcon(localize(KEY_CLICK_EDIT, "Redigera")));
 				edit.addParameter(PARAMETER_REGULATION_SPEC_TYPE_ID, rst.getPrimaryKey().toString());
@@ -413,7 +413,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		try {
 			menu = (DropdownMenu) getStyledInterface(
 					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllMainRules(), 
-					"getTextKey"));
+					"getLocalizationKey"));
 			menu.addMenuElementFirst("0", localize(KEY_MAIN_RULE_DROP_HEADER, "Välj Huvudregel"));
 			menu.setSelectedElement(refIndex);
 		} catch (RemoteException e) {}

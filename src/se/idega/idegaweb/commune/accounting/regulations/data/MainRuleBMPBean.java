@@ -1,5 +1,5 @@
 /*	
- * $Id: MainRuleBMPBean.java,v 1.2 2003/08/29 00:54:32 kjell Exp $
+ * $Id: MainRuleBMPBean.java,v 1.3 2003/09/02 23:48:05 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.regulation.data.RegulationSpecTypeBMPBean# 
  * <p>
- * $Id: MainRuleBMPBean.java,v 1.2 2003/08/29 00:54:32 kjell Exp $
+ * $Id: MainRuleBMPBean.java,v 1.3 2003/09/02 23:48:05 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MainRuleBMPBean extends GenericEntity implements MainRule {
 	
@@ -67,14 +67,13 @@ public class MainRuleBMPBean extends GenericEntity implements MainRule {
 		return (String) getStringColumnValue(COLUMN_MAIN_RULE);
 	}
 
-	public void setTextKey(String key) { 
+	public void setLocalizationKey(String key) { 
 		setColumn(COLUMN_MAIN_RULE, key); 
 	}
 	
-	public String getTextKey() {
+	public String getLocalizationKey() {
 		return (String) getStringColumnValue(COLUMN_MAIN_RULE);
 	}
-
 
 	public Collection ejbFindAllMainRules() throws FinderException {
 		IDOQuery sql = idoQuery();
