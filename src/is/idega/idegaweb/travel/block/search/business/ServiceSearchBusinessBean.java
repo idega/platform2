@@ -152,20 +152,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					ids.add(iter.next());
 				}
 			}
-			
-			/*			
-			for (int i = 0 ; i < sPostalCode.length; i++) {
-				//System.out.println("postalCodeLength = "+sPostalCode.length+" ... currently working with "+i);
-				pks = pcHome.findByName(sPostalCode[i]);
-				if (pks != null && !pks.isEmpty()) {
-					Iterator iter = pks.iterator();
-					while (iter.hasNext()) {
-						//System.out.println("Adding postalCode to vector");
-						ids.add(iter.next());
-					}
-				}
-			}*/
-			
+						
 			postalCodeIds = ids.toArray();
 		}
 		return postalCodeIds;
