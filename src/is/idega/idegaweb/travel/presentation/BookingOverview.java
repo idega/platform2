@@ -564,8 +564,6 @@ public class BookingOverview extends TravelManager {
           Text availableTextBold = (Text) theSmallBoldText.clone();
           Text hotelPickupTextBold = (Text) theSmallBoldText.clone();
 
-
-
           table.add(dateText,1,row);
           table.add(nameText,2,row);
           table.add(countText,3,row);
@@ -702,6 +700,8 @@ public class BookingOverview extends TravelManager {
 
 
           // ------------------ BOOKINGS ------------------------
+          Link changeLink = new Link(iwrb.getImage("buttons/change.gif"));
+          Link link;
           is.idega.travel.data.Booking[] bookings = Booker.getBookings(this.service.getID(), currentStamp);
           for (int i = 0; i < bookings.length; i++) {
               ++row;
@@ -723,32 +723,33 @@ public class BookingOverview extends TravelManager {
               Tbooked = (Text) super.theSmallBoldText.clone();
                 Tbooked.setText(Integer.toString(bookings[i].getTotalCount()));
 
-              table.mergeCells(2,row,5, row);
-              table.add(Tname,1,row);
-              table.add(Temail,2,row);
-              table.setAlignment(3,row,"left");
-              table.add(Tbooked,6,row);
-              table.add(Thotel,8,row);
+              table.mergeCells(2, row, 5, row);
+              table.add(Tname, 1, row);
+              table.add(Temail, 2, row);
+              table.setAlignment(3, row, "left");
+              table.add(Tbooked, 6, row);
+              table.add(Thotel, 8, row);
 
-
-              table.setColor(1,row,super.RED);
-              table.setColor(2,row,super.RED);
-              table.setColor(6,row,super.RED);
-              table.setColor(7,row,super.LIGHTGREEN);
-              table.setColor(8,row,super.backgroundColor);
+              table.setColor(1, row, super.RED);
+              table.setColor(2, row, super.RED);
+              table.setColor(6, row, super.RED);
+              table.setColor(7, row, super.LIGHTGREEN);
+              table.setColor(8, row, super.backgroundColor);
+              link = (Link) changeLink.clone();
+              table.add(link, 8, row);
           }
 
         ++row;
         table.mergeCells(1,row,6,row);
         availableTextBold.setText(Integer.toString(available));
-        table.setColor(1,row,super.LIGHTGREEN);
-        table.setColor(7,row,super.LIGHTGREEN);
-        table.setColor(8,row,super.backgroundColor);
+        table.setColor(1, row, super.LIGHTGREEN);
+        table.setColor(7, row, super.LIGHTGREEN);
+        table.setColor(8, row, super.backgroundColor);
         Text Tavail = (Text) super.theSmallBoldText.clone();
           Tavail.setText(iwrb.getLocalizedString("travel.available_seats","Available seats"));
         if (seats > 0) {
-          table.add(Tavail,1,row);
-          table.add(availableTextBold,7,row);
+          table.add(Tavail, 1, row);
+          table.add(availableTextBold, 7, row);
         }
 
 
