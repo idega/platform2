@@ -35,6 +35,7 @@ public class TournamentResultsDetailed extends JModuleObject {
   private int tournamentRound_ = -1;
 
   private Tournament tournament;
+  private TournamentRound tournamentRound;
   private Vector result = null;
   private Table myTable;
   private Text blackText;
@@ -59,6 +60,7 @@ public class TournamentResultsDetailed extends JModuleObject {
       iwrb = getResourceBundle(modinfo);
       iwb = getBundle(modinfo);
       tournament = new Tournament(tournamentId_);
+      tournamentRound = new TournamentRound(tournamentRound_);
       getMemberVector();
       setMemberVectorPastRounds();
       setMemberVectorAllRounds();
@@ -102,7 +104,7 @@ public class TournamentResultsDetailed extends JModuleObject {
           r.calculateCompareInfo();
         }
 
-        if ( r.getDismissal() == 0 || r.getDismissal() == 15 ) {
+        if ( r.getDismissal() == 0 || ( r.getDismissal() == 15 && tournamentRound.getRoundNumber() <= 2 ) ) {
           myTable.mergeCells(1,row+2,22,row+2);
           myTable.addText("",1,row+2);
           myTable.setHeight(1,row+2,"5");
