@@ -89,6 +89,17 @@ public class ProductCategoryBMPBean extends GenericEntity implements ProductCate
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
+		sql.append(BELONGS_TO);
+		sql.append(" = ");
+		sql.append(category);
+				
+		return (Collection)super.idoFindPKsBySQL(sql.toString());				
+	}
+	
+	public Collection ejbFindAllByCategory(String category) throws FinderException, RemoteException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
 		sql.append(CATEGORY);
 		sql.append(" = ");
 		sql.append(category);

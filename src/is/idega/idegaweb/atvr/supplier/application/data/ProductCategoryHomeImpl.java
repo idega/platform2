@@ -13,6 +13,13 @@ public class ProductCategoryHomeImpl extends com.idega.data.IDOFactory implement
  }
 
 
+public java.util.Collection findAllByCategory(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ProductCategoryBMPBean)entity).ejbFindAllByCategory(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllCategoriesBelongingTo(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ProductCategoryBMPBean)entity).ejbFindAllCategoriesBelongingTo(p0);

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.atvr.supplier.application.business;
 
-import javax.ejb.*;
 
 public interface NewProductApplicationBusiness extends com.idega.business.IBOService
 {
@@ -13,4 +12,5 @@ public interface NewProductApplicationBusiness extends com.idega.business.IBOSer
  public void insertApplication(is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication p0) throws java.rmi.RemoteException;
  public void markApplicationsAsSent(java.lang.String[] p0) throws java.rmi.RemoteException;
  public void markApplicationsAsSent(java.util.Collection p0) throws java.rmi.RemoteException;
+ public boolean storeProductCategory(java.lang.String p0,java.lang.String p1,java.lang.String p2) throws java.rmi.RemoteException;
 }
