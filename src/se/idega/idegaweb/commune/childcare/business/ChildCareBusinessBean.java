@@ -7,6 +7,7 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.NoCustodianFound;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -2061,47 +2062,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 
 			boolean hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
-
-			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-			ITextXMLHandler txtHandler = new ITextXMLHandler(ITextXMLHandler.TXT);
-			List pdfBuffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			List txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractTxtURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			if (pdfBuffers != null && pdfBuffers.size() == 1 && txtBuffers != null && txtBuffers.size() == 1) {
-				String contractText = txtHandler.bufferToString((MemoryFileBuffer) txtBuffers.get(0));
-				contractText = breakString(contractText, 80);
-				ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) pdfBuffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
-				ContractService service = (ContractService) getServiceInstance(ContractService.class);
-				Contract contract = service.getContractHome().create(((Integer) application.getOwner().getPrimaryKey()).intValue(), getContractCategory(), validFrom, null, "C", contractText);
-				int contractID = ((Integer) contract.getPrimaryKey()).intValue();
-
-				//contractFile.addTo(Contract.class,contractID);
-
-				contract.addFileToContract(contractFile);
-
-				application.setContractId(contractID);
-				if(validFrom!=null)
-				    application.setFromDate(validFrom.getDate());
-				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
-
-				String defaultContractCreatedBody = hasBankId ? "Your child care contract for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
-				String defaultContractChangedBody = hasBankId ? "Your child care contract with altered care time for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
-
-				String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
-				if (changeStatus) {
-					application.setApplicationStatus(getStatusContract());
-					changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
-
-					String subject = getLocalizedString("child_care.contract_created_subject", "A child care contract has been created", locale);
-					String body = getLocalizedString("child_care.contract_created_body" + localizeBankIdPrefix, defaultContractCreatedBody, locale);
-					sendMessageToParents(application, subject, body);
-				}
-				else {
-					changeCaseStatus(application, application.getCaseStatus().getStatus(), user);
-
-					String subject = getLocalizedString("child_care.alter_caretime_subject", "A contract with changed care time has been created", locale);
-					String body = getLocalizedString("child_care.alter_caretime_body" + localizeBankIdPrefix, defaultContractChangedBody, locale);
-					sendMessageToParents(application, subject, body);
-				}
+			
+			if(createContractContentToApplication(application,locale,validFrom,changeStatus,hasBankId)){
+			
+			    if(validFrom!=null)
+			        application.setFromDate(validFrom.getDate());
+			    
+			    if(changeStatus){
+			        application.setApplicationStatus(getStatusContract());
+		        		changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
+		        		createMessagesForParentsOnContractCreation(application, locale, hasBankId);
+			    }
+			    else{
+			    		changeCaseStatus(application, application.getCaseStatus().getStatus(), user);
+			    		createMessagesForParentsOnContractCareTimeAlter(application,locale,hasBankId);
+			    }
+			    
+				
 				int invoiceReceiverId = -1;
 				SchoolClassMember oldStudent = null;
 				if(oldArchiveID>0 ){//&& application.getContractFileId()>0){
@@ -2113,7 +2090,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
                     }
                    
 				}
-				addContractToArchive(-1,oldArchiveID,true, application,contractID, validFrom.getDate(), employmentTypeID,invoiceReceiverId,user,createNewStudent,schoolTypeId,schoolClassId, oldStudent);
+				addContractToArchive(-1,oldArchiveID,true, application,application.getContractId(), validFrom.getDate(), employmentTypeID,invoiceReceiverId,user,createNewStudent,schoolTypeId,schoolClassId, oldStudent);
 				application.store();
 			
 			}
@@ -2132,6 +2109,72 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		return true;
 	}
+
+	/**
+     * @param user
+     * @param locale
+     * @param changeStatus
+     * @param application
+     * @param hasBankId
+     * @param defaultContractCreatedBody
+     * @param defaultContractChangedBody
+     */
+    private void createMessagesForParentsOnContractCreation( ChildCareApplication application, Locale locale, boolean hasBankId) {
+        String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
+        String defaultContractCreatedBody = hasBankId ? "Your child care contract for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
+        	String subject = getLocalizedString("child_care.contract_created_subject", "A child care contract has been created", locale);
+        	String body = getLocalizedString("child_care.contract_created_body" + localizeBankIdPrefix, defaultContractCreatedBody, locale);
+        	sendMessageToParents(application, subject, body);
+    }
+    
+    private void createMessagesForParentsOnContractCareTimeAlter(ChildCareApplication application, Locale locale,  boolean hasBankId) {
+        String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
+        String defaultContractChangedBody = hasBankId ? "Your child care contract with altered care time for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
+        String subject = getLocalizedString("child_care.alter_caretime_subject", "A contract with changed care time has been created", locale);
+    		String body = getLocalizedString("child_care.alter_caretime_body" + localizeBankIdPrefix, defaultContractChangedBody, locale);
+    		sendMessageToParents(application, subject, body);
+        
+    }
+
+    private boolean createContractContentToApplication(ChildCareApplication application,Locale locale,IWTimestamp validFrom, boolean changeStatus,boolean hasBankId){
+		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
+		ITextXMLHandler txtHandler = new ITextXMLHandler(ITextXMLHandler.TXT);
+		try {
+            List pdfBuffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+            List txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractTxtURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+            if (pdfBuffers != null && pdfBuffers.size() == 1 && txtBuffers != null && txtBuffers.size() == 1) {
+            	String contractText = txtHandler.bufferToString((MemoryFileBuffer) txtBuffers.get(0));
+            	contractText = breakString(contractText, 80);
+            	ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) pdfBuffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
+            	ContractService service = (ContractService) getServiceInstance(ContractService.class);
+            	Contract contract = service.getContractHome().create(((Integer) application.getOwner().getPrimaryKey()).intValue(), getContractCategory(), validFrom, null, "C", contractText);
+            	int contractID = ((Integer) contract.getPrimaryKey()).intValue();
+            
+            	//contractFile.addTo(Contract.class,contractID);
+            	contract.addFileToContract(contractFile);
+            
+            	application.setContractId(contractID);
+            	application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
+            	return true;
+            }
+        } catch (IBOLookupException e) {
+            e.printStackTrace();
+        } catch (IDOLookupException e) {
+            e.printStackTrace();
+        } catch (IDOAddRelationshipException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (IWBundleDoesNotExist e) {
+            e.printStackTrace();
+        } catch (EJBException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+		return false;
+	}
+
 
 	private String breakString(String page, int maxLineLength) {
 		StringBuffer pageWrapped = new StringBuffer();
