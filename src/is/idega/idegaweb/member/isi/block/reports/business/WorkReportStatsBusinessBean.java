@@ -3972,6 +3972,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				regData.addData(multiDivisionMembers, new Integer(0));
 				regData.addData(singleDivisionPlayers, new Integer(0));
 				regData.addData(multiDivisionPlayers, new Integer(0));
+				reportCollection.add(regData);
 			}
 			
 			String cType = report.getType();
@@ -4080,6 +4081,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					regData.addData(multiDivisionMembers, new Integer(0));
 					regData.addData(singleDivisionPlayers, new Integer(0));
 					regData.addData(multiDivisionPlayers, new Integer(0));
+					reportCollection.add(regData);
 				}
 				
 				String cType = report.getType();
