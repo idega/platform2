@@ -310,7 +310,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	private void getDivisionStaff(IWContext iwc) {
 		List groups = StaffFinder.getAllGroups(iwc);
 		if (_sortGroupsAlphabetically)
-			Collections.sort(groups, new GenericGroupComparator(iwc.getCurrentLocale()));
+			Collections.sort(groups, new GenericGroupComparator(iwc));
 		boolean showDivision = true;
 		
 		Text divisionText = null;

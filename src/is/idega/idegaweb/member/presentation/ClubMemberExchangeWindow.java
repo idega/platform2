@@ -158,7 +158,7 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		}
 		
 		if(groups!=null){
-			GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
+			GroupComparator groupComparator = new GroupComparator(iwc);
 			groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
 			Collections.sort(groups, groupComparator);//sort alphabetically
 		}else{

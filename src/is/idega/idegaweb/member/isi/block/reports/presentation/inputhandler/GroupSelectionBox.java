@@ -139,7 +139,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	}
 
 	protected void sortList(IWContext iwc, List groups) throws RemoteException {
-		GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
+		GroupComparator groupComparator = new GroupComparator(iwc);
 		groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
 		Collections.sort(groups, groupComparator);//sort alphabetically
 	}
