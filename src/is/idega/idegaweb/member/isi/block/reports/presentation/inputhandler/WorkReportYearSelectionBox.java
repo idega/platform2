@@ -1,0 +1,101 @@
+/*
+ * Created on Dec 18, 2003
+ */
+package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
+
+/**
+ * Description: <br>
+ * Copyright: Idega Software 2003 <br>
+ * Company: Idega Software <br>
+ * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
+ */
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.idega.business.IBOLookup;
+import com.idega.business.InputHandler;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.util.IWTimestamp;
+
+public class WorkReportYearSelectionBox extends SelectionBox implements InputHandler {
+	
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	
+	private int year = IWTimestamp.getTimestampRightNow().getYear();
+	
+	
+	/**
+	 * Creates a new <code>RegionalUnionSelectionBox</code> with all regional unions.
+	 * @param name	The name of the <code>RegionalUnionSelectionBox</code>
+	 */
+	public WorkReportYearSelectionBox() {
+		super();
+	}
+	
+	public PresentationObject getHandlerObject(String name,String stringValue,IWContext iwc) {
+		this.setName(name);
+		SelectionBox yearInput=null;
+		try {
+			yearInput = getYearSelectionBox();
+			
+			yearInput.setName(name);
+			if(stringValue!=null){
+				yearInput.setSelectedElement(stringValue);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return yearInput;
+	}
+		
+	public Object getResultingObject(String[] values, IWContext iwc) throws Exception{
+		if(values!=null && values.length>0){
+			return new Integer(values[0]);
+		}
+		else return null;
+	}
+	
+	public String getDisplayNameOfValue(Object value, IWContext iwc) {
+		if(value!=null){
+			return value.toString();
+		}
+		else return "";
+	}
+		
+	public SelectionBox getYearSelectionBox() {
+		SelectionBox dateSelector = new SelectionBox();
+		IWTimestamp stamp = IWTimestamp.RightNow();
+
+		int currentYear = stamp.getYear();
+		int beginningYear = 2001;//Because we have no older data, could also be an application setting
+
+		for (int i = beginningYear; i <= currentYear; i++) {
+			dateSelector.addMenuElement(i,Integer.toString(i));
+		}
+		
+		return dateSelector;
+  	
+	}		
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+}
+	
+	
+	
+
+
