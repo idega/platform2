@@ -2,6 +2,7 @@ package com.idega.block.datareport.business;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -89,8 +90,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       print = getReport(dataSource, map, design);
     }
     catch (JRException ex)  {
-      System.err.println("[ReportBusiness]: Jasper print could not be generated.");
-      ex.printStackTrace(System.err);
+     logError("[ReportBusiness]: Jasper print could not be generated.");
+     log(ex);
       return null;
     }
     return print;
@@ -115,8 +116,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 		  exporter.exportReport();
     }
     catch (JRException ex)  {
-      System.err.println("[ReportBusiness]: Jasper print could not be generated.");
-      ex.printStackTrace(System.err);
+      logError("[ReportBusiness]: Jasper print could not be generated.");
+      log(ex);
       return null;
     }
     return getURIToReport(nameOfReport, HTML_FILE_EXTENSION,folderIdentifier);
@@ -127,12 +128,12 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     long folderIdentifier = System.currentTimeMillis();
     String path = getRealPathToReportFile(nameOfReport, PDF_FILE_EXTENSION,folderIdentifier);
     try {
-      JasperExportManager.exportReportToPdfFile(print, path);
+    	JasperExportManager.exportReportToPdfFile(print, path);
     }
     catch (JRException ex)  {
-      System.err.println("[ReportBusiness]: Jasper print could not be generated.");
-      ex.printStackTrace(System.err);
-      return null;
+    	logError("[ReportBusiness]: Jasper print could not be generated.");
+    	log(ex);
+    	return null;
     }
     return getURIToReport(nameOfReport, PDF_FILE_EXTENSION,folderIdentifier);
   }  
@@ -152,8 +153,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       exporter.exportReport();
     }
     catch (JRException ex)  {
-      System.err.println("[ReportBusiness]: Jasper print could not be generated.");
-      ex.printStackTrace(System.err);
+      logError("[ReportBusiness]: Jasper print could not be generated.");
+      log(ex);
       return null;
     }
     return getURIToReport(nameOfReport, EXCEL_FILE_EXTENSION,folderIdentifier);
@@ -304,21 +305,23 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     try {
       inputStream = reportDesign.getFileValue();
       JasperDesign design = JasperManager.loadXmlDesign(inputStream);
-      inputStream.close();
       DesignBox designBox = new DesignBox();
       designBox.setDesign(design);
       return designBox;
     }
-    catch (Exception ex)  {
-      System.err.println("[JasperReportBusiness]: File could not be read");
-      ex.printStackTrace(System.err);
+    catch (JRException jrEx) {
+    	logError("[JasperReportBusiness] Problems loading design");
+    	log(jrEx);
+    }
+    finally {
       try {
         inputStream.close();
       }
       catch (IOException streamEx)  {
+      	//do not hide an existing exception 
       }
-      return null;
     }
+    return null;
   }    
   
   public DesignBox getDynamicDesignBox(SQLQuery query, IWResourceBundle resourceBundle, IWContext iwc) throws IOException, JRException {
@@ -467,21 +470,27 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	  inputStream = new FileInputStream(new File(bundle.getRealPathWithFileNameString(layoutXMLFileName)));
 
 	  JasperDesign design = JasperManager.loadXmlDesign(inputStream);
-	  inputStream.close();
 	  return design;
 	}
-	catch (Exception ex)  {
-	  System.err.println("[JasperReportBusiness]: File could not be read");
-	  ex.printStackTrace(System.err);
+	catch (JRException ex)  {
+	  logError("[JasperReportBusiness]: File could not be loaded");
+	  log(ex);
+	}
+	catch (FileNotFoundException fileEx) {
+	  logError("[JasperReportBusiness]: File could not be loaded");
+	  log(fileEx);
+	}
+	finally {	
 	  try {
 	  	if(inputStream!=null){
 	  		inputStream.close();
 	  	}
 	  }
 	  catch (IOException streamEx)  {
+	  	// do not hide an existing exception
 	  }
-	  return null;
 	}
+	return null;
   }    
 
   private ICFile getFile(int fileId)  {
