@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.40 2001/09/25 02:15:24 eiki Exp $
+ * $Id: Link.java,v 1.41 2001/09/25 02:33:53 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -534,6 +534,8 @@ public class Link extends Text {
   public void setObject(ModuleObject object) {
     _obj = object;
     _objectType = OBJECT_TYPE_MODULEOBJECT;
+
+        _obj.setParentObject(this);
   }
 
   /**
@@ -542,6 +544,8 @@ public class Link extends Text {
   public void setImage(Image image) {
     _obj = image;
     _objectType = OBJECT_TYPE_MODULEOBJECT;
+
+        _obj.setParentObject(this);
   }
 
 
