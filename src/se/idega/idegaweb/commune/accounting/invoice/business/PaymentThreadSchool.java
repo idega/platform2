@@ -68,11 +68,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/12 11:36:16 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/12 11:46:40 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.99 $
+ * @version $Revision: 1.100 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -361,7 +361,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}
 			//Get all the resources for the child
 			Collection resources = getResourceBusiness().getResourcePlacementsByMemberId((Integer) schoolClassMember.getPrimaryKey());
-			log.info("Found " + resources.size() + " resources for " + schoolClassMember.getStudent().getName());
+// 			errorRelated.append("Found " + resources.size() + " resources");
 			ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated.toString());
 			for (Iterator i = resources.iterator(); i.hasNext();) {
 				ResourceClassMember resource = (ResourceClassMember) i.next();
