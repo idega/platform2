@@ -278,9 +278,7 @@ public class MemberOverview extends Block {
 	 */
 	private int insertSectionHeaderIntoTable(Table table, int row, String[] headers, Link link) {
 		int length = headers.length;
-		if(length<3 && length>0) {
-			table.mergeCells(2, row, 6 - length, row);
-		}
+		table.mergeCells(1+length, row, 5, row); // merges last column with value to last column (notice that the first column is the '+' or '-')
 		for(int i=0; i<length; i++) {
 			if(headers[i]!=null) {
 				Text histText = new Text(headers[i]);
@@ -341,9 +339,8 @@ public class MemberOverview extends Block {
 			if(categoryName==null) {
 				categoryName="";
 			}
-			System.out.println("Checking membership entry \"" + name + "\" of type " + categoryName);
 			if(!categoryName.equals(previousCategoryName)) {
-				table.mergeCells(2, row, 4, row);
+				table.mergeCells(2, row, 5, row);
 				table.setColor(2, row, _categoryColor);
 				table.add(categoryName, 2, row++);
 				previousCategoryName = categoryName;
