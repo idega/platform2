@@ -79,7 +79,7 @@ import com.idega.util.SendMail;
  */
 public abstract class AbstractSearchForm extends TravelBlock{
 
-	private boolean debug = true;
+	private boolean debug = false;
 	
 	protected String ACTION = "bsf_a";
 	protected String ACTION_SEARCH = "bsf_as";
