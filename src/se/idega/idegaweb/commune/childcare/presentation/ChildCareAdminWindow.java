@@ -2206,7 +2206,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						parentalLeave = Boolean.valueOf(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
 					}
 		
-					application = getBusiness().getApplication(_applicationID);
 					application.setApplicationStatus(getBusiness().getStatusParentTerminated());
 					application.setRequestedCancelDate(date.getDate());
 					application.setParentalLeave(parentalLeave);
