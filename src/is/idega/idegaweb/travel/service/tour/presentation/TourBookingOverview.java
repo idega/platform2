@@ -18,6 +18,8 @@ import com.idega.data.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.util.*;
+import com.sun.rsasign.b;
+
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.presentation.*;
@@ -534,12 +536,21 @@ public class TourBookingOverview extends AbstractBookingOverview {
 
       Object serviceType;
       User bUser;
+      int depAddressId = -1;
+      TravelAddress ta;
       Reseller bReseller;
       int idForLink = -1;
       for (int i = 0; i < bookings.length; i++) {
         ++row;
         booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(bookings[i].getPrimaryKey());
         serviceType = getBooker(iwc).getServiceType(product.getID());
+        ta = getBooker(iwc).getDepartureAddress(booking);
+        if (ta != null) {
+        	depAddressId = ta.getID();
+        }else {
+        	depAddressId = -1;
+        }
+        
 
         Tname = (Text) super.theSmallBoldText.clone();
         Tname.setText(bookings[i].getName());
@@ -598,6 +609,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
         link = (Link) changeLink.clone();
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,idForLink);
+				link.addParameter(TourBookingForm.parameterDepartureAddressId, trAddress.getID());
         table.add(link, 9, row);
         table.add(Text.NON_BREAKING_SPACE,9,row);
 
