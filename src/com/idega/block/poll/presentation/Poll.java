@@ -139,7 +139,7 @@ private int _layout = RADIO_BUTTON_VIEW;
   }
 
   private Link getAdminPart(int pollID,boolean newObjInst,boolean newWithAttribute) {
-    Image editImage = _iwrb.getLocalizedImageButton("edit","Edit");
+    Image editImage = _iwb.getImage("shared/edit.gif");
     //Link adminLink = new Link(_iwb.getImage("shared/edit.gif"));
     Link adminLink = new Link(editImage);
       adminLink.setWindowToOpen(PollAdminWindow.class,this.getICObjectInstanceID());
