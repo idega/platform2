@@ -249,7 +249,7 @@ public class PhoneFiles extends Block {
     List L = null;
     Hashtable H = null;
     try {
-      L = EntityFinder.findAll(((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy());
+      L = EntityFinder.getInstance().findAll(PhoneFileInfo.class);
       if(L!= null){
         int len = L.size();
         H = new Hashtable(len);
@@ -259,7 +259,7 @@ public class PhoneFiles extends Block {
         }
       }
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
     return H;

@@ -112,12 +112,12 @@ public class SysPropsSetter extends Block{
   public static SystemProperties seekProperties(){
     SystemProperties SysProps = null;
     try {
-      List L = EntityFinder.findAll(((is.idega.idegaweb.campus.data.SystemPropertiesHome)com.idega.data.IDOLookup.getHomeLegacy(SystemProperties.class)).createLegacy());
+      List L = EntityFinder.getInstance().findAll(SystemProperties.class);
       if(L!=null){
        SysProps = (SystemProperties) L.get(0);
       }
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
     return SysProps;
