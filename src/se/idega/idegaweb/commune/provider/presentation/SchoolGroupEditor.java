@@ -496,14 +496,14 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		//study paths...
 		
+		//added 23.February - ac
+		form.maintainAllParameters();
+		
 		Link link = new Link(localize("create_school_user", "Create school user"));
 		link.setAsImageButton(true);
 		link.setWindowToOpen(com.idega.block.school.presentation.SchoolUserWindow.class);
 		link.setParameter("sue_act", "sue_pvs");
 		link.setParameter("pr_schl_id", _provider.getPrimaryKey().toString());
-		
-		//	added 23.February - ac
-		link.setToMaintainAllParameter(true);
 		
 		table.add(link, 3, row++);
 
