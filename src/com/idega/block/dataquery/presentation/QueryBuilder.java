@@ -23,6 +23,7 @@ import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryEntityPart;
 import com.idega.block.dataquery.business.QueryFieldPart;
 import com.idega.block.dataquery.business.QueryHelper;
+import com.idega.block.dataquery.business.QueryOrderConditionPart;
 import com.idega.block.dataquery.business.QueryPart;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
@@ -91,6 +92,7 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_SOURCE = "source_entity";
 	private static final String PARAM_RELATED = "related_entity";
 	private static final String PARAM_FIELDS = "entity_fields";
+	private static final String PARAM_ORDER_FIELDS = "order_fields";
 	private static final String PARAM_CONDITION = "field_pattern";
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
@@ -371,10 +373,12 @@ public class QueryBuilder extends Block {
 				return processStep3(iwc);
 			case 4 :
 				return processStep4(iwc);
+			case 5:
+				return processStep5(iwc);
 		}
 		return false;
 	}
-	private boolean processStep4(IWContext iwc) {
+	private boolean processStep5(IWContext iwc) {
 		/*
 		helper.clearConditions();
 		String[] conditions = iwc.getParameterValues(PARAM_CONDITION);
@@ -420,6 +424,30 @@ public class QueryBuilder extends Block {
 		}
 		return false;
 	}
+	
+	private boolean processStep4(IWContext iwc) {
+		helper.clearOrderConditions();
+		String[] orderConditions = null;
+		if (iwc.isParameterSet(PARAM_ORDER_FIELDS))	{
+			orderConditions = iwc.getParameterValues(PARAM_ORDER_FIELDS);
+		}
+		else if (iwc.isParameterSet(PARAM_ORDER_FIELDS + "_left"))	{
+			orderConditions = iwc.getParameterValues(PARAM_ORDER_FIELDS + "_left");
+		}
+		if (orderConditions != null) {
+			for (int i = 0; i < orderConditions.length; i++) {
+				QueryOrderConditionPart part = QueryOrderConditionPart.decode(orderConditions[i]);
+				if (part != null)
+					helper.addOrderCondition(part);
+			}
+			return helper.hasOrderConditions();
+		}
+		return false;
+	}
+
+	
+	
+	
 	private boolean processStep2(IWContext iwc) {
 		helper.clearRelatedEntities();
 		if (iwc.isParameterSet(PARAM_RELATED)) {
@@ -471,7 +499,7 @@ public class QueryBuilder extends Block {
 		}
 	}
 	
-	private boolean processStep5(IWContext iwc) throws IOException	{
+	private boolean processStep6(IWContext iwc) throws IOException	{
 		helper.setTemplate(true);
 		String name = iwc.getParameter(PARAM_QUERY_NAME);
 		if (name == null) {
@@ -863,6 +891,92 @@ public class QueryBuilder extends Block {
 		return table;
 	}
 	
+	public PresentationObject getStep4(IWContext iwc) throws RemoteException {
+		QueryService service = getQueryService(iwc);
+		Table table = getStepTable();
+
+		int row = 2;
+		
+		List entities = helper.getListOfRelatedEntities();
+		if (entities == null)
+			entities = new Vector();
+		Iterator relatedEntitiesIterator = entities.iterator();
+		List listOfFields = helper.getOrderConditions();
+		if (listOfFields == null)
+			listOfFields = new Vector();
+		Map fieldMap = getQueryPartMap(listOfFields);
+		SelectionDoubleBox box = new SelectionDoubleBox(PARAM_ORDER_FIELDS + "_left", PARAM_ORDER_FIELDS);
+		box.getLeftBox().setTextHeading(getMsgText(iwrb.getLocalizedString("available_fields", "Available fields")));
+		box.getRightBox().setTextHeading(getMsgText(iwrb.getLocalizedString("chosen_fields", "Chosen fields")));
+		box.getRightBox().addUpAndDownMovers();
+		box.getRightBox().setWidth("400");
+		box.getLeftBox().setWidth("400");
+		box.getRightBox().setHeight("20");
+		box.getLeftBox().setHeight("20");
+		box.getRightBox().selectAllOnSubmit();
+		
+		// in simple mode source entity is not set
+		QueryEntityPart entityPart;
+		if (helper.hasSourceEntity()) {
+			entityPart = helper.getSourceEntity();
+			// box is filled with values from the source entity
+			fillFieldSelectionBox(service, entityPart, fieldMap, box);
+		}
+		
+		// box is filled with results field from the previous query
+		if (helper.hasPreviousQuery())	{
+			List resultFields = new ArrayList();
+			QueryHelper previousQuery = helper.previousQuery();
+			String previousQueryName = previousQuery.getName();
+			List fields = previousQuery.getListOfFields();
+			Iterator fieldIterator = fields.iterator();
+			while (fieldIterator.hasNext())	{
+				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+				String display = fieldPart.getDisplay();
+				String type = fieldPart.getTypeClass();
+							
+				QueryFieldPart newFieldPart = 
+					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type, false);
+				resultFields.add(newFieldPart);
+			}
+			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
+		}
+
+		// box is filled with values from the previous 
+		while (relatedEntitiesIterator.hasNext()) {
+			entityPart = (QueryEntityPart) relatedEntitiesIterator.next();
+			fillFieldSelectionBox(service, entityPart, fieldMap, box);
+		}
+		if(!fieldMap.isEmpty()){
+			Iterator iter = fieldMap.values().iterator();
+			while(iter.hasNext()){
+				QueryFieldPart part = (QueryFieldPart) iter.next();
+				String entity = iwrb.getLocalizedString(part.getEntity(), part.getEntity());
+				String display =iwrb. getLocalizedString(part.getDisplay(), part.getDisplay());
+				
+				box.getRightBox().addElement(part.encode(), entity + " -> " + display); 
+			}
+		}
+		table.add(box, 2, row);
+		
+		row++;
+		if(allowFunctions){
+			table.add(getFunctionTable(),2,row);
+		}
+		if (hasTemplatePermission) {
+			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
+			lockCheck.setChecked(helper.isFieldsLock());
+			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
+			table.add(lockCheck, 2, row);
+		}
+		
+		
+		return table;
+	}
+	
+	
+	
+	
 	private PresentationObject getFunctionTable(){
 		Table table = new Table(8,2);
 		int col = 1;
@@ -888,6 +1002,8 @@ public class QueryBuilder extends Block {
 		return table;
 	}
 	
+	// fills the right and the left list of the specified box depending on values set in fieldMap
+	// values are retrieved from the specified entityPart
 	private void fillFieldSelectionBox(
 		QueryService service,
 		QueryEntityPart entityPart,
@@ -914,6 +1030,9 @@ public class QueryBuilder extends Block {
 		}
 	}
 
+	
+	// fills the right and the left list of the specified box depending on values set in fieldMap
+	// values are retrieved from the specified choiceFields
 	private void fillFieldSelectionBox(
 		String entityName,
 		List choiceFields,
@@ -942,34 +1061,7 @@ public class QueryBuilder extends Block {
 
 
 
-	public PresentationObject getStep4Old(IWContext iwc) {
-		Table table = getStepTable();
-		int row = 1;
-		table.add(getMsgText(iwrb.getLocalizedString("field_display", "Display")), 2, row);
-		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 3, row);
-		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 4, row);
-		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
-		row++;
-		DropdownMenu drp = getConditionTypeDropdown();
-		Iterator iter = helper.getListOfFields().iterator();
-		Map mapOfFieldConditions = getConditionsMapByFieldName();
-		while (iter.hasNext()) {
-			QueryFieldPart part = (QueryFieldPart) iter.next();
-			table.add(part.getDisplay(), 2, row);
-			table.add(iwrb.getLocalizedString(part.getEntity(), part.getEntity()), 3, row);
-			//table.add(iwrb.getLocalizedString(part.getTypeClass(), part.getTypeClass()), 4, row);
-			table.add(drp, 4, row);
-			TextInput conditionInput = new TextInput(PARAM_CONDITION);
-			if (mapOfFieldConditions.containsKey(part.getName())) {
-				conditionInput.setContent(((QueryConditionPart) mapOfFieldConditions.get(part.getName())).getPattern());
-			}
-			table.add(conditionInput, 5, row);
-			row++;
-		}
-		return table;
-	}
-
-	public PresentationObject getStep4(IWContext iwc) throws RemoteException {
+	public PresentationObject getStep5(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		int row = 1;
 		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 2, row);
@@ -1033,7 +1125,7 @@ public class QueryBuilder extends Block {
 		return table;
 	}
 
-	public PresentationObject getStep5(IWContext iwc) throws RemoteException {
+	public PresentationObject getStep6(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		int row = 1;
 		// thomas changed: do not use the FileChooser 
