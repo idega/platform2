@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.15 2003/01/02 18:56:55 eiki Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.16 2003/01/08 09:15:12 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		super.addGeneralCaseRelation();
 		addAttribute (NAME, "Name", true, true, String.class, 100);
 		addAttribute (SSN, "SSN", true, true, String.class, 40);
-		addAttribute (EMAIL, "E-mail", true, true, String.class, 40);
+		addAttribute (EMAIL, "E-mail", true, true, String.class, 255);
 		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
 		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
         addAttribute (STREET, "street", true, true, String.class, 40);
