@@ -52,6 +52,7 @@ import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
+import com.idega.block.pdf.ITextXMLHandler;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
@@ -69,7 +70,6 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
-import com.idega.io.ITextXMLHandler;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
