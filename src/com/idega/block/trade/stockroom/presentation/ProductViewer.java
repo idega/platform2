@@ -49,6 +49,7 @@ public class ProductViewer extends Block {
   Image _productImage;
   boolean _showProductLink = false;
   boolean _showTeaser = false;
+  boolean _showThumbnail = false;
   String _spaceBetween = "3";
   boolean _showImages = true;
 
@@ -244,6 +245,10 @@ public class ProductViewer extends Block {
 
   public void setShowTeaser(boolean showTeaser) {
     _showTeaser = showTeaser;
+  }
+
+  public void setShowThumbnail(boolean showThumbnail) {
+    _showThumbnail = showThumbnail;
   }
 
   public void setSpaceBetweenTitleAndBody(String spaceBetween) {

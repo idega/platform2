@@ -98,19 +98,33 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
       imageTable.setCellpadding(0);
       imageTable.setCellspacing(0);
       imageTable.setAlignment(productViewer._imageAlignment);
-      ProductItemImages pii = new ProductItemImages(_product);
-	pii.setVerticalView(true);
-	pii.setImageAlignment(Table.HORIZONTAL_ALIGN_CENTER);
+      if ( productViewer._showThumbnail ) {
+	ProductItemThumbnail thumb = new ProductItemThumbnail(_product);
 	if ( productViewer._imageWidth != null ) {
 	  try {
-	    pii.setWidth(Integer.parseInt(productViewer._imageWidth));
+	    thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
 	  }
 	  catch (NumberFormatException e) {
-	    pii.setWidth(0);
 	  }
 	}
-      imageTable.add(pii);
-      table.add(imageTable, 1, row);
+	imageTable.add(thumb);
+	table.add(imageTable, 1, row);
+      }
+      else {
+	ProductItemImages pii = new ProductItemImages(_product);
+	  pii.setVerticalView(true);
+	  pii.setImageAlignment(Table.HORIZONTAL_ALIGN_CENTER);
+	  if ( productViewer._imageWidth != null ) {
+	    try {
+	      pii.setWidth(Integer.parseInt(productViewer._imageWidth));
+	    }
+	    catch (NumberFormatException e) {
+	      pii.setWidth(0);
+	    }
+	  }
+	imageTable.add(pii);
+	table.add(imageTable, 1, row);
+      }
     }
     table.add(description, 1, row);
 
@@ -132,8 +146,4 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
     return table;
   }
-
-
-
 }
-
