@@ -106,7 +106,23 @@ public class HandicapInfo extends GolfBlock {
 
 		}
 
-		drawTable(modinfo);
+		try {
+			drawTable(modinfo);
+		}
+		catch (FinderException fe) {
+			Table noTable = new Table();
+			noTable.setAlignment("center");
+			noTable.setCellpadding(12);
+			noTable.setCellspacing(12);
+
+			Text texti = getHeader(iwrb.getLocalizedString("handicap.member_no_handicap", "Member does not have a registered handicap."));
+			texti.addBreak();
+			texti.addBreak();
+			texti.addToText(iwrb.getLocalizedString("handicap.handicap_help", "Contact your club to get your handicap."));
+
+			noTable.add(texti);
+			add(noTable);
+		}
 	}
 
 	private void drawTable(IWContext iwc) throws IOException, SQLException, FinderException {
