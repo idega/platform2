@@ -53,8 +53,8 @@ private boolean cacheImagesToFiles = true;
                   conn = getConnection();
                   Stmt = conn.createStatement();
 
-                  RS = Stmt.executeQuery("select * from image where image_id='"+imageId+"'");
-                  Blob myBlob=null;
+                  RS = Stmt.executeQuery("select image_value,content_type from image where image_id='"+imageId+"'");
+                 // Blob myBlob=null;
                   String filename = null;
                   InputStream myInputStream = null;
 
@@ -85,7 +85,7 @@ private boolean cacheImagesToFiles = true;
 
 
 //
-                          if(cacheImagesToFiles) cacheImageToFile(imageId);
+//                          if(cacheImagesToFiles) cacheImageToFile(imageId);
 
                           output.flush();
                           output.close();
