@@ -1305,9 +1305,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER + age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 
-		ReportableField bothGendersEqualOverAge = new ReportableField("bothGendersEqualOverAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER + age, "all "+age+"+"), currentLocale);
-		reportCollection.addField(bothGendersEqualOverAge);
+		ReportableField bothGendersEqualOrOverAge = new ReportableField("bothGendersEqualOrOverAge", Integer.class);
+		bothGendersEqualOrOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER + age, "all "+age+"+"), currentLocale);
+		reportCollection.addField(bothGendersEqualOrOverAge);
 			
 		ReportableField bothGendersAllAge = new ReportableField("bothGendersAllAge", Integer.class);
 		bothGendersAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all "), currentLocale);
@@ -1342,7 +1342,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData.addData(womenOverOrEqualAgeLimit, new Integer(womenMembersEqualOrOver));
 			regData.addData(menUnderAge, new Integer(menMembersUnder));
 			regData.addData(menOverOrEqualAgeLimit, new Integer(menMembersEqualOrOver));
-			regData.addData(bothGendersEqualOverAge, new Integer(menMembersEqualOrOver + womenMembersEqualOrOver));
+			regData.addData(bothGendersEqualOrOverAge, new Integer(menMembersEqualOrOver + womenMembersEqualOrOver));
 			regData.addData(bothGendersUnderAge, new Integer(menMembersUnder + womenMembersUnder));
 			regData.addData(bothGendersAllAge, new Integer(menMembersUnder + womenMembersUnder + menMembersEqualOrOver + womenMembersEqualOrOver));
 			
@@ -1809,7 +1809,12 @@ private ReportableData addToIntegerCount(ReportableField reportableField, Report
 		if(count!=null) {
 			count = new Integer(count.intValue()+intToAdd);
 		} else {
-			count = new Integer(0);
+			if(intToAdd>0){
+				count = new Integer(intToAdd);
+			}
+			else{
+				count = new Integer(0);
+			}
 		}
 		reportableData.addData(reportableField,count);//swap
 	}
