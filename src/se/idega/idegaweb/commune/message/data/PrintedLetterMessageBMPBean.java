@@ -524,12 +524,18 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	//TODO Handle this in more general way...
-	public Collection ejbFindLettersByChildcare(int providerID) throws FinderException {
+	public Collection ejbFindLettersByChildcare(int providerID, String ssn, String msgId) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getEntityName()+" m, proc_case p, comm_childcare c");
+		sql.appendSelectAllFrom(this.getEntityName()+" m, proc_case p, comm_childcare c, ic_user u");
 		sql.appendWhereEquals("m.msg_letter_message_id","p.proc_case_id");
 		sql.appendAndEquals("p.parent_case_id", "c.comm_childcare_id");
 		sql.appendAndEquals("c.provider_id", providerID);
+/*		if (ssn != null){
+			sql.appendAndEquals("p.user_id", "u.ic_user_id");
+			sql.appendAndEquals("u.personal_id", ssn);
+		}
+*/		
+		System.out.println("########### SQL: " + sql.toString());
 		return this.idoFindPKsByQuery(sql);
 	}
 }
