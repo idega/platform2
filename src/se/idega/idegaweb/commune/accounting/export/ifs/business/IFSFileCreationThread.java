@@ -982,6 +982,46 @@ public class IFSFileCreationThread extends Thread {
 						bWriter.write(empty.substring(0, 15));
 						bWriter.newLine();
 
+						//Extra line for BETA system
+						//Posttype
+						bWriter.write("62");
+						//Filler
+						bWriter.write(empty.substring(0, 10));
+						//Belopp
+						bWriter.write("000000000000000");
+						//Antal
+						bWriter.write("000000000000000");
+						//Apris
+						bWriter.write("000000000000");
+						//moms, filler
+						bWriter.write(empty.substring(0, 1));
+						bWriter.write("0");
+						//Avser period f.o.m
+						bWriter.write("00000000");
+						//Avser period t.o.m
+						bWriter.write("00000000");
+						//Faktura text 1 + Filler
+						if (periodText.length() < 36) {
+						    StringBuffer p = new StringBuffer(periodText);
+						    while (p.length() < 36)
+						        p.append(' ');
+						
+						    periodText = p.toString();
+						} else if (periodText.length() > 36) {
+						    periodText = periodText.substring(0, 36);
+						}
+						bWriter.write(periodText);
+						//Faktura text 2
+						bWriter.write("--------------------");
+						//Faktura text 2, 3 and 4
+						bWriter.write(empty.substring(0, 88));
+						//Kod
+						bWriter.write('T');
+						//Filler
+						bWriter.write(empty.substring(0, 33));
+						numberOf62Lines++;
+						bWriter.newLine();
+						
 						while (irIt.hasNext()) {
 							InvoiceRecord iRec = (InvoiceRecord) irIt.next();
 							String posting = iRec.getOwnPosting();
@@ -1099,8 +1139,8 @@ public class IFSFileCreationThread extends Thread {
 								// Kvantitet and Apris
 								bWriter.write("000000000000001");
 								bWriter.write(amount.substring(2, 14));
-								// Ansvar
-								String tmp = pb.findFieldInStringByName(posting, "Ansvar");
+								// Konto
+								String tmp = pb.findFieldInStringByName(posting, "Konto");
 								if (tmp.length() < 10) {
 									StringBuffer post = new StringBuffer(tmp);
 									while (post.length() < 10)
@@ -1111,8 +1151,8 @@ public class IFSFileCreationThread extends Thread {
 									tmp = tmp.substring(0, 10);
 								}
 								bWriter.write(tmp);
-								// Konto
-								tmp = pb.findFieldInStringByName(posting, "Konto");
+								// Ansvar
+								tmp = pb.findFieldInStringByName(posting, "Ansvar");
 								if (tmp.length() < 10) {
 									StringBuffer post = new StringBuffer(tmp);
 									while (post.length() < 10)
