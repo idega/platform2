@@ -209,7 +209,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   	.appendAnd().append(SCHOOL).appendEqualSign().append(((Integer)school.getPrimaryKey()).intValue())
   	.appendAnd().append(SCHOOLYEAR).appendEqualSign().append(((Integer)schoolYear.getPrimaryKey()).intValue())
   	.appendAnd().append(SEASON).appendEqualSign().append(((Integer)schoolSeason.getPrimaryKey()).intValue())
-  	.appendAnd().appendLeftParenthesis().append(COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes(VALID).appendOr().append(VALID).append(" is null").appendRightParenthesis();
+  	.appendAnd().appendLeftParenthesis().append(COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes(VALID).appendOr().append(COLUMN_VALID).append(" is null").appendRightParenthesis();
 
   	return (Integer)super.idoFindOnePKBySQL(sql.toString());
   }
