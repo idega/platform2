@@ -109,12 +109,13 @@ public class BookingOverview extends JModuleObject {
       idegaTimestamp stamp = null;
       String from_time = modinfo.getParameter("active_from");
       if (from_time!= null) {
-          try {
+          stamp = new idegaTimestamp(from_time);
+          /*try {
               stamp = new idegaTimestamp(from_time);
           }
           catch (Exception e) {
               stamp = idegaTimestamp.RightNow();
-          }
+          }*/
       }
       else {
           stamp = idegaTimestamp.RightNow();
@@ -127,13 +128,14 @@ public class BookingOverview extends JModuleObject {
       idegaTimestamp stamp = null;
       String from_time = modinfo.getParameter("active_to");
       if (from_time!= null) {
-          try {
+          stamp = new idegaTimestamp(from_time);
+          /*try {
               stamp = new idegaTimestamp(from_time);
           }
           catch (Exception e) {
               stamp = idegaTimestamp.RightNow();
               stamp.addDays(15);
-          }
+          }*/
       }
       else {
           stamp = idegaTimestamp.RightNow();
