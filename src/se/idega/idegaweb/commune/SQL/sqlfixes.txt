@@ -221,5 +221,869 @@ select * from IC_POSTAL_CODE;
 commit;
 
 
+------------
+SQL code for deleting people with protected identities
+
+  12:30:15  [SELECT - 0 rows, 1.075 sec]  ORA-00907: missing right parenthesis
+select personal_id, ic_user_id from ic_user where personal_id in (198802011406
+198812020116,
+198911070632,
+198911110073,
+199001011205,
+199007133680,
+199010024249,
+199103132917,
+199104171690,
+199109102021,
+199111025327,
+199204090980,
+199206291743,
+199306089237,
+199306256349,
+199403270235,
+199410229604,
+199504237067,
+199509028727,
+199603204620,
+199603304347,
+199606138205,
+199607089605,
+199611030108,
+199704047365,
+199711247636,
+199712095893);
+... 1 statement executed, 0 rows affected
+
+  12:30:32  [SELECT - 20 rows, 1.944 sec]  ORA-01722: invalid number
+select personal_id, ic_user_id from ic_user where personal_id in (198802011406,
+198812020116,
+198911070632,
+198911110073,
+199001011205,
+199007133680,
+199010024249,
+199103132917,
+199104171690,
+199109102021,
+199111025327,
+199204090980,
+199206291743,
+199306089237,
+199306256349,
+199403270235,
+199410229604,
+199504237067,
+199509028727,
+199603204620,
+199603304347,
+199606138205,
+199607089605,
+199611030108,
+199704047365,
+199711247636,
+199712095893);
+... 1 statement executed, 20 rows affected
+
+  12:31:33  [SELECT - 21 rows, 0.831 sec]  Result set fetched
+select personal_id, ic_user_id from ic_user where personal_id in ('198802011406',
+'198812020116',
+'198911070632',
+'198911110073',
+'199001011205',
+'199007133680',
+'199010024249',
+'199103132917',
+'199104171690',
+'199109102021',
+'199111025327',
+'199204090980',
+'199206291743',
+'199306089237',
+'199306256349',
+'199403270235',
+'199410229604',
+'199504237067',
+'199509028727',
+'199603204620',
+'199603304347',
+'199606138205',
+'199607089605',
+'199611030108',
+'199704047365',
+'199711247636',
+'199712095893');
+... 1 statement executed, 21 rows affected
+
+  12:37:33  [SELECT - 1 row, 0.841 sec]  Result set fetched
+select count(*) from ic_user where personal_id in ('198802011406',
+'198812020116',
+'198911070632',
+'198911110073',
+'199001011205',
+'199007133680',
+'199010024249',
+'199103132917',
+'199104171690',
+'199109102021',
+'199111025327',
+'199204090980',
+'199206291743',
+'199306089237',
+'199306256349',
+'199403270235',
+'199410229604',
+'199504237067',
+'199509028727',
+'199603204620',
+'199603304347',
+'199606138205',
+'199607089605',
+'199611030108',
+'199704047365',
+'199711247636',
+'199712095893');
+... 1 statement executed, 1 row affected
+
+  12:38:37  [SELECT - 21 rows, 0.794 sec]  Result set fetched
+select * from ic_user where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 21 rows affected
+
+  12:40:04  [DELETE - 0 rows, 1.165 sec]  ORA-02292: integrity constraint (NACKA241.SYS_C004354) violated - child record found
+delete from ic_user where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:42:47  [DELETE - 0 rows, 0.796 sec]  ORA-00942: table or view does not exist
+delete from ic_user_addres where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:42:55  [DELETE - 17 rows, 0.457 sec]  Command processed
+delete from ic_user_address where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 17 rows affected
+
+  12:43:21  [DELETE - 0 rows, 0.992 sec]  ORA-02292: integrity constraint (NACKA241.SYS_C004232) violated - child record found
+delete from ic_user where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:44:26  [DELETE - 21 rows, 2.349 sec]  Command processed
+delete from ic_address where not ic_address_id in (select ic_address_id from ic_user_address);
+... 1 statement executed, 21 rows affected
+
+  12:44:42  [COMMIT - 0 rows, 0.375 sec]  Command processed but no rows were affected
+commit;
+... 1 statement executed, 0 rows affected
+
+  12:46:02  [DELETE - 0 rows, 0.801 sec]  ORA-00942: table or view does not exist
+delete from sch_class where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:46:52  [DELETE - 0 rows, 0.426 sec]  Command processed but no rows were affected
+delete from sch_school_class where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:47:10  [SELECT - 0 rows, 0.910 sec]  Empty result set fetched
+select *  from sch_school_class where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:47:34  [SELECT - 0 rows, 0.788 sec]  ORA-00904: "IC_USER_ID": invalid identifier
+select *  from proc_case where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:47:43  [SELECT - 0 rows, 0.820 sec]  ORA-00904: "OWNER_ID": invalid identifier
+select *  from proc_case where owner_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:48:05  [SELECT - 0 rows, 0.859 sec]  Empty result set fetched
+select *  from proc_case where user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:48:36  [SELECT - 0 rows, 0.768 sec]  Empty result set fetched
+select *  from cc_check where child_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:48:44  [SELECT - 0 rows, 0.811 sec]  ORA-00942: table or view does not exist
+select *  from granted_check where child_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:48:56  [SELECT - 0 rows, 0.879 sec]  Empty result set fetched
+select *  from cc_granted_check where child_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:50:47  [SELECT - 0 rows, 0.807 sec]  ORA-00904: "USER_ID": invalid identifier
+select * from ic_user_email where user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:50:54  [SELECT - 0 rows, 0.828 sec]  Empty result set fetched
+select * from ic_user_email where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:51:01  [SELECT - 0 rows, 0.956 sec]  Empty result set fetched
+select * from ic_user_phone where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:51:09  [SELECT - 0 rows, 0.744 sec]  ORA-00942: table or view does not exist
+select * from ic_user_group where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:51:18  [SELECT - 0 rows, 0.779 sec]  Empty result set fetched
+select * from ic_group_user where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:51:42  [DELETE - 0 rows, 1.110 sec]  ORA-02292: integrity constraint (NACKA241.SYS_C004232) violated - child record found
+delete from ic_user where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:55:29  [SELECT - 2 rows, 0.838 sec]  Result set fetched
+select * from sch_class_member where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 2 rows affected
+
+  12:56:06  [DELETE - 2 rows, 0.459 sec]  Command processed
+delete from sch_class_member where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 2 rows affected
+
+  12:56:33  [DELETE - 21 rows, 1.734 sec]  Command processed
+delete from ic_user where ic_user_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 21 rows affected
+
+  12:56:44  [COMMIT - 0 rows, 0.400 sec]  Command processed but no rows were affected
+commit;
+... 1 statement executed, 0 rows affected
+
+  12:57:15  [DELETE - 28 rows, 3.051 sec]  Command processed
+delete from ic_group_relation where ic_group_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 28 rows affected
+
+  12:57:41  [DELETE - 56 rows, 1.096 sec]  Command processed
+delete from ic_group_relation where related_ic_group_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 56 rows affected
+
+  12:57:54  [DELETE - 0 rows, 1.276 sec]  ORA-02292: integrity constraint (NACKA241.SYS_C004374) violated - child record found
+delete from ic_group where ic_group_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:59:26  [DELETE - 0 rows, 0.786 sec]  ORA-00904: "IC_GROUP_ID": invalid identifier
+delete from ic_group_domain_relation where ic_group_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 0 rows affected
+
+  12:59:40  [DELETE - 21 rows, 0.738 sec]  Command processed
+delete from ic_group_domain_relation where related_ic_group_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 21 rows affected
+
+  12:59:54  [DELETE - 21 rows, 1.828 sec]  Command processed
+delete from ic_group where ic_group_id in (
+82317,
+83214,
+84299,
+84304,
+84446,
+85106,
+85399,
+85955,
+86100,
+86581,
+86762,
+87328,
+87619,
+88857,
+88923,
+89816,
+90533,
+91149,
+91615,
+92461,
+93325);
+... 1 statement executed, 21 rows affected
+
+  13:00:05  [COMMIT - 0 rows, 0.509 sec]  Command processed but no rows were affected
+commit;
+... 1 statement executed, 0 rows affected
+
 
 
