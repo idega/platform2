@@ -78,15 +78,14 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setWidth(1,"50%");
 		table.setWidth(2,"50%");
-		table.setWidth(3,"10");
-		table.setWidth(4,"10");
-		table.setWidth(1,"50%");
-		table.setCellpadding(1);
-		table.setCellspacing(0);
+		table.setWidth(3,"12");
+		table.setWidth(4,"12");
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(getCellspacing());
 
 		int row = 1;
-		table.add(getHeader(localize("school.class_name", "Class name")),1,row);
-		table.add(getHeader(localize("school.teacher", "Teacher")),2,row);
+		table.add(getSmallHeader(localize("school.class_name", "Class name")),1,row);
+		table.add(getSmallHeader(localize("school.teacher", "Teacher")),2,row);
 		HiddenInput classID = new HiddenInput(getSession().getParameterSchoolClassID(),"-1");
 		if (action == ACTION_EDIT)
 			classID.setValue(getSchoolClassID());
@@ -101,16 +100,21 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 				if ( element.getTeacherId() != -1 )
 					teacher = getUserBusiness(iwc).getUser(element.getTeacherId());
 				
-				SubmitButton edit = (SubmitButton) getStyledInterface(new SubmitButton(localize("school.edit","Edit"),PARAMETER_ACTION,String.valueOf(ACTION_EDIT)));
+				SubmitButton edit = (SubmitButton) getStyledInterface(new SubmitButton(getEditIcon(""),PARAMETER_ACTION,String.valueOf(ACTION_EDIT)));
 				edit.setValueOnClick(getSession().getParameterSchoolClassID(), element.getPrimaryKey().toString());
 				edit.setDescription(localize("school.edit_class","Edit this class"));
 
-				SubmitButton delete = (SubmitButton) getStyledInterface(new SubmitButton(localize("school.delete","Delete"),PARAMETER_ACTION,String.valueOf(ACTION_DELETE)));
+				SubmitButton delete = (SubmitButton) getStyledInterface(new SubmitButton(getDeleteIcon(""),PARAMETER_ACTION,String.valueOf(ACTION_DELETE)));
 				delete.setValueOnClick(getSession().getParameterSchoolClassID(), element.getPrimaryKey().toString());
 				delete.setDescription(localize("school.delete_class","Delete this class"));
 				if (getBusiness().getSchoolClassBusiness().getNumberOfStudentsInClass(((Integer)element.getPrimaryKey()).intValue()) > 0)
 					delete.setSubmitConfirm(localize("school.confirm_class_delete","This class has students, delete anyway?"));
 				
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+
 				if (action == ACTION_EDIT && getSchoolClassID() == ((Integer)element.getPrimaryKey()).intValue()) {
 					TextInput nameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CLASS_NAME));
 					nameInput.setValue(element.getName());
@@ -144,6 +148,8 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 			table.add(teacherInput,2,row++);
 		}
 		
+		table.setHeight(row++, 6);
+		
 		SubmitButton newButton = (SubmitButton) getStyledInterface(new SubmitButton(localize("school.new","New"),PARAMETER_ACTION,String.valueOf(ACTION_NEW)));
 		newButton.setDescription(localize("school.create_new_class","Create new clas"));
 		newButton.setValueOnClick(getSession().getParameterSchoolClassID(), "-1");
@@ -156,9 +162,7 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		if (action == ACTION_EDIT || action == ACTION_NEW)
 			table.add(submit,1,row);
 		table.mergeCells(1, row, table.getColumns(), row);
-		table.setHorizontalZebraColored("#EFEFEF", "#FFFFFF");
-		table.setRowColor(1, "#CCCCCC");
-		table.setRowColor(row, "#FFFFFF");
+		table.setRowColor(1, getHeaderColor());
 		
 		return table;
 	}
