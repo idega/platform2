@@ -8,10 +8,13 @@
 package se.idega.idegaweb.commune.accounting.export.ifs.business;
 
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -21,6 +24,14 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFHeader;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
@@ -330,7 +341,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			BufferedWriter bWriter = new BufferedWriter(writer);
 
 			PostingBusiness pb = getPostingBusiness();
-
+			createPaymentFilesExcel(rec, fileName1+".xls");
 			while (it.hasNext()) {
 				PaymentRecord pRec = (PaymentRecord) it.next();
 				if (pRec.getTotalAmount() != 0.0f) {
@@ -673,6 +684,62 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			bWriter.close();
 		}
 
+	}
+	
+	public void createPaymentFilesExcel(Collection data, String fileName) throws IOException {					
+		if (!data.isEmpty()) {											
+			int[] columnWidths = {11,7,6,7,10,8,7,7,7,10,35};
+			String[] columnNames = {"Bokf datum","Ansvar","Konto","Resurs","Verksamhet","Aktivitet","Projekt","Objekt","Motpart","Belopp","Text"};			
+			HSSFWorkbook wb = new HSSFWorkbook();		
+			HSSFSheet sheet = wb.createSheet("Excel");					
+			HSSFHeader header = sheet.getHeader();										
+			Calendar now = Calendar.getInstance();
+			Date date = new Date(now.getTimeInMillis());										
+			String[] MONTH_NAMES = {"januari","februari","mars", "april","maj","juni","juli","augusti","september","oktober","november", "december"};
+			header.setLeft("Bokföringsorder framställd "+date.toString()+".  Skolor checkutbetalning "+MONTH_NAMES[now.get(Calendar.MONTH)]+" "+now.get(Calendar.YEAR));
+			header.setRight("Sida "+HSSFHeader.page());
+			sheet.getPrintSetup().setLandscape(true);					
+			for (short i = 0; i<columnWidths.length; i++)
+				sheet.setColumnWidth(i, (short)(columnWidths[i] * 256));											
+			HSSFFont font = wb.createFont();
+			font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+			HSSFCellStyle style = wb.createCellStyle();
+			style.setFont(font);	
+			style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+			short rowNumber = 0;
+			HSSFRow row = sheet.createRow(rowNumber++);
+			HSSFCell cell = null;
+			for (short i = 0; i<columnNames.length; i++) {				
+				cell = row.createCell(i);
+				cell.setCellValue(columnNames[i]);
+				cell.setCellStyle(style);			
+			}																								
+			Iterator it = data.iterator();								
+			while (it.hasNext()) {							
+				PaymentRecord pRec = (PaymentRecord) it.next();
+				row = sheet.createRow(rowNumber++);
+				short cellNumber = 0;						
+				row.createCell(cellNumber++).setCellValue(pRec.getDateCreated().toString());
+				//style = wb.createCellStyle();							
+				//style.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
+				//cell = row.createCell(cellNumber++);
+				//cell.setCellValue(pRec.getDateCreated());
+				//cell.setCellStyle(style);												
+				short loopTillEndOfPostingFields = (short)(cellNumber+8);
+				PostingBusiness pb = getPostingBusiness();		
+				for (short i=cellNumber;i<loopTillEndOfPostingFields;i++)						
+					row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
+				style = wb.createCellStyle();
+				style.setDataFormat(wb.createDataFormat().getFormat("#,##0.00"));
+				cell = row.createCell(cellNumber++);
+				cell.setCellStyle(style);
+				cell.setCellValue((double)pRec.getTotalAmount());
+				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());						
+			}
+			FileOutputStream out = new FileOutputStream(fileName);
+			wb.write(out);
+			out.close();				
+		}						
 	}
 
 	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, Locale currentLocale, String periodText, IFSCheckHeader checkHeader)
