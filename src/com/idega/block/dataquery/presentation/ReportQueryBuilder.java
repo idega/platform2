@@ -911,23 +911,7 @@ public class ReportQueryBuilder extends Block {
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
 		
-		if (helper.hasPreviousQuery())	{
-			List resultFields = new ArrayList();
-			QueryHelper previousQuery = helper.previousQuery();
-			String previousQueryName = previousQuery.getName();
-			List fields = previousQuery.getListOfVisibleFields();
-			Iterator fieldIterator = fields.iterator();
-			while (fieldIterator.hasNext())	{
-				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
-				String display = fieldPart.getDisplay();
-				String type = fieldPart.getTypeClass();
-							
-				QueryFieldPart newFieldPart = 
-					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
-				resultFields.add(newFieldPart);
-			}
-			fillFieldSelectionBox(resultFields, fieldMap,box);
-		}
+		fillFieldsFromPreviousQuery(fieldMap, box);
 		
 		while (iterator.hasNext()) {
 			entityPart = (QueryEntityPart) iterator.next();
@@ -987,23 +971,7 @@ public class ReportQueryBuilder extends Block {
 		}
 		
 		// box is filled with results field from the previous query
-		if (helper.hasPreviousQuery())	{
-			List resultFields = new ArrayList();
-			QueryHelper previousQuery = helper.previousQuery();
-			String previousQueryName = previousQuery.getName();
-			List fields = previousQuery.getListOfVisibleFields();
-			Iterator fieldIterator = fields.iterator();
-			while (fieldIterator.hasNext())	{
-				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
-				String display = fieldPart.getDisplay();
-				String type = fieldPart.getTypeClass();
-							
-				QueryFieldPart newFieldPart = 
-					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
-				resultFields.add(newFieldPart);
-			}
-			fillFieldSelectionBox(resultFields, fieldMap,box);
-		}
+		fillFieldsFromPreviousQuery(fieldMap, box);
 
 		// box is filled with values from the related entities
 		while (relatedEntitiesIterator.hasNext()) {
@@ -1555,25 +1523,35 @@ public class ReportQueryBuilder extends Block {
 		Map drpMap = new HashMap();
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
 
-//		if(helper.hasFields()){
-//			Iterator iter  = helper.getListOfVisibleFields().iterator();
-//			while (iter.hasNext()) {
-//				QueryFieldPart part = (QueryFieldPart) iter.next();
-//				drpMap.put(part.encode(),part);
+		if (helper.hasPreviousQuery())	{
+			QueryHelper previousQuery = helper.previousQuery();
+			String previousQueryName = previousQuery.getName();
+			List fields = previousQuery.getListOfVisibleFields();
+			Iterator fieldIterator = fields.iterator();
+			while (fieldIterator.hasNext())	{
+				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+				String display = fieldPart.getDisplay();
+				String type = fieldPart.getTypeClass();
+							
+				QueryFieldPart newFieldPart = 
+					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
+				drpMap.put(newFieldPart.encode(), newFieldPart);
+				addMenuElement(drp, newFieldPart);
+			}
+		}
+
+//		wrong and old
+//		
+//		if (helper.hasPreviousQuery())	{
+//			QueryHelper previousQuery = helper.previousQuery();
+//			List fields = previousQuery.getListOfVisibleFields();
+//			Iterator iterator = fields.iterator();
+//			while (iterator.hasNext())	{
+//				QueryFieldPart part = (QueryFieldPart) iterator.next();
+//				drpMap.put(part.encode(), part);
 //				addMenuElement(drp, part);
 //			}
 //		}
-		
-		if (helper.hasPreviousQuery())	{
-			QueryHelper previousQuery = helper.previousQuery();
-			List fields = previousQuery.getListOfVisibleFields();
-			Iterator iterator = fields.iterator();
-			while (iterator.hasNext())	{
-				QueryFieldPart part = (QueryFieldPart) iterator.next();
-				drpMap.put(part.encode(), part);
-				addMenuElement(drp, part);
-			}
-		}
 
 		
 		List entities = helper.getListOfRelatedEntities();
@@ -1797,6 +1775,26 @@ public class ReportQueryBuilder extends Block {
 		catch (RemoteException ex)	{
       System.err.println("[ReportOverview]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
       throw new RuntimeException("[ReportOverview]: Can't retrieve GroupBusiness");
+		}
+	}
+	
+	private  void fillFieldsFromPreviousQuery(Map fieldMap, SelectionDoubleBox box) {
+		if (helper.hasPreviousQuery())	{
+			List resultFields = new ArrayList();
+			QueryHelper previousQuery = helper.previousQuery();
+			String previousQueryName = previousQuery.getName();
+			List fields = previousQuery.getListOfVisibleFields();
+			Iterator fieldIterator = fields.iterator();
+			while (fieldIterator.hasNext())	{
+				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+				String display = fieldPart.getDisplay();
+				String type = fieldPart.getTypeClass();
+							
+				QueryFieldPart newFieldPart = 
+					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
+				resultFields.add(newFieldPart);
+			}
+			fillFieldSelectionBox(resultFields, fieldMap,box);
 		}
 	}
 	
