@@ -1613,7 +1613,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				archive = getChildCareContractArchiveHome().create();
 				
 			archive.setChildID(application.getChildId());
-			archive.setContractFileID(contractFileID);
+			archive.setContractFileID(application.getContractFileId());
 			if (contractID != -1)
 				archive.setContractID(contractID);
 			archive.setApplication(application);
