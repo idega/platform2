@@ -374,18 +374,12 @@ public abstract class Voucher extends TravelManager {
 				String cardType = null;
 				if (ccAuthNumber != null) {
 					CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(_iwc).getAuthorizationEntry(_supplier, ccAuthNumber, new IWTimestamp(_booking.getDateOfBooking()));
-					//TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
-					//Collection authEnts = authEntHome.findByAuthorisationIdRsp(ccAuthNumber);
-					//if (authEnts != null && !authEnts.isEmpty()) {
-						//Iterator iter = authEnts.iterator();
-						//TPosAuthorisationEntriesBean authEnt = (TPosAuthorisationEntriesBean) authEntHome.findByPrimaryKey( iter.next() );
-						cardType = entry.getBrandName();
-						_table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
-						_table.add(getText(" : "),1,2);
-						//String amount = entry.getAmount();
-						double fAmount = entry.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
-						_table.add(getText(df.format(fAmount)+" "+entry.getCurrency()), 1, 2);
-						_table.add(Text.BREAK,1,2);
+					cardType = entry.getBrandName();
+					_table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
+					_table.add(getText(" : "),1,2);
+					double fAmount = entry.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
+					_table.add(getText(df.format(fAmount)+" "+entry.getCurrency()), 1, 2);
+					_table.add(Text.BREAK,1,2);
 				}
 				_table.add(getText(_iwrb.getLocalizedString("travel.payment_type_lg","PAYMENT TYPE")),1,2);
 				_table.add(getText(" : "),1,2);
