@@ -294,7 +294,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         paymentStatus.setStyleClass(styledLink);
         paymentStatus.add(formatText(
                 iwrb.getLocalizedString("isi_acc_cashierwindow.paymentStatus",
-                        "Payment Status (A.29)"), false));
+                        "Payment Status (A.29.1)"), false));
         addParametersToMenuItems(paymentStatus, ACTION_REPORTS);
         paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
                 "Invocation-A29.1.xml");
@@ -307,7 +307,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         paymentOverview.setStyleClass(styledLink);
         paymentOverview.add(formatText(iwrb.getLocalizedString(
                 "isi_acc_cashierwindow.paymentOverview",
-                "Payment overview (A.29)")));
+                "Payment overview (A.29.2)")));
         addParametersToMenuItems(paymentOverview, ACTION_REPORTS);
         paymentOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
                 "Invocation-A29.2.xml");
@@ -319,7 +319,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         LinkContainer debtOverview = new LinkContainer();
         debtOverview.setStyleClass(styledLink);
         debtOverview.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.debtOverview", "Debt overview (A.29)")));
+                "isi_acc_cashierwindow.debtOverview", "Debt overview (A.29.3)")));
         addParametersToMenuItems(debtOverview, ACTION_REPORTS);
         debtOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
                 "Invocation-A29.3.xml");
@@ -333,7 +333,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         entryOverview
                 .add(formatText(iwrb.getLocalizedString(
                         "isi_acc_cashierwindow.entryOverview",
-                        "Entry overview (A.29)")));
+                        "Entry overview (A.29.4)")));
         addParametersToMenuItems(entryOverview, ACTION_REPORTS);
         entryOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
                 "Invocation-A29.4.xml");
@@ -346,7 +346,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         latePaymentList.setStyleClass(styledLink);
         latePaymentList.add(formatText(iwrb.getLocalizedString(
                 "isi_acc_cashierwindow.latePaymentList",
-                "Late payment list (A.29)")));
+                "Late payment list (A.29.5)")));
         addParametersToMenuItems(latePaymentList, ACTION_REPORTS);
         latePaymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
                 "Invocation-A29.5.xml");
@@ -358,7 +358,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         LinkContainer paymentList = new LinkContainer();
         paymentList.setStyleClass(styledLink);
         paymentList.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.paymentList", "Payment list (A.29)")));
+                "isi_acc_cashierwindow.paymentList", "Payment list (A.29.6)")));
         addParametersToMenuItems(paymentList, ACTION_REPORTS);
         paymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,
                 "Invocation-A29.6.xml");
@@ -649,24 +649,22 @@ public class CashierWindow extends StyledIWAdminWindow {
                 subWindow = new CashierLedgerWindow();
                 helpTextKey = ACTION_CASHIER_LEDGER + "_help";
             } else if (action.equals(ACTION_REPORTS)) {
-                ReportGenerator repGen = new ReportGenerator();
+            	actionTitle.append(iwrb.getLocalizedString(
+            			ACTION_REPORTS, "Reports"));
+            	ReportGenerator repGen = new ReportGenerator();
                 repGen.setParameterToMaintain(ACTION);
                 repGen.setParameterToMaintain(STATS_INVOCATION_PARAM);
                 repGen.setParameterToMaintain(STATS_LAYOUT_PARAM);
                 repGen.setParameterToMaintain(STATS_LAYOUT_NAME_FROM_BUNDLE);
-                repGen
-                        .setParameterToMaintain(STATS_INVOCATION_NAME_FROM_BUNDLE);
+                repGen.setParameterToMaintain(STATS_INVOCATION_NAME_FROM_BUNDLE);
                 repGen.setParameterToMaintain(STATS_LOCALIZABLE_KEY_NAME);
                 repGen.setParameterToMaintain(PARAMETER_GROUP_ID);
                 repGen.setParameterToMaintain(PARAMETER_CLUB_ID);
                 String invocationKey = iwc.getParameter(STATS_INVOCATION_PARAM);
-                String invocationFileName = iwc
-                        .getParameter(STATS_INVOCATION_NAME_FROM_BUNDLE);
+                String invocationFileName = iwc.getParameter(STATS_INVOCATION_NAME_FROM_BUNDLE);
                 String layoutKey = iwc.getParameter(STATS_LAYOUT_PARAM);
-                String layoutFileName = iwc
-                        .getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
-                String localizedNameKey = iwc
-                        .getParameter(STATS_LOCALIZABLE_KEY_NAME);
+                String layoutFileName = iwc.getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
+                String localizedNameKey = iwc.getParameter(STATS_LOCALIZABLE_KEY_NAME);
                 if ((invocationKey != null && iwb.getProperty(invocationKey,
                         "-1") != null)
                         || invocationFileName != null) {
@@ -702,10 +700,6 @@ public class CashierWindow extends StyledIWAdminWindow {
                     }
                 }
                 table.add(repGen, 2, 1); //not a selector
-                //this.addTitle(iwrb.getLocalizedString(, "Statistics"));
-                //this.addTitle(iwrb.getLocalizedString(, "Statistics"),
-                // IWConstants.BUILDER_FONT_STYLE_TITLE);
-
             }
 
             if (eClub != null) {
