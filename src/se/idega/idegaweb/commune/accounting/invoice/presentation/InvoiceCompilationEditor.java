@@ -17,6 +17,9 @@ import se.idega.idegaweb.commune.accounting.invoice.data.*;
 import se.idega.idegaweb.commune.accounting.presentation.*;
 import se.idega.idegaweb.commune.accounting.regulations.data.*;
 
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
+
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
  * and edit invoice compilations.
@@ -30,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/10 10:57:58 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/10 16:17:43 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -121,6 +124,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
     private static final String PLACMENT_DEFAULT = "Placering";
     private static final String PLACMENT_KEY = PREFIX + "placment";
+    private static final String POSTING_KEY = PREFIX + "posting";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
@@ -229,19 +233,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             displayRedText
                     ("<p>Denna funktion är inte färdig! Bl.a. så återstår:<ol>" 
 
-                     + "<li>egen och motkontering i fler fält"
-                     + "<li>klicka på faktureringsrad och se detaljer"
+                     + "<li>välj ett kontrakt från 'skapa fakturarrad'"
+                     + "<li>faturarad.VAT_TYPE i klartetxt"
+                     + "<li>'Check familjedaghem...' ska inte hårdkodas"
+                     + "<li>ändra i en manuell faktureringsrad"
                      + "<li>se faktureringsunderlag i pdf"
                      + "<li>efter skapa ny faktura => ny record form"
                      + "<li>tillåt inte negativt taxbelopp mm"
-                     + "<li>namn etc i sökrutorna om man hittar exakt en"
                      + "<li>sök på huvudverksamhet - bara barnomsorg"
                      + "<li>felhantering för periodinmatning, t ex '1313'"
                      + "<li>confirm-page tillbaka till rätt sida"
                      + "<li>sortera efter order_id eller något annat"
-                     + "<li>byt inte funktion vid byte av huvudverksamhet"
+                     + "<li>byt inte sida vid byte av huvudverksamhet"
                      + "<li>kontroll av felaktig eller utelämnad indata"
-                     + "<li>'Check familjedaghem...' ska inte hårdkodas"
                      + "<li>skriv ut anordnare på 'skapa fakturarrad'"
                      + "<li>uppdatera totalb. och momsersättning vid justering"
                      + "<li>ta bort invoice record => ta bort payment-record?"
@@ -260,14 +264,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                         CHECK_END_PERIOD_KEY);
         final Date checkStartPeriod
                 = getPeriodParameter (context, CHECK_START_PERIOD_KEY);
-        final String doublePosting = context.getParameter (DOUBLE_POSTING_KEY);
+        final String doublePosting = getPostingString (context,
+                                                       DOUBLE_POSTING_KEY);
         final Integer invoiceCompilation
                 = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
         final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
         final String note = context.getParameter (NOTE_KEY);
         final Integer numberOfDays = getIntegerParameter (context,
                                                           NUMBER_OF_DAYS_KEY);
-        final String ownPosting = context.getParameter (OWN_POSTING_KEY);
+        final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
         final Date placementEndPeriod
                 = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
         final Date placementStartPeriod
@@ -430,13 +435,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         col = 1; row++;
         addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
                         ":");
+        col = 1; row++;
+        table.mergeCells (col, row, table.getColumns (), row);
         table.add ((PresentationObject) presentationObjects.get
-                   (OWN_POSTING_KEY), col++, row);
+                   (OWN_POSTING_KEY), col, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
                         DOUBLE_POSTING_DEFAULT, ":");
+        col = 1; row++;
+        table.mergeCells (col, row, table.getColumns (), row);
         table.add ((PresentationObject) presentationObjects.get
-                   (DOUBLE_POSTING_KEY), col++, row);
+                   (DOUBLE_POSTING_KEY), col, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
         table.add ((PresentationObject) presentationObjects.get (VAT_RULE_KEY),
@@ -491,8 +500,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         result.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
                     (business.getAllRegulationSpecTypes ()));
-        result.put (OWN_POSTING_KEY, getStyledInput (OWN_POSTING_KEY));
-        result.put (DOUBLE_POSTING_KEY, getStyledInput (DOUBLE_POSTING_KEY));
+        result.put (OWN_POSTING_KEY, getPostingParameterForm (context,
+                                                              OWN_POSTING_KEY));
+        result.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+                    (context, DOUBLE_POSTING_KEY));
         result.put (VAT_RULE_KEY,  getLocalizedDropdown
                     (business.getAllVatRules ()));
         result.put (ACTION_KEY, getSubmitButton
@@ -520,10 +531,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallDateText (result, DATE_ADJUSTED_KEY, record.getDateChanged ());
         addSmallDateText (result, DATE_CREATED_KEY, record.getDateCreated ());
         addSmallText (result, NUMBER_OF_DAYS_KEY, record.getDays () + "");
-        addSmallText (result, DOUBLE_POSTING_KEY, record.getDoublePosting ());
+        result.put (DOUBLE_POSTING_KEY, getPostingListTable
+                    (context, record.getDoublePosting ()));
         addSmallText (result, INVOICE_TEXT_KEY, record.getInvoiceText ());
         addSmallText (result, NOTE_KEY, record.getNotes ());
-        addSmallText (result, OWN_POSTING_KEY, record.getOwnPosting ());
+        result.put (OWN_POSTING_KEY,
+                    getPostingListTable (context, record.getOwnPosting ()));
         addSmallPeriodText (result, CHECK_END_PERIOD_KEY,
                             record.getPeriodEndCheck ());
         addSmallPeriodText (result, PLACEMENT_START_PERIOD_KEY,
@@ -776,13 +789,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
             final Date now = new Date ();
             table.add (getStyledInput (PERIOD_KEY, periodFormatter.format
-                                       (now)), col++, row);
+                                       (now)), col++, row++);
+            table.setHeight (row++, 12);
             addSmallHeader (table, col++, row, OWN_POSTING_KEY,
                             OWN_POSTING_DEFAULT, ":");
-            table.add (getStyledInput (OWN_POSTING_KEY), col++, row);
+            table.mergeCells (1, row, table.getColumns (), row);
+            table.add (getPostingParameterForm (context, OWN_POSTING_KEY), 1,
+                       row++);
             addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
                             DOUBLE_POSTING_DEFAULT, ":");
-            table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row++);
+            table.mergeCells (1, row, table.getColumns (), row);
+            table.add (getPostingParameterForm (context, DOUBLE_POSTING_KEY), 1,
+                       row++);
             table.setHeight (row++, 12);
             table.mergeCells (1, row, table.getColumns (), row);
             table.add (getSubmitButton (ACTION_NEW_COMPILATION + "",
@@ -811,8 +829,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final int custodianId = Integer.parseInt (context.getParameter
                                                   (INVOICE_RECEIVER_KEY));
         final User currentUser = context.getCurrentUser ();
-        final String ownPosting = context.getParameter (OWN_POSTING_KEY);
-        final String doublePosting = context.getParameter (DOUBLE_POSTING_KEY);
+        final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
+        final String doublePosting = getPostingString (context,
+                                                       DOUBLE_POSTING_KEY);
         final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
                 .getServiceInstance (context, InvoiceBusiness.class);
         business.createInvoiceHeader
@@ -996,12 +1015,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add (getTotalAmountVat (records) + "", 5, row++);
         addSmallHeader (table, 1, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
                         ":");
-        table.mergeCells (2, row, table.getColumns (), row);
-        table.add (header.getOwnPosting (), 2, row++);
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getPostingListTable (context, header.getOwnPosting ()), 1,
+                   row++);
         addSmallHeader (table, 1, row, DOUBLE_POSTING_KEY,
                         DOUBLE_POSTING_DEFAULT, ":");
-        table.mergeCells (2, row, table.getColumns (), row);
-        table.add (header.getDoublePosting (), 2, row++);
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getPostingListTable (context, header.getDoublePosting ()), 1,
+                   row++);
         
         return table;
     }
@@ -1043,6 +1064,67 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
     }
 
+	private ListTable getPostingParameterForm (final IWContext context,
+                                               final String key)
+        throws RemoteException {
+        final PostingField [] fields = getCurrentPostingFields (context);
+		final ListTable postingInputs = new ListTable (this, fields.length);
+        for (int i = 0; i < fields.length; i++) {
+            final PostingField field = (PostingField) fields [i];
+            final int j = i + 1;
+            postingInputs.setHeader (field.getFieldTitle(), j);
+            postingInputs.add (getTextInput (key + j, "", 80, field.getLen()));
+        }       
+		return postingInputs;
+	}
+
+	private ListTable getPostingListTable (final IWContext context,
+                                           final String postingString) 
+        throws RemoteException {
+        final PostingField [] fields = getCurrentPostingFields (context);
+		final ListTable result = new ListTable (this, fields.length);
+        int offset = 0;
+        for (int i = 0; i < fields.length; i++) {
+            final PostingField field = (PostingField) fields [i];
+            result.setHeader (field.getFieldTitle(), i + 1);
+            result.add (getSmallText (postingString.substring
+                                      (offset, offset + field.getLen ())));
+            offset += field.getLen ();
+        }       
+		return result;
+	}
+
+    final PostingField [] getCurrentPostingFields (final IWContext context)
+        throws RemoteException {
+        final PostingBusiness business = (PostingBusiness)
+                IBOLookup.getServiceInstance (context, PostingBusiness.class);
+        final java.sql.Date now = new java.sql.Date (new Date ().getTime ());
+        final Collection fields = business.getAllPostingFieldsByDate (now);
+        final PostingField [] array = new PostingField [0];
+        return fields != null ? (PostingField []) fields.toArray (array)
+                : array;
+    }
+
+	private String getPostingString (final IWContext context,
+                                     final String postingKey)
+        throws RemoteException {
+        final PostingBusiness business = (PostingBusiness)
+                IBOLookup.getServiceInstance (context, PostingBusiness.class);
+        final StringBuffer result = new StringBuffer ();
+        final PostingField [] fields = getCurrentPostingFields (context);
+        for (int i = 0; i < fields.length; i++) {
+            final PostingField field = (PostingField) fields [i];
+            final String key = postingKey + (i + 1);
+            final String parameter = context.isParameterSet (key)
+                    ? context.getParameter (key) : "";
+            final String value =  parameter.length () > field.getLen ()
+                    ? parameter.substring (0, field.getLen ())
+                    : business.pad (parameter, field);
+            result.append (value);
+        }
+        return result.toString ();
+	}
+
     static boolean isManualRecord (final InvoiceRecord record) {
         final String createdBy = record.getCreatedBy ();
         return null != createdBy && 2 == createdBy.length ();
@@ -1079,17 +1161,29 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         } catch (final FinderException dummy) {
             // do nothing, it's ok that none was found
         }
+        final User user = searcher.getUser ();
+        final String ssn = null != user ? user.getPersonalID ()
+                : context.isParameterSet (USERSEARCHER_PERSONALID_KEY)
+                ? context.getParameter (USERSEARCHER_PERSONALID_KEY) : "";
+        final String firstName = null != user ? user.getFirstName ()
+                : context.isParameterSet (USERSEARCHER_FIRSTNAME_KEY)
+                ? context.getParameter (USERSEARCHER_FIRSTNAME_KEY) : "";
+        final String lastName = null != user ? user.getLastName ()
+                : context.isParameterSet (USERSEARCHER_LASTNAME_KEY)
+                ? context.getParameter (USERSEARCHER_LASTNAME_KEY) : "";
+
+
         addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
-        table.add (getUserSearcherInput
-                   (context, USERSEARCHER_PERSONALID_KEY), col++, row);
+        table.add (getStyledInput (USERSEARCHER_PERSONALID_KEY, ssn), col++,
+                   row);
         addSmallHeader (table, col++, row, LAST_NAME_KEY, LAST_NAME_DEFAULT,
                         ":");
-        table.add (getUserSearcherInput
-                   (context, USERSEARCHER_LASTNAME_KEY), col++, row);
+        table.add (getStyledInput (USERSEARCHER_LASTNAME_KEY, lastName), col++,
+                   row);
         addSmallHeader (table, col++, row, FIRST_NAME_KEY,  FIRST_NAME_DEFAULT,
                         ":");
-        table.add (getUserSearcherInput
-                   (context, USERSEARCHER_FIRSTNAME_KEY), col++, row);
+        table.add (getStyledInput (USERSEARCHER_FIRSTNAME_KEY, firstName),
+                   col++, row);
     }
 
     private void addPeriodForm (final Table table, final int row,
@@ -1102,11 +1196,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add (new Text (" - "), col, row);
         table.add (getStyledInput (END_PERIOD_KEY, periodFormatter.format
                                    (now)), col, row);
-    }
-
-    private TextInput getUserSearcherInput (final IWContext context,
-                                            final String key) {
-        return getStyledInput (key, context.getParameter (key));
     }
 
     private TextInput getStyledInput (final String key) {
