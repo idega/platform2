@@ -87,7 +87,9 @@ public class TestPosts extends InvoiceBatchStarter {
 				ex.printStackTrace();
 			}catch(RemoveException ex){
 				ex.printStackTrace();
-			}		
+			}catch(RemoteException ex) {
+				ex.printStackTrace();
+			}
 			super.handleSave(iwc, schoolCategory); //This call will result addBatchRunToQueue( ) being called
 		}
 	}

@@ -45,6 +45,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.care.business.CareInvoiceBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 import com.idega.block.school.business.SchoolBusiness;
@@ -56,6 +57,7 @@ import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
@@ -75,14 +77,14 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/10/14 10:53:12 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/20 17:05:09 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.133 $
+ * @version $Revision: 1.134 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
-public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
+public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness, CareInvoiceBusiness {
 	
 	public int generatePdf (final String title, final MemoryFileBuffer buffer)
 		throws RemoteException {
@@ -1081,6 +1083,27 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return result;
 	}
 
+	public void removeInvoiceRecords(ChildCareContract contract) throws RemoveException {
+		try {
+			InvoiceBusiness business = (InvoiceBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), InvoiceBusiness.class);
+			Collection records = business.findInvoiceRecordsByContract(contract);
+			Iterator iter = records.iterator();
+			while (iter.hasNext()) {
+				InvoiceRecord element = (InvoiceRecord) iter.next();
+				element.remove();
+			}
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+		catch (FinderException fe) {
+			//Nothing found, which is OK...
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}	
+	
 	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember, CalendarMonth month) {
 		Date sDate = null;
 		Date eDate = null;

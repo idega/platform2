@@ -27,6 +27,7 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.logging.Level;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -34,12 +35,11 @@ import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.business.CareConstants;
+import se.idega.idegaweb.commune.care.business.CareInvoiceBusiness;
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -3318,19 +3318,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	private void removeInvoiceRecords(ChildCareContract contract) throws RemoveException {
 		try {
-			InvoiceBusiness business = (InvoiceBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), InvoiceBusiness.class);
-			Collection records = business.findInvoiceRecordsByContract(contract);
-			Iterator iter = records.iterator();
-			while (iter.hasNext()) {
-				InvoiceRecord element = (InvoiceRecord) iter.next();
-				element.remove();
-			}
+			CareInvoiceBusiness business = (CareInvoiceBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CareInvoiceBusiness.class);
+			business.removeInvoiceRecords(contract);
 		}
 		catch (IBOLookupException ile) {
-			throw new IBORuntimeException(ile);
-		}
-		catch (FinderException fe) {
-			//Nothing found, which is OK...
+			log(Level.INFO, "[ChildCareBusiness] CareInvoiceBusiness is not installed");
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
