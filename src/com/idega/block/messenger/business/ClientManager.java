@@ -68,6 +68,7 @@ public class ClientManager implements PacketManager{
   String sessionId = null;
   String userId = null;
   String packetUserListVersion = null;
+  boolean checkin = true;
 
     if( packet!=null ){
       Vector props = packet.getProperties();
@@ -93,12 +94,13 @@ public class ClientManager implements PacketManager{
           else if( key.equalsIgnoreCase(LOG_OUT) ){
             sessionId = (String) prop.getValue();
             clientCheckOut(sessionId);
+            checkin = false;
           }
 
         }
       }
 
-      if( sessionId!=null ){
+      if( (sessionId!=null) && checkin ){
         User user = (User) ClientManager.clients.get(sessionId);//already logged on
         if( user == null ){
           clientCheckIn(sessionId,userId);//register this client and check that he's not double logged on
