@@ -183,12 +183,13 @@ public class SchoolBMPBean extends GenericEntity implements School {
 				++count;
 			}
 			select.append(") and m.sch_school_id = s.sch_school_id");
+			select.append(" order by s.").append(NAME);
 			return super.idoFindPKsBySQL(select.toString());
 		}
 	}
 
 	public Collection ejbFindAllBySchoolType(int typeId) throws javax.ejb.FinderException {
-		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id";
+		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id order by s."+NAME;
 		return super.idoFindPKsBySQL(select);
 	}
 
@@ -273,6 +274,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		sql.append(type);
 		sql.append(" and a.sch_school_area_id = ");
 		sql.append(area);
+		sql.append(" order by s.").append(NAME);
 
 		return super.idoFindPKsBySQL(sql.toString());
 
@@ -291,6 +293,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		sql.append(areaID);
 		sql.append(" and ssy.sch_school_year_id = ");
 		sql.append(yearID);
+		sql.append(" order by s.").append(NAME);
 
 		return super.idoFindPKsBySQL(sql.toString());
 		
@@ -317,6 +320,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		}
 		sql.append(" and a.sch_school_area_id = ");
 		sql.append(area);
+		sql.append(" order by s.").append(NAME);
 
 		return super.idoFindPKsBySQL(sql.toString());
 
@@ -331,6 +335,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		sql.append(" and r.related_ic_group_id = ");
 		sql.append(schoolGroup.getPrimaryKey().toString());
 		sql.append(" ) ");
+		sql.append(" order by s.").append(NAME);
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
