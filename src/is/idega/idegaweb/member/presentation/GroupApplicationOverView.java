@@ -104,6 +104,10 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	      userTable.setCellpaddingAndCellspacing(0);
 	      userTable.setLineAfterColumn(1);
 	      userTable.setLineAfterColumn(2);
+	      userTable.setLineAfterColumn(3);
+	      userTable.setLineAfterColumn(4);
+	      userTable.setLineAfterColumn(5);
+
 	      userTable.setLineColor("#DBDCDF");
 	
 	      userTable.setBackgroundImage(1,1,this.getBundle(iwc).getImage("glass_column_light.gif"));
