@@ -740,8 +740,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		if (coll != null && !coll.isEmpty()) {
 			try {
 				Iterator iter = coll.iterator();
-				TxTextHome textHome = (TxTextHome) IDOLookup.getHome(TxText.class);
-				TxText txText = textHome.findByPrimaryKey(iter.next());
+				TxText txText = (TxText) iter.next();
 				LocalizedText lText = TextFinder.getContentHelper(txText.getID(), localeId).getLocalizedText();
 				int lTextId = -1;
 				if (lText != null) {
