@@ -36,13 +36,12 @@ public class ApplicationQueueAdmin extends ChildCareBlock{
 		if ( childID > 0 ) {
 			UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
 			User child = uHome.findByPrimaryKey(new Integer(childID)); 
-			Collection applications = getBusiness().getApplicationsForChild(child);
 			
 			String action = iwc.getParameter(ACTION);
 			if (action != null && action.equals(ACTION_UPDATE)) {
 				handleUpdate(iwc);
 			}
-			drawForm(iwc, applications);
+			drawForm(iwc, child);
 			
 			
 			
@@ -55,7 +54,9 @@ public class ApplicationQueueAdmin extends ChildCareBlock{
 		}
 	}
 	
-	private void drawForm(IWContext iwc, Collection applications) throws RemoteException {
+	private void drawForm(IWContext iwc, User child) throws RemoteException {
+		Collection applications = getBusiness().getApplicationsForChild(child);
+		
 		Form form = new Form();
 		Table table = new Table();
 		form.add(table);
@@ -63,6 +64,9 @@ public class ApplicationQueueAdmin extends ChildCareBlock{
 		table.setCellspacing(getCellspacing());
 		int row = 1;
 		int column = 1;
+	
+		table.mergeCells(1, row, 6, row);
+		table.add(getSmallHeader(child.getName()+Text.NON_BREAKING_SPACE+"-"+Text.NON_BREAKING_SPACE+child.getPersonalID()), 1, row++);
 		
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
@@ -118,7 +122,8 @@ public class ApplicationQueueAdmin extends ChildCareBlock{
 			table.add(queuePriority, column++, row);
 		}
 
-		table.setRowColor(1, getHeaderColor());
+		//table.setRowColor(1, getHeaderColor());
+		table.setRowColor(2, getHeaderColor());
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		form.add(getLegendTable());
