@@ -13,10 +13,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * Document generator class that creates reports.
  * <p>
- * Last modified: $Date: 2003/03/17 09:25:43 $ by $Author: staffan $
+ * Last modified: $Date: 2003/03/17 11:01:37 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see com.idega.block.reports.data.Report
  * @see se.idega.idegaweb.commune.report.business.Fetcher
  */
@@ -35,7 +35,7 @@ public class ReportGenerator implements MediaWritable
                 reportInfo = ReportFinder.getReport (reportId);
                 final String [][] data = Fetcher.fetchFromDatabase
                         (reportInfo.getSQL ());
-                report = getXlsReport (data);
+                report = getXlsReport (data, reportInfo);
             } catch (Exception e) {
                 System.err.println
                         (getClass ().getName () + " (" + REPORT_ID + "="
@@ -66,17 +66,25 @@ public class ReportGenerator implements MediaWritable
         }
     }
 
-    private static MemoryFileBuffer getXlsReport (String [][] data) {
+    private static MemoryFileBuffer getXlsReport (final String [][] data,
+                                                  final Report reportInfo) {
         final MemoryFileBuffer report = new MemoryFileBuffer ();
         final MemoryOutputStream reportStream = new MemoryOutputStream (report);
         final int columnCount = data [0].length;
-        for (int i = 0; i < data.length; i++) {
-            final StringBuffer row = new StringBuffer ();
-            for (int j = 0; j < columnCount; j++) {
-                row.append (data [i][j] + '\t');
+        reportStream.write (new String (reportInfo.getName ()
+                                        + "\n\n").getBytes ());
+
+        final String [] headers = reportInfo.getHeaders ();
+        for (int col = 0; col < columnCount; col++) {
+            data [1][col] = headers [col];
+        }
+        for (int row = 1; row < data.length; row++) {
+            final StringBuffer rowData = new StringBuffer ();
+            for (int col = 0; col < columnCount; col++) {
+                rowData.append (data [row][col] + '\t');
             }
-            row.append ('\n');
-            reportStream.write (row.toString().getBytes());
+            rowData.append ('\n');
+            reportStream.write (rowData.toString().getBytes());
         }
 
         reportStream.close ();

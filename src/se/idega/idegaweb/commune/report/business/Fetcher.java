@@ -8,12 +8,12 @@ import java.util.*;
  * Fetches data dynamically from the IdegaWeb database using a jdbc connection
  * retreived from IdegaWeb's {@link com.idega.util.database.ConnectionBroker}.
  * <p>
- * Last modified: $Date: 2003/03/17 09:21:14 $ by $Author: staffan $
+ * Last modified: $Date: 2003/03/17 11:01:37 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see java.sql
- * @see se.idega.idegaweb.commune.report.business.FetcherException
+ * @see se.idega.idegaweb.commune.report.business.Fetcher.FetcherException
  */
 public class Fetcher {
 
@@ -25,7 +25,7 @@ public class Fetcher {
      * @return the fetcheed result as an two dimensional String matrix, where
      * first row is the column name, the second row is the column label and then
      * comes the cell values
-     * @throws FetchException if the sql doesn't start with 'select' or if an
+     * @throws Fetcher.FetchException if the sql doesn't start with 'select' or if an
      * exception occurs during database communication
      */
     public static String [][] fetchFromDatabase (final String sql)
@@ -43,7 +43,7 @@ public class Fetcher {
      * @return the fetcheed result as an two dimensional String matrix, where
      * first row is the column name, the second row is the column label and then
      * comes the cell values
-     * @throws FetchException if the sql doesn't start with 'select' or if an
+     * @throws Fetcher.FetchException if the sql doesn't start with 'select' or if an
      * exception occurs during database communication
      */
     public static String [][] fetchFromDatabase
@@ -120,10 +120,10 @@ public class Fetcher {
      * not to throw any {@link java.sql.SQLException} to clients, since they are
      * at wrong abstraction level.
      * <p>
-     * Last modified: $Date: 2003/03/17 09:21:14 $ by $Author: staffan $
+     * Last modified: $Date: 2003/03/17 11:01:37 $ by $Author: staffan $
      *
      * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
-     * @version $Revision: 1.1 $
+     * @version $Revision: 1.2 $
      */
     public static class FetchException extends Exception {
         public FetchException (final String message) {
