@@ -504,8 +504,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
   private PresentationObject makeTextArea(String sInit){
     TextArea TA = new TextArea("bm_info");
     TA.setContent(sInit);
-    TA.setWidth(50);
-    TA.setHeight(6);
+    TA.setWidth(90);
+    TA.setHeight(12);
     setStyle(TA);
     return TA;
   }
@@ -513,8 +513,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
   private PresentationObject makeTextArea(String name,String sInit){
     TextArea TA = new TextArea(name);
     TA.setContent(sInit);
-    TA.setWidth(50);
-    TA.setHeight(6);
+    TA.setWidth(90);
+    TA.setHeight(12);
     setStyle(TA);
     return TA;
   }
@@ -834,7 +834,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     Frame.add(T2,2,1);
     Frame.add(T,1,1);
     Table InnerTable = new Table();
-      InnerTable.setWidth("100%");
+      //InnerTable.setWidth("100%");
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu roomcount = drpCount("bm_roomcount","--",sRoomCount,6);
     TextInput area = new TextInput("bm_area",sArea);
