@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/14 20:52:44 $ by $Author: laddi $
+ * Last modified: $Date: 2002/11/14 23:31:14 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -300,7 +300,7 @@ public class ViewpointForm extends CommuneBlock {
 		viewpointBusiness.createViewpoint(iwc.getCurrentUser(), iwc.getParameter(PARAM_SUBJECT), iwc.getParameter(PARAM_MESSAGE), category.getName(), handlerGroupId);
 		final Text text1 = new Text(getLocalizedString(CONFIRMENTERVIEWPOINT_KEY, CONFIRMENTERVIEWPOINT_DEFAULT));
 		text1.setWidth(Table.HUNDRED_PERCENT);
-		final Table table = new Table(1, 2);
+		final Table table = new Table();
 		int row = 1;
 		table.setWidth(getWidth());
 		table.setCellspacing(0);
