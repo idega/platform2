@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.19 2004/09/01 14:38:07 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.20 2004/09/18 17:38:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ContractBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.allocation.data.Contract {
+public class ContractBMPBean extends com.idega.data.GenericEntity  implements Contract{
   private static final String name_ = "cam_contract";
   private static final String userId_ = "ic_user_id";
   private static final String apartmentId_ = "bu_apartment_id";
