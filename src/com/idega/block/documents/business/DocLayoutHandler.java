@@ -1,5 +1,5 @@
 /*
- * $Id: LocaleHandler.java,v 1.4 2002/03/15 12:09:32 gummi Exp $
+ * $Id: DocLayoutHandler.java,v 1.1 2002/03/15 12:09:32 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -7,28 +7,25 @@
  * Use is subject to license terms.
  *
  */
-package com.idega.builder.handler;
+package com.idega.block.documents.business;
 
 import java.util.List;
+import com.idega.block.documents.presentation.Doc;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.text.Text;
-import com.idega.development.presentation.Localizer;
-import com.idega.builder.business.IBPropertyHandler;
+import com.idega.builder.handler.PropertyHandler;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
- *
- * This handler is to display a selection with the available Locales.
- * In the selection the keys (values) are the locale-stringrepresentations e.g. "en_US" for English/US
  */
-public class LocaleHandler implements PropertyHandler {
+public class DocLayoutHandler implements PropertyHandler {
   /**
    *
    */
-  public LocaleHandler() {
+  public DocLayoutHandler() {
   }
 
   /**
@@ -42,9 +39,12 @@ public class LocaleHandler implements PropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-    DropdownMenu menu = Localizer.getAvailableLocalesDropdown(iwc.getApplication(),name);
+    DropdownMenu menu = new DropdownMenu(name);
+    menu.addMenuElement("","Select:");
+    menu.addMenuElement(Doc.BOX_VIEW,"Doc view");
+    menu.addMenuElement(Doc.CATEGORY_VIEW,"Category view");
+    menu.addMenuElement(Doc.COLLECTION_VIEW,"Collection view");
     menu.setSelectedElement(value);
-    //IBPropertyHandler.getInstance().setDropdownToChangeValue(menu);
     return(menu);
   }
 
