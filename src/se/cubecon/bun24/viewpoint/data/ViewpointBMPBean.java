@@ -7,10 +7,10 @@ import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/29 12:17:48 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -85,6 +85,10 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 
     public int getUserId () {
         return getIntegerColumnValue (COLUMN_USER_ID). intValue ();
+    }
+
+    public boolean isAnswered () throws RemoteException {
+        return getStatus ().equalsIgnoreCase (STATUSKEY_ANSWERED);
     }
 
     public void setHandlerGroupId (final int handlerGroupId) {
