@@ -560,7 +560,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 	
 	public boolean hasBankLogin(int userID) {
-		if (userID != -1){
+		if (userID == -1){
 			return false;
 		} else {
 			try {
