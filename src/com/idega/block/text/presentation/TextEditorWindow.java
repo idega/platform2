@@ -49,7 +49,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
   private final static String prmHeadline = "txep_headline";
   private final static String prmBody = "txep_body";
   public final static String imageAttributeKey = "txre_im_prop";
-  public boolean debugParameter = true;
+  public boolean debugParameter = false;
 
   private String prmUsedTextId = prmTextId;
   //debug
