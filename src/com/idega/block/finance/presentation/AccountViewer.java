@@ -223,7 +223,7 @@ public class AccountViewer extends Finance {
 			T.setWidth(Table.HUNDRED_PERCENT);
 			T.setCellspacing(0);
 			T.setCellpadding(2);
-			int fontSize = 1;
+			//int fontSize = 1;
 			int row = 1;
 			T.add(getHeader(localize("account", "Account")), 1, row);
 			T.add(getText(eAccount.getName()), 2, row);
@@ -414,7 +414,7 @@ public class AccountViewer extends Finance {
 		T.setColumnAlignment(3, "right");
 		T.setColumnAlignment(4, "right");
 		T.setColumnAlignment(5, "right");
-		int fontSize = 1;
+		//int fontSize = 1;
 		String title = localize("sum_report", "Report") + "  " + localize("for", "for") + " "
 				+ df.format(from.getSQLDate()) + " - " + df.format(to.getSQLDate());
 		Text Title = getHeader(title);
@@ -492,7 +492,7 @@ public class AccountViewer extends Finance {
 		DataTable T = new DataTable();
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setTitlesHorizontal(true);
-		int fontSize = 1;
+		//int fontSize = 1;
 		String title = localize("entries", "Entries") + " " + eAccount.getAccountName() + "   "
 				+ df.format(from.getSQLDate()) + " - " + df.format(to.getSQLDate());
 		T.addTitle(title);
@@ -508,7 +508,7 @@ public class AccountViewer extends Finance {
 		}
 		row++;
 		Text[] TableTexts = new Text[4];
-		boolean debet = false;
+		//boolean debet = false;
 		if (listEntries != null) {
 			double totPrice = 0;
 			for (Iterator iter = listEntries.iterator(); iter.hasNext();) {
@@ -517,7 +517,7 @@ public class AccountViewer extends Finance {
 				TableTexts[1] = getText(entry.getName());
 				TableTexts[2] = getText(entry.getInfo());
 				double p = entry.getTotal();
-				debet = p > 0 ? true : false;
+				//debet = p > 0 ? true : false;
 				totPrice += p;
 				TableTexts[3] = getAmountText((p));
 				for (int i = 0; i < 4; i++) {
@@ -564,15 +564,15 @@ public class AccountViewer extends Finance {
 		T.add(getHeader(localize("text", "Text")), 3, 2);
 		T.add(getHeader(localize("amount", "Amount")), 4, 2);
 		T.setTopLine(true);
-		boolean debet = false;
+		//boolean debet = false;
 		if (listEntries != null) {
-			int len = listEntries.size();
+			//int len = listEntries.size();
 			double totPrice = 0;
 			int row = 3;
 			for (Iterator iter = listEntries.iterator(); iter.hasNext();) {
 				AccountEntry entry = (AccountEntry) iter.next();
 				double p = entry.getTotal();
-				debet = p > 0 ? true : false;
+				//debet = p > 0 ? true : false;
 				totPrice += p;
 				T.add(getText(getDateString(new IWTimestamp(entry.getLastUpdated()))), 1, row);
 				T.add(getText(entry.getName()), 2, row);

@@ -1,6 +1,5 @@
 package com.idega.block.finance.presentation;
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -208,7 +207,7 @@ public class AccountTariffer extends Finance {
 			T.add(getText(user.getName()), 2, 2);
 			T.add(getHeader(localize("account_balance", "Account balance")),
 					1, 3);
-			DecimalFormat Dformat = (DecimalFormat) DecimalFormat.getCurrencyInstance(iwc.getCurrentLocale());
+			//DecimalFormat Dformat = (DecimalFormat) DecimalFormat.getCurrencyInstance(iwc.getCurrentLocale());
 			T.add(getAmountText(account.getBalance()), 2, 3);
 			T.add(getHeader(localize("last_updated", "Last updated")), 1, 4);
 			T.add(getText(account.getLastUpdated().toString()), 2, 4);

@@ -227,7 +227,7 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 		Iterator iter = types.iterator();
 		for (int i = 1; i <= inputcount; i++) {
 			String rownum = String.valueOf(i);
-			int pos;
+			//int pos;
 			nameInput = new TextInput("tke_nameinput" + i);
 			infoInput = new TextInput("tke_infoinput" + i);
 			payments = getIntDrop("tke_paym" + i, 1, 12, "");
@@ -235,7 +235,7 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 			percent = getIntDrop("tke_percent" + i, 0, 100, "");
 			int id = -1;
 			if (i <= count && iter.hasNext()) {
-				pos = i - 1;
+				//pos = i - 1;
 				key = (PaymentType) iter.next();
 				nameInput.setContent(key.getName());
 				infoInput.setContent(key.getInfo());
@@ -269,8 +269,9 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 		return (myForm);
 	}
 	protected PresentationObject doUpdate(IWContext iwc, int iCategoryId) {
-		int count = Integer.parseInt(iwc.getParameter("tke_count"));
-		String sName, sInfo, sDel, sCost, sPercent, sPayments;
+		/*int count = Integer.parseInt(iwc.getParameter("tke_count"));
+		String sName, sDel, sCost, sPercent, sPayments;
+		String sInfo;
 		Float cost = null, percent = null;
 		Integer payments = null;
 		int ID;
@@ -295,7 +296,7 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 				}
 				//FinanceBusiness.savePaymentType(ID, sName, sInfo, iCategoryId, payments, cost, percent);
 			}
-		}// for loop
+		}// for loop*/
 		return getMain(iwc, iCategoryId);
 	}
 	private DropdownMenu getIntDrop(String name, int from, int to, String selected) {

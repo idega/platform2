@@ -47,7 +47,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		try {
 			t.begin();
 			///////////////////////////
-			AccountEntryHome ehome = (AccountEntryHome) IDOLookup.getHome(AccountEntry.class);
+			//AccountEntryHome ehome = (AccountEntryHome) IDOLookup.getHome(AccountEntry.class);
 			
 			EntryGroup EG = null;
 			int gid = -1;

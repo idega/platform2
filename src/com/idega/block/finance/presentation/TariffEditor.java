@@ -21,7 +21,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Anchor;
-import com.idega.presentation.text.AnchorLink;
+//import com.idega.presentation.text.AnchorLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -727,9 +727,9 @@ public class TariffEditor extends Finance {
 			//drpAtt = this.drpLodgings("te_attdrp"+i,"",XL,BL,FL,CL,TL);
 			//drpAK = this.drpAccountKeys(AK,"te_akdrp"+i,"");
 
-			int pos;
+			//int pos;
 			if (i <= count && !ifnew && iter.hasNext()) {
-				pos = i - 1;
+				//pos = i - 1;
 				tariff = (Tariff) iter.next();
 				float iPrice = tariff.getPrice();
 

@@ -175,9 +175,9 @@ public class TariffIndexEditor extends Finance {
       HiddenInput idInput;
       CheckBox delCheck;
       DropdownMenu typeDrp;
-      int pos;
+      //int pos;
       if(i <= count && iter.hasNext() ){
-        pos = i-1;
+        //pos = i-1;
         TariffIndex ti = (TariffIndex) iter.next();
         nameInput  = getTextInput("ti_nameinput"+i,(ti.getName()));
         infoInput = getTextInput("ti_infoinput"+i,(ti.getInfo()));

@@ -222,7 +222,7 @@ public class EntryGroups extends Finance {
 				int col = 1;
 				int row = 2;
 				AccountEntry A;
-				java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+				//java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
 				for (Iterator iter = entries.iterator(); iter.hasNext();) {
 					A = (AccountEntry) iter.next();
 					col = 1;

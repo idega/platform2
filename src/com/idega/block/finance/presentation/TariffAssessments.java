@@ -23,7 +23,7 @@ import com.idega.block.finance.data.TariffGroup;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.presentation.BusyBar;
-import com.idega.idegaweb.presentation.StatusBar;
+//import com.idega.idegaweb.presentation.StatusBar;
 import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -340,13 +340,13 @@ public class TariffAssessments extends Finance {
 		if (sRoundId != null) {
 			int iRoundId = Integer.parseInt(sRoundId);
 			try {
-				boolean rb = false;
+				//boolean rb = false;
 				if (handler != null) {
-					rb = handler.rollbackAssessment(iRoundId);
+					handler.rollbackAssessment(iRoundId);
 				} else {
 					AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(
 							iwc, AssessmentBusiness.class);
-					rb = assBuiz.rollBackAssessment(iRoundId);
+					assBuiz.rollBackAssessment(iRoundId);
 				}
 				//AssessmentBusiness.rollBackAssessment(iRoundId);
 				/*if (rb)
@@ -379,7 +379,7 @@ public class TariffAssessments extends Finance {
 					IWTimestamp enddate = new IWTimestamp(end);
 					//add(paydate.getISLDate());
 					debug("Starting Execution " + IWTimestamp.RightNow().toString());
-					boolean assessed = handler.executeAssessment(iCategoryId, groupID.intValue(), roundName, 1,
+					handler.executeAssessment(iCategoryId, groupID.intValue(), roundName, 1,
 							iAccountKeyId, paydate, startdate, enddate);
 					debug("Ending Execution " + IWTimestamp.RightNow().toString());
 					/*if (assessed) {
@@ -402,7 +402,7 @@ public class TariffAssessments extends Finance {
 	protected PresentationObject getActionButtonsTable(IWContext iwc) {
 		Table LinkTable = new Table(4, 1);
 		if (isAdmin) {
-			int last = 4;
+			//int last = 4;
 			LinkTable.setWidth("100%");
 			LinkTable.setWidth(4,"100%");
 			LinkTable.setCellpadding(getCellpadding());
@@ -448,7 +448,7 @@ public class TariffAssessments extends Finance {
 			T.add(getHeader(localize("assessment_stamp", "Timestamp")), 2, 1);
 			T.add(getHeader(localize("totals", "Total amount")), 3, 1);
 			T.add(getHeader(sRollBack), 4, 1);
-			int col = 1;
+			//int col = 1;
 			row = 2;
 			AssessmentRound AR;
 			AccountEntryHome eHome = getFinanceService().getAccountEntryHome();
@@ -572,7 +572,7 @@ public class TariffAssessments extends Finance {
 					Account A;
 					
 					float total = 0;
-					String username;
+					//String username;
 					AccountUserHome uHome = getFinanceService().getAccountUserHome();
 					AccountEntryHome eHome = getFinanceService().getAccountEntryHome();
 					int count = 0;

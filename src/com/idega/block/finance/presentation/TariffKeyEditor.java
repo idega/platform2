@@ -173,9 +173,9 @@ public class TariffKeyEditor extends Finance {
 			TextInput nameInput, infoInput;
 			HiddenInput idInput;
 			CheckBox delCheck;
-			int pos;
+			//int pos;
 			if (i <= count && iter.hasNext()) {
-				pos = i - 1;
+				//pos = i - 1;
 				key = (TariffKey) iter.next();
 				nameInput = getTextInput("tke_nameinput" + i, key.getName());
 				infoInput = getTextInput("tke_infoinput" + i, key.getInfo());

@@ -192,9 +192,9 @@ public class AccountKeyEditor extends Finance {
       DropdownMenu iDrp =  keyDrp(Tkeys);
       iDrp.setName("ake_keydrp"+i);
       iDrp = (DropdownMenu) setStyle(iDrp,STYLENAME_INTERFACE);
-      int pos;
+      //int pos;
       if(i <= count && iter.hasNext()){
-        pos = i-1;
+        //pos = i-1;
         key  = (AccountKey) iter.next();
         nameInput  = getTextInput("ake_nameinput"+i,(key.getName()));
         infoInput = getTextInput("ake_infoinput"+i,(key.getInfo()));
