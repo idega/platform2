@@ -145,10 +145,10 @@ public class CalendarView extends Block{
 			entryTable.setHeight("100%");
 			entryTable.setColor(1,1,"#ffffff");
 			now.setTime(i,0,0);
-			dayTable.add(now.getTime().toString(),1,1);
+			dayTable.add(now.getDateString("hh:mm"),1,1);
 			dayTable.setColor(1,1,"#ffffff");
 			backTable.add(dayTable,1,row);
-			backTable.setWidth(1,row,"20%");
+			backTable.setWidth(1,row,"7%");
 			Timestamp fromStamp = Timestamp.valueOf(stamp.getDateString("yyyy-MM-dd hh:mm:ss.S")); 
 			fromStamp.setHours(beginHour);
 			fromStamp.setMinutes(0);
