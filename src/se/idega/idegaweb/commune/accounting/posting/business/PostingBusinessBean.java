@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.19 2003/09/08 08:10:07 laddi Exp $
+ * $Id: PostingBusinessBean.java,v 1.20 2003/09/12 00:15:07 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -45,6 +45,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	private final static String KEY_ERROR_POST_NOT_FOUND = "posting_parm_edit.post_not_found";
 	private final static String KEY_ERROR_POST_PARAM_DATE_ORDER = "posting_parm_edit.post_dateorder";
 	private final static String KEY_ERROR_POST_PARAM_SAME_ENTRY = "posting_parm_edit.post_sameentry";
+	private final static String KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER = "posting_parm_edit.post_school_year_order";
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
 	 * @param first posting string
@@ -65,12 +66,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			PostingString posting = ksHome.findPostingStringByDate(date);
 			Collection list = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));
 			Iterator iter = list.iterator();
-			while (iter.hasNext())
+			while (iter.hasNext()) 
 			{
 				PostingField field = (PostingField)iter.next();
 				fieldLength = field.getLen();
 				temp = trim(first.substring(readPointer,readPointer+fieldLength),field);
-				if(temp.length()==0)
+				if (temp.length()==0)
 				{
 					temp = trim(second.substring(readPointer,readPointer+fieldLength),field);
 				}
@@ -78,7 +79,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				ret.append(temp);
 				readPointer += fieldLength;
 			}
-			if(readPointer != first.length()){
+			if (readPointer != first.length()){
 				System.out.println("Error: Wrong length of the string used for posting. Expected: "+readPointer+
 				"  Actual: "+first.length());
 			}
@@ -139,6 +140,11 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 */
 	public PostingParameters getPostingParameter(Date date, int act_id, 
 			int reg_id, int com_id, int com_bel_id) throws PostingParametersException {
+			return getPostingParameter(date, act_id, reg_id, com_id, com_bel_id, 0, 0);
+	}
+	
+	public PostingParameters getPostingParameter(Date date, int act_id, 
+			int reg_id, int com_id, int com_bel_id, int schoolYear1_id, int schoolYear2_id) throws PostingParametersException {
 		
 		try {
 			int match;
@@ -147,7 +153,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			Collection ppCol = home.findPostingParametersByDate(date);
 			Iterator iter = ppCol.iterator();
 
-			while(iter.hasNext())  {
+			while (iter.hasNext())  {
 				PostingParameters pp = (PostingParameters) iter.next();
 				String the_act_id = pp.getActivity() != null ? 
 						pp.getActivity().getPrimaryKey().toString() : "0";
@@ -157,30 +163,52 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 						pp.getCompanyType().getPrimaryKey().toString() : "0";
 				String the_com_bel_id = pp.getCommuneBelonging() != null ? 
 						pp.getCommuneBelonging().getPrimaryKey().toString() : "0";
+
+				String the_school_year1_id = pp.getSchoolYear1() != null ? 
+						pp.getSchoolYear1().getPrimaryKey().toString() : "0";
+
+				String the_school_year2_id = pp.getSchoolYear2() != null ? 
+						pp.getSchoolYear2().getPrimaryKey().toString() : "0";
 				
 				match = 0;
 				
-				if(act_id == 0) { 
+				if (act_id == 0) { 
 					match++;
 				} else if (Integer.parseInt(the_act_id) == act_id) { 
 					match++; 
 				}
-				if(reg_id == 0) { 
+
+				if (reg_id == 0) { 
 					match++;
 				} else if (Integer.parseInt(the_reg_id) == reg_id) { 
 					match++; 
 				}
-				if(com_id == 0) { 
+
+				if (com_id == 0) { 
 					match++;
 				} else if (Integer.parseInt(the_com_id) == com_id) { 
 					match++; 
 				}
-				if(com_bel_id == 0) { 
+
+				if (com_bel_id == 0) { 
 					match++;
 				} else if (Integer.parseInt(the_com_bel_id) == com_bel_id) { 
 					match++; 
 				}
-				if (match == 4) {
+
+				if (schoolYear1_id == 0) { 
+					match++;
+				} else if (Integer.parseInt(the_school_year1_id) == schoolYear1_id) { 
+					match++; 
+				}
+
+				if (schoolYear2_id == 0) { 
+					match++;
+				} else if (Integer.parseInt(the_school_year2_id) == schoolYear2_id) { 
+					match++; 
+				}
+
+				if (match == 6) {
 					return pp;
 				}
 			}
@@ -216,6 +244,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				String regSpecTypeID,
 				String companyTypeID,
 				String communeBelongingID,
+				String schoolYear1ID,
+				String schoolYear2ID,
 				String ownPostingString,
 				String doublePostingString
 			) throws PostingParametersException, RemoteException {
@@ -226,8 +256,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			int parm2 = 0;
 			String parm3 = null;
 			int parm4 = 0;
-			
-
+			int parm5 = 0;
+			int parm6 = 0;
+			if (schoolYear1ID != null && schoolYear1ID != null) {
+				if (Integer.parseInt(schoolYear1ID) > Integer.parseInt(schoolYear2ID)) {
+					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER, "Fel ordning bland skolŒren!");			
+				}
+			}
 			if (periodeFrom.after(periodeTo)) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
 			}
@@ -235,22 +270,28 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			try {
 				home = (PostingParametersHome) IDOLookup.getHome(PostingParameters.class);
 	
-				if(activityID == null) activityID = "0"; 
-				if(regSpecTypeID == null) regSpecTypeID = "0"; 
-				if(companyTypeID == null) companyTypeID = "0"; 
-				if(communeBelongingID == null) communeBelongingID = "0"; 
-				
-				if(activityID.indexOf("0") != -1) activityID = "0"; 
-				if(regSpecTypeID.indexOf("0") != -1) regSpecTypeID = "0"; 
-				if(companyTypeID.indexOf("0") != -1) companyTypeID = "0"; 
-				if(communeBelongingID.indexOf("0") != -1) communeBelongingID = "0"; 
+				if (activityID == null) activityID = "0"; 
+				if (regSpecTypeID == null) regSpecTypeID = "0"; 
+				if (companyTypeID == null) companyTypeID = "0"; 
+				if (communeBelongingID == null) communeBelongingID = "0"; 
+				if (schoolYear1ID == null) schoolYear1ID = "0";
+				if (schoolYear2ID == null) schoolYear2ID = "0";
+								
+				if (activityID.indexOf("0") != -1) activityID = "0"; 
+				if (regSpecTypeID.indexOf("0") != -1) regSpecTypeID = "0"; 
+				if (companyTypeID.indexOf("0") != -1) companyTypeID = "0"; 
+				if (communeBelongingID.indexOf("0") != -1) communeBelongingID = "0"; 
+				if (schoolYear1ID.indexOf("0") != -1) schoolYear1ID = "0"; 
+				if (schoolYear2ID.indexOf("0") != -1) schoolYear2ID = "0"; 
 
 				parm1 = Integer.parseInt(activityID);
 				parm2 = Integer.parseInt(regSpecTypeID);
 				parm3 = companyTypeID;
 				parm4 = Integer.parseInt(communeBelongingID);
+				parm5 = Integer.parseInt(schoolYear1ID);
+				parm6 = Integer.parseInt(schoolYear2ID);
 
-				if(searchPP(
+				if (searchPP(
 						periodeFrom, 
 						periodeTo, 
 						ownPostingString, 
@@ -258,18 +299,20 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 						parm1,
 						parm2,
 						parm3,
-						parm4
+						parm4,
+						parm5,
+						parm6
 					)) {
 					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SAME_ENTRY, "Denna post finns redan sparad!");			
 				}
 				
 
 				int ppID = 0;
-				if(sppID != null) {
+				if (sppID != null) {
 					ppID = Integer.parseInt(sppID);
 				}
 				pp = null;
-				if(ppID != 0) {				
+				if (ppID != 0) {				
 					pp = home.findPostingParameter(ppID);
 				}
 			} catch (FinderException e) {
@@ -290,6 +333,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				pp.setRegSpecType(parm2);
 				pp.setCompanyType(parm3);
 				pp.setCommuneBelonging(parm4);
+				pp.setSchoolYear1(parm5);
+				pp.setSchoolYear2(parm6);
 				pp.store();
 			} catch (CreateException ce) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_CREATE, "Kan ej skapa parameter");			
@@ -301,69 +346,93 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @author Kjell
 	 */
 	private boolean searchPP(Date from, Date to, String ownPosting, String doublePosting, 
-								int code1, int code2, String code3, int code4) {
+								int code1, int code2, String code3, int code4, int code5, int code6) {
 	
 		try {
-			if(ownPosting == null || doublePosting == null) {
+			if (ownPosting == null || doublePosting == null) {
 				return false;
 			}
 			PostingParametersHome home = getPostingParametersHome();
 			Collection ppCol = home.findAllPostingParameters();
 			Iterator iter = ppCol.iterator();
 			
-			while(iter.hasNext())  {
+			while (iter.hasNext())  {
 				PostingParameters pp = (PostingParameters) iter.next();
 				int eq = 0;
-				if(pp.getPostingString() != null) {
+				
+				if (pp.getPostingString() != null) {
 					if (pp.getPostingString().compareTo(ownPosting) == 0) {
 						eq++;
 					}
 				}
-				if(pp.getDoublePostingString() != null) {
+				
+				if (pp.getDoublePostingString() != null) {
 					if (pp.getDoublePostingString().compareTo(doublePosting) == 0) {
 						eq++;
 					}
 				}
+				
 				if (pp.getPeriodeFrom() != null) {
-					if(pp.getPeriodeFrom().compareTo(from) == 0) {
+					if (pp.getPeriodeFrom().compareTo(from) == 0) {
 						eq++;
 					}
 				}
+				
 				if (pp.getPeriodeTo() != null) {
-					if(pp.getPeriodeTo().compareTo(to) == 0) {
+					if (pp.getPeriodeTo().compareTo(to) == 0) {
 						eq++;
 					}
 				}
-				System.out.println("" + code1 + ":" + code2 + ":" +code3 +":" +code4);
-				if(pp.getActivity() == null) {
-					if(code1 == 0) {
+				
+				if (pp.getActivity() == null) {
+					if (code1 == 0) {
 						eq++;
 					}
 				} else if (Integer.parseInt(pp.getActivity().getPrimaryKey().toString()) == code1) {
 					eq++;
 				}
-				if(pp.getRegSpecType() == null) {
-					if(code2 == 0) {
+				
+				if (pp.getRegSpecType() == null) {
+					if (code2 == 0) {
 						eq++;
 					}
 				} else if (Integer.parseInt(pp.getRegSpecType().getPrimaryKey().toString()) == code2) {
 					eq++;
 				}
-				if(pp.getCompanyType() == null) {
-					if(code3 == null) {
+				
+				if (pp.getCompanyType() == null) {
+					if (code3 == null) {
 						eq++;
 					}
 				} else if (pp.getCompanyType().getPrimaryKey().toString() == code3) {
 					eq++;
 				}	
-				if(pp.getCommuneBelonging() == null) {
-					if(code4 == 0) {
+				
+				if (pp.getCommuneBelonging() == null) {
+					if (code4 == 0) {
 						eq++;
 					}
 				} else if (Integer.parseInt(pp.getCommuneBelonging().getPrimaryKey().toString()) == code4) {
 					eq++;				
+				}
+					
+				if (pp.getSchoolYear1() == null) {
+					if (code5 == 0) {
+						eq++;
+					}
+				} else if (Integer.parseInt(pp.getSchoolYear1().getPrimaryKey().toString()) == code4) {
+					eq++;				
+				}
+					
+				if (pp.getSchoolYear2() == null) {
+					if (code6 == 0) {
+						eq++;
+					}
+				} else if (Integer.parseInt(pp.getSchoolYear2().getPrimaryKey().toString()) == code4) {
+					eq++;				
 				}	
-				if(eq == 8) {
+				
+				if (eq == 10) {
 					return true;
 				}
 			}
@@ -491,12 +560,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	public String pad(String in, PostingField postingField){
 		StringBuffer ret = new StringBuffer(in);
 		//Add the padding character on right side of the string until it is of right size
-		if(postingField.getJustification() == JUSTIFY_LEFT) {
-			while(ret.length()<postingField.getLen()){
+		if (postingField.getJustification() == JUSTIFY_LEFT) {
+			while (ret.length()<postingField.getLen()){
 				ret.append(postingField.getPadChar());
 			}
 		} else {
-			while(ret.length()<postingField.getLen()){
+			while (ret.length()<postingField.getLen()){
 				ret.insert(0,postingField.getPadChar());
 			}
 		}
@@ -513,10 +582,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		String ret = "";
 		int i;
 		//Remove all padding characters until a non padding character is encountered
-		if(postingField.getJustification() == JUSTIFY_LEFT){
+		if (postingField.getJustification() == JUSTIFY_LEFT){
 			for(i=postingField.getLen();i>0 && in.charAt(i) == postingField.getPadChar();i++){}
 			ret = in.substring(0,i);
-		}else{
+		} else {
 			for(i=0;i<postingField.getLen() && in.charAt(i) == postingField.getPadChar();i++){}
 			ret = in.substring(i,postingField.getLen());
 		}
