@@ -53,6 +53,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
@@ -1281,6 +1282,9 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (IDOCompositePrimaryKeyException e) {
 			e.printStackTrace();
 		}
 		return null;
