@@ -1,176 +1,135 @@
 /*
-
- * $Id: WaitingListFinder.java,v 1.2 2002/04/06 19:11:13 tryggvil Exp $
-
+ * $Id: WaitingListFinder.java,v 1.3 2002/08/06 11:27:50 palli Exp $
  *
-
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
-
  *
-
  * This software is the proprietary information of Idega hf.
-
  * Use is subject to license terms.
-
  *
-
  */
-
 package is.idega.idegaweb.campus.block.allocation.business;
 
-
-
-
-
+import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
-
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.sql.Statement;
+import java.util.Hashtable;
 import java.util.List;
-
-import com.idega.data.EntityFinder;
-
 import java.util.Vector;
 
-import java.util.Hashtable;
-
-import java.util.Map;
-
-import java.util.Iterator;
-
-import com.idega.core.user.data.User;
-
-import com.idega.block.application.data.Applicant;
-
-
+import com.idega.data.EntityFinder;
+import com.idega.util.database.ConnectionBroker;
 
 /**
-
- *
-
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
-
  * @version 1.0
-
  */
-
 public abstract class WaitingListFinder {
+	public final static int APPLICANT = 1, APARTMENTTYPE = 2, COMPLEX = 4;
 
-  public final static int APPLICANT = 1,APARTMENTTYPE=2,COMPLEX = 4;
+	public static List listOfWaitinglist() {
+		try {
+			return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.WaitingListHome) com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy());
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
 
+			return null;
+		}
+	}
 
+	public static List listOfWaitingList(int fields, int iApplicantId, int iTypeId, int iComplexId) {
+		try {
+			return EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.WaitingListHome) com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy(), getSQL(fields, iApplicantId, iTypeId, iComplexId));
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
 
-  public static List listOfWaitinglist(){
+			return null;
+		}
+	}
 
-    try {
+	public static String getSQL(int fields, int iApplicantId, int iTypeId, int iComplexId) {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getEntityTableName());
 
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy()));
+		int count = 0;
+		if (fields > 0) {
+			sql.append(" where ");
 
-    }
+			if ((fields & APPLICANT) == APPLICANT && iApplicantId > 0) {
+				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApplicantIdColumnName());
+				sql.append(" = ");
+				sql.append(iApplicantId);
+				count++;
+			}
 
-    catch(SQLException e){
+			if ((fields & APARTMENTTYPE) == APARTMENTTYPE && iTypeId > 0) {
+				sql.append(count > 0 ? " and " : "  ");
+				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName());
+				sql.append(" = ");
+				sql.append(iTypeId);
+				count++;
+			}
 
-      e.printStackTrace();
+			if ((fields & COMPLEX) == COMPLEX && iComplexId > 0) {
+				sql.append(count > 0 ? " and " : "  ");
+				sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName());
+				sql.append(" = ");
+				sql.append(iComplexId);
+				count++;
+			}
+		}
 
-      return(null);
+		return sql.toString();
+	}
 
-    }
+	public static Hashtable getAllocationView() {
+		Hashtable table = new Hashtable();
+		Connection Conn = null;
 
-  }
+		String sqlString = "select * from v_allocation_view2";
 
+		try {
+			Conn = ConnectionBroker.getConnection();
+			Statement stmt = Conn.createStatement();
+			ResultSet RS = stmt.executeQuery(sqlString);
 
+			while (RS.next()) {
+				int catId = RS.getInt("bu_aprt_cat_id");
+				int typeId = RS.getInt("bu_aprt_type_id");
+				int complexId = RS.getInt("bu_complex_id");
+				String typeName = RS.getString("type_name");
+				String complexName = RS.getString("complex_name");
+				int total = RS.getInt("total_aprt");
+				int avail = RS.getInt("avail_aprt");
+				int choice1 = RS.getInt("choice1");
+				int choice2 = RS.getInt("choice2");
+				int choice3 = RS.getInt("choice3");
+				
+				AllocationView view = new AllocationView(catId,typeId,complexId,typeName,complexName,total,avail,choice1,choice2,choice3);
+				Integer category = new Integer(catId);
+				List li = (List)table.get(category);
+				if (li == null) {
+					li = new Vector();
+					table.put(category,li);
+				}
+				li.add(view);
+			}
 
-  public static List listOfWaitingList(int FIELDS,int iApplicantId,int iTypeId,int iComplexId){
+			RS.close();
+			stmt.close();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		finally {
+			ConnectionBroker.freeConnection(Conn);
+		}
 
-     try {
-
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy(),getSQL(FIELDS ,iApplicantId,iTypeId,iComplexId) ));
-
-    }
-
-    catch(SQLException e){
-
-      e.printStackTrace();
-
-      return(null);
-
-    }
-
-  }
-
-
-
-  public static String getSQL(int FIELDS,int iApplicantId,int iTypeId,int iComplexId){
-
-    StringBuffer sql = new StringBuffer("select * from ");
-
-    sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getEntityTableName());
-
-    int count = 0;
-
-    if( FIELDS > 0 ){
-
-      sql.append(" where ");
-
-      if((FIELDS & APPLICANT) == APPLICANT && iApplicantId > 0){
-
-        sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApplicantIdColumnName());
-
-        sql.append(" = ");
-
-        sql.append(iApplicantId);
-
-        count++;
-
-      }
-
-      if((FIELDS & APARTMENTTYPE )== APARTMENTTYPE && iTypeId > 0){
-
-        sql.append(count > 0?" and ": "  ");
-
-        sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName());
-
-        sql.append(" = ");
-
-        sql.append(iTypeId);
-
-        count++;
-
-      }
-
-      if((FIELDS & COMPLEX ) == COMPLEX && iComplexId > 0 ){
-
-        sql.append(count > 0?" and ": "  ");
-
-        sql.append(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName());
-
-        sql.append(" = ");
-
-        sql.append(iComplexId);
-
-        count++;
-
-      }
-
-    }
-
-    //System.err.println(sql.toString());
-
-    return sql.toString();
-
-  }
-
-
-
-
-
-
-
+		return table;
+	}
 }
-
-
-
-
-
-
-

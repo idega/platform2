@@ -1,17 +1,21 @@
 package com.idega.block.building.business;
 
-import com.idega.block.building.data.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.idega.util.idegaCalendar;
-import com.idega.util.idegaTimestamp;
-import java.util.List;
+import java.sql.Statement;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
-import java.sql.*;
+
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.block.building.data.RoomType;
 import com.idega.data.EntityFinder;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.util.database.ConnectionBroker;
-import java.lang.StringBuffer;
 
 /**
  * Title:
@@ -383,7 +387,7 @@ public class BuildingFinder {
     }
     return L;
   }
-
+  
   public static Vector getApartmentTypesComplexForCategory(int categoryId) {
     Vector v = new Vector();
     Connection Conn = null;
@@ -394,7 +398,6 @@ public class BuildingFinder {
       Conn = com.idega.util.database.ConnectionBroker.getConnection();
       Statement stmt = Conn.createStatement();
       ResultSet RS  = stmt.executeQuery(sqlString);
-      int a = 0;
 
       while (RS.next()) {
         ApartmentTypeComplexHelper appHelp = new ApartmentTypeComplexHelper();
