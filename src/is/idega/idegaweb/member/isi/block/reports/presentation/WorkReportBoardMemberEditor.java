@@ -170,6 +170,16 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     // does the user want to save a new entry?
     if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+      // check if personal id is okay
+      EntityPathValueContainer valueContainerFromTextEditor = 
+        TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, PERSONAL_ID, iwc);
+      Object value = valueContainerFromTextEditor.getValue();
+      String socialSecurityNumber = value.toString();
+      User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
+      if (user == null) {
+        personalIdnotCorrect = true;
+        return action;
+      }
       WorkReportBoardMember member = createWorkReportBoardMember();
       Iterator iterator = FIELD_LIST.iterator();
       while (iterator.hasNext())  {
