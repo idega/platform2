@@ -9,7 +9,7 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 import java.sql.Date;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 import com.idega.block.school.data.School;
 import com.idega.user.data.User;
@@ -34,8 +34,8 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity{
 	String getDoublePosting();
 	float getAmount();
 	float getVAT();
-	VATRegulation getVatRegulation();
-	int getVatRegulationId();	
+	VATRule getVatRule();
+	int getVatRuleId();	
 	String getNote();
 	Date getCreatedDate();
 	String getCreatedName();
@@ -52,8 +52,8 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity{
 	void setSchoolCategoryId(String s);	
 	void setAmount(float amount);
 	void setVAT(float vat);
-	void setVatRegulation(VATRegulation vatRegulation);
-	void setVatRegulationId(int vatRegId);	
+	void setVatRule(VATRule vatRule);
+	void setVatRuleId(int vatRuleId);	
 	void setNote(String note);	
 	void setOwnPosting(String ownPosting);
 	void setDoublePosting(String doublePosting);
