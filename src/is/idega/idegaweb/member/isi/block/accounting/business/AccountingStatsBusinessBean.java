@@ -41,6 +41,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String LOCALIZED_PERSONAL_ID = "AccountingStatsBusiness.personal_id";
 	private static final String LOCALIZED_AMOUNT = "AccountingStatsBusiness.amount";
 	private static final String LOCALIZED_DATE_OF_ENTRY = "AccountingStatsBusiness.date_of_entry";
+	private static final String LOCALIZED_AMOUNT_EQUALIZED = "AccountingStatsBusiness.amount_equalized";
+	private static final String LOCALIZED_INFO = "AccountingStatsBusiness.info";
 	
 	private static final String FIELD_NAME_DIVISION_NAME = "division_name";
 	private static final String FIELD_NAME_GROUP_NAME = "group_name";
@@ -48,6 +50,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String FIELD_NAME_PERSONAL_ID = "personal_id";
 	private static final String FIELD_NAME_AMOUNT = "amount";
 	private static final String FIELD_NAME_DATE_OF_ENTRY = "date_of_entry";
+	private static final String FIELD_NAME_AMOUNT_EQUALIZED = "amount_equalized";
+	private static final String FIELD_NAME_INFO = "info";
 	
 	private AccountingBusiness accountingBiz = null;
 	private IWBundle _iwb = null;
@@ -102,30 +106,29 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		 reportCollection.addField(groupField);
 		 
-		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, Integer.class);
+		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
 		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
 		 
-		 ReportableField ssnField = new ReportableField(FIELD_NAME_PERSONAL_ID, Integer.class);
+		 ReportableField ssnField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
 		 ssnField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal id"),currentLocale);
 		 reportCollection.addField(ssnField);
 		 
-		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Integer.class);
+		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
 		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		 reportCollection.addField(amountField);
 		 
-		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, Integer.class);
+		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, Date.class);
 		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		 reportCollection.addField(entryDateField);
-		 /*
-		 ReportableField bothGendersUnderAge = new ReportableField(FIELD_NAME_NAME_ALL_UNDER_AGE, Integer.class);
-		 bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER, "all -"+age), currentLocale);
-		 reportCollection.addField(bothGendersUnderAge);
 		 
-		 ReportableField bothGendersEqualOverAge = new ReportableField(FIELD_NAME_NAME_ALL_OVER_OR_EQUAL_AGE, Integer.class);
-		 bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER, "all "+age+"+"), currentLocale);
-		 reportCollection.addField(bothGendersEqualOverAge);
-		 */
+		 ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
+		 amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
+		 reportCollection.addField(amountEqualizedField);
+		 
+		 ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
+		 infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		 reportCollection.addField(infoField);
 		 
 		 //Real data stuff
 		 //Gathering data
@@ -162,6 +165,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 		data.addData(ssnField, financeEntry.getUser().getPersonalID() );
 			 		data.addData(amountField, new Double(financeEntry.getAmount()) );
 			 		data.addData(entryDateField, financeEntry.getDateOfEntry() );
+			 		data.addData(amountEqualizedField, new Double(financeEntry.getAmountEqualized()) );
+			 		data.addData(infoField, financeEntry.getInfo() );
 			 		
 			 		//					get the stats
 			 		//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
