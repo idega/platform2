@@ -75,7 +75,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.EMAIL"};
     EntityBrowser browser = new EntityBrowser();
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
-    browser.setDefaultNumberOfRows(entities.size());
+    if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
     // switch off the internal form of the browser
     browser.setUseExternalForm(true);
     for (int i = 0; i < columns.length; i++) {
