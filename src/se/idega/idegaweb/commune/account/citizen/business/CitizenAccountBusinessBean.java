@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.56 2003/10/22 10:00:29 gimmi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.57 2003/11/10 19:15:06 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/10/22 10:00:29 $ by $Author: gimmi $
+ * Last modified: $Date: 2003/11/10 19:15:06 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.56 $
+ * @version $Revision: 1.57 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -95,7 +95,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	 * @return Integer appliaction id or null if insertion was unsuccessful
 	 * @throws UserHasLoginException If A User already has a login in the system.
 	 */
-	public Integer insertApplication(IWContext iwc, User user, String ssn, String email, String phoneHome, String phoneWork) throws UserHasLoginException, RemoteException {
+	public Integer insertApplication(IWContext iwc, User user, String ssn, String email, String phoneHome, String phoneWork) throws UserHasLoginException {
 		CitizenAccount application = null;
 		UserTransaction transaction = null;
 		NBSLoginBusinessBean loginBusiness = new NBSLoginBusinessBean();
@@ -165,7 +165,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (Integer) (application == null ? null : application.getPrimaryKey());
 	}
 
-	public Integer insertApplication(IWContext iwc, final String name, final String ssn, final String email, final String phoneHome, final String phoneWork, final String street, final String zipCode, final String city, final String civilStatus, final boolean hasCohabitant, final int childrenCount, final String applicationReason) throws RemoteException {
+	public Integer insertApplication(IWContext iwc, final String name, final String ssn, final String email, final String phoneHome, final String phoneWork, final String street, final String zipCode, final String city, final String civilStatus, final boolean hasCohabitant, final int childrenCount, final String applicationReason) {
 		CitizenAccount application = null;
 		try {
 			final CitizenAccountHome citizenAccountHome = (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
@@ -193,7 +193,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (Integer) (application == null ? null : application.getPrimaryKey());
 	}
 
-	public Integer insertCohabitant(final Integer applicationId, final String firstName, final String lastName, final String ssn, final String civilStatus, final String phoneWork) throws RemoteException, CreateException {
+	public Integer insertCohabitant(final Integer applicationId, final String firstName, final String lastName, final String ssn, final String civilStatus, final String phoneWork) {
 		CitizenApplicantCohabitant cohabitant = null;
 		try {
 			final CitizenApplicantCohabitantHome citizenApplicantCohabitantHome = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
@@ -214,7 +214,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (Integer) (cohabitant == null ? null : cohabitant.getPrimaryKey());
 	}
 
-	public Integer insertChildren(final Integer applicationId, final String firstName, final String lastName, final String ssn) throws RemoteException, CreateException {
+	public Integer insertChildren(final Integer applicationId, final String firstName, final String lastName, final String ssn) {
 		CitizenApplicantChildren children = null;
 		try {
 			final CitizenApplicantChildrenHome citizenApplicantChildrenHome = (CitizenApplicantChildrenHome) IDOLookup.getHome(CitizenApplicantChildren.class);
@@ -233,7 +233,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (Integer) (children == null ? null : children.getPrimaryKey());
 	}
 
-	public Integer insertMovingTo(final Integer applicationId, final String address, final String date, final String housingType, final String propertyType, final String landlordName, final String landlordPhone, final String landlordAddress) throws RemoteException, CreateException {
+	public Integer insertMovingTo(final Integer applicationId, final String address, final String date, final String housingType, final String propertyType, final String landlordName, final String landlordPhone, final String landlordAddress) {
 		CitizenApplicantMovingTo movingTo = null;
 		try {
 			final CitizenApplicantMovingToHome citizenApplicantMovingToHome = (CitizenApplicantMovingToHome) IDOLookup.getHome(CitizenApplicantMovingTo.class);
@@ -254,7 +254,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (Integer) (movingTo == null ? null : movingTo.getPrimaryKey());
 	}
 
-	public Integer insertPutChildren(final Integer applicationId, final String currentCommuneID) throws RemoteException, CreateException {
+	public Integer insertPutChildren(final Integer applicationId, final String currentCommuneID) {
 		CitizenApplicantPutChildren putChildren = null;
 		try {
 			final CitizenApplicantPutChildrenHome citizenApplicantPutChildrenHome = (CitizenApplicantPutChildrenHome) IDOLookup.getHome(CitizenApplicantPutChildren.class);
@@ -401,7 +401,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return CitizenAccount.class;
 	}
 
-	public void acceptApplication(final int applicationID, final User performer, boolean createUserMessage, boolean createPasswordMessage) throws RemoteException, CreateException, FinderException {
+	public void acceptApplication(final int applicationID, final User performer, boolean createUserMessage, boolean createPasswordMessage) throws CreateException {
 		UserTransaction transaction = null;
 		try {
 			transaction = getSessionContext().getUserTransaction();
@@ -539,7 +539,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllAcceptedApplications()
 	 */
-	public Collection getAllAcceptedApplications() throws FinderException, RemoteException {
+	public Collection getAllAcceptedApplications() {
 		/**
 		 * @todo Implement
 		 */
@@ -549,7 +549,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllPendingApplications()
 	 */
-	public Collection getAllPendingApplications() throws FinderException, RemoteException {
+	public Collection getAllPendingApplications() {
 		/**
 		 * @todo Implement
 		 */
@@ -559,7 +559,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllRejectedApplications()
 	 */
-	public Collection getAllRejectedApplications() throws FinderException, RemoteException {
+	public Collection getAllRejectedApplications() {
 		/**
 		 * @todo Implement
 		 */
@@ -678,7 +678,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return this.getLocalizedString("acc.app.acc.fp.subj", "New password for your account");
 	}
 
-	protected String getNewPasswordWasCreatedMessageBody(String userName, String loginName, String password) throws RemoteException {
+	protected String getNewPasswordWasCreatedMessageBody(String userName, String loginName, String password) {
 		//int ownerID = ((Integer) theCase.getOwner().getPrimaryKey()).intValue();
 		String body = this.getLocalizedString("acc.app.acc.body1", "Dear mr./ms./mrs. ");
 		body += userName + "\n";
