@@ -290,7 +290,7 @@ public class SchoolUserEditor extends Block {
 			//contTable.setBorder(1);
 			
 			++cRow;
-			BackButton back = new BackButton(_iwrb.getLocalizedString("school.back", "Back"));
+			SubmitButton back = new SubmitButton(_iwrb.getLocalizedString("school.back", "Back"));
 			contTable.add(back, 1, cRow);
 			if (addSubmitButton) {
 				SubmitButton update = new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE);
