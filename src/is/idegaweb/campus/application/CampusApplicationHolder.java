@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationHolder.java,v 1.2 2001/07/30 11:48:31 palli Exp $
+ * $Id: CampusApplicationHolder.java,v 1.3 2001/08/29 20:31:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import is.idegaweb.campus.entity.Applied;
 import is.idegaweb.campus.entity.CampusApplication;
+import is.idegaweb.campus.entity.Contract;
 import java.util.Vector;
 
 /**
@@ -56,5 +57,11 @@ public class CampusApplicationHolder {
   }
    public Vector getApplied(){
     return this.vApplied ;
+  }
+  public Contract getContract(){
+    return null;
+  }
+  public Vector getWaitingList(){
+    return null;
   }
 }
