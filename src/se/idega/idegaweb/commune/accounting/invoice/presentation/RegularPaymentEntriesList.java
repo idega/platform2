@@ -1229,6 +1229,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				
 			}
 			public Object decode(String string){return null;}
+			public Collection decode(String[] pks){return null;}
 		};
 	}
 	

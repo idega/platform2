@@ -1082,6 +1082,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public boolean isIdentical(EJBLocalObject arg0) throws EJBException {return false;}
 			public int compareTo(Object arg0) {return 0;}
 			public Object decode(String string){return null;}
+			public Collection decode(String[] pks){return null;}
 		};
 	}
 	
