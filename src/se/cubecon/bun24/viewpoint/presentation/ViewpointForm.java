@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/14 23:31:14 $ by $Author: laddi $
+ * Last modified: $Date: 2002/11/15 00:12:12 $ by $Author: gimmi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -332,7 +332,7 @@ public class ViewpointForm extends CommuneBlock {
 		textArea.setColumns(40);
 		textArea.setRows(10);
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString(SUBMITVIEWPOINT_KEY, SUBMITVIEWPOINT_DEFAULT)));
-		submit.setAsImageButton(true);
+//		submit.setAsImageButton(true);
 
 		final Table table = new Table();
 		table.setWidth(getWidth());
