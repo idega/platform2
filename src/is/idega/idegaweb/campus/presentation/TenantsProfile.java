@@ -17,6 +17,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -208,6 +209,7 @@ public static final String darkRed = "#932A2D";
 
     if ( _update ) {
       myForm.add(table);
+      myForm.add(new HiddenInput(this.PARAMETER_USER_ID,Integer.toString(_userID)));
       table.add(new BackButton(iwrb.getImage("back.gif")),1,row);
       table.add(new SubmitButton(iwrb.getImage("save.gif"),PARAMETER_MODE,PARAMETER_SAVE),1,row);
       return myForm;
@@ -215,6 +217,7 @@ public static final String darkRed = "#932A2D";
     else {
       Link editLink = new Link(iwrb.getImage("edit.gif"));
         editLink.addParameter(PARAMETER_MODE,PARAMETER_EDIT);
+        editLink.addParameter(PARAMETER_USER_ID,_userID);
       table.add(editLink,1,row);
     }
     return table;

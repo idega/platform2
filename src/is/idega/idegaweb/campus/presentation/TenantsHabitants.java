@@ -168,6 +168,9 @@ private String darkRed = "#932A2D";
       complex = BuildingCacher.getComplex(_campusID);
     else if(!_isAdmin)
       complex = BuildingCacher.getComplex(building.getComplexId());
+    else {
+      complex = BuildingCacher.getComplex();
+    }
     Map phoneMap = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
     CampusPhone phone = null;
 
@@ -236,12 +239,14 @@ private String darkRed = "#932A2D";
       column = 1;
       HabitantsCollector collected = (HabitantsCollector) vector.get(a);
       if ( _isAdmin ) {
-        adminLink = new Link(iwb.getImage("view.gif"));
+        adminLink = new Link(formatText(collected.getName()));
           adminLink.addParameter(TenantsProfile.getUserParameter(collected.getUserID()));
           adminLink.addParameter(TabAction.sAction,20);
+          adminLink.addParameter("cam_fact_view",10);
         table.add(adminLink,column++,row);
       }
-      table.add(formatText(collected.getName()),column++,row);
+      else
+        table.add(formatText(collected.getName()),column++,row);
       table.add(formatText(collected.getApartment()),column++,row);
       table.add(formatText(collected.getFloor()),column++,row);
       table.add(formatText(collected.getPhone()),column++,row);

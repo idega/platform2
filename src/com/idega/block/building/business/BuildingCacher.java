@@ -192,7 +192,7 @@ public class BuildingCacher {
     else {
       Iterator iter = hComplexes.keySet().iterator();
       while (iter.hasNext()) {
-        return (Complex) iter.next();
+        return (Complex) hComplexes.get(iter.next());
       }
     }
     return null;
