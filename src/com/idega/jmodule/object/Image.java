@@ -125,12 +125,11 @@ public Image(String url,String name,int width,int height){
 */
 
 public Image(int image_id) throws SQLException{
-	super();
-	//String URIString = "/servlet/imageModule";
-	//URIString = URIString+"?image_id="+image_id;
-	String URIString = this.getImageURL(image_id);
-            setURL(URIString);
-	setBorder(0);
+  super();
+  this.imageId = image_id;
+  String URIString = this.getImageURL(image_id);
+  setURL(URIString);
+  setBorder(0);
 /*
 public Image(int imageId) throws SQLException{
   super();
