@@ -201,7 +201,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			column = 1;
 			application = (ChildCareApplication) iter.next();
 			phone = getBusiness().getSchoolBusiness().getSchoolPhone(application.getProviderId());
-			queueDate = new IWTimestamp(application.getCreated());
+			queueDate = new IWTimestamp(application.getQueueDate());
 			placementDate = new IWTimestamp(application.getFromDate());
 			if (application.getProviderId() == getSession().getChildCareID())
 				isCurrentProvider = true;
