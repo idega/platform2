@@ -1,5 +1,5 @@
 /*
- * $Id: NewsLayoutHandler.java,v 1.4 2003/04/03 08:01:12 laddi Exp $
+ * $Id: NewsLayoutHandler.java,v 1.5 2004/06/28 11:18:35 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package com.idega.block.news.business;
 
 import java.util.List;
 
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -20,7 +20,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * @author <a href="aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class NewsLayoutHandler implements PropertyHandler {
+public class NewsLayoutHandler implements ICPropertyHandler {
   public static final int SINGLE_FILE_LAYOUT = 1;
   public static final int NEWS_SITE_LAYOUT = 2;
   public static final int NEWS_PAPER_LAYOUT = 3;

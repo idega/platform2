@@ -1,5 +1,5 @@
 /*
- * $Id: ProductViewerLayoutHandler.java,v 1.6 2003/08/18 16:04:10 laddi Exp $
+ * $Id: ProductViewerLayoutHandler.java,v 1.7 2004/06/28 11:18:35 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,7 @@ import java.util.List;
 import com.idega.block.trade.stockroom.presentation.ProductViewerLayoutIdega;
 import com.idega.block.trade.stockroom.presentation.ProductViewerLayoutStandard;
 import com.idega.block.trade.stockroom.presentation.ProductViewerLayoutTeaser;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -23,7 +23,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class ProductViewerLayoutHandler implements PropertyHandler {
+public class ProductViewerLayoutHandler implements ICPropertyHandler {
   /**
    *
    */

@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductComparatorHandler.java,v 1.1 2002/03/10 23:22:48 gimmi Exp $
+ *  $Id: ProductComparatorHandler.java,v 1.2 2004/06/28 11:18:35 thomas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,14 +12,14 @@ import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 
 /**
  *@author     <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  *@created    10. mars 2002
  *@version    1.0
  */
-public class ProductComparatorHandler implements PropertyHandler {
+public class ProductComparatorHandler implements ICPropertyHandler {
  /**
   */
  public ProductComparatorHandler() { }

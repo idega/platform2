@@ -1,5 +1,5 @@
 /*
- * $Id: BoxLayoutHandler.java,v 1.5 2003/04/03 07:12:39 laddi Exp $
+ * $Id: BoxLayoutHandler.java,v 1.6 2004/06/28 11:18:52 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,7 @@ package com.idega.block.boxoffice.business;
 import java.util.List;
 
 import com.idega.block.boxoffice.presentation.Box;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -21,7 +21,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class BoxLayoutHandler implements PropertyHandler {
+public class BoxLayoutHandler implements ICPropertyHandler {
   /**
    *
    */

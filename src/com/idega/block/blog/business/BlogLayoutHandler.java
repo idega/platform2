@@ -2,7 +2,7 @@ package com.idega.block.blog.business;
 
 import java.util.List;
 
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -11,7 +11,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * @author <a href="aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class BlogLayoutHandler implements PropertyHandler {
+public class BlogLayoutHandler implements ICPropertyHandler {
   public static final int SINGLE_FILE_LAYOUT = 1;
   public static final int BLOG_SITE_LAYOUT = 2;
   public static final int BLOG_PAPER_LAYOUT = 3;

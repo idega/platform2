@@ -2,7 +2,7 @@ package com.idega.block.school.presentation;
 
 import java.util.List;
 
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -10,7 +10,7 @@ import com.idega.presentation.ui.DropdownMenu;
 /**
  * @author gimmi
  */
-public class SchoolTypeHandler implements PropertyHandler{
+public class SchoolTypeHandler implements ICPropertyHandler{
 	public SchoolTypeHandler() {
 	}
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductCatalogLayoutHandler.java,v 1.6 2003/07/15 01:06:28 laddi Exp $
+ *  $Id: ProductCatalogLayoutHandler.java,v 1.7 2004/06/28 11:18:35 thomas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,14 +13,14 @@ import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 
 /**
  *@author     <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  *@created    10. mars 2002
  *@version    1.0
  */
-public class ProductCatalogLayoutHandler implements PropertyHandler {
+public class ProductCatalogLayoutHandler implements ICPropertyHandler {
  /**
   */
  public ProductCatalogLayoutHandler() { }
