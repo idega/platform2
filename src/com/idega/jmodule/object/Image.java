@@ -60,15 +60,17 @@ public Image(String name,String url, String overImageUrl){
 	setURL(url);
 	setBorder(0);
 
-	setOverImageURL(overImageUrl);
+	this.overImageUrl=overImageUrl;
+
 	Script rollOverScript = new Script();
 	rollOverScript.addFunction("swapImgRestore()","function swapImgRestore() {var i,x,a=document.sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;}");
-	rollOverScript.addFunction("preloadImages()","function preloadImages(){var d=document; if(d.images){ if(!d.p) d.p=new Array(); var i,j=d.p.length,a=preloadImages.arguments; for(i=0; i<a.length; i++)  if (a[i].indexOf(\"#\")!=0){ d.p[j]=new Image; d.p[j++].src=a[i];}}}");
-	rollOverScript.addFunction("findObj(n, d)","function findObj(n, d){var p,i,x;  if(!d) d=document; if((p=n.indexOf(\"?\"))>0&&parent.frames.length) {  d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); return x;}}");
+	rollOverScript.addFunction("preLoadImages()","function preLoadImages(){var d=document; if(d.images){ if(!d.p) d.p=new Array(); var i,j=d.p.length,a=preLoadImages.arguments; for(i=0; i<a.length; i++)  if (a[i].indexOf(\"#\")!=0){ d.p[j]=new Image; d.p[j++].src=a[i];}}}");
+	rollOverScript.addFunction("findObj(n, d)","function findObj(n, d){var p,i,x;  if(!d) d=document; if((p=n.indexOf(\"?\"))>0&&parent.frames.length) {  d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); return x;}");
 	rollOverScript.addFunction("swapImage()","function swapImage(){ var i,j=0,x,a=swapImage.arguments; document.sr=new Array; for(i=0;i<(a.length-2);i+=3) if ((x=findObj(a[i]))!=null){document.sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}}");
+
 	setAssociatedScript(rollOverScript);
-
-
+  setAttribute("onMouseOut","swapImgRestore()");
+  setAttribute("onMouseOver","swapImage('"+getName()+"','','"+overImageUrl+"',1)");
 }
 
 /*
@@ -285,6 +287,9 @@ private String getPrintStringWithName(){
   sPrint.append("<img alt=\"");
   sPrint.append(getName());
   sPrint.append("\"");
+  sPrint.append(" name=\"");
+  sPrint.append(getName());
+  sPrint.append("\"");
   sPrint.append(getAttributeString());
   if ( align != null ) {
     sPrint.append(" align=\""+align+"\" ");
@@ -447,7 +452,14 @@ public void limitImageWidth( boolean limitImageWidth ){
     return obj;
   }
 
-public void print(ModuleInfo modinfo)throws IOException{
+  public void main(ModuleInfo modinfo) {
+    if(getParentObject()!=null && this.overImageUrl != null ){
+      getParentPage().setAssociatedScript(getAssociatedScript());
+      getParentPage().setOnLoad("preLoadImages('"+overImageUrl+"')");
+    }
+  }
+
+  public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if( doPrint(modinfo) ){
 		if (getLanguage().equals("HTML")){
@@ -462,7 +474,7 @@ public void print(ModuleInfo modinfo)throws IOException{
 			else print("parent = null");
 
 			if ( getAssociatedScript() != null){
-					getAssociatedScript().print(modinfo);
+        this.getParentPage().setAssociatedScript(getAssociatedScript());
 			}*/
 
                         //added by eiki
