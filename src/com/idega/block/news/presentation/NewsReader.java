@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.91 2002/04/23 12:57:49 laddi Exp $
+ * $Id: NewsReader.java,v 1.92 2002/04/23 13:28:23 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,7 +57,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   private int attributeId = -1;
   private User eUser = null;
 
-  private boolean showNewsCollectionButton = true;
+  private boolean showNewsCollectionButton = false;
   private int categoryId = 0;
 
   private Table outerTable = new Table(1,1);
@@ -473,8 +473,8 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       Integer I;
       NewsHelper newsHelper;
       for (int i = 0; i < len; i++) {
-	if (numberOfExpandedNews == i)
-	  collection = true; // show the rest as collection
+	//if (numberOfExpandedNews == i)
+	  //collection = true; // show the rest as collection
 	newsHelper = (NewsHelper) L.get(i);
 	I = new Integer(i);
 	if(objectsBetween != null && objectsBetween.containsKey(I)){
