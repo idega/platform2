@@ -138,10 +138,10 @@ public class BookingDeleterWindow extends TravelWindow {
       table.add(box, 4, row);
       table.add(new HiddenInput(this.parameterBookingIdForForm, Integer.toString(bookingId)), 4,row);
 
-      if (bookingId == this._bookingId) {
+      //if (bookingId == this._bookingId) {
         box.setChecked(true);
         //Merkja юб sem var valin
-      }
+      //}
     }
     ++row;
     table.mergeCells(1, row, 2, row);
