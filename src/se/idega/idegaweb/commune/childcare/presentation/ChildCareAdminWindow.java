@@ -769,6 +769,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		schoolClasses.setLayoutVertical(true);
 		schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.school_type", "School type")));
 		schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.school_class", "School class")));
+		schoolClasses.setVerticalSpaceBetween(15);
+		schoolClasses.setSpaceBetween(15);
 		schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);	
 		int classID = archive.getSchoolClassMember().getSchoolClassId();
 
@@ -1480,8 +1482,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
-		int schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
-		int schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+		int schoolTypeId = -1;
+		if(iwc.isParameterSet(PARAMETER_SCHOOL_TYPES))
+		schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
+		int schoolClassId = -1;
+		if(iwc.isParameterSet(PARAMETER_SCHOOL_CLASS))
+			schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
 		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		ChildCareContract archive = getBusiness().getContractFile(application.getContractFileId());
