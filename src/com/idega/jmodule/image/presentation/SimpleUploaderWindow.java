@@ -2,6 +2,7 @@ package com.idega.jmodule.image.presentation;
 
 import com.idega.jmodule.image.data.*;
 import com.idega.jmodule.object.interfaceobject.Window;
+import com.idega.jmodule.image.business.SimpleImage;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.ModuleInfo;
@@ -21,24 +22,38 @@ import com.oreilly.servlet.MultipartRequest;
  * @version 1.0
  */
 
-public class SimpleUploaderWindow extends Window{
+public class SimpleUploaderWindow extends Window implements SimpleImage{
 
     String dataBaseType;
-    String sessImageParameter = "image_id";
+    private String sessImageParameter = "image_id";
     Connection Conn = null;
 
+    public SimpleUploaderWindow(){
+
+    }
+
+    public void setSessionSaveParameterName(String prmName){
+      sessImageParameter = prmName;
+    }
+    public String getSessionSaveParameterName(){
+      return sessImageParameter;
+    }
+     public void checkParameterName(ModuleInfo modinfo){
+       if(modinfo.getParameter(sessImageParameterName)!=null){
+        sessImageParameter = modinfo.getParameter(sessImageParameterName);
+        modinfo.setSessionAttribute(sessImageParameterName,sessImageParameter);
+      }
+      else if(modinfo.getSessionAttribute(sessImageParameterName)!=null)
+        sessImageParameter = (String) modinfo.getSessionAttribute(sessImageParameterName);
+    }
+
     public void main(ModuleInfo modinfo){
+      checkParameterName(modinfo);
       this.setBackgroundColor("white");
       this.setTitle("Idega Uploader");
       String whichButton = modinfo.getParameter("submit");
       String image_id = null;
       String sessImageParameter = "image_id";
-      if(modinfo.getParameter("im_image_session_name")!=null){
-        sessImageParameter=modinfo.getParameter("im_image_session_name");
-        modinfo.setSessionAttribute("im_image_session_name",sessImageParameter);
-      }
-      else if(modinfo.getSessionAttribute("im_image_session_name")!= null)
-        sessImageParameter = (String )modinfo.getSessionAttribute("im_image_session_name");
 
       add(sessImageParameter);
 
@@ -138,7 +153,7 @@ public class SimpleUploaderWindow extends Window{
 
       try {
 
-        multi = new MultipartRequest(modinfo.getRequest(),Conn,".", 5 * 1024 * 1024);
+        multi = new MultipartRequest(getRequest(),Conn,".", 5 * 1024 * 1024);
         ImageCatagory[] imgCat = (ImageCatagory[]) (new ImageCatagory()).findAll();
         DropdownMenu category = new DropdownMenu("category");
         for (int i = 0 ; i < imgCat.length ; i++ ) {
