@@ -963,7 +963,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				if (_reg != null){
 					try{
 						VATBusiness vb = (VATBusiness) IBOLookup.getServiceInstance(_iwc, VATBusiness.class);
-						return vb.getVATPercentForRegulation(_reg);
+						return (getAmount () * vb.getVATPercentForRegulation(_reg)) / 100.0f;
 					}catch(IBOLookupException ex){
 						ex.printStackTrace();
 					}catch(VATException ex){

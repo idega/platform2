@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/03/16 12:57:19 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/02 10:37:12 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.143 $
+ * @version $Revision: 1.144 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -716,25 +716,22 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setDateCreated(currentDate);
 						invoiceRecord.setCreatedBy(BATCH_TEXT);
 						long amount = AccountingUtil.roundAmount(regularInvoiceEntry.getAmount());
+						float vat = regularInvoiceEntry.getVAT ();
 						totalSum += amount;
 						if(totalSum<0){
 							errorRelated.append(getLocalizedString("invoice.PreviousSum","Previous sum")+":"+amount+" "+
 									getLocalizedString("invoice.changedTo","changed to")+" "+(amount-totalSum));
 							createNewErrorMessage(errorRelated,getLocalizedString("invoice.SumLessThanZeroForRegularInvoiceRecord",
 									"Sum less than zero for regular invoice record"));
-							amount = amount-totalSum;
+							final long newAmount = amount - totalSum;
+							if (0 != amount) {
+								vat *= (float) newAmount / (float) amount;
+							}
+							amount = newAmount;
 						}
 						invoiceRecord.setAmount(amount);
 						invoiceRecord.setVATRuleRegulation(regularInvoiceEntry.getVatRuleRegulationId());
-						try {
-							final float vatPercent = getVATBusiness ()
-									.getVATPercentForVATRuleRegulation
-									(invoiceRecord.getVATRuleRegulation ()) / 100.0f;
-							invoiceRecord.setAmountVAT (vatPercent * invoiceRecord.getAmount ());
-						} catch (Exception e) {
-							e.printStackTrace ();
-						}
-
+						invoiceRecord.setAmountVAT (AccountingUtil.roundAmount(vat));
 						invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
 						
 						invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
