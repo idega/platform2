@@ -537,10 +537,10 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c.provider_id", providerID);
 		if (ssn != null && ! ssn.equals("")){
 			sql.appendAndEquals("p.user_id", "u.ic_user_id");
-			sql.appendAndEquals("u.personal_id", ssn);
+			sql.appendAndEqualsQuoted("u.personal_id", ssn);
 		}
 		if (msgId != null && ! msgId.equals("")){
-			sql.appendAndEquals("m.msg_letter_message_id", msgId);
+			sql.appendAndEqualsQuoted("m.msg_letter_message_id", msgId);
 		}
 		
 		System.out.println("########### SQL:" + sql.toString() + ".");
@@ -550,4 +550,20 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		return tmp;
 		
 	}
+	
+	public Collection ejbFindLetters(String[] msgId) throws FinderException {
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName() + " m");
+		sql.appendWhere("m.msg_letter_message_id");
+		sql.appendInArray(msgId);
+		
+		System.out.println("########### SQL:" + sql.toString() + ".");
+		
+		Collection tmp = this.idoFindPKsByQuery(sql);
+		System.out.println("### ejbFindLetters return ");
+		return tmp;
+		
+	}	
+	
 }
