@@ -31,29 +31,42 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	public static final int USER_TYPE_TEACHER = SchoolUserBMPBean.USER_TYPE_TEACHER;
 	public static final int USER_TYPE_WEB_ADMIN = SchoolUserBMPBean.USER_TYPE_WEB_ADMIN;
 
-	public SchoolUser addUser(School school, User user, int userType) throws RemoteException, CreateException {
+	public SchoolUser addUser(School school, User user, int userType) throws RemoteException, CreateException, FinderException {
 		SchoolUser sUser = getSchoolUserHome().create();
 		sUser.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
 		sUser.setUserId(((Integer) user.getPrimaryKey()).intValue());
 		sUser.setUserType(userType);
 		sUser.store();
+		
+		setUserGroups(school, user, userType);
+		
 		return sUser;
 	}
 
-	public SchoolUser addTeacher(School school, User user) throws RemoteException, CreateException {
+	public SchoolUser addTeacher(School school, User user) throws RemoteException, CreateException, FinderException {
 		return addUser(school, user, USER_TYPE_TEACHER);	
 	}
 
-	public SchoolUser addHeadmaster(School school, User user) throws RemoteException, CreateException {
-		return addUser(school, user, USER_TYPE_HEADMASTER);	
+	public SchoolUser addHeadmaster(School school, User user) throws RemoteException, CreateException, FinderException {
+		SchoolUser sUser = addUser(school, user, USER_TYPE_HEADMASTER);
+		return sUser;
 	}
 
-	public SchoolUser addAssistantHeadmaster(School school, User user) throws RemoteException, CreateException {
-		return addUser(school, user, USER_TYPE_ASSISTANT_HEADMASTER);	
+	public SchoolUser addAssistantHeadmaster(School school, User user) throws RemoteException, CreateException, FinderException {
+		SchoolUser sUser = addUser(school, user, USER_TYPE_ASSISTANT_HEADMASTER);	
+		return sUser;
 	}
 
-	public SchoolUser addWebAdmin(School school, User user) throws RemoteException, CreateException {
-		return addUser(school, user, USER_TYPE_WEB_ADMIN);	
+	public SchoolUser addWebAdmin(School school, User user) throws RemoteException, CreateException, FinderException {
+		SchoolUser sUser = addUser(school, user, USER_TYPE_WEB_ADMIN);	
+		return sUser;
+	}
+
+	public void setUserGroups(School school, User user, int userType) throws RemoteException, FinderException {
+		/* code of death, fix later... */
+		if (userType == USER_TYPE_HEADMASTER || userType == USER_TYPE_ASSISTANT_HEADMASTER || userType == USER_TYPE_WEB_ADMIN) {
+			getSchoolBusiness().addHeadmaster(school, user);
+		}
 	}
 
 	public void removeUser(School school, User user, int userType)  throws FinderException, RemoteException, RemoveException{
@@ -171,9 +184,54 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		return coll;
 	}
 
+	public Collection getSchools(User user) throws RemoteException, FinderException {
+//		System.out.println("[SchoolUserBusinessBean] : halo eg heitir recursive");
+		Collection csUser = getSchoolUserHome().findByUser(user);
+		if (csUser != null || !csUser.isEmpty()) {
+//			System.out.println("[SchoolUserBusinessBean] : found school(s)....");
+			Collection coll = new Vector();
+			Iterator iter = csUser.iterator();
+			SchoolUser sUser;
+			while (iter.hasNext()) {
+				sUser = getSchoolUserHome().findByPrimaryKey(iter.next());
+				coll.add(new Integer(sUser.getSchoolId()));	
+			}
+			return coll;
+		}else {
+//			System.out.println("[SchoolUserBusinessBean] : trying to backwards.....");
+			Collection schools =
+				((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class))
+					.getSchoolHome()
+					.findAllBySchoolGroup(user);
+			if (schools != null && !schools.isEmpty()) {
+//				System.out.println("[SchoolUserBusinessBean] : trying to backwards .. school != null and not empty");
+				School school;
+				Iterator iter = schools.iterator();
+				while (iter.hasNext()) {
+					school = getSchoolHome().findByPrimaryKey(iter.next());
+					try {
+						addWebAdmin(school, user);
+						System.out.println("[SchoolUserBusinessBean] : Backwards compatability for schools ...");
+					} catch (Exception e) {
+						System.out.println("[SchoolUserBusinessBean] : Backwards compatability for schools FAILED");
+					}	
+				}
+			}else {
+//				System.out.println("[SchoolUserBusinessBean] : trying to backwards .. school == null or empty");
+			}		
+			
+			return getSchools(user);
+			
+		}
+	}
+
 
 	private UserBusiness getUserBusiness() throws RemoteException {
 		return  (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+	}
+
+	public UserHome getUserHome() throws RemoteException {
+		return (UserHome) IDOLookup.getHome(User.class);	
 	}
 
 	public SchoolUserHome getSchoolUserHome() throws RemoteException {
@@ -184,4 +242,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		return (SchoolHome) IDOLookup.getHome(School.class);	
 	}
 
+	public SchoolBusiness getSchoolBusiness() throws RemoteException {
+		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);	
+	}
 }
