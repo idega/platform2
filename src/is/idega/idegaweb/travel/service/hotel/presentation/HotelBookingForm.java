@@ -330,18 +330,14 @@ public class HotelBookingForm extends BookingForm {
         }
 
         ++row;
-        Table pTable = new Table();
-          pTable.setBorder(1);
-        int pWidthLeft = 60;
-        int pWidthCenter = 60;
-        int pWidthRight = 75;
 
-        pTable = new Table(3,1);
+        Table pTable = new Table(3,1);
           pTable.setWidth(1, Integer.toString(pWidthLeft));
           pTable.setWidth(2, Integer.toString(pWidthCenter));
           pTable.setWidth(3, Integer.toString(pWidthRight));
           pTable.setCellpaddingAndCellspacing(0);
         table.add(pTable, 2, row+1);
+//			pTable.setBorder(1);
 
         Text count = (Text) super.theSmallBoldText.clone();
           count.setText(iwrb.getLocalizedString("travel.number_of_units","Number of units"));
