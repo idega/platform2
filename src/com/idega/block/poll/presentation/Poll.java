@@ -20,6 +20,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.util.idegaTimestamp;
 
 
 public class Poll extends JModuleObject implements IWBlock{
@@ -48,6 +49,7 @@ private String _pollWidth;
 private int _numberOfShownPolls;
 private boolean _showVotes;
 private boolean _showCollection;
+private idegaTimestamp _date;
 
   public Poll(){
     setDefaultValues();
@@ -71,6 +73,7 @@ private boolean _showCollection;
     _isAdmin = AccessControl.hasEditPermission(this,modinfo);
     _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
     _parameterString = modinfo.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
+    _date = new idegaTimestamp();
 
     PollEntity poll = null;
 
@@ -135,9 +138,28 @@ private boolean _showCollection;
     PollQuestion pollQuestion = PollBusiness.getQuestion(poll);
     Image submitImage = _iwrb.getImage("vote.gif");
     Image olderPollsImage = _iwrb.getImage("older_polls.gif");
+    idegaTimestamp after;
+    boolean pollByDate = false;
 
     if(pollQuestion != null){
+      if ( pollQuestion.getEndTime() != null ) {
+        after = new idegaTimestamp(pollQuestion.getEndTime());
+        if ( _date.isLaterThan(after) ) {
+          pollQuestion = PollBusiness.getPollByDate(poll,_date);
+          pollByDate = true;
+        }
+      }
+    }
+    else {
+      pollQuestion = PollBusiness.getPollByDate(poll,_date);
+      pollByDate = true;
+    }
+
+    if ( pollQuestion != null ) {
       locText = TextFinder.getLocalizedText(pollQuestion,_iLocaleID);
+      if ( pollByDate ) {
+        PollBusiness.setPollQuestion(poll,pollQuestion);
+      }
     }
 
     if ( locText != null ) {

@@ -59,6 +59,30 @@ public static final String _PARAMETER_CLOSE = "close";
     }
   }
 
+  public static idegaTimestamp getStartDate(int pollQuestionID) {
+    PollQuestion question = getPollQuestion(pollQuestionID);
+
+    if ( question != null ) {
+      if ( question.getStartTime() != null ) {
+        return new idegaTimestamp(question.getStartTime());
+      }
+    }
+
+    return null;
+  }
+
+  public static idegaTimestamp getEndDate(int pollQuestionID) {
+    PollQuestion question = getPollQuestion(pollQuestionID);
+
+    if ( question != null ) {
+      if ( question.getEndTime() != null ) {
+        return new idegaTimestamp(question.getEndTime());
+      }
+    }
+
+    return null;
+  }
+
   public static PollQuestion getPollQuestion(int pollQuestionID) {
     try {
       return new PollQuestion(pollQuestionID);
@@ -176,9 +200,6 @@ public static final String _PARAMETER_CLOSE = "close";
       catch (NumberFormatException e) {
         e.printStackTrace();
       }
-    }
-    else {
-      System.out.println("PollQuestionID == null");
     }
 	}
 
@@ -308,7 +329,7 @@ public static final String _PARAMETER_CLOSE = "close";
     return drp;
   }
 
-  public static int savePollQuestion(int userID,int pollID,int pollQuestionID,String pollQuestionString,int iLocaleID) {
+  public static int savePollQuestion(int userID,int pollID,int pollQuestionID,String pollQuestionString,String pollStartDate,String pollEndDate,int iLocaleID) {
     boolean update = false;
     boolean newLocText = false;
     int _pollQuestionID = -1;
@@ -326,6 +347,13 @@ public static final String _PARAMETER_CLOSE = "close";
         pollQuestion = new PollQuestion();
         update = false;
       }
+    }
+
+    if ( pollStartDate != null && pollStartDate.length() > 0 ) {
+      pollQuestion.setStartTime(new idegaTimestamp(pollStartDate).getTimestamp());
+    }
+    if ( pollEndDate != null && pollEndDate.length() > 0 ) {
+      pollQuestion.setEndTime(new idegaTimestamp(pollEndDate).getTimestamp());
     }
 
     if ( !update ) {
@@ -561,20 +589,11 @@ public static final String _PARAMETER_CLOSE = "close";
 
   public static void addToPoll(PollEntity poll, int pollQuestionID) {
     try {
-      System.out.println("Is here, pollQuestionID = "+pollQuestionID+", pollID = "+poll.getID());
       PollQuestion question = getPollQuestion(pollQuestionID);
       if ( question != null ) {
-        System.out.println("question is not null");
         PollQuestion[] polls = (PollQuestion[]) poll.findRelated(new PollQuestion(pollQuestionID));
         if ( polls == null || polls.length == 0 ) {
-          System.out.println("list is not null");
           poll.addTo(question);
-        }
-        else {
-          System.out.println("Length: "+polls.length);
-          if ( polls.length > 0 ) {
-            System.out.println(polls[0].getID());
-          }
         }
       }
     }
@@ -601,4 +620,57 @@ public static final String _PARAMETER_CLOSE = "close";
     }
   }
 
+  public static PollQuestion getPollByDate(PollEntity poll, idegaTimestamp date) {
+    System.out.println("Is here!");
+    try {
+      boolean isActive = false;
+      List polls = getPollQuestions(poll);
+
+      if ( polls != null ) {
+        for ( int a = 0; a < polls.size(); a++ ) {
+          idegaTimestamp before = new idegaTimestamp(((PollQuestion) polls.get(a)).getStartTime());
+          idegaTimestamp after = new idegaTimestamp(((PollQuestion) polls.get(a)).getEndTime());
+
+          if ( before != null ) {
+            if ( date.isLaterThan(before) ) {
+              System.out.println("Date is later than before");
+              isActive = true;
+            }
+            else {
+              isActive = false;
+            }
+          }
+          if ( after != null ) {
+            if ( after.isLaterThan(date) && isActive ) {
+              System.out.println("After is later than date");
+              isActive = true;
+            }
+            else {
+              isActive = false;
+            }
+          }
+
+          if ( isActive ) {
+            return (PollQuestion) polls.get(a);
+          }
+        }
+      }
+      return null;
+    }
+    catch (Exception e) {
+      return null;
+    }
+  }
+
+  public static void setPollQuestion(PollEntity poll,PollQuestion pollQuestion) {
+    if ( pollQuestion != null ) {
+      poll.setPollQuestionID(pollQuestion.getID());
+      try {
+        poll.update();
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+    }
+  }
 }
