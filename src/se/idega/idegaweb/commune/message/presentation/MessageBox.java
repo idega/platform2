@@ -116,6 +116,8 @@ public class MessageBox extends CommuneBlock {
 					subject = (Link) getSmallLink(msg.getSubject());
 					subject.setWindowToOpen(MessageViewerWindow.class);
 					subject.addParameter(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
+					subject.addParameter(MessageViewer.PARAMETER_METHOD, MessageViewer.METHOD_VIEW_MESSAGE);
+					subject.addParameter(MessageViewer.PARAMETER_PAGE_ID, this.getParentPageID());
 					if (!isRead)
 						subject.setBold();
 					

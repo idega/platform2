@@ -126,6 +126,14 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 			this.setColumn(COLUMN_BULK_DATA, fileID);
 		}
 	
+	public int getSender(){
+		return -1;
+	}
+
+	public void setSender(int userID){
+		//does nothing...
+	}
+
 	public String getSenderName()
 	{
 		try

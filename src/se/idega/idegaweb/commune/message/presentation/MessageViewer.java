@@ -1,16 +1,26 @@
 package se.idega.idegaweb.commune.message.presentation;
 
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.text.business.TextFormatter;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -23,20 +33,47 @@ import com.idega.util.IWTimestamp;
  */
 public class MessageViewer extends CommuneBlock {
 
-  private final static String PARAM_MESSAGE_ID = MessageListener.PARAM_MESSAGE_ID;
-  private int messageID = -1;
+  public final static String PARAMETER_MESSAGE_ID = MessageListener.PARAM_MESSAGE_ID;
+	public final static String PARAMETER_SENDER_ID = "msg_sender_id";
+	public final static String PARAMETER_PAGE_ID = "msg_page_id";
+	public final static String PARAMETER_METHOD = "msg_method";
+	public final static String PARAMETER_ACTION = "msg_action";
+	public final static String PARAMETER_SUBJECT = "msg_subject";
+	public final static String PARAMETER_BODY = "msg_body";
+
+  private int _pageID = -1;
+  private int _messageID = -1;
+	private int _senderID = -1;
+	private int _action = -1;
+	private int _method = -1;
+	
+	public static final int ACTION_CLOSE = 0;
+	public static final int ACTION_REPLY_MESSAGE = 1;
+
+	public static final int METHOD_VIEW_MESSAGE = 1;
+	public static final int METHOD_REPLY_MESSAGE = 2;
+	
+	private SubmitButton close;
 
 	public void main(IWContext iwc) throws Exception {
 		getParentPage().setAllMargins(0);
 		setResourceBundle(getResourceBundle(iwc));
 		parse(iwc);
-		if (messageID != -1)
+		
+		switch (_action) {
+			case ACTION_CLOSE :
+				close(iwc);
+				break;
+			case ACTION_REPLY_MESSAGE :
+				reply(iwc);
+				break;
+		}
+		
+		if (_method != -1)
 			drawForm(iwc);
-		else
-			getParentPage().close();
 	}
 	
-	private void drawForm(IWContext iwc) throws RemoteException {
+	private void drawForm(IWContext iwc) throws Exception {
 		Table table = new Table(3,5);
 		table.setRowColor(1, "#000000");
 		table.setRowColor(3, "#000000");
@@ -59,31 +96,38 @@ public class MessageViewer extends CommuneBlock {
 		Table contentTable = new Table(1,1);
 		contentTable.setCellpadding(10);
 		contentTable.setHeight(Table.HUNDRED_PERCENT);
+		contentTable.setWidth(Table.HUNDRED_PERCENT);
 		table.add(contentTable,2,4);
 		
-		headerTable.add(getHeader(localize("message.message","Message")));
-		try {
-			contentTable.add(getMessageTable(iwc));
+		close = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.close", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
+		
+		switch (_method) {
+			case METHOD_VIEW_MESSAGE :
+				headerTable.add(getHeader(localize("message.message","Message")));
+				contentTable.add(getMessageTable(iwc));
+				break;
+			case METHOD_REPLY_MESSAGE :
+				headerTable.add(getHeader(localize("message.reply_message", "Reply message")));
+				contentTable.add(getReplyTable(iwc));
+				break;
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+
 		add(table);
 	}
 	
-	private void parse(IWContext iwc) throws RemoteException {
-		if (iwc.isParameterSet(PARAM_MESSAGE_ID))
-			messageID = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
-	}
-
-	private Table getMessageTable(IWContext iwc) throws Exception {
+	private Form getMessageTable(IWContext iwc) throws Exception {
+		Form form = new Form();
+		form.maintainParameter(PARAMETER_PAGE_ID);
+		form.maintainParameter(PARAMETER_MESSAGE_ID);
+		
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(Table.HUNDRED_PERCENT);
+		form.add(table);
 		int row = 1;
 
-		Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID), iwc);
+		Message msg = getMessageBusiness(iwc).getUserMessage(_messageID);
 		getMessageBusiness(iwc).markMessageAsRead(msg);
 
 		IWTimestamp stamp = new IWTimestamp(msg.getCreated());
@@ -95,21 +139,103 @@ public class MessageViewer extends CommuneBlock {
 
 		table.add(getSmallText(TextFormatter.formatText(msg.getBody(),2,Table.HUNDRED_PERCENT)),2,row++);
 
-		table.add((CloseButton) getButton(new CloseButton(localize("message.back", "Back"))),1,row);
+		if (msg.getSender() != -1) {
+			SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.Reply", "Reply"), PARAMETER_METHOD, String.valueOf(METHOD_REPLY_MESSAGE)));
+			table.add(reply, 1, row);
+			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			form.addParameter(PARAMETER_SENDER_ID, msg.getSender());
+		}
+
+		table.add(close,1,row);
 		table.mergeCells(1, row, 2, row);
 		table.setHeight(row,Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 		
-		return table;
+		return form;
 	}
 
-	private Message getMessage(String id, IWContext iwc) throws Exception {
-		int msgId = Integer.parseInt(id);
-		Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
-		return msg;
+	private Form getReplyTable(IWContext iwc) throws Exception {
+		Form form = new Form();
+		form.maintainParameter(PARAMETER_PAGE_ID);
+		form.maintainParameter(PARAMETER_MESSAGE_ID);
+		form.maintainParameter(PARAMETER_SENDER_ID);
+		
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		form.add(table);
+		int row = 1;
+
+		Message msg = getMessageBusiness(iwc).getUserMessage(_messageID);
+
+		TextInput subject = (TextInput) getStyledInterface(new TextInput(PARAMETER_SUBJECT));
+		subject.setLength(30);
+		subject.setContent(localize("message.re","RE")+": "+msg.getSubject());
+		
+		table.add(getSmallHeader(localize("message.subject","Subject")+": "), 1, row);
+		table.add(subject, 1, row++);
+
+		TextArea body = (TextArea) getStyledInterface(new TextArea(PARAMETER_BODY));
+		body.setWidth(Table.HUNDRED_PERCENT);
+		body.setRows(7);
+		
+		User sender = getUserBusiness(iwc).getUser(_senderID);
+		IWTimestamp stamp = new IWTimestamp(msg.getCreated());
+		
+		Object[] arguments = { sender.getNameLastFirst(true), stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT) };
+		String bodyMessage = MessageFormat.format(localize("message.reply_info", "On {1}, {0} wrote:\n"), arguments);
+		if (msg.getBody() != null)
+			bodyMessage += "\"" + TextFormatter.formatText(msg.getBody(),2,Table.HUNDRED_PERCENT) + "\"";
+		body.setContent("\n\n"+bodyMessage);
+
+		table.add(getSmallHeader(localize("message.body","Body")+":"), 1, row);
+		table.add(new Break(), 1, row);
+		table.add(body, 1, row++);
+
+		SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.reply", "Reply"), PARAMETER_ACTION, String.valueOf(ACTION_REPLY_MESSAGE)));
+		table.add(reply, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(close,1,row);
+		table.mergeCells(1, row, 2, row);
+		table.setHeight(row,Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+		
+		return form;
 	}
 
-	private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
+	private void close(IWContext iwc) {
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+	
+	private void reply(IWContext iwc) throws RemoteException {
+		String subject = iwc.getParameter(PARAMETER_SUBJECT);
+		String body = iwc.getParameter(PARAMETER_BODY);
+		User receiver = getUserBusiness(iwc).getUser(_senderID);
+		getMessageBusiness(iwc).createUserMessage(receiver, subject, body, iwc.getCurrentUser(), false);
+		
+		close(iwc);
+	}
+	
+	private void parse(IWContext iwc) throws RemoteException {
+		if (iwc.isParameterSet(PARAMETER_MESSAGE_ID))
+			_messageID = Integer.parseInt(iwc.getParameter(PARAMETER_MESSAGE_ID));
+		if (iwc.isParameterSet(PARAMETER_SENDER_ID))
+			_senderID = Integer.parseInt(iwc.getParameter(PARAMETER_SENDER_ID));
+		if (iwc.isParameterSet(PARAMETER_ACTION))
+			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		if (iwc.isParameterSet(PARAMETER_METHOD))
+			_method = Integer.parseInt(iwc.getParameter(PARAMETER_METHOD));
+		if (iwc.isParameterSet(PARAMETER_PAGE_ID))
+			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
+	}
+
+	private MessageBusiness getMessageBusiness(IWContext iwc) throws RemoteException {
 		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
+	}
+
+	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
 }

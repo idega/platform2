@@ -104,6 +104,14 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		}
 	}
 
+	public int getSender(){
+		return -1;
+	}
+
+	public void setSender(int userID){
+		//does nothing...
+	}
+
 	public void setSubject(String subject) throws java.rmi.RemoteException {
 		this.setColumn(COLUMN_SUBJECT, subject);
 	}
