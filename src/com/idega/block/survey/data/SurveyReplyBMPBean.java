@@ -12,6 +12,12 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
  * Title:		SurveyReplyBMPBean
@@ -121,8 +127,39 @@ public class SurveyReplyBMPBean extends GenericEntity implements SurveyReply{
 	}
 	
 	public Collection ejbFindByQuestion(SurveyQuestion question) throws FinderException{
-		return this.idoFindAllIDsByColumnOrderedBySQL(COLUMNNAME_QUESTION_ID, question.getPrimaryKey().toString());
-		//return this.idoFindAllIDsByColumnOrderedBySQL(COLUMNNAME_QUESTION_ID, question.getPrimaryKey().toString(), COLUMNNAME_ANSWER_ID);
+		Collection coll = this.idoFindAllIDsByColumnOrderedBySQL(COLUMNNAME_QUESTION_ID, question.getPrimaryKey().toString()); 
+		return coll;
 	}
 	
+	public Collection ejbFindByQuestions(Collection questions) throws FinderException{
+		Table table = new Table(this);
+		SelectQuery selectQuery = new SelectQuery(table);
+		selectQuery.addColumn(new WildCardColumn(table));
+		selectQuery.addCriteria(new InCriteria(table.getColumn(COLUMNNAME_QUESTION_ID), questions));
+		
+		Collection coll = this.idoFindPKsBySQL(selectQuery.toString());
+		
+		return coll;
+	}
+	
+	public int ejbHomeGetCountByQuestionAndAnswer(SurveyQuestion question, SurveyAnswer answer) throws IDOException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table.getColumn(COLUMNNAME_QUESTION_ID));
+		query.addCriteria(new MatchCriteria(table.getColumn(COLUMNNAME_QUESTION_ID), MatchCriteria.EQUALS, question));
+		query.addCriteria(new MatchCriteria(table.getColumn(COLUMNNAME_ANSWER_ID), MatchCriteria.EQUALS, answer));
+		
+		query.setAsCountQuery(true);		
+		return this.idoGetNumberOfRecords(query.toString());
+	}
+	
+	public int ejbHomeGetCountByQuestion(SurveyQuestion question) throws IDOException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table.getColumn(COLUMNNAME_QUESTION_ID));
+		query.addCriteria(new MatchCriteria(table.getColumn(COLUMNNAME_QUESTION_ID), MatchCriteria.EQUALS, question));
+
+		query.setAsCountQuery(true);
+		return this.idoGetNumberOfRecords(query.toString());
+	}	
 }

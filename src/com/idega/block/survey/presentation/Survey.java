@@ -357,6 +357,7 @@ public class Survey extends FolderBlock {
 		SurveyStatus status = _sBusiness.getSurveyStatus(_currentSurvey);
 		status.setIsModified(true);
 		status.store();
+		System.out.println("Stored...");
 	}
 
 	/**

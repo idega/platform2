@@ -7,9 +7,9 @@ public interface SurveyReply extends com.idega.data.IDOEntity
 	
  public java.lang.String getAnswer();
  public java.lang.String getParticipantKey();
- public SurveyAnswer getSurveyAnswer();
  public com.idega.block.survey.data.SurveyQuestion getQuestion();
  public com.idega.block.survey.data.SurveyEntity getSurvey();
+ public com.idega.block.survey.data.SurveyAnswer getSurveyAnswer();
  public void setAnswer(java.lang.String p0);
  public void setAnswer(com.idega.block.survey.data.SurveyAnswer p0);
  public void setAnswerPK(java.lang.Object p0);

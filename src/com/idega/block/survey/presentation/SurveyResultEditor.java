@@ -1,6 +1,7 @@
 package com.idega.block.survey.presentation;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -22,6 +23,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
@@ -72,6 +74,8 @@ public class SurveyResultEditor extends Block {
 	private SurveyReplyHome _repHome;
 	private SurveyAnswerHome _ansHome;
 	
+	private NumberFormat nf = NumberFormat.getPercentInstance();
+	
 	private String messageTextStyle;// = "font-weight: bold;";
 	private String messageTextHighlightStyle ;//= "font-weight: bold;color: #FF0000;";
 	private long startMilli = 0;
@@ -94,6 +98,7 @@ public class SurveyResultEditor extends Block {
 		_iwbSurvey = getBundle(iwc);
 		_locale = iwc.getCurrentLocale();
 		_icLocale = ICLocaleBusiness.getICLocale(_locale);
+		nf.setMinimumFractionDigits(2);
 		
 		String surveyID = iwc.getParameter(PARAMETER_SURVEY_ID);
 		if (surveyID != null) {
@@ -117,7 +122,7 @@ public class SurveyResultEditor extends Block {
 		if ( _survey != null ) {
 			Legend legend = new Legend(_survey.getName()+" - "+_iwrb.getLocalizedString("history", "History"));
 			FieldSet fs = new FieldSet(legend);
-			fs.setWidth("450");
+			//fs.setWidth("450");
 			if (iwc.isParameterSet(PARAMETER_STATUS_ID)) {
 				fs.add(displayQuestions());
 			} else {
@@ -314,7 +319,7 @@ public class SurveyResultEditor extends Block {
 		if (_questions != null && !_questions.isEmpty()) {
 			try {
 				startMilli = System.currentTimeMillis();
-				log("[SurveyResultEditor] Starting to create survey report...");
+				
 				Iterator iter = _questions.iterator();
 				SurveyQuestion question;
 				while (iter.hasNext()) {
@@ -355,7 +360,6 @@ public class SurveyResultEditor extends Block {
 		try {
 			Collection answers = getAnswerHome().findQuestionsAnswer(question);
 			String questionName = question.getQuestion(_icLocale);
-			Collection replys = getReplyHome().findByQuestion(question);
 			
 			int column = 1;
 			int[] totals;
@@ -364,66 +368,89 @@ public class SurveyResultEditor extends Block {
 			boolean isCheckBox = SurveyBusinessBean.ANSWERTYPE_MULTI_CHOICE == question.getAnswerType();
 			Object[] answersIds = new Object[]{};
 			if (answers != null) {
+				
+				if (choiceAnswer) {
+					table.add(getText(_iwrb.getLocalizedString("total", "Total")+":"), column, (row+1));
+				}
+				
 				Iterator iter = answers.iterator();
 				answersIds = new Object[answers.size()+2]; // 0 and 1 are not used
 				SurveyAnswer answer;
+				int count = 0;
+				int totalCount = getReplyHome().getCountByQuestion(question);
 				while (iter.hasNext()) {
 					answer = (SurveyAnswer) iter.next();
 					answersIds[++column] = answer.getPrimaryKey();
 					table.add(answer.getAnswer(_icLocale), column, row);
-					
-				}
-			}
-			
-			if (replys != null) {
-				Iterator iter = replys.iterator();
-				SurveyReply reply;
-				Object primaryKey;
-				String lastParticipant = "";
-				String participant = "";
-				totals = new int[answersIds.length];
-				while (iter.hasNext()) {
-					reply = (SurveyReply) iter.next();
-					if (isCheckBox) {
-						participant = reply.getParticipantKey();
-						if (participant == null || !participant.equals(lastParticipant)) {
-							++row;
-							lastParticipant = participant;
-						} 
-					} else {
-						++row;
-					}
-					primaryKey = reply.getSurveyAnswer().getPrimaryKey();
-					for (int i = 2; i < answersIds.length; i++) {
-						if (answersIds[i].equals(primaryKey)) {
-							if (choiceAnswer) {
-								totals[i] += 1;
-								//table.add(getText("X"), i, row);
-								table.add("X", i, row);
-								break;
-							} else {
-								//table.add(reply.getAnswer(), i, row);
-								table.add(reply.getAnswer(), i, row);
-								break;
-							}
+					if (choiceAnswer) {
+						count = getReplyHome().getCountByQuestionAndAnswer(question, answer);
+						table.add(getText(Integer.toString(count)), column, (row+1));
+						if (totalCount > 0) {
+							table.add(getText(nf.format((double) count / (double) totalCount)), column, (row+2));
 						}
 					}
 				}
 				if (choiceAnswer) {
 					++row;
-					//table.add(getText(_iwrb.getLocalizedString("totals", "Totals")), 1, row);
-					table.add("Totals", 1, row);
-					for (int i = 2; i < answersIds.length; i++) {
-						//table.add(getText(Integer.toString( totals[i] )), i, row);
-						table.add(Integer.toString( totals[i] ), i, row);
+					++row;
+				}
+			} 
+
+			if (!choiceAnswer) {
+				Collection replys = getReplyHome().findByQuestion(question);
+				if (replys != null) {
+					Iterator iter = replys.iterator();
+					SurveyReply reply;
+					Object primaryKey;
+					String lastParticipant = "";
+					String participant = "";
+					totals = new int[answersIds.length];
+					while (iter.hasNext()) {
+						reply = (SurveyReply) iter.next();
+						if (isCheckBox) {
+							participant = reply.getParticipantKey();
+							if (participant == null || !participant.equals(lastParticipant)) {
+		//						++row;
+								lastParticipant = participant;
+							} 
+						} else {
+							++row;
+						}
+						primaryKey = reply.getSurveyAnswer().getPrimaryKey();
+						for (int i = 2; i < answersIds.length; i++) {
+							if (answersIds[i].equals(primaryKey)) {
+								if (choiceAnswer) {
+									totals[i] += 1;
+									//table.add(getText("X"), i, row);
+	//								table.add("X", i, row);
+									break;
+								} else {
+									//table.add(reply.getAnswer(), i, row);
+									table.add(getText(reply.getAnswer()), i, row);
+									break;
+								}
+							}
+						}
+					}
+					if (choiceAnswer) {
+						++row;
+						//table.add(getText(_iwrb.getLocalizedString("totals", "Totals")), 1, row);
+						table.add("Totals", 1, row);
+						for (int i = 2; i < answersIds.length; i++) {
+							//table.add(getText(Integer.toString( totals[i] )), i, row);
+							table.add(Integer.toString( totals[i] ), i, row);
+						}
 					}
 				}
 			}
+			
 			++row;
 			
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (IDOException e) {
 			e.printStackTrace();
 		}
 		
