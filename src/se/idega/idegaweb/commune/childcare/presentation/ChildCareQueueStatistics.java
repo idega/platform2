@@ -24,6 +24,8 @@ public class ChildCareQueueStatistics extends ChildCareBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setRowColor(1, getHeaderColor());
+		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		int row = 1;
 		int column = 2;
 		
