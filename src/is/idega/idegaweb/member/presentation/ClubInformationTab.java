@@ -52,7 +52,7 @@ public class ClubInformationTab extends UserGroupTab {
 	private TextInput _shortNameField;
 	private TextInput _nameField;
 	private DateInput _foundedField;
-	private DropdownMenu _typeField;
+//	private DropdownMenu _typeField;
 	private CheckBox _memberUMFIField;
 	private DropdownMenu _makeField;
 	private DropdownMenu _connectionToSpecialField;
@@ -67,7 +67,7 @@ public class ClubInformationTab extends UserGroupTab {
 	private Text _shortNameText;
 	private Text _nameText;
 	private Text _foundedText;
-	private Text _typeText;
+//	private Text _typeText;
 	private Text _memberUMFIText;
 	private Text _makeText;
 	private Text _connectionToSpecialText;
@@ -160,7 +160,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_shortNameField.setContent((String) fieldValues.get(_shortNameFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
 		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
-		_typeField.setSelectedElement((String) fieldValues.get(_typeFieldName));
+//		_typeField.setSelectedElement((String) fieldValues.get(_typeFieldName));
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
 		String make = (String) fieldValues.get(_makeFieldName);
 		_connectionToSpecialField.setDisabled(true);
@@ -178,7 +178,7 @@ public class ClubInformationTab extends UserGroupTab {
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, "SŽrgreinafŽlag");
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB, "FŽlag ‡n i?kenda");
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_INACTIVE_CLUB, "îvirkt");
-			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName, "2");
+			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName, IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB);
 		}
 		_makeField.setSelectedElement(make);
 
@@ -199,7 +199,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_nameField = new TextInput(_nameFieldName);
 		_foundedField = new DateInput(_foundedFieldName);
 		_foundedField.setYearRange(1900, GregorianCalendar.getInstance().get(GregorianCalendar.YEAR));
-		_typeField = new DropdownMenu(_typeFieldName);
+		//_typeField = new DropdownMenu(_typeFieldName);
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
 		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
@@ -211,10 +211,10 @@ public class ClubInformationTab extends UserGroupTab {
 		/**
 		 * @todo Setja í töflu og sækja þaðan.
 		 */
-		_typeField.addMenuElement("1", "Innlent fŽlag");
+		/*_typeField.addMenuElement("1", "Innlent fŽlag");
 		_typeField.addMenuElement("2", "SŽrsamband");
 		_typeField.addMenuElement("3", "HŽra?ssamband/ê?r—ttabandalag");
-
+		*/
 
 		_statusField.addMenuElement("0", "");
 		_statusField.addMenuElement("1", "Virkt");
@@ -252,7 +252,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_shortNameText = new Text(iwrb.getLocalizedString(_shortNameFieldName, "Short name") + ":");
 		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Long name") + ":");
 		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded") + ":");
-		_typeText = new Text(iwrb.getLocalizedString(_typeFieldName, "Type") + ":");
+//		_typeText = new Text(iwrb.getLocalizedString(_typeFieldName, "Type") + ":");
 		_memberUMFIText = new Text(iwrb.getLocalizedString(_memberUMFIFieldName, "UMFI membership") + ":");
 		_makeText = new Text(iwrb.getLocalizedString(_makeFieldName, "Make") + ":");
 		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
@@ -268,7 +268,7 @@ public class ClubInformationTab extends UserGroupTab {
 	public void lineUpFields() {
 		empty();
 
-		Table t = new Table(2, 15);
+		Table t = new Table(2, 14);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
 		t.add(_ssnText, 1, 2);
@@ -281,22 +281,22 @@ public class ClubInformationTab extends UserGroupTab {
 		t.add(_nameField, 2, 5);
 		t.add(_foundedText, 1, 6);
 		t.add(_foundedField, 2, 6);
-		t.add(_typeText, 1, 7);
-		t.add(_typeField, 2, 7);
-		t.add(_memberUMFIText, 1, 8);
-		t.add(_memberUMFIField, 2, 8);
-		t.add(_makeText, 1, 9);
-		t.add(_makeField, 2, 9);
-		t.add(_connectionToSpecialText, 1, 10);
-		t.add(_connectionToSpecialField, 2, 10);
-		t.add(_regionalUnionText, 1, 12);
-		t.add(_regionalUnionField, 2, 12);
-		t.add(_statusText, 1, 13);
-		t.add(_statusField, 2, 13);
-		t.add(_inOperationText, 1, 14);
-		t.add(_inOperationField, 2, 14);
-		t.add(_usingMemberSystemText, 1, 15);
-		t.add(_usingMemberSystemField, 2, 15);
+//		t.add(_typeText, 1, 7);
+//		t.add(_typeField, 2, 7);
+		t.add(_memberUMFIText, 1, 7);
+		t.add(_memberUMFIField, 2, 7);
+		t.add(_makeText, 1, 8);
+		t.add(_makeField, 2, 8);
+		t.add(_connectionToSpecialText, 1, 9);
+		t.add(_connectionToSpecialField, 2, 9);
+		t.add(_regionalUnionText, 1, 11);
+		t.add(_regionalUnionField, 2, 11);
+		t.add(_statusText, 1, 12);
+		t.add(_statusField, 2, 12);
+		t.add(_inOperationText, 1, 13);
+		t.add(_inOperationField, 2, 13);
+		t.add(_usingMemberSystemText, 1, 14);
+		t.add(_usingMemberSystemField, 2, 14);
 
 		add(t);
 	}
