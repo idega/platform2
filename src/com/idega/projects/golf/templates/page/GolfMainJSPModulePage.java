@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.4 2001/05/23 18:26:00 haffi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.5 2001/05/23 18:44:48 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -281,7 +281,8 @@ public class GolfMainJSPModulePage extends MainPage {
           idegaTable.setAlignment(1,1, "center");
           idegaTable.setWidth(148);
 
-          Link idegaLink = new Link(new Image("/pics/templates/idegalogo.gif", "idega"), "http://www.idega.is");
+          Link idegaLink = new Link(iwrb.getImage("banners/idegalogo.gif"), "http://www.idega.is");
+
           idegaLink.setTarget("_blank");
           idegaTable.add(idegaLink, 1, 1);
 
@@ -354,9 +355,9 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
 
-              com.idega.jmodule.object.Image logo1 = new com.idega.jmodule.object.Image("/pics/templates/associates/WAGC.gif");
-              com.idega.jmodule.object.Image logo2 = new com.idega.jmodule.object.Image("/pics/templates/associates/EGA.gif");
-              com.idega.jmodule.object.Image logo3 = new com.idega.jmodule.object.Image("/pics/templates/associates/RACrest2.gif");
+              com.idega.jmodule.object.Image logo1 = iwrb.getImage("banners/WAGC.gif");
+              com.idega.jmodule.object.Image logo2 = iwrb.getImage("banners/EGA.gif");
+              com.idega.jmodule.object.Image logo3 = iwrb.getImage("banners/RACrest2.gif");
 
 
               Link logo1Link = new Link(logo1,"http://www.wagc.org/");
