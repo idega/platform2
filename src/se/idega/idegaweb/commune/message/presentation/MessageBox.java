@@ -66,7 +66,6 @@ public class MessageBox extends CommuneBlock {
 	private void viewMessageList(IWContext iwc) throws Exception {
 		Form f = new Form();
 		f.setEventListener(MessageListener.class);
-		f.setWindowToOpen(MessageSubmitWindow.class);
 		
 		int row = 1;
 		Table messageTable = new Table();
@@ -150,9 +149,10 @@ public class MessageBox extends CommuneBlock {
 
 			messageTable.setHeight(row++,5);
 			
-			Table submitTable = new Table(3, 1);
+			Table submitTable = new Table(2, 1);
 			submitTable.setCellpaddingAndCellspacing(0);
-			submitTable.setWidth(2, 1, "6");
+			submitTable.setWidth(Table.HUNDRED_PERCENT);
+			submitTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 			messageTable.mergeCells(1, row, messageTable.getColumns(), row);
 			messageTable.add(submitTable, 1, row);
 
@@ -161,11 +161,11 @@ public class MessageBox extends CommuneBlock {
 			deleteButton.setDescription(localize("message.delete", "Delete"));
 			deleteButton.setSubmitConfirm(localize("message.messages_to_delete", "Do you really want to delete the selected messages?"));
 			if (hasMessages)
-				submitTable.add(deleteButton, 1, 1);
+				submitTable.add(deleteButton, 2, 1);
 
 			SubmitButton settings = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAM_SAVE_SETTINGS, "true"));
 			settings.setDescription(localize("message.settings", "Save settings"));
-			submitTable.add(settings, 3, 1);
+			submitTable.add(settings, 1, 1);
 		}
 
 		add(f);
