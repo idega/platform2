@@ -167,7 +167,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
 
-  private void getMessagesFromDialog(MessageDialog dialog){//gets called on and iw-send event action
+  private synchronized void getMessagesFromDialog(MessageDialog dialog){//gets called on and iw-send event action
     if( packetToServlet == null ){
       packetToServlet = new Packet();
     }
