@@ -28,6 +28,8 @@ public class ProductItemImages extends ProductItem {
   private int _height = 0;
   private int _cellspacing = 3;
   private String _alignment;
+  private boolean _zoom = false;
+  private String _tableWidth;
 
   /**
    *  Constructor for the ProductItemThumbnail object
@@ -72,7 +74,9 @@ public class ProductItemImages extends ProductItem {
 
     Table table = new Table();
       table.setCellpadding(0);
-      table.setCellspacing(_cellspacing);
+      table.setCellspacing(0);
+      if ( _tableWidth != null )
+	table.setWidth(_tableWidth);
     int row = 1;
     int column = 1;
     Image image;
@@ -97,12 +101,27 @@ public class ProductItemImages extends ProductItem {
 	if ( _alignment != null ) {
 	  table.setAlignment( column , row , _alignment);
 	}
-	table.add(image, column, row);
+
+	if ( _zoom ) {
+	  Link link = new Link(image);
+	    link.setTarget("_blank");
+	    link.setURL(image.getMediaURL());
+	  table.add(link,column,row);
+	}
+	else {
+	  table.add(image, column, row);
+	}
 
 
 	if (this._horizontalView) {
+	  if ( _cellspacing > 0 ) {
+	    table.setWidth(column++,row,String.valueOf(_cellspacing));
+	  }
 	  ++column;
 	}else {
+	  if ( _cellspacing > 0 ) {
+	    table.setHeight(column,row++,String.valueOf(_cellspacing));
+	  }
 	  ++row;
 	}
       }
@@ -122,6 +141,10 @@ public class ProductItemImages extends ProductItem {
    */
   public void setWidth( int width ) {
     _width = width;
+  }
+
+  public void setTableWidth(String width) {
+    _tableWidth = width;
   }
 
   /**
@@ -163,6 +186,10 @@ public class ProductItemImages extends ProductItem {
 
   public void setSpaceBetweenImages(int pixels) {
     _cellspacing = pixels;
+  }
+
+  public void setImagesToZoom(boolean zoom) {
+    _zoom = zoom;
   }
 
 }
