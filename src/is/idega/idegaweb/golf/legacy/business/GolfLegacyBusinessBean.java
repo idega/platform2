@@ -88,7 +88,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 //	}
 	
 	
-	public void copyAllFromUnionToGroup() {
+	public void copyAllFromUnionToGroup(boolean overwrite) {
 		System.out.println("[GOLF] Start: Copy all unions to Group...");
 		System.out.println("[GOLF] finding all unions");
 		
@@ -105,7 +105,6 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 				System.out.println(union.getPrimaryKey());
 				
 				System.out.println("[GOLF] get group for union");
-				
 				
 				
 				Group group = union.getUnionFromIWMemberSystem();
@@ -131,6 +130,9 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 						e1.printStackTrace();
 						continue;
 					}
+				} else if(!overwrite){
+					System.out.println("[GOLF] found group for union ... does nothing");
+					continue;
 				}
 				
 				group.setName(union.getName());

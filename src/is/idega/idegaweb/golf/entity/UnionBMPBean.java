@@ -828,6 +828,10 @@ public List getTournamentGroupsRecursive(){
 		setColumn(COLUMNNAME_IC_GROUP_ID,group);
 	}
 	
+	public com.idega.user.data.Group getICGroup() {
+		return (com.idega.user.data.Group)getColumnValue(COLUMNNAME_IC_GROUP_ID);
+	}
+	
 	public com.idega.user.data.Group getUnionFromIWMemberSystem() {
 		return (com.idega.user.data.Group)getColumnValue(COLUMNNAME_IC_GROUP_ID);
 	}

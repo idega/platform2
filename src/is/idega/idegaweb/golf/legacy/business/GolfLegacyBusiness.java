@@ -3,7 +3,7 @@ package is.idega.idegaweb.golf.legacy.business;
 
 public interface GolfLegacyBusiness extends com.idega.business.IBOService
 {
- public void copyAllFromUnionToGroup() throws java.rmi.RemoteException;
+ public void copyAllFromUnionToGroup(boolean overwrite) throws java.rmi.RemoteException;
  public void copyFieldImagesForFieldOverview(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
  public void copyHoleTextForFieldOverview(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
  public void copyTeeImagesForFieldOverview(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;

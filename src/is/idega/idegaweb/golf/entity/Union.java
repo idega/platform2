@@ -19,14 +19,15 @@ public interface Union extends com.idega.data.IDOLegacyEntity,com.idega.util.dat
  public java.util.Iterator getChildren(java.lang.String p0);
  public java.util.Iterator getChildren();
  public java.util.List getGroups(java.lang.String p0);
+ public com.idega.user.data.Group getICGroup();
  public java.util.List getInActiveMembers();
  public int getIndex(com.idega.core.data.ICTreeNode p0);
  public int getIndex(com.idega.util.datastructures.idegaTreeNode p0);
  public java.util.List getMembersInUnion();
  public java.lang.String getName();
  public int getNodeID();
- public java.lang.String getNodeName(java.util.Locale p0);
  public java.lang.String getNodeName();
+ public java.lang.String getNodeName(java.util.Locale p0);
  public java.lang.String getNodeName(java.util.Locale p0,com.idega.idegaweb.IWApplicationContext p1);
  public int getNumber();
  public java.util.List getOwningFields()throws java.sql.SQLException;
