@@ -125,4 +125,8 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void alterValidFromDate(int applicationID, java.sql.Date newDate, java.util.Locale locale, com.idega.user.data.User user) throws java.rmi.RemoteException;
  public boolean hasActiveContract(int applicationID) throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByChild(int childID) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getActiveApplicationByChild(int childID) throws java.rmi.RemoteException;
+ public boolean hasActiveApplication(int childID) throws java.rmi.RemoteException;
+ public boolean hasOutstandingOffers(int childID) throws java.rmi.RemoteException;
+ public int getNumberOfApplicationsForChildByStatus(int childID, String caseStatus) throws java.rmi.RemoteException;
 }

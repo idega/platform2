@@ -1070,6 +1070,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 //				application.store();
 				caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 			
+				String subject = getLocalizedString("child_care.rejected_offer_subject", "A placing offer replied to.");
+				String body = getLocalizedString("child_care.rejected_offer_body", "Custodian for {0}, {5} rejects an offer for placing at {1}.");
+				sendMessageToProvider(application, subject, body);
 			
 				t.commit();
 			
@@ -1107,6 +1110,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setFromDate(date);
 				application.setApplicationStatus(getStatusSentIn());
 				caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+				
+				String subject = getLocalizedString("child_care.rejected_with_new_date_subject", "A placing offer replied to.");
+				String body = getLocalizedString("child_care.rejected_with_new_date_body", "Custodian for {0}, {5} would like to move the placement date to {2}.");
+				sendMessageToProvider(application, subject, body);
 			
 				t.commit();
 			
@@ -1159,7 +1166,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public boolean removeFromQueue(ChildCareApplication application, User user) {
 		try {
+			application.setApplicationStatus(this.getStatusRejected());
 			changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+
+			String subject = getLocalizedString("child_care.removed_from_queue_subject", "A child removed from the queue.");
+			String body = getLocalizedString("child_care.removed_from_queue_body", "Custodian for {0}, {5} has removed you as a choice alternative.  {0} can therefore no longer be found in the queue but in the list of those removed from the queue.");
+			sendMessageToProvider(application, subject, body);
 			return true;
 		}
 		catch (RemoteException e) {
@@ -1442,7 +1454,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public Collection getApplicationsForChild(int childId) {
 		try {
-			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus() };
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusReady().getStatus() };
 			return getChildCareApplicationHome().findApplicationByChildAndNotInStatus(childId, caseStatus);
 		} catch (FinderException fe) {
 			return null;
@@ -1451,6 +1463,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}		
 
+	public int getNumberOfApplicationsForChildByStatus(int childID, String caseStatus) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, caseStatus);
+		} 
+		catch (IDOException ie) {
+			return 0;
+		}
+	}
+	
+	public boolean hasOutstandingOffers(int childID) throws RemoteException {
+		int numberOfOffers = getNumberOfApplicationsForChildByStatus(childID, getCaseStatusGranted().getStatus());
+		if (numberOfOffers > 0)
+			return true;
+		return false;
+	}
+	
 	public ChildCareApplication getApplicationForChildAndProvider(int childID, int providerID) throws RemoteException {
 		try {
 			return getChildCareApplicationHome().findApplicationByChildAndProvider(childID, providerID);
@@ -2007,6 +2035,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			catch (NullPointerException e) {
 				return null;
 			}
+		}
+	}
+	
+	public ChildCareApplication getActiveApplicationByChild(int childID) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().findActiveApplicationByChild(childID);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
+	public boolean hasActiveApplication(int childID) throws RemoteException {
+		try {
+			int numberOfApplications = getChildCareApplicationHome().getNumberOfActiveApplications(childID);
+			if (numberOfApplications > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException fe) {
+			return false;
 		}
 	}
 	

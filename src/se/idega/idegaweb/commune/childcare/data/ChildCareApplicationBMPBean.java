@@ -559,6 +559,26 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return super.idoFindPKsByQuery(sql);
 	}
 	
+	public Integer ejbFindActiveApplicationByChild(int childID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	public int ejbHomeGetNumberOfActiveApplications(int childID) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
+		return idoGetNumberOfRecords(sql);
+	}
+
 	public Collection ejbFindApplicationsByProviderAndDate(int providerID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID,providerID);

@@ -29,6 +29,10 @@ import com.idega.presentation.ui.Window;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ChildCareProviderQueueWindow extends Window {
+	
+	public ChildCareProviderQueueWindow() {
+		setScrollbar(true);
+	}
 
 	private CommuneBlock style = new CommuneBlock();
 	private Text 
@@ -119,8 +123,7 @@ public class ChildCareProviderQueueWindow extends Window {
 		layoutTbl.add(appTbl, 1, 5);
 		layoutTbl.mergeCells(1, 5, 2, 5);
 		
-		CloseButton closeBtn = new CloseButton(CLOSE);
-		closeBtn.setAsImageButton(true);
+		CloseButton closeBtn = (CloseButton) style.getStyledInterface(new CloseButton(CLOSE));
 		layoutTbl.add(closeBtn, 2, 6);
 		layoutTbl.setAlignment(2, 6, "right");
 	
