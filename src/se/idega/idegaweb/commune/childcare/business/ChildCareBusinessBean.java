@@ -581,13 +581,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	private void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {
+		sendMessageToParents(application, subject, body, body, alwaysSendLetter);
+	}
+	
+	private void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter) {
 		try {
 			User child = application.getChild();
 			Object[] arguments = {child.getNameLastFirst(true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "" };
 
 			User appParent = application.getOwner();
 			if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-				Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), true, alwaysSendLetter);
+				Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
 				message.setParentCase(application);
 				message.store();
 			}
@@ -598,7 +602,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				while (iter.hasNext()) {
 					User parent = (User) iter.next();
 					if (!getUserBusiness().haveSameAddress(parent, appParent)) {
-						getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), true, alwaysSendLetter);
+						getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
 					}
 				}
 			}
@@ -800,6 +804,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			String subject = getLocalizedString("child_care.clean_queue_subject", "Old application in queue");
 			String body = getLocalizedString("child_care.clean_queue_body", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
+			String letterBody = getLocalizedString("child_care.clean_queue_body_letter", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
 			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -808,7 +813,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.setLastReplyDate(lastReplyDate.getDate());
 					changeCaseStatus(application, getCaseStatusPending().getStatus(), performer);
 					
-					sendMessageToParents(application, subject, body, true);
+					sendMessageToParents(application, subject, body, letterBody, true);
 				}
 			}
 			
