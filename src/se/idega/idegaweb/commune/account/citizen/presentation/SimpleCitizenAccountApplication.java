@@ -46,12 +46,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/03/29 06:00:45 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/31 13:34:56 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -128,8 +128,8 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 
 		SubmitButton button = getSubmitButton(SIMPLE_FORM_SUBMIT_KEY + "_button", SIMPLE_FORM_SUBMIT_DEFAULT);
 		table.add(button, 3, table.getRows() + 1);
-		table.add(Text.getNonBrakingSpace(), 3, table.getRows() + 1);
-		table.add(getHelpButton("registration_help_key"), 3, table.getRows() + 1);
+		table.add(Text.getNonBrakingSpace(), 3, table.getRows());
+		table.add(getHelpButton("registration_help_key"), 3, table.getRows());
 		final Form accountForm = new Form();
 		accountForm.add(table);
 		accountForm.setToDisableOnSubmit(button, true);
