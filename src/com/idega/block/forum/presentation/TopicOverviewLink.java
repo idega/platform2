@@ -9,7 +9,6 @@ package com.idega.block.forum.presentation;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 
 /**
