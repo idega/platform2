@@ -18,13 +18,19 @@ import java.text.SimpleDateFormat;
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
  * and edit invoice compilations.
  * <p>
- * <b>English - Swedish mini lexicon:</b><br/>
- * Invoice compilation = Faktureringsunderlag<br/>
+ * <b>English - Swedish mini lexicon:</b>
+ * <ul>
+ * <li>Invoice compilation = Faktureringsunderlag
+ * <li>Invoice Header = Fakturahuvud
+ * <li>Invoice Record = Fakturrad
+ * <li>Amount = Belopp exklusive moms
+ * <li>Amount VAT = Momsbelopp i kronor
+ * </ul>
  * <p>
- * Last modified: $Date: 2003/10/29 13:22:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/29 16:19:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -32,18 +38,23 @@ import java.text.SimpleDateFormat;
  */
 public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PREFIX = "cacc_invcmp_";
-    
 
+    private static final String FIRST_NAME_DEFAULT = "Förnamn";
+    private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
     private static final String INVOICE_COMPILATION_LIST_DEFAULT = "Faktureringsunderlagslista";
     private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String INVOICE_RECEIVER_DEFAULT = "Fakturamottagare";
     private static final String INVOICE_RECEIVER_KEY = PREFIX + "invoice_receiver";
+    private static final String LAST_NAME_DEFAULT = "Efternamn";
+    private static final String LAST_NAME_KEY = PREFIX + "last_name";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
+    private static final String PERSONAL_ID_DEFAULT = "Personnummer";
+    private static final String PERSONAL_ID_KEY = PREFIX + "personal_id";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String STATUS_DEFAULT = "Status";
@@ -95,7 +106,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private void showCompilation (final IWContext context)
         throws RemoteException {
         add (createMainTable (INVOICE_COMPILATION_KEY,
-                              INVOICE_COMPILATION_DEFAULT, createTable ()));
+                              INVOICE_COMPILATION_DEFAULT, createTable (1)));
         throw new UnsupportedOperationException ("not implemnted yet ["
                                                  + context + ']');
     }
@@ -108,28 +119,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private void showCompilationList (final IWContext context)
         throws RemoteException, FinderException {
         final UserSearcher searcher = createSearcher ();
-        try {
-            searcher.process (context);
-        } catch (final FinderException dummy) {
-            // do nothing, it's ok that none was found
-        }
-        final boolean exactlyOneUserFound = null != searcher.getUser ();
-        final Form form = new Form ();
-        form.setOnSubmit("return checkInfoForm()");
-        final Table table = createTable ();
-        form.add (table);
-        form.add (new HiddenInput (USERSEARCHER_ACTION_KEY));
+        final Table table = createTable (1);
         int row = 1;
-        table.add (getUserSearcherPidInput
-                   (context, USERSEARCHER_PERSONALID_KEY), 1, row);
-        table.add (getUserSearcherInput
-                   (context, USERSEARCHER_FIRSTNAME_KEY), 2, row);
-        table.add (getUserSearcherInput
-                   (context, USERSEARCHER_LASTNAME_KEY), 3, row++);
+        table.add (getUserSearcherTable (context, searcher), 1, row++);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
                                     SEARCH_KEY, SEARCH_DEFAULT), 1, row++);
-        table.add (searcher, 1, row++);
-        if (exactlyOneUserFound) {
+        if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
             final User userFound = searcher.getUser ();
             final InvoiceBusiness business = (InvoiceBusiness)
@@ -137,7 +132,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                   InvoiceBusiness.class);
             final InvoiceHeader [] headers
                     = business.getInvoiceHeadersByCustodianOrChild (userFound);
-
+            
             if (0 < headers.length) {
                 table.add (getInvoiceCompilationListTable (context, headers), 1,
                            row++);
@@ -146,7 +141,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                      + " or child!"), 1, row++);
             }
         }
-        final Table outerTable = createTable ();
+        final Form form = new Form ();
+        form.setOnSubmit("return checkInfoForm()");
+        form.add (table);
+        final Table outerTable = createTable (1);
         outerTable.add (form, 1, 1);
         add (createMainTable (INVOICE_COMPILATION_LIST_KEY,
                               INVOICE_COMPILATION_LIST_DEFAULT,  outerTable));
@@ -161,7 +159,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
                  { INVOICE_RECEIVER_KEY, INVOICE_RECEIVER_DEFAULT },
                  { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT }};
-        final Table table = createTable();
+        final Table table = createTable(columnNames.length);
         table.setColumns (columnNames.length);
         int row = 1;
         table.setRowColor(row, getHeaderColor());
@@ -215,38 +213,62 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private Table createMainTable
                 (final String headerKey, final String headerDefault,
                  final PresentationObject content) throws RemoteException {
-        final Table mainTable = createTable();
+        final Table mainTable = createTable(1);
         mainTable.setCellpadding (getCellpadding ());
         mainTable.setCellspacing (getCellspacing ());
         mainTable.setWidth (Table.HUNDRED_PERCENT);
-        mainTable.setColumns (1);
         mainTable.setRowColor (1, getHeaderColor ());
         mainTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER) ;
         mainTable.add (getSmallHeader (localize (headerKey, headerDefault)), 1,
                        1);
-        final Table innerTable = createTable ();
-        innerTable.setColumns (2);
-        innerTable.add (getSmallHeader (localize (MAIN_ACTIVITY_KEY,
-                                                  MAIN_ACTIVITY_DEFAULT) + ":"),
-                        1, 1);
+        final Table operationTable = new Table ();
+        operationTable.setCellpadding (getCellpadding ());
+        operationTable.setCellspacing (getCellspacing ());
+        operationTable.setColumns (2);
+        operationTable.add (getSmallHeader
+                            (localize (MAIN_ACTIVITY_KEY,
+                                       MAIN_ACTIVITY_DEFAULT) + ":"), 1, 1);
         String operationalField = getSession ().getOperationalField();
         operationalField = operationalField == null ? "" : operationalField;
-        innerTable.add (new OperationalFieldsMenu (), 2, 1);
-        mainTable.add (innerTable, 1, 2);
+        operationTable.add (new OperationalFieldsMenu (), 2, 1);
+        mainTable.add (operationTable, 1, 2);
         mainTable.add (content, 1, 3);
         return mainTable;
     }
 
-    private TextInput getUserSearcherPidInput (final IWContext context,
-                                               final String key) {
-        final TextInput input = getUserSearcherInput (context, key);
-        input.setAsIntegers ("Personnumret ska bestå av upp till 12 siffror, börja med århundrade och får inte innehålla streck");
-        return input;
+    Table getUserSearcherTable
+        (final IWContext context, final UserSearcher searcher)
+        throws RemoteException {
+        final Table table = createTable (6);
+        table.add (new HiddenInput (USERSEARCHER_ACTION_KEY), 1, 1);
+        try {
+            searcher.process (context);
+        } catch (final FinderException dummy) {
+            // do nothing, it's ok that none was found
+        }
+        int col = 1;
+        table.add (getSmallHeader (localize (PERSONAL_ID_KEY,
+                                             PERSONAL_ID_DEFAULT) + ':'), col++,
+                   1);
+        table.add (getUserSearcherInput
+                   (context, USERSEARCHER_PERSONALID_KEY), col++, 1);
+        table.add (getSmallHeader (localize (FIRST_NAME_KEY,
+                                             FIRST_NAME_DEFAULT) + ':'), col++,
+                   1);
+        table.add (getUserSearcherInput
+                   (context, USERSEARCHER_FIRSTNAME_KEY), col++, 1);
+        table.add (getSmallHeader (localize (LAST_NAME_KEY,
+                                             LAST_NAME_DEFAULT) + ':'), col++,
+                   1);
+        table.add (getUserSearcherInput
+                   (context, USERSEARCHER_LASTNAME_KEY), col++, 1);
+        return table;
     }
-    
+
     private TextInput getUserSearcherInput (final IWContext context,
                                             final String key) {
-        final TextInput input = new TextInput (key);
+        final TextInput input = (TextInput) getStyledInterface
+                (new TextInput (key));
         input.setLength (12);
         if (context.isParameterSet (key)) {
             input.setValue (context.getParameter (key));
@@ -254,11 +276,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return input;
     }
 
-    private Table createTable () {
+    private Table createTable (final int columnCount) {
         final Table table = new Table();
         table.setCellpadding (getCellpadding ());
         table.setCellspacing (getCellspacing ());
         table.setWidth (Table.HUNDRED_PERCENT);
+        table.setColumns (columnCount);
         return table;
     }
 
