@@ -131,9 +131,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 
 		reportData.addExtraHeaderParameter(
-			"workreportreport",
+			"currentdate",
 			_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
-			"label",
+			"datelabel",
 			IWTimestamp.getTimestampRightNow().toGMTString());
 		
 		/*reportData.addExtraHeaderParameter(
