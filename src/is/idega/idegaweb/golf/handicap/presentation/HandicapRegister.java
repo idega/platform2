@@ -932,16 +932,16 @@ public class HandicapRegister extends GolfBlock {
 					punktar = "0";
 				}
 				String abraut = modinfo.getParameter("fairway_" + String.valueOf(hole_nr));
-				if (abraut == null) {
-					abraut = "0";
+				if (abraut == null || abraut.equals("")) {
+					abraut = "-1";
 				}
 				String aflot = modinfo.getParameter("greens_" + String.valueOf(hole_nr));
-				if (aflot == null) {
-					aflot = "0";
+				if (aflot == null || aflot.equals("")) {
+					aflot = "-1";
 				}
 				String puttin = modinfo.getParameter("putts_" + String.valueOf(hole_nr));
-				if (puttin == null || puttin.equals("") || puttin.equals("0")) {
-					puttin = "0";
+				if (puttin == null || puttin.equals("")) {
+					puttin = "-1";
 				}
 
 				int tee_nr = tee_id[teeNumber].getID();
