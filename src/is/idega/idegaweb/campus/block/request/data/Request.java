@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.5 2002/02/06 10:21:17 palli Exp $
+ * $Id: Request.java,v 1.6 2002/02/21 00:22:02 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,153 +9,104 @@
  */
 package is.idega.idegaweb.campus.block.request.data;
 
-import com.idega.data.GenericEntity;
-import com.idega.core.user.data.User;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class Request extends GenericEntity {
-  private static final String ENTITY_NAME = "re_request";
-  private static final String USER_ID = "user_id";
-  private static final String DESCRIPTION = "description";
-  private static final String DATE_SENT = "date_sent";
-  private static final String DATE_PROCESSED = "date_processed";
-  private static final String REQUEST_TYPE = "request_type";
-  private static final String DATE_FAILURE = "date_failure";
-  private static final String SPECIAL_REPAIR_TIME = "special_time";
-  private static final String STATUS = "status";
-
+public interface Request {
   public static final String REQUEST_COMPUTER = "C";
   public static final String REQUEST_REPAIR = "R";
 
-  public Request() {
-    super();
-  }
+  public static final String REQUEST_STATUS_SENT = "S";
+  public static final String REQUEST_STATUS_RECEIVED = "R";
+  public static final String REQUEST_STATUS_IN_PROGRESS = "P";
+  public static final String REQUEST_STATUS_DONE = "D";
+  public static final String REQUEST_STATUS_DENIED = "X";
 
-  public Request(int id) throws SQLException {
-    super(id);
-  }
+  /**
+   *
+   */
+  public String getRequestType();
 
-  public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute(getColumnUserId(),"User id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,User.class);
-    addAttribute(getColumnDescription(),"Description",true,true,String.class);
-    addAttribute(getColumnDateSent(),"Date sent",true,true,Timestamp.class);
-    addAttribute(getColumnDateProcessed(),"Date processed",true,true,Timestamp.class);
-    addAttribute(getColumnRequestType(),"Request type",true,true,String.class);
-    addAttribute(getColumnStatus(),"Status",true,true,String.class);
-    addAttribute(getColumnDateFailure(),"Date of failure",true,true,Timestamp.class);
-    addAttribute(getColumnSpecialTime(),"Request special time",true,true,String.class);
-    setMaxLength(getColumnRequestType(),1);
-    setMaxLength(getColumnStatus(),1);
-    setMaxLength(getColumnDescription(),4000);
-  }
+  /**
+   *
+   */
+  public void setRequestType(String type);
 
-  public String getEntityName() {
-    return(ENTITY_NAME);
-  }
+  /**
+   *
+   */
+  public int getUserId();
 
-  public static String getColumnRequestType() {
-    return(REQUEST_TYPE);
-  }
+  /**
+   *
+   */
+  public void setUserId(int id);
 
-  public static String getColumnUserId() {
-    return(USER_ID);
-  }
+  /**
+   *
+   */
+  public void setUserId(Integer id);
 
-  public static String getColumnDescription() {
-    return(DESCRIPTION);
-  }
+  /**
+   *
+   */
+  public String getDescription();
 
-  public static String getColumnDateSent() {
-    return(DATE_SENT);
-  }
+  /**
+   *
+   */
+  public void setDescription(String description);
 
-  public static String getColumnDateProcessed() {
-    return(DATE_PROCESSED);
-  }
+  /**
+   *
+   */
+  public Timestamp getDateSent();
 
-  public static String getColumnStatus() {
-    return(STATUS);
-  }
+  /**
+   *
+   */
+  public void setDateSent(Timestamp sent);
 
-  public static String getColumnDateFailure() {
-    return(DATE_FAILURE);
-  }
+  /**
+   *
+   */
+  public Timestamp getDateProcessed();
 
-  public static String getColumnSpecialTime() {
-    return(SPECIAL_REPAIR_TIME);
-  }
+  /**
+   *
+   */
+  public void setDateProcessed(Timestamp processed);
 
-  public int getRequestType() {
-    return(getIntColumnValue(getColumnRequestType()));
-  }
+  /**
+   *
+   */
+  public String getStatus();
 
-  public void setRequestType(String type) {
-    setColumn(getColumnRequestType(),type);
-  }
+  /**
+   *
+   */
+  public void setStatus(String status);
 
-  public int getUserId() {
-    return(getIntColumnValue(getColumnUserId()));
-  }
+  /**
+   *
+   */
+  public Timestamp getDateFailure();
 
-  public void setUserId(int id) {
-    setColumn(getColumnUserId(),id);
-  }
+  /**
+   *
+   */
+  public void setDateFailure(Timestamp failure);
 
-  public void setUserId(Integer id) {
-    setColumn(getColumnUserId(),id);
-  }
+  /**
+   *
+   */
+  public String getSpecialTime();
 
-  public String getDescription() {
-    return(getStringColumnValue(getColumnDescription()));
-  }
-
-  public void setDescription(String description) {
-    setColumn(getColumnDescription(),description);
-  }
-
-  public Timestamp getDateSent() {
-    return((Timestamp)getColumnValue(getColumnDateSent()));
-  }
-
-  public void setDateSent(Timestamp sent) {
-    setColumn(getColumnDateSent(),sent);
-  }
-
-  public Timestamp getDateProcessed() {
-    return((Timestamp)getColumnValue(getColumnDateProcessed()));
-  }
-
-  public void setDateProcessed(Timestamp processed) {
-    setColumn(getColumnDateProcessed(),processed);
-  }
-
-  public String getStatus() {
-    return(getStringColumnValue(getColumnStatus()));
-  }
-
-  public void setStatus(String status) {
-    setColumn(getColumnStatus(),status);
-  }
-
-  public Timestamp getDateFailure() {
-    return((Timestamp)getColumnValue(getColumnDateFailure()));
-  }
-
-  public void setDateFailure(Timestamp failure) {
-    setColumn(getColumnDateFailure(),failure);
-  }
-
-  public String getSpecialTime() {
-    return(getStringColumnValue(getColumnSpecialTime()));
-  }
-
-  public void setSpecialTime(String time) {
-    setColumn(getColumnSpecialTime(),time);
-  }
+  /**
+   *
+   */
+  public void setSpecialTime(String time);
 }

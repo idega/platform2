@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApply.java,v 1.6 2002/02/15 11:05:20 palli Exp $
+ * $Id: CampusApply.java,v 1.7 2002/02/21 00:21:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -51,7 +51,8 @@ public class CampusApply extends PresentationObjectContainer {
     if(iwc.hasEditPermission(this))
       T.add("Átt þú ekki að skrá umsóknir á öðrum stað "+iwc.getUser().getName()+" !!",1,1);
     else
-      T.add(new CampusApplicationForm(),1,1);
+      T.add("Hægt verður að sækja um á netinu þann 25.2.2002",1,1);
+//      T.add(new CampusApplicationForm(),1,1);
 
     add(T);
   }

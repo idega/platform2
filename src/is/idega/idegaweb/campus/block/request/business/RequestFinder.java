@@ -1,5 +1,5 @@
 /*
- * $Id: RequestFinder.java,v 1.5 2002/02/15 11:05:37 palli Exp $
+ * $Id: RequestFinder.java,v 1.6 2002/02/21 00:22:21 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idega.idegaweb.campus.block.request.business;
 import com.idega.data.EntityFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
 import is.idega.idegaweb.campus.block.request.data.Request;
+import is.idega.idegaweb.campus.block.request.data.RequestBean;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
@@ -23,17 +24,22 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class RequestFinder {
+  public static final String REQUEST_STATUS_SENT = Request.REQUEST_STATUS_SENT;
+  public static final String REQUEST_STATUS_RECEIVED = Request.REQUEST_STATUS_RECEIVED;
+  public static final String REQUEST_STATUS_IN_PROGRESS = Request.REQUEST_STATUS_IN_PROGRESS;
+  public static final String REQUEST_STATUS_DONE = Request.REQUEST_STATUS_DONE;
+  public static final String REQUEST_STATUS_DENIED = Request.REQUEST_STATUS_DENIED;
 
   public static List getRequests(int userId) {
     try {
-      List l = EntityFinder.findAllByColumn(Request.getStaticInstance(Request.class),Request.getColumnUserId(),userId);
+      List l = EntityFinder.findAllByColumn(RequestBean.getStaticInstance(RequestBean.class),RequestBean.getColumnUserId(),userId);
       if (l == null)
         return(null);
 
       Iterator i = l.iterator();
       Vector requests = new Vector();
       while (i.hasNext()) {
-        Request r = (Request)i.next();
+        RequestBean r = (RequestBean)i.next();
         RequestHolder holder = new RequestHolder(r);
         requests.add(holder);
       }
@@ -47,7 +53,7 @@ public class RequestFinder {
 
   public static List getAllRequests() {
     try {
-      List l = EntityFinder.findAll(Request.getStaticInstance(Request.class));
+      List l = EntityFinder.findAll(RequestBean.getStaticInstance(RequestBean.class));
 
       if (l == null)
         return(null);
@@ -55,7 +61,29 @@ public class RequestFinder {
       Iterator i = l.iterator();
       Vector requests = new Vector();
       while (i.hasNext()) {
-        Request r = (Request)i.next();
+        RequestBean r = (RequestBean)i.next();
+        RequestHolder holder = new RequestHolder(r);
+        requests.add(holder);
+      }
+
+      return(requests);
+    }
+    catch(SQLException e) {
+      return(null);
+    }
+  }
+
+  public static List getAllRequestsByType(String type) {
+    try {
+      List l = EntityFinder.findAllByColumn(RequestBean.getStaticInstance(RequestBean.class),RequestBean.getColumnStatus(),type);
+
+      if (l == null)
+        return(null);
+
+      Iterator i = l.iterator();
+      Vector requests = new Vector();
+      while (i.hasNext()) {
+        RequestBean r = (RequestBean)i.next();
         RequestHolder holder = new RequestHolder(r);
         requests.add(holder);
       }

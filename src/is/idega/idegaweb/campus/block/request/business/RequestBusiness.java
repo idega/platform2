@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBusiness.java,v 1.1 2002/02/06 10:21:17 palli Exp $
+ * $Id: RequestBusiness.java,v 1.2 2002/02/21 00:22:21 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package is.idega.idegaweb.campus.block.request.business;
 
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.campus.block.request.data.Request;
+import is.idega.idegaweb.campus.block.request.data.RequestBean;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -27,7 +28,7 @@ public class RequestBusiness {
    */
   public static boolean insertRequest(int userId, String comment, Timestamp dateOfFailure, String type, String special) {
     try {
-      Request req = new Request();
+      RequestBean req = new RequestBean();
       req.setUserId(userId);
       req.setDescription(comment);
       req.setDateFailure(dateOfFailure);
@@ -35,6 +36,7 @@ public class RequestBusiness {
       if (special != null)
         req.setSpecialTime(special);
       req.setDateSent(idegaTimestamp.getTimestampRightNow());
+      req.setStatus(Request.REQUEST_STATUS_SENT);
       req.insert();
     }
     catch(SQLException e) {

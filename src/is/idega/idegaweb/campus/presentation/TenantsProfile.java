@@ -134,9 +134,26 @@ public class TenantsProfile extends Block {
         }
       }
 
-      _contract = ContractFinder.findApplicant(_userID);
-      _applicant = ContractFinder.getApplicant(_contract);
-      _campusApplication = CampusApplicationFinder.getApplicantInfo(_applicant).getCampusApplication();
+      try {
+        _contract = ContractFinder.findApplicant(_userID);
+      }
+      catch(Exception e) {
+        _contract = null;
+      }
+
+      try {
+        _applicant = ContractFinder.getApplicant(_contract);
+      }
+      catch(Exception e) {
+        _applicant = null;
+      }
+
+      try {
+        _campusApplication = CampusApplicationFinder.getApplicantInfo(_applicant).getCampusApplication();
+      }
+      catch(Exception e) {
+        _campusApplication = null;
+      }
 
       if ( iwc.getParameter(PARAMETER_MODE) != null ) {
         if ( iwc.getParameter(PARAMETER_MODE).equalsIgnoreCase(PARAMETER_SAVE) )
@@ -329,10 +346,10 @@ public class TenantsProfile extends Block {
       table.mergeCells(1,1,3,1);
       table.setWidth("100%");
 
-    table.add(formatText(_iwrb.getLocalizedString("requests","Requests"),"#FFFFFF",true),1,1);
-    table.add(formatText(_iwrb.getLocalizedString("request","Request")),1,2);
-    table.add(formatText(_iwrb.getLocalizedString("sent","Sent")),2,2);
-    table.add(formatText(_iwrb.getLocalizedString("status","Status")),3,2);
+    table.add(formatText(_iwrb.getLocalizedString("REQUEST_HEADER","Beiðni"),"#FFFFFF",true),1,1);
+    table.add(formatText(_iwrb.getLocalizedString("REQUEST_TYPE","Tegund")),1,2);
+    table.add(formatText(_iwrb.getLocalizedString("REQUEST_SENT","Send")),2,2);
+    table.add(formatText(_iwrb.getLocalizedString("REQUEST_STATUS","Staða")),3,2);
 
     int row = 3;
 
@@ -344,8 +361,11 @@ public class TenantsProfile extends Block {
       for ( int a = 0; a < requests.size(); a++ ) {
         holder = (RequestHolder) requests.get(a);
         request = holder.getRequest();
+        String type = request.getRequestType();
+        String status = request.getStatus();
+        table.add(formatText(_iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð")),1,row);
         table.add(formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
-        table.add(formatText(request.getStatus()),3,row);
+        table.add(formatText(_iwrb.getLocalizedString("REQUEST_STATUS_" + status,"Innsend")),3,row);
         row++;
       }
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.2 2002/02/15 11:20:47 palli Exp $
+ * $Id: RequestAdminView.java,v 1.3 2002/02/21 00:21:48 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,16 +14,18 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.RadioGroup;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 import com.idega.util.idegaTimestamp;
-import com.idega.util.text.StyleConstants;
-import com.idega.util.text.TextStyler;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
-import is.idega.idegaweb.campus.presentation.CampusColors;
+import is.idega.idegaweb.campus.presentation.Edit;
 import java.util.List;
 
 import is.idega.idegaweb.campus.block.request.data.Request;
@@ -39,9 +41,6 @@ public class RequestAdminView extends Block {
 
   private IWResourceBundle _iwrb = null;
 
-  private TextStyler _styler;
-  private Image _image;
-
   /**
    *
    */
@@ -53,11 +52,8 @@ public class RequestAdminView extends Block {
    */
   public void main(IWContext iwc) {
     _iwrb = getResourceBundle(iwc);
-    _styler = new TextStyler();
-    _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
-    _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
 
-    add(getRequests());
+    add(getRequests(1));
   }
 
   /**
@@ -81,25 +77,39 @@ public class RequestAdminView extends Block {
     return(IW_BUNDLE_IDENTIFIER);
   }
 
-  private Table getRequests() {
-//    DataTable table = new DataTable();
-    Table table = new Table();
-    table.setCellspacing(1);
-    table.setCellpadding(3);
-    table.mergeCells(1,1,3,1);
+  private Form getRequests(int id) {
+    Form f = new Form();
+    Table t = new Table(1,2);
+    t.setWidth("100%");
+    DataTable table = new DataTable();
     table.setWidth("100%");
+    table.setTitlesHorizontal(true);
 
-//    System.out.println("_iwrb = " + _iwrb);
+    table.addTitle(_iwrb.getLocalizedString("REQUEST_HEADER","Requests"));
+    table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_TYPE","Request"),true),1,1);
+    table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_SENT","Sent"),true),2,1);
+    table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS","Status"),true),3,1);
+
+    int row = 2;
 
 
-    table.add(formatText(_iwrb.getLocalizedString("requests","Requests"),"#FFFFFF",true),1,1);
-    table.add(formatText(_iwrb.getLocalizedString("request","Request")),1,2);
-    table.add(formatText(_iwrb.getLocalizedString("sent","Sent")),2,2);
-    table.add(formatText(_iwrb.getLocalizedString("status","Status")),3,2);
+    RadioGroup grp = new RadioGroup("req_admin_filter");
+    grp.addRadioButton(Request.REQUEST_STATUS_SENT,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_S")));
+    grp.addRadioButton(Request.REQUEST_STATUS_RECEIVED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_R")));
+    grp.addRadioButton(Request.REQUEST_STATUS_IN_PROGRESS,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_P")));
+    grp.addRadioButton(Request.REQUEST_STATUS_DONE,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_D")));
+    grp.addRadioButton(Request.REQUEST_STATUS_DENIED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_X")));
+    grp.setVertical(false);
+    grp.keepStatusOnAction();
 
-    int row = 3;
+    String selected = grp.getSelected();
+    System.out.println("Selected = " + selected);
+    if (selected == null) {
+      selected = Request.REQUEST_STATUS_SENT;
+      grp.setSelected(selected);
+    }
 
-    List requests = RequestFinder.getAllRequests();
+    List requests = RequestFinder.getAllRequestsByType(selected);
     Request request = null;
     RequestHolder holder = null;
 
@@ -107,24 +117,23 @@ public class RequestAdminView extends Block {
       for ( int a = 0; a < requests.size(); a++ ) {
         holder = (RequestHolder) requests.get(a);
         request = holder.getRequest();
-        table.add(formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
-        table.add(formatText(request.getStatus()),3,row);
+        String type = request.getRequestType();
+        String status = request.getStatus();
+        table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð")),1,row);
+        table.add(Edit.formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+        table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_" + status,"Innsend")),3,row);
         row++;
       }
     }
 
-    table.setHorizontalZebraColored(CampusColors.WHITE,CampusColors.LIGHTGREY);
-    table.setColor(1,1,CampusColors.DARKBLUE);
-    table.setRowColor(2,CampusColors.DARKGREY);
-    table.mergeCells(1,row,3,row);
-
-//    table.add(_image,1,row);
-    table.setColor(1,row,CampusColors.DARKRED);
-
-    return table;
+    t.add(grp,1,1);
+    t.add(table,1,2);
+    f.add(t);
+    grp.setToSubmit();
+    return(f);
   }
 
-  private Text formatText(String text){
+/*  private Text formatText(String text){
     return formatText(text,"#000000",false);
   }
 
@@ -144,6 +153,6 @@ public class RequestAdminView extends Block {
       T.setFontStyle(_styler.getStyleString());
 
     return T;
-  }
+  }*/
 
 }

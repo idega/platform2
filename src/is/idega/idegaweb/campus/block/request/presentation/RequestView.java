@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.2 2002/02/06 10:21:17 palli Exp $
+ * $Id: RequestView.java,v 1.3 2002/02/21 00:21:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -118,7 +118,11 @@ public class RequestView extends Window {
     else
       type = RequestBusiness.REQUEST_REPAIR;
     String special = iwc.getParameter(REQUEST_SPECIAL_TIME);
-    idegaTimestamp t = new idegaTimestamp(dateOfFailureString);
+
+    System.out.println("DateOfFailureString = " + dateOfFailureString);
+
+    idegaTimestamp t = new idegaTimestamp();
+    t = idegaTimestamp.RightNow();
 
     boolean insert = RequestBusiness.insertRequest(_eUser.getID(),comment,t.getTimestamp(),type,special);
 

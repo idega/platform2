@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.14 2001/12/07 13:24:23 aron Exp $
+ * $Id: ApplicationForm.java,v 1.15 2002/02/21 00:20:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.Table;
 import com.idega.idegaweb.IWResourceBundle;
@@ -31,39 +32,50 @@ import com.idega.presentation.Block;
  * @version 1.0
  */
 public class ApplicationForm extends PresentationObjectContainer {
-  private final int statusEnteringPage_ = 0;
-  private final int statusSubject_ = 1;
-  private final int statusGeneralInfo_ = 2;
+  private final int _statusEnteringPage = 0;
+  private final int _statusSubject = 1;
+  private final int _statusGeneralInfo = 2;
 
-  protected boolean isAdmin;
+  protected boolean _isAdmin;
   private static final String IW_RESOURCE_BUNDLE = "com.idega.block.application";
 
-  protected IWResourceBundle iwrb_ = null;
+  protected IWResourceBundle _iwrb = null;
 
-  private Text textTemplate = new Text();
+  private Text _textTemplate = new Text();
 
+  /**
+   *
+   */
   public ApplicationForm() {
   }
 
+  /**
+   *
+   */
   protected void control(IWContext iwc) {
     String statusString = iwc.getParameter("status");
     int status = 0;
 
     if (statusString == null){
-      status = statusEnteringPage_;
+      status = _statusEnteringPage;
     }
     else {
-      status = Integer.parseInt(statusString);
+      try {
+        status = Integer.parseInt(statusString);
+      }
+      catch(NumberFormatException e) {
+        status = _statusEnteringPage;
+      }
     }
 
-    if (status == statusEnteringPage_) {
+    if (status == _statusEnteringPage) {
       doSelectSubject(iwc);
     }
-    else if (status == statusSubject_) {
+    else if (status == _statusSubject) {
       ApplicationFormHelper.saveSubject(iwc);
       doGeneralInformation(iwc);
     }
-    else if (status == statusGeneralInfo_) {
+    else if (status == _statusGeneralInfo) {
       ApplicationFormHelper.saveApplicantInformation(iwc);
       if (ApplicationFormHelper.saveDataToDB(iwc) != null)
         doDone();
@@ -87,23 +99,23 @@ public class ApplicationForm extends PresentationObjectContainer {
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb_.getLocalizedString("applicationSubjectTitle","Veldu tegund umsóknar"));
+    heading.setText(_iwrb.getLocalizedString("applicationSubjectTitle","Veldu tegund umsóknar"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
-    text1.setText(iwrb_.getLocalizedString("applicationSubject","Umsókn um"));
+    text1.setText(_iwrb.getLocalizedString("applicationSubject","Umsókn um"));
     text1.setBold();
     Text required = (Text)textTemplate.clone();
     required.setText(" * ");
     required.setBold();
     required.setStyle("required");
     Text info = (Text)textTemplate.clone();
-    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setText(_iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
     subject.setStyle("formstyle");
-    BackButton back = new BackButton(iwrb_.getImage("back.gif"));
-    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")));
+    BackButton back = new BackButton(_iwrb.getImage("back.gif"));
+    SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif",_iwrb.getLocalizedString("ok","áfram")));
 
     form.add(heading);
     form.add(Text.getBreak());
@@ -119,7 +131,7 @@ public class ApplicationForm extends PresentationObjectContainer {
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(info);
-    form.add(new HiddenInput("status",Integer.toString(statusSubject_)));
+    form.add(new HiddenInput("status",Integer.toString(_statusSubject)));
     add(form);
   }
 
@@ -127,50 +139,50 @@ public class ApplicationForm extends PresentationObjectContainer {
     Text textTemplate = new Text();
     TextInput textInputTemplate = new TextInput();
     Form form = new Form();
-    Table t = new Table(2,10);
-    BackButton back = new BackButton(iwrb_.getImage("back.gif"));
-    SubmitButton ok = new SubmitButton(iwrb_.getImage("next.gif",iwrb_.getLocalizedString("ok","áfram")));
+    DataTable t = new DataTable();
+    BackButton back = new BackButton(_iwrb.getImage("back.gif"));
+    SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif",_iwrb.getLocalizedString("ok","áfram")));
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb_.getLocalizedString("generalInfo","Almennar upplýsingar um umsækjanda"));
+    heading.setText(_iwrb.getLocalizedString("generalInfo","Almennar upplýsingar um umsækjanda"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
-    text1.setText(iwrb_.getLocalizedString("firstName","Fornafn"));
+    text1.setText(_iwrb.getLocalizedString("firstName","Fornafn"));
     text1.setBold();
     Text text2 = (Text)textTemplate.clone();
     text2.setStyle("bodytext");
-    text2.setText(iwrb_.getLocalizedString("middleName","Millinafn"));
+    text2.setText(_iwrb.getLocalizedString("middleName","Millinafn"));
     Text text3 = (Text)textTemplate.clone();
     text3.setStyle("bodytext");
-    text3.setText(iwrb_.getLocalizedString("lastName","Eftirnafn"));
+    text3.setText(_iwrb.getLocalizedString("lastName","Eftirnafn"));
     text3.setBold();
     Text text4 = (Text)textTemplate.clone();
     text4.setStyle("bodytext");
-    text4.setText(iwrb_.getLocalizedString("ssn","Kennitala"));
+    text4.setText(_iwrb.getLocalizedString("ssn","Kennitala"));
     text4.setBold();
     Text text5 = (Text)textTemplate.clone();
     text5.setStyle("bodytext");
-    text5.setText(iwrb_.getLocalizedString("legalResidence","Lögheimili"));
+    text5.setText(_iwrb.getLocalizedString("legalResidence","Lögheimili"));
     text5.setBold();
     Text text6 = (Text)textTemplate.clone();
     text6.setStyle("bodytext");
-    text6.setText(iwrb_.getLocalizedString("residence","Dvalarstaður"));
+    text6.setText(_iwrb.getLocalizedString("residence","Dvalarstaður"));
     text6.setBold();
     Text text7 = (Text)textTemplate.clone();
     text7.setStyle("bodytext");
-    text7.setText(iwrb_.getLocalizedString("residencePhone","Símanúmer á dvalarstað"));
+    text7.setText(_iwrb.getLocalizedString("residencePhone","Símanúmer á dvalarstað"));
     text7.setBold();
     Text text8 = (Text)textTemplate.clone();
     text8.setStyle("bodytext");
-    text8.setText(iwrb_.getLocalizedString("po","Póstnúmer"));
+    text8.setText(_iwrb.getLocalizedString("po","Póstnúmer"));
     text8.setBold();
     Text required = (Text)textTemplate.clone();
     required.setText(" * ");
     required.setBold();
     required.setStyle("required");
     Text info = (Text)textTemplate.clone();
-    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setText(_iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
     TextInput input1 = (TextInput)textInputTemplate.clone();
     input1.setName("firstName");
@@ -205,9 +217,7 @@ public class ApplicationForm extends PresentationObjectContainer {
     input8.setLength(3);
     input8.setStyle("formstyle");
 
-    t.setWidth(1,"220");
-    //t.setWidth(1,"50%");
-    //t.setWidth(2,"50%");
+    t.addTitle(heading);
     t.add(text1,1,1);
     t.add(required,1,1);
     t.add(input1,2,1);
@@ -231,45 +241,43 @@ public class ApplicationForm extends PresentationObjectContainer {
     t.add(text8,1,8);
     t.add(required,1,8);
     t.add(input8,2,8);
-    //t.add(back,1,10);
-    t.add(ok,1,10);
+//    t.add(ok,1,10);
+    t.addButton(ok);
 
-    form.add(heading);
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
+
     form.add(t);
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(info);
-    form.add(new HiddenInput("status",Integer.toString(statusGeneralInfo_)));
+    form.add(new HiddenInput("status",Integer.toString(_statusGeneralInfo)));
     add(form);
   }
 
   protected void doDone() {
-    add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð"));
+    add(_iwrb.getLocalizedString("applicationRegistered","Umsókn skráð"));
   }
 
   protected void doDone(String cypher) {
     Text cypherText = new Text(cypher);
     cypherText.setBold();
-    add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð")+". "+iwrb_.getLocalizedString("applicationReferenceNumber","Tilvísunarnúmer þitt er")+": ");
+    add(_iwrb.getLocalizedString("applicationRegistered","Umsókn skráð")+". "+_iwrb.getLocalizedString("applicationReferenceNumber","Tilvísunarnúmer þitt er")+": ");
     add(cypherText);
     add(Text.getBreak());
     add(Text.getBreak());
-    add(iwrb_.getLocalizedString("applicationFollowUp","Þú getur notað tilvísunarnúmerið til að fylgjast með stöðu umsóknar þinnar")+".");
+    add(_iwrb.getLocalizedString("applicationFollowUp","Þú getur notað tilvísunarnúmerið til að fylgjast með stöðu umsóknar þinnar")+".");
   }
 
   protected void doError() {
-    add(iwrb_.getLocalizedString("applicationDBError","Gagnagrunnsvilla við skráningu umsóknar"));
+    add(_iwrb.getLocalizedString("applicationDBError","Gagnagrunnsvilla við skráningu umsóknar"));
   }
 
   public void main(IWContext iwc){
-    iwrb_ = getResourceBundle(iwc);
+    _iwrb = getResourceBundle(iwc);
     control(iwc);
   }
 
   protected void doSubjectError() {
-    add(iwrb_.getLocalizedString("applicationSubjectError","Nothing to apply for"));
+    add(_iwrb.getLocalizedString("applicationSubjectError","Nothing to apply for"));
   }
 }
