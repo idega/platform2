@@ -66,7 +66,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		
 		InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
 
-		readDateInput = new DateInput(PARAM_READ_DATE,true);	
+		readDateInput = new DateInput(PARAM_READ_DATE,true);
+		readDateInput.setToDisplayDayLast(true);
 
 		readDateInput.setYearRange(currentYear - 1, currentYear + 1);
 		InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
