@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.30 2003/10/21 23:22:50 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.31 2003/10/22 13:19:53 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.30 2003/10/21 23:22:50 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.31 2003/10/22 13:19:53 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -86,6 +86,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_SCHOOL_YEAR_TO = "posting_parm_edit.school_year_to";
 	private final static String KEY_SCHOOL_YEAR_SELECTOR_BLANK = "posting_parm_edit.school_yer_selector_blank";
 	private final static String KEY_ERROR_DATE_NULL	= "posting_parm_edit.error_date";
+	private final static String KEY_ERROR_LENGTH	= "posting_parm_edit.error_length";
 	private final static String KEY_NUMERIC = "posting_parm_edit.numeric_only";
 	private final static String KEY_ALPHA = "posting_parm_edit.alpha_only";
 	
@@ -175,20 +176,24 @@ public class PostingParameterListEditor extends AccountingBlock {
 				id = null;
 			}
 			getPostingBusiness(iwc).savePostingParameter(id,
-			parseDate(iwc.getParameter(PARAM_PERIOD_FROM)),
-			parseDate(iwc.getParameter(PARAM_PERIOD_TO)),
-			iwc.getParameter(PARAM_SIGNED),
-			iwc.getParameter(PARAM_SELECTOR_ACTIVITY),				
-			iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
-			iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
-			iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
-			iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1),
-			iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2),
-			_theOwnString,
-			_theDoubleString
+					parseDate(iwc.getParameter(PARAM_PERIOD_FROM)),
+					parseDate(iwc.getParameter(PARAM_PERIOD_TO)),
+					iwc.getParameter(PARAM_SIGNED),
+					iwc.getParameter(PARAM_SELECTOR_ACTIVITY),				
+					iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
+					iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
+					iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
+					iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1),
+					iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2),
+					_theOwnString,
+					_theDoubleString
 			);
 		} catch (PostingParametersException e) {
-			_errorText = localize(e.getTextKey(), e.getDefaultText());
+			if(e.getTextKey().compareTo(KEY_ERROR_LENGTH) == 0) {
+				_errorText = localize(e.getTextKey(), "Fel längd på fält: ")+e.getDefaultText();
+			} else {
+				_errorText = localize(e.getTextKey(), e.getDefaultText());
+			}
 			return false;
 		} catch (RemoteException e) {
 			super.add(new ExceptionWrapper(e, this));
@@ -221,6 +226,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 			Iterator iter = fields.iterator();
 			while (iter.hasNext()) {
 				PostingField field = (PostingField) iter.next();
+				int len = iwc.getParameter(PARAM_OWN_STRING + "_" + index).length();
+				if(len != field.getLen() && len > 0) {
+					throw new PostingParametersException(KEY_ERROR_LENGTH, field.getFieldTitle());			
+				}
 				_theOwnString += pBiz.pad(iwc.getParameter(PARAM_OWN_STRING + "_" + index), field);
 				_theDoubleString += pBiz.pad(iwc.getParameter(PARAM_DOUBLE_STRING + "_" + index), field);
 				index++;
@@ -469,7 +478,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 				if(iwc.isParameterSet(PARAM_DOUBLE_STRING+"_"+index)) {
 					theData2 = (String) _pMap.get(PARAM_DOUBLE_STRING+"_"+index);
 				}
-				if (postingString != null) {
+				if (postingString != null && !iwc.isParameterSet(PARAM_BUTTON_SAVE)) {
 					theData1 = pBiz.extractField(postingString,readPointer, fieldLength, field);
 					theData2 = pBiz.extractField(doublePostingString,readPointer, fieldLength, field);
 				}
