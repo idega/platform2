@@ -428,10 +428,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			Date to = parseDate(iwc.getParameter(PAR_TO));
 			entry.setFrom(from);
 			entry.setTo(to);
-				
-			if (iwc.getParameter(PAR_REMARK) != null){
-				entry.setNote(iwc.getParameter(PAR_REMARK));
-			}
+			
+			String note = iwc.getParameter(PAR_REMARK);
+			if (note == null || note.length() == 0){
+				note = " "; //Oracle stores empty string as "null"
+			}				
+			entry.setNote(note);
+		
 			if (iwc.getParameter(PAR_SCH_TYPE) != null){
 				entry.setSchoolTypeId(Integer.parseInt(iwc.getParameter(PAR_SCH_TYPE)));
 			}
@@ -855,7 +858,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		addIntField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getAmount()), 1, row++);
 		//Vat is currently set to 0
-		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
+		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
@@ -1248,22 +1251,22 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private Table addField(Table table, String key, String value, int col, int row){
 		return addWidget(table, key, getText(value), col, row);
 	}	
-	
-	/**
-	 * Adds a label and a TextInput to a table
-	 * @param table
-	 * @param key is used both as localization key for the label and default label value
-	 * @param value
-	 * @param parameter
-	 * @param col
-	 * @param row
-	 * @return
-	 */
-	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
-		TextInput input = getTextInput(parameter, value);
-		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2); 
-		return addWidget(table, key, input, col, row);
-	}
+//	
+//	/**
+//	 * Adds a label and a TextInput to a table
+//	 * @param table
+//	 * @param key is used both as localization key for the label and default label value
+//	 * @param value
+//	 * @param parameter
+//	 * @param col
+//	 * @param row
+//	 * @return
+//	 */
+//	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
+//		TextInput input = getTextInput(parameter, value);
+//		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2); 
+//		return addWidget(table, key, input, col, row);
+//	}
 
 	
 	private Table addIntField(Table table, String parameter, String key, String value, int col, int row){
