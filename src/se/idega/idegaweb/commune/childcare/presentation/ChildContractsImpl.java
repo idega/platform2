@@ -1,5 +1,5 @@
 /*
- * $Id: ChildContractsImpl.java,v 1.1 2004/10/08 16:32:40 thomas Exp $
+ * $Id: ChildContractsImpl.java,v 1.2 2004/10/14 17:32:26 thomas Exp $
  * Created on Oct 8, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
-import se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContracts;
+import se.idega.idegaweb.commune.care.presentation.ChildContracts;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.school.business.SchoolConstants;
 import com.idega.business.IBOLookup;
@@ -22,10 +22,10 @@ import com.idega.presentation.PresentationObject;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/08 16:32:40 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/14 17:32:26 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChildContractsImpl implements ChildContracts {
 	

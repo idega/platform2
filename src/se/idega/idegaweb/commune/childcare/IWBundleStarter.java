@@ -2,7 +2,7 @@ package se.idega.idegaweb.commune.childcare;
 
 import java.util.Iterator;
 import java.util.List;
-import se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContracts;
+import se.idega.idegaweb.commune.care.presentation.ChildContracts;
 import se.idega.idegaweb.commune.childcare.business.ChildCareDeceasedUserBusiness;
 import se.idega.idegaweb.commune.childcare.presentation.ChildContractsImpl;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
