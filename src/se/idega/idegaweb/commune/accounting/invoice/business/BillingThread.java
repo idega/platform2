@@ -27,7 +27,6 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
@@ -188,8 +187,10 @@ public abstract class BillingThread extends Thread{
 				PaymentRecord paymentRecord;
 //				System.out.println("About to create VAT payment record");
 				Provider provider = new Provider(school);
-				String ruleSpecType = RegSpecConstant.MOMS;
-				RegulationSpecType regSpecType;
+				RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType();
+				String ruleSpecType = regSpecType.getRegSpecType();
+				//String ruleSpecType = RegSpecConstant.MOMS;
+				//RegulationSpecType regSpecType;
 				String[] postingStrings=null;
 				//float amount = postingDetail.getAmount();
 				//float vatPercent = postingDetail.getVATPercent();
@@ -198,7 +199,7 @@ public abstract class BillingThread extends Thread{
 				float newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);				
 				
 				try {
-					regSpecType = this.getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);
+					//regSpecType = this.getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);
 					int regSpecTypeId= ((Number)regSpecType.getPrimaryKey()).intValue();
 					int schoolYearId = -1;
 					if(sYear!=null){
@@ -207,10 +208,6 @@ public abstract class BillingThread extends Thread{
 					postingStrings = this.getPostingBusiness().getPostingStrings(category,sType,regSpecTypeId,provider,startPeriod.getDate(),schoolYearId);
 				}
 				catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (FinderException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
