@@ -138,7 +138,7 @@ public class ServiceSearch extends Block {
 			ss.setTextFontStyle(textFontStyle);
 			ss.setHeaderFontStyle(headerFontStyle);
 			ss.setLinkFontStyle(linkFontStyle);
-			//ss.setClickedLinkFontStyle(clickedLinkFontStyle);
+			ss.setClickedLinkFontStyle(clickedLinkFontStyle);
 			ss.setErrorFontStyle(errorFontStyle);
 			ss.setHeaderBackgroundColor(headerBackgroundColor);
 			ss.setLinksBackgroundColor(linkBackgroundColor);
@@ -166,10 +166,10 @@ public class ServiceSearch extends Block {
 	public void setLinkFontStyle(String fontStyle) {
 		this.linkFontStyle = fontStyle;
 	}
-	/*
+	
 	public void setClickedLinkFontStyle(String fontStyle) {
 		this.clickedLinkFontStyle = fontStyle;
-	}*/
+	}
 	
 	public void setErrorTextStyle(String fontStyle) {
 		this.errorFontStyle = fontStyle;
