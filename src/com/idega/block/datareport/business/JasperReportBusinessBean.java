@@ -41,8 +41,11 @@ import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
 import com.idega.block.datareport.data.DesignBox;
 import com.idega.block.datareport.presentation.ReportOverviewWindowPlugin;
+import com.idega.block.datareport.util.ReportDescription;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableField;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.business.InputHandler;
 import com.idega.core.file.data.ICFile;
@@ -167,6 +170,28 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     return getURIToReport(nameOfReport, EXCEL_FILE_EXTENSION,folderIdentifier);
   }  
     
+  public String getSimpleExcelReport(JRDataSource reportData, String nameOfReport, ReportDescription description) {
+    // prepare path
+    long folderIdentifier = System.currentTimeMillis();
+    String path = getRealPathToReportFile("report", EXCEL_FILE_EXTENSION,folderIdentifier);
+
+    try {
+		SimpleReportBusiness srBusiness = (SimpleReportBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(),SimpleReportBusiness.class);
+		srBusiness.writeSimpleExcelFile(reportData,nameOfReport,path, description);
+	}
+	catch (IBOLookupException e) {
+	      logError("[ReportBusiness]: The Simple Report could not be generated.");
+	      log(e);
+	      return null;
+	}
+	catch (IOException e) {
+	      logError("[ReportBusiness]: The Simple Report could not be generated.");
+	      log(e);
+	      return null;
+	}    
+    
+    return getURIToReport("report", EXCEL_FILE_EXTENSION,folderIdentifier);
+  }  
 
   
   private String getRealPathToReportFile(String fileName, String extension, long folderIdentifier) {
@@ -527,62 +552,45 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     
 	public JasperDesign generateLayout(JRDataSource _dataSource) throws IOException, JRException{
 		int columnWidth = 120;
-		int prmLableWidth = 95;
-		int prmValueWidth = 55;
 			
 		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
 		
-		Collection _allFields = null;
-		Map externalParameters = null;
+		ReportDescription description = null;
 		if(_dataSource != null && _dataSource instanceof ReportableCollection){
 			ReportableCollection rcSource = ((ReportableCollection)_dataSource);
-			_allFields = rcSource.getListOfFields();
-			externalParameters = rcSource.getExtraHeaderParameters();
-			
+			description = rcSource.getReportDescription();			
 		}
 		
-
-	
-		if(externalParameters != null ){
-			Iterator keyIter = externalParameters.keySet().iterator();
-			Iterator valueIter = externalParameters.values().iterator();
+		if(description != null ){
+			Iterator keyIter = description.getListOfHeaderParameterLabelKeys().iterator();
+			Iterator valueIter = description.getListOfHeaderParameterKeys().iterator();
 			while (keyIter.hasNext()) {
-				String keyLabel = (String)keyIter.next();
-				String valueLabel = (String)valueIter.next();
-				if(keyIter.hasNext()){
-					String keyValue = (String)keyIter.next();
-					String valueValue = (String)valueIter.next();
-				
-					String tmpPrmLabel = valueLabel;
-					String tmpPrmValue = valueValue;
-					int tmpPrmLabelWidth = (tmpPrmLabel != null)?calculateTextFieldWidthForString(tmpPrmLabel):prmLableWidth;
-					int tmpPrmValueWidth = (tmpPrmValue != null)?calculateTextFieldWidthForString(tmpPrmValue):prmValueWidth;
-					designTemplate.addHeaderParameter(keyLabel,tmpPrmLabelWidth,keyValue,String.class,tmpPrmValueWidth);
-				}
+				String labelKey = (String)keyIter.next();
+				String valueKey = (String)valueIter.next();
+				designTemplate.addHeaderParameter(labelKey,description.getWithOfParameterOrLabel(labelKey),valueKey,String.class,description.getWithOfParameterOrLabel(valueKey));
+			}
+			
+			
+			
+			List allFields = description.getListOfFields();
+			if(allFields != null && allFields.size() > 0){
+				//TMP
+				//TODO get columnspacing (15) and it to columnsWidth;
+				int columnsWidth = columnWidth*allFields.size()+15*(allFields.size()-1);
+				//TMP
+				//TODO get page Margins (20) and add them to pageWidth;
+				designTemplate.setPageWidth(columnsWidth+20+20);
+				designTemplate.setColumnWidth(columnsWidth);
+
+				//
+				Iterator iter = allFields.iterator();
+				while (iter.hasNext()) {
+					ReportableField field = (ReportableField)iter.next();
+					String name = field.getName();
+					designTemplate.addField(name,field.getValueClass(),columnWidth);
+				} 	
 			}
 
-		}
-	
-	
-	
-		if(_allFields != null && _allFields.size() > 0){
-			//System.out.println("ReportGenerator.");
-		
-			//TMP
-			//TODO get columnspacing (15) and it to columnsWidth;
-			int columnsWidth = columnWidth*_allFields.size()+15*(_allFields.size()-1);
-			//TMP
-			//TODO get page Margins (20) and add them to pageWidth;
-			designTemplate.setPageWidth(columnsWidth+20+20);
-			designTemplate.setColumnWidth(columnsWidth);
-		
-			//
-			Iterator iter = _allFields.iterator();
-			while (iter.hasNext()) {
-				ReportableField field = (ReportableField)iter.next();
-				String name = field.getName();
-				designTemplate.addField(name,field.getValueClass(),columnWidth);
-			} 	
 		}
 	
 		designTemplate.close();

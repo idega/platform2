@@ -4,7 +4,7 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.design.JasperDesign;
-
+import com.idega.block.datareport.util.ReportDescription;
 import com.idega.user.business.UserGroupPlugInBusiness;
 
 
@@ -20,4 +20,5 @@ public interface JasperReportBusiness extends com.idega.business.IBOService, Use
  public JasperPrint getReport(JRDataSource p0,java.util.Map p1,JasperDesign p2)throws JRException, java.rmi.RemoteException;
  public JasperPrint printSynchronizedReport(com.idega.block.dataquery.data.QueryResult p0,java.util.Map p1,com.idega.block.datareport.data.DesignBox p2) throws java.rmi.RemoteException;
  public void synchronizeResultAndDesign(com.idega.block.dataquery.data.QueryResult p0,java.util.Map p1,com.idega.block.datareport.data.DesignBox p2) throws java.rmi.RemoteException;
+ public String getSimpleExcelReport(JRDataSource reportData, String nameOfReport, ReportDescription description);
 }
