@@ -138,9 +138,9 @@ public class ClubNavigation extends GolfBlock {
 		table.setBorder(0);
 
 		Text link;
-		Text header = getText(getLocationName(location));
-		header.setFontSize(3);
-		header.setBold();
+		Text header = getLocalizedHeader(getLocationNameKey(location),"");
+//		header.setFontSize(3);
+//		header.setBold();
 
 		add(header);
 
@@ -215,38 +215,38 @@ public class ClubNavigation extends GolfBlock {
 		return returner;
 	}
 
-	public String getLocationName(int location) {
+	public String getLocationNameKey(int location) {
 		String returner = "";
 		switch (location) {
 			case 1 :
-				returner = "Höfu›borgarsvæ›i›";
+				returner = "capital_area";
 				break;
 			case 2 :
-				returner = "Reykjanes";
+				returner = "reykjanes";
 				break;
 			case 3 :
-				returner = "Vesturland";
+				returner = "west";
 				break;
 			case 4 :
-				returner = "Vestfir›ir";
+				returner = "westfords";
 				break;
 			case 5 :
-				returner = "Nor›urland vestra";
+				returner = "north_west";
 				break;
 			case 6 :
-				returner = "Nor›urland eystra";
+				returner = "north_east";
 				break;
 			case 7 :
-				returner = "Austurland";
+				returner = "east";
 				break;
 			case 8 :
-				returner = "Su›urland";
+				returner = "south";
 				break;
 			case 10 :
-				returner = "Allt landi›";
+				returner = "the_whole_country";
 				break;
 			case 12 :
-				returner = "A›rir";
+				returner = "others";
 				break;
 		}
 		return returner;
@@ -255,25 +255,25 @@ public class ClubNavigation extends GolfBlock {
 	public Table getLinkTable() {
 		int font_size = 2;
 
-		Text rvkText = new Text(getLocationName(1));
+		Text rvkText = getLocalizedText(getLocationNameKey(1),"Capital Area");
 		rvkText.setFontSize(font_size);
-		Text reykjanesText = new Text(getLocationName(2));
+		Text reykjanesText = getLocalizedText(getLocationNameKey(2),"Reykjanes");
 		reykjanesText.setFontSize(font_size);
-		Text vesturlandText = new Text(getLocationName(3));
+		Text vesturlandText = getLocalizedText(getLocationNameKey(3),"West");
 		vesturlandText.setFontSize(font_size);
-		Text vestfirdirText = new Text(getLocationName(4));
+		Text vestfirdirText = getLocalizedText(getLocationNameKey(4),"Westfjords");
 		vestfirdirText.setFontSize(font_size);
-		Text nordurvestText = new Text(getLocationName(5));
+		Text nordurvestText = getLocalizedText(getLocationNameKey(5),"North West");
 		nordurvestText.setFontSize(font_size);
-		Text norduraustText = new Text(getLocationName(6));
+		Text norduraustText = getLocalizedText(getLocationNameKey(6),"North East");
 		norduraustText.setFontSize(font_size);
-		Text austurText = new Text(getLocationName(7));
+		Text austurText = getLocalizedText(getLocationNameKey(7),"East");
 		austurText.setFontSize(font_size);
-		Text sudurText = new Text(getLocationName(8));
+		Text sudurText = getLocalizedText(getLocationNameKey(8),"South");
 		sudurText.setFontSize(font_size);
-		Text alltLandText = new Text(getLocationName(10));
+		Text alltLandText = getLocalizedText(getLocationNameKey(10),"The Whole Country");
 		alltLandText.setFontSize(font_size);
-		Text otherText = new Text(getLocationName(12));
+		Text otherText = getLocalizedText(getLocationNameKey(12),"Others");
 		otherText.setFontSize(font_size);
 
 		Link rvk = new Link(rvkText);
