@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -33,7 +34,7 @@ import com.idega.util.IWTimestamp;
  */
 
 
-public class ClubMemberExchangeWindow extends IWAdminWindow {
+public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed from extends IWAdminWindow - birna
 
 	private MemberUserBusiness memBiz;
 	private GroupBusiness groupBiz;
@@ -184,8 +185,8 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 		table.add(close,1,5);
 		table.add(save,1,5);
 		
-		
-		add(form);
+		//changed from add(form) - birna
+		add(form, iwc);
 		
 	}
 
