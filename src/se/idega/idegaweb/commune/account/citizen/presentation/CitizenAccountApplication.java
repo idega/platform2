@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.52 2003/05/22 10:11:04 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.53 2003/05/30 18:27:25 gummi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.block.pki.presentation.NBSLogin;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -50,11 +51,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/05/22 10:11:04 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/30 18:27:25 $ by $Author: gummi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.52 $
+ * @version $Revision: 1.53 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -552,7 +553,12 @@ private Table createTable() {
 
 private void addSimpleInputs(final Table table, final IWContext iwc) {
 	table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, 1);
-	table.add(getSingleInput(iwc, SSN_KEY, 12, true), 3, 1);
+	TextInput ssnInput = getSingleInput(iwc, SSN_KEY, 12, true);
+	String ssn = iwc.getParameter(NBSLogin.PRM_PERSONAL_ID);
+	if(ssn!=null){
+		ssnInput.setValue(ssn);
+	}
+	table.add(ssnInput, 3, 1);
 	table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, 2);
 	table.add(getSingleInput(iwc, EMAIL_KEY, 40, false), 3, 2);
 	table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, 3);

@@ -24,6 +24,10 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserBusinessBean;
+import com.idega.user.business.UserBusinessHome;
+import com.idega.user.data.User;
 import com.idega.util.StringHandler;
 
 /**
@@ -120,7 +124,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	 * @param loginRecords - all login records for one user
 	 * @return LoginTable record to log on the system
 	 */
-	protected LoginTable chooseLoginRecord(IWContext iwc, LoginTable[] loginRecords) throws Exception {
+	protected LoginTable chooseLoginRecord(IWContext iwc, LoginTable[] loginRecords, User user) throws Exception {
 		LoginTable chosenRecord = null;
 		if (loginRecords != null)
 			for (int i = 0; i < loginRecords.length; i++) {
@@ -138,9 +142,8 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 				chosenRecord.setLoginType(NBSLoginBusinessBean.PKI_LOGIN_TYPE);
 				chosenRecord.store();
 				return chosenRecord;
-			} else {
-				
-				Exception e = new LoginCreateException(IWEX_USER_HAS_NO_ACCOUNT);
+			} else {				
+				Exception e = new LoginCreateException(IWEX_USER_HAS_NO_ACCOUNT+"#"+user.getPersonalID()+"#");
 				this.carryOnException(iwc,e);
 				throw e;
 			}
@@ -221,7 +224,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			loginSuccessful = this.logInByPersonalID(iwc, personalID);
 			
 			if(!loginSuccessful){
-				throw new Exception(IWEX_PKI_USR_NOT_REGISTERED);
+				throw new Exception(IWEX_PKI_USR_NOT_REGISTERED+"#"+personalID+"#");
 			}
 
 			System.out.println("idegaWeb Login " + ((loginSuccessful) ? "successful" : "failed") + " for personalId : '" + personalID + "'");

@@ -36,6 +36,8 @@ public class NBSLogin extends Login {
 	
 
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";
+	
+	public final static String PRM_PERSONAL_ID = "nbs_personal_id";
 
 	private String _loginHandlerClass = NBSLoginBusinessBean.class.getName();
 
@@ -150,17 +152,30 @@ public class NBSLogin extends Login {
 					NBSLoginBusinessBean.removeNBSException(iwc);	
 				} else if(ex != null){
 					showLoginApplet = false;
+					String personalID="";
 					
 					boolean showApplicationPageLink = false;
 					String message = ex.getMessage();
 					if(message.startsWith(NBSLoginBusinessBean.IWEX_PKI_USR_NOT_REGISTERED)){
 						// not registered user
 						showApplicationPageLink = true;
+						int start = message.indexOf('#')+1;
+						int end = message.indexOf('#',start);
+						if(start != -1 && end != -1){
+							personalID = message.substring(start,end);
+						}
 						message = iwrb.getLocalizedString(NBSLoginBusinessBean.IWEX_PKI_USR_NOT_REGISTERED,"User not found");
 						
 					} else if(message.startsWith(NBSLoginBusinessBean.IWEX_USER_HAS_NO_ACCOUNT)){
 						//"PKI login record could not be created: user has no account"
 						showApplicationPageLink = true;
+						
+						int start = message.indexOf('#')+1;
+						int end = message.indexOf('#',start);
+						if(start != -1 && end != -1){
+							personalID = message.substring(start,end);
+						}
+						
 						message = iwrb.getLocalizedString(NBSLoginBusinessBean.IWEX_PKI_USR_NOT_REGISTERED,"User has no account");
 					}
 					
@@ -176,6 +191,7 @@ public class NBSLogin extends Login {
 					if(showApplicationPageLink && _applicationPage!= null){
 						Link applicationLink = new Link(iwrb.getLocalizedString("apply_for_account","Apply"));
 						applicationLink.setPage(_applicationPage);
+						applicationLink.setParameter(PRM_PERSONAL_ID,personalID);
 						
 						this.add(applicationLink);
 						this.add(" | ");
