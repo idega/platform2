@@ -186,6 +186,7 @@ public class AccountingBlock extends CommuneBlock {
 		ParsePosition pos = null;
 		java.util.Date d = null;
 		String s = dateString.trim();
+		Date date = null;
 		
 		if ((d == null) && (s.length() == 4)) {
 			pos = new ParsePosition(0);
@@ -212,13 +213,11 @@ public class AccountingBlock extends CommuneBlock {
 			formatter = new SimpleDateFormat ("yyyy-MM-dd");
 			d = formatter.parse(s, pos);
 		}
-				
-		Date date = null;
-		
+
 		if (d != null) {
-			date = new Date(d.getTime());
+			date = validateDate(d, s);		 	
 		}
-		 	
+		
 		return date;
 	}
 	
@@ -257,7 +256,27 @@ public class AccountingBlock extends CommuneBlock {
 		
 		return dateString;
 	}
-
+	
+	/*
+	 * Returns a java.sqlDate object if s has valid date format.
+	 */
+	private Date validateDate(java.util.Date d, String s) {
+		Date date = null;
+		if (d != null) {
+			date = new Date(d.getTime());
+			String validate = null;
+			if ((s.length() == 8) && (s.indexOf('-') != -1)) {
+				SimpleDateFormat formatter = new SimpleDateFormat ("yy-MM-dd");
+				validate = formatter.format(d);		
+			} else {
+				validate = formatDate(date, s.length());
+			}
+			if (!validate.equals(s)) {
+				date = null;
+			}
+		}
+		return date;
+	}
 	
 	/**
 	 * Formats the specified java.sql.Timestamp object into a string.
