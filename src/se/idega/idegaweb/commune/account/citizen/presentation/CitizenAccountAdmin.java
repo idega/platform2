@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.25 2004/04/07 07:35:16 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.26 2004/06/09 07:01:27 malin Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -43,11 +43,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/04/07 07:35:16 $ by $Author: staffan $
+ * Last modified: $Date: 2004/06/09 07:01:27 $ by $Author: malin $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -159,10 +159,25 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			while (it.hasNext()) {
 				col = 1;
 				AdminListOfApplications list = (AdminListOfApplications) it.next();
-				table.add(getSmallText(list.getName()), col++, row);
+				if (list.getName() != null){
+					table.add(getSmallText(list.getName()), col++, row);	
+				}
+				else {
+					col++;
+				}
 				String personalID = PersonalIDFormatter.format(list.getPID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
-				table.add(getSmallText(personalID), col++, row);
-				table.add(getSmallText(list.getAddress()), col++, row);
+				if (personalID != null) {
+					table.add(getSmallText(personalID), col++, row);	
+				}
+				else{
+					col++;
+				}
+				if (list.getAddress().indexOf("null", 0) == -1){
+					table.add(getSmallText(list.getAddress()), col++, row);	
+				}
+				else {
+					col++;
+				}
 	
 				if (row % 2 == 0)
 					table.setRowColor(row, getZebraColor1());
@@ -196,23 +211,47 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			final CitizenAccount applicant = business.getAccount(id);
 
 			table.add(getSmallHeader(localize(NAME_KEY, NAME_DEFAULT)), 1, row);
-			table.add(getSmallText(applicant.getApplicantName()), 3, row++);
+			if (applicant.getApplicantName() != null){
+				table.add(getSmallText(applicant.getApplicantName()), 3, row++);	
+			}
+			else{
+				row++;
+			}
 			
 			table.add(getSmallHeader(localize(CitizenAccountApplication.SSN_KEY, CitizenAccountApplication.SSN_DEFAULT)), 1, row);
 			final String pid = PersonalIDFormatter.format(applicant.getSsn(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
-			table.add(getSmallText(pid), 3, row++);
-			
+			if (pid != null){
+				table.add(getSmallText(pid), 3, row++);
+			}
+			else{
+				row++;
+			}
+				
 			table.add(getSmallHeader(localize(CitizenAccountApplication.EMAIL_KEY, CitizenAccountApplication.EMAIL_DEFAULT)), 1, row);
 			final Link email = getSmallLink(applicant.getEmail());
-			email.setURL("mailto:" + applicant.getEmail());
-			table.add(email, 3, row++);
+			
+			if (applicant.getEmail() != null){
+				email.setURL("mailto:" + applicant.getEmail());
+				table.add(email, 3, row++);
+			}
+			else {
+				row++;
+			}
 			
 			table.add(getSmallHeader(localize(CitizenAccountApplication.PHONE_HOME_KEY, CitizenAccountApplication.PHONE_HOME_DEFAULT)), 1, row);
-			table.add(getSmallText(applicant.getPhoneHome()), 3, row++);
-			
+			if (applicant.getPhoneHome() != null){
+				table.add(getSmallText(applicant.getPhoneHome()), 3, row++);
+			}
+			else {
+				row++;
+			}
 			table.add(getSmallHeader(localize(CitizenAccountApplication.PHONE_WORK_KEY, CitizenAccountApplication.PHONE_WORK_DEFAULT)), 1, row);
-			table.add(getSmallText(applicant.getPhoneWork()), 3, row++);
-			
+			if (applicant.getPhoneWork() != null){
+				table.add(getSmallText(applicant.getPhoneWork()), 3, row++);
+			}
+			else {
+				row++;
+			}
 			final String careOf = applicant.getCareOf ();
 			final String address = (careOf != null ? "c/o " + careOf + ' ' : "") + applicant.getStreet() + "; " + applicant.getZipCode() + " " + applicant.getCity();
 			if (applicant.getStreet() != null && applicant.getZipCode() != null && applicant.getCity() != null) {
