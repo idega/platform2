@@ -687,10 +687,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
-
+	
 	public int getNumberOfUnhandledApplicationsByProvider(int providerID) {
 		try {
-			return getChildCareApplicationHome().getNumberOfApplications(providerID, getCaseStatusOpen().getPrimaryKey().toString());
+			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusPending().getStatus() };
+			return getChildCareApplicationHome().getNumberOfApplicationsByStatus(providerID, caseStatus);
 		}
 		catch (IDOException ie) {
 			return 0;
