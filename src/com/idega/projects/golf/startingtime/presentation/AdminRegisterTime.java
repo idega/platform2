@@ -51,6 +51,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
   private Table frameTable;
   private idegaTimestamp currentDay;
   private String currentField;
+  private String currentUnion;
   private StartingtimeFieldConfig fieldInfo;
 
   private static String saveParameterString = "STsave";
@@ -187,26 +188,33 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     int lastGroup = -1;
     boolean insert = true;
     int[] freeGroups = new int[groupCount];
+    System.err.println("freeGroups: "+freeGroups.length);
     List takenTimes = business.getStartingtimeTableEntries(this.currentDay,this.currentField);
     if(takenTimes != null){
       for (int i = 0; i < takenTimes.size(); i++) {
         Startingtime tempStart = (Startingtime)takenTimes.get(i);
         int tempGroupNum = tempStart.getGroupNum();
-        if(lastGroup == tempGroupNum){
-          groupCounter++;
-          if(groupCounter == countInGroups){
-            freeGroups[tempGroupNum-1] = 1;
-          }
-          if(groupCounter > countInGroups){
-            System.err.println("yfirfullt holl : "+tempGroupNum);
-            illegalTimes.insertElementAt(tempStart,illegalTimesIndex++);
-            //continue;
-            insert = false;
-          }
-        }else{
-          groupCounter = 1;
-        }
 
+        if(tempGroupNum < 1){
+          illegalTimes.insertElementAt(tempStart,illegalTimesIndex++);
+          insert = false;
+        }else{
+          if(lastGroup == tempGroupNum){
+            groupCounter++;
+            if(groupCounter == countInGroups){
+  //            System.err.println("tempGroupNum: "+tempGroupNum);
+              freeGroups[tempGroupNum-1] = 1;
+            }
+            if(groupCounter > countInGroups){
+  //            System.err.println("yfirfullt holl : "+tempGroupNum);
+              illegalTimes.insertElementAt(tempStart,illegalTimesIndex++);
+              //continue;
+              insert = false;
+            }
+          }else{
+            groupCounter = 1;
+          }
+        }
         if(insert){
           int line = (tempGroupNum-1)*countInGroups + groupCounter+1; //(-1+1) -groupCounter++ +headerLine
 //          openTime.addMinutes((tempGroupNum-1)*minBetween);
@@ -243,6 +251,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
       openTime.addMinutes(minBetween);
     }
     openTime.addMinutes(-groupCount*minBetween);
+    timeMenu.addMenuElement("-","-");
 
 
 
@@ -255,7 +264,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     handycapInput.setSize(3);
 
     DropdownMenu unionMenu = GolfCacher.getUnionAbbreviationDropdown(unionParameterString);
-    unionMenu.setSelectedElement("81");  // temp
+    unionMenu.setSelectedElement(currentUnion);
     boolean firstColor = true;
     int count = 0;
     int min = 0;
@@ -275,11 +284,11 @@ public class AdminRegisterTime extends ModuleObjectContainer {
         DropdownMenu tempTimeMenu = (DropdownMenu)timeMenu.clone();
         min = ((i-2)/countInGroups)*minBetween;
         openTime.addMinutes(min);
-        tempTimeMenu.addMenuElement(Integer.toString((i-2)/countInGroups),TextSoap.addZero(openTime.getHour()) + ":" + TextSoap.addZero(openTime.getMinute()));
+        tempTimeMenu.addMenuElement(Integer.toString((i-2)/countInGroups+1),TextSoap.addZero(openTime.getHour()) + ":" + TextSoap.addZero(openTime.getMinute()));
         openTime.addMinutes(-min);
-        tempTimeMenu.setSelectedElement(Integer.toString((i-2)/countInGroups));
+        tempTimeMenu.setSelectedElement(Integer.toString((i-2)/countInGroups+1));
         startTable.add(tempTimeMenu,1,i);
-        startTable.add(new HiddenInput(lastGroupParameterString,Integer.toString((i-2)/countInGroups)),1,i);
+        startTable.add(new HiddenInput(lastGroupParameterString,Integer.toString((i-2)/countInGroups)+1),1,i);
       }
       if(i>1){
         if(count >= countInGroups){
@@ -366,7 +375,17 @@ public class AdminRegisterTime extends ModuleObjectContainer {
       }
 
     }
-
+    Text dateText = new Text(this.currentDay.getISLDate());
+    dateText.setBold();
+    dateText.setFontSize(3);
+    dateText.setFontColor("#000000");
+    Table dateTable = new Table();
+    dateTable.add(dateText);
+    dateTable.setAlignment("center");
+    dateTable.setAlignment(1,1,"left");
+    dateTable.setHeight(1,"25");
+    dateTable.setWidth(width);
+    frameTable.add(dateTable);
 
     frameTable.add(headerTable);
 
@@ -432,8 +451,9 @@ public class AdminRegisterTime extends ModuleObjectContainer {
 
     if(sentTimes != null){
       for (int i = 0; i < sentTimes.length; i++) {
-        if(!sentTimes[i].equals(sentLastGroups[i])){
+        if(!sentTimes[i].equals(sentLastGroups[i]) || sentTimes[i].equals("-") ){
           try{
+            System.err.println("");
             Startingtime tempSt = new Startingtime(Integer.parseInt(sentStartIDs[i]));
             tempSt.setGroupNum(Integer.parseInt(sentTimes[i]));
             tempSt.update();
@@ -526,6 +546,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
   public void main(ModuleInfo modinfo) throws Exception {
     String date = modinfo.getParameter("date");
     currentField = modinfo.getParameter("field_id");
+    currentUnion = modinfo.getParameter("union");
 
     if(date == null){
       Object tempObj = modinfo.getSessionAttribute("date");
@@ -546,6 +567,18 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     }else{
       myForm.maintainParameter("field_id");
     }
+
+    if(currentUnion == null){
+      Object tempObj = modinfo.getSessionAttribute("union_id");
+      if(tempObj != null){
+        currentUnion = tempObj.toString();
+        myForm.add(new HiddenInput("union_id",currentUnion));
+      }
+    }else{
+      myForm.maintainParameter("union_id");
+    }
+
+
 
     boolean keepOn = true;
 
@@ -576,7 +609,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
         String hasPermission = modinfo.getParameter("golf");
         if( hasPermission != null || AccessControl.isAdmin(modinfo) || (AccessControl.isClubAdmin(modinfo) && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (AccessControl.isClubWorker(modinfo) && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) ){
           if(hasPermission == null){
-            myForm.add(new HiddenInput("golf","79"));
+            myForm.add(new HiddenInput("golf","79")); // some dummy value
           }else{
             myForm.maintainParameter("golf");
           }
