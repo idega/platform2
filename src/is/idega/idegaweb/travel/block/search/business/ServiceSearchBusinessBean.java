@@ -62,8 +62,6 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	private String PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS = "post_wmi";
 	private String PARAMETER_POSTAL_CODE_SPACER = "post_space";
 	
-	private ProductComparator productComparator;
-	
 	public ServiceSearchBusinessBean() {
 		super();
 	}
@@ -227,10 +225,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 
 	public Collection sortProducts(Collection productIdsToSort, PriceCategory priceCat) {
 		try {
-			if (productComparator == null) {
-				productComparator = new ProductComparator(ProductComparator.PRICE);
+			//if (productComparator == null) {
+			ProductComparator	productComparator = new ProductComparator(ProductComparator.PRICE);
 				productComparator.setPriceCategoryValues(priceCat, -1, IWTimestamp.getTimestampRightNow());
-			}
+			//}
 			/** Gera betra */
 			Collection tmp = getInstanceCollectionFromPKS(productIdsToSort);
 			Collections.sort( (Vector) tmp, productComparator);
