@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.6 2001/07/10 17:03:29 palli Exp $
+ * $Id: ApplicationFinder.java,v 1.7 2001/07/11 10:33:49 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,7 +36,18 @@ public class ApplicationFinder {
     catch(SQLException e){
       return(null);
     }
+  }
+  public static List listOfApplicationInSubject(int subjectId,String status){
+    try {
+      Application A = new Application();
+      String sql = "select * from "+A.getEntityName()+" where "+A.getSubjectIdColumnName()+" = "+subjectId +" and "+A.getStatusColumnName()+"='"+status+"'";
+      System.err.println(sql);
+      return(EntityFinder.findAll(A,sql));
 
+    }
+    catch(SQLException e){
+      return(null);
+    }
   }
   public static List listOfNewApplications(){
     try {
@@ -48,8 +59,8 @@ public class ApplicationFinder {
     catch(SQLException e){
       return(null);
     }
-
   }
+
 
   public static List listOfNewApplicants(){
     try {
@@ -119,6 +130,12 @@ public class ApplicationFinder {
   public static List listOfNewApplicationHoldersInSubject(int id){
     List A = listOfNewApplicants();
     List L = listOfNewApplicationInSubject(id);
+    return listOfApplicationHolders(L,A);
+  }
+
+  public static List listOfNewApplicationHoldersInSubject(int id,String status){
+    List A = listOfNewApplicants();
+    List L = listOfApplicationInSubject(id,status);
     return listOfApplicationHolders(L,A);
   }
 
