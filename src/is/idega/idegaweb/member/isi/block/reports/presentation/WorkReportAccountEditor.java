@@ -555,8 +555,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     browser.setCellpadding(2);
     browser.setCellspacing(0);
     browser.setBorder(0);
-    browser.setColorForEvenRows(IWColor.getHexColorString(246, 246, 247));
+    browser.setColorForEvenRows("#EFEFEF");
     browser.setColorForOddRows("#FFFFFF");
+    browser.setColorForHeader("#DFDFDF");
     return browser;
   }
   

@@ -103,8 +103,6 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   
   private boolean editable = true;
   
-  private Set referencedLeagues = new HashSet();
-    
   public WorkReportDivisionBoardEditor() {
     super();
     setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
@@ -157,26 +155,26 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
       action = ACTION_SHOW_NEW_ENTRY;
     }  
-    // does the user want to save a new entry?
-    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
-      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-      WorkReportDivisionBoard board = createWorkReportDivisionBoard();
-      Iterator iterator = FIELD_LIST.iterator();
-      while (iterator.hasNext())  {
-        String field = (String) iterator.next();
-        EntityPathValueContainer entityPathValueContainerFromTextEditor = 
-          TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
-        EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
-          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
-        if (entityPathValueContainerFromTextEditor.isValid()) {
-          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromTextEditor, board, workReportBusiness);
-        }
-        if (entityPathValueContainerFromDropDownMenu.isValid()) {
-          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, board, workReportBusiness);
-        }
-      }
-      board.store();
-    }  
+//    // does the user want to save a new entry?
+//    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
+//      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+//      WorkReportDivisionBoard board = createWorkReportDivisionBoard();
+//      Iterator iterator = FIELD_LIST.iterator();
+//      while (iterator.hasNext())  {
+//        String field = (String) iterator.next();
+//        EntityPathValueContainer entityPathValueContainerFromTextEditor = 
+//          TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+//        EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
+//          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+//        if (entityPathValueContainerFromTextEditor.isValid()) {
+//          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromTextEditor, board, workReportBusiness);
+//        }
+//        if (entityPathValueContainerFromDropDownMenu.isValid()) {
+//          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, board, workReportBusiness);
+//        }
+//      }
+//      board.store();
+//    }  
     // does the user want to modify an existing entity?
     if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
@@ -247,14 +245,18 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
     } 
     Collection coll;
+    Collection leagues;
+    Set referencedLeagues = new HashSet();
     try {
-      coll =
-        workReportBusiness.getAllWorkReportDivisionBoardForWorkReportId(
-          getWorkReportId());
-    } catch (RemoteException e) {
+      int workReportId = getWorkReportId();
+      coll = workReportBusiness.getAllWorkReportDivisionBoardForWorkReportId(workReportId);
+      leagues = workReportBusiness.getLeaguesOfWorkReportById(workReportId);
+    } 
+    catch (Exception e) {
       System.err.println("[WorkReportDivisionBoardEditor] Can't get members. Message was: "+ e.getMessage());
       e.printStackTrace(System.err);
       coll = new ArrayList();
+      leagues = new ArrayList();
     }
     // create new entities
     List list = new ArrayList();
@@ -273,10 +275,22 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         throw new RuntimeException("[WorkReportDivsionBoardEditor]: Can't retrieve league.");
       }
       String leagueName = (league == null) ? "" : league.getName();
-      referencedLeagues.add(leagueName);
+      referencedLeagues.add(league.getPrimaryKey());
       WorkReportDivisionBoardHelper helper = new WorkReportDivisionBoardHelper(leagueName, board);
       list.add(helper);
     }
+    // create missing entities
+    Iterator leagueIterator = leagues.iterator();
+    while (leagueIterator.hasNext())  {
+      WorkReportGroup workReportGroup = (WorkReportGroup) leagueIterator.next();
+      Integer pk = (Integer) workReportGroup.getPrimaryKey();
+      if (! referencedLeagues.contains(pk)) {
+        WorkReportDivisionBoard board = createWorkReportDivisionBoard(pk.intValue());
+        String leagueName = workReportGroup.getName();
+        WorkReportDivisionBoardHelper helper = new WorkReportDivisionBoardHelper(leagueName, board);
+        list.add(helper);
+      }
+    }         
     // add a value holder for a new entry if desired
     if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
       EntityValueHolder valueHolder = new EntityValueHolder(); 
@@ -381,18 +395,18 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
-    DropDownMenuConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
+    EntityToPresentationObjectConverter textConverter = new WorkReportTextConverter();
     DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     // define if the converters should be editable or not
     checkBoxConverter.setEditable(editable);
     textEditorConverter.setEditable(editable);
-    leagueDropDownMenuConverter.setEditable(editable);
     dropDownPostalCodeConverter.setEditable(editable);
+    // WorkReportTextConverter is not an editor 
     // define path short keys and map corresponding converters
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
-      LEAGUE, leagueDropDownMenuConverter,
+      LEAGUE, textConverter,
       HOME_PAGE, textEditorConverter,
       PERSONAL_ID, textEditorConverter,
       STREET_NAME, textEditorConverter,
@@ -414,68 +428,74 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       browser.setEntityToPresentationConverter(column, converter);
     }
     browser.setEntities("dummy_string", entities);
+    browser.setCellpadding(2);
+    browser.setCellspacing(0);
+    browser.setBorder(0);
+    browser.setColorForEvenRows("#EFEFEF");
+    browser.setColorForOddRows("#FFFFFF");
+    browser.setColorForHeader("#DFDFDF");
     return browser;
   }
   
   
-  /**
-   * Converter for league column 
-   */
-  private DropDownMenuConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
-    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
-      protected Object getValue(
-        Object entity,
-        EntityPath path,
-        EntityBrowser browser,
-        IWContext iwc)  {
-          return ((EntityRepresentation) entity).getColumnValue(LEAGUE);
-        }
-      };        
-
-        
-    OptionProvider optionProvider = new OptionProvider() {
-      
-    Map optionMap = null;
-      
-    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-      if (optionMap == null)  {
-        optionMap = new TreeMap();
-        WorkReportBusiness business = getWorkReportBusiness(iwc);
-        Collection coll = null;
-        try {
-          coll = business.getLeaguesOfWorkReportById(getWorkReportId());
-        }
-        catch (Exception ex) {
-          System.err.println(
-            "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportBusiness. Message is: "
-              + ex.getMessage());
-          ex.printStackTrace(System.err);
-          throw new RuntimeException("[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportBusiness.");
-        }
-        SortedSet names = new TreeSet();
-        Iterator collIterator = coll.iterator();
-        while (collIterator.hasNext())  {
-          WorkReportGroup league = (WorkReportGroup) collIterator.next();
-          String name = league.getName(); 
-          // do not offer to create a board with the same league twice
-          if (! referencedLeagues.contains(name)) {
-            names.add(name);
-          }
-        }        
-        Iterator nameIterator = names.iterator();
-        while (nameIterator.hasNext())  {
-          String name = (String) nameIterator.next();
-          String display = resourceBundle.getLocalizedString(name, name);
-          optionMap.put(name, display);
-          }
-        }
-        return optionMap;
-      }
-    };     
-    converter.setOptionProvider(optionProvider); 
-    converter.maintainParameters(getParametersToMaintain());
-    return converter;
-  }  
+//  /**
+//   * Converter for league column 
+//   */
+//  private DropDownMenuConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
+//    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
+//      protected Object getValue(
+//        Object entity,
+//        EntityPath path,
+//        EntityBrowser browser,
+//        IWContext iwc)  {
+//          return ((EntityRepresentation) entity).getColumnValue(LEAGUE);
+//        }
+//      };        
+//
+//        
+//    OptionProvider optionProvider = new OptionProvider() {
+//      
+//    Map optionMap = null;
+//      
+//    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+//      if (optionMap == null)  {
+//        optionMap = new TreeMap();
+//        WorkReportBusiness business = getWorkReportBusiness(iwc);
+//        Collection coll = null;
+//        try {
+//          coll = business.getLeaguesOfWorkReportById(getWorkReportId());
+//        }
+//        catch (Exception ex) {
+//          System.err.println(
+//            "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportBusiness. Message is: "
+//              + ex.getMessage());
+//          ex.printStackTrace(System.err);
+//          throw new RuntimeException("[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportBusiness.");
+//        }
+//        SortedSet names = new TreeSet();
+//        Iterator collIterator = coll.iterator();
+//        while (collIterator.hasNext())  {
+//          WorkReportGroup league = (WorkReportGroup) collIterator.next();
+//          String name = league.getName(); 
+//          // do not offer to create a board with the same league twice
+//          if (! referencedLeagues.contains(name)) {
+//            names.add(name);
+//          }
+//        }        
+//        Iterator nameIterator = names.iterator();
+//        while (nameIterator.hasNext())  {
+//          String name = (String) nameIterator.next();
+//          String display = resourceBundle.getLocalizedString(name, name);
+//          optionMap.put(name, display);
+//          }
+//        }
+//        return optionMap;
+//      }
+//    };     
+//    converter.setOptionProvider(optionProvider); 
+//    converter.maintainParameters(getParametersToMaintain());
+//    return converter;
+//  }  
   
   /**
    * converter for postal code column
@@ -538,7 +558,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   }
   
   // business method: create
-  private WorkReportDivisionBoard createWorkReportDivisionBoard()  {
+  private WorkReportDivisionBoard createWorkReportDivisionBoard(int workReportGroupId)  {
     WorkReportDivisionBoard workReportDivisionBoard = null;
     try {
       workReportDivisionBoard =
@@ -551,6 +571,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       e.printStackTrace(System.err);
     }
     workReportDivisionBoard.setReportId(getWorkReportId());
+    workReportDivisionBoard.setLeague(workReportGroupId);
     workReportDivisionBoard.store();
     return workReportDivisionBoard;
   }
@@ -635,6 +656,26 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     }
   }
 
+  class WorkReportTextConverter implements  EntityToPresentationObjectConverter  {    
+    
+    public PresentationObject getHeaderPresentationObject (
+        EntityPath entityPath,
+        EntityBrowser browser,
+        IWContext iwc) {
+      return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);   
+    }
+    
+    public PresentationObject getPresentationObject(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc) {
+      String name = path.getShortKey();
+      String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
+      return new Text(value);
+    }
+    
+  }
 
   /** 
    * WorkReportDivisionBoardHelper:
