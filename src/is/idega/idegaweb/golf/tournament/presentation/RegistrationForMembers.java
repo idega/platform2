@@ -27,7 +27,6 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
@@ -252,32 +251,47 @@ public class RegistrationForMembers extends GolfBlock {
       add(table);
   }
   
-  public void notOnlineRegistrationWML(IWContext modinfo) {
-    Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
+  public void notOnlineRegistrationWML(IWContext modinfo) throws SQLException {
+    Member member = GolfLoginBusiness.getMember(modinfo);
+    Tournament tournament = getTournament(modinfo);
 
-    Table table = new Table();
+    Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + member.getName());
+	Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
+	Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
+	Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
+	Text trounamentStartDate = new Text(localize("tournament.Startdate", "Start date")+ ": " + new IWTimestamp(tournament.getStartTime()).getLocaleDate(modinfo.getCurrentLocale(),IWTimestamp.SHORT));
+	Text confirmation = new Text(localize("tournament.registered_in","You have been registered in tournament"));
+    
+	Paragraph p = new Paragraph();
+	
+	p.add(golfer);
+	p.add(new Break());
+	p.add(tournamentName);
+	p.add(new Break());
+	p.add(tournamentClub);
+	p.add(new Break());
+	p.add(tournamentField);
+	p.add(new Break());
+	p.add(trounamentStartDate);
+	add(p);
 
-    Paragraph p = new Paragraph();
-    p.add(new Text(localize("tournament.register","Register")+" \""+member.getName()+"\" "+localize("tournament.to_the_tournament_named","to the tournament named")+" \""+getTournament(modinfo).getName() +"\"?"));
-    add(p);
+    Paragraph p1 = new Paragraph();
+    Strong s1 = new Strong();
+    s1.add(new Text(localize("tournament.register","Register")+" \""+member.getName()+"\" "+localize("tournament.to_the_tournament_named","to the tournament named")+" \""+getTournament(modinfo).getName() +"\"?"));
+    p1.add(s1);
+    add(p1);
     
     
-    Link yes = new Link(localize("tournament.yes","Yes"));
+    Link yes = new Link(localize("tournament.Forward","Forward >"));
     yes.maintainParameter(PRM_ACTION,modinfo);
     yes.addParameter("subAction","yes");
     
-    Link no = new Link(localize("tournament.cancel","Cancel"));
-    no.maintainParameter(PRM_ACTION,modinfo);
-    no.addParameter("subAction","no");
+
 
     Paragraph p2 = new Paragraph();
     Strong s = new Strong();
     s.add(yes);
     p2.add(s);
-    p2.add(new Text(" | "));
-    Strong s2 = new Strong();
-    s2.add(no);
-    p2.add(s2);
 
     add(p2);
 }
@@ -290,19 +304,34 @@ public class RegistrationForMembers extends GolfBlock {
       TournamentGroup[] tGroups = tournament.getTournamentGroups();
       List groups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
       
-      PresentationObjectContainer info = new PresentationObjectContainer();
-      String tournamentInfo = localize("start.tournament_info", "Tournament: ") + tournament.getName();
-      info.add(tournamentInfo);
-      info.addBreak();
-      TournamentRound tRound = tournament.getTournamentRounds()[0];
-      String teetimeInfo = localize("start.teetime_info", "Teetime: ") + getRoundTimeFromGrupNum(Integer.parseInt(modinfo.getParameter(PRM_TEETIME_GROUP_NUMBER)), tournament, tRound);
-      info.add(teetimeInfo);
-      info.addBreak();
-      add(info);
+
       
       if (tGroups.length != 0) {
           if (groups.size() != 0)  {
           	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+          		
+          		Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(modinfo).getName());
+          		Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
+          		Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
+          		Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
+          		Text trounamentStartDate = new Text(localize("tournament.Startdate", "Start date")+ ": " + new IWTimestamp(tournament.getStartTime()).getLocaleDate(modinfo.getCurrentLocale(),IWTimestamp.SHORT));
+          		
+          		
+          		Paragraph p = new Paragraph();
+          		
+          		p.add(golfer);
+          		p.add(new Break());
+          		p.add(tournamentName);
+          		p.add(new Break());
+          		p.add(tournamentClub);
+          		p.add(new Break());
+          		p.add(tournamentField);
+          		p.add(new Break());
+          		p.add(trounamentStartDate);
+
+          		
+          		
+          		
           		Form form = new Form();
           		    form.maintainParameter("subAction");
           		    String gr = modinfo.getParameter(PRM_TEETIME_GROUP_NUMBER);
@@ -317,9 +346,28 @@ public class RegistrationForMembers extends GolfBlock {
 	                		if(index!=-1){
 	                			form.addParameter("starting_time",gr.substring(0,index-1));
 		                		form.addParameter("starting_tee",10);
+		                		
+		                		TournamentRound tRound = tournament.getTournamentRounds()[0];
+	                  		Text tournamentTeetime = new Text(localize("tournament.Teetime", "Teetime")+ ": " + getRoundTimeFromGrupNum(Integer.parseInt(gr.substring(0,index-1)), tournament, tRound));
+	                  		Text tournamentTee = new Text(localize("tournament.Tee", "Tee")+ ": " +"10");
+	                  		
+	                  		p.add(new Break());
+	                  		p.add(tournamentTeetime);
+	                  		p.add(new Break());
+	                  		p.add(tournamentTee);
+		                		
 	                		}else{
 	                			form.addParameter("starting_time",gr);
 		                		form.addParameter("starting_tee",1);	
+		                		
+		                		TournamentRound tRound = tournament.getTournamentRounds()[0];
+	                  		Text tournamentTeetime = new Text(localize("tournament.Teetime", "Teetime")+ ": " + getRoundTimeFromGrupNum(Integer.parseInt(gr), tournament, tRound));
+	                  		Text tournamentTee = new Text(localize("tournament.Tee", "Tee")+ ": " +"1");
+	                  		
+	                  		p.add(new Break());
+	                  		p.add(tournamentTeetime);
+	                  		p.add(new Break());
+	                  		p.add(tournamentTee);
 	                		}
 	                		
 	                		form.maintainParameter("tournament_round");
@@ -334,9 +382,10 @@ public class RegistrationForMembers extends GolfBlock {
 	            form.add(l);
 	            form.add(groupsMenu);
 	
-	            SubmitButton afram = getTournamentBusiness(modinfo).getAheadButton(modinfo,"","");
+	            SubmitButton afram = new SubmitButton(localize("trounament.register","Register"));
 	            form.add(afram);
-	
+	            
+	            add(p);
 	            add(form);
           	} else {
           	    Form form = new Form();
@@ -399,9 +448,50 @@ public class RegistrationForMembers extends GolfBlock {
       getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_group_id);
       
       if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
-  		Paragraph p = new Paragraph();
-  		p.add(getLocalizedText("tounament.registered_to_the_tournament","Registered to the tournament"));
-        add(p);
+        
+        Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(modinfo).getName());
+	    	Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
+	    	Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
+	    	Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
+	    	Text trounamentStartDate = new Text(localize("tournament.Startdate", "Start date")+ ": " + new IWTimestamp(tournament.getStartTime()).getLocaleDate(modinfo.getCurrentLocale(),IWTimestamp.SHORT));
+	    	Text confirmation = new Text(localize("tournament.registered_in","You have been registered in tournament"));
+	    	
+	    	
+	    	Paragraph p = new Paragraph();
+	    	
+	    	p.add(golfer);
+	    	p.add(new Break());
+	    	p.add(tournamentName);
+	    	p.add(new Break());
+	    	p.add(tournamentClub);
+	    	p.add(new Break());
+	    	p.add(tournamentField);
+	    	p.add(new Break());
+	    	p.add(trounamentStartDate);
+	        
+	    	String tgroup = modinfo.getParameter("tournament_group");
+	    	if(tgroup!=null){
+	    		try {
+	    			TournamentGroup tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tgroup));
+	    			Text trounamentGroup = new Text(localize("tournament.Tournament_group", "Tournament group")+ ": " + tGroup.getName());
+	    			p.add(new Break());
+	    			p.add(trounamentGroup);
+	    		} catch (NumberFormatException e) {
+	    			e.printStackTrace();
+	    		} catch (FinderException e) {
+	    			e.printStackTrace();
+	    		}
+	    	}
+	    	
+	    	Strong s = new Strong();
+	    	s.add(confirmation);
+	    	p.add(new Break());
+	    	p.add(new Break());
+	    	p.add(s);
+	    	
+	    	
+	    	add(p);
+
   	  } else {
         add(getLocalizedText("tounament.registered_to_the_tournament","Registered to the tournament"));
         add(Text.getBreak());
@@ -470,16 +560,33 @@ public class RegistrationForMembers extends GolfBlock {
 //        TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
 //        form.setSubmitButtonParameter("action", "open");
     	
+    		Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(modinfo).getName());
+    		Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
+    		Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
+    		Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
+    		Text trounamentStartDate = new Text(localize("tournament.Startdate", "Start date")+ ": " + new IWTimestamp(tournament.getStartTime()).getLocaleDate(modinfo.getCurrentLocale(),IWTimestamp.SHORT));
+    		
+    		Paragraph p = new Paragraph();
+    		
+    		p.add(golfer);
+    		p.add(new Break());
+    		p.add(tournamentName);
+    		p.add(new Break());
+    		p.add(tournamentClub);
+    		p.add(new Break());
+    		p.add(tournamentField);
+    		p.add(new Break());
+    		p.add(trounamentStartDate);
+    		
+    		add(p);
+    		
         Form form = new Form();
-        String info = localize("start.tournament_info", "Tournament: ") + tournament.getName();
-        add(info);
-        addBreak();
         form.addParameter("action", "open");
         form.addParameter("tournament_round",tRounds[0].getPrimaryKey().toString());
         
         DropdownMenu teetimes = getAvailableGrupNumsDropdownMenu(modinfo,PRM_TEETIME_GROUP_NUMBER,tournament,tRounds[0]);
-        Label l = new Label(localize("start.choose_teetime","Choose teetime"),teetimes);
-        SubmitButton button = new SubmitButton(localize("tournament.register","Register"));
+        Label l = new Label(localize("tournament.choose_teetime","Choose teetime"),teetimes);
+        SubmitButton button = new SubmitButton(localize("tournament.Forward","Forward >"));
         
         form.add(l);
         form.add(teetimes);
@@ -1023,7 +1130,7 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
     Member member;
     TournamentGroup tGroup;
     Tournament tournament = getTournament(modinfo);
-
+    
     javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
     if (member_ids != null) {
         for (int i = 0; i < member_ids.length; i++) {
@@ -1110,26 +1217,67 @@ public DropdownMenu getAvailableGrupNumsDropdownMenu(IWContext iwc, String dropd
 	return menu;
 }
 
-public void directRegistrationConfirmMessageWML(IWContext iwc){
-    Paragraph p = new Paragraph();
+public void directRegistrationConfirmMessageWML(IWContext iwc) throws SQLException{
     
     Tournament tournament = getTournament(iwc);
-    String tournamentName = tournament.getName();
-    String tournamentText = localize("start.registered_in","You have been registered in tournament");
-    add(tournamentText + ": ");
-    add(tournamentName);
-    addBreak();
     
-    try {
-    	TournamentRound tRound = tournament.getTournamentRounds()[0];
-    	String teetime = getRoundTimeFromGrupNum(Integer.parseInt(iwc.getParameter(PRM_TEETIME_GROUP_NUMBER)), tournament, tRound);
-    	String teetimeText = localize("start.your_teetime_is", "Your teetime is");
-    	add(teetimeText + ": ");
-    	add(teetime);
-    	addBreak();
-    } catch(Exception e) {
-    		e.printStackTrace();
-    }
+    Text golfer = new Text(localize("tournament.golfer", "Golfer")+ ": " + GolfLoginBusiness.getMember(iwc).getName());
+	Text tournamentName = new Text(localize("tournament.Tournament", "Tournament")+ ": " + tournament.getName());
+	Text tournamentClub = new Text(localize("tournament.Club", "Club")+ ": " + tournament.getUnion().getAbbrevation());
+	Text tournamentField = new Text(localize("tournament.Field", "Field")+ ": " + tournament.getField().getName());
+	Text trounamentStartDate = new Text(localize("tournament.Startdate", "Start date")+ ": " + new IWTimestamp(tournament.getStartTime()).getLocaleDate(iwc.getCurrentLocale(),IWTimestamp.SHORT));
+	Text confirmation = new Text(localize("tournament.registered_in","You have been registered in tournament"));
+	
+	
+	Paragraph p = new Paragraph();
+	
+	p.add(golfer);
+	p.add(new Break());
+	p.add(tournamentName);
+	p.add(new Break());
+	p.add(tournamentClub);
+	p.add(new Break());
+	p.add(tournamentField);
+	p.add(new Break());
+	p.add(trounamentStartDate);
+    
+	String tgroup = iwc.getParameter("tournament_group");
+	if(tgroup!=null){
+		try {
+			TournamentGroup tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tgroup));
+			Text trounamentGroup = new Text(localize("tournament.Tournament_group", "Tournament group")+ ": " + tGroup.getName());
+			p.add(new Break());
+			p.add(trounamentGroup);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	String teetime = iwc.getParameter("starting_time");
+	if(teetime!=null){
+		TournamentRound tRound = tournament.getTournamentRounds()[0];
+  		Text tournamentTeetime = new Text(localize("tournament.Teetime", "Teetime")+ ": " + getRoundTimeFromGrupNum(Integer.parseInt(teetime), tournament, tRound));
+  		Text tournamentTee = new Text(localize("tournament.Tee", "Tee")+ ": " +iwc.getParameter("starting_tee"));
+  		
+  		p.add(new Break());
+  		p.add(tournamentTeetime);
+  		p.add(new Break());
+  		p.add(tournamentTee);
+  		
+	}
+	Strong s = new Strong();
+	s.add(confirmation);
+	p.add(new Break());
+	p.add(new Break());
+	p.add(s);
+	
+	
+	add(p);
+    
+
 }
 
 }
