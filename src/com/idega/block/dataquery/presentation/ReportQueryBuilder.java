@@ -43,7 +43,6 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.texteditor.TextEditor;
 import com.idega.presentation.ui.AbstractTreeViewer;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
@@ -52,6 +51,7 @@ import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
 import com.idega.user.business.GroupBusiness;
@@ -773,64 +773,7 @@ public class ReportQueryBuilder extends Block {
 			select.setHeight("20");
 			select.setWidth("300");
 
-/// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			Collection queries = ReportQueryOverview.getQueries(iwc);
-//	  	User currentUser = iwc.getCurrentUser();
-//	  	GroupBusiness groupBusiness = getGroupBusiness();
-//	  	UserBusiness userBusiness = getUserBusiness();
-//	  	//TODO: thi solve problems with group types
-//	  	String[] groupTypes = 
-//				{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
-//			Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
-//			if (topGroup == null) {
-//				List groupType = new ArrayList();
-//				groupType.add("general");
-//				topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
-//			}
-//	  	Collection parentGroups = new ArrayList();
-//	  	parentGroups.add(topGroup);
-//	  	try {
-//	  		// brilliant implementation in GroupBusiness!!!!!!
-//	  		// null is returned instead of an empty collection!!!! This is really brilliant.
-//	  		//TODO: implement a better version of that method
-//	  	Collection coll  = groupBusiness.getParentGroupsRecursive(topGroup);
-//	  	if (coll != null) {
-//	  		parentGroups.addAll(coll);
-//	  	}
-//	  	//TODO thi: handle exception in the right way
-//	  	}
-//	  	catch (Exception ex) {
-//	  		parentGroups = new ArrayList();
-//	  	}
-//	  	//List queryRepresentations = new ArrayList();
-//	  	Iterator parentGroupsIterator = parentGroups.iterator();
-//			while (parentGroupsIterator.hasNext()) {
-//	  		Group group = (Group) parentGroupsIterator.next();
-//	  		String groupName = group.getName();
-//	  		String groupId = group.getPrimaryKey().toString();
-//	  		StringBuffer buffer = new StringBuffer(groupId).append("_").append("public");
-//	  		ICFile folderFile = getFile(buffer.toString());
-//	  		if (folderFile != null) {
-//	  			// bad implementation:
-//	  			// if the children list is empty null is returned. 
-//	  			//TODO: thi: change the implementation
-//	  			Iterator iterator = folderFile.getChildren();
-//	  			if (iterator == null) {
-//	  				iterator = (new ArrayList(0)).iterator();
-//	  			}
-//					while (iterator.hasNext())	{
-//	  				ICTreeNode node = (ICTreeNode) iterator.next();
-//	  				int id = node.getNodeID();
-//	  				String name = node.getNodeName();
-//	  				String displayName = new StringBuffer(groupName).append(" - ").append(name).toString();
-//	  				select.addMenuElement(Integer.toString(id), displayName);
-//	//  				// show only the query with a specified id if desired 
-//	//  				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
-//	//  					QueryRepresentation representation = new QueryRepresentation(id, name, groupName);
-//	//  					queryRepresentations.add(representation);
-//	  				}
-//					}
-//	  		}
 			Iterator iterator = queries.iterator();
 			while (iterator.hasNext()) {
 				EntityRepresentation representation = (EntityRepresentation) iterator.next();
@@ -1348,6 +1291,7 @@ public class ReportQueryBuilder extends Block {
 		// FileChooser folderChooser = new FileChooser(PARAM_FOLDER_ID);
 
 		TextInput queryNameInput = new TextInput(PARAM_QUERY_NAME);
+		queryNameInput.setWidth("250");
 		
 		
 		queryNameInput.setLength(20);
@@ -1366,9 +1310,9 @@ public class ReportQueryBuilder extends Block {
 		table.setAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		String descriptionText = helper.getDescription();
 		descriptionText = (descriptionText == null) ? "" : descriptionText;
-		TextEditor descriptionEditor = new TextEditor(PARAM_QUERY_DESCRIPTION, descriptionText );
-		descriptionEditor.setWidth("30");
-		descriptionEditor.setHeight("20");
+		TextArea descriptionEditor = new TextArea(PARAM_QUERY_DESCRIPTION, descriptionText );
+		descriptionEditor.setWidth("250");
+		descriptionEditor.setHeight("60");
 		table.add(descriptionEditor, 1, row++);
 //		if (this.queryFolderID > 0) {
 //			ICFile currentFolder = sessionBean.getXMLFile(queryFolderID);
