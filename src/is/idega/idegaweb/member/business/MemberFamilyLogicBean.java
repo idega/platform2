@@ -21,6 +21,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   private static final String RELATION_TYPE_GROUP_PARENT="FAM_PARENT";
   private static final String RELATION_TYPE_GROUP_CHILD="FAM_CHILD";
   private static final String RELATION_TYPE_GROUP_SPOUSE="FAM_SPOUSE";
+  private static final String RELATION_TYPE_GROUP_SIBLING="FAM_SIBLING";
 
   protected UserHome getUserHome(){
     try{
@@ -99,6 +100,26 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
+   * @returns A Collection of User object who are siblings of a user. Returns an empty Collection if no siblings found.
+   * @throws NoSiblingFound if no siblings are found
+   */
+  public Collection getSiblingsFor(User user)throws NoSiblingFound,RemoteException{
+    String userName = null;
+    try{
+      userName = user.getName();
+      Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_SIBLING);
+      if(coll==null){
+	throw new NoSiblingFound(userName);
+      }
+      return convertGroupCollectionToUserCollection(coll);
+      //return coll;
+    }
+    catch(FinderException e){
+      throw new NoSiblingFound(userName);
+    }
+  }
+
+  /**
    * @returns User object for the spouse of a user.
    * @throws NoSpouseFound if no spouse is found
    */
@@ -160,6 +181,19 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     }
   }
 
+  public boolean hasPersonGotSiblings(User person){
+    /**
+     * @todo Implement better
+     */
+    try{
+      this.getSiblingsFor(person);
+      return true;
+    }
+    catch(Exception e){
+      return false;
+    }
+  }
+
   /**
    * @returns True if the childToCheck is a child of parent else false
    */
@@ -194,15 +228,28 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   public boolean isSpouseOf(User personToCheck,User relatedPerson) throws RemoteException {
     if ( this.hasPersonGotSpouse(personToCheck) ) {
       try{
-	User spouse = this.getSpouseFor(personToCheck);
-	if( spouse.equals(relatedPerson) ) {
-	  return true;
-	}
+				User spouse = this.getSpouseFor(personToCheck);
+				if( spouse.equals(relatedPerson) ) {
+				  return true;
+				}
       }
       catch (NoSpouseFound nsf) {
       }
     }
     return false;
+  }
+
+  /**
+   * @returns True if the personToCheck is a sibling of relatedPerson else false
+   */
+  public boolean isSiblingOf(User personToCheck,User relatedPerson) throws RemoteException {
+    try {
+      Collection coll = getSiblingsFor(relatedPerson);
+      return coll.contains(personToCheck);
+    }
+    catch (NoSiblingFound ex) {
+      return false;
+    }
   }
 
   public void setAsChildFor(User personToSet,User parent)throws CreateException,RemoteException{
@@ -226,6 +273,13 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     }
   }
 
+  public void setAsSiblingFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
+    if(!this.isSiblingOf(personToSet,relatedPerson)){
+      personToSet.addRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SIBLING);
+      relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
+    }
+  }
+
   public void removeAsChildFor(User personToSet,User parent)throws RemoveException,RemoteException{
     personToSet.removeRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
     parent.removeRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_PARENT);
@@ -239,6 +293,11 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   public void removeAsSpouseFor(User personToSet,User relatedPerson)throws RemoveException,RemoteException{
     personToSet.removeRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
     relatedPerson.removeRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SPOUSE);
+  }
+
+  public void removeAsSiblingFor(User personToSet,User relatedPerson)throws RemoveException,RemoteException{
+    personToSet.removeRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SIBLING);
+    relatedPerson.removeRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
   }
 
 
