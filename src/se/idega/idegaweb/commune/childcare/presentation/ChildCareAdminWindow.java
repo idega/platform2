@@ -552,7 +552,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateInput.setDate(stampNow.getDate());
 		}
 		
-		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
+		String dateHeader = null;
+		if (isAlteration) {
+			dateHeader = localize("child_care.new_date", "Select the new placement date");
+		} else {
+			dateHeader = localize("child_care.change_date", "Change date");
+		}
+		table.add(getSmallHeader(dateHeader), 1, row++);
 		table.add(dateInput, 1, row++);
 
 		if (isAlteration) {
