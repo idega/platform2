@@ -9,6 +9,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.BackButton;
 import com.idega.block.albumcollection.data.Lyric;
 import com.idega.block.albumcollection.data.Author;
+import com.idega.block.albumcollection.data.Track;
 import com.idega.data.EntityFinder;
 import com.idega.util.text.TextSoap;
 import com.idega.idegaweb.IWResourceBundle;
@@ -61,9 +62,13 @@ public class LyricViewer extends Block {
     frameTable.setWidth("550");
     frameTable.setAlignment("center");
     frameTable.setAlignment(1,1,"center");
+    //frameTable.setBorder(1);
 
     Table contentTable = new Table(1,6);
-    contentTable.setAlignment(1,4,"right");
+    //contentTable.setAlignment(1,4,"right");
+	contentTable.setRowHeight(4,"15");
+	
+    //contentTable.setBorder(1);
 
 
     frameTable.add(contentTable);
@@ -82,7 +87,9 @@ public class LyricViewer extends Block {
         contentTable.add(heading,1,1);
         //contentTable.add(Text.getBreak());
         contentTable.add(text,1,3);
-
+		
+		// add authors - begins
+		contentTable.add(new Text(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+"( "),1,1);
         List T_authors = EntityFinder.findRelated(lyric,com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
         if(T_authors != null){
           Iterator iter2 = T_authors.iterator();
@@ -96,8 +103,35 @@ public class LyricViewer extends Block {
             name2 += T_author.getDisplayName();
             f=true;
           }
-          contentTable.add(AlbumCollectionBusiness.getMainTextBoldClone(name2),1,4);
+          contentTable.add(new Text(" texti:"),1,1);
+		  contentTable.add(AlbumCollectionBusiness.getMainTextClone(name2),1,1);
         }
+        
+		String trackId = iwc.getParameter(AlbumCollectionBusiness._PRM_TRACK_ID);
+		if(trackId != null){
+		  Track track = AlbumCollectionBusiness.getTrack(Integer.parseInt(trackId));
+		  if(track != null){
+			List songAuthors = EntityFinder.findRelated(track,com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
+			if(songAuthors != null){
+			  Iterator iter3 = songAuthors.iterator();
+			  boolean f = false;
+			  String name3 = "";
+			  while (iter3.hasNext()) {
+				Author songAuthor = (Author)iter3.next();
+				if(f){
+				  name3 += ", ";
+				}
+				name3 += songAuthor.getDisplayName();
+				f=true;
+			  }
+			  contentTable.add(new Text(" lag:"),1,1);
+			  contentTable.add(AlbumCollectionBusiness.getMainTextClone(name3),1,1);
+			}
+		  }
+		}
+		contentTable.add(new Text(" )"),1,1);
+		// add authors - ends
+		
 
         if(hasEditPermission()){
 

@@ -7,6 +7,7 @@ import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.block.albumcollection.data.Track;
+import com.idega.block.media.presentation.FileChooser;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -57,6 +58,7 @@ public class AddTrack extends IWAdminWindow {
   private static String _fieldNameAuthors = "ac_authors";
   private static String _fieldNamePerformers = "ac_performers";
   private static String _fieldNameCategories = "ac_categories";
+  private static String _fieldAudioID = "ac_audio_id";
 
 
   public AddTrack() {
@@ -75,7 +77,7 @@ public class AddTrack extends IWAdminWindow {
     if(trId != null){
       //update
       if(trId != null && !trId.equals("")){
-        _fieldTrackId = new HiddenInput(this._fieldNameTrackId,trId);
+        _fieldTrackId = new HiddenInput(_fieldNameTrackId,trId);
         if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
           track = ((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(Integer.parseInt(trId));
         }
@@ -86,35 +88,36 @@ public class AddTrack extends IWAdminWindow {
 
     String albumId = iwc.getParameter(_fieldNameAlbumId);
     if(albumId != null && !albumId.equals("")){
-      _fieldAlbumId = new HiddenInput(this._fieldNameAlbumId,albumId);
+      _fieldAlbumId = new HiddenInput(_fieldNameAlbumId,albumId);
     }else{
-      _fieldAlbumId = new HiddenInput(this._fieldNameAlbumId);
+      _fieldAlbumId = new HiddenInput(_fieldNameAlbumId);
       _fieldAlbumId.setContent("");
     }
     _fieldAlbumId.keepStatusOnAction();
 
 
     _fieldTrackName = new TextInput(_fieldNameTrackName);
+	_fieldTrackName.setWidth("275");
     if(track != null){
       _fieldTrackName.setContent(track.getName());
     }
     _fieldTrackName.keepStatusOnAction();
 
-    _fieldTrackNumber = new IntegerInput(this._fieldNameTrackNumber);
+    _fieldTrackNumber = new IntegerInput(_fieldNameTrackNumber);
     _fieldTrackNumber.setLength(2);
     _fieldTrackNumber.setMaxlength(2);
     if(track != null){
       _fieldTrackNumber.setContent(Integer.toString(track.getNumber()));
     }
 
-    _fieldTrackLengthMin = new IntegerInput(this._fieldNameTrackLengthMin);
+    _fieldTrackLengthMin = new IntegerInput(_fieldNameTrackLengthMin);
     _fieldTrackLengthMin.setLength(2);
     _fieldTrackLengthMin.setMaxlength(2);
     if(track != null){
       _fieldTrackLengthMin.setContent(Integer.toString(track.getLength()/60));
     }
 
-    _fieldTrackLengthSek = new IntegerInput(this._fieldNameTrackLengthSek);
+    _fieldTrackLengthSek = new IntegerInput(_fieldNameTrackLengthSek);
     _fieldTrackLengthSek.setLength(2);
     _fieldTrackLengthSek.setMaxlength(2);
     if(track != null){
@@ -122,7 +125,7 @@ public class AddTrack extends IWAdminWindow {
     }
 
 
-    _fieldDescription = new TextArea(this._fieldNameDescription);
+    _fieldDescription = new TextArea(_fieldNameDescription);
     _fieldDescription.setHeight(6);
     _fieldDescription.setWidth(42);
     if(track != null){
@@ -176,35 +179,39 @@ public class AddTrack extends IWAdminWindow {
     Table contentTable = new Table();
     contentTable.setWidth("100%");
     //
-    Table nameTable = new Table(2,3);
+    Table nameTable = new Table(4,3);
+    //nameTable.setBorder(1);
+    
+    nameTable.setColumnWidth(1,"70");
+	nameTable.setColumnWidth(2,"50");
+	//nameTable.setColumnWidth(3,"70");
+	nameTable.setColumnWidth(4,"170");
+
+    
+    nameTable.mergeCells(2,1,4,1);
+	nameTable.mergeCells(2,3,4,3);
     nameTable.add(new Text("Nafn:"),1,1);
     nameTable.add(this._fieldTrackName,2,1);
     nameTable.add(this._fieldAlbumId,2,1);
     nameTable.add(new Text("Númer lags:"),1,2);
     nameTable.add(this._fieldTrackNumber,2,2);
-    nameTable.add(new Text("Lengd:"),1,3);
-    Table lTable = new Table(3,1);
-    lTable.setCellpadding(0);
-    lTable.setCellspacing(0);
-    lTable.add(this._fieldTrackLengthMin,1,1);
-    lTable.add(new Text(" : "),2,1);
-    lTable.add(this._fieldTrackLengthSek,2,1);
-    nameTable.add(lTable,2,3);
-
+    nameTable.add(new Text("Lengd:"),3,2);
+    
+    //lenth input table
+	    Table lTable = new Table(3,1);
+	    lTable.setCellpadding(0);
+	    lTable.setCellspacing(0);
+	    lTable.add(this._fieldTrackLengthMin,1,1);
+	    lTable.add(new Text(" : "),2,1);
+	    lTable.add(this._fieldTrackLengthSek,2,1);
+    nameTable.add(lTable,4,2);
+	
+	nameTable.add(new Text("Lagið:"),1,3);
+	nameTable.add(new FileChooser(_fieldAudioID),2,3);
 
     contentTable.add(nameTable,1,1);
 
-    //Description
-    Table descriptionTable = new Table(1,2);
-    descriptionTable.setWidth("100%");
-    //descriptionTable.setCellpadding(0);
-    //descriptionTable.setCellspacing(0);
-    //descriptionTable.setHeight(1,"32");
-    descriptionTable.add(new Text("Um lagið"),1,1);
-    descriptionTable.add(this._fieldDescription,1,2);
-
-    contentTable.add(descriptionTable,1,2);
-
+    
     Table t2 = new Table(2,3);
     t2.setWidth("100%");
     t2.add(new Text("Höfundar:"),1,1);
@@ -218,7 +225,21 @@ public class AddTrack extends IWAdminWindow {
     addPerformer.setWindowToOpen(CreatePerformer.class);
     t2.add(addPerformer,2,3);
 
-    contentTable.add(t2,1,3);
+    contentTable.add(t2,1,2);
+    
+    
+	//Description
+	Table descriptionTable = new Table(1,2);
+	descriptionTable.setWidth("100%");
+	//descriptionTable.setCellpadding(0);
+	//descriptionTable.setCellspacing(0);
+	//descriptionTable.setHeight(1,"32");
+	descriptionTable.add(new Text("Um lagið"),1,1);
+	descriptionTable.add(this._fieldDescription,1,2);
+	
+	contentTable.add(descriptionTable,1,3);
+    
+    
 
     // ButtonTable
     Table bTable = new Table(2,1);
@@ -249,6 +270,8 @@ public class AddTrack extends IWAdminWindow {
 
     String acLengthMin = iwc.getParameter(_fieldNameTrackLengthMin);
     String acLengthSek = iwc.getParameter(_fieldNameTrackLengthSek);
+    
+	String acAudioID = iwc.getParameter(_fieldAudioID);
 
     String[] acAuthors = iwc.getParameterValues(_fieldNameAuthors);
     String[] acPerformers = iwc.getParameterValues(_fieldNamePerformers);
@@ -274,6 +297,18 @@ public class AddTrack extends IWAdminWindow {
     if(length != 0){
       trackLength = new Integer(length);
     }
+    
+    
+    Integer audioID = null;
+    if(acAudioID!=null&& !acAudioID.equals("")){
+    	try{
+			audioID = new Integer(acAudioID);
+    	} catch(NumberFormatException nfe){
+    		nfe.printStackTrace();
+    	}
+    }
+    
+    
 
     int[] authorIDs = null;
     if(acAuthors != null){
@@ -303,9 +338,9 @@ public class AddTrack extends IWAdminWindow {
 
 
     if(trackId > -1){
-      AlbumCollectionBusiness.updateTrack(trackId,acName,acDescription,TrackNumber,null,null,trackLength,authorIDs,performerIDs,null);
+      AlbumCollectionBusiness.updateTrack(trackId,acName,acDescription,TrackNumber,null,null,trackLength,audioID,authorIDs,performerIDs,null);
     }else{
-      AlbumCollectionBusiness.addTrack(acName,acDescription,TrackNumber,AlbumId,null,trackLength,authorIDs,performerIDs,null);
+      AlbumCollectionBusiness.addTrack(acName,acDescription,TrackNumber,AlbumId,null,trackLength,audioID,authorIDs,performerIDs,null);
     }
 
   }

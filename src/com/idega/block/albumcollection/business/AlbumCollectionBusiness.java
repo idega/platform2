@@ -269,7 +269,7 @@ public class AlbumCollectionBusiness {
 
   }
 
-  public static void addTrack(String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, int[] authors, int[] performers, int[] categories) throws SQLException {
+  public static void addTrack(String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, Integer audioID, int[] authors, int[] performers, int[] categories) throws SQLException {
     Track track = ((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).createLegacy();
 
     if( name != null){
@@ -295,6 +295,10 @@ public class AlbumCollectionBusiness {
     if(lengthInSek != null){
       track.setLength(lengthInSek.intValue());
     }
+    
+    if(audioID!=null){
+    	track.setTrackID(audioID);
+    }
 
     track.insert();
 
@@ -318,7 +322,7 @@ public class AlbumCollectionBusiness {
 
   }
 
-  public static void updateTrack(int trackId, String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, int[] authors, int[] performers, int[] categories) throws SQLException {
+  public static void updateTrack(int trackId, String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, Integer audioID, int[] authors, int[] performers, int[] categories) throws SQLException {
     Track track = ((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(trackId);
 
     if( name != null){
@@ -344,6 +348,10 @@ public class AlbumCollectionBusiness {
     if(lengthInSek != null){
       track.setLength(lengthInSek.intValue());
     }
+    
+	if(audioID!=null){
+		track.setTrackID(audioID);
+	}
 
     track.update();
 
@@ -463,6 +471,14 @@ public class AlbumCollectionBusiness {
 
   }
 
+  public static Track getTrack(int trackId) {
+    try {
+	  return ((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(trackId);
+    }
+    catch (SQLException ex) {
+	  return null;
+    }
+  }
 
   public static List getTracks(int albumId) throws SQLException {
     return EntityFinder.findAllByColumnOrdered(com.idega.block.albumcollection.data.TrackBMPBean.getStaticInstance(Track.class),com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_ALBUM_ID,Integer.toString(albumId), com.idega.block.albumcollection.data.TrackBMPBean._COLUMNNAME_NUMBER);

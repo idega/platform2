@@ -131,8 +131,7 @@ public class AlbumList extends Block {
 
         index += 2;
       }
-      this.add(contentTable);
-
+      
 /*
       this.add(Text.getBreak());
       this.add(Text.getBreak());
@@ -168,6 +167,8 @@ public class AlbumList extends Block {
       }
       contentTable.add(createAlbumLink,1,1);
     }
+    
+	this.add(contentTable);
 
   }
 

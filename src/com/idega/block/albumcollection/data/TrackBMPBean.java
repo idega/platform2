@@ -2,6 +2,8 @@ package com.idega.block.albumcollection.data;
 
 import java.sql.SQLException;
 
+import com.idega.core.data.ICFile;
+
 
 /**
  * Title:        AlbumCollection
@@ -20,6 +22,7 @@ public class TrackBMPBean extends com.idega.data.GenericEntity implements com.id
   public static final String _COLUMNNAME_NUMBER = "number";
   public static final String _COLUMNNAME_LENGTH = "track_length";
   public static final String _COLUMNNAME_LYRIC_ID = "lyric_id";
+  public static final String _COLUMNNAME_TRACK = "track";
 
   public TrackBMPBean() {
     super();
@@ -40,6 +43,7 @@ public class TrackBMPBean extends com.idega.data.GenericEntity implements com.id
     this.addManyToManyRelationShip(Category.class,"ac_track_category");
     this.addManyToManyRelationShip(Author.class,"ac_track_author");
     this.addManyToManyRelationShip(Performer.class, "ac_track_performer");
+	addOneToOneRelationship(_COLUMNNAME_TRACK, "Track", ICFile.class);
   }
 
   public String getEntityName() {
@@ -96,6 +100,22 @@ public class TrackBMPBean extends com.idega.data.GenericEntity implements com.id
 
   public void setLength(int sek){
     this.setColumn(_COLUMNNAME_LENGTH,sek);
+  }
+  
+  public ICFile getTrack(){
+  	return (ICFile)this.getColumnValue(_COLUMNNAME_TRACK);
+  }
+  
+	public int getTrackID(){
+		return this.getIntColumnValue(_COLUMNNAME_TRACK);
+	}
+
+  public void setTrackID(Integer fileID) {
+	  setColumn(_COLUMNNAME_TRACK, fileID);
+  }
+
+  public void setTrackID(int fileID) {
+	  setColumn(_COLUMNNAME_TRACK, fileID);
   }
 
 }

@@ -1,5 +1,7 @@
 package com.idega.block.albumcollection.data;
 
+import com.idega.core.data.ICFile;
+
 
 public interface Track extends com.idega.data.IDOLegacyEntity
 {
@@ -16,4 +18,8 @@ public interface Track extends com.idega.data.IDOLegacyEntity
  public void setLyricIdAsNull()throws java.sql.SQLException;
  public void setName(java.lang.String p0);
  public void setNumber(int p0);
+ public ICFile getTrack();
+ public int getTrackID();
+ public void setTrackID(Integer fileID);
+ public void setTrackID(int fileID);
 }
