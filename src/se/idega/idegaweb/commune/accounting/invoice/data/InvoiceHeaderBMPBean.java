@@ -205,11 +205,11 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		Date end = month.getLastDateOfMonth();
 		IDOQuery query = idoQuery();
 		query.appendSelectCountFrom();
-		query.append("(select distinct a.child_id from cacc_invoice_header h, cacc_invoice_record r, comm_childcare_archive a where"); 
-		query.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.append("(select distinct a.child_id from cacc_invoice_header h, cacc_invoice_record r, comm_childcare_archive a"); 
+		query.appendWhere().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
 		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		query.append("and a.comm_childcare_archive_id=r.comm_childcare_archive_id and r.invoice_header = h.cacc_invoice_header_id) a");		
-	//query.appendWhereEquals(COLUMN_STATUS, "'P'");		
+	//query.appendWhereEquals(COLUMN_STATUS, "'P'");
 		return idoGetNumberOfRecords(query);
 	}
 	
