@@ -202,8 +202,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         EntityPath path,
         EntityBrowser browser,
         IWContext iwc)  {
-          int i = browser.getCurrentRow();
-          WorkReportBoardMemberHelper helper = (WorkReportBoardMemberHelper) orderedHelperList.get(i-1);
+          int i = browser.getCurrentIndexOfEntities();
+          WorkReportBoardMemberHelper helper = (WorkReportBoardMemberHelper) orderedHelperList.get(i);
           return helper.getLeague();
         }
     };
