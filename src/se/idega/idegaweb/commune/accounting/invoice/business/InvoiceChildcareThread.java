@@ -570,7 +570,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		if(!hasBeenHandled){
 			try {
 				//Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndCategory(startPeriod.getDate(), category).iterator();
-				Collection regularInvoices = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndChildAndCategory(startPeriod.getDate(),endPeriod.getDate(),childId,category.getPrimaryKey().toString());
+				Collection regularInvoices = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndChildAndCategoryExceptLowincome(startPeriod.getDate(),endPeriod.getDate(),childId,category.getPrimaryKey().toString());
 				Iterator regularInvoiceIter = regularInvoices.iterator();
 				//Go through all the regular invoices
 				while(regularInvoiceIter.hasNext()){

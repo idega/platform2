@@ -410,7 +410,7 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		setColumn(COLUMN_EDIT_NAME, name);
 	}
 
-	public Collection ejbFindRegularInvoicesForPeriodAndChildAndCategory(Date from, Date to, int childUserId, String schoolCategoryId) throws FinderException {
+	public Collection ejbFindRegularInvoicesForPeriodAndChildAndCategoryExceptType(Date from, Date to, int childUserId, String schoolCategoryId,  int regulationSpecTypeId) throws FinderException {
 		
 				IDOQuery query = idoQuery() 
 				.appendSelectAllFrom(this)
@@ -428,7 +428,12 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 //		.appendOr()
 //		.append(COLUMN_TO)
 //		.appendIsNull()
-				.appendRightParenthesis();
+				.appendRightParenthesis()
+				.appendAnd()
+				.append(COLUMN_REG_SPEC_TYPE_ID)
+				.appendNOTEqual()
+				.append(regulationSpecTypeId);
+
 				return idoFindPKsByQuery(query);
 	}	
 	
