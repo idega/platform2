@@ -36,6 +36,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
 
 /**
  * PrintMessageViewer
@@ -166,7 +167,7 @@ public class PrintMessageViewer extends CommuneBlock {
 	}
 	private void initSearch(IWContext iwc) throws Exception {
 		if (iwc.isParameterSet(PRM_SSN)) {
-			searchSsn = iwc.getParameter(PRM_SSN);
+			searchSsn = PersonalIDFormatter.stripForDatabaseSearch(iwc.getParameter(PRM_SSN));
 		}
 		if (iwc.isParameterSet(PRM_MSGID)) {
 			searchMsgId = iwc.getParameter(PRM_MSGID);
