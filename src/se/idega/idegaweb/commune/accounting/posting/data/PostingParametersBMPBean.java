@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.20 2003/11/26 16:21:06 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.21 2003/12/03 13:16:16 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.20 2003/11/26 16:21:06 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.21 2003/12/03 13:16:16 laddi Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -327,7 +327,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	}
 
 
-	public Object ejbFindPostingParameter(Date date, int act, int reg, int comt, int comb ) throws FinderException {
+	public Object ejbFindPostingParameter(int act, int reg, int comt, int comb ) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY_ID, act);
 		sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID, reg);
