@@ -61,6 +61,7 @@ public class NewsLetter extends CategoryBlock {
   private String _inputStyle = "";
   private String _checkFontStyle = "";
   private int _inputLength = 0;
+  private String _inputWidth = null;
   private boolean _submitBelow = false;
   private boolean _submitBelowTopics = false;
   private String _spaceBetween = "2";
@@ -205,6 +206,9 @@ public class NewsLetter extends CategoryBlock {
       if(_inputLength != 0) {
       		email.setLength(_inputLength);
       }
+      if(_inputWidth != null) {
+      		email.setWidth(_inputWidth);
+      }
       email.setContent(iwrb.getLocalizedString("enter_email_here","Enter e-mail here"));
       email.setOnFocus("this.value=''");
 			SubmitButton send,cancel;
@@ -322,6 +326,7 @@ public class NewsLetter extends CategoryBlock {
 		T.add(send,1,1);
 		T.setWidth(2,1,_spaceBetween);
 		if (_showCancelImage)
+			T.setAlignment(3,1,Table.HORIZONTAL_ALIGN_RIGHT);
 			T.add(cancel, 3, 1);
   		
 		return T;
@@ -493,6 +498,13 @@ public class NewsLetter extends CategoryBlock {
 	 */
 	public void setCheckBoxFont(String style) {
 		_checkFontStyle = style;
+	}
+	/**
+	 * Sets the width of the input box 
+	 * @param width
+	 */
+	public void setInputWidth(String width) {
+		_inputWidth = width;
 	}
 
 }
