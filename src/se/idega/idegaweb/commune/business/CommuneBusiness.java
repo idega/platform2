@@ -1,0 +1,10 @@
+package se.idega.idegaweb.commune.business;
+
+
+public interface CommuneBusiness extends com.idega.business.IBOService
+{
+ public com.idega.core.data.Commune getCommune(int p0) throws java.rmi.RemoteException;
+ public com.idega.core.data.CommuneHome getCommuneHome()throws com.idega.data.IDOLookupException, java.rmi.RemoteException;
+ public java.util.Collection getCommunes() throws java.rmi.RemoteException;
+ public com.idega.core.data.Commune getDefaultCommune() throws java.rmi.RemoteException;
+}
