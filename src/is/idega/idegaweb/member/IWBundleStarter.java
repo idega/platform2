@@ -26,21 +26,12 @@ import com.idega.user.util.ICUserConstants;
 public class IWBundleStarter implements IWBundleStartable {
 
 	public void start(IWBundle starterBundle) {
-		// changing constants, setting the right help bundle in the com.idega.user bundle
-		UserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
-		// changing constants, setting the right help bundle in the com.idega.core.bundle
-		ICUserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
-		// services registration
-		//IBOLookup.registerImplementationForBean(FamilyLogic.class, MemberFamilyLogicBean.class);
 		// add implementors for the com.idega.user bundle
 		ImplementorRepository repository =  ImplementorRepository.getInstance();
 		repository.addImplementor(FamilyTab.class, UserFamilyTab.class);
 		repository.addImplementor(UserPinLookupToGroupImportHandler.class,PinLookupToGroupImportHandler.class);
 		repository.addImplementor(UserUpdateClubDivisionTemplate.class, UpdateClubDivisionTemplate.class);
-//		repository.addImplementor(UserCashierWindow.class, CashierWindow.class);
 		repository.addImplementor(UserClubMemberExchangeWindow.class, ClubMemberExchangeWindow.class);
-//		repository.addImplementor(UserWorkReportWindow.class, WorkReportWindow.class);
-
 	}
 	
 	public void stop(IWBundle starterBundle) {

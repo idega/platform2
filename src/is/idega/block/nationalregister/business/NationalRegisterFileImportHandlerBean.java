@@ -199,9 +199,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			Set keys = _familyRelations.keySet();
 			UserHome userHome = null; 
 			NationalRegisterBusiness natReg = null;
-			FamilyLogic familyLogic = null;
+			MemberFamilyLogic familyLogic = null;
 			try {
-				familyLogic = (FamilyLogic) getServiceInstance(FamilyLogic.class);
+				familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
 				natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 				UserBusiness userBusiness = (UserBusiness) getServiceInstance(UserBusiness.class);
 				userHome = userBusiness.getUserHome();
@@ -264,7 +264,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	 * @throws RemoveException
 	 * @throws RemoteException
 	 */
-	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, FamilyLogic familyLogic, UserHome uHome, Collection coll) throws RemoteException, RemoveException {
+	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, MemberFamilyLogic familyLogic, UserHome uHome, Collection coll) throws RemoteException, RemoveException {
 		if (coll != null) {
 			MemberFamilyLogicBean memFamLog = (MemberFamilyLogicBean) getServiceInstance(MemberFamilyLogicBean.class);
 
@@ -406,7 +406,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		
 	}
 
-	private void setAsSpouseFor(FamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2)
+	private void setAsSpouseFor(MemberFamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2)
 			throws RemoteException, CreateException {
 		//See if this person already is married
 		if (null != rel1.spouse) {
@@ -422,7 +422,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		
 	}
 	
-	private void setAsParentFor(FamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2)
+	private void setAsParentFor(MemberFamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2)
 			throws RemoteException, CreateException {
 		if (rel1.child.contains(user2)) {
 			rel1.child.remove(user2);
@@ -433,7 +433,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		familyLogic.setAsParentFor(user1, user2); //User1 is parent; user2 is child
 	}
 	
-	private void setAsCustodianFor(FamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2) throws RemoteException, CreateException{
+	private void setAsCustodianFor(MemberFamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2) throws RemoteException, CreateException{
 		if(rel1.isCustodianFor.contains(user2)){
 			rel1.isCustodianFor.remove(user2);
 			rel2.hasCustodian.remove(user1);
@@ -443,7 +443,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		familyLogic.setAsCustodianFor(user1, user2);
 	}
 	
-	private void setAsSiblingFor(FamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2) throws RemoteException, CreateException{
+	private void setAsSiblingFor(MemberFamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2) throws RemoteException, CreateException{
 		if(rel1.sibling.contains(user2)){
 			rel1.sibling.remove(user2);
 			rel2.sibling.remove(user1);
@@ -453,7 +453,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		familyLogic.setAsSiblingFor(user1, user2);	//Both are children
 	}
 	
-	private void setAsChildFor(FamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2) throws RemoteException, CreateException{
+	private void setAsChildFor(MemberFamilyLogic familyLogic, User user1, User user2, Relations rel1, Relations rel2) throws RemoteException, CreateException{
 		if(rel1.parent.contains(user2)){
 			rel1.parent.remove(user2);
 			rel2.child.remove(user1);
