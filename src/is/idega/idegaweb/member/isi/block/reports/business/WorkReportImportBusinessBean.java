@@ -898,7 +898,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					throw new WorkReportImportException("workreportimportexception.error_creating_division");
 				}
 			}
-
+			
+			board.setReportId(workReportId);
+			board.setWorKReportGroupID(id.intValue());
 			board.setNumberOfPlayers(val.intValue());
 			board.store();
 		}
