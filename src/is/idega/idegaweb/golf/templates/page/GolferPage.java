@@ -1,7 +1,7 @@
 package is.idega.idegaweb.golf.templates.page;
 
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
-import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapOverview;
 import is.idega.idegaweb.golf.presentation.GolferFriendsSigningSheet;
 
@@ -415,7 +415,7 @@ public class GolferPage extends Page {
 		//temp
 		boolean isBjorgvin = false;
 		try {
-			isBjorgvin = (LoginBusiness.getMember(modinfo).getID() == this.memberId);
+			isBjorgvin = (GolfLoginBusiness.getMember(modinfo).getID() == this.memberId);
 		}
 		catch (Exception ex) {
 			isBjorgvin = false;
@@ -450,7 +450,7 @@ public class GolferPage extends Page {
 		//Added by Laddi
 		boolean isBjorgvin = false;
 		try {
-			isBjorgvin = (LoginBusiness.getMember(modinfo).getID() == this.memberId);
+			isBjorgvin = (GolfLoginBusiness.getMember(modinfo).getID() == this.memberId);
 		}
 		catch (Exception ex) {
 			isBjorgvin = false;
@@ -475,7 +475,7 @@ public class GolferPage extends Page {
 		//Added by Laddi
 		boolean isBjorgvin = false;
 		try {
-			isBjorgvin = (LoginBusiness.getMember(modinfo).getID() == this.memberId);
+			isBjorgvin = (GolfLoginBusiness.getMember(modinfo).getID() == this.memberId);
 		}
 		catch (Exception ex) {
 			isBjorgvin = false;
@@ -552,7 +552,7 @@ public class GolferPage extends Page {
 		//Added by Laddi
 		boolean isBjorgvin = false;
 		try {
-			isBjorgvin = (LoginBusiness.getMember(modinfo).getID() == this.memberId);
+			isBjorgvin = (GolfLoginBusiness.getMember(modinfo).getID() == this.memberId);
 		}
 		catch (Exception ex) {
 			isBjorgvin = false;
@@ -598,7 +598,7 @@ public class GolferPage extends Page {
 		//Added by Laddi
 		boolean isBjorgvin = false;
 		try {
-			isBjorgvin = (LoginBusiness.getMember(modinfo).getID() == this.memberId);
+			isBjorgvin = (GolfLoginBusiness.getMember(modinfo).getID() == this.memberId);
 		}
 		catch (Exception ex) {
 			isBjorgvin = false;

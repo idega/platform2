@@ -17,8 +17,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
-import com.idega.event.IWEventListener;
-import com.idega.event.IWPresentationEvent;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 
@@ -31,7 +30,7 @@ import com.idega.presentation.IWContext;
  * @version 1.1
  */
 
-public class LoginBusiness implements IWEventListener {
+public class LoginBusiness implements IWPageEventListener {
 
 	public static String UserAttributeParameter = "member_login";
 	public static String UserAccessAttributeParameter = "member_access";
@@ -55,7 +54,7 @@ public class LoginBusiness implements IWEventListener {
 		return (String) modinfo.getSessionAttribute(LoginStateParameter);
 	}
 
-	public void actionPerformed(IWContext modinfo) throws IWException {
+	public boolean actionPerformed(IWContext modinfo) throws IWException {
 		//System.out.println("LoginBusiness.actionPerformed");
 
 		try {
@@ -104,8 +103,9 @@ public class LoginBusiness implements IWEventListener {
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);
 			//throw (IdegaWebException)ex.fillInStackTrace();
+			return false;
 		}
-
+		return true;
 	}
 
 	public boolean isAdmin(IWContext modinfo) throws SQLException {
@@ -192,12 +192,5 @@ public class LoginBusiness implements IWEventListener {
 		return returner;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.idega.event.IWEventListener#actionPerformed(com.idega.event.IWPresentationEvent)
-	 */
-	public boolean actionPerformed(IWPresentationEvent e) throws IWException {
-		return false;
-	}
+
 }

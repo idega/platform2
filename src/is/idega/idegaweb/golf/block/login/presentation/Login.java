@@ -9,7 +9,7 @@ package is.idega.idegaweb.golf.block.login.presentation;
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
 import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -195,7 +195,7 @@ public static String controlParameter;
 	private void startState(){
 		Form myForm = new Form();
                 //myForm.submitTo(this);
-                myForm.setEventListener(GolfLoginBusiness.class);
+                myForm.setEventListener(LoginBusiness.class);
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();
 
@@ -377,7 +377,7 @@ public static String controlParameter;
 
 		Form myForm = new Form();
                 //myForm.submitTo(this);
-                myForm.setEventListener(GolfLoginBusiness.class);
+                myForm.setEventListener(LoginBusiness.class);
 /*		Table EinnTable = new Table(2,1);
 			EinnTable.setBorder(0);
 			EinnTable.setWidth(1,"148");
@@ -468,7 +468,7 @@ public static String controlParameter;
 
 		Form myForm = new Form();
                 //myForm.submitTo(this);
-                myForm.setEventListener(GolfLoginBusiness.class);
+                myForm.setEventListener(LoginBusiness.class);
 
 /*		Table EinnTable = new Table(2,1);
 			EinnTable.setBorder(0);
@@ -569,7 +569,7 @@ public static String controlParameter;
 
 		Form myForm = new Form();
                 //myForm.submitTo(this);
-                myForm.setEventListener(GolfLoginBusiness.class);
+                myForm.setEventListener(LoginBusiness.class);
 
 /*		Table EinnTable = new Table(2,1);
 			EinnTable.setBorder(0);
