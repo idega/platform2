@@ -59,10 +59,12 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	private static String DEFAULT_SMTP_MAILSERVER = "mail.agurait.com";
 
 	private static String PROP_SYSTEM_SMTP_MAILSERVER = "messagebox_smtp_mailserver";
+	private static String PROP_CC_ADDRESS = "messagebox_cc_address";
 
 	private static String PROP_MESSAGEBOX_FROM_ADDRESS = "messagebox_from_mailaddress";
 
 	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS = "messagebox@idega.com";
+	private static String DEFAULT_CC_ADDRESS = "hjordis@ibr.is";
 
 	/**
 	 * saves information on the user - creates a new user if he doesn't exsist..
@@ -280,10 +282,12 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 
 		String mailServer = DEFAULT_SMTP_MAILSERVER;
 		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
+		String cc = DEFAULT_CC_ADDRESS;
 		try {
 			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER, DEFAULT_SMTP_MAILSERVER);
 			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS, DEFAULT_MESSAGEBOX_FROM_ADDRESS);
+			cc = iwb.getProperty(PROP_CC_ADDRESS, DEFAULT_CC_ADDRESS);
 		}
 		catch (Exception e) {
 			System.err.println("MessageBusinessBean: Error getting mail property from bundle");
@@ -291,7 +295,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 
 		try {
-			com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body);
+			com.idega.util.SendMail.send(fromAddress, email.trim(), cc, "", mailServer, subject, body);
 		}
 		catch (javax.mail.MessagingException me) {
 			System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());
