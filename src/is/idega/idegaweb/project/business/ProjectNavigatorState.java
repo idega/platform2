@@ -21,6 +21,8 @@ public class ProjectNavigatorState extends EntityNavigationListState {
 
   private int[] selectedCategories = null;
 
+
+
   public ProjectNavigatorState(PresentationObject obj, IWContext iwc) {
     super(obj,iwc);
   }
@@ -32,7 +34,7 @@ public class ProjectNavigatorState extends EntityNavigationListState {
 
   public void addFilter(int categoryTypeID, int categoryId){
     //System.err.println("adding filter cattype: "+categoryTypeID+" cat: "+categoryId);
-    String[] toModify = (String[])this.getValue(1);
+    String[] toModify = (String[])this.getValue(FilterPos);
     String catTypeID = Integer.toString(categoryTypeID);
     String catID = Integer.toString(categoryId);
     if(toModify == null){
@@ -78,7 +80,13 @@ public class ProjectNavigatorState extends EntityNavigationListState {
   }
 
   public String[] getFilters(){
-    return (String[])this.getValue(FilterPos);
+    Object obj = this.getValue(FilterPos);
+//    System.err.println("getFilters() -> "+obj);
+    if(obj != null && !obj.equals(ProjectNavigatorState.STATESTRING_NOVALUE)){
+      return (String[])obj;
+    } else {
+      return null;
+    }
   }
 
   public int[] getSelectedCategories(){
@@ -107,6 +115,17 @@ public class ProjectNavigatorState extends EntityNavigationListState {
   }
 
 
+  public synchronized Object clone(){
 
+    ProjectNavigatorState obj = null;
+
+    obj = (ProjectNavigatorState)super.clone();
+
+    if(selectedCategories != null){
+      obj.selectedCategories = (int[])this.selectedCategories.clone();
+    }
+
+    return obj;
+  }
 
 }

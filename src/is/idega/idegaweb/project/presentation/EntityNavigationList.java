@@ -32,7 +32,6 @@ import java.util.ListIterator;
 public abstract class EntityNavigationList extends Block {
 
   protected Table table = null;
-  protected ProjectBusiness business = null;
 
   protected String[] linkColumns = null;
 
@@ -196,13 +195,14 @@ public abstract class EntityNavigationList extends Block {
   }
 
   public void main(IWContext iwc) throws Exception {
+    //System.err.println("EntityNavigationList hashcode: "+ this.hashCode());
     EntityNavigationListState state = (EntityNavigationListState)this.getState(iwc);
-    business = ProjectBusiness.getInstance();
-    table.empty();
+    //temp table.empty();
     //System.err.println("table.empty()");
     //initColumns(iwc);
     int selectedElement = -1;
     int selectedItem = state.getSelectedElementID();
+    //System.err.println("selectedItem: "+selectedItem + " and getDefaultState()).getSelectedElementID():"+((EntityNavigationListState)this.getDefaultState()).getSelectedElementID());
     PresentationObject firstT = null;
 
     if(addLinkBefore){
@@ -308,6 +308,7 @@ public abstract class EntityNavigationList extends Block {
 
   public String changeState(PresentationObject source, IWContext iwc){
     EntityNavigationListState oldState = (EntityNavigationListState)this.getState(iwc);
+
     if(this.equals(source)){
       String selected = iwc.getParameter(_SELECTED_ENTITY_ID);
       if(selected != null){
@@ -327,10 +328,9 @@ public abstract class EntityNavigationList extends Block {
     EntityNavigationList obj = (EntityNavigationList)super.clone();
     if(table != null){
       obj.table = (Table)this.table.clone();
+      obj.empty();
+      obj.add(obj.table);
     }
-
-    // clone ?
-    obj.business = this.business;
 
     if(linkColumns != null){
       obj.linkColumns = (String[])this.linkColumns.clone();

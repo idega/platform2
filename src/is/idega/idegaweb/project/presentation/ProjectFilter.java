@@ -51,14 +51,9 @@ public class ProjectFilter extends Block implements IFrameContainer{
     return PFcontent;
   }
 
-  public void main(IWContext iwc) throws Exception {
-    this.empty();
-    PFcontent.setOwnerInstance(this);
+  public void configIFrameContent(){
     if(UseIFrame){
-      if(!nameSet){
-        iframe.setName(iframe.getName()+"_"+this.getICObjectInstanceID());
-      }
-      if(!UseIFrameLastValue){
+      //if(!UseIFrameLastValue){
         String scrolling = iframe.getScrolling();
         if(!( scrolling != null && !scrolling.equals(IFrame.SCROLLING_YES))){
           try {
@@ -68,15 +63,58 @@ public class ProjectFilter extends Block implements IFrameContainer{
             PFcontent.setWidth("100%");
           }
         }
+      //}
+    } else {
+      PFcontent.setWidth(iframe.getWidth());
+    }
+  }
+
+
+  public synchronized Object clone(){
+    ProjectFilter obj = (ProjectFilter)super.clone();
+    if(PFcontent != null){
+      obj.PFcontent = (ProjectFilterContent)this.PFcontent.clone();
+      obj.PFcontent.setOwnerInstance(obj);
+    }
+    obj.UseIFrame = this.UseIFrame;
+    obj.UseIFrameLastValue = this.UseIFrameLastValue;
+    obj.nameSet = this.nameSet;
+    if(iframe != null){
+      obj.iframe = (IFrame)this.iframe.clone();
+    }
+    obj.IFrameWithSubtraction = this.IFrameWithSubtraction;
+
+    return obj;
+  }
+
+
+  public void main(IWContext iwc) throws Exception {
+    this.empty();
+    PFcontent.setOwnerInstance(this);
+    if(UseIFrame){
+      if(!nameSet){
+        iframe.setName(iframe.getName()+"_"+this.getICObjectInstanceID());
       }
-      try {
-        int ibPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
-      }
+//      if(!UseIFrameLastValue){
+//        String scrolling = iframe.getScrolling();
+//        if(!( scrolling != null && !scrolling.equals(IFrame.SCROLLING_YES))){
+//          try {
+//            PFcontent.setWidth(Integer.toString(Integer.parseInt(iframe.getWidth())-IFrameWithSubtraction));
+//          }
+//          catch (NumberFormatException ex) {
+//            PFcontent.setWidth("100%");
+//          }
+//        }
+//      }
+//      try {
+//        int ibPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
+        iframe.setSrc(BuilderLogic.getIFrameContentURL(iwc,this.getICObjectInstanceID()));
+/*      }
       catch (NumberFormatException ex) {
-        int ibPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
+        //int ibPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
+        iframe.setSrc(BuilderLogic.getIFrameContentURL(iwc,this.getICObjectInstanceID()));
       }
+ */
       this.add(iframe);
       UseIFrameLastValue=UseIFrame;
     } else {
@@ -106,7 +144,8 @@ public class ProjectFilter extends Block implements IFrameContainer{
 
   public void setWidth(String width){
     iframe.setWidth(width);
-    PFcontent.setWidth(width);
+    //PFcontent.setWidth(width);
+    configIFrameContent();
   }
 
   public void setHeight(String height){
@@ -117,6 +156,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
     UseIFrame = value;
     PFcontent.setIsInIFrame(value);
     UseIFrameLastValue = !value;
+    configIFrameContent();
   }
 
   public void setCategoryTypeId(int id){
@@ -172,6 +212,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
     PresentationObject ownerInstance = null;
     boolean isInIFrame = true;
 
+    ProjectBusiness business = null;
 
     public ProjectFilterContent() {
       super();
@@ -235,11 +276,11 @@ public class ProjectFilter extends Block implements IFrameContainer{
     public void initColumns(IWContext iwc) throws Exception {
       super.addLinkEntityColumn(IPCategory._COLUMN_NAME);
     }
-
+/*
     public String getURl(IWContext iwc){
       if(url == null){
         if(targetInstanceId != 0){
-          url = BuilderLogic.getIFrameContentURL(targetInstanceId,parentPageId);
+          url = BuilderLogic.getIFrameContentURL(iwc,targetInstanceId);
           try {
             parentPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
           }
@@ -257,7 +298,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
       }
       return url;
     }
-
+*/
     protected void addParameters(IWContext iwc, GenericEntity item, Link link){
       super.addParameters(iwc,item,link);
       link.addParameter(_PRM_CAT_TYPE_ID, this.categoryTypeId);
@@ -281,6 +322,23 @@ public class ProjectFilter extends Block implements IFrameContainer{
       return business.getCategories(categoryTypeId);
     }
 
+    public synchronized Object clone(){
+      ProjectFilterContent obj = (ProjectFilterContent)super.clone();
+      obj.business = ProjectBusiness.getInstance();
+      obj.categoryTypeId = this.categoryTypeId;
+      obj.targetInstanceId = this.targetInstanceId;
+      obj.parentPageId = this.parentPageId;
+      obj.url = this.url;
+      obj.targetName = this.targetName;
+      /*
+      if(ownerInstance != null){
+        obj.ownerInstance = (PresentationObject)this.ownerInstance.clone();
+      }
+      */
+      obj.isInIFrame = this.isInIFrame;
+
+      return obj;
+    }
 
     public void main(IWContext iwc) throws Exception {
       super.main(iwc);

@@ -45,6 +45,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
   public static final String _PRM_PROJECT_ID = "ip_pid";
 
 
+
   public ProjectNavigator(){
     super();
     PFcontent = new ProjectNavigatorContent();
@@ -61,14 +62,9 @@ public class ProjectNavigator extends Block implements IFrameContainer{
     return PFcontent;
   }
 
-  public void main(IWContext iwc) throws Exception {
-    this.empty();
-    PFcontent.setOwnerInstance(this);
+  public void configIFrameContent(){
     if(UseIFrame){
-      if(!nameSet){
-        iframe.setName(iframe.getName()+"_"+this.getICObjectInstanceID());
-      }
-      if(!UseIFrameLastValue){
+      //if(!UseIFrameLastValue){
         String scrolling = iframe.getScrolling();
         if(!( scrolling != null && !scrolling.equals(IFrame.SCROLLING_YES))){
           try {
@@ -78,15 +74,56 @@ public class ProjectNavigator extends Block implements IFrameContainer{
             PFcontent.setWidth("100%");
           }
         }
+      //}
+    } else {
+      PFcontent.setWidth(iframe.getWidth());
+    }
+  }
+
+  public synchronized Object clone(){
+    ProjectNavigator obj = (ProjectNavigator)super.clone();
+    if(PFcontent != null){
+      obj.PFcontent = (ProjectNavigatorContent)this.PFcontent.clone();
+      obj.PFcontent.setOwnerInstance(obj);
+    }
+    obj.UseIFrame = this.UseIFrame;
+    obj.UseIFrameLastValue = this.UseIFrameLastValue;
+    obj.nameSet = this.nameSet;
+    if(iframe != null){
+      obj.iframe = (IFrame)this.iframe.clone();
+    }
+    obj.IFrameWithSubtraction = this.IFrameWithSubtraction;
+
+    return obj;
+  }
+
+
+  public void main(IWContext iwc) throws Exception {
+    this.empty();
+    PFcontent.setOwnerInstance(this);
+    if(UseIFrame){
+      if(!nameSet){
+        iframe.setName(iframe.getName()+"_"+this.getICObjectInstanceID());
       }
-      try {
-        int ibPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
-      }
-      catch (NumberFormatException ex) {
-        int ibPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
-        iframe.setSrc(BuilderLogic.getIFrameContentURL(this.getICObjectInstanceID(),ibPageId));
-      }
+//      if(!UseIFrameLastValue){
+//        String scrolling = iframe.getScrolling();
+//        if(!( scrolling != null && !scrolling.equals(IFrame.SCROLLING_YES))){
+//          try {
+//            PFcontent.setWidth(Integer.toString(Integer.parseInt(iframe.getWidth())-IFrameWithSubtraction));
+//          }
+//          catch (NumberFormatException ex) {
+//            PFcontent.setWidth("100%");
+//          }
+//        }
+//      }
+//      try {
+//        int ibPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
+        iframe.setSrc(BuilderLogic.getIFrameContentURL(iwc,this.getICObjectInstanceID()));
+//      }
+//      catch (NumberFormatException ex) {
+//        int ibPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
+//        iframe.setSrc(BuilderLogic.getIFrameContentURL(iwc, this.getICObjectInstanceID()));
+//      }
       this.add(iframe);
       UseIFrameLastValue=UseIFrame;
     } else {
@@ -116,7 +153,8 @@ public class ProjectNavigator extends Block implements IFrameContainer{
 
   public void setWidth(String width){
     iframe.setWidth(width);
-    PFcontent.setWidth(width);
+    //PFcontent.setWidth(width);
+    configIFrameContent();
   }
 
   public void setHeight(String height){
@@ -127,6 +165,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
     UseIFrame = value;
     PFcontent.setIsInIFrame(value);
     UseIFrameLastValue = !value;
+    configIFrameContent();
   }
 
 
@@ -176,6 +215,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
     String targetName = null;
     PresentationObject ownerInstance = null;
     boolean isInIFrame = true;
+    ProjectBusiness business = null;
 
     public ProjectNavigatorContent() {
       super();
@@ -237,29 +277,6 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       targetInstanceId = instanceId;
     }
 
-
-    public String getURl(IWContext iwc){
-      if(url == null){
-        if(targetInstanceId != 0){
-          url = BuilderLogic.getIFrameContentURL(targetInstanceId,parentPageId);
-          try {
-            parentPageId = Integer.parseInt(iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
-          }
-          catch (NumberFormatException ex) {
-            parentPageId = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getPopulatedPage().getPageID();
-          }
-          if(parentPageId != 0){
-            PresentationObject ob = BuilderLogic.getInstance().getIFrameContent(parentPageId,targetInstanceId,iwc);
-            if(ob != null){
-              //System.err.println("get its name = "+ob.getName());
-              targetName = ob.getName();
-            }
-          }
-        }
-      }
-      return url;
-    }
-
     public List getEntityList(IWContext iwc) throws Exception{
       ProjectNavigatorState state = (ProjectNavigatorState)this.getState(iwc);
 
@@ -275,6 +292,9 @@ public class ProjectNavigator extends Block implements IFrameContainer{
         System.err.println(this.getClassName()+" - filter is null");
       }*/
 
+      if(business == null){
+        business = ProjectBusiness.getInstance();
+      }
       return business.getProjectDPTPageLinks(state.getSelectedCategories());
     }
 
@@ -336,6 +356,24 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       return oldState.getStateString();
     }
 
+    public synchronized Object clone(){
+      ProjectNavigatorContent obj = (ProjectNavigatorContent)super.clone();
+
+      obj.business = ProjectBusiness.getInstance();
+
+      obj.targetInstanceId = this.targetInstanceId;
+      obj.parentPageId = this.parentPageId;
+      obj.url = this.url;
+      obj.targetName = this.targetName;
+      /*
+      if(ownerInstance != null){
+        obj.ownerInstance = (PresentationObject)this.ownerInstance.clone();
+      }
+      */
+      obj.isInIFrame = this.isInIFrame;
+
+      return obj;
+    }
 
   }
 

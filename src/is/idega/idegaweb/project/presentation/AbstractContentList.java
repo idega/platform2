@@ -31,7 +31,6 @@ import java.util.ListIterator;
 public abstract class AbstractContentList extends Block {
 
   protected Table table = null;
-  protected ProjectBusiness business = null;
 
   protected int extraRowsBefore = 0;
   protected int extraRowsAfter = 0;
@@ -51,6 +50,35 @@ public abstract class AbstractContentList extends Block {
   protected String width = "181";
   protected String rowHeight = "20";
 
+
+  public synchronized Object clone(){
+    AbstractContentList obj = (AbstractContentList)super.clone();
+    if(table != null){
+      obj.table = (Table)this.table.clone();
+      obj.empty();
+      obj.add(obj.table);
+    }
+
+    obj.extraRowsBefore = this.extraRowsBefore;
+    obj.extraRowsAfter = this.extraRowsAfter;
+    obj.minimumNumberOfRows = this.minimumNumberOfRows;
+
+    obj.cellspacing = this.cellspacing;
+    obj.cellpadding = this.cellpadding;
+    obj.linesBeetween = this.linesBeetween;
+    obj.bottomLine = this.bottomLine;
+    obj.topLine = this.topLine;
+
+    obj.sebracolor1 = this.sebracolor1;
+    obj.sebracolor2 = this.sebracolor2;
+    obj.selectedColor = this.selectedColor;
+    obj.lineColor = this.lineColor;
+
+    obj.width = this.width;
+    obj.rowHeight = this.rowHeight;
+
+    return obj;
+  }
 
   public AbstractContentList() {
     super();
