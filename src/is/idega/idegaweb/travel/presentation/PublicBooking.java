@@ -199,8 +199,14 @@ public class PublicBooking extends Block  {
       Image image = bundle.getImage("verisignseals/verisign_logo.gif");
         image.setWidth(100);
         image.setHeight(42);
-      Link verisign = new Link(image, "https://digitalid.verisign.com/as2/3537e1357d56f9db899a65d84e97d2c9");
+			String verisignUrl = bundle.getProperty("verisign_url");
+			if (verisignUrl == null) { 
+				verisignUrl = "https://digitalid.verisign.com/as2/a83d13ff1653ab8baf084d646faab5c9";
+			}
+			
+			Link verisign = new Link(image, verisignUrl);
         verisign.setTarget(Link.TARGET_NEW_WINDOW);
+        verisign.setOutgoing(true);
       table.add(verisign, 2,4);
       table.setAlignment(2,4, "center");
       table.setVerticalAlignment(2, 4, "bottom");
