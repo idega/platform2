@@ -181,72 +181,72 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 		Statement statement = connection.createStatement();
 		String sqlStatement = sqlQuery.toSQLString();
 		List displayNames = sqlQuery.getDisplayNames();
-    ResultSet resultSet = null;
-    ResultSetMetaData metadata;
-    QueryResult queryResult = new QueryResult();
-    try {
-      // get default connection
-      statement = connection.createStatement();
-      executedSQLStatements.add(sqlStatement);
-      resultSet = statement.executeQuery(sqlStatement);
-      metadata = resultSet.getMetaData();
-      
-      int numberOfColumns = metadata.getColumnCount();
-      int i;
-      for (i=1; i <= numberOfColumns; i++) {
-        // String columnClass = metadata.getColumnClassName(i);
-        String columnName = metadata.getColumnName(i);
-        // store into QueryResultField
-        QueryResultField field = new QueryResultField(Integer.toString(i));
-        // field.setValue(QueryResultField.TYPE, columnClass);
-        field.setValue(QueryResultField.COLUMN, columnName);
-        // set display name
-        setDisplayName(field, i, displayNames);
-        queryResult.addField(field);
-      }
-      int numberOfRow = 1;
-      // if number of rows is less than zero ignore the limit of rows, that is to get all rows choose -1 for example
-       while (resultSet.next() && (numberOfRowsLimit < 0 || numberOfRow <= numberOfRowsLimit))  {
-        String id = Integer.toString(numberOfRow++);
-        for (i=1 ; i <= numberOfColumns; i++)  {
-          Object columnValue = resultSet.getObject(i);
-          // store into QueryResultCell
-          String fieldId = Integer.toString(i);  
-          QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);
-		  // !!!!!!!!! do NOT use the following statement because the columnName is NOT necessarily unique if you use more than one table : 
-          //QueryResultCell cell = new QueryResultCell(id, metadata.getColumnName(i), columnValue);
-          queryResult.addCell(cell);
-        }
-      }
-    }   
-    catch (SQLException sqlEx) {
-      	logError("[QueryToSQLBridge] sql statement could not be executed."); 
-        log(sqlEx);
-        throw sqlEx;
-    }
-    finally {
-    	// do not hide an existing exception
-    	try { 
-	      if (resultSet != null) {
-	        resultSet.close();
-	      }
-    	}
-	    catch (SQLException resultCloseEx) {
-	     	logError("[QueryToSQLBridge] result set could not be closed");
-	     	log(resultCloseEx);
-	    }
-	    // do not hide an existing exception
+	    ResultSet resultSet = null;
+	    ResultSetMetaData metadata;
+	    QueryResult queryResult = new QueryResult();
 	    try {
-	     if (statement != null)  {
-        statement.close();
-	     }
+	    	// get default connection
+		    statement = connection.createStatement();
+		    executedSQLStatements.add(sqlStatement);
+		    resultSet = statement.executeQuery(sqlStatement);
+		    metadata = resultSet.getMetaData();
+		      
+		     int numberOfColumns = metadata.getColumnCount();
+		     int i;
+		     for (i=1; i <= numberOfColumns; i++) {
+		      		// String columnClass = metadata.getColumnClassName(i);
+			        String columnName = metadata.getColumnName(i);
+			        // store into QueryResultField
+			        QueryResultField field = new QueryResultField(Integer.toString(i));
+			        // field.setValue(QueryResultField.TYPE, columnClass);
+			        field.setValue(QueryResultField.COLUMN, columnName);
+			        // set display name
+			        setDisplayName(field, i, displayNames);
+			        queryResult.addField(field);
+		     }
+		     int numberOfRow = 1;
+		     // if number of rows is less than zero ignore the limit of rows, that is to get all rows choose -1 for example
+		    while (resultSet.next() && (numberOfRowsLimit < 0 || numberOfRow <= numberOfRowsLimit))  {
+		    	String id = Integer.toString(numberOfRow++);
+			    for (i=1 ; i <= numberOfColumns; i++)  {
+			     	Object columnValue = resultSet.getObject(i);
+			       	// store into QueryResultCell
+			       	String fieldId = Integer.toString(i);  
+			       	QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);
+			       	// !!!!!!!!! do NOT use the following statement because the columnName is NOT necessarily unique if you use more than one table : 
+			       	//QueryResultCell cell = new QueryResultCell(id, metadata.getColumnName(i), columnValue);
+			       	queryResult.addCell(cell);
+			    }
+		    }
+	    }   
+	    catch (SQLException sqlEx) {
+	      	logError("[QueryToSQLBridge] sql statement could not be executed."); 
+	        log(sqlEx);
+	        throw sqlEx;
 	    }
- 	    catch (SQLException statementCloseEx) {
-	     	logError("[QueryToSQLBridge] statement could not be closed");
-	     	log(statementCloseEx);
+	    finally {
+	    	// do not hide an existing exception
+	    	try { 
+	    		if (resultSet != null) {
+	    			resultSet.close();
+		      	}
+	    	}
+		    catch (SQLException resultCloseEx) {
+		     	logError("[QueryToSQLBridge] result set could not be closed");
+		     	log(resultCloseEx);
+		    }
+		    // do not hide an existing exception
+		    try {
+		    	if (statement != null)  {
+		    		statement.close();
+		    	}
+		    }
+	 	    catch (SQLException statementCloseEx) {
+		     	logError("[QueryToSQLBridge] statement could not be closed");
+		     	log(statementCloseEx);
+		    }
 	    }
-    }
-    return queryResult;
+	    return queryResult;
   }		
 
   
