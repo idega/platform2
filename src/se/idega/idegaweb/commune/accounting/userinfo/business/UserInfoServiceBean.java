@@ -396,8 +396,14 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 
 		try {
 			// if this is the same address row, then return immediately
+			if(null == address1 || null == address2){
+				return false;
+			}
 			if (address1.getPrimaryKey ().equals (address2.getPrimaryKey ())) {
 				return true;
+			}
+			if(null == address1.getStreetName() || null == address2.getStreetName()){
+				return false;
 			}
 			if (address1.getStreetName ()
 					.equalsIgnoreCase	(address2.getStreetName ())) {
@@ -405,7 +411,8 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 				if (startingNumberPart (address1.getStreetNumber ())
 						.equals	(startingNumberPart (address2.getStreetNumber ()))) {
 					// they have same starting number
-					if (address1.getPostalCode ().equals (address2.getPostalCode ())) {
+					if ((null != address1.getPostalCode() && null != address2.getPostalCode ()) &&
+							address1.getPostalCode ().equals (address2.getPostalCode ())) {
 						// they have same postal code
 						if (address1.getCountryId () == address2.getCountryId ()) {
 							// they have same country id
