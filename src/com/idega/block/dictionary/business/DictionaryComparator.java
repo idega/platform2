@@ -3,6 +3,7 @@ package com.idega.block.dictionary.business;
 import com.idega.block.dictionary.data.Word;
 import com.idega.core.data.ICCategory;
 import java.rmi.RemoteException;
+import java.text.Collator;
 import java.util.*;
 import java.util.Comparator;
 
@@ -23,9 +24,15 @@ public class DictionaryComparator implements Comparator {
   public static final int CATEGORY_NAME = 2;
 
   private int sortBy;
+  private Locale _locale;
 
   public DictionaryComparator() {
     this(WORD_NAME);
+  }
+
+  public DictionaryComparator(Locale locale, int toSortBy) {
+    sortBy = toSortBy;
+    _locale = locale;
   }
 
   public DictionaryComparator(int toSortBy) {
@@ -76,13 +83,18 @@ public class DictionaryComparator implements Comparator {
   }
 
   private int categorySort(Object o1, Object o2) {
+    Collator collator = null;
+    if (_locale != null)
+    	collator = Collator.getInstance(_locale);
+    else collator = IsCollator.getIsCollator();
+    
     ICCategory p1 = (ICCategory) o1;
     ICCategory p2 = (ICCategory) o2;
 
     String one = p1.getName()!=null?p1.getName():"";
     String two = p2.getName()!=null?p2.getName():"";
 
-    return IsCollator.getIsCollator().compare(one,two);
+    return collator.compare(one,two);
   }
 
   public boolean equals(Object obj) {
