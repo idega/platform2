@@ -9,8 +9,6 @@ package com.idega.block.datareport.business;
 import java.io.IOException;
 import java.io.InputStream;
 
-import sun.security.action.GetBooleanAction;
-
 import com.idega.block.datareport.business.jasperdesignxml.ColumnFooter;
 import com.idega.block.datareport.business.jasperdesignxml.ColumnHeader;
 import com.idega.block.datareport.business.jasperdesignxml.DesignDocument;

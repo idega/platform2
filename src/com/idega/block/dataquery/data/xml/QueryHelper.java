@@ -13,7 +13,6 @@ import java.util.List;
 
 import com.idega.block.dataquery.data.Query;
 import com.idega.data.GenericEntity;
-import com.idega.util.StringHandler;
 import com.idega.util.datastructures.HashMatrix;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
