@@ -178,7 +178,12 @@ public class ProviderAccountBusinessBean
 				theCase.getApplicantName().lastIndexOf(" ") + 1,
 				theCase.getApplicantName().length());
 		User user = null;
-		user = getUserBusiness().createSchoolAdministrator(firstName, null, lastName, school);
+		try{
+			user = getUserBusiness().createSchoolAdministrator(firstName, null, lastName, school);
+		}
+		catch(FinderException fe){
+			throw new IDOCreateException(fe);	
+		}
 		theCase.setOwner(user);
 		theCase.store();
 		return user;
