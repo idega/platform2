@@ -85,6 +85,9 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     this.addManyToManyRelationShip( TxText.class );
     this.addManyToManyRelationShip( ICFile.class );
     addMetaDataRelationship();
+    
+    addIndex("IDX_PROD_1", new String[]{getColumnNameSupplierId(), getColumnNameIsValid()});
+    addIndex("IDX_PROD_2", new String[]{getIDColumnName(), getColumnNameSupplierId(), getColumnNameIsValid()});
   }
 
 

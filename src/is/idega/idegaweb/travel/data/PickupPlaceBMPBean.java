@@ -39,6 +39,7 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
     addAttribute(getTypeColumnName(), "Type", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Supplier.class,"TB_HOTEL_PICKUP_PL_SR_SUPPLIER");
+    addIndex("IDX_PLACE_TYPE", new String[]{getIDColumnName(), getTypeColumnName()});
   }
 
   public void insertStartData()throws Exception{

@@ -63,6 +63,8 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
 
 		this.addManyToManyRelationShip(CreditCardInformation.class, "SR_SUPPLIER_CC_INFORMATION");
 
+		addIndex("IDX_SUPP_1", new String[]{getIDColumnName(), getColumnNameIsValid()});
+		addIndex("IDX_SUPP_1", new String[]{getColumnNameIsValid()});
 	}
 
 	public void insertStartData() throws Exception {

@@ -51,6 +51,11 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     this.addManyToManyRelationShip(Timeframe.class,getProductPriceTableName()+"_TIMEFRAME");
     this.addManyToManyRelationShip(Address.class,getProductPriceTableName()+"_ADDRESS");
     this.addManyToManyRelationShip(TravelAddress.class);
+    
+    addIndex("IDX_PRO_PRI_1", new String[]{getColumnNameProductId(), getColumnNamePriceCategoryId(), getColumnNameCurrencyId(), getColumnNameIsValid()});
+    addIndex("IDX_PRO_PRI_2", new String[]{getColumnNameProductId(), getColumnNamePriceCategoryId(), getColumnNameIsValid()});
+    addIndex("IDX_PRO_PRI_3", new String[]{getColumnNameProductId(), getColumnNameCurrencyId(), getColumnNameIsValid()});
+    addIndex("IDX_PRO_PRI_4", getColumnNameProductId());
   }
 
 

@@ -45,6 +45,9 @@ public class ResellerDayBMPBean extends com.idega.data.GenericEntity implements 
     this.setAsPrimaryKey(getColumnNameServiceId(), true);
     this.setAsPrimaryKey(getColumnNameDayOfWeek(), true);
     
+    addIndex("IDX_RES_SER_DAY", new String[]{getColumnNameResellerId(), getColumnNameServiceId(), getColumnNameDayOfWeek()});
+
+    
   }
   public String getEntityName() {
     return getResellerDaysTableName();

@@ -38,6 +38,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
     addAttribute(getColumnNameTo(), "Virkt til", true, true, Timestamp.class);
     addAttribute(getColumnNameDiscount(), "Afsláttur", true, true, String.class);
     addAttribute(getColumnNameExpiresDaysBeforeDeparture(), "dagar fyrir brottför", true, true, Integer.class);
+    addIndex(getColumnNameServiceId());
+    addIndex("IDX_CON_SERVICE", new String[]{getIDColumnName(), getColumnNameServiceId()});
 
   }
   public String getEntityName() {

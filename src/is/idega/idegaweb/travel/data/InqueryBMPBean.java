@@ -50,6 +50,9 @@ public class InqueryBMPBean extends com.idega.data.GenericEntity implements is.i
     addAttribute(getBookingIdColumnName(), "bókun", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Reseller.class);
+    
+    addIndex(getBookingIdColumnName());
+    addIndex(getServiceIDColumnName());
   }
 
 

@@ -85,6 +85,10 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     this.addManyToManyRelationShip(Reseller.class);
     this.addManyToManyRelationShip(Address.class);
     this.addManyToManyRelationShip(TravelAddress.class);
+    addIndex(getBookingTypeIDColumnName());
+    addIndex(getServiceIDColumnName());
+    addIndex("IDX_BOOK_TYPE_SERV", new String[]{getIDColumnName(), getBookingTypeIDColumnName(), getServiceIDColumnName()});
+    addIndex("IDX_BOOK_SERV", new String[]{getIDColumnName(), getServiceIDColumnName()});
   }
 
 

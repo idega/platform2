@@ -46,6 +46,7 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
     this.addManyToManyRelationShip(PickupPlace.class, "TB_SERVICE_HOTEL_PICKUP_PLACE");
    this.addManyToManyRelationShip(Address.class, "TB_SERVICE_IC_ADDRESS");
 
+   addIndex("IDX_SERV_VALID", new String[] {getIDColumnName(), getIsValidColumnName()});
  }
 
   public void setDefaultValues() {

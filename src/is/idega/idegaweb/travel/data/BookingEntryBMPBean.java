@@ -29,6 +29,8 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
     addAttribute(getBookingIDColumnName(), "booking id", true, true, Integer.class, "many-to-one", GeneralBooking.class);
     addAttribute(getCountColumnName(), "Fjöldi", true, true, Integer.class);
     addAttribute(getProductPriceIDColumnName(), "product price id", true, true, Integer.class, "many-to-one",ProductPrice.class);
+    addIndex(getBookingIDColumnName());
+    addIndex("IDX_ENT_BOOKING", new String[]{getIDColumnName(), getBookingIDColumnName()});
   }
   public String getEntityName() {
     return getBookingEntriesTableName();

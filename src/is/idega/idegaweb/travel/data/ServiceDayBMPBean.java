@@ -44,6 +44,8 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
     addAttribute(getColumnNameEstimated(), "estimated", true, true, Integer.class);
     this.setAsPrimaryKey(getIDColumnName(), true);
 		this.setAsPrimaryKey(getColumnNameDayOfWeek(), true);
+		
+    addIndex("IDX_SER_DAY", new String[]{getIDColumnName(), getColumnNameDayOfWeek()});
   }
 
   public String getEntityName() {

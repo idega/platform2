@@ -51,6 +51,12 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
 
     this.addManyToManyRelationShip(Address.class);
     this.addTreeRelationShip();
+    
+    addIndex("IDX_PRICECAT_1", new String[]{getIDColumnName(), getColumnNameType()});
+    addIndex("IDX_PRICECAT_2", new String[]{getIDColumnName(), getColumnNameType(), getColumnNameIsValid()});
+    addIndex("IDX_PRICECAT_3", new String[]{getIDColumnName(), getColumnNameType(), getColumnNameIsValid(), getColumnNameParentId()});
+    addIndex(getColumnNameType());
+    addIndex("IDX_PRICECAT_5", new String[]{getColumnNameType(), getColumnNameIsValid()});
   }
 
   public void delete() {
