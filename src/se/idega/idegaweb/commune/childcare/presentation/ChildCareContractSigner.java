@@ -19,6 +19,7 @@ import com.idega.block.contract.business.ContractFinder;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
 import com.idega.builder.data.IBPage;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -171,7 +172,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 //		t.add(new Text("Text"), 1, 1);
 //		t.add(new Text("Text"), 1, 1);
 //		t.add(new Text("Text"), 1, 1);
-		
+		IWResourceBundle iwrb = getResourceBundle(iwc);		
 		
 		while (i.hasNext()){
 			Contract contract = (Contract) i.next();
@@ -188,9 +189,10 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 			t.add(new Text(cat.getName()), 1, row);
 						
 			if (contract.isSigned()) {
-				t.add(new Text("Signed " + contract.getSignedDate()), 3, row);
+				t.add(new Text(iwrb.getLocalizedString("ccconsign_signed", "Signed") + contract.getSignedDate()), 3, row);
 			}else {
-				Link signBtn = new Link("Sign Contract");
+
+				Link signBtn = new Link(iwrb.getLocalizedString("ccconsign_signcon","Sign Contract"));
 				signBtn.setAsImageButton(true);
 				signBtn.setParameter(PAR_CONTRACT_ID, ""+contract.getID());
 				signBtn.setParameter(ACTION, ACTION_SIGN);
