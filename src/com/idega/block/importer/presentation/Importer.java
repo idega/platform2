@@ -185,6 +185,7 @@ public class Importer extends Block {
 		 
 		 Table table = getFrameTable();
 		 
+		 
 		 Text header = new Text(iwrb.getLocalizedString("importer.importing","Importer : Importing"));
 		 header.setBold();
 		 table.add(header,1,1);
@@ -192,7 +193,7 @@ public class Importer extends Block {
 		 Text done = new Text(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
 		 table.add(done,1,2);
 		 
-		 table.mergeCells(1,2,7,2);
+		 
 		
 	     String[] values = null;
 	     if(usingLocalFileSystem) values = iwc.getParameterValues(IMPORT_FILE_PATHS);//for local file importing
@@ -203,6 +204,8 @@ public class Importer extends Block {
 	     String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
 	     
 	     if(values!=null){
+	     	table.resize(7,values.length+3);
+	     	table.mergeCells(1,2,7,2);
 		      // for each file to import
 		     for (int i = 0; i < values.length; i++) {
 		        boolean success = false;
@@ -214,6 +217,9 @@ public class Importer extends Block {
 		        	path = MediaBusiness.getCachedFileInfo(Integer.parseInt(values[i]),iwc.getApplication()).getRealPathToFile();
 		        }
 		        
+		        
+		        //todo get failed records and associate with the import
+		        //handler. add import methods that take in the file id!
 		        if(groupIDFromSession!=null){
 		        	success = getImportBusiness(iwc).importRecords(handler,fileClass,path,new Integer(groupIDFromSession));       
 		        }
@@ -235,17 +241,19 @@ public class Importer extends Block {
 		        	record.store();
 		        	//getImportBusiness(iwc).updateImportRecord(getImportBusiness(iwc));
 		        }
+		                
 		
 		        table.addBreak(1,2);
 		        table.add(fileStatus,1,2);
-		     }
+		      }
+		     
+		     table.add(new BackButton(iwrb.getLocalizedString("importer.back","back")),7,3);
 		     
 		
 		}
 		else{
 			table.add(new Text(iwrb.getLocalizedString("importer.no.file.selected","No file selected!")),1,2);
-			addBreak();
-			table.add(new BackButton(iwrb.getLocalizedString("importer.back","back")),7,3);
+			table.add(new BackButton(iwrb.getLocalizedString("importer.back","back")),7,values.length+3);
 		}
 		
 		add(table);
@@ -375,6 +383,14 @@ public class Importer extends Block {
           	
           	fileTable.add(header,1,1);
           	fileTable.add(iwrb.getLocalizedString("no.files","No files to import, please upload files first"),1,2);	
+      	 	Link upload = new Link(iwrb.getLocalizedString("importer.upload","Upload"));
+         	upload.setWindowToOpen(MediaChooserWindow.class);
+         	upload.setAsImageButton(true);
+         	upload.addParameter(MediaConstants.MEDIA_ACTION_RELOAD,"TRUE");
+         	upload.addParameter(MediaBusiness.getMediaParameterNameInSession(iwc),((Integer)folder.getPrimaryKey()).intValue());
+          
+         	fileTable.add(upload, 7, 3);
+          	
           	add(fileTable);
           }
           
