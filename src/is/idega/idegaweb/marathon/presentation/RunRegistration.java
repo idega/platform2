@@ -19,7 +19,6 @@ import com.idega.block.text.business.TextFormatter;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -305,8 +304,8 @@ public class RunRegistration extends Block {
 			countryField = (DropdownMenu) util.getSelectorFromIDOEntities(countryField, countries, "getName");
 		}
 		if (isIcelandic) {
-			nationalityField.setSelectedElement(ICLocaleBusiness.getLocaleId(LocaleUtil.getIcelandicLocale()));
-			countryField.setSelectedElement(ICLocaleBusiness.getLocaleId(LocaleUtil.getIcelandicLocale()));
+			nationalityField.setSelectedElement("104");
+			countryField.setSelectedElement("104");
 		}
 		nationalityField.setWidth(Table.HUNDRED_PERCENT);
 		nationalityField.addMenuElementFirst("-1", iwrb.getLocalizedString("run_reg.select_country", "Select country"));
@@ -585,9 +584,9 @@ public class RunRegistration extends Block {
 		t.setHeight(row++, 12);
 		
 		int threeKM = Integer.parseInt(iwrb.getIWBundleParent().getProperty("3_km_id", "126"));
-		int runID = Integer.parseInt(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN));
+		int distanceID = Integer.parseInt(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE));
 		
-		if (threeKM != runID) {
+		if (threeKM != distanceID) {
 			Currency ISK = Currency.getInstance("ISK");
 			Currency EUR = Currency.getInstance("EUR");
 	
@@ -601,20 +600,20 @@ public class RunRegistration extends Block {
 			t.add(buyChipText, column, row);
 			t.add(" - ", column, row);
 			if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
-				t.add(String.valueOf(buyPrice) + " " + ISK.getSymbol(), column, row++);
+				t.add(String.valueOf((int) buyPrice) + " " + ISK.getSymbol(), column, row++);
 			}
 			else {
-				t.add(EUR.getSymbol() + String.valueOf(buyPriceEuro), column, row++);
+				t.add(EUR.getSymbol() + String.valueOf((int) buyPriceEuro), column, row++);
 			}
 			t.setHeight(row++, 3);
 			t.add(rentChipField, column, row);
 			t.add(rentChipText, column, row);
 			t.add(" - ", column, row);
 			if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
-				t.add(String.valueOf(rentPrice) + " " + ISK.getSymbol(), column, row++);
+				t.add(String.valueOf((int) rentPrice) + " " + ISK.getSymbol(), column, row++);
 			}
 			else {
-				t.add(EUR.getSymbol() + String.valueOf(rentPriceEuro), column, row++);
+				t.add(EUR.getSymbol() + String.valueOf((int) rentPriceEuro), column, row++);
 			}
 			
 			t.setHeight(row++, 8);
@@ -805,7 +804,6 @@ public class RunRegistration extends Block {
 				t.setHeight(row++, 8);
 		
 				t.add(buttonTable, 1, row);
-				add(t);
 			}
 			else {
 				message = iwrb.getLocalizedString("run_reg.must_accept_conditions", "You must accept the conditions before you can register.");
@@ -828,6 +826,7 @@ public class RunRegistration extends Block {
 			t.add(Text.getNonBrakingSpace(), 1, row);
 			t.add(backGreen, 1, row++);
 		}
+		add(t);
 	}
 	
 	public void main(IWContext iwc) throws Exception {
