@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 
-import com.idega.presentation.IWContext;
 
 
 /**
@@ -11,12 +10,12 @@ import com.idega.presentation.IWContext;
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  * 
- * @author Joakim
+ * @author Roar
  */
 public class TestResult extends InvoiceBatchResult{
 	
-	public void init(IWContext iwc){
-		super.init(iwc);
+	protected boolean isTestRun(){
+		return true;
 	}
 	
 }

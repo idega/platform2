@@ -13,9 +13,9 @@ public class BatchRunHomeImpl extends com.idega.data.IDOFactory implements Batch
  }
 
 
-public BatchRun findBySchoolCategory(com.idega.block.school.data.SchoolCategory p0)throws javax.ejb.FinderException{
+public BatchRun findBySchoolCategory(com.idega.block.school.data.SchoolCategory p0, boolean p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((BatchRunBMPBean)entity).ejbFindBySchoolCategory(p0);
+	Object pk = ((BatchRunBMPBean)entity).ejbFindBySchoolCategory(p0, p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

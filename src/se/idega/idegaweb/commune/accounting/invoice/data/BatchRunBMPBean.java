@@ -19,6 +19,7 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	private static final String COLUMN_PERIOD = "period";
 	private static final String COLUMN_START = "start_date";
 	private static final String COLUMN_STOP = "stop_date";
+	private static final String COLUMN_TEST = "test";
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
@@ -33,9 +34,16 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_START, "", true, true, java.sql.Timestamp.class);
 		addAttribute(COLUMN_STOP, "", true, true, java.sql.Timestamp.class);
+		addAttribute(COLUMN_TEST, "", true, true, java.lang.Boolean.class);
+	
 		
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 	}
+	
+	protected void setDefaultvalues(){
+		setTest(false);
+	}
+	
 	public String getSchoolCategoryID() {
 		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
@@ -48,6 +56,9 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	public Timestamp getEnd() {
 		return getTimestampColumnValue(COLUMN_STOP);
 	}
+	public boolean getTest() {
+		return getBooleanColumnValue(COLUMN_TEST);
+	}	
 	
 	public void setSchoolCategoryID(String i) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
@@ -64,6 +75,10 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	public void setEnd(Timestamp d) {
 		setColumn(COLUMN_STOP, d);
 	}
+	public void setTest(boolean test) {
+		setColumn(COLUMN_TEST, test);
+	}
+		
 	
 	/**
 	 * Gets the CalendarMonth for the Period
@@ -77,9 +92,14 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	 *	Finds one Batchrun from a schoolCategory. There should be max one schoolcategory
 	 *	@throws javax.ejb.FinderException if no SchoolType is found.	
 	 */
-	public Integer ejbFindBySchoolCategory(SchoolCategory schoolCategory) throws javax.ejb.FinderException {
+	public Integer ejbFindBySchoolCategory(SchoolCategory schoolCategory, boolean test) throws javax.ejb.FinderException {
 		IDOQuery query = this.idoQueryGetSelect();
 		query.appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
+		if (test){
+			query.appendAndEqualsTrue(COLUMN_TEST);
+		} else {
+			query.appendAndNotEqualsTrue(COLUMN_TEST); //handle null as false
+		}
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 }

@@ -74,7 +74,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 				table.add(getLocalizedLabel("invbr.total_Amount_excluding_VAT","Total amount excluding VAT"),1,i++);
 			}
 	
-			BatchRun batchRun = invoiceBusiness.getBatchRunByCategory(schoolCategory);
+			BatchRun batchRun = invoiceBusiness.getBatchRunByCategory(schoolCategory, isTestRun());
 
 			IWTimestamp period = new IWTimestamp(batchRun.getPeriod());
 			IWTimestamp start = new IWTimestamp(batchRun.getStart());
@@ -114,7 +114,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 			
 			int row = 1;
 			BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
-			Collection errorColl = batchRunErrorHome.findByBatchRun(batchRun);
+			Collection errorColl = batchRunErrorHome.findByBatchRun(batchRun, isTestRun());
 
 			//Bottom section
 			add(getLocalizedLabel("invbr.Total_number_of_suspected_errors","Total number of suspected errors"));
@@ -173,6 +173,10 @@ public class InvoiceBatchResult extends AccountingBlock{
 	
 	protected InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+	}
+	
+	protected boolean isTestRun(){
+		return false;
 	}
 
 }

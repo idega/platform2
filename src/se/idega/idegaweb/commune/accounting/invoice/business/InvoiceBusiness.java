@@ -9,7 +9,7 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
  public int generatePdf(java.lang.String p0,com.idega.io.MemoryFileBuffer p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType[] getAllRegulationSpecTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection getAllVATRuleRegulations()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.BatchRun getBatchRunByCategory(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.invoice.data.BatchRun getBatchRunByCategory(java.lang.String p0, boolean p1)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
  public com.idega.user.data.User getChildByInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareContractHome getChildCareContractHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome getInvoiceHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;

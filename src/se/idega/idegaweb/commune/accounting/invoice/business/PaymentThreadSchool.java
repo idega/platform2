@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/25 15:06:26 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/27 11:10:44 $ by $Author: roar $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.126 $
+ * @version $Revision: 1.127 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -161,7 +161,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			if (isTestRun() && school != null){
 				contractForProvider(school,	validSchoolSeasonId, privateType, regBus);
 			}else{
-				for (Iterator i = getSchools().iterator(); i.hasNext(); school = (School) i.next()) {
+				Iterator i = getSchools().iterator();
+				while(i.hasNext()){
+					school = (School) i.next();
 					contractForProvider(school,	validSchoolSeasonId, privateType, regBus);
 					if(!running){
 						return;

@@ -424,6 +424,7 @@ public abstract class BillingThread extends Thread{
 			error.setRelated(related);
 			error.setDescription(desc);
 			error.setOrder(errorOrder);
+			error.setTest(testRun);
 			error.store();
 			errorOrder++;
 		} catch (Exception e) {
@@ -463,25 +464,31 @@ public abstract class BillingThread extends Thread{
 	protected void createBatchRunLogger(SchoolCategory category) throws IDOLookupException, CreateException{
 		//First delete all old logging for this category
 		try {
-			batchRunLogger = ((BatchRunHome) IDOLookup.getHome(BatchRun.class)).findBySchoolCategory(category);
-			Iterator errorIter = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).findByBatchRun(batchRunLogger).iterator();
-			while (errorIter.hasNext()) {
-				BatchRunError error = (BatchRunError) errorIter.next();
-				try {
-//					System.out.println("Removing BatchRunLogError");
-					error.remove();
-				} catch (EJBException e) {
-					createNewErrorMessage(getLocalizedString("invoice.batchrun","batchrun"),
-							getLocalizedString("invoice.batchrun.cannotRemoveOldBatchrunDataEJBException","Cannot remove old batchrun data, EJBException"));
-					//If it cant be removed, it is just left... Not much to do about it.
-					e.printStackTrace();
-				} catch (RemoveException e) {
-					createNewErrorMessage(getLocalizedString("invoice.batchrun","batchrun"),
-							getLocalizedString("invoice.batchrun.cannotRemoveOldBatchrunDataRemoveException","Cannot remove old batchrun data, RemoveException"));
-					//If it cant be removed, it is just left... Not much to do about it.
-					e.printStackTrace();
+			batchRunLogger = ((BatchRunHome) IDOLookup.getHome(BatchRun.class)).findBySchoolCategory(category, testRun);
+			
+			try{
+				Iterator errorIter = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).findByBatchRun(batchRunLogger, testRun).iterator();
+				while (errorIter.hasNext()) {
+					BatchRunError error = (BatchRunError) errorIter.next();
+					try {
+	//					System.out.println("Removing BatchRunLogError");
+						error.remove();
+					} catch (EJBException e) {
+						createNewErrorMessage(getLocalizedString("invoice.batchrun","batchrun"),
+								getLocalizedString("invoice.batchrun.cannotRemoveOldBatchrunDataEJBException","Cannot remove old batchrun data, EJBException"));
+						//If it cant be removed, it is just left... Not much to do about it.
+						e.printStackTrace();
+					} catch (RemoveException e) {
+						createNewErrorMessage(getLocalizedString("invoice.batchrun","batchrun"),
+								getLocalizedString("invoice.batchrun.cannotRemoveOldBatchrunDataRemoveException","Cannot remove old batchrun data, RemoveException"));
+						//If it cant be removed, it is just left... Not much to do about it.
+						e.printStackTrace();
+					}
 				}
+			}catch (FinderException ex){
+				
 			}
+			
 		} catch (FinderException e1) {
 			//Excepiton OK We just create it instead
 			batchRunLogger = (BatchRun) IDOLookup.create(BatchRun.class);
@@ -489,6 +496,7 @@ public abstract class BillingThread extends Thread{
 		}
 		batchRunLogger.setPeriod(startPeriod.getDate());
 		batchRunLogger.setStart(IWTimestamp.getTimestampRightNow());
+		batchRunLogger.setTest(testRun);
 		batchRunLogger.setEnd(null);
 		batchRunLogger.store();
 	}
