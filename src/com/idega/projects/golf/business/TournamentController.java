@@ -450,6 +450,7 @@ public class TournamentController{
         return TournamentController.getStartingtimeTable(tournament,tournament_round_id,viewOnly,true);
     }
 
+
     public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly, boolean useBorder) throws SQLException{
         Form form = new Form();
             form.maintainParameter("action");
