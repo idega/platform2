@@ -19,6 +19,7 @@ public interface SchoolHome extends com.idega.data.IDOHome
  public java.util.Collection findAllInHomeCommuneByCategory(com.idega.block.school.data.SchoolCategory p0)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException,javax.ejb.CreateException;
  public java.util.Collection findAllPrivate()throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException;
  public java.util.Collection findAllSchools()throws javax.ejb.FinderException;
+ public java.util.Collection findAllSchoolsByCategoryIncludingTerminated(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllSchoolsIncludingTerminated()throws javax.ejb.FinderException;
  public School findBySchoolName(java.lang.String p0)throws javax.ejb.FinderException;
  public int getNumberOfRelations(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolYear p1)throws com.idega.data.IDOException;

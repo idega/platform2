@@ -369,6 +369,17 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		return super.idoFindPKsBySQL("select * from " + SCHOOL + " order by upper("+NAME+")");
 	}
 
+	public Collection ejbFindAllSchoolsByCategoryIncludingTerminated(String category) throws javax.ejb.FinderException {
+		String sql = "select unique s.* from " + SCHOOL + " s, " + 
+				"sch_school_type t, sch_school_sch_school_type st " +
+				"where st.sch_school_type_id = t.sch_school_type_id " + 
+				"and st.sch_school_id = s.sch_school_id " +
+				"and t.school_category = '" + category + "' " +
+				"order by upper(s." + NAME + ")";		
+				
+		return super.idoFindPKsBySQL(sql);
+	}
+
 	public void addSchoolTypes(int[] ids) {
 		try {
 			super.addTo(SchoolType.class, ids);
