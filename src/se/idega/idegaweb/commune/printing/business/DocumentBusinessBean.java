@@ -27,6 +27,8 @@ import javax.ejb.FinderException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.business.NoUserAddressException;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessagePdfHandler;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
@@ -53,7 +55,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWColor;
 import com.idega.util.IWTimestamp;
@@ -205,10 +206,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 
 			addrString.append(user.getName());
 			addrString.append("\n");
-			int userID = ((Integer) user.getPrimaryKey()).intValue();
-			Address addr = getUserBusiness().getUserAddressByAddressType(userID, getUserBusiness().getAddressHome().getAddressType2());
-			if (addr == null) addr = getUserBusiness().getUsersMainAddress(user);
-			if (addr == null) throw new NoUserAddressException(user);
+			Address addr = getSnailMailAddress(user);
 			if (addr != null) {
 				addrString.append(addr.getStreetAddress());
 				addrString.append("\n");
@@ -231,7 +229,19 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		return addrString.toString();
 	}
 
-	public Collection getPrintedDocuments() throws FinderException {
+	/**
+     * @param user
+     * @return
+	 * @throws NoUserAddressException
+	 * @throws RemoteException
+     * @throws RemoteException
+     * @throws NoUserAddressException
+     */
+    private Address getSnailMailAddress(User user) throws RemoteException, NoUserAddressException  {
+        return getUserBusiness().getSnailMailAddress(user);
+    }
+
+    public Collection getPrintedDocuments() throws FinderException {
 		return getPrintDocumentsHome().findAllPrintedLetterDocuments();
 	}
 
@@ -428,9 +438,9 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		}
 	}
 
-	protected UserBusiness getUserBusiness() {
+	protected CommuneUserBusiness getUserBusiness() {
 		try {
-			return (UserBusiness) getServiceInstance(UserBusiness.class);
+			return (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
 		}
 		catch (Exception e) {
 			throw new IBORuntimeException(e);
@@ -575,11 +585,26 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		 *  } return -1; }
 		 */
 		document.close();
-
 		ICFile file = getICFileHome().create();
+		/* *** writing pdf to cachefolder manually
+		if(!fileName.endsWith(".pdf") &&  !fileName.endsWith(".PDF"))
+		    fileName +=".pdf";
+		String folder = getIWApplicationContext().getIWMainApplication().getRealPath(getIWApplicationContext().getIWMainApplication().getCacheDirectoryURI()+"/prints");
+		File tfile = FileUtil.getFileAndCreateIfNotExists(folder,fileName);
+		FileOutputStream fos = new FileOutputStream(tfile);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		while (mis.available() > 0) {
+			baos.write(mis.read());
+		}
+		baos.writeTo(fos);
+		baos.flush();
+    		baos.close();
+    		mis.reset();
+    		*/
+		
 		file.setFileValue(mis);
 		file.setMimeType("application/x-pdf");
-		file.setName(fileName + ".pdf");
+		file.setName(fileName );
 		file.setFileSize(buffer.length());
 		file.store();
 		msg.setMessageData(file);
@@ -1193,12 +1218,6 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		return content.toString();
 	}
 
-	private class NoUserAddressException extends Exception {
-
-		NoUserAddressException(User user) {
-			super("User :" + user.getPrimaryKey().toString() + " : " + user.getName() + " has no address ");
-		}
-	}
 
 	private MessagePdfHandler getMessagePdfHandler(PrintMessage message) {
 		Case parentCase = message.getParentCase();
@@ -1216,7 +1235,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 				e.printStackTrace();
 			}
 			catch (FinderException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 
 		}
