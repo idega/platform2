@@ -68,12 +68,12 @@ public class ClientServer extends IWCoreServlet{
 
           outputToApplet = new ObjectOutputStream(response.getOutputStream());
 
-          System.out.println("sendPacket : Sending Packet to applet...");
+          //System.out.println("sendPacket : Sending Packet to applet...");
           outputToApplet.writeObject(packet);
           outputToApplet.flush();
 
           outputToApplet.close();
-          System.out.println("sendPacket : Data transmission complete.");
+          //System.out.println("sendPacket : Data transmission complete.");
         }
         catch (IOException e){
           e.printStackTrace(System.err);
@@ -91,9 +91,9 @@ public class ClientServer extends IWCoreServlet{
         //System.out.println("receivePacket : Connected");
 
         // read the serialized Packet data from applet
-        System.out.println("receivePacket : Reading data...");
+        //System.out.println("receivePacket : Reading data...");
         packet = (Packet) inputFromApplet.readObject();
-        System.out.println("receivePacket : Finished reading.");
+        //System.out.println("receivePacket : Finished reading.");
 
         inputFromApplet.close();
 

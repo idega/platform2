@@ -48,7 +48,7 @@ public class ClientManager implements PacketManager{
   }
 
   public void clientCheckOut(String sessionId){//debug here is the place if you want to store offline messages
-    System.out.println("ClientManager:LOGGIN OFF USER : "+this.getClientName(sessionId)+" sessionid "+sessionId);
+    //System.out.println("ClientManager:LOGGIN OFF USER : "+this.getClientName(sessionId)+" sessionid "+sessionId);
     User user = (User) ClientManager.clients.get(sessionId);
     ClientManager.reverseClients.remove(Integer.toString(user.getID()));
     ClientManager.clients.remove(sessionId);
@@ -81,15 +81,15 @@ public class ClientManager implements PacketManager{
           String key = prop.getKey();
           if( key.equalsIgnoreCase(SESSION_ID) ){
             sessionId = (String) prop.getValue();
-            System.out.println("ClientManager: session id "+sessionId);
+            //System.out.println("ClientManager: session id "+sessionId);
           }
           else if( key.equalsIgnoreCase(USER_ID) ){
             userId = (String) prop.getValue();
-            System.out.println("ClientManager: user id "+userId);
+            //System.out.println("ClientManager: user id "+userId);
           }
           else if( key.equalsIgnoreCase(USER_LIST_VERSION) ){
             packetUserListVersion = (String) prop.getValue();
-            System.out.println("ClientManager: user list version "+packetUserListVersion);
+            //System.out.println("ClientManager: user list version "+packetUserListVersion);
           }
           else if( key.equalsIgnoreCase(LOG_OUT) ){
             clientCheckOut((String) prop.getValue());
@@ -117,7 +117,7 @@ public class ClientManager implements PacketManager{
           //System.out.println("ClientManager : Property key: "+key+" ; value: "+value);
           //System.out.println("ClientManager : After clients.get(key)");
     }
-    else  System.out.println("ClientManager : client sending. no packet");
+   // else  System.out.println("ClientManager : client sending. no packet");
 
   }
 
@@ -139,12 +139,12 @@ public class ClientManager implements PacketManager{
   }
 
   private boolean removeDoubleRegistry(String sessionId, String userId){
-    System.out.println("ClientManager: removeDoubleRegistry new sessionId : "+sessionId);
+    //System.out.println("ClientManager: removeDoubleRegistry new sessionId : "+sessionId);
 
     boolean existed = false;
     String fromId = (String) ClientManager.reverseClients.get(userId);
     if( fromId!=null){
-      System.out.println("ClientManager: removeDoubleRegistry old sessionId : "+fromId);
+      //System.out.println("ClientManager: removeDoubleRegistry old sessionId : "+fromId);
       MessageManager.moveMessages(fromId,sessionId);
 
       ClientManager.clients.remove(fromId);
