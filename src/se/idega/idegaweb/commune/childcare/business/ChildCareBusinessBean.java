@@ -2345,6 +2345,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
+	
+	public ChildCareApplication getApplicationForChildAndProviderinStatus(int childID, int providerID) {
+		try {
+			String[] statuses = { String.valueOf(getStatusReady()), String.valueOf(getStatusCancelled()) };
+			return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
 
 	public Collection findAllGrantedApplications() {
 		try {
