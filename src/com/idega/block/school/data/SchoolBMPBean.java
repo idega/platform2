@@ -43,7 +43,7 @@ import com.idega.user.data.User;
  * @version 1.0
  */
 
-public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEntity, MetaDataCapable {
+public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEntity, MetaDataCapable{
 
 	public final static String SCHOOL = "sch_school";
 	public final static String NAME = "SCHOOL_NAME";
@@ -83,7 +83,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	//MANY TO MANY RELATIONSHIP TABLES
 	public final static String M2M_TX_TEXT_SCH_SCHOOL="TX_TEXT_SCH_SCHOOL";
 	public final static String M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL="TX_LOCALIZED_TEXT_SCH_SCHOOL";
-	public final static String UNVISIBLE_FOR_CITIZEN = "unvisible_for_citizen";
+	public final static String INVISIBLE_FOR_CITIZEN = "invisible_for_citizen";
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -127,7 +127,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(TERMINATION_DATE, "termination date", true, true, Date.class);
 		addManyToOneRelationship(COUNTRY, Country.class);
 		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);
-		addAttribute(UNVISIBLE_FOR_CITIZEN, "Do not show this provider for citizens", true, true, Boolean.class);
+		addAttribute(INVISIBLE_FOR_CITIZEN, "Do not show this provider for citizens", true, true, Boolean.class);
 		this.addMetaDataRelationship();
 	}
 	public String getEntityName() {
@@ -306,12 +306,12 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.setColumn(CENTRALIZED_ADMINISTRATION, b);
 	}
 	
-	public boolean getUnvisibleForCitizen() {
-		return getBooleanColumnValue(UNVISIBLE_FOR_CITIZEN, false);
+	public boolean getInvisibleForCitizen() {
+		return getBooleanColumnValue(INVISIBLE_FOR_CITIZEN, false);
 	}
 	
-	public void setUnvisibleForCitizen(boolean b) {
-		setColumn(UNVISIBLE_FOR_CITIZEN, b);
+	public void setInvisibleForCitizen(boolean b) {
+		setColumn(INVISIBLE_FOR_CITIZEN, b);
 	}
 	
 	private Date getCurrentDate() {
