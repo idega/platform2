@@ -9,6 +9,7 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -16,11 +17,14 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.util.Converter;
@@ -78,6 +82,8 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 			Collection unions = ((UnionHome)IDOLookup.getHomeLegacy(Union.class)).findAllUnions();
 			System.out.println("[GOLF] Start: create group for unions");
 			GroupHome groupHome = (GroupHome)IDOLookup.getHome(Group.class);
+			GroupBusiness business = (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(),GroupBusiness.class);
+			
 			for (Iterator unionIter = unions.iterator(); unionIter.hasNext();) {
 				System.out.print("[GOLF] next union > ");
 				Union union = (Union) unionIter.next();
@@ -89,31 +95,41 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 				
 				Group group = union.getUnionFromIWMemberSystem();
 				
+				String unionType = union.getUnionType();
+				String groupType = null;
+				
+				if(UNION_TYPE_CLUB.equals(unionType)) {
+					groupType=GROUP_TYPE_CLUB;
+				} else if(UNION_TYPE_EXTRA_CLUB.equals(unionType)) {
+					groupType=GROUP_TYPE_CLUB;
+				} else if(UNION_TYPE_UNION.equals(unionType)) {
+					groupType=GROUP_TYPE_UNION;
+				} else {
+					continue;
+				}
+				
 				if(group == null) {
 					System.out.println("[GOLF] create new group for union");
-					group = groupHome.create();
+					try {
+						group = business.createGroup(union.getName(),"",groupType);
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+						continue;
+					}
 				}
 				
 				group.setName(union.getName());
 				group.setAbbrevation(union.getAbbrevation());
 				group.setShortName(union.getAbbrevation());
 				
-				String unionType = union.getUnionType();
-				
-				if(UNION_TYPE_CLUB.equals(unionType)) {
-					group.setGroupType(GROUP_TYPE_CLUB);
-				} else if(UNION_TYPE_EXTRA_CLUB.equals(unionType)) {
-					group.setGroupType(GROUP_TYPE_CLUB);
-				} else if(UNION_TYPE_UNION.equals(unionType)) {
-					group.setGroupType(GROUP_TYPE_UNION);
-				} else {
-					continue;
-				}
 				
 				group.store();
 				
 				union.setICGroup(group);
 				union.store();
+				
+				
+				
 				
 				//System.out.println("[GOLF] create group.address for union.address");
 				//address
@@ -137,6 +153,8 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (CreateException e) {
+			e.printStackTrace();
+		} catch (IBOLookupException e) {
 			e.printStackTrace();
 		}
 		
