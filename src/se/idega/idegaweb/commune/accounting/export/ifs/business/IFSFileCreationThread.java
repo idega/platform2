@@ -416,18 +416,6 @@ public class IFSFileCreationThread extends Thread {
         } catch (FinderException e1) {
             e1.printStackTrace();
         }
-        Collection phAll = new ArrayList();
-        phAll.addAll(phOutsideCommune);
-        phAll.addAll(phInCommune);
-        try {
-            createPaymentSigningFilesExcel(phAll, fileName5 + ".xls",
-                    "Utbetalningsattestlista " + localizedSchoolCategoryName
-                            + ", " + executionDate.getDateString("yyyy-MM-dd"));
-        } catch (IOException e3) {
-            e3.printStackTrace();
-        } catch (FinderException e3) {
-            e3.printStackTrace();
-        }
 
         if (phInCommune != null && !phInCommune.isEmpty()) {
             Collection rec = null;
@@ -455,6 +443,19 @@ public class IFSFileCreationThread extends Thread {
                         FILE_TYPE_KOMMUN);
             } catch (IOException e3) {
                 e3.printStackTrace();
+            }
+            
+            Collection phAll = new ArrayList();
+            phAll.addAll(phOutsideCommune);
+            phAll.addAll(phInCommune);
+            try {
+            	createPaymentSigningFilesExcel(phAll, fileName5 + ".xls",
+            			"Utbetalningsattestlista " + localizedSchoolCategoryName
+						+ ", " + executionDate.getDateString("yyyy-MM-dd"));
+            } catch (IOException e3) {
+            	e3.printStackTrace();
+            } catch (FinderException e3) {
+            	e3.printStackTrace();
             }
 
             Iterator it = rec.iterator();
@@ -1761,7 +1762,7 @@ public class IFSFileCreationThread extends Thread {
                 School school = pRec.getPaymentHeader().getSchool();
                 if (pRec.getTotalAmount() != 0.0f) {
                 	amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
-                    totalAmount += amount;
+                    
                     if (fileType == FILE_TYPE_OWN_POSTING
                             || fileType == FILE_TYPE_DOUBLE_POSTING) {
                         numberOfRecords++;
@@ -1776,6 +1777,7 @@ public class IFSFileCreationThread extends Thread {
                                 rowNumber, -1 * amount, pb, pRec, school, pRec
                                         .getDoublePosting(), fileType);
                     }
+                    totalAmount += amount;
                 }
             }
             if (fileType == FILE_TYPE_KOMMUN)
