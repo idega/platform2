@@ -97,6 +97,9 @@ public class MessengerApplet extends Applet implements Runnable{
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
 
+      listener.addMessageDialog(dialog);
+
+
       SingleLineItem test = new SingleLineItem(this);
       test.setWindowToOpen(dialog);
       if( lb!= null ) test.add(lb);
@@ -172,14 +175,8 @@ public class MessengerApplet extends Applet implements Runnable{
 
           dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
           messageDialog.setVisible(true);
-
-          if(!listenerStarted){
-            //listener.start();
-            listenerStarted = true;
-          }
-
-          //listener.addMessageDialog(messageDialog);
-
+//debug
+          listener.addMessageDialog(messageDialog);
 
         }
         else {
