@@ -348,7 +348,7 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_typeFieldName, type);
 			else
 				fieldValues.put(_typeFieldName, "");
-			fieldValues.put(_memberUMFIFieldName, new Boolean(member));
+			fieldValues.put(_memberUMFIFieldName, new Boolean(member != null));
 			if (make != null)
 				fieldValues.put(_makeFieldName, make);
 			else
@@ -361,8 +361,8 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_statusFieldName, status);
 			else
 				fieldValues.put(_statusFieldName, "");
-			fieldValues.put(_inOperationFieldName, new Boolean(inOperation));
-			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using));
+			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
+			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
 
 			updateFieldsDisplayStatus();
 		}
