@@ -100,12 +100,12 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 					return _childcareID;
 				}
 				else {
-					setHasPrognosis();
+					hasPrognosis = null;
 					return getChildCareIDFromUser(user);
 				}
 			}
 			else {
-				setHasPrognosis();
+				hasPrognosis = null;
 				_userID = userID;
 				return getChildCareIDFromUser(user);
 			}
