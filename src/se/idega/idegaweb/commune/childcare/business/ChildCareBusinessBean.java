@@ -535,7 +535,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			System.out.println("Got no users for provider " + application.getProviderId());
 	}
 	
-	private void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
+	public void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
 		sendMessageToProvider(application, subject, message, null);
 	}
 
