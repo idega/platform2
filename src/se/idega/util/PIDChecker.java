@@ -196,9 +196,14 @@ public class PIDChecker {
 			int year = 0;
 			int month = 0;
 			int day = 0;
+			
+			IWTimestamp stampNow = new IWTimestamp();
 
 			if (personalID.length() == 10) {
 				year = Integer.parseInt(personalID.substring(0, 2)) + 1900;
+				if (stampNow.getYear() - year > 99) {
+					year = year + 100;
+				}
 				month = Integer.parseInt(personalID.substring(2, 4));
 				day = Integer.parseInt(personalID.substring(4, 6));
 			} else if (personalID.length() == 12) {
