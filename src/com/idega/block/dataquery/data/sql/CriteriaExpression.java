@@ -1,5 +1,6 @@
 package com.idega.block.dataquery.data.sql;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -91,8 +92,8 @@ public class CriteriaExpression implements DynamicExpression {
 	 * @see com.idega.block.dataquery.data.sql.Expression#toSQLString()
 	 */
 	public String toSQLString() {
+		Map replaceMap = new HashMap();
 		Iterator iterator = idCriterionMap.entrySet().iterator();
-		String result = booleanExpression;
 		while (iterator.hasNext())	{
 			Map.Entry entry = (Map.Entry) iterator.next();
 			String key = (String) entry.getKey();
@@ -100,9 +101,24 @@ public class CriteriaExpression implements DynamicExpression {
 			String value = criterion.toSQLString();
 			StringBuffer buffer = new StringBuffer(LEFT_BRACKET);
 			buffer.append(value).append(RIGHT_BRACKET);
-			result = StringHandler.replaceIgnoreCase(result, key, buffer.toString()); 
+			replaceMap.putAll(StringHandler.getReplaceMapIgnoreCase(booleanExpression, key, buffer.toString())); 
 		}
-		return result;
+		// replace the booleanExpression
+		int index = 0;
+		StringBuffer buffer = new StringBuffer();
+		while (index < booleanExpression.length()) {
+			Integer indexInt = new Integer(index);
+			String replace = null;
+			if (replaceMap.containsKey(indexInt)) {
+				replace = (String) replaceMap.get(indexInt);
+				index++;
+			}
+			else {
+				replace = booleanExpression.substring(index, ++index);
+			}
+			buffer.append(replace);
+		}
+		return buffer.toString();
 	}
 		
 
