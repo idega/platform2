@@ -1,5 +1,5 @@
 /*
- * $Id: FinanceIndex.java,v 1.3 2001/12/19 13:16:24 aron Exp $
+ * $Id: FinanceIndex.java,v 1.4 2001/12/19 13:24:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -77,7 +77,7 @@ public class FinanceIndex extends Block {
     FinanceObjects.add(0,new PaymentTypeEditor());
   }
 
-  public void addFinanceObject(FinanceObject obj){
+  public void addFinanceObject(Block obj){
     if(FinanceObjects == null)
       FinanceObjects = new Vector();
     FinanceObjects.add(obj);
