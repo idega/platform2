@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.22 2003/05/24 12:47:55 aron Exp $
+ * $Id: ContractBusiness.java,v 1.23 2003/07/29 10:40:15 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,7 +93,7 @@ public  class ContractBusiness {
         }
 
         //System.err.println("deleteing from waitinglist ");
-        deleteFromWaitingList(eContract);
+        deleteFromWaitingList(eContract.getApplicantId());
 
         //System.err.println("changing application status ");
         changeApplicationStatus( eContract);
@@ -170,9 +170,10 @@ public  class ContractBusiness {
 
     }
   }
+  
 
-  public static void deleteFromWaitingList(Contract eContract){
-    List L = WaitingListFinder.listOfWaitingList(WaitingListFinder.APPLICANT,eContract.getApplicantId().intValue(),0,0);
+  public static void deleteFromWaitingList(Integer applicantID){
+    List L = WaitingListFinder.listOfWaitingList(WaitingListFinder.APPLICANT,applicantID.intValue(),0,0);
       if(L!=null){
         Iterator I = L.iterator();
         while(I.hasNext()){
