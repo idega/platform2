@@ -2801,6 +2801,70 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public int getBruttoQueueTotalByProvider(int providerID, Date from, Date to) {
+		try {
+			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
+			return getChildCareApplicationHome().getBruttoQueueSizeNotInStatus(providerID, caseStatus, from, to);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getBruttoQueueByProvider(int providerID, Date from, Date to) {
+		try {
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, getCaseStatusOpenString(), from, to);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getBruttoQueueTotalByProviderWithinMonths(int providerID, int months) {
+		try {
+			IWTimestamp to = IWTimestamp.RightNow();
+			to.addMonths(months);
+			Date toDate = to.getDate();
+			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
+			return getChildCareApplicationHome().getBruttoQueueSizeNotInStatus(providerID, caseStatus, null, toDate);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getNettoQueueTotalByProvider(int providerID, Date from, Date to) {
+		try {
+			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
+			return getChildCareApplicationHome().getNettoQueueSizeNotInStatus(providerID, caseStatus, from, to);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getNettoQueueByProvider(int providerID, Date from, Date to) {
+		try {
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, getCaseStatusOpenString(), from, to);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getNettoQueueTotalByProviderWithinMonths(int providerID, int months) {
+		try {
+			IWTimestamp to = IWTimestamp.RightNow();
+			to.addMonths(months);
+			Date toDate = to.getDate();
+			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
+			return getChildCareApplicationHome().getNettoQueueSizeNotInStatus(providerID, caseStatus, null, toDate);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
 	public int getQueueTotalByArea(int areaID) {
 		try {
 

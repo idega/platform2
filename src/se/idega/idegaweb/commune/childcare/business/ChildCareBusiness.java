@@ -107,11 +107,17 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public int getQueueByArea(int p0) throws java.rmi.RemoteException;
  public int getQueueByProvider(int p0) throws java.rmi.RemoteException;
  public int getQueueByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
+ public int getNettoQueueByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
+ public int getBruttoQueueByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
  public java.util.Collection getQueueChoices(int p0) throws java.rmi.RemoteException;
  public int getQueueTotalByArea(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getQueueTotalByProvider(int p0) throws java.rmi.RemoteException;
  public int getQueueTotalByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
+ public int getNettoQueueTotalByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
+ public int getBruttoQueueTotalByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
  public int getQueueTotalByProviderWithinMonths(int p0,int p1) throws java.rmi.RemoteException;
+ public int getNettoQueueTotalByProviderWithinMonths(int p0,int p1) throws java.rmi.RemoteException;
+ public int getBruttoQueueTotalByProviderWithinMonths(int p0,int p1) throws java.rmi.RemoteException;
  public com.idega.block.school.business.SchoolBusiness getSchoolBusiness() throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness getSchoolChoiceBusiness() throws java.rmi.RemoteException;
  public char getStatusAccepted() throws java.rmi.RemoteException;
