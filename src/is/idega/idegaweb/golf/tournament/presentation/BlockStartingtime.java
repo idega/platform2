@@ -7,8 +7,8 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
@@ -46,7 +46,7 @@ public class BlockStartingtime extends GolfBlock {
     }
   }
 
-  public void getForm(IWContext modinfo,IWResourceBundle iwrb) throws SQLException{
+  public void getForm(IWContext modinfo,IWResourceBundle iwrb) throws RemoteException, SQLException{
     Form form = new Form();
     Table table = new Table();
     table.setAlignment("center");
@@ -67,8 +67,8 @@ public class BlockStartingtime extends GolfBlock {
     table.add(iwrb.getLocalizedString("tournament.text","Texti")+":",1,1);
     table.add(text,2,1);
 
-    DropdownMenu start = TournamentController.getAvailableGrupNums("start",tournamentRound.getTournament(),tournamentRound);
-    DropdownMenu stop = TournamentController.getAvailableGrupNums("stop",tournamentRound.getTournament(),tournamentRound);
+    DropdownMenu start = getTournamentBusiness(modinfo).getAvailableGrupNums("start",tournamentRound.getTournament(),tournamentRound);
+    DropdownMenu stop = getTournamentBusiness(modinfo).getAvailableGrupNums("stop",tournamentRound.getTournament(),tournamentRound);
     table.add(iwrb.getLocalizedString("tournament.from","Frá")+":",1,2);
     table.add(iwrb.getLocalizedString("tournament.to","Til")+":",1,3);
     table.add(start,2,2);
@@ -86,7 +86,7 @@ public class BlockStartingtime extends GolfBlock {
     add(form);
   }
 
-  public void block(IWContext modinfo,IWResourceBundle iwrb,boolean block) throws SQLException{
+  public void block(IWContext modinfo,IWResourceBundle iwrb,boolean block) throws NumberFormatException, RemoteException, SQLException{
     Form form = new Form();
     Table table = new Table();
     table.setAlignment("center");
@@ -100,9 +100,9 @@ public class BlockStartingtime extends GolfBlock {
     String stop = modinfo.getParameter("stop");
 
     if ( block )
-      TournamentController.blockStartingtime(modinfo, name,Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop));
+      getTournamentBusiness(modinfo).blockStartingtime(modinfo, name,Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop));
     else
-      TournamentController.unblockStartingtime(modinfo, Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop));
+      getTournamentBusiness(modinfo).unblockStartingtime(modinfo, Integer.parseInt(tournamentRoundID),Integer.parseInt(start),Integer.parseInt(stop));
 
     SubmitButton back = new SubmitButton("Til baka","action","getForm");
     table.add(back);

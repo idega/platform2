@@ -2,7 +2,6 @@ package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -60,10 +59,10 @@ private IWResourceBundle iwrb;
 
 
           if (this.headerImage != null) {
-              initialize(headerImage);
+              initialize(modinfo, headerImage);
           }
           else {
-              initialize(headerT);
+              initialize(modinfo, headerT);
           }
 
           /*if(!goneThrough_main){
@@ -83,7 +82,7 @@ private IWResourceBundle iwrb;
           }
         }*/
 
-        public void initialize(Object obj){
+        public void initialize(IWContext modinfo, Object obj){
               mainTable = new HeaderTable();
               innerTable = new Table();
               add(innerTable);
@@ -107,9 +106,9 @@ private IWResourceBundle iwrb;
                 int row = 1;
 
                 try {
-                    recent = TournamentController.getLastClosedTournaments(5);
+                    recent = getTournamentBusiness(modinfo).getLastClosedTournaments(5);
 //                  recent = TournamentController.getLastTournaments(3);
-                  coming = TournamentController.getTournamentToday();
+                  coming = getTournamentBusiness(modinfo).getTournamentToday();
 //                  coming = TournamentController.getNextTournaments(3);
                 }
                 catch (Exception e) {

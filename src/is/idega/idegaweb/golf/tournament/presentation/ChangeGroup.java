@@ -13,7 +13,6 @@ import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentGroupHome;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,7 +58,7 @@ public class ChangeGroup extends GolfBlock {
 			myForm.add(new HiddenInput("member_id", member_id));
 			myForm.add(new HiddenInput("mode", "submit"));
 
-			DropdownMenu menu = new DropdownMenu(TournamentController.getTournamentGroups(member, tournament));
+			DropdownMenu menu = new DropdownMenu(getTournamentBusiness(modinfo).getTournamentGroups(member, tournament));
 			menu.setSelectedElement("" + tournament.getTournamentGroupId(member));
 
 			myTable.addText(localize("tournament.choose_group","Choose group")+":", 1, 1);

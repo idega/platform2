@@ -16,7 +16,6 @@ import is.idega.idegaweb.golf.moduleobject.GolfDialog;
 import is.idega.idegaweb.golf.tournament.business.ResultComparator;
 import is.idega.idegaweb.golf.tournament.business.ResultDataHandler;
 import is.idega.idegaweb.golf.tournament.business.ResultsCollector;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -145,10 +144,10 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		Form form = new Form();
 		form.add(table);
 		table.add(iwrb.getLocalizedString("tournament.choose_tournament", "Choose a tournament"), 1, 1);
-		DropdownMenu menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"), modinfo);
+		DropdownMenu menu = getTournamentBusiness(modinfo).getDropdownOrderedByUnion(new DropdownMenu("tournament"), modinfo);
 		menu.setMarkupAttribute("size", "10");
 		table.add(menu, 1, 2);
-		table.add(TournamentController.getAheadButton(modinfo, "", ""), 1, 3);
+		table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 1, 3);
 		table.add(new HiddenInput("stt_action", "tournRound"));
 
 		add(form);
@@ -184,7 +183,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 						} else {
 							tRound.setVisibleStartingtimes(true);
 						}
-						TournamentController.invalidateStartingTimeCache(modinfo, tournament.getID(), String.valueOf(tournament_round_id));
+						getTournamentBusiness(modinfo).invalidateStartingTimeCache(modinfo, tournament.getID(), String.valueOf(tournament_round_id));
 						tRound.update();
 					}
 				}
@@ -278,7 +277,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		//	table.setBorder(1);
 		++row;
 		table.add(theMenu, 1, row);
-		table.add(TournamentController.getAheadButton(modinfo, "", ""), 1, row);
+		table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 1, row);
 		table.add(new HiddenInput("stt_action", "tourngroups"));
 
 		++row;
@@ -297,7 +296,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		Paragraph par = new Paragraph();
 		par.setAlign("center");
 		par.add("<br>&nbsp;&nbsp;&nbsp;");
-		par.add(TournamentController.getBackLink(modinfo));
+		par.add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 		add(par);
 
 	}
@@ -323,8 +322,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			table.add(new SelectionBox(tournament.getTournamentGroups()), 1, 2);
 			table.add(new HiddenInput("stt_action", "tournament_groups_chosen"));
 			form.maintainParameter("tournament_round");
-			table.add(TournamentController.getAheadButton(modinfo, "", ""), 2, 3);
-			table.add(TournamentController.getBackLink(modinfo), 1, 3);
+			table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 2, 3);
+			table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, 3);
 			add(form);
 		} else {
 			selectArrangement(modinfo, iwrb);
@@ -360,8 +359,8 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 			table.add(iwrb.getLocalizedString("tournament.choose_order", "Select the order of the groups"), 1, 1);
 			table.add(tournamentGroups, 1, 2);
-			table.add(TournamentController.getBackLink(modinfo), 1, 3);
-			table.add(TournamentController.getAheadButton(modinfo, "", ""), 2, 3);
+			table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, 3);
+			table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 2, 3);
 
 			form.add(new HiddenInput("stt_action", "tournament_groups_ordered"));
 			form.maintainParameter("tournament_round");
@@ -369,7 +368,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		} else {
 			add(iwrb.getLocalizedString("tournament.must_select_groups", "You must pick at least one group"));
 			add("<br><br>");
-			add(TournamentController.getBackLink(modinfo));
+			add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 
 		}
 	}
@@ -409,7 +408,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				++row;
 				tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournamentGroups[i]));
 				//members =
-				// TournamentController.getMembersInTournamentGroup(tournament,tGroup);
+				// getTournamentBusiness(modinfo).getMembersInTournamentGroup(tournament,tGroup);
 				table.add(tGroup.getName(), 1, row);
 				table.add(new HiddenInput("tournament_group_id", "" + tGroup.getID()), 3, row);
 				table.add(menu, 3, row);
@@ -452,9 +451,9 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			++row;
 
 			table.add(new HiddenInput("stt_action", "arrangement_chosen_for_groups"));
-			table.add(TournamentController.getBackLink(modinfo), 1, row);
+			table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, row);
 			table.mergeCells(3, row, 5, row);
-			table.add(TournamentController.getAheadButton(modinfo, "", ""), 3, row);
+			table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 3, row);
 			table.setAlignment(3, row, "right");
 			++row;
 			++row;
@@ -521,7 +520,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					for (int i = 0; i < tournament_group_ids.length; i++) {
 						tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_group_ids[i]));
 						if (!arrangements[i].equals("null")) {
-							members = TournamentController.getMembersInTournamentGroup(tournament, tGroup);
+							members = getTournamentBusiness(modinfo).getMembersInTournamentGroup(tournament, tGroup);
 							if (members != null) {
 								if (arrangements[i].equals("manual")) {
 									/*
@@ -561,7 +560,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				if (addTable) {
 					form.add(table);
 					++row;
-					table.add(TournamentController.getAheadButton(modinfo, "", ""), 2, row);
+					table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 2, row);
 					table.add(new HiddenInput("stt_action", "manualArrangementForMembersInGroupsChosen"), 2, row);
 					table.setAlignment(2, row, "right");
 
@@ -570,11 +569,11 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			} else {
 				add(iwrb.getLocalizedString("tournament.ording_method_missing_for_group", "Ordering method missing for one group or more"));
 				add("<p>");
-				add(TournamentController.getBackLink(modinfo));
+				add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 			}
 		} else {
 			arrangementsAllNull = false;
-			List members = TournamentController.getMembersInTournamentList(tournament);
+			List members = getTournamentBusiness(modinfo).getMembersInTournamentList(tournament);
 
 			if (arrangementAll.indexOf("previousRounds") != -1) {
 				arrangementsAllNull = true;
@@ -620,7 +619,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				++theRow;
 				table.mergeCells(1, theRow, 2, theRow);
 				table.setAlignment(1, theRow, "right");
-				table.add(TournamentController.getAheadButton(modinfo, "", ""), 1, theRow);
+				table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 1, theRow);
 
 				form.add(table);
 				add(form);
@@ -653,7 +652,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 				++theRow;
 				table.mergeCells(1, theRow, 2, theRow);
 				table.setAlignment(1, theRow, "right");
-				table.add(TournamentController.getAheadButton(modinfo, "", ""), 1, theRow);
+				table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 1, theRow);
 
 				form.add(table);
 				add(form);
@@ -725,14 +724,14 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					if (members != null) {
 						for (int j = 0; j < members.length; j++) {
 							member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(members[j]));
-							startingGroup = TournamentController.getNextAvailableStartingGroup(tournament, tourRound);
+							startingGroup = getTournamentBusiness(modinfo).getNextAvailableStartingGroup(tournament, tourRound);
 
 							//startingGroup =
 							// getNextAvailableStartingGroup(tournament,
 							// tourDay, tournament.getNumberInGroup());
 
-							if (!TournamentController.isMemberRegisteredInTournament(tournament, tourRound, tournament.getNumberInGroup(), member)) {
-								TournamentController.setupStartingtime(modinfo, member, tournament, tourRound.getID(), startingGroup);
+							if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, tourRound, tournament.getNumberInGroup(), member)) {
+								getTournamentBusiness(modinfo).setupStartingtime(modinfo, member, tournament, tourRound.getID(), startingGroup);
 								++rowR;
 								tableR.add(member.getName(), 1, rowR);
 								tableR.add("Ráshópur " + startingGroup, 4, rowR);
@@ -1016,7 +1015,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 					}
 
 					tRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(s_tournament_round_id));
-					int startingGroup = TournamentController.getNextAvailableStartingGroup(tournament, tRound, newTournamentGroups, minimumGroupNumber);
+					int startingGroup = getTournamentBusiness(modinfo).getNextAvailableStartingGroup(tournament, tRound, newTournamentGroups, minimumGroupNumber);
 
 					if (i == 0) {
 						previousStartingGroup = startingGroup;
@@ -1031,11 +1030,11 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 						previousStartingGroup = currentStartingGroup - 1;
 					}
 
-					TournamentController.setupStartingtime(modinfo, member, tournament, tRound.getID(), startingGroup);
+					getTournamentBusiness(modinfo).setupStartingtime(modinfo, member, tournament, tRound.getID(), startingGroup);
 
 					if (start.length > 1) {
 						if (groupNumber <= start.length) {
-							List theList = TournamentController.getMembersInStartingGroup(tournament, tRound, startingGroup);
+							List theList = getTournamentBusiness(modinfo).getMembersInStartingGroup(tournament, tRound, startingGroup);
 							if (theList != null) {
 								if (theList.size() == start[groupNumber - 1]) {
 									minimumGroupNumber = (startingGroup + 1);
@@ -1044,7 +1043,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 						}
 					} else if (start.length > 0) {
 						if (groupNumber == 1) {
-							List theList = TournamentController.getMembersInStartingGroup(tournament, tRound, startingGroup);
+							List theList = getTournamentBusiness(modinfo).getMembersInStartingGroup(tournament, tRound, startingGroup);
 							if (theList != null) {
 								if (theList.size() == start[groupNumber - 1]) {
 									minimumGroupNumber = (startingGroup + 1);
@@ -1184,7 +1183,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		if (tournament_round_id == null) {
 			add(iwrb.getLocalizedString("tournament.must_select_rounds", "You must select at least one round"));
 			add("<p>");
-			add(TournamentController.getBackLink(modinfo));
+			add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 		} else {
 
 			String tournament_round = modinfo.getParameter("tournament_round");
@@ -1253,7 +1252,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		if (tournament_round_id == null) {
 			add(iwrb.getLocalizedString("tournament.must_select_rounds", "You must select at least one round"));
 			add("<p>");
-			add(TournamentController.getBackLink(modinfo));
+			add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 		} else {
 			String tournament_round = modinfo.getParameter("tournament_round");
 			Startingtime[] sTimes = (Startingtime[]) ((Startingtime) IDOLookup.instanciateEntity(Startingtime.class)).findAll("select s.* from startingtime s,tournament_round_startingtime trs where trs.startingtime_id = s.startingtime_id AND trs.tournament_round_id = " + tournament_round_id + " order by s.grup_num");
@@ -1264,7 +1263,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 			for (int i = 0; i < sTimes.length; i++) {
 				member = sTimes[i].getMember();
-				TournamentController.setupStartingtime(modinfo, member, tournament, tourRound.getID(), sTimes[i].getGroupNum(), sTimes[i].getTeeNumber());
+				getTournamentBusiness(modinfo).setupStartingtime(modinfo, member, tournament, tourRound.getID(), sTimes[i].getGroupNum(), sTimes[i].getTeeNumber());
 			}
 
 			add(iwrb.getLocalizedString("tournament.ordering_finished", "Ordering complete"));

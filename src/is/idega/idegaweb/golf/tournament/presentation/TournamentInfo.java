@@ -11,7 +11,6 @@ import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import com.idega.business.IBOLookup;
@@ -129,7 +128,7 @@ public class TournamentInfo extends GolfBlock {
 				}
 			}
 	
-			if (TournamentController.isOnlineRegistration(tournament)) {
+			if (getTournamentBusiness(modinfo).isOnlineRegistration(tournament)) {
 				GenericButton register = getButton(new GenericButton(localize("tournament_register","Register")));
 				register.setWindowToOpen(RegistrationForMembersWindow.class);
 				register.addParameter("action", "open");

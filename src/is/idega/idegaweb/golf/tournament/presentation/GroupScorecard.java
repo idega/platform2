@@ -16,7 +16,6 @@ import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -571,7 +570,7 @@ public class GroupScorecard extends GolfBlock {
 
 			int rows = myTable.getRows();
 			myTable.setAlignment(1, rows, "right");
-			myTable.add(getButton(TournamentController.getBackLink(modinfo)), 1, rows);
+			myTable.add(getButton(getTournamentBusiness(modinfo).getBackLink(modinfo)), 1, rows);
 			myTable.addText(" ", 1, rows);
 			myTable.add(getButton(new SubmitButton(localize("tournament.save","Save"))), 1, rows);
 			myForm.add(myTable);

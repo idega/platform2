@@ -14,8 +14,8 @@ import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -53,7 +53,7 @@ public class TournamentChecker extends GolfBlock {
         String action = modinfo.getParameter("action");
         if (action != null) {
             if (action.equals("doCheck")) {
-                checkTournament(((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
+                checkTournament(modinfo, ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
             }else if (action.equals("fix")) {
                 prepareFix(modinfo,iwrb,iwb);
             }else if (action.equals("doFix")) {
@@ -65,7 +65,7 @@ public class TournamentChecker extends GolfBlock {
                 if (scorecard_id != null) {
                     deleteScorecard(Integer.parseInt(scorecard_id));
                 }
-                checkTournament(((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
+                checkTournament(modinfo, ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
             }else if (action.equals("deleteAllScorecards")) {
                 String[] scorecard_ids = modinfo.getParameterValues("scorecard_id");
                 if (scorecard_ids != null) {
@@ -73,13 +73,13 @@ public class TournamentChecker extends GolfBlock {
                         deleteScorecard(Integer.parseInt(scorecard_ids[i]));
                     }
                 }
-                checkTournament(((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
+                checkTournament(modinfo, ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
             }else if (action.equals("deleteOneStartingtime")) {
                 String startingtime_id = modinfo.getParameter("startingtime_id");
                 if (startingtime_id != null) {
                     deleteStartingtime(Integer.parseInt(startingtime_id));
                 }
-                checkTournament(((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
+                checkTournament(modinfo, ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
             }else if (action.equals("deleteAllStartingtimes")) {
                 String[] startingtime_ids = modinfo.getParameterValues("startingtime_id");
                 if (startingtime_ids != null) {
@@ -87,7 +87,7 @@ public class TournamentChecker extends GolfBlock {
                         deleteStartingtime(Integer.parseInt(startingtime_ids[i]));
                     }
                 }
-                checkTournament(((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
+                checkTournament(modinfo, ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id)),iwrb,iwb);
             }
 
 
@@ -99,9 +99,9 @@ public class TournamentChecker extends GolfBlock {
     }
 }
 
-public void checkTournament(Tournament tournament,IWResourceBundle iwrb, IWBundle iwb) throws SQLException {
+public void checkTournament(IWContext modinfo, Tournament tournament,IWResourceBundle iwrb, IWBundle iwb) throws RemoteException, SQLException {
 
-    List members = TournamentController.getMembersInTournamentList(tournament);
+    List members = getTournamentBusiness(modinfo).getMembersInTournamentList(tournament);
     TournamentRound[] tRounds = tournament.getTournamentRounds();
 
     int roundRows = tRounds.length;
@@ -345,13 +345,13 @@ public void doFix(IWContext modinfo, IWResourceBundle iwrb, IWBundle iwb) throws
             }
 
 
-            TournamentController.removeMemberFromTournament(modinfo, tournament,member);
-            TournamentController.registerMember(member,tournament,tournament_group_ids[0]);
+            getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,member);
+            getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_group_ids[0]);
 
-            TournamentController.setupStartingtime(modinfo, member,tournament,tRounds[0].getID(),grupNum);
+            getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,tRounds[0].getID(),grupNum);
 
         }
-        checkTournament(tournament,iwrb,iwb);
+        checkTournament(modinfo,tournament,iwrb,iwb);
     }
     catch (Exception e) {
         e.printStackTrace(System.err);
@@ -402,9 +402,9 @@ public void delete(IWContext modinfo,IWResourceBundle iwrb, IWBundle iwb) throws
         Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
         Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
 
-        TournamentController.removeMemberFromTournament(modinfo, tournament,member);
+        getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,member);
 
-        checkTournament(tournament,iwrb,iwb);
+        checkTournament(modinfo, tournament,iwrb,iwb);
 
     }
     catch (Exception e) {

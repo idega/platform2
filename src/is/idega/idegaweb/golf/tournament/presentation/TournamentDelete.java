@@ -4,7 +4,6 @@ import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
@@ -75,7 +74,7 @@ public class TournamentDelete extends GolfBlock {
 	                tournament.delete();
 	                table.add(iwrb.getLocalizedString("tournament.tournament","tournament")+" "+tournament.getName()+iwrb.getLocalizedString("tournament.was_deleted","was deleted"),1,1);
 	                table.add(new CloseButton(iwrb.getLocalizedString("tournament.close","close")),1,2);
-	                TournamentController.removeTournamentTableApplicationAttribute(modinfo);
+	                getTournamentBusiness(modinfo).removeTournamentTableApplicationAttribute(modinfo);
 	                getParentPage().setParentToReload();
 	            }
 	        }

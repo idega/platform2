@@ -12,7 +12,6 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 import is.idega.idegaweb.golf.tournament.even.TournamentEventListener;
 
@@ -323,7 +322,7 @@ public class TournamentList extends GolfBlock {
 						Text theForm = getSmallText(tournaments[i].getTournamentForm().getName());
 						table.add(theForm, column++, row);
 
-						if (TournamentController.isOnlineRegistration(tournaments[i], rightNowStamp)) {
+						if (getTournamentBusiness(modinfo).isOnlineRegistration(tournaments[i], rightNowStamp)) {
 							Image registerImage = iwb.getImage("shared/tournament/register.gif");
 							registerImage.setName(iwrb.getLocalizedString("tournament.register_me", "Register me"));
 							registerImage.setToolTip(iwrb.getLocalizedString("tournament.register_me", "Register me"));

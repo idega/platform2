@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import java.rmi.RemoteException;
+
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentParticipants;
@@ -12,7 +14,6 @@ import is.idega.idegaweb.golf.entity.TournamentType;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapRegisterWindow;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapUtility;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.data.IDOLookup;
@@ -70,7 +71,7 @@ public class ScorecardSelect extends TournamentBlock {
 
 	}
 
-	public void getTournaments(IWContext modinfo) {
+	public void getTournaments(IWContext modinfo) throws RemoteException {
 		iwrb = getResourceBundle(modinfo);
 		//dialog = new GolfTournamentAdminDialog();
 		//super.add(dialog);
@@ -87,7 +88,7 @@ public class ScorecardSelect extends TournamentBlock {
 		myTable.setAlignment(1, 3, "right");
 		myTable.setCellpadding(4);
 
-		menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"), modinfo);
+		menu = getTournamentBusiness(modinfo).getDropdownOrderedByUnion(new DropdownMenu("tournament"), modinfo);
 		menu.setMarkupAttribute("size", "10");
 
 		Text selectText = new Text(iwrb.getLocalizedString("tournament.choose_tournament", "Choose tournament") + ":");
@@ -236,7 +237,7 @@ public class ScorecardSelect extends TournamentBlock {
 		int numberOfGolfers = 0;
 
 		if (order.equalsIgnoreCase("alphabetical")) {
-			TournamentParticipants[] members = TournamentController.getTournamentParticipants("tr.tournament_round_id", tournament_round_id, "first_name,last_name,middle_name");
+			TournamentParticipants[] members = getTournamentBusiness(modinfo).getTournamentParticipants("tr.tournament_round_id", tournament_round_id, "first_name,last_name,middle_name");
 
 			numberOfGolfers = members.length;
 			for (int a = 0; a < members.length; a++) {
@@ -380,7 +381,7 @@ public class ScorecardSelect extends TournamentBlock {
 
 		}
 		else if (order.equalsIgnoreCase("byStartingTime")) {
-			TournamentRoundParticipants[] members = TournamentController.getTournamentRoundParticipants("tr.tournament_round_id", tournament_round_id, "grup_num");
+			TournamentRoundParticipants[] members = getTournamentBusiness(modinfo).getTournamentRoundParticipants("tr.tournament_round_id", tournament_round_id, "grup_num");
 
 			numberOfGolfers = members.length;
 			for (int a = 0; a < members.length; a++) {
@@ -532,7 +533,7 @@ public class ScorecardSelect extends TournamentBlock {
 		myTable.addText("<hr size=\"1\" noshade align=\"left\" width=\"150\">" + iwrb.getLocalizedString("tournament.number_of_contestants", "Number of contestants") + ": " + numberOfGolfers, 1, rows + 1);
 
 		myTable.add(getButton(new SubmitButton(localize("tournament.register", "Register"))), 6, rows + 2);
-		Link backLink = new Link(TournamentController.getBackLink(modinfo));
+		Link backLink = new Link(getTournamentBusiness(modinfo).getBackLink(modinfo));
 		myTable.add(backLink, 1, rows + 2);
  
 		myForm.addBreak();

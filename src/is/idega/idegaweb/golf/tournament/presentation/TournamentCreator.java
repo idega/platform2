@@ -21,8 +21,8 @@ import is.idega.idegaweb.golf.entity.TournamentTournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentType;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.moduleobject.GolfDialog;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -149,7 +149,7 @@ public class TournamentCreator extends TournamentBlock {
 	        }
 	}
 
-	public void createTournament(IWContext modinfo,IWResourceBundle iwrb) throws SQLException {
+	public void createTournament(IWContext modinfo,IWResourceBundle iwrb) throws SQLException, RemoteException {
 	        String sSelectedTournamentType = "-1";
 	        String sSelectedTournamentForm = "-1";
 	        boolean bSelectedTournamentUseGroups = false;
@@ -267,7 +267,7 @@ public class TournamentCreator extends TournamentBlock {
 	                IntegerInput numberOfHoles = new IntegerInput("tournament_admin_number_of_holes",18);
 	                    numberOfHoles.setSize(3);
 
-	                List tGroup = TournamentController.getUnionTournamentGroups(union);
+	                List tGroup = getTournamentBusiness(modinfo).getUnionTournamentGroups(union);
 	                SelectionBox tournamentGroups = new SelectionBox(tGroup);
 	                    tournamentGroups.setHeight(15);
 
@@ -564,7 +564,7 @@ public class TournamentCreator extends TournamentBlock {
 	            table.add(hiddenAction,1,row);
 
 
-	            table.add(getButton(TournamentController.getBackLink(modinfo)),1,row);
+	            table.add(getButton(getTournamentBusiness(modinfo).getBackLink(modinfo)),1,row);
 
 	        }
 	        else {
@@ -575,11 +575,11 @@ public class TournamentCreator extends TournamentBlock {
 
 	}
 
-	public void createTournament2(IWContext modinfo, IWResourceBundle iwrb)throws SQLException{
+	public void createTournament2(IWContext modinfo, IWResourceBundle iwrb)throws SQLException, RemoteException{
 	    String[] tournament_groups = modinfo.getParameterValues("tournament_group");
 	    if (tournament_groups == null) {
 	        add(iwrb.getLocalizedString("tournament.you_must_pick_groups","You must pick at least one tournament group")+ "<br><br>");
-	        add(getButton(TournamentController.getBackLink(modinfo)));
+	        add(getButton(getTournamentBusiness(modinfo).getBackLink(modinfo)));
 	    }
 	    else {
 	        try {
@@ -821,7 +821,7 @@ public class TournamentCreator extends TournamentBlock {
 					buttonTable.setWidth("85%");
 	            GenericButton submitButton = getButton(new SubmitButton(localize("tournament.save","Save")));
 	            HiddenInput hiddenInput = new HiddenInput("tournament_admin_createtournament_action","tournament_admin_save_tournament");
-	            buttonTable.add(getButton(TournamentController.getBackLink(modinfo)),1,1);
+	            buttonTable.add(getButton(getTournamentBusiness(modinfo).getBackLink(modinfo)),1,1);
 	            buttonTable.add(submitButton,3,1);
 	            buttonTable.add(hiddenInput,3,1);
 	            buttonTable.setAlignment(3,1,"right");
@@ -896,7 +896,7 @@ public class TournamentCreator extends TournamentBlock {
 	                IWTimestamp stampFrom;
 	                IWTimestamp stampTo;
 
-	                Member[] members = TournamentController.getMembersInTournament(tournament);
+	                Member[] members = getTournamentBusiness(modinfo).getMembersInTournament(tournament);
 	                Member member;
 
 	                for (int i = (manyRounds +1) ; i <= tournament.getNumberOfRounds() ; i++){
@@ -947,7 +947,7 @@ public class TournamentCreator extends TournamentBlock {
 	            
 	 	       TournamentRound[] tournRounds = tournament.getTournamentRounds();
 	 	       for (int u = 0; u < tournRounds.length; u++) {
-	              TournamentController.invalidateStartingTimeCache(modinfo, tournRounds[u].getTournamentID(),  Integer.toString(tournRounds[u].getID()));
+	 	       getTournamentBusiness(modinfo).invalidateStartingTimeCache(modinfo, tournRounds[u].getTournamentID(),  Integer.toString(tournRounds[u].getID()));
 	           }
 
 
@@ -1110,7 +1110,7 @@ public class TournamentCreator extends TournamentBlock {
 	      if (isUpdateHandicap != null) {
 	          if (isUpdateHandicap.equalsIgnoreCase("true")) {
 	              try {  // updateHandicapForRegisteredMembers
-	                  Member[] members = TournamentController.getMembersInTournament(tournament);
+	                  Member[] members = getTournamentBusiness(modinfo).getMembersInTournament(tournament);
 
 	                  if (members != null) {
 	                      if (members.length > 0) {
@@ -1127,7 +1127,7 @@ public class TournamentCreator extends TournamentBlock {
 	      }
 
 
-	    TournamentController.removeTournamentTableApplicationAttribute(modinfo);
+	      getTournamentBusiness(modinfo).removeTournamentTableApplicationAttribute(modinfo);
 		add(iwrb.getLocalizedString("tournament.tournament_saved","Tournament saved"));
 
 	}

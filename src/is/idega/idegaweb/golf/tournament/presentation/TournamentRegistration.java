@@ -21,8 +21,8 @@ import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -134,7 +134,7 @@ public void main(IWContext modinfo)throws Exception{
             }else if (action.equals("removeMemberFromTournament")) {
                 String startingGroupNumber = modinfo.getParameter("startingGroupNumber");
                 String member_id = modinfo.getParameter("member_id");
-                TournamentController.removeMemberFromTournament(modinfo, tournament,((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id)));
+                getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id)));
                 getDirectRegistrationTable(modinfo,false,getResourceBundle());
             }else if (action.equals("directRegistrationMembersChosen")) {
                 finalizeDirectRegistration(modinfo,getResourceBundle());
@@ -142,20 +142,20 @@ public void main(IWContext modinfo)throws Exception{
                 String sub_action = modinfo.getParameter("sub_action");
                 if (sub_action != null) {
                 	if (sub_action.equals("update")) {
-                		TournamentController.setAllMemberToNotPaid(tournament);
+                		getTournamentBusiness(modinfo).setAllMemberToNotPaid(tournament);
 						String[] paid = modinfo.getParameterValues("paid");
 						Member mMember;
 						if (paid != null) {
 							for (int y = 0; y < paid.length; y++) {
 								mMember = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(paid[y]));
-								TournamentController.setHasMemberPaid(tournament, mMember, true);
+								getTournamentBusiness(modinfo).setHasMemberPaid(tournament, mMember, true);
 							}
 						}
 						String[] rem = modinfo.getParameterValues("removeMember");
 						if (rem != null) {
 							for (int y = 0; y < rem.length; y++) {
 								mMember = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(rem[y]));
-		                        TournamentController.removeMemberFromTournament(modinfo, tournament,mMember);
+								getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,mMember);
 							}
 						}
                 	}
@@ -171,11 +171,11 @@ public void main(IWContext modinfo)throws Exception{
 
 }
 
-public void noAction(IWContext modinfo,IWResourceBundle iwrb) {
+public void noAction(IWContext modinfo,IWResourceBundle iwrb) throws RemoteException {
             Form form = new Form();
             Table table2 = new Table(1,3);
             table2.add(iwrb.getLocalizedString("tournament.choose_tournament","Choose a tournament") ,1,1);
-            DropdownMenu menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),modinfo);
+            DropdownMenu menu = getTournamentBusiness(modinfo).getDropdownOrderedByUnion(new DropdownMenu("tournament"),modinfo);
                 menu.setMarkupAttribute("size","10");
 
 
@@ -191,7 +191,7 @@ public void noAction(IWContext modinfo,IWResourceBundle iwrb) {
             form.add(table2);
 }
 
-public void selectMember(IWContext modinfo,IWResourceBundle iwrb) throws SQLException{
+public void selectMember(IWContext modinfo,IWResourceBundle iwrb) throws NumberFormatException, RemoteException, SQLException{
     Tournament tournament = getTournament(modinfo);
 
     if(tournament.isDirectRegistration()){
@@ -213,7 +213,7 @@ public void selectMember(IWContext modinfo,IWResourceBundle iwrb) throws SQLExce
 
 }
 
-public void directRegistration(IWContext modinfo,IWResourceBundle iwrb) throws SQLException {
+public void directRegistration(IWContext modinfo,IWResourceBundle iwrb) throws SQLException, NumberFormatException, RemoteException {
 
 
     String subAction = modinfo.getParameter("sub_action");
@@ -226,7 +226,7 @@ public void directRegistration(IWContext modinfo,IWResourceBundle iwrb) throws S
             String startingGroupNumber = modinfo.getParameter("startingGroupNumber");
             String member_id = modinfo.getParameter("member_id");
             try {
-            	TournamentController.removeMemberFromTournament(modinfo, tournament,((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id)));
+            	getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id)));
             }
             catch (FinderException fe) {
             	throw new SQLException(fe.getMessage());
@@ -303,7 +303,7 @@ public void tournamentMemberList(IWContext modinfo, IWResourceBundle iwrb) throw
             
             try {
 	            paid = new CheckBox("paid", Integer.toString(member.getID()));
-	            paid.setChecked(TournamentController.getHasMemberPaid(tournament, member));
+	            paid.setChecked(getTournamentBusiness(modinfo).getHasMemberPaid(tournament, member));
 	            table.add(paid, 9, row);
             }catch (Exception e) {
             	table.add("Villa", 9, row);
@@ -340,7 +340,7 @@ public void tournamentMemberList(IWContext modinfo, IWResourceBundle iwrb) throw
 
 }
 
-public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourceBundle iwrb) throws SQLException {
+public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourceBundle iwrb) throws RemoteException, SQLException {
     add("<center><big><b>");
     add(iwrb.getLocalizedString("tournament.tee_time_registration","Tee time registration"));
     add("</b></big></center>");
@@ -383,7 +383,7 @@ public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourc
 
 
         add(table);
-        add(TournamentController.getStartingtimeTable(tournament,tournament_round_id, view));
+        add(getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id, view));
         Link link = getLink(iwrb.getLocalizedString("tournament.print","print"));
         link.addParameter(TournamentStartingtimeWindow.PARAMETER_TOURNAMENT_ROUND_ID, tournament_round_id);
         link.addParameter(TournamentStartingtimeWindow.PARAMETER_TOURNAMENT_ID, tournament.getID());
@@ -400,7 +400,7 @@ public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourc
 
 
 
-public void finalizeDirectRegistration(IWContext modinfo,IWResourceBundle iwrc) throws SQLException {
+public void finalizeDirectRegistration(IWContext modinfo,IWResourceBundle iwrc) throws NumberFormatException, RemoteException, SQLException {
     if (isSaveEnabled(modinfo)) {
 
         Tournament tournament = getTournament(modinfo);
@@ -422,7 +422,7 @@ public void finalizeDirectRegistration(IWContext modinfo,IWResourceBundle iwrc) 
                 tm = com.idega.transaction.IdegaTransactionManager.getInstance();
                 try {
                     member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_ids[i]));
-                    if (!TournamentController.isMemberRegisteredInTournament(tournament, member)) {
+                    if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, member)) {
                         tm.begin();
                         handicapCorrection = modinfo.getParameter("handicap_correction_"+member.getID());
                         if (handicapCorrection != null) {
@@ -431,11 +431,11 @@ public void finalizeDirectRegistration(IWContext modinfo,IWResourceBundle iwrc) 
                             }
                         }
                         tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
-                        TournamentController.registerMember(member,tournament,tournament_groups[i]);
+                        getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_groups[i]);
                         if (starting_tee[i].equals("10")) {
-                            TournamentController.setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]),10);
+                        		getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]),10);
                         }else {
-                            TournamentController.setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
+                        		getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
                         }
                         tm.commit();
                     }
@@ -506,8 +506,8 @@ public void finalizeDirectRegistration(IWContext modinfo,IWResourceBundle iwrc) 
                     uMInfo.setMemberStatus("A");
                     uMInfo.insert();
 
-                TournamentController.registerMember(XPmember,tournament,XPGroups[XP]);
-                TournamentController.setupStartingtime(modinfo, XPmember, tournament, Integer.parseInt(tournament_round), Integer.parseInt(XPStartingtime[XP]) );
+                    getTournamentBusiness(modinfo).registerMember(XPmember,tournament,XPGroups[XP]);
+                    getTournamentBusiness(modinfo).setupStartingtime(modinfo, XPmember, tournament, Integer.parseInt(tournament_round), Integer.parseInt(XPStartingtime[XP]) );
             }
 
         }
@@ -530,13 +530,13 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
 	try {
 		String[] membersPaid = modinfo.getParameterValues("paid");
 		Member member;
-		TournamentController.setAllMemberToNotPaid(tournament);
+		getTournamentBusiness(modinfo).setAllMemberToNotPaid(tournament);
 		if (membersPaid != null) {
 			for (int i = 0; i < membersPaid.length; i++) {
                 member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(membersPaid[i]));
-                TournamentController.setHasMemberPaid(tournament, member, true);
+                getTournamentBusiness(modinfo).setHasMemberPaid(tournament, member, true);
 			}
-			TournamentController.invalidateStartingTimeCache(modinfo, tournament);		
+			getTournamentBusiness(modinfo).invalidateStartingTimeCache(modinfo, tournament);		
 		}
 	}catch (Exception e) {
         System.err.println("TournamentController : saveDirectRegistration : setting PAID");
@@ -550,7 +550,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
         if (memberIdsToDelete != null) {
             for (int i = 0; i < memberIdsToDelete.length; i++) {
                 member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(memberIdsToDelete[i]));
-                TournamentController.removeMemberFromTournament(modinfo, tournament,member);
+                getTournamentBusiness(modinfo).removeMemberFromTournament(modinfo, tournament,member);
             }
         }
     }
@@ -671,11 +671,11 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
 
                         }
                         else {
-                            errors = TournamentController.isMemberAllowedToRegister(member,tournament);
+                            errors = getTournamentBusiness(modinfo).isMemberAllowedToRegister(member,tournament);
 
                             if ( (errors[0] == 0) && (errors[1] == 0) && (errors[2] == 0) && (errors[3] == 0) ){
-                                if (!TournamentController.isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
-                                    List tGroups = TournamentController.getTournamentGroups(member,tournament);
+                                if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
+                                    List tGroups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
                                     if (tGroups != null) {
                                         ++tableRow;
                                         table.add(member.getName(),1,tableRow);
@@ -785,11 +785,11 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
 
                         }
                         else {
-                            errors = TournamentController.isMemberAllowedToRegister(member,tournament);
+                            errors = getTournamentBusiness(modinfo).isMemberAllowedToRegister(member,tournament);
 
                             if ( (errors[0] == 0) && (errors[1] == 0) && (errors[2] == 0) && (errors[3] == 0) ){
-                                if (!TournamentController.isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
-                                    List tGroups = TournamentController.getTournamentGroups(member,tournament);
+                                if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
+                                    List tGroups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
                                     if (tGroups != null) {
                                         ++tableRow;
                                         table.add(member.getName(),1,tableRow);
@@ -885,7 +885,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
         Table buttonTable = new Table(1,1);
             buttonTable.setAlignment(1,1,"right");
             buttonTable.setWidth("100%");
-            buttonTable.add(TournamentController.getAheadButton(modinfo,"",""));
+            buttonTable.add(getTournamentBusiness(modinfo).getAheadButton(modinfo,"",""));
         form.add(buttonTable);
 
 
@@ -933,7 +933,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
         Table flippTable = new Table();
           flippTable.setWidth("100%");
           flippTable.setAlignment(1,1,"left");
-          flippTable.add(TournamentController.getBackLink(modinfo),1,1);
+          flippTable.add(getTournamentBusiness(modinfo).getBackLink(modinfo),1,1);
       content.add("<br>");
       content.add(flippTable);
 
@@ -952,7 +952,7 @@ public void saveDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) thr
 }
 
 
-public void getUnionMemberList(IWContext modinfo,IWResourceBundle iwrb) throws SQLException {
+public void getUnionMemberList(IWContext modinfo,IWResourceBundle iwrb) throws SQLException, RemoteException {
     try {
     	Member member =  ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(AccessControl.getMember(modinfo).getID());
     Union union = member.getMainUnion();
@@ -1019,12 +1019,12 @@ public void searchByName(IWContext modinfo,IWResourceBundle iwrb) throws SQLExce
 
 }
 
-public void getSearchByNameResults(IWContext modinfo,IWResourceBundle iwrb) throws SQLException {
+public void getSearchByNameResults(IWContext modinfo,IWResourceBundle iwrb) throws SQLException, RemoteException {
     String names = modinfo.getParameter("name");
     Member[] theMembers = this.findMembersByName(modinfo, names);
     drawTableWithMembers(modinfo, theMembers, iwrb);
 }
-public void getSearchBySocialSecurityNumberResults(IWContext modinfo,IWResourceBundle iwrb) throws SQLException {
+public void getSearchBySocialSecurityNumberResults(IWContext modinfo,IWResourceBundle iwrb) throws SQLException, RemoteException {
     String socialSecurityNumbers = modinfo.getParameter("socialSecurityNumbers");
     Member[] theMembers = this.findMembersBySocialSecurityNumber(modinfo,socialSecurityNumbers);
     List guests = this.findGuestsBySocialSecurityNumber(modinfo,socialSecurityNumbers);
@@ -1065,7 +1065,7 @@ public void searchBySocialSecurityNumber(IWContext modinfo,IWResourceBundle iwrb
 
 }
 
-public void drawTableWithMembers(IWContext modinfo, List theMembers, IWResourceBundle iwrb) {
+public void drawTableWithMembers(IWContext modinfo, List theMembers, IWResourceBundle iwrb) throws RemoteException {
     is.idega.idegaweb.golf.entity.Member[] theMembersArray = new is.idega.idegaweb.golf.entity.Member[theMembers.size()];
 
         for (int i = 0; i < theMembersArray.length; i++) {
@@ -1077,10 +1077,10 @@ public void drawTableWithMembers(IWContext modinfo, List theMembers, IWResourceB
     drawTableWithMembers(modinfo,theMembersArray, iwrb);
 }
 
-public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, IWResourceBundle iwrb) {
+public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, IWResourceBundle iwrb) throws RemoteException {
     drawTableWithMembers(modinfo, theMembers, null, iwrb);
 }
-public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, List guests,IWResourceBundle iwrb) {
+public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, List guests,IWResourceBundle iwrb) throws RemoteException {
     int tableHeight = 5;
     int numberOfMember = 0;
 
@@ -1224,7 +1224,7 @@ public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, List gu
     table.setColumnAlignment(3,"left");
     table.setColumnAlignment(5,"left");
     table.setColumnAlignment(7,"left");
-     bottom.add(TournamentController.getBackLink(modinfo),1,1);
+     bottom.add(getTournamentBusiness(modinfo).getBackLink(modinfo),1,1);
 
 
     form.addBreak();
@@ -1234,7 +1234,7 @@ public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, List gu
 
 
 
-public void registerMarkedMembers(IWContext modinfo,IWResourceBundle iwrb) throws SQLException{
+public void registerMarkedMembers(IWContext modinfo,IWResourceBundle iwrb) throws SQLException, RemoteException{
     Tournament tournament = getTournament(modinfo);
     String[] extraPlayers = modinfo.getParameterValues("extra_player");
     String[] member_id = modinfo.getParameterValues("member_id");
@@ -1276,7 +1276,7 @@ public void registerMarkedMembers(IWContext modinfo,IWResourceBundle iwrb) throw
                     if (!handicap_correction.equals("")) {
                         correctHandicap(modinfo,member , handicap_correction);
                     }
-                    isError = TournamentController.registerMember(member,tournament,tournament_group_id[i]);
+                    isError = getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_group_id[i]);
 
                     disableSave(modinfo);
 
@@ -1368,7 +1368,7 @@ public void registerMarkedMembers(IWContext modinfo,IWResourceBundle iwrb) throw
                         uMInfo.setMemberStatus("A");
                         uMInfo.insert();
 
-                    isError = TournamentController.registerMember(XPmember,tournament,XPGroups[XP]);
+                    isError = getTournamentBusiness(modinfo).registerMember(XPmember,tournament,XPGroups[XP]);
 
 
                     switch (isError) {
@@ -1407,7 +1407,7 @@ public void registerMarkedMembers(IWContext modinfo,IWResourceBundle iwrb) throw
 
     if ((member == null)&&(extraPlayers == null)){
         add(iwrb.getLocalizedString("tournament.no_one_was_chosen","No on was chosen")+"<br><br>");
-        add(TournamentController.getBackLink(modinfo));
+        add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 
     }
 
@@ -1471,7 +1471,7 @@ public void correctHandicap(IWContext modinfo,Member member ,String handicapStri
     }
 }
 
-public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws SQLException, RemoteException {
     enableSave(modinfo);
 
     Tournament tournament = getTournament(modinfo);
@@ -1540,8 +1540,8 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
               catch (FinderException fe) {
               	throw new SQLException(fe.getMessage());
               }
-              if (!TournamentController.isMemberRegisteredInTournament(tournament, member) ) {
-                  errors = TournamentController.isMemberAllowedToRegister(member,tournament);
+              if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, member) ) {
+                  errors = getTournamentBusiness(modinfo).isMemberAllowedToRegister(member,tournament);
 
                   if ( (errors[0] == 0) && (errors[1] == 0) && (errors[2] == 0) && (errors[3] == 0) ){
 //                  if (TournamentController.isMemberAllowedToRegister(member,tournament) == 0) {
@@ -1549,7 +1549,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
                         table.add(member.getSocialSecurityNumber(),1,row);
                         table.add(member.getName(),3,row);
                         table.add(new HiddenInput("member_id",member.getID()+""));
-                        tGroupsList = TournamentController.getTournamentGroups(member,tournament);
+                        tGroupsList = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
                         tGroups = new DropdownMenu(tGroupsList);
                         table.add(tGroups,5,row);
                         if (tGroupsList.size() > 1) {
@@ -1734,7 +1734,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
             bottom.add(getButton(new SubmitButton(localize("tournament.continue","Continue"))),2,1);
             bottom.add(new HiddenInput("action","confirmRegisterMarkedMembers"),2,1);
         }
-        bottom.add(TournamentController.getBackLink(modinfo),1,1);
+        bottom.add(getTournamentBusiness(modinfo).getBackLink(modinfo),1,1);
         form.addBreak();
         form.add(bottom);
 
@@ -1742,7 +1742,7 @@ public void checkMarkedMembers(IWContext modinfo, IWResourceBundle iwrb) throws 
     else {
         add(iwrb.getLocalizedString("tournament.no_tournament_groups_in_tournament","There are no tournament groups set up in the tournament"));
         //add("<br>Hægt að bæta þeim við í \"Breyta móti\".<br>");
-        add(TournamentController.getBackLink(modinfo));
+        add(getTournamentBusiness(modinfo).getBackLink(modinfo));
     }
 
 }

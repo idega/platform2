@@ -8,7 +8,6 @@ import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
@@ -89,11 +88,11 @@ public class TournamentSelector extends TournamentBlock {
 			        int member_id = member.getID();
 			        Member golfMember = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(member_id);
 			        int main_union_id = golfMember.getMainUnionID();
-			        Dropdown2 = TournamentController.getDropdownOrderedByUnion(new DropdownMenu(PARAMETER_TOURNAMENT),modinfo, iYear);
+			        Dropdown2 = getTournamentBusiness(modinfo).getDropdownOrderedByUnion(new DropdownMenu(PARAMETER_TOURNAMENT),modinfo, iYear);
 			
 			    }
 			    else if (isAdmin()) {
-			        Dropdown2 = TournamentController.getDropdownOrderedByUnion(new DropdownMenu(PARAMETER_TOURNAMENT),modinfo, iYear);
+			        Dropdown2 = getTournamentBusiness(modinfo).getDropdownOrderedByUnion(new DropdownMenu(PARAMETER_TOURNAMENT),modinfo, iYear);
 			    }
 		        Dropdown2.setMarkupAttribute("size","10");
 			    table.add(Dropdown2,1,2);

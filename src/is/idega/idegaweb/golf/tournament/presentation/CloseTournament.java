@@ -10,9 +10,9 @@ import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -69,7 +69,7 @@ public class CloseTournament extends TournamentBlock {
 
 	}
 
-	public void getTournaments(IWContext modinfo) {
+	public void getTournaments(IWContext modinfo) throws NumberFormatException, RemoteException {
 
 		DropdownMenu menu = null;
 		GenericButton submit = getButton(new SubmitButton(localize("tournament.continue","Continue")));
@@ -98,7 +98,7 @@ public class CloseTournament extends TournamentBlock {
 		myTable.setCellpadding(4);
 
 		//	add("using year : "+selectedYear);
-		menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"), modinfo, Integer.parseInt(selectedYear));
+		menu = getTournamentBusiness(modinfo).getDropdownOrderedByUnion(new DropdownMenu("tournament"), modinfo, Integer.parseInt(selectedYear));
 		menu.setMarkupAttribute("size", "10");
 
 		Text tournText = new Text(iwrb.getLocalizedString("tournament.choose_tournament", "Choose tournament") + ":");
@@ -130,7 +130,7 @@ public class CloseTournament extends TournamentBlock {
 
 		int holes = rounds.length * tournament.getNumberOfHoles();
 
-		DisplayScores[] members = TournamentController.getDisplayScores("t.tournament_id = " + tournament_id, "m.member_id", "having count(stroke_count) < " + holes);
+		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament_id, "m.member_id", "having count(stroke_count) < " + holes);
 
 		Form myForm = new Form();
 		myForm.add(new HiddenInput("mode", "select"));
@@ -298,7 +298,7 @@ public class CloseTournament extends TournamentBlock {
 			calculate = false;
 		}
 
-		DisplayScores[] members = TournamentController.getDisplayScores("t.tournament_id = " + tournament_id + " ", "m.member_id");
+		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament_id + " ", "m.member_id");
 
 		if (calculate) {
 			for (int a = 0; a < members.length; a++) {
@@ -311,7 +311,7 @@ public class CloseTournament extends TournamentBlock {
 		tournament.setIsClosed(true);
 		tournament.setClosedDate(stamp);
 		tournament.update();
-		TournamentController.removeTournamentBoxApplication(modinfo);
+		getTournamentBusiness(modinfo).removeTournamentBoxApplication(modinfo);
 		// :done
 
 		Table myTable = new Table(1, 3);

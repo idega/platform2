@@ -4,12 +4,16 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
+import is.idega.idegaweb.golf.tournament.business.TournamentBusiness;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -35,14 +39,14 @@ public class TournamentStartingtimeWindow extends Window{
 		this.setToolbar(true);	
 	}
 
-	public void main(IWContext modinfo) {
+	public void main(IWContext modinfo) throws RemoteException {
 		iwrb = getResourceBundle(modinfo);
 		
 		boolean valid = init(modinfo);
 		
 		if (valid) {
 			try {
-				add(TournamentController.getStartingtimeTable(tournament, Integer.toString(tournamentRound.getID()), true, true));
+				add(getTournamentBusiness(modinfo).getStartingtimeTable(tournament, Integer.toString(tournamentRound.getID()), true, true));
 			} catch (SQLException e) {
 				add("error");
 				e.printStackTrace();
@@ -81,7 +85,16 @@ public class TournamentStartingtimeWindow extends Window{
 		}
 		return false;	
 	}
-
+	
+	public TournamentBusiness getTournamentBusiness(IWContext iwc) {
+		try {
+			return (TournamentBusiness) IBOLookup.getServiceInstance(iwc, TournamentBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
 	public String getBundleIdentifier(){
 	  return IW_BUNDLE_IDENTIFIER;
 	}

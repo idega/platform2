@@ -12,7 +12,6 @@ import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import java.util.Collections;
@@ -43,7 +42,7 @@ public class TournamentParticipantsList extends GolfBlock {
 		IWResourceBundle iwrb = getResourceBundle();
 		
 		Tournament tournament = getTournamentSession(modinfo).getTournament();
-		List members = TournamentController.getMembersInTournamentList(tournament);
+		List members = getTournamentBusiness(modinfo).getMembersInTournamentList(tournament);
 		Member member;
 
 		if (members != null) {

@@ -7,8 +7,8 @@ import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -123,20 +123,20 @@ public class MemberSearch extends GolfBlock {
 
 	}
 
-	public void getSearchByNameResults(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+	public void getSearchByNameResults(IWContext modinfo, IWResourceBundle iwrb) throws SQLException, RemoteException {
 		String names = modinfo.getParameter("name");
 		Member[] theMembers = this.findMembersByName(modinfo, names);
 		drawTableWithMembers(modinfo, theMembers, iwrb);
 	}
 
-	public void getSearchBySocialSecurityNumberResults(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+	public void getSearchBySocialSecurityNumberResults(IWContext modinfo, IWResourceBundle iwrb) throws SQLException, RemoteException {
 		String socialSecurityNumbers = modinfo.getParameter("socialSecurityNumbers");
 		Member[] theMembers = this.findMembersBySocialSecurityNumber(modinfo, socialSecurityNumbers);
 
 		drawTableWithMembers(modinfo, theMembers, iwrb);
 	}
 
-	public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, IWResourceBundle iwrb) {
+	public void drawTableWithMembers(IWContext modinfo, Member[] theMembers, IWResourceBundle iwrb) throws RemoteException {
 		int tableHeight = 5;
 		int numberOfMember = 0;
 		if (theMembers != null) {
@@ -223,7 +223,7 @@ public class MemberSearch extends GolfBlock {
 
 				++row;
 				++row;
-				table.add(TournamentController.getBackLink(modinfo), 1, row);
+				table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, row);
 				//    table.add(this.skraButton,5,row);
 				table.add(new HiddenInput("action", "registermarkedmembers"));
 				table.setAlignment(5, row, "right");
@@ -234,7 +234,7 @@ public class MemberSearch extends GolfBlock {
 				table.add(iwrb.getLocalizedString("tournament.no_one_was_found", "No one was found"), 1, row);
 				++row;
 				++row;
-				table.add(TournamentController.getBackLink(modinfo), 1, row);
+				table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, row);
 			}
 		}
 		else {
@@ -242,7 +242,7 @@ public class MemberSearch extends GolfBlock {
 			table.add(iwrb.getLocalizedString("tournament.no_one_was_found", "No one was found"), 1, row);
 			++row;
 			++row;
-			table.add(TournamentController.getBackLink(modinfo), 1, row);
+			table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, row);
 		}
 
 		add(form);

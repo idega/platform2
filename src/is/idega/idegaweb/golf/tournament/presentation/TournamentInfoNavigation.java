@@ -2,7 +2,6 @@ package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import java.io.IOException;
@@ -109,7 +108,7 @@ public class TournamentInfoNavigation extends GolfBlock {
 			else if (action.equalsIgnoreCase("startingtime")) {
 				String tournament_round = modinfo.getParameter("tournament_round");
 
-				TournamentStartingtimeList form = TournamentController.getStartingtimeTable(tournament, tournament_round, true, false);
+				TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament, tournament_round, true, false);
 				table2.add(form);
 				table2.setAlignment(1, 1, "center");
 			}

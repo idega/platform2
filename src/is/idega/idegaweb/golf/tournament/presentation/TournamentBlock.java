@@ -54,7 +54,7 @@ public abstract class TournamentBlock extends GolfBlock {
 		}
 		return -1;
 	}
-
+	
 	public void setTournamentID(IWContext modinfo, String tournamentID) {
 		modinfo.setSessionAttribute(SESSION_PARAMETER_TOURNAMENT_ID, tournamentID);
 	}

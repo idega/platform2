@@ -12,8 +12,8 @@ import is.idega.idegaweb.golf.entity.TournamentGroupHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.moduleobject.GolfDialog;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -107,7 +107,7 @@ public class TournamentGroups extends GolfBlock {
 
 	}
 
-	private void createTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+	private void createTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) throws SQLException, RemoteException {
 		Form form = new Form();
 		form.maintainParameter(ACTION_PARAMETER);
 
@@ -174,15 +174,15 @@ public class TournamentGroups extends GolfBlock {
 		}
 
 		table.setVerticalAlignment(1, row, "top");
-		table.add(TournamentController.getBackLink(modinfo), 1, row);
+		table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, row);
 		table.setAlignment(2, row, "right");
-		table.add(TournamentController.getAheadButton(modinfo, "tournament_group_action", "submitted"), 2, row);
+		table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "tournament_group_action", "submitted"), 2, row);
 		//table.add(new HiddenInput("tournament_group_action","submitted"));
 
 		add(form);
 	}
 
-	private void saveTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) {
+	private void saveTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException {
 		String name = modinfo.getParameter("name");
 		String description = modinfo.getParameter("description");
 		String maxAge = modinfo.getParameter("max_age");
@@ -219,7 +219,7 @@ public class TournamentGroups extends GolfBlock {
 
 		add("<br>");
 		add("<br>");
-		add(TournamentController.getBackLink(modinfo));
+		add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 
 	}
 
@@ -229,7 +229,7 @@ public class TournamentGroups extends GolfBlock {
 		return form;
 	}
 
-	public void fromViewTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+	public void fromViewTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) throws SQLException, RemoteException {
 		if ((isAdmin()) || (isClubAdmin())) {
 
 			String action = modinfo.getParameter("view_action");
@@ -249,11 +249,11 @@ public class TournamentGroups extends GolfBlock {
 		}
 		else {
 			add(iwrb.getLocalizedString("tournament.access_denied", "Access denied"));
-			add(TournamentController.getBackLink(modinfo));
+			add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 		}
 	}
 
-	private void chooseTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+	private void chooseTournamentGroup(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException, SQLException {
 		Form form = new Form();
 		form.maintainParameter(ACTION_PARAMETER);
 		Table table = new Table(2, 3);
@@ -272,7 +272,7 @@ public class TournamentGroups extends GolfBlock {
 		if (isClubAdmin()) {
 			Member member = (Member) getMember();
 			try {
-				menu = new DropdownMenu(TournamentController.getUnionTournamentGroups(member.getMainUnion()));
+				menu = new DropdownMenu(getTournamentBusiness(modinfo).getUnionTournamentGroups(member.getMainUnion()));
 			}
 			catch (FinderException fe) {
 				throw new SQLException(fe.getMessage());
@@ -284,14 +284,14 @@ public class TournamentGroups extends GolfBlock {
 
 		menu.setMarkupAttribute("size", "7");
 		table.add(menu, 1, 2);
-		table.add(TournamentController.getBackLink(modinfo), 1, 3);
-		table.add(TournamentController.getAheadButton(modinfo, "view_action", "group_chosen"), 2, 3);
+		table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, 3);
+		table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "view_action", "group_chosen"), 2, 3);
 		//table.add(new HiddenInput("view_action","group_chosen"),2,3);
 
 		add(form);
 	}
 
-	private void viewGroup(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+	private void viewGroup(IWContext modinfo, IWResourceBundle iwrb) throws SQLException, RemoteException {
 		String tournament_group_id = modinfo.getParameter("tournament_group");
 		if (tournament_group_id != null) {
 			Form form = new Form();
@@ -383,7 +383,7 @@ public class TournamentGroups extends GolfBlock {
 			table.add(sex, 2, row);
 			++row;
 
-			table.add(TournamentController.getBackLink(modinfo), 1, row);
+			table.add(getTournamentBusiness(modinfo).getBackLink(modinfo), 1, row);
 			table.setAlignment(2, row, "right");
 			table.setVerticalAlignment(1, row, "top");
 			table.setVerticalAlignment(2, row, "top");
@@ -407,12 +407,12 @@ public class TournamentGroups extends GolfBlock {
 		}
 		else {
 			add("Enginn mótshópur valinn<br><br>");
-			add(TournamentController.getBackLink(modinfo));
+			add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 		}
 
 	}
 
-	public void update(IWContext modinfo, IWResourceBundle iwrb) {
+	public void update(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException {
 		String name = modinfo.getParameter("name");
 		String description = modinfo.getParameter("description");
 		String maxAge = modinfo.getParameter("max_age");
@@ -454,7 +454,7 @@ public class TournamentGroups extends GolfBlock {
 
 		add("<br>");
 		add("<br>");
-		add(TournamentController.getBackLink(modinfo));
+		add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 
 	}
 
@@ -545,7 +545,7 @@ public class TournamentGroups extends GolfBlock {
 				group.delete();
 
 				dialog.addMessage(iwrb.getLocalizedString("tournament.the_group", "The group") + " " + group.getName() + " " + iwrb.getLocalizedString("tournament.was_deleted", "was deleted"));
-				dialog.add(TournamentController.getBackLink(modinfo));
+				dialog.add(getTournamentBusiness(modinfo).getBackLink(modinfo));
 
 			}
 			catch (Exception ex) {

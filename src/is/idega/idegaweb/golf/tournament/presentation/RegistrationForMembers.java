@@ -11,8 +11,8 @@ import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class RegistrationForMembers extends GolfBlock {
       if (member != null) {
           if (tournament != null) {
 
-              if (!TournamentController.isMemberRegisteredInTournament(tournament,member) ) {
+              if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament,member) ) {
 
                   String action = modinfo.getParameter("action");
 
@@ -98,7 +98,7 @@ public class RegistrationForMembers extends GolfBlock {
       modinfo.setSessionAttribute("tournament_registrationForMembers",tournament);
   }
 
-  public void register(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+  public void register(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException, SQLException {
       Tournament tournament = getTournament(modinfo);
       Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
 
@@ -112,12 +112,12 @@ public class RegistrationForMembers extends GolfBlock {
               e.printStackTrace(System.err);
             }
           }else if (subAction.equals("saveDirectRegistration")) {
-              if (!TournamentController.isMemberRegisteredInTournament(tournament,member) ) {
+              if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament,member) ) {
                   saveDirectRegistration(modinfo,iwrb);
               }
           }
       }else {
-          if (!TournamentController.isMemberRegisteredInTournament(tournament,member) ) {
+          if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament,member) ) {
               String subAction = modinfo.getParameter("subAction");
               if (subAction == null) {
                   notOnlineRegistration(modinfo);
@@ -178,13 +178,13 @@ public class RegistrationForMembers extends GolfBlock {
       add(table);
   }
 
-  public void getAvailableGroups(IWContext modinfo) throws SQLException{
+  public void getAvailableGroups(IWContext modinfo) throws SQLException, RemoteException{
       Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
 
       Tournament tournament = getTournament(modinfo);
 
       TournamentGroup[] tGroups = tournament.getTournamentGroups();
-      List groups = TournamentController.getTournamentGroups(member,tournament);
+      List groups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
 
       if (tGroups.length != 0) {
           if (groups.size() != 0)  {
@@ -202,7 +202,7 @@ public class RegistrationForMembers extends GolfBlock {
               table.add(member.getName(),1,2);
               table.add(groupsMenu,2,2);
 
-              SubmitButton afram = TournamentController.getAheadButton(modinfo,"","");
+              SubmitButton afram = getTournamentBusiness(modinfo).getAheadButton(modinfo,"","");
               table.setAlignment(2,3,"right");
               table.add(afram,2,3);
 
@@ -231,11 +231,11 @@ public class RegistrationForMembers extends GolfBlock {
   }
 
 
-  public void performRegistrationNotOnline(IWContext modinfo,String tournament_group_id) throws SQLException{
+  public void performRegistrationNotOnline(IWContext modinfo,String tournament_group_id) throws RemoteException, SQLException{
       Member member = (is.idega.idegaweb.golf.entity.Member) AccessControl.getMember(modinfo);
       Tournament tournament = getTournament(modinfo);
 
-      TournamentController.registerMember(member,tournament,tournament_group_id);
+      getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_group_id);
       add(getLocalizedText("tounament.registered_to_the_tournament","Registered to the tournament"));
       add(Text.getBreak());
       add(getButton(new CloseButton()));
@@ -243,7 +243,7 @@ public class RegistrationForMembers extends GolfBlock {
   }
 
 
-  public void getDirectRegistrationTable(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+  public void getDirectRegistrationTable(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException, SQLException {
       Tournament tournament = getTournament(modinfo);
       String tournament_round_id = modinfo.getParameter("tournament_round");
 
@@ -275,7 +275,7 @@ public class RegistrationForMembers extends GolfBlock {
             table.add("2",1,2);
             table.add(getText(localize("tournament.press_the","Press the")+" \""+localize("tournament.save","Save")+"\" "+localize("tournament.button_located_at_the_bottom_of_the_page","button located at the bottom of the page.")),2,2);
 
-          TournamentStartingtimeList form = TournamentController.getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
+          TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
           form.setSubmitButtonParameter("action", "open");
 
           add(table);
@@ -370,11 +370,11 @@ public class RegistrationForMembers extends GolfBlock {
                             other.add(numbers[j],1,otherRow);
                         }
                         else {
-                            errors = TournamentController.isMemberAllowedToRegister(member,tournament);
+                            errors = getTournamentBusiness(modinfo).isMemberAllowedToRegister(member,tournament);
                             if ( (errors[0] == 0) && (errors[1] == 0) && (errors[2] == 0) && (errors[3] == 0) ){
 //                            if (canMemberRegister == 0) {
-                                if (!TournamentController.isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
-                                    List tGroups = TournamentController.getTournamentGroups(member,tournament);
+                                if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
+                                    List tGroups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
                                     if (tGroups != null) {
                                         ++tableRow;
                                         table.add(member.getName(),1,tableRow);
@@ -429,11 +429,11 @@ public class RegistrationForMembers extends GolfBlock {
                             other.add(numbers[j],1,otherRow);
                         }
                         else {
-                            errors = TournamentController.isMemberAllowedToRegister(member,tournament);
+                            errors = getTournamentBusiness(modinfo).isMemberAllowedToRegister(member,tournament);
 
                             if ( (errors[0] == 0) && (errors[1] == 0) && (errors[2] == 0) && (errors[3] == 0) ){
-                                if (!TournamentController.isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
-                                    List tGroups = TournamentController.getTournamentGroups(member,tournament);
+                                if (!getTournamentBusiness(modinfo).isMemberRegisteredInTournament(tournament, ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(iTournamentRoundId),tournament.getNumberInGroup(),member) ) {
+                                    List tGroups = getTournamentBusiness(modinfo).getTournamentGroups(member,tournament);
                                     if (tGroups != null) {
                                         ++tableRow;
                                         table.add(member.getName(),1,tableRow);
@@ -531,7 +531,7 @@ public class RegistrationForMembers extends GolfBlock {
         Table buttonTable = new Table(1,1);
             buttonTable.setAlignment(1,1,"right");
             buttonTable.setWidth(Table.HUNDRED_PERCENT);
-            buttonTable.add(TournamentController.getAheadButton(modinfo,"",""));
+            buttonTable.add(getTournamentBusiness(modinfo).getAheadButton(modinfo,"",""));
         form.add(buttonTable);
 
 
@@ -571,7 +571,7 @@ public class RegistrationForMembers extends GolfBlock {
     }
 }
 
-public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) throws SQLException {
+public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb) throws RemoteException, SQLException {
     String tournament_round = modinfo.getParameter("tournament_round");
 
     String[] member_ids = modinfo.getParameterValues("member_id");
@@ -593,11 +593,11 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
 
                 tGroup = ((TournamentGroupHome) IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKey(Integer.parseInt(tournament_groups[i]));
 
-                TournamentController.registerMember(member,tournament,tournament_groups[i]);
+                getTournamentBusiness(modinfo).registerMember(member,tournament,tournament_groups[i]);
                 if (starting_tee[i].equals("10")) {
-                    TournamentController.setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]),10);
+                	getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]),10);
                 }else {
-                    TournamentController.setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
+                	getTournamentBusiness(modinfo).setupStartingtime(modinfo, member,tournament,Integer.parseInt(sTournamentRoundId),Integer.parseInt(starting_time[i]));
                 }
                 tm.commit();
             }

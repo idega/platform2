@@ -13,7 +13,6 @@ import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import java.sql.SQLException;
@@ -316,7 +315,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 					table.mergeCells(1, row, 1, row + (numberInGroup - 1));
 					table.setStyleClass(1, row, getBigRowClass());
 
-					sView = TournamentController.getStartingtimeView(tournamentRound.getID(), "", "", "grup_num", groupCounter + "", tee_number, "");
+					sView = getTournamentBusiness(modinfo).getStartingtimeView(tournamentRound.getID(), "", "", "grup_num", groupCounter + "", tee_number, "");
 
 
 					startInGroup = sView.length;

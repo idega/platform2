@@ -4,7 +4,6 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
@@ -23,6 +22,6 @@ public class PrintStartingtimes extends GolfBlock {
     TournamentRound tournamentRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(tournament_round_id));
     Tournament tournament = tournamentRound.getTournament();
 
-    add(TournamentController.getStartingtimeTable(tournament,tournament_round_id,true,true));
+    add(getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,true,true));
   }
 }

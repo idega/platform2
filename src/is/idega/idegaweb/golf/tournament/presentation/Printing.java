@@ -7,9 +7,9 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.tournament.business.PrintStickersWriter;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
@@ -44,7 +44,7 @@ public class Printing extends TournamentBlock {
 	  getPrintScreen(modinfo);
 	}
 
-	  public void getTournaments(IWContext modinfo) {
+	  public void getTournaments(IWContext modinfo) throws RemoteException {
 
 	    DropdownMenu menu = null;
 	    GenericButton submit = getButton(new SubmitButton(localize("tournament.continue","Continue")));
@@ -59,7 +59,7 @@ public class Printing extends TournamentBlock {
 	      myTable.setAlignment(1,3,"right");
 	      myTable.setCellpadding(4);
 
-	    menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),modinfo);
+	    menu = getTournamentBusiness(modinfo).getDropdownOrderedByUnion(new DropdownMenu("tournament"),modinfo);
 	                menu.setMarkupAttribute("size","10");
 
 	    Text selectText = new Text(iwrb.getLocalizedString("tournament.choose_tournament","Choose tournament")+":");

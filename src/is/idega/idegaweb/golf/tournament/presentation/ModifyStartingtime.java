@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -26,7 +27,6 @@ import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -87,7 +87,7 @@ public class ModifyStartingtime extends GolfBlock {
 
 	}
 
-	public Form getEditableStartingtimeForm(IWContext modinfo, Tournament tournament, String tournament_round_id) throws SQLException, FinderException {
+	public Form getEditableStartingtimeForm(IWContext modinfo, Tournament tournament, String tournament_round_id) throws SQLException, FinderException, RemoteException {
 
 		Form form = new Form();
 		Table table = new Table();
@@ -294,7 +294,7 @@ public class ModifyStartingtime extends GolfBlock {
 
 		table.add(link, 1, row);
 
-		table.add(TournamentController.getAheadButton(modinfo, "", ""), 3, row);
+		table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 3, row);
 
 		table.add(new HiddenInput("action", "update"), 3, row);
 		table.add(new HiddenInput("tournament_round", tournamentRoundId + ""), 3, row);
@@ -349,7 +349,7 @@ public class ModifyStartingtime extends GolfBlock {
 		return menu;
 	}
 
-	public void executeUpdate(IWContext modinfo) throws SQLException, FinderException {
+	public void executeUpdate(IWContext modinfo) throws FinderException, RemoteException, SQLException {
 		String[] member_id = modinfo.getParameterValues("member_id");
 		String[] grup_nums = modinfo.getParameterValues("grup_num");
 
@@ -360,7 +360,7 @@ public class ModifyStartingtime extends GolfBlock {
 
 		if (tournament_round_id != null) {
 			TournamentRound trou = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(tournament_round_id));
-			TournamentController.invalidateStartingTimeCache(modinfo, trou.getTournamentID(), tournament_round_id);
+			getTournamentBusiness(modinfo).invalidateStartingTimeCache(modinfo, trou.getTournamentID(), tournament_round_id);
 
 			if (to_remove != null) {
 				String[] flipp;
@@ -410,7 +410,7 @@ public class ModifyStartingtime extends GolfBlock {
 					//		System.out.println("[-=Gimmi=-] GrupNum after fix = "+grup_num);
 					if (grup_num != null) {
 						if (!grup_num.equals("0")) {
-							List members = TournamentController.getMembersInStartingGroup(tournament, tournamentRound, Integer.parseInt(grup_nums[i]));
+							List members = getTournamentBusiness(modinfo).getMembersInStartingGroup(tournament, tournamentRound, Integer.parseInt(grup_nums[i]));
 							if (members != null) {
 								for (int g = 0; g < members.size(); g++) {
 									member = (Member) members.get(g);
@@ -470,10 +470,10 @@ public class ModifyStartingtime extends GolfBlock {
 								if (!grup_num.equals("0")) {
 									member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id[i]));
 									try {
-										TournamentController.setupStartingtime(modinfo, member, tournament, Integer.parseInt(tournament_round_id), Integer.parseInt(grup_num), 1);
+										getTournamentBusiness(modinfo).setupStartingtime(modinfo, member, tournament, Integer.parseInt(tournament_round_id), Integer.parseInt(grup_num), 1);
 									}
 									catch (NumberFormatException n) {
-										TournamentController.setupStartingtime(modinfo, member, tournament, Integer.parseInt(tournament_round_id), Integer.parseInt(TextSoap.findAndCut(grup_num, "_")), 10);
+										getTournamentBusiness(modinfo).setupStartingtime(modinfo, member, tournament, Integer.parseInt(tournament_round_id), Integer.parseInt(TextSoap.findAndCut(grup_num, "_")), 10);
 									}
 								}
 							}
@@ -508,7 +508,7 @@ public class ModifyStartingtime extends GolfBlock {
 		return returner;
 	}
 
-	public Form drawLeftOuts(IWContext modinfo, Tournament tournament, String tournament_round_id) throws SQLException, FinderException {
+	public Form drawLeftOuts(IWContext modinfo, Tournament tournament, String tournament_round_id) throws SQLException, FinderException, RemoteException {
 
 		Form form = new Form();
 		Table table = new Table();
@@ -559,7 +559,7 @@ public class ModifyStartingtime extends GolfBlock {
 			++row;
 			table.mergeCells(3, row, 6, row);
 			table.setAlignment(3, row, "right");
-			table.add(TournamentController.getAheadButton(modinfo, "", ""), 3, row);
+			table.add(getTournamentBusiness(modinfo).getAheadButton(modinfo, "", ""), 3, row);
 		}
 
 		return form;
