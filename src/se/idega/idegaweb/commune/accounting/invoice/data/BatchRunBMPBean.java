@@ -1,13 +1,9 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
-
 import java.sql.Date;
-import java.util.Collection;
 
-import javax.ejb.FinderException;
-
-import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
-
+import com.idega.data.IDOQuery;
 /**
  * Holds information about a batchrun for an invoice build (Used in fonster 33 in the C&P req. spec.)
  * Related to a set of rows in BatchRunError.
@@ -15,15 +11,12 @@ import com.idega.data.GenericEntity;
  * @author Joakim
  * @see se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorBMPBean
  */
-public class BatchRunBMPBean extends GenericEntity implements BatchRun{
-	
+public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	private static final String ENTITY_NAME = "cacc_batch_run";
-
-	private static final String COLUMN_OPERATION = "operation";
+	private static final String COLUMN_SCHOOL_CATEGORY_ID = "school_category_id";
 	private static final String COLUMN_PERIOD = "period";
 	private static final String COLUMN_START = "start";
 	private static final String COLUMN_STOP = "stop";
-
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
@@ -35,16 +28,15 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun{
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_OPERATION, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_START, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_STOP, "", true, true, java.sql.Date.class);
-
-		addManyToOneRelationship(COLUMN_OPERATION, SchoolType.class);
+		
+		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 	}
-	
-	public int getOperationID() {
-		return getIntColumnValue(COLUMN_OPERATION);
+	public int getSchoolCategoryID() {
+		return getIntColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
 	public Date getPeriod() {
 		return getDateColumnValue(COLUMN_PERIOD);
@@ -55,10 +47,12 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun{
 	public Date getEnd() {
 		return getDateColumnValue(COLUMN_STOP);
 	}
-
-
-	public void setOperationID(int i) {
-		setColumn(COLUMN_OPERATION, i);
+	
+	public void setSchoolCategoryID(int i) {
+		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
+	}
+	public void setSchoolCategoryID(SchoolCategory s) {
+		setColumn(COLUMN_SCHOOL_CATEGORY_ID, s);
 	}
 	public void setPeriod(Date d) {
 		setColumn(COLUMN_PERIOD, d);
@@ -70,7 +64,14 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun{
 		setColumn(COLUMN_STOP, d);
 	}
 	
-	public Collection ejbFindAllOrderByStart() throws FinderException {
-		return idoFindAllIDsOrderedBySQL(COLUMN_START);
+	
+	/**
+	 *	Finds one Batchrun from a schoolCategory. There should be max one schoolcategory
+	 *	@throws javax.ejb.FinderException if no SchoolType is found.	
+	 */
+	public Integer ejbFindBySchoolCategory(SchoolCategory schoolCategory) throws javax.ejb.FinderException {
+		IDOQuery query = this.idoQueryGetSelect();
+		query.appendWhereEquals(COLUMN_SCHOOL_CATEGORY_ID, ((Integer)schoolCategory.getPrimaryKey()).intValue());
+		return (Integer) idoFindOnePKByQuery(query);
 	}
 }

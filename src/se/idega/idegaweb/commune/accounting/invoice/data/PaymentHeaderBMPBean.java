@@ -12,6 +12,7 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
@@ -25,9 +26,9 @@ import com.idega.util.IWTimestamp;
 public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader {
 	private static final String ENTITY_NAME = "cacc_payment_header";
 
-	private static final String COLUMN_SCHOOL_ID = "";
-	private static final String COLUMN_SCHOOL_CATEGORY_ID = "";
-	private static final String COLUMN_SIGNATURE = "";
+	private static final String COLUMN_SCHOOL_ID = "school_id";
+	private static final String COLUMN_SCHOOL_CATEGORY_ID = "school_category_id";
+	private static final String COLUMN_SIGNATURE = "signature";
 	private static final String COLUMN_DATE_ATTESTED = "date_attested";
 	private static final String COLUMN_STATUS = "status";
 	private static final String COLUMN_PERIOD = "period";
@@ -97,14 +98,55 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		setColumn(COLUMN_PERIOD, d);
 	}
 	
+	/**
+	 * Finds one school for the given input paramters
+	 * @param school
+	 * @param schoolCategory
+	 * @param period
+	 * @return
+	 * @throws FinderException
+	 */
 	public Integer ejbFindBySchoolCategorySchoolPeriod(School school, SchoolCategory schoolCategory, Date period) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school.getPrimaryKey());
 		sql.appendWhereEquals(COLUMN_SCHOOL_CATEGORY_ID, schoolCategory.getPrimaryKey());
-		sql.appendWhereEquals(COLUMN_PERIOD, period);
+		sql.appendAndEquals(COLUMN_PERIOD, period);
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 
+	/**
+	 * Gets # of providers for the given input parameters
+	 * @param schoolCategoryID
+	 * @param period
+	 * @return
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetProviderCountForSchoolCategoryAndPeriod(int schoolCategoryID, Date period) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCount().append("("+COLUMN_SCHOOL_ID+") distinct");
+		sql.appendWhereEquals(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryID);
+		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
+		return idoGetNumberOfRecords(sql);
+	}
+
+	/**
+	 * Finds a collection of Payment headers for private providers given the input parameters
+	 * 
+	 * @param schoolCategory
+	 * @param period
+	 * @return
+	 * @throws IDOLookupException
+	 * @throws EJBException
+	 * @throws FinderException
+	 */
 	public Collection ejbFindBySchoolCategoryAndPeriodForPrivate(SchoolCategory schoolCategory, Date period) throws IDOLookupException, EJBException, FinderException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();

@@ -20,6 +20,13 @@ public java.util.Collection findAllOrdered()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByBatchRun(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((BatchRunErrorBMPBean)entity).ejbFindByBatchRun(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public BatchRunError findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (BatchRunError) super.findByPrimaryKeyIDO(pk);
  }

@@ -32,5 +32,12 @@ public PaymentHeader findBySchoolCategorySchoolPeriod(com.idega.block.school.dat
  }
 
 
+public int getProviderCountForSchoolCategoryAndPeriod(int p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((PaymentHeaderBMPBean)entity).ejbHomeGetProviderCountForSchoolCategoryAndPeriod(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }

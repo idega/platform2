@@ -13,11 +13,11 @@ public class BatchRunHomeImpl extends com.idega.data.IDOFactory implements Batch
  }
 
 
-public java.util.Collection findAllOrderByStart()throws javax.ejb.FinderException{
+public BatchRun findBySchoolCategory(com.idega.block.school.data.SchoolCategory p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((BatchRunBMPBean)entity).ejbFindAllOrderByStart();
+	Object pk = ((BatchRunBMPBean)entity).ejbFindBySchoolCategory(p0);
 	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
+	return this.findByPrimaryKey(pk);
 }
 
  public BatchRun findByPrimaryKey(Object pk) throws javax.ejb.FinderException{

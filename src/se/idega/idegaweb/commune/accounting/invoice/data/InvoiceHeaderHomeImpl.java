@@ -27,6 +27,13 @@ public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.Finder
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByMonthAndSchoolCategory(java.sql.Date p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByMonthAndSchoolCategory(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public InvoiceHeader findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (InvoiceHeader) super.findByPrimaryKeyIDO(pk);
  }

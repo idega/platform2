@@ -17,7 +17,9 @@ import com.idega.util.IWTimestamp;
  * 
  * @author Joakim
  */
-public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader {
+public class InvoiceHeaderBMPBean extends GenericEntity 
+//implements InvoiceHeader 
+{
 	private static final String ENTITY_NAME = "cacc_invoice_header";
 
 	private static final String COLUMN_SCHOOL_CATEGORY_ID = "main_school_category_id";
@@ -144,6 +146,20 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		return idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindByMonthAndSchoolCategory(Date month, SchoolCategory schoolCategory) throws FinderException {
+		IWTimestamp start = new IWTimestamp(month);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		sql.appendAndEquals(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
 		return idoFindPKsByQuery(sql);
 	}
 	

@@ -6,12 +6,15 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.util.IWTimestamp;
 
 /**
+ * Bean holding all the information for a payment record
+ * 
  * @author Joakim
- *
+ * @see se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader
  */
 public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecord {
 	private static final String ENTITY_NAME = "cacc_payment_record";
@@ -176,12 +179,25 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		setColumn(COLUMN_VAT_TYPE, i);
 	}
 	
+	/**
+	 * Finds all the payment records that are related to the given payment header
+	 * @param paymentHeader
+	 * @return
+	 * @throws FinderException
+	 */
 	public Collection ejbFindByPaymentHeader(PaymentHeader paymentHeader) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_PAYMENT_HEADER, paymentHeader.getPrimaryKey());
 		return idoFindPKsByQuery(sql);
 	}
 	
+	/**
+	 * Finds a payment record for the payment header and with the given rule spec type
+	 * @param paymentHeader
+	 * @param ruleSpecType
+	 * @return
+	 * @throws FinderException
+	 */
 	public Integer ejbFindByPaymentHeaderAndRuleSpecType(PaymentHeader paymentHeader, String ruleSpecType) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_PAYMENT_HEADER, paymentHeader.getPrimaryKey());
@@ -189,6 +205,12 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	
+	/**
+	 * Gets a Collection of payment records for the specified month
+	 * @param month
+	 * @return Collection of payment records
+	 * @throws FinderException
+	 */
 	public Collection ejbFindByMonth(Date month) throws FinderException {
 		IWTimestamp start = new IWTimestamp(month);
 		start.setAsDate();
@@ -203,4 +225,55 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		return idoFindPKsByQuery(sql);
 	}
 
+	/**
+	 * Gets the # of placements handled for the given category and period
+	 * @param schoolCategoryID
+	 * @param period
+	 * @return # of placements
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(int schoolCategoryID, Date period) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		
+		IDOQuery sql = idoQuery();
+		sql.append("select sum("+COLUMN_PLACEMENTS+") from "+getEntityName());
+		sql.append(" r, cacc_payment_header h ");
+		sql.appendWhereEquals("h.school_category_id", schoolCategoryID);
+		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+		return idoGetNumberOfRecords(sql);
+	}
+	
+	/**
+	 * Gets tottal amount paid for the given category and period
+	 * @param schoolCategoryID
+	 * @param period
+	 * @return
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetTotAmountForSchoolCategoryAndPeriod(int schoolCategoryID, Date period) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		
+		IDOQuery sql = idoQuery();
+		sql.append("select sum("+COLUMN_TOT_AMOUNT+") from "+getEntityName());
+		sql.append(" r, cacc_payment_header h ");
+		sql.appendWhereEquals("h.school_category_id", schoolCategoryID);
+		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+		return idoGetNumberOfRecords(sql);
+	}
 }

@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 /**
  * Holds information about each possible error that might have occured during the batchrun
@@ -38,7 +39,7 @@ public class BatchRunErrorBMPBean extends GenericEntity implements BatchRunError
 		addAttribute(COLUMN_RELATED, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DESCRIPTION, "", true, true, java.lang.String.class, 1000);
 
-//		addManyToOneRelationship(COLUMN_BATCH_RUN_ID, BatchRun.class);
+		addManyToOneRelationship(COLUMN_BATCH_RUN_ID, BatchRun.class);
 	}
 	public int getBatchRunID() {
 		return getIntColumnValue(COLUMN_BATCH_RUN_ID);
@@ -57,6 +58,9 @@ public class BatchRunErrorBMPBean extends GenericEntity implements BatchRunError
 	public void setBatchRunID(int i) {
 		setColumn(COLUMN_BATCH_RUN_ID, i);
 	}
+	public void setBatchRunID(BatchRun b) {
+		setColumn(COLUMN_BATCH_RUN_ID, b);
+	}
 	public void setOrder(int i) {
 		setColumn(COLUMN_ORDER, i);
 	}
@@ -69,6 +73,16 @@ public class BatchRunErrorBMPBean extends GenericEntity implements BatchRunError
 
 	public Collection ejbFindAllOrdered() throws FinderException {
 		return idoFindAllIDsOrderedBySQL(COLUMN_ORDER);
+	}
+	
+	/**
+	 *	Finds all BatchRunErrors from a BatchRun.
+	 *	@throws javax.ejb.FinderException if no BatchRunErrors is found.	
+	 */
+	public Collection ejbFindByBatchRun(BatchRun batchRun) throws javax.ejb.FinderException {
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(COLUMN_BATCH_RUN_ID, ((Integer)batchRun.getPrimaryKey()).intValue());
+		return idoFindPKsByQuery(query);
 	}
 }
 

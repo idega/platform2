@@ -9,6 +9,7 @@ public interface BatchRunError extends com.idega.data.IDOEntity
  public java.lang.String getRelated();
  public void initializeAttributes();
  public void setBatchRunID(int p0);
+ public void setBatchRunID(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0);
  public void setDescription(java.lang.String p0);
  public void setOrder(int p0);
  public void setRelated(java.lang.String p0);
