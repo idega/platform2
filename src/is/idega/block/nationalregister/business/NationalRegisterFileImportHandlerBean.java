@@ -79,7 +79,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	public final static int COLUMN_DATE_OF_BIRTH = 30;
 	
 	private final static String PROPERTY_NAME_CREATE_ONLY = "NAT_REG_CREATE_ONLY";
+	private final static String PROPERTY_NAME_RELATION_ONLY = "NAT_REG_RELATION_ONLY";
 	private boolean createOnly = false;
+	private boolean relationOnly = false;
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -99,11 +101,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			_spouseRelations = new MultivaluedHashMap();
 			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
 			String sCreateOnly = bundle.getProperty(PROPERTY_NAME_CREATE_ONLY);
+			String sRelationOnly = bundle.getProperty(PROPERTY_NAME_RELATION_ONLY);
 			createOnly = (sCreateOnly != null && sCreateOnly.equalsIgnoreCase("yes"));
+			relationOnly = (sRelationOnly != null && sRelationOnly.equalsIgnoreCase("yes"));
 			int count = 0;
 			if (createOnly) {
 				System.out.println("NationalRegisterHandler create only variable set to TRUE");
 			}
+			if (relationOnly) {
+				System.out.println("NationalRegisterHandler relation only variable set to TRUE");
+			}
+			
 			System.out.println("NationalRegisterHandler processing RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
 			while (!(item = (String) _file.getNextRecord()).equals("")) {
 				count++;
@@ -125,13 +133,13 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			System.out.println("Time to handleRecords: " + msTime + " ms  OR " + secTime + " s, averaging "+(msTime / count)+"ms per record");
 			clock.start();
 			handleFamilyRelation();
-
-			printFailedRecords();
-
 			clock.stop();
 			msTime = clock.getTime();
 			secTime = msTime / 1000;
 			System.out.println("Time to handleFamilyRelation: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s, averaging "+(msTime / count)+"ms per record");
+
+			printFailedRecords();
+
 
 //			transaction.commit();
 
@@ -175,6 +183,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				int counter = 0;
 				Collection ssnColl;
 				Collection familyColl;
+				System.out.println("NationalRegisterHandler Total families to handle = "+keys.size());
 				System.out.println("NationalRegisterHandler processing family relations RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
 				while (keysIter.hasNext()) {
 					++counter;
@@ -231,11 +240,13 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				spouseSSN = natReg.getSpouseSSN();
 				if (spouseSSN != null && !"".equals(spouseSSN)) {
 					parents.add(user);
-					/*try {
+					try {
 						parents.add(uHome.findByPersonalID(spouseSSN));
+						break;
 					} catch (FinderException e) {
-						e.printStackTrace();
-					}*/
+						//System.out.println("NationalRegisterHandler processed family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
+						//e.printStackTrace();
+					}
 				}
 			}
 			if (parents.isEmpty() && oldestPerson != null) {
@@ -335,6 +346,11 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (ssn == null || ssn.equals(""))
 			return false;
 
+		if (relationOnly && familyId != null) {
+			_familyRelations.put(familyId, ssn);
+			return true;
+		}
+		
 		//			//initialize business beans and data homes           
 		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 		
