@@ -124,15 +124,15 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 				++row;
 									
 				if (coll != null) {
-					String indent = "";
 						school = (School) iter.next();
 						iSchoolId = ((Integer) school.getPrimaryKey()).intValue();
 						table.add(getExpandedLink(school.getName(), Integer.toString(school.getSchoolAreaId()), Integer.toString(iSchoolId)), col, row);
 	
 				}
-			  }
+		  }
 			add(table);
-}
+	}
+	
 	private void drawList(IWContext iwc) throws RemoteException {
 		SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
 		
