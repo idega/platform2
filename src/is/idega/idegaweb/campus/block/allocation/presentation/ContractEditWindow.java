@@ -73,14 +73,13 @@ public class ContractEditWindow extends Window{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    if(iwc.hasEditPermission(new CampusContracts())){
+
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
         doSaveContract(iwc);
       }
       add(getEditTable(iwc));
-    }
-    else
-      add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+
+    //  add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
 
     //add(String.valueOf(iSubjectId));
   }
