@@ -180,6 +180,13 @@ public class TournamentList extends GolfBlock {
 			view = "allTournaments";
 		}
 		
+		if (view.equalsIgnoreCase("results")) {
+			setAreResults(modinfo, true);
+		}
+		else {
+			setAreResults(modinfo, false);
+		}
+		
 		Table outerTable = new Table(1, 3);
 		outerTable.setCellpadding(0);
 		outerTable.setCellspacing(0);
