@@ -5,18 +5,19 @@
 
 package com.idega.jmodule.object;
 
-//import com.idega.jmodule.*;
+import com.idega.jmodule.object.interfaceobject.Window;
+
 import java.io.*;
 import java.util.List;
 import java.util.Iterator;
+import java.util.*;
 
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
-*UNIMPLEMENTED
 */
-public class FrameSet extends Page{
+public class FrameSet extends Window{
 
   private int alignment;
   private int numberOfFrames=0;
@@ -24,27 +25,74 @@ public class FrameSet extends Page{
   private static final int ALIGNMENT_VERTICAL=1;
   private static final int ALIGNMENT_HORIZONTAL=2;
   private static final String COLS_PROPERTY="cols";
+  private static final String CLASS_PROPERTY="iw_frameset_class";
+  private static final String SOURCE_PROPERTY="src";
 
   private static final String star = "*";
   private static final String PERCENTSIGN = "%";
 
+  private Map framesMap;
+
   public FrameSet(){
-    //add(new Page("Flott"));
-    //add(new Page("Blank"));
     setFrameBorder(0);
     setBorder(0);
     setFrameSpacing(0);
     setVertical();
   }
 
-  public Page getFirstFrame(){
-    return (Page)this.getAllContainingObjects().get(0);
+  public void add(String frameURL){
+      setPage(frameURL);
+  }
+
+  public void add(Class pageClass){
+      setPage(pageClass);
+  }
+
+  private void setPage(Class pageClass){
+    numberOfFrames++;
+    this.getFramesMap().put(new Integer(numberOfFrames),new HashMap());
+    this.getFramesPropertyMap(numberOfFrames).put(CLASS_PROPERTY,pageClass);
+  }
+
+  private void setPage(String url){
+    numberOfFrames++;
+    this.getFramesMap().put(new Integer(numberOfFrames),new HashMap());
+    setFrameSource(numberOfFrames,url);
+  }
+
+  public Class getClass(int frameIndex){
+    return (Class)getFramesPropertyMap(frameIndex).get(CLASS_PROPERTY);
   }
 
 
   /**
-   * adds the Object to the First Page;
+   * Does nothing
    */
+  protected void add(int index,ModuleObject modObject) {
+  }
+
+  /**
+   * Does nothing
+   */
+  public void add(ModuleObject modObject) {
+  }
+
+  /**
+   * Does nothing
+   */
+  public void add(Object moduleObject) {
+  }
+
+  /**
+   * Does nothing
+   */
+  public void addAtBeginning(ModuleObject modObject) {
+  }
+
+
+  /* //
+   //adds the Object to the First Page;
+   //
   public void add(ModuleObject obj){
     if(obj instanceof Page){
       add((Page)obj);
@@ -56,26 +104,42 @@ public class FrameSet extends Page{
 
 
   public void add(Page page){
-    super.add(numberOfFrames++,page);
+    numberOfFrames += 1;
+    super.add(numberOfFrames-1,page);
     setFrameName(numberOfFrames,page.getID());
     setAllMargins(numberOfFrames,0);
   }
 
-  /**
-   * adds the Object to the First Page;
-   */
+  //
+  // adds the Object to the First Page;
+  //
   public void add(String string){
     getFirstFrame().add(string);
   }
+*/
 
+    /*private Map getClassesMap(){
+      if(classesMap==null){
+        classesMap = new Hashtable();
+      }
+      return classesMap;
+    }*/
 
+    private Map getFramesMap(){
+      if(framesMap==null){
+        framesMap = new HashMap();
+      }
+      return framesMap;
+    }
 
+    /*private Map getFramesPropertyMap(Class c){
+      return (Map) getPagesMap().get(c);
+    }*/
 
-    public void _main(ModuleInfo modinfo) throws Exception {
-      //if (!goneThroughMain) {
-        initVariables(modinfo);
-      //}
-      main(modinfo);
+    private Map getFramesPropertyMap(int frameIndex){
+      //Class c = (Class)this.getIndexesMap().get(Integer.toString(frameIndex));
+      //return getFramesPropertyMap(c);
+      return (Map) getFramesMap().get(new Integer(frameIndex));
     }
 
     protected void setFrameSetProperty(String name,String value){
@@ -86,23 +150,29 @@ public class FrameSet extends Page{
       return getAttributeString();
     }
 
-    public void main(ModuleInfo modinfo)throws Exception{
+    public void _main(ModuleInfo modinfo)throws Exception{
+      super._main(modinfo);
+      this.adaptFrames(modinfo);
+    }
+
+    private void adaptFrames(ModuleInfo modinfo){
+      if(numberOfFrames==1){
+        add(com.idega.jmodule.object.Page.class);
+        setSpanPercent(1,100);
+        setSpanAdaptive(2);
+      }
       setSpanAttribute();
 
-      List list = this.getAllContainingObjects();
-      if(list!=null){
-        Iterator iter = list.iterator();
-        int i = 0;
-        while (iter.hasNext()) {
-          i++;
-          Page item = (Page)iter.next();
-          if(getFrameSource(i)==null){
-            setFrameSource(i,getFrameURI(item,modinfo));
-          }
-          //item.empty();
-          this.storePage(item,modinfo);
+      int i = 1;
+      while (i<=numberOfFrames) {
+
+        Class item = this.getClass(i);
+        if(item!=null){
+          setFrameSource(i,getFrameURI(item,modinfo));
         }
+        i++;
       }
+
     }
 
     public void print(ModuleInfo modinfo) throws Exception{
@@ -116,30 +186,29 @@ public class FrameSet extends Page{
       buf.append(getFrameSetPropertiesString());
       buf.append(" >\n");
 
-      List list = this.getAllContainingObjects();
-      if(list!=null){
-        int counter = 1;
-        Iterator iter = list.iterator();
-        while (iter.hasNext()) {
-          Page item = (Page)iter.next();
-          buf.append("<frame ");
-          buf.append(getFramePropertiesString(counter));
-          counter++;
-          //buf.append("<frame name=\"");
-          //buf.append(item.getID());
-          //buf.append("\" src=\"");
-          //buf.append(getFrameURI(item,modinfo));
-          buf.append(" >\n");
-        }
+
+      int counter = 1;
+      while(counter<=this.numberOfFrames){
+
+        buf.append("<frame ");
+        buf.append(getFramePropertiesString(counter));
+        buf.append(" >\n");
+        counter++;
       }
+
 
       buf.append("\n</frameset>\n");
       buf.append(getEndTag());
       print(buf.toString());
     }
 
-    private String getFrameURI(Page page,ModuleInfo modinfo){
+    /*private String getFrameURI(Page page,ModuleInfo modinfo){
       String uri = modinfo.getRequestURI()+"?"+this.IW_FRAME_STORAGE_PARMETER+"="+page.getID();
+      return uri;
+    }*/
+
+    private String getFrameURI(Class pageClass,ModuleInfo modinfo){
+      String uri = modinfo.getRequestURI()+"?"+this.IW_FRAME_CLASS_PARAMETER+"="+pageClass.getName();
       return uri;
     }
 
@@ -177,8 +246,15 @@ public class FrameSet extends Page{
       setFrameProperty(frameIndex,ROWS_PROPERTY,Integer.toString(pixels));
     }
 
+    /**
+     * Sets the span (in pixels) for each of the Frame Objects. frameIndex starts at 1.
+     */
+    public void setSpanAdaptive(int frameIndex){
+      setFrameProperty(frameIndex,ROWS_PROPERTY,this.star);
+    }
+
     private String getSpan(int frameIndex){
-      String frameProperty = getFrameProperty(ROWS_PROPERTY);
+      String frameProperty = getFrameProperty(frameIndex,ROWS_PROPERTY);
       if(frameProperty==null){
         frameProperty=star;
       }
@@ -208,25 +284,34 @@ public class FrameSet extends Page{
         setFrameProperty(frameIndex,"scrolling","auto");
     }
 
+    public void setScrolling(int frameIndex,boolean ifScrollBar){
+      if(ifScrollBar){
+        setFrameProperty(frameIndex,"scrolling","yes");
+      }
+      else{
+        setFrameProperty(frameIndex,"scrolling","no");
+      }
+    }
+
 
     public void setMarginWidth(int frameIndex,int width) {
       setFrameProperty(frameIndex,"marginwidth",Integer.toString(width));
-      getPage(frameIndex).setMarginWidth(width);
+      //getPage(frameIndex).setMarginWidth(width);
     }
 
     public void setMarginHeight(int frameIndex,int height) {
       setFrameProperty(frameIndex,"marginheight",Integer.toString(height));
-      getPage(frameIndex).setMarginHeight(height);
+      //getPage(frameIndex).setMarginHeight(height);
     }
 
     public void setLeftMargin(int frameIndex,int leftmargin) {
       setFrameProperty(frameIndex,"leftmargin",Integer.toString(leftmargin));
-      getPage(frameIndex).setMarginWidth(leftmargin);
+      //getPage(frameIndex).setMarginWidth(leftmargin);
     }
 
     public void setTopMargin(int frameIndex,int topmargin) {
       setFrameProperty(frameIndex,"topmargin",Integer.toString(topmargin));
-      getPage(frameIndex).setTopMargin(topmargin);
+      //getPage(frameIndex).setTopMargin(topmargin);
     }
 
     public void setAllMargins(int frameIndex,int allMargins) {
@@ -241,7 +326,7 @@ public class FrameSet extends Page{
     }
 
     public void setFrameSource(int frameIndex,String URL){
-      setFrameProperty(frameIndex,"src",URL);
+      setFrameProperty(frameIndex,SOURCE_PROPERTY,URL);
     }
 
     public String getFrameSource(int frameIndex){
@@ -249,24 +334,53 @@ public class FrameSet extends Page{
     }
 
     protected void setFrameProperty(int frameIndex,String propertyName,String propertyValue){
-      getPage(frameIndex).setFrameProperty(propertyName,propertyValue);
+      //getPage(frameIndex).setFrameProperty(propertyName,propertyValue);
+      this.getFramesPropertyMap(frameIndex).put(propertyName,propertyValue);
     }
 
     protected void setFrameProperty(int frameIndex,String propertyName){
-      getPage(frameIndex).setFrameProperty(propertyName);
+      //getPage(frameIndex).setFrameProperty(propertyName);
+      this.getFramesPropertyMap(frameIndex).put(propertyName,this.slash);
     }
 
     protected String getFrameProperty(int frameIndex,String propertyName){
-      return getPage(frameIndex).getFrameProperty(propertyName);
+      Map frameProperties = getFramesPropertyMap(frameIndex);
+      if(frameProperties == null){
+        return null;
+      }
+      return (String)frameProperties.get(propertyName);
     }
 
     protected String getFramePropertiesString(int frameIndex){
-      return getPage(frameIndex).getFramePropertiesString();
+      Map frameProperties = getFramesPropertyMap(frameIndex);
+      StringBuffer returnString = new StringBuffer();
+      String Attribute ="";
+      if (frameProperties != null) {
+        Iterator e = frameProperties.keySet().iterator();
+        while (e.hasNext()){
+          Attribute = (String)e.next();
+          if(!(Attribute.equals(ROWS_PROPERTY)||Attribute.equals(CLASS_PROPERTY))){
+            returnString.append(" ");
+            returnString.append(Attribute);
+
+            String AttributeValue = (String)frameProperties.get(Attribute);
+            if(!AttributeValue.equals(slash)){
+
+              returnString.append("=\"");
+              returnString.append(AttributeValue);
+              returnString.append("\" ");
+
+            }
+
+          }
+        }
+      }
+      return returnString.toString();
     }
 
-    public Page getPage(int frameIndex){
+    /*public Page getPage(int frameIndex){
       return (Page)this.getAllContainingObjects().get(frameIndex-1);
-    }
+    }*/
 
     public void setSpanAttribute(){
       setSpan();
@@ -290,17 +404,11 @@ public class FrameSet extends Page{
     }
 
     public boolean isVertical(){
-      if(ALIGNMENT_VERTICAL==alignment){
-        return true;
-      }
-      return false;
+      return (ALIGNMENT_VERTICAL==alignment);
     }
 
     public boolean isHorizontal(){
-      if(ALIGNMENT_HORIZONTAL==alignment){
-        return true;
-      }
-      return false;
+      return (ALIGNMENT_HORIZONTAL==alignment);
     }
 
     public void setSpan(){
@@ -312,14 +420,15 @@ public class FrameSet extends Page{
         String span= getSpan(i);
         if(!span.equals(star)){
           nothingset=false;
-          System.out.println("YES");
         }
       }
 
       if(nothingset){
-        int thePercent = (int)(100/numberOfFrames);
-        for (int i = 1; i <= numberOfFrames ; i++) {
-            setSpanPercent(i,thePercent);
+        if(numberOfFrames!=0){
+          int thePercent = (int)(100/numberOfFrames);
+          for (int i = 1; i <= numberOfFrames ; i++) {
+              setSpanPercent(i,thePercent);
+          }
         }
 
       }
