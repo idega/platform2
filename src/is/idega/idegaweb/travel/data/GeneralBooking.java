@@ -45,7 +45,8 @@ public class GeneralBooking extends GenericEntity implements Booking{
     addAttribute(getPaymentTypeIdColumnName(), "Gerð greiðslu", true, true, Integer.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
     addAttribute(getReferenceNumberColumnName(), "reference number", true, true, String.class);
-
+//    addAttribute(getEstimatedSeatsUsedColumnName(), "estimated seats used", true, true, Integer.class);
+//   addAttribute(getDiscountTypeIdColumnName(), "discount type", true, true, Integer.class);
     this.addManyToManyRelationShip(Reseller.class);
   }
 
@@ -54,6 +55,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
       this.setIsValid(true);
       this.setAttendance(-1000);
       this.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
+      //this.setDiscountTypeId(Booking.DISCOUNT_TYPE_ID_PERCENT);
   }
 
 
@@ -196,7 +198,23 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public String getReferenceNumber() {
     return getStringColumnValue(getReferenceNumberColumnName());
   }
+/*
+  public void setEstimatedSeatsUsed(int seats) {
+    setColumn(getEstimatedSeatsUsedColumnName(), seats);
+  }
 
+  public int getEstimatedSeatsUsed() {
+    return getIntColumnValue(getEstimatedSeatsUsedColumnName());
+  }
+
+  public void setDiscountTypeId(int discountTypeId) {
+    setColumn(getDiscountTypeIdColumnName(), discountTypeId);
+  }
+
+  public int getDiscountTypeId() {
+    return getIntColumnValue(getDiscountTypeIdColumnName());
+  }
+*/
   public void insert() throws SQLException {
     CypherText cyph = new CypherText();
     String key = cyph.getKey(16);
@@ -221,6 +239,8 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public static String getPaymentTypeIdColumnName() {return "PAYMENT_TYPE";}
   public static String getIsValidColumnName() {return "IS_VALID";}
   public static String getReferenceNumberColumnName() {return "REFERENCE_NUMBER";}
+//  public static String getEstimatedSeatsUsedColumnName() {return "ESTIMATED_SEATS_USED";}
+//  public static String getDiscountTypeIdColumnName() {return "DISCOUNT_TYPE_ID";}
 
 
 }

@@ -17,6 +17,9 @@ import java.util.List;
 
 public class Product extends GenericEntity {
 
+  public static final int DISCOUNT_TYPE_ID_AMOUNT = 0;
+  public static final int DISCOUNT_TYPE_ID_PERCENT = 1;
+
   public Product() {
     super();
   }
@@ -33,6 +36,7 @@ public class Product extends GenericEntity {
     this.addAttribute(getColumnNameProductName(),"Nafn vöru",true,true,String.class,255);
     this.addAttribute(getColumnNameProductDescription(),"Lýsing vöru",true,true,String.class,510);
     this.addAttribute(getColumnNameIsValid(),"í notkun",true,true,Boolean.class);
+    addAttribute(getDiscountTypeIdColumnName(), "discount type", true, true, Integer.class);
 //    this.addManyToManyRelationShip(PriceCategory.class,"SR_PRODUCT_PRICE_CATEGORY");
     this.addManyToManyRelationShip(ProductCategory.class,"SR_PRODUCT_PRODUCT_CATEGORY");
     this.setNullable(getColumnNameFileId(), true);
@@ -56,6 +60,7 @@ public class Product extends GenericEntity {
 
   public void setDefaultValues() {
     this.setIsValid(true);
+    this.setDiscountTypeId(DISCOUNT_TYPE_ID_PERCENT);
   }
 
   public String getEntityName() {
@@ -68,6 +73,7 @@ public class Product extends GenericEntity {
   public static String getColumnNameProductName(){return "PRODUCT_NAME";}
   public static String getColumnNameProductDescription(){return "PRODUCT_DESCRIPTION";}
   public static String getColumnNameIsValid(){return "IS_VALID";}
+  public static String getDiscountTypeIdColumnName() {return "DISCOUNT_TYPE_ID";}
 
 
   /* Setters */
@@ -100,6 +106,10 @@ public class Product extends GenericEntity {
     this.setColumn(getColumnNameIsValid(),valid);
   }
 
+  public void setDiscountTypeId(int discountTypeId) {
+    setColumn(getDiscountTypeIdColumnName(), discountTypeId);
+  }
+
 
   /* Getters */
 
@@ -123,10 +133,14 @@ public class Product extends GenericEntity {
   public boolean getIsValid(){
     return this.getBooleanColumnValue(getColumnNameIsValid());
   }
+
   public String getName() {
     return this.getProductName();
   }
 
+  public int getDiscountTypeId() {
+    return getIntColumnValue(getDiscountTypeIdColumnName());
+  }
 }
 
 

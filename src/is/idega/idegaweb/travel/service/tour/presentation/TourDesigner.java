@@ -34,6 +34,7 @@ public class TourDesigner extends TravelManager {
   String NAME_OF_FORM = ServiceDesigner.NAME_OF_FORM;
   String ServiceAction = ServiceDesigner.ServiceAction;
 
+  Product product;
   Service service;
   Tour tour;
   Timeframe timeframe;
@@ -57,6 +58,7 @@ public class TourDesigner extends TravelManager {
 
   private boolean setupData(int tourId) {
     try {
+      product = new Product(tourId);
       service = new Service(tourId);
       tour = new Tour(tourId);
       timeframe = service.getTimeframe();
@@ -176,8 +178,17 @@ public class TourDesigner extends TravelManager {
       TextInput minNumberOfSeats = new TextInput("min_number_of_seats");
         minNumberOfSeats.keepStatusOnAction();
 
+      TextInput estSeats = new TextInput("estimated_seats");
+        estSeats.keepStatusOnAction();
+
       TextInput kilometers = new TextInput("kilometers");
         kilometers.keepStatusOnAction();
+
+      DropdownMenu discountType = new DropdownMenu("discountType");
+        discountType.addMenuElement(Product.DISCOUNT_TYPE_ID_AMOUNT,iwrb.getLocalizedString("travel.amount","Amount"));
+        discountType.addMenuElement(Product.DISCOUNT_TYPE_ID_PERCENT,iwrb.getLocalizedString("travel.percent","Percent"));
+
+
 
       ++row;
       Text nameText = (Text) theBoldText.clone();
@@ -359,10 +370,22 @@ public class TourDesigner extends TravelManager {
       table.add(minNumberOfSeats,2,row);
 
       ++row;
+      Text eNOSText = (Text) theBoldText.clone();
+        eNOSText.setText(iwrb.getLocalizedString("travel.estimated_number_of_seats","Estimated number of seats"));
+      table.add(eNOSText,1,row);
+      table.add(estSeats,2,row);
+
+      ++row;
       Text noKm = (Text) theBoldText.clone();
         noKm.setText(iwrb.getLocalizedString("travel.kilometers","Kilometers"));
       table.add(noKm,1,row);
       table.add(kilometers,2,row);
+
+      ++row;
+      Text discountTypeText = (Text) theBoldText.clone();
+        discountTypeText.setText(iwrb.getLocalizedString("travel.discount_type","Discount type"));
+      table.add(discountTypeText,1,row);
+      table.add(discountType,2,row);
 
       ++row;
       table.mergeCells(1,row,2,row);
@@ -425,7 +448,11 @@ public class TourDesigner extends TravelManager {
           numberOfSeats.setContent(Integer.toString(tour.getTotalSeats()));
           minNumberOfSeats.setContent(Integer.toString(tour.getMinimumSeats()));
           number_of_days.setContent(Integer.toString(tour.getNumberOfDays()));
+          estSeats.setContent(Integer.toString(tour.getEstimatedSeatsUsed()));
+          discountType.setSelectedElement(Integer.toString(this.product.getDiscountTypeId()));
           kilometers.setContent(Float.toString(tour.getLength()));
+      }else {
+        discountType.setSelectedElement(Integer.toString(Product.DISCOUNT_TYPE_ID_PERCENT));
       }
     }else {
       table.add(iwrb.getLocalizedString("travel.data_is_invalid","Data is invalid"));
@@ -467,6 +494,8 @@ public class TourDesigner extends TravelManager {
       String numberOfSeats = iwc.getParameter("number_of_seats");
       String minNumberOfSeats = iwc.getParameter("min_number_of_seats");
       String kilometers = iwc.getParameter("kilometers");
+      String estSeats = iwc.getParameter("estimated_seats");
+      String discountType = iwc.getParameter("discountType");
 /*
       if (hotelPickup != null) {
         if (hotelPickup.equals("N")) hotelPickupAddress = "";
@@ -479,6 +508,13 @@ public class TourDesigner extends TravelManager {
         if (activeYearly.equals("Y")) yearly = true;
       }
 
+      if (estSeats == null) {
+        estSeats = "0";
+      }
+
+      if (discountType == null) {
+        discountType = Integer.toString(Product.DISCOUNT_TYPE_ID_PERCENT);
+      }
 
       Integer iImageId = null;
       if (imageId != null) {
@@ -583,11 +619,11 @@ public class TourDesigner extends TravelManager {
 
         if (tourId == -1) {
             tb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers);
+            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt(estSeats), Integer.parseInt(discountType));
         } else {
             String timeframeId = iwc.getParameter(this.parameterTimeframeId);
             tb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
-            serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers);
+            serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt(estSeats), Integer.parseInt(discountType));
         }
 
         /**

@@ -32,6 +32,7 @@ public class Tour extends GenericEntity {
     addAttribute(getMinimumSeatsColumnName(), "Lágmark sæta", true, true, Integer.class);
     addAttribute(getNumberOfDaysColumnName(), "Fjöldi daga", true, true, Integer.class);
     addAttribute(getLengthColumnName(), "Lengd", true, true, Float.class);
+    addAttribute(getEstimatedSeatsUsedColumnName(), "estimated seats used", true, true, Integer.class);
   }
   public String getEntityName() {
     return getTripTableName();
@@ -101,6 +102,16 @@ public class Tour extends GenericEntity {
     return getFloatColumnValue(getLengthColumnName());
   }
 
+  public void setEstimatedSeatsUsed(int seats) {
+    setColumn(getEstimatedSeatsUsedColumnName(), seats);
+  }
+
+  public int getEstimatedSeatsUsed() {
+    return getIntColumnValue(getEstimatedSeatsUsedColumnName());
+  }
+
+
+
   public static String getTripTableName() {return "TB_TOUR";}
   public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
   public static String getHotelPickupTimeColumnName() {return "HOTEL_PICKUP_TIME";}
@@ -108,5 +119,6 @@ public class Tour extends GenericEntity {
   public static String getMinimumSeatsColumnName() {return "MINIMUM_SEATS";}
   public static String getNumberOfDaysColumnName() {return "NUMBER_OF_DAYS";}
   public static String getLengthColumnName() {return "TOUR_LENGTH";}
+  public static String getEstimatedSeatsUsedColumnName() {return "ESTIMATED_SEATS_USED";}
 
 }

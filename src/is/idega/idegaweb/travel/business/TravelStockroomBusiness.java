@@ -125,24 +125,24 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
 
-  public int createService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival) throws Exception{
-    return createService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival);
+  public int createService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int discountTypeId) throws Exception{
+    return createService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival, discountTypeId);
   }
 
-  public int updateService(int serviceId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival) throws Exception {
-    return createService(serviceId,supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival);
+  public int updateService(int serviceId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int discountTypeId) throws Exception {
+    return createService(serviceId,supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival, discountTypeId);
   }
 
-  private int createService(int serviceId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival) throws Exception{
+  private int createService(int serviceId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int discountTypeId) throws Exception{
 //    TransactionManager transaction = IdegaTransactionManager.getInstance();
     try{
       //transaction.begin();
 
       int id = -1;
       if (serviceId == -1) {
-        id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid);
+        id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid, discountTypeId);
       }else {
-        id = StockroomBusiness.updateProduct(serviceId, supplierId,fileId,serviceName,serviceDescription,isValid);
+        id = StockroomBusiness.updateProduct(serviceId, supplierId,fileId,serviceName,serviceDescription,isValid, discountTypeId);
       }
 
         Service service = new Service();
@@ -561,10 +561,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       }else {
         goOn = isDateValid(contract, stamp);
       }
+
+
       if (goOn) {
         Service service = TravelStockroomBusiness.getService(product);
         Timeframe frame = service.getTimeframe();
         boolean isYearly = frame.getIfYearly();
+
 
         returner = idegaTimestamp.isInTimeframe(new idegaTimestamp(frame.getFrom()), new idegaTimestamp(frame.getTo() ), stamp, isYearly);
 

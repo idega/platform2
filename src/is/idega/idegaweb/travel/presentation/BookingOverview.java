@@ -418,6 +418,9 @@ public class BookingOverview extends TravelManager {
                               iBooked = Booker.getNumberOfBookings(service.getID(), tempStamp);
                               iAssigned = Assigner.getNumberOfAssignedSeats(product, tempStamp);
 
+                              int resellerBookings = Booker.getNumberOfBookingsByResellers(service.getID(), tempStamp);
+                              iAssigned = iAssigned - resellerBookings;
+
                               iInquery = Inquirer.getInqueredSeats(service.getID(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
                               //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
                               iAvailable = iCount - iBooked - iAssigned;
@@ -428,6 +431,7 @@ public class BookingOverview extends TravelManager {
 
                               iInquery = Inquirer.getInqueredSeats(service.getID(),tempStamp,reseller.getID(), true);
                               iAvailable = iCount - iBooked - iAssigned -iInquery;
+                              iCount = iCount -iBooked;
                           }
                           countTextBold.setText(Integer.toString(iCount));
 

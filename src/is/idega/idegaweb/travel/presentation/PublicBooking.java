@@ -466,6 +466,19 @@ public class PublicBooking extends Block  {
       table.mergeCells(1,1,2,1);
       table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")),1,1);
 
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
+      table.add(getBoldTextWhite(this.product.getName()),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.date","Date")),1,row);
+      table.add(getBoldTextWhite(this.stamp.getLocaleDate(iwc)),2,row);
+
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
@@ -508,19 +521,6 @@ public class PublicBooking extends Block  {
       table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
       table.add(getBoldTextWhite(telephoneNumber),2,row);
 
-      /*
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
-      table.add(getBoldTextWhite(city),2,row);
-
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
-      table.add(getBoldTextWhite(city),2,row);
-      */
       ++row;
 
       float price = 0;
@@ -657,7 +657,7 @@ public class PublicBooking extends Block  {
           table.add(Text.BREAK);
           table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
 
-          Link printVoucher = new Link(getBoldTextWhite("Print voucher"));
+          Link printVoucher = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
             printVoucher.addParameter(VoucherWindow.parameterBookingId, bookingId);
             printVoucher.setWindowToOpen(VoucherWindow.class);
 

@@ -91,6 +91,21 @@ public class Booker {
     return returner;
   }
 
+  public static int getNumberOfBookingsByResellers(int serviceId, idegaTimestamp stamp) {
+    return getNumberOfBookings(-1, serviceId, stamp);
+  }
+
+  public static int getNumberOfBookingsByResellers(int[] resellerIds, int serviceId, idegaTimestamp stamp) {
+    int returner = 0;
+    for (int i = 0; i < resellerIds.length; i++) {
+      returner += getNumberOfBookings(resellerIds[i], serviceId, stamp);
+    }
+    return returner;
+  }
+
+  public static int getNumberOfBookingsByReseller(int resellerId, int serviceId, idegaTimestamp stamp) {
+    return getNumberOfBookings(resellerId, serviceId, stamp);
+  }
 
   public static int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp) {
     int returner = 0;
@@ -102,15 +117,17 @@ public class Booker {
           StringBuffer sql = new StringBuffer();
             sql.append("Select sum(b."+GeneralBooking.getTotalCountColumnName()+") from "+GeneralBooking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
             sql.append(" where ");
-            sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
-            sql.append(" and ");
+            if (resellerId != -1) {
+              sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
+              sql.append(" and ");
+            }
             sql.append(" b."+booking.getIDColumnName()+" = br."+booking.getIDColumnName());
             sql.append(" and ");
             sql.append(" b."+GeneralBooking.getIsValidColumnName()+"='Y'");
             sql.append(" and ");
             sql.append(" b."+GeneralBooking.getServiceIDColumnName()+"="+serviceId);
             sql.append(" and ");
-            sql.append(" b."+GeneralBooking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
+            sql.append(" b."+GeneralBooking.getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
         many = SimpleQuerier.executeStringQuery(sql.toString());
 
         if (many != null) {
@@ -140,7 +157,7 @@ public class Booker {
 
   public static int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType){
     int returner = 0;
-    Connection conn = null;
+    //Connection conn = null;
     try {
       Timeframe timeframe = TravelStockroomBusiness.getTimeframe(new Product(serviceId));
       Service service = (Service) Service.getStaticInstance(Service.class);
@@ -148,7 +165,7 @@ public class Booker {
       String sTable = Service.getServiceTableName();
       String tTable = Timeframe.getTimeframeTableName();
 
-      conn = ConnectionBroker.getConnection();
+      //conn = ConnectionBroker.getConnection();
         String[] many = {};
           StringBuffer sql = new StringBuffer();
             sql.append("Select "+GeneralBooking.getTotalCountColumnName()+" from "+GeneralBooking.getBookingTableName()+" b");
@@ -158,44 +175,28 @@ public class Booker {
             sql.append(" and ");
             sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
             sql.append(" and ");
-            sql.append(GeneralBooking.getServiceIDColumnName()+"="+serviceId);
+            sql.append("s."+service.getIDColumnName()+"="+serviceId);
             sql.append(" and ");
-            sql.append(GeneralBooking.getIsValidColumnName()+" = 'Y'");
+            sql.append("b."+GeneralBooking.getServiceIDColumnName()+"= s."+service.getIDColumnName());
+            sql.append(" and ");
+            sql.append("b."+GeneralBooking.getIsValidColumnName()+" = 'Y'");
             if (bookingType != -1) {
               sql.append(" and ");
               sql.append(GeneralBooking.getBookingTypeIDColumnName()+" = "+bookingType);
             }
             sql.append(" and (");
-            sql.append(" (");
-            sql.append("t."+timeframe.getYearlyColumnName()+" = 'N'");
             if ( (fromStamp != null) && (toStamp == null) ) {
-              sql.append(" and ");
-              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
+              sql.append(GeneralBooking.getBookingDateColumnName()+" like '"+fromStamp.toSQLDateString()+"%'");
             }else if ( (fromStamp != null) && (toStamp != null)) {
-              sql.append(" and (");
+              sql.append(" (");
               sql.append(GeneralBooking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
               sql.append(GeneralBooking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
             }
-
-            sql.append(" )");
-            sql.append(" OR (");
-            sql.append("t."+timeframe.getYearlyColumnName()+" = 'Y'");
-            if ( (fromStamp != null) && (toStamp == null) ) {
-              sql.append(" and ");
-              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
-            }else if ( (fromStamp != null) && (toStamp != null)) {
-              sql.append(" and (");
-              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '-"+fromStamp.getMonth() +"-"+fromStamp.getYear()+"'");
-              sql.append(" and ");
-              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '-"+fromStamp.getMonth() +"-"+fromStamp.getYear()+"')");
-            }
-            sql.append(" )");
             sql.append(" )");
 
-//        System.err.println(sql.toString());
-        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
-
+        many = SimpleQuerier.executeStringQuery(sql.toString());
+//        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
         for (int i = 0; i < many.length; i++) {
             returner += Integer.parseInt(many[i]);
@@ -204,7 +205,7 @@ public class Booker {
     }catch (Exception e) {
         e.printStackTrace(System.err);
     }finally {
-      ConnectionBroker.freeConnection(conn);
+      //ConnectionBroker.freeConnection(conn);
     }
 
     return returner;

@@ -27,15 +27,15 @@ public class TourBusiness extends TravelStockroomBusiness {
   public TourBusiness() {
   }
 
-  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays, Float kilometers) throws Exception{
-    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats, minNumberOfSeats, numberOfDays, kilometers);
+  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays, Float kilometers, int estimatedSeatsUsed, int discountTypeId) throws Exception{
+    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats, minNumberOfSeats, numberOfDays, kilometers, estimatedSeatsUsed, discountTypeId);
   }
 
-  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays, Float kilometers) throws Exception {
-    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats,minNumberOfSeats, numberOfDays, kilometers);
+  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays, Float kilometers, int estimatedSeatsUsed, int discountTypeId) throws Exception {
+    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats,minNumberOfSeats, numberOfDays, kilometers, estimatedSeatsUsed, discountTypeId);
   }
 
-  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats,Integer numberOfDays, Float kilometers) throws Exception {
+  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats,Integer numberOfDays, Float kilometers, int estimatedSeatsUsed, int discountTypeId) throws Exception {
 
       boolean isError = false;
 
@@ -105,9 +105,9 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       int serviceId = -1;
       if (tourId == -1) {
-        serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
+        serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp(), discountTypeId);
       }else {
-        serviceId = updateService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
+        serviceId = updateService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp(), discountTypeId);
       }
 
 //      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
@@ -134,6 +134,9 @@ public class TourBusiness extends TravelStockroomBusiness {
             tour.setNumberOfDays(numberOfDays.intValue());
           if (kilometers != null)
             tour.setLength(kilometers.floatValue());
+
+          if (estimatedSeatsUsed != -1)
+            tour.setEstimatedSeatsUsed(estimatedSeatsUsed);
 
           if (arrivalAddressIds.length > 0)
           for (int i = 0; i < arrivalAddressIds.length; i++) {
@@ -257,6 +260,43 @@ public class TourBusiness extends TravelStockroomBusiness {
 
     return menu;
   }
+
+  public static boolean getIfDay(IWContext iwc, Contract contract, Tour tour, idegaTimestamp stamp) {
+    try {
+      if (!getIfDayInManyDayTour(tour, stamp)) return false;
+      return TravelStockroomBusiness.getIfDay(iwc, contract, new Product(tour.getID()), stamp);
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+      return false;
+    }
+  }
+
+  public static boolean getIfDay(IWContext iwc, Tour tour, idegaTimestamp stamp, boolean includePast) {
+    try {
+      if (!getIfDayInManyDayTour(tour, stamp)) return false;
+      return TravelStockroomBusiness.getIfDay(iwc, new Product(tour.getID()), stamp, includePast);
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+      return false;
+    }
+  }
+
+  private static boolean getIfDayInManyDayTour(Tour tour, idegaTimestamp stamp) throws SQLException {
+    int numberOfDays = tour.getNumberOfDays();
+    if (numberOfDays > 1) {
+      Timeframe frame = new Service(tour.getID()).getTimeframe();
+      idegaTimestamp from = new idegaTimestamp(frame.getFrom());
+      if (frame.getIfYearly()) {
+        from.setYear(stamp.getYear());
+      }
+      int daysBetween = from.getDaysBetween(from, stamp);
+      if (daysBetween % numberOfDays != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   public static List getDepartureDays(IWContext iwc, Tour tour) {
     return getDepartureDays(iwc, tour, true);

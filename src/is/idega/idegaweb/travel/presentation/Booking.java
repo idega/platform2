@@ -217,20 +217,7 @@ public class Booking extends TravelManager {
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
           }
-/*
-      idegaTimestamp temp = idegaTimestamp.RightNow();
-      DropdownMenu year = new DropdownMenu("chosen_year");
-          for (int i = 2000; i < ( temp.getYear() +4 ); i++) {
-              year.addMenuElement(i,""+i);
-          }
 
-          String parYear = iwc.getParameter("chosen_year");
-          if (parYear != null) {
-              year.setSelectedElement(parYear);
-          }else {
-              year.setSelectedElement(Integer.toString(temp.getYear()));
-          }
-*/
       Text nameText = (Text) theText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
           nameText.addToText(":");
@@ -279,11 +266,19 @@ public class Booking extends TravelManager {
         if (reseller != null) {
           isExpired = TravelStockroomBusiness.getIfExpired(contract, stamp);
           if (!isExpired) {
-            isDayVisible = TravelStockroomBusiness.getIfDay(iwc, contract, product, stamp);
+            if (this.tour != null) {
+              isDayVisible = TourBusiness.getIfDay(iwc, contract, tour, stamp);
+            }else {
+              isDayVisible = TravelStockroomBusiness.getIfDay(iwc, contract, product, stamp);
+            }
           }
         }
         else {
-          isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, this.stamp);
+          if (this.tour != null) {
+            isDayVisible = TourBusiness.getIfDay(iwc, tour, stamp, false);
+          }else {
+            isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, this.stamp);
+          }
           if (supplier == null) {
             if (isDayVisible) {
               iBookings = Booker.getNumberOfBookings(productId, stamp);
@@ -608,6 +603,7 @@ public class Booking extends TravelManager {
               available = iAvailable;
               availableTextBold.setText(Integer.toString(iAvailable));
             }
+            iCount = iCount - iBooked;
 
           }
         }

@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.block.trade.data.Currency;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -1084,6 +1085,16 @@ public class Contracts extends TravelManager {
 
             infoTable.add(tDiscount,1,infoRow);
             infoTable.add(pDiscount,3,infoRow);
+            if (product != null) {
+              Text what = (Text) theText.clone();
+              if (product.getDiscountTypeId() == product.DISCOUNT_TYPE_ID_PERCENT) {
+                what.setText(" %");
+              }else if (product.getDiscountTypeId() == product.DISCOUNT_TYPE_ID_AMOUNT) {
+                pDiscount.setSize(10);
+                what.setText(" "+new Currency(tsb.getCurrencyIdForIceland()).getCurrencyAbbreviation());
+              }
+              infoTable.add(what,3,infoRow);
+            }
 
             ++infoRow;
             infoTable.add(tNumberOfSeatsPerTour,1,infoRow);

@@ -10,7 +10,7 @@ import com.idega.block.trade.stockroom.data.*;
 import com.idega.util.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
-import is.idega.idegaweb.travel.service.tour.business.TourBooker;
+import is.idega.idegaweb.travel.service.tour.business.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.business.Inquirer;
 
@@ -398,8 +398,7 @@ public class TourBookingForm extends TravelManager {
 
       boolean isDay = true;
 
-      if (isDay)
-        isDay = TravelStockroomBusiness.getIfDay(iwc,product, stamp, false);
+      isDay = TourBusiness.getIfDay(iwc, _tour, stamp, false);
 
 
       ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), true);
@@ -1031,6 +1030,10 @@ public class TourBookingForm extends TravelManager {
           }
         }
         */
+        if (_reseller != null) {
+          _reseller.addTo(GeneralBooking.class, lbookingId);
+        }
+
         returner = lbookingId;
 
         if (lbookingId != -1) {

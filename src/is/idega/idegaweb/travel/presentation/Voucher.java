@@ -34,6 +34,7 @@ public class Voucher extends TravelManager {
   private IWBundle _bundle;
 
   private Booking _booking;
+  private BookingEntry[] _entries;
   private Service _service;
   private Product _product;
   private Supplier _supplier;
@@ -53,6 +54,7 @@ public class Voucher extends TravelManager {
       _booking = booking;
       _service = _booking.getService();
       _product = _service.getProduct();
+      _entries = _booking.getBookingEntries();
       _supplier = new Supplier(_product.getSupplierId());
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -178,6 +180,14 @@ public class Voucher extends TravelManager {
         table.add(getText(" : "),1,2);
         table.add(getText(Integer.toString(_booking.getTotalCount())),1,2);
         table.add(Text.BREAK,1,2);
+        for (int i = 0; i < _entries.length; i++) {
+          table.add(getText(Text.NON_BREAKING_SPACE+ Text.NON_BREAKING_SPACE),1,2);
+          table.add(getText(_entries[i].getProductPrice().getPriceCategory().getName()),1,2);
+          table.add(getText(" : "),1,2);
+          table.add(getText(Integer.toString(_entries[i].getCount())),1,2);
+          table.add(Text.BREAK,1,2);
+        }
+
 
         table.add(Text.BREAK,1,2);
         table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
