@@ -7,15 +7,24 @@ import java.util.Vector;
 
 import com.idega.block.news.data.NewsCategory;
 import com.idega.block.news.data.NwNews;
+import com.idega.block.news.data.NwNewsBMPBean;
 import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.data.Content;
+import com.idega.block.text.data.ContentBMPBean;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.core.category.business.CategoryFinder;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -66,7 +75,24 @@ public class NewsFinder {
   }
 
   public static List listOfPublishingNews(int newsCategoryId,boolean ignorePublishingDates){
-    StringBuffer sql = new StringBuffer("select * from ");
+    Table news = new Table(com.idega.block.news.data.NwNewsBMPBean.getEntityTableName(), "n");
+    Table content = new Table(com.idega.block.text.data.ContentBMPBean.getEntityTableName(), "c");
+    
+    SelectQuery query = new SelectQuery(news);
+    query.addColumn(new WildCardColumn(news));
+    query.addColumn(new WildCardColumn(content));
+    
+    query.addJoin(news, NwNewsBMPBean.getColumnNameContentId(), content, ContentBMPBean.getEntityTableName()+"_ID");
+    query.addCriteria(new MatchCriteria(news, NwNewsBMPBean.getColumnNameNewsCategoryId(), MatchCriteria.EQUALS, newsCategoryId));
+    if (!ignorePublishingDates ) {
+    	IWTimestamp today = IWTimestamp.RightNow();
+      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.GREATEREQUAL, today.getDate());
+      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.LESSEQUAL, today.getDate());
+      	query.addCriteria(new OR(from, to));
+    }
+    query.addOrder(content, ContentBMPBean.getColumnNameCreated(), false);
+
+    /*StringBuffer sql = new StringBuffer("select * from ");
     sql.append(com.idega.block.news.data.NwNewsBMPBean.getEntityTableName());
     sql.append(" n,");
     sql.append(com.idega.block.text.data.ContentBMPBean.getEntityTableName());
@@ -77,7 +103,7 @@ public class NewsFinder {
     sql.append("_id and ");
     sql.append(com.idega.block.news.data.NwNewsBMPBean.getColumnNameNewsCategoryId());
     sql.append(" = ");
-    sql.append(newsCategoryId);
+    sql.append(newsCategoryId);*/
     // USE BETWEEN
     /*
     if(!ignorePublishingDates ){
@@ -93,7 +119,7 @@ public class NewsFinder {
     */
     // USE OPERATORS <= AND >=
 
-    if(!ignorePublishingDates ){
+    /*if(!ignorePublishingDates ){
       IWTimestamp today = IWTimestamp.RightNow();
       sql.append(" and ");
       sql.append(com.idega.block.text.data.ContentBMPBean.getColumnNamePublishFrom() );
@@ -108,10 +134,10 @@ public class NewsFinder {
 
     sql.append(" order by ");
     sql.append(com.idega.block.text.data.ContentBMPBean.getColumnNamePublishFrom());
-    sql.append(" desc ");
+    sql.append(" desc ");*/
     //System.err.println(sql.toString());
     try {
-      return EntityFinder.findAll(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy(),sql.toString());
+      return EntityFinder.findAll(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy(),query.toString());
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -121,7 +147,31 @@ public class NewsFinder {
 
     public static List listOfPublishingNews(int[] newsCategoryIds,int iLocaleId,boolean ignorePublishingDates){
       String middleTable = ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).createLegacy().getLocalizedTextMiddleTableName(((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy(),((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).createLegacy());
-      StringBuffer sql = new StringBuffer("SELECT N.*,C.* FROM ");
+      Table news = new Table(com.idega.block.news.data.NwNewsBMPBean.getEntityTableName(), "n");
+      Table content = new Table(com.idega.block.text.data.ContentBMPBean.getEntityTableName(), "c");
+      Table text = new Table(com.idega.block.text.data.LocalizedTextBMPBean.getEntityTableName(), "t");
+      Table middle = new Table(middleTable, "m");
+      
+      SelectQuery query = new SelectQuery(news);
+      query.addColumn(new WildCardColumn(news));
+      query.addColumn(new WildCardColumn(content));
+      
+      query.addJoin(news, NwNewsBMPBean.getColumnNameContentId(), content, ContentBMPBean.getEntityTableName()+"_ID");
+      query.addJoin(content, ContentBMPBean.getEntityTableName()+"_ID", middle, ContentBMPBean.getEntityTableName()+"_ID");
+      query.addJoin(content, ContentBMPBean.getEntityTableName()+"_ID", middle, ContentBMPBean.getEntityTableName()+"_ID");
+      query.addJoin(middle, LocalizedTextBMPBean.getEntityTableName()+"_ID", text, LocalizedTextBMPBean.getEntityTableName()+"_ID");
+
+      query.addCriteria(new InCriteria(news, NwNewsBMPBean.getColumnNameNewsCategoryId(), newsCategoryIds));
+      query.addCriteria(new MatchCriteria(text, LocalizedTextBMPBean.getColumnNameLocaleId(), MatchCriteria.EQUALS, iLocaleId));
+      if (!ignorePublishingDates ) {
+      	IWTimestamp today = IWTimestamp.RightNow();
+      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.GREATEREQUAL, today.getDate());
+      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.LESSEQUAL, today.getDate());
+      	query.addCriteria(new OR(from, to));
+      }
+      query.addOrder(content, ContentBMPBean.getColumnNameCreated(), false);
+      
+      /*StringBuffer sql = new StringBuffer("SELECT N.*,C.* FROM ");
       sql.append(com.idega.block.news.data.NwNewsBMPBean.getEntityTableName());
       sql.append(" N, ");
       sql.append(com.idega.block.text.data.LocalizedTextBMPBean.getEntityTableName());
@@ -175,7 +225,7 @@ public class NewsFinder {
     */
     // USE OPERATORS <= AND >=
 
-    if(!ignorePublishingDates ){
+    /*if(!ignorePublishingDates ){
       IWTimestamp today = IWTimestamp.RightNow();
       sql.append(" and ");
       sql.append(com.idega.block.text.data.ContentBMPBean.getColumnNamePublishFrom() );
@@ -190,11 +240,11 @@ public class NewsFinder {
 
     sql.append(" order by C.");
     sql.append(com.idega.block.text.data.ContentBMPBean.getColumnNameCreated());
-    sql.append(" desc ");
+    sql.append(" desc ");*/
     //
     //System.err.println(sql.toString());
     try {
-      return EntityFinder.findAll(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy(),sql.toString());
+      return EntityFinder.findAll(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy(),query.toString());
     }
     catch (SQLException ex) {
       ex.printStackTrace();
