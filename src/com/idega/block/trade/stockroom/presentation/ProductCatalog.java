@@ -77,7 +77,9 @@ public class ProductCatalog extends CategoryBlock{
   int _currentLocaleId = -1;
   boolean _hasEditPermission = false;
   boolean _allowMulitpleCategories = true;
+  boolean _useParameterCategory = false;
   Image _iconImage;
+  List productCategories;
 
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
   private AbstractProductCatalogLayout layout = null;
@@ -155,7 +157,7 @@ public class ProductCatalog extends CategoryBlock{
 
       layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
 
-      List productCategories = new Vector();
+      productCategories = new Vector();
       if ( iwc.isParameterSet(CATEGORY_ID) ) {
 	String[] categoryIDs = iwc.getParameterValues(CATEGORY_ID);
 	for ( int a = 0; a < categoryIDs.length; a++ ) {
@@ -430,7 +432,14 @@ public class ProductCatalog extends CategoryBlock{
 
       if ( _addCategoryID ) {
 	try {
-	  List list = ProductBusiness.getProductCategories(product);
+	  List list;
+	  if ( productCategories != null && productCategories.size() > 0 && _useParameterCategory ) {
+	    list = productCategories;
+	  }
+	  else {
+	    list = ProductBusiness.getProductCategories(product);
+	  }
+
 	  if ( list != null ) {
 	    Iterator iter = list.iterator();
 	    while (iter.hasNext()) {
@@ -541,5 +550,9 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setIconSpacing(int iconSpacing) {
     _iconSpacing = iconSpacing;
+  }
+
+  public void setUseParameterCategory(boolean useParameterCategory) {
+    _useParameterCategory = useParameterCategory;
   }
 }
