@@ -348,7 +348,7 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_typeFieldName, type);
 			else
 				fieldValues.put(_typeFieldName, "");
-			fieldValues.put(_memberUMFIFieldName, new Boolean(member != null));
+			fieldValues.put(_memberUMFIFieldName, new Boolean(member));
 			if (make != null)
 				fieldValues.put(_makeFieldName, make);
 			else
@@ -361,8 +361,8 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_statusFieldName, status);
 			else
 				fieldValues.put(_statusFieldName, "");
-			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
-			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
+			fieldValues.put(_inOperationFieldName, new Boolean(inOperation));
+			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using));
 
 			updateFieldsDisplayStatus();
 		}
@@ -488,7 +488,7 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_foundedFieldName, founded);
 			if (type != null)
 				fieldValues.put(_typeFieldName, type);
-			fieldValues.put(_memberUMFIFieldName, new Boolean(member != null));
+			fieldValues.put(_memberUMFIFieldName, new Boolean(member));
 			if (make != null)
 				fieldValues.put(_makeFieldName, make);
 			if (connection != null)
@@ -497,8 +497,8 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_regionalUnionFieldName, regional);
 			if (status != null)
 				fieldValues.put(_statusFieldName, status);
-			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
-			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
+			fieldValues.put(_inOperationFieldName, new Boolean(inOperation));
+			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using));
 
 			updateFieldsDisplayStatus();
 		}
