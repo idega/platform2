@@ -312,6 +312,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
 		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
 		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
+		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendIsNotNull();
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
