@@ -473,7 +473,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 				"[ReportOverview]: Can't generate query.";
 			System.err.println(message + " Message is: " + ex.getMessage());
 			ex.printStackTrace(System.err);
-			errorMessage = resourceBundle.getLocalizedString("ro_query_could not_be_created", "Query could not be created");
+			errorMessage = resourceBundle.getLocalizedString("ro_query_could_not_be_created", "Query could not be created");
 		}
 		// execute query if the query was successfully created
 		if (errorMessage == null) { 
