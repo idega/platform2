@@ -1,48 +1,25 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
-import is.idega.idegaweb.member.presentation.UserSearcher;
-
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.ListTable;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
+import com.idega.user.data.*;
+import is.idega.idegaweb.member.presentation.UserSearcher;
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.*;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
+import se.idega.idegaweb.commune.accounting.presentation.*;
+import se.idega.idegaweb.commune.accounting.regulations.data.*;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -57,10 +34,10 @@ import com.idega.user.data.UserHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/10 18:53:34 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/11 10:35:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -74,8 +51,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String AMOUNT_DEFAULT = "Belopp";
     private static final String AMOUNT_KEY = PREFIX + "amount";
     private static final String CHECK_END_PERIOD_KEY = PREFIX + "check_end_period";
-    private static final String CHECK_FAMILY_CHILDCARE_40H_DEFAULT = "Check familjedaghem, 40 tim/v";
-    private static final String CHECK_FAMILY_CHILDCARE_40H_KEY = PREFIX + "check_family_childcare_40h";
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
     private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
@@ -104,6 +79,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
     private static final String GO_BACK_KEY = PREFIX + "go_back";
+    private static final String HEADER_KEY = PREFIX + "header";
     private static final String INVOICE_ADDRESS_DEFAULT = "Faktureringsadress";
     private static final String INVOICE_ADDRESS_KEY = PREFIX + "invoice_address";
     private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT = "Fakturaunderlaget och dess fakturarader är nu borttagna";
@@ -146,9 +122,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PLACEMENT_PERIOD_DEFAULT = "Placeringsperiod";
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
     private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
-    private static final String PLACMENT_DEFAULT = "Placering";
-    private static final String PLACMENT_KEY = PREFIX + "placment";
-    //private static final String POSTING_KEY = PREFIX + "posting";
+    private static final String PLACEMENT_DEFAULT = "Placering";
+    private static final String PLACEMENT_KEY = PREFIX + "placement";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
@@ -183,6 +158,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
+    private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
 
 
     private static final String ACTION_KEY = PREFIX + "action_key";
@@ -253,14 +229,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     showCompilationList (context);
 					break;					
 			}
-
+            /*
             displayRedText
                     ("<p>Denna funktion är inte färdig! Bl.a. så återstår:<ol>" 
 
-                     + "<li>välj ett kontrakt från 'skapa fakturarrad'"
-                     + "<li>faturarad.VAT_TYPE i klartetxt"
-                     + "<li>'Check familjedaghem...' ska inte hårdkodas"
                      + "<li>ändra i en manuell faktureringsrad"
+                     + "<li>skapa rad: kopiera rule_text till invoice_text"
+                     + "<li>skapa rad: hitta rule_text, order_id i regelverket"
+                     + "<li>skapa rad: hitt payment_record_id med anordn.+verks"
+                     + "<li>välj ett kontrakt från 'skapa fakturarrad'"
                      + "<li>se faktureringsunderlag i pdf"
                      + "<li>efter skapa ny faktura => ny record form"
                      + "<li>tillåt inte negativt taxbelopp mm"
@@ -273,8 +250,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      + "<li>skriv ut anordnare på 'skapa fakturarrad'"
                      + "<li>uppdatera totalb. och momsersättning vid justering"
                      + "<li>ta bort invoice record => ta bort payment-record?"
+                     + "<li>funkar periodsökning på fakturaunderlag?"
 
                      + "</ol>\n\n(" + actionId + ')');
+            */
 		} catch (Exception exception) {
             logUnexpectedException (context, exception);
 		}
@@ -386,12 +365,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add ((PresentationObject) presentationObjects.get
                    (INVOICE_TEXT_KEY), col++, row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, PLACMENT_KEY, PLACMENT_DEFAULT, ":");
-        addSmallText(table, localize (CHECK_FAMILY_CHILDCARE_40H_KEY,
-                                      CHECK_FAMILY_CHILDCARE_40H_DEFAULT),
-                     col++, row);
+        addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
+                        ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        table.add ((PresentationObject) presentationObjects.get (RULE_TEXT_KEY),
+                   col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        table.add ((PresentationObject) presentationObjects.get (PROVIDER_KEY),
+                   col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
                         NUMBER_OF_DAYS_DEFAULT, ":");
@@ -485,8 +468,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         form.add (table);
         final Table outerTable = createTable (1);
         outerTable.add (form, 1, 1);
-        add (createMainTable (CREATE_INVOICE_RECORD_KEY,
-                              CREATE_INVOICE_RECORD_DEFAULT,  outerTable));
+        add (createMainTable (presentationObjects.get (HEADER_KEY).toString (),
+                              outerTable));
     }
 
     private Map getNewRecordInputsMap (final IWContext context)
@@ -533,6 +516,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         result.put (ACTION_KEY, getSubmitButton
                     (ACTION_NEW_RECORD + "", CREATE_INVOICE_RECORD_KEY,
                      CREATE_INVOICE_RECORD_DEFAULT));
+        result.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
+                                          CREATE_INVOICE_RECORD_DEFAULT));
+        result.put (RULE_TEXT_KEY, getSmallText (""));
+        result.put (PROVIDER_KEY, getSmallText (""));
         return result;
     }
 
@@ -547,14 +534,23 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 = home.findByPrimaryKey (new Integer (recordId));
 
         final Map result = new HashMap ();
-        addSmallText (result, AMOUNT_KEY, ((long) record.getAmount ()) + "");
-        addSmallText (result, VAT_AMOUNT_KEY, ((long) record.getAmountVAT ())
-                      + "");
+        if (0 < record.getProviderId ()) {
+            final SchoolBusiness schoolBusiness
+                    = (SchoolBusiness) IBOLookup.getServiceInstance
+                    (context, SchoolBusiness.class);
+            final School school = schoolBusiness.getSchool
+                    (new Integer (record.getProviderId ()));
+            result.put (PROVIDER_KEY, getSmallText (school.getName ()));
+        } else {
+            result.put (PROVIDER_KEY, getSmallText (""));
+        }
+        addSmallText (result, AMOUNT_KEY, (long) record.getAmount ());
+        addSmallText (result, VAT_AMOUNT_KEY, (long) record.getAmountVAT ());
         addSmallText (result, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
         addSmallText (result, CREATED_SIGNATURE_KEY, record.getCreatedBy ());
         addSmallDateText (result, DATE_ADJUSTED_KEY, record.getDateChanged ());
         addSmallDateText (result, DATE_CREATED_KEY, record.getDateCreated ());
-        addSmallText (result, NUMBER_OF_DAYS_KEY, record.getDays () + "");
+        addSmallText (result, NUMBER_OF_DAYS_KEY, record.getDays ());
         result.put (DOUBLE_POSTING_KEY, getPostingListTable
                     (context, record.getDoublePosting ()));
         addSmallText (result, INVOICE_TEXT_KEY, record.getInvoiceText ());
@@ -572,14 +568,29 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String ruleSpecType = record.getRuleSpecType ();
         addSmallText (result, REGULATION_SPEC_TYPE_KEY,
                       localize (ruleSpecType, ruleSpecType));
-        addSmallText (result, VAT_RULE_KEY, record.getVATType () + "");
+        if (0 < record.getVATType ()) {
+            final VATRule rule = business.getVatRule (record.getVATType ());
+            final String ruleName = rule.getVATRule ();
+            result.put (VAT_RULE_KEY, getSmallText (localize (ruleName,
+                                                              ruleName)));
+        } else {
+            result.put (VAT_RULE_KEY, getSmallText (""));
+        }
+        addSmallText (result, RULE_TEXT_KEY, record.getRuleText ());
         result.put (ACTION_KEY, getConfirmTable ("Tillbaka", "Tillbaka", new String [0][0]));
+        result.put (HEADER_KEY, localize (INVOICE_RECORD_KEY,
+                    INVOICE_RECORD_DEFAULT));
         return result;
     }
 
     private void addSmallText (final Map map, final String key,
                                final String value) {
         map.put (key, getSmallText (null != value ? value : ""));
+    }
+
+    private void addSmallText (final Map map, final String key,
+                               final long value) {
+        map.put (key, getSmallText (-1 != value ? value + "" : "0"));
     }
 
     private void addSmallDateText (final Map map, final String key,
@@ -1111,14 +1122,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         for (int i = 0; i < fields.length; i++) {
             final PostingField field = fields [i];
             result.setHeader (field.getFieldTitle(), i + 1);
+            final int endPosition = min (offset + field.getLen (),
+                                         postingString.length ());
             result.add (getSmallText (postingString.substring
-                                      (offset, offset + field.getLen ())));
-            offset += field.getLen ();
+                                      (offset, endPosition)));
+            offset = endPosition;
         }       
 		return result;
 	}
 
-    final PostingField [] getCurrentPostingFields (final IWContext context)
+    private int min (final int a, final int b) {
+        return a < b ? a : b;
+    }
+
+    private PostingField [] getCurrentPostingFields (final IWContext context)
         throws RemoteException {
         final PostingBusiness business = (PostingBusiness)
                 IBOLookup.getServiceInstance (context, PostingBusiness.class);
@@ -1161,18 +1178,30 @@ public class InvoiceCompilationEditor extends AccountingBlock {
      * @return Table to add to output
 	 */
     private Table createMainTable
-                (final String headerKey, final String headerDefault,
-                 final PresentationObject content) throws RemoteException {
-        final Table mainTable = createTable(1);
+        (final String header, final PresentationObject content)
+        throws RemoteException {
+        final Table mainTable = createTable (1);
         mainTable.setCellpadding (getCellpadding ());
         mainTable.setCellspacing (getCellspacing ());
         mainTable.setWidth (Table.HUNDRED_PERCENT);
         int row = 1;
         mainTable.setRowColor (row, getHeaderColor ());
         mainTable.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER) ;
-        addSmallHeader (mainTable, 1, row++,  headerKey, headerDefault);
+        mainTable.add (getSmallHeader (header), 1, row++);
         mainTable.add (content, 1, row++);
         return mainTable;
+    }
+
+	/**
+	 * Returns a styled table with content placed properly
+	 *
+	 * @param content the page unique content
+     * @return Table to add to output
+	 */
+    private Table createMainTable
+                (final String headerKey, final String headerDefault,
+                 final PresentationObject content) throws RemoteException {
+        return createMainTable (localize (headerKey, headerDefault), content);
     }
 
     private void addUserSearcherForm

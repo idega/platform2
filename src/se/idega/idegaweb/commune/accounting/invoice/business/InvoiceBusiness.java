@@ -7,6 +7,7 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
  public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createInvoiceRecord(com.idega.user.data.User p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3,java.lang.String p4,java.lang.Integer p5,java.lang.String p6,java.lang.String p7,java.lang.Integer p8,java.lang.String p9,java.sql.Date p10,java.sql.Date p11,java.lang.Integer p12,java.lang.String p13,java.lang.Integer p14,java.lang.Integer p15)throws javax.ejb.CreateException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType[] getAllRegulationSpecTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.VATRule[] getAllVatRules()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVatRule(int primaryKey)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.BatchRun getBatchRunByCategory(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
  public com.idega.user.data.User getChildByInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome getInvoiceHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;

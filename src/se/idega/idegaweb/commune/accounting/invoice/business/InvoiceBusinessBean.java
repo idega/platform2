@@ -46,10 +46,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/10 18:12:59 $ by $Author: joakim $
+ * Last modified: $Date: 2003/11/11 10:35:27 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -397,6 +397,16 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
                     : (VATRule []) collection.toArray (new VATRule [0]);
         } catch (FinderException e) {
             return new VATRule [0];
+        }
+    }
+
+    public VATRule getVatRule (int primaryKey) throws RemoteException {
+        try {
+            final VATRule rule = getVatRuleHome ().findByPrimaryKey
+                    (new Integer (primaryKey));
+            return rule;
+        } catch (FinderException e) {
+            return null;
         }
     }
 
