@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
@@ -46,11 +47,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/24 12:56:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 13:51:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -217,9 +218,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         throws RemoteException, FinderException {
         final PaymentRecord record = getPaymentRecord (context);
         final java.util.Map map = new java.util.HashMap ();
+        map.put (ADJUSTED_SIGNATURE_KEY,
+                 getSmallSignature (record.getChangedBy ()));
         addSmallText (map, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
         addSmallText (map, AMOUNT_KEY, (long) record.getTotalAmount ());
-        addSmallText (map, CREATED_SIGNATURE_KEY, record.getCreatedBy ());
+        map.put (CREATED_SIGNATURE_KEY,
+                 getSmallSignature (record.getCreatedBy ()));
         addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
         addSmallText (map, DATE_CREATED_KEY, record.getDateCreated ());
         map.put (DOUBLE_POSTING_KEY,
@@ -593,9 +597,22 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     }
 
     private static boolean isManualRecord (final PaymentRecord record) {
+        final String autoSignature = BillingThread.getBathRunSignatureKey ();
         final String createdBy = record.getCreatedBy ();
-        return null == createdBy || 0 == createdBy.length ()
-                || 2 == createdBy.length ();
+        return null == createdBy || !createdBy.equals (autoSignature);
+    }
+
+    private Text getSmallSignature (final String string) {
+        final StringBuffer result = new StringBuffer ();
+        final String autoSignature = BillingThread.getBathRunSignatureKey ();
+        if (null != string) {
+            if (string.equals (autoSignature)) {
+                result.append (localize (string, string));
+            } else {
+                result.append (string);
+            }
+        }
+        return getSmallText (string.toString ());
     }
 
 	private void showPaymentRecordOnARow

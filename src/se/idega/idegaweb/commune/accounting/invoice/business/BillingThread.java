@@ -79,6 +79,10 @@ public abstract class BillingThread extends Thread{
 		this.iwc = iwc;
 	}
 	
+    public static String getBathRunSignatureKey () {
+        return BATCH_TEXT;
+    }
+
 	/**
 	 * Finds existing payment reacord or creates a new payment record if needed, 
 	 * and populates the values as needed. It also creates the payment header if needed

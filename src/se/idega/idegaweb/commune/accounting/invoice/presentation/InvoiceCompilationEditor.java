@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
+import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
@@ -64,10 +65,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 13:51:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.50 $
+ * @version $Revision: 1.51 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -495,10 +496,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      (record.getPeriodEndPlacement ())));
         inputs.put (DATE_CREATED_KEY, getSmallText
                     (dateFormatter.format (record.getDateCreated ())));
-        inputs.put (CREATED_SIGNATURE_KEY, getSmallText
+        inputs.put (CREATED_SIGNATURE_KEY, getSmallSignature
                     (record.getCreatedBy ()));
         addSmallDateText (inputs, DATE_ADJUSTED_KEY, record.getDateChanged ());
-        addSmallText (inputs, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
+        inputs.put (ADJUSTED_SIGNATURE_KEY,
+                    getSmallSignature (record.getChangedBy ()));
 
         inputs.put (AMOUNT_KEY, getStyledInput
                     (AMOUNT_KEY, ((long) record.getAmount ()) +""));
@@ -547,8 +549,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final java.util.Map details = new java.util.HashMap ();
         addSmallText (details, AMOUNT_KEY, (long) record.getAmount ());
         addSmallText (details, VAT_AMOUNT_KEY, (long) record.getAmountVAT ());
-        addSmallText (details, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
-        addSmallText (details, CREATED_SIGNATURE_KEY, record.getCreatedBy ());
+        details.put (ADJUSTED_SIGNATURE_KEY,
+                     getSmallSignature (record.getChangedBy ()));
+        details.put (CREATED_SIGNATURE_KEY,
+                     getSmallSignature (record.getCreatedBy ()));
         addSmallDateText (details, DATE_ADJUSTED_KEY, record.getDateChanged ());
         addSmallDateText (details, DATE_CREATED_KEY, record.getDateCreated ());
         addSmallText (details, NUMBER_OF_DAYS_KEY, record.getDays ());
@@ -1491,12 +1495,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return result.toString ();
 	}
 
-    private static boolean isManualRecord (final InvoiceRecord record) {
-        final String createdBy = record.getCreatedBy ();
-        return null == createdBy || 0 == createdBy.length ()
-                || 2 == createdBy.length ();
-    }
-
 	/**
 	 * Returns a styled table with content placed properly
 	 *
@@ -1528,6 +1526,25 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 (final String headerKey, final String headerDefault,
                  final PresentationObject content) throws RemoteException {
         return createMainTable (localize (headerKey, headerDefault), content);
+    }
+
+    private static boolean isManualRecord (final InvoiceRecord record) {
+        final String autoSignature = BillingThread.getBathRunSignatureKey ();
+        final String createdBy = record.getCreatedBy ();
+        return null == createdBy || !createdBy.equals (autoSignature);
+    }
+
+    private Text getSmallSignature (final String string) {
+        final StringBuffer result = new StringBuffer ();
+        final String autoSignature = BillingThread.getBathRunSignatureKey ();
+        if (null != string) {
+            if (string.equals (autoSignature)) {
+                result.append (localize (string, string));
+            } else {
+                result.append (string);
+            }
+        }
+        return getSmallText (string.toString ());
     }
 
     private void addUserSearcherForm
