@@ -8,6 +8,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -110,6 +111,24 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		
 		return colorTable;		
 	}
+
+
+	protected DropdownMenu getSchoolTypes(int typeID, int typeToIgnoreID) throws RemoteException {
+		DropdownMenu menu = new DropdownMenu(getSession().getParameterSchoolTypeID());
+		
+		Collection types = getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare();
+		Iterator iter = types .iterator();
+		while (iter.hasNext()) {
+			SchoolType element = (SchoolType) iter.next();
+			if (((Integer)element.getPrimaryKey()).intValue() != typeToIgnoreID)
+				menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolTypeName());
+		}
+		if (typeID != -1)
+			menu.setSelectedElement(typeID);
+		
+		return (DropdownMenu) getStyledInterface(menu);	
+	}
+
 
 	protected DropdownMenu getGroups(int groupID, int groupToIgnoreID) throws RemoteException {
 		DropdownMenu menu = new DropdownMenu(getSession().getParameterGroupID());
