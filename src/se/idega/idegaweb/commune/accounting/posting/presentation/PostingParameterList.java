@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.33 2004/02/24 18:25:22 aron Exp $
+ * $Id: PostingParameterList.java,v 1.34 2004/02/25 08:40:27 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.33 2004/02/24 18:25:22 aron Exp $
+ * $Id: PostingParameterList.java,v 1.34 2004/02/25 08:40:27 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -80,7 +80,7 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_CLICK_REMOVE = "posting_parm_list.click_to_remove";
 	private final static String KEY_SCHOOL_YEAR = "posting_parm_list.school_year";
 	private final static String KEY_HEADER_OPERATION =  "posting_parm_list.operation_header";
-	private final static String KEY_HEADER_SORT_BY =  "posting_parm_list.sort_by_header"; 
+	//private final static String KEY_HEADER_SORT_BY =  "posting_parm_list.sort_by_header"; 
 
 	private final static String BLANK = " ";
 
