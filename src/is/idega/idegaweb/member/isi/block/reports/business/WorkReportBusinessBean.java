@@ -164,7 +164,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
 				report.setGroupId(groupId);
 				report.setYearOfReport(year);
-				report.setGroupType(club.getGroupType());
+				
 			}
 			catch (CreateException e1) {
 				e1.printStackTrace();
@@ -181,8 +181,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
               e1.printStackTrace();
             }
 
-	
-			//THIS IS CRAP IT SHOULD JUST USE .getName() !! palli bitch
+
+			report.setGroupType(club.getGroupType());
 			report.setGroupName((club.getName() != null) ? club.getName() : club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME));
 			report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 			report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
