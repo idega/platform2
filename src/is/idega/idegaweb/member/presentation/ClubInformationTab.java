@@ -345,7 +345,7 @@ public class ClubInformationTab extends UserGroupTab {
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED, founded);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_TYPE, type);
 			if (memberUMFI != null)
-				group.setMetaData(IWMemberConstants.META_DATA_CLUB_MEMBER, memberUMFI.toString());
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI, memberUMFI.toString());
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_MAKE, make);
 			if (make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB )) {
 				String oldConnection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
@@ -410,7 +410,7 @@ public class ClubInformationTab extends UserGroupTab {
 
 			String founded = group.getMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED);
 			String type = group.getMetaData(IWMemberConstants.META_DATA_CLUB_TYPE);
-			String member = group.getMetaData(IWMemberConstants.META_DATA_CLUB_MEMBER);
+			String member = group.getMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI);
 			String make = group.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
 			String connection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
 			String status = group.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
