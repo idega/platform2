@@ -257,11 +257,14 @@ public class Forum extends CategoryBlock implements IWBlock {
     table.setCellpaddingAndCellspacing(0);
     int row = 1;
 
-    List list = forumBusiness.getThreadsInCategories(this.getCategories(),_numberOfThreads);
+    Collection categories = this.getCategories();
+    List list = forumBusiness.getThreadsInCategories(categories,_numberOfThreads);
     if ( list != null ) {
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
 	ForumData thread = (ForumData) iter.next();
+	if ( row == 1 && categories.size() == 1 )
+	  _topicID = thread.getTopicID();
 
 	table.add(getUser(thread),1,row);
 	table.add(formatText(","+Text.NON_BREAKING_SPACE),1,row);
@@ -274,10 +277,8 @@ public class Forum extends CategoryBlock implements IWBlock {
       }
     }
 
-    if ( _showOverviewLink ) {
-      table.setAlignment(1,row,Table.HORIZONTAL_ALIGN_RIGHT);
-      table.add(getOverviewLink(),1,row);
-    }
+    table.setAlignment(1,row,Table.HORIZONTAL_ALIGN_RIGHT);
+    table.add(getForumLinks(),1,row);
   }
 
   private void getTopicCollection(IWContext iwc,Table table) {
@@ -565,22 +566,24 @@ public class Forum extends CategoryBlock implements IWBlock {
     Table table = new Table();
     int column = 1;
 
-    Image newImage = _iwb.getImage("shared/new.gif");
-      newImage.setHorizontalSpacing(2);
-      newImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
-    table.add(newImage,column,1);
+    if ( _topicID != -1 ) {
+      Image newImage = _iwb.getImage("shared/new.gif");
+	newImage.setHorizontalSpacing(2);
+	newImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+      table.add(newImage,column,1);
 
-    if ( _hasAddPermission ) {
-      Link newLink = new Link(_iwrb.getLocalizedString("new_thread"));
-	newLink.setStyle(_linkName);
-	newLink.setWindowToOpen(ForumThreadEditor.class);
-	newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
-      table.add(newLink,column++,1);
-    }
-    else {
-      Text newText = new Text(_iwrb.getLocalizedString("new_thread"));
-	newText.setFontStyle(_linkStyle);
-      table.add(newText,column++,1);
+      if ( _hasAddPermission ) {
+	Link newLink = new Link(_iwrb.getLocalizedString("new_thread"));
+	  newLink.setStyle(_linkName);
+	  newLink.setWindowToOpen(ForumThreadEditor.class);
+	  newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,_topicID);
+	table.add(newLink,column++,1);
+      }
+      else {
+	Text newText = new Text(_iwrb.getLocalizedString("new_thread"));
+	  newText.setFontStyle(_linkStyle);
+	table.add(newText,column++,1);
+      }
     }
 
     if ( _showOverviewLink ) {
