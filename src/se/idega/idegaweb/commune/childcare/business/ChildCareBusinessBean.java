@@ -3880,7 +3880,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			t.begin();			
 
 			ChildCareApplication application = getApplication(applicationID);
-			ChildCareContract latestContract = getLatestContract(applicationID);
+			ChildCareContract latestContract = getLatestContractByApplication(applicationID);
 			SchoolClassMember latestMember = latestContract.getSchoolClassMember();
 			
 			SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
@@ -3917,7 +3917,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					contract.remove();
 				}
 				
-				ChildCareContract newLatestContract = getLatestContract(applicationID);
+				ChildCareContract newLatestContract = getLatestContractByApplication(applicationID);
 
 				if (newLatestContract != null) {
 					newLatestContract.setTerminatedDate(application.getRejectionDate());
