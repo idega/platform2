@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.4 2003/05/24 13:13:46 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.5 2004/02/02 11:14:31 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -208,7 +208,23 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
   public User makeNewUser(Applicant A,String[] emails){
 
     try{
-    User u = getUserService().insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
+    	User u = null;
+    	
+    	String ssn = A.getSSN();
+    	if(ssn!=null){
+    		
+    			try {
+					u = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(ssn);
+				}
+				catch (RuntimeException e) {
+					e.printStackTrace();
+				}
+    		
+    		
+    	}
+    	else{
+    		u = getUserService().insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
+    	}
     if(emails !=null && emails.length >0)
       getUserService().addNewUserEmail( ((Integer) u.getPrimaryKey()).intValue(),emails[0]);
 
