@@ -1,5 +1,5 @@
 /*
- * $Id: TariffIndex.java,v 1.4 2001/08/17 08:08:23 aron Exp $
+ * $Id: TariffIndex.java,v 1.5 2001/08/17 10:20:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,8 +33,9 @@ public class TariffIndex extends GenericEntity{
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameIndex(), "Index", true, true, java.lang.Float.class);
     addAttribute(getColumnNameDate(), "LastUpdated", true, true, java.sql.Date.class);
-    addAttribute(getColumnNameInfo(), "Name", true, true, java.lang.String.class);
+    addAttribute(getColumnNameName(), "Name", true, true, java.lang.String.class);
     addAttribute(getColumnNameInfo(), "Info", true, true, java.lang.String.class);
+    addAttribute(getColumnNameType(), "type", true, true, java.lang.String.class);
   }
 
   public static String getTariffIndexEntityName(){ return "CAM_TARIFF_INDEX"; }
