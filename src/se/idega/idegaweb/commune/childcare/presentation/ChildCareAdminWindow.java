@@ -1542,8 +1542,25 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				classMember = getBusiness().createNewPlacement(_applicationID,schoolTypeId,schoolClassId,validFrom,iwc.getCurrentUser());
 			}
 		}*/
-		getBusiness().assignContractToApplication(_applicationID,oldArchiveId, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false,true,schoolTypeId,schoolClassId);
-		close();
+		
+		//Add a control that says IF schooltypeid !=oldschooltypeid && schoolclassid == oldschoolclassid message: "You are trying to change the school type but keep the child in the same group"
+		//+
+		//Add control that they in the future only can place in groups with correct school type
+		
+		if(!getBusiness().isTryingToChangeSchoolTypeButNotSchoolClass(oldArchiveId,schoolTypeId,schoolClassId)){
+			if(getBusiness().isSchoolClassBelongingToSchooltype(schoolClassId,schoolTypeId)){
+				getBusiness().assignContractToApplication(_applicationID,oldArchiveId, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false,true,schoolTypeId,schoolClassId);
+				close();
+			}
+			else{
+				// add a message : "Chosen school group does not belong to chosen school type"
+				getParentPage().setAlertOnLoad(localize("child_care.warning.group_not_belonging_to_type","Chosen school group does not belong to chosen school type"));
+			}
+		}
+		else{
+			// add a message : "You are trying to change the school type but keep the child in the same group"
+			getParentPage().setAlertOnLoad(localize("child_care.warning.change_school_type_but_keep_same_group","You are trying to change the school type but keep the child in the same group"));
+		}
 	}
 
 	private void alterValidFromDate(IWContext iwc) throws RemoteException , NoPlacementFoundException{
