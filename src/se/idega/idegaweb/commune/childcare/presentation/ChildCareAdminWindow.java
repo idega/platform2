@@ -2253,10 +2253,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		User owner = application.getOwner();
 		com.idega.core.user.data.User child = UserBusiness.getUser(application.getChildId());
+		String p = child.getPersonalID();
+		String pnr = p.substring(2, 8) + "-" + p.substring(8, 12);
+		getBusiness().sendMessageToParents(application, localize("ccecw_encon_par1", "Beg�ran om upps�gning av kontrakt gjord"), localize("ccecw_encon_par2", "Du har skickat en beg�ran om upps�gning av kontrakt f�r") + " " + child.getName() + " " + pnr + " " + localize("ccecw_encon_par3", "fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".");
 
-		getBusiness().sendMessageToParents(application, localize("ccecw_encon_par1", "Beg�ran om upps�gning av kontrakt gjord"), localize("ccecw_encon_par2", "Du har skickat en beg�ran om upps�gning av kontrakt f�r") + " " + child.getName() + " " + child.getPersonalID() + " " + localize("ccecw_encon_par3", "fr.o.m.") + " " + stamp.toString() + ".");
-
-		getBusiness().sendMessageToProvider(application, localize("ccecw_encon_prov1", "Upps�gning av kontrakt"), owner.getName() + " " + localize("ccecw_encon_prov2", "har beg�rt upps�gning av kontrakt f�r") + " " + child.getName() + " " + child.getPersonalID() + ". " + localize("ccecw_encon_prov3", "Kontraktet ska upph�ra fr.o.m.") + " " + stamp.toString() + ".", application.getOwner());
+		getBusiness().sendMessageToProvider(application, localize("ccecw_encon_prov1", "Upps�gning av kontrakt"), owner.getName() + " " + localize("ccecw_encon_prov2", "har beg�rt upps�gning av kontrakt f�r") + " " + child.getName() + " " + pnr + ". " + localize("ccecw_encon_prov3", "Kontraktet ska upph�ra fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".", application.getOwner());
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
