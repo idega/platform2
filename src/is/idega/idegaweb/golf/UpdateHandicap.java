@@ -24,35 +24,44 @@ import com.idega.util.text.TextSoap;
 
 public class UpdateHandicap {
 
-    public static void update(int member_id) {
-	try {
+  public static void update(int member_id) {
+  		try {
 	    Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(member_id);
 	    IWTimestamp stampur = new IWTimestamp(1,1,2000);
 	    UpdateHandicap.update(member,stampur);
-	}
-	catch (FinderException sql) {
-	    sql.printStackTrace(System.err);
-	}
-    }
+		}
+		catch (FinderException sql) {
+		    sql.printStackTrace(System.err);
+		}
+  }
 
-    public static void update(int member_id,IWTimestamp stampur) {
-	try {
-	    Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(member_id);
-	    stampur.addDays(-1);
-	    UpdateHandicap.update(member,stampur);
-	}
-	catch (FinderException sql) {
-	    sql.printStackTrace(System.err);
-	}
-    }
+  public static void update(int member_id,IWTimestamp stampur) {
+		try {
+		    Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(member_id);
+		    stampur.addDays(-1);
+		    UpdateHandicap.update(member,stampur);
+		}
+		catch (FinderException sql) {
+		    sql.printStackTrace(System.err);
+		}
+  }
 
-    public static void update(Member member,IWTimestamp stampur) {
+  public static void update(Member member,IWTimestamp stampur) {
 
+    	MemberInfo memberInfo = null;
+  		try {
+			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByMember(member);
+		}
+		catch (FinderException e1) {
+			System.out.println("UpdateHandicap : handicapInfo not found for member : "+member.getSocialSecurityNumber());
+		}
+
+		if (memberInfo != null) {
+			
       try {
 	    int member_id = member.getID();
 	    //System.out.println("MemberID: "+member_id);
 
-	    MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByMember(member);
 	    TournamentRound round = null;
 	    Field field = null;
 	    Handicap leikForgjof = null;
@@ -219,67 +228,69 @@ public class UpdateHandicap {
       }
 
       catch (Exception e) {
-	  e.printStackTrace(System.err);
+			  e.printStackTrace(System.err);
       }
+		}
+  }
 
+  public static double reiknaHandicap2(Member member, double grunn, int heildarpunktar) {
+    double nyForgjof = 0;
+
+    try {
+    		double breyting;
+
+			if ( heildarpunktar >= 0 ) {
+			  breyting = heildarpunktar - 36;
+			}
+		
+			else {
+			  breyting = 0.0;
+			}
+		
+			Handicap forgjof = new Handicap(grunn);
+		
+			nyForgjof = forgjof.getNewHandicap(breyting);
+		
+			if ( member.getGender().equalsIgnoreCase("f") ) {
+			  if ( nyForgjof > 40.0 ) {
+			    nyForgjof = 40.0;
+			  }
+			}
+			else if ( member.getGender().equalsIgnoreCase("m") ) {
+			  if ( nyForgjof > 36.0 ) {
+			    nyForgjof = 36.0;
+			  }
+			}
+    }
+    catch (Exception e) {
+    		e.printStackTrace(System.out);
     }
 
-    public static double reiknaHandicap2(Member member, double grunn, int heildarpunktar) {
-      double nyForgjof = 0;
+    nyForgjof = Double.parseDouble(TextSoap.singleDecimalFormat(nyForgjof));
+    return nyForgjof;
+  }
 
-      try {
-	double breyting;
+  public static String reiknaHandicap(Member member, double grunn, int heildarpunktar) {
+  		double nyForgjof = reiknaHandicap2(member,grunn,heildarpunktar);
+  		return Double.toString(nyForgjof);
+  }
 
-	if ( heildarpunktar >= 0 ) {
-	  breyting = heildarpunktar - 36;
-	}
-
-	else {
-	  breyting = 0.0;
-	}
-
-	Handicap forgjof = new Handicap(grunn);
-
-	nyForgjof = forgjof.getNewHandicap(breyting);
-
-	if ( member.getGender().equalsIgnoreCase("f") ) {
-	  if ( nyForgjof > 40.0 ) {
-	    nyForgjof = 40.0;
-	  }
-	}
-	else if ( member.getGender().equalsIgnoreCase("m") ) {
-	  if ( nyForgjof > 36.0 ) {
-	    nyForgjof = 36.0;
-	  }
-	}
-      }
-      catch (Exception e) {
-	  e.printStackTrace(System.out);
-      }
-
-      nyForgjof = Double.parseDouble(TextSoap.singleDecimalFormat(nyForgjof));
-      return nyForgjof;
-    }
-
-    public static String reiknaHandicap(Member member, double grunn, int heildarpunktar) {
-      double nyForgjof = reiknaHandicap2(member,grunn,heildarpunktar);
-      return Double.toString(nyForgjof);
-    }
-
-    private static int getFieldPar(Vector vector) {
-      if ( vector != null ) {
-	int par = 0;
-	Iterator iter = vector.iterator();
-	while (iter.hasNext()) {
-	  Stroke item = (Stroke) iter.next();
-	  par += item.getHolePar();
-	}
-	if ( vector.size() == 9 )
-	  par = par * 2;
-	else if ( vector.size() < 18 )
-	  par = 0;
-	return par;
-      }
-      return 0;
-    }
+  private static int getFieldPar(Vector vector) {
+  		if ( vector != null ) {
+  			int par = 0;
+  			Iterator iter = vector.iterator();
+			while (iter.hasNext()) {
+			  Stroke item = (Stroke) iter.next();
+			  par += item.getHolePar();
+			}
+			if ( vector.size() == 9 )
+				par = par * 2;
+			else if ( vector.size() < 18 )
+				par = 0;
+			return par;
+  		}
+  		return 0;
+  }
+  
+  
 }
