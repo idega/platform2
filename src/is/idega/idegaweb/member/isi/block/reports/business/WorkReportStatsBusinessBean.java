@@ -2264,7 +2264,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int menMembersEqualOrOver = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age, report);
 			int lastYearMemberCount = 0;
 			if(lastYearReport!=null) {
-				lastYearMemberCount = getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
+				lastYearMemberCount = getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
 			} 
 			
 			regData.addData(womenUnderAge, new Integer(womenMembersUnder));
@@ -2667,23 +2667,104 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					
 					
 					//Get and display the report for the league itself
+					
 					/*
-					WorkReport leagueReport = null;
+					 WorkReport leagueReport = null;
 					try{
 						leagueReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(league.getGroupId().intValue(),league.getYearOfReport().intValue());
+						
+						Collection mainBoard = leagueReport.getLeagues();
+						if(mainBoard!=null && !mainBoard.isEmpty()){
+							WorkReportGroup mainBoardWRGroup = (WorkReportGroup) mainBoard.iterator().next();
+							String leagueKey = leagueIdentifier+"leaguesowndata";
+							//add the data					
+							//fetch the stats or initialize
+							ReportableData leagueData = (ReportableData) recordsMapKeyedByLeagueIdentifierAndClubsName.get(leagueKey);
+							if(leagueData==null){//initialize
+								leagueData = new ReportableData();
+								leagueData.addData(leagueString, leagueIdentifier);
+								leagueData.addData(clubName, groupName);
+								leagueData.addData(regionalUnionAbbreviation, regionalUnionIdentifier);
+								leagueData.addData(clubType, getClubTypeString(report));
+	
+								leagueData.addData(income, new Integer(0));
+								leagueData.addData(expenses, new Integer(0));
+								leagueData.addData(incomeMinusExpenses,new Integer(0));
+								leagueData.addData(rollingMoney, new Integer(0));
+								leagueData.addData(rigidMoney, new Integer(0));
+								leagueData.addData(debts, new Integer(0));
+								leagueData.addData(rollingMoneyMinusDebts,new Integer(0));
+	
+								leagueData.addData(comparingIncome, new Integer(0));
+								leagueData.addData(comparingExpenses, new Integer(0));
+								leagueData.addData(comparingIncomeMinusExpenses,new Integer(0));
+								leagueData.addData(comparingRollingMoney, new Integer(0));
+								leagueData.addData(comparingRigidMoney, new Integer(0));
+								leagueData.addData(comparingDebts, new Integer(0));
+								leagueData.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+	
+								leagueData.addData(dummyOrderingField,"A");
+							}
+
+							//getWorkReportBusiness().getWorkReportClubAccountRecordHome().
+
+							//Amounts for selected year
+							//income is account key collection
+							incomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,incomeKeys);
+							addToIntegerCount(income,regData,incomeTotal);
+							//expenses is account key collection
+							expensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,expensesKeys);
+							addToIntegerCount(expenses,regData,expensesTotal);
+							//income minus expenses
+							addToIntegerCount(incomeMinusExpenses,regData,incomeTotal - expensesTotal);
+							//rollingMoney FIN_85000
+							rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_85000");
+							addToIntegerCount(rollingMoney,regData,rollingMoneyTotal);
+							//rigidMoney FIN_81000
+							rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_81000");
+							addToIntegerCount(rigidMoney,regData,rigidMoneyTotal);
+							//debts FIN_92000
+							debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_92000");
+							addToIntegerCount(debts,regData,debtsTotal);
+							//rollingmoney minus debts
+							addToIntegerCount(rollingMoneyMinusDebts,regData,(rollingMoneyTotal-debtsTotal));
+
+							//Amounts for comparingYear
+							if(comparingReportId!=-1 && comparingWrGroupId!=-1){//just zero's otherwise
+								//income is account key collection
+								int comparingIncomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,incomeKeys);
+								addToIntegerCount(comparingIncome,regData,comparingIncomeTotal);
+								//expenses is account key collection
+								int comparingExpensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,expensesKeys);
+								addToIntegerCount(comparingExpenses,regData,comparingExpensesTotal);
+								//income minus expenses
+								addToIntegerCount(comparingIncomeMinusExpenses,regData,comparingIncomeTotal - comparingExpensesTotal);
+								//rollingMoney FIN_85000
+								int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_85000");
+								addToIntegerCount(comparingRollingMoney,regData,comparingRollingMoneyTotal);
+								//rigidMoney FIN_81000
+								int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_81000");
+								addToIntegerCount(comparingRigidMoney,regData,comparingRigidMoneyTotal);
+								//debts FIN_92000
+								int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_92000");
+								addToIntegerCount(comparingDebts,regData,comparingDebtsTotal);
+								//rollingmoney minus debts
+								addToIntegerCount(comparingRollingMoneyMinusDebts,regData,(comparingRollingMoneyTotal-comparingDebtsTotal));
+							}
+							
+							
+							
+							
+							
+						}
+						
 					}
 					catch (FinderException e) {
 						e.printStackTrace();
 					}
 					
-					WorkReport leagueReport = null;
-					try{
-						leagueReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(league.getGroupId().intValue(),league.getYearOfReport().intValue());
-					}
-					catch (FinderException e) {
-						e.printStackTrace();
-					}
-					*/
+				*/
+					
 					
 					//SUM DATA STARTS
 					WorkReportDivisionBoard division = null;
@@ -2701,7 +2782,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							divDataSum = new ReportableData();
 							divDataSum.addData(leagueString, leagueIdentifier);
 							divDataSum.addData(clubName, "Félög með efstudeild");
-							divDataSum.addData(regionalUnionAbbreviation, "");
+							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 						
 							divDataSum.addData(income, new Integer(0));
@@ -2749,7 +2830,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							divDataSum = new ReportableData();
 							divDataSum.addData(leagueString, leagueIdentifier);
 							divDataSum.addData(clubName, "Félög án efstudeildar");
-							divDataSum.addData(regionalUnionAbbreviation, "");
+							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 						
 							divDataSum.addData(income, new Integer(0));
@@ -2797,8 +2878,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					if(divDataSum==null){//initialize
 						divDataSum = new ReportableData();
 						divDataSum.addData(leagueString, leagueIdentifier);
-						divDataSum.addData(clubName, "Samtals");
-						divDataSum.addData(regionalUnionAbbreviation, "");
+						divDataSum.addData(clubName, "Öll félög");
+						divDataSum.addData(regionalUnionAbbreviation, "samtals");
 						divDataSum.addData(clubType,"");
 
 						divDataSum.addData(income, new Integer(0));
