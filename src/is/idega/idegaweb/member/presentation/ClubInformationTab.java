@@ -91,13 +91,9 @@ public class ClubInformationTab extends UserGroupTab {
 	private String _inOperationFieldName;
 	private String _usingMemberSystemFieldName;
 	private IWResourceBundle iwrb;
-
+  
 	public ClubInformationTab() {
-		super();
-		IWContext iwc = IWContext.getInstance();
-		iwrb = getResourceBundle(iwc);
-
-		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+        super();
 	}
 
 	public ClubInformationTab(Group group) {
@@ -191,6 +187,11 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFields()
 	 */
 	public void initializeFields() {
+    
+        IWContext iwc = IWContext.getInstance();
+        iwrb = getResourceBundle(iwc);
+        setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+
 		_numberField = new TextInput(_numberFieldName);
 		_ssnField = new TextInput(_ssnFieldName);
 		_abbreviationField = new TextInput(_abrvFieldName);
