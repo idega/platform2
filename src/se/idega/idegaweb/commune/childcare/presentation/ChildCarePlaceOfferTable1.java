@@ -4,9 +4,11 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.SortedSet;
 
+
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -16,6 +18,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 
 class ChildCarePlaceOfferTable1 extends Table {
+	
 
 	private static Text HEADER_YOUR_CHOICE;
 	private static Text HEADER_OFFER;
@@ -24,6 +27,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	private static Text HEADER_YES;
 	private static Text HEADER_YES_BUT;
 	private static Text HEADER_NO;
+	private static String CONFIRM_DELETE;
 
 	private static String GRANTED;
 
@@ -59,6 +63,12 @@ class ChildCarePlaceOfferTable1 extends Table {
 					"ccatp1_yes_but",
 					"No, but don't delete from queue");
 			HEADER_NO = page.getLocalHeader("ccatp1_no", "No");
+			
+			CONFIRM_DELETE = page
+			   .localize(
+				   "ccatp1_confirm_delete",
+				   "Really delete?")
+			   .toString();		
 
 			GRANTED =
 				page
@@ -74,30 +84,35 @@ class ChildCarePlaceOfferTable1 extends Table {
 	public ChildCarePlaceOfferTable1(
 		IWContext iwc,
 		ChildCareCustomerApplicationTable page,
-		SortedSet applications)
+		SortedSet applications,
+		boolean hasOffer)
 		throws RemoteException {
 			
-		super(7, applications.size() + 1);
+//		super(9, applications.size() + 1);
 		initConstants(page);
 
-		initTable();
+		initTable(hasOffer);
 
 //		System.out.println("Applications: " + applications);
 		Iterator i = applications.iterator();
 		int row = 2;
 		boolean offerPresented = false;
 		//To avoid more than the first offer to be presented with accept/reject possibilities
-		String validateDateScript = "";
+		StringBuffer validateDateScript = new StringBuffer("false ");
 		
 		boolean choiceOneAccepted = false;
 		while (i.hasNext()) {
 			ChildCareApplication app =
 				((ComparableApp) i.next()).getApplication();
-			app.getChoiceNumber();
+				
+			if (app.getApplicationStatus() == _page.getChildCareBusiness(iwc).getStatusParentsAccept()){
+				continue;
+			}
+
 
 
 			//Only first offer should be presented with possibility to accept / reject
-			boolean offer =
+			boolean isOffer =
 				app.getStatus().equalsIgnoreCase(
 					ChildCareCustomerApplicationTable.STATUS_BVJD);
 			
@@ -107,36 +122,19 @@ class ChildCarePlaceOfferTable1 extends Table {
 			if (app.isAcceptedByParent() && app.getChoiceNumber() == 1){
 				choiceOneAccepted = true;
 			}
-			if (app.getChoiceNumber() == 2 && offer && choiceOneAccepted){
+			if (app.getChoiceNumber() == 2 && isOffer && choiceOneAccepted){
 				disableAccept = true;
 			}
 
+
 			//Adding row to the table
-			validateDateScript
-				+= addToTable(
-					row,
-			        ((Integer) app.getPrimaryKey()).toString(),
-					app.getChoiceNumber()
-						+ ": "
-						+ app.getProvider().getName()
-						+ _page.getDebugInfo(app),
-					offer ? GRANTED + app.getFromDate() : "",
-					app.getPrognosis() != null ? app.getPrognosis() : "",
-					offer && !offerPresented,
-					offerPresented
-						|| app.getApplicationStatus()
-							== _page.childCarebusiness.getStatusRejected(),
-					iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null,
-					app.isAcceptedByParent(),
-					app.isCancelledOrRejectedByParent(),
-					disableAccept);
+			validateDateScript.append(" || ");			
+			validateDateScript.append(
+				addToTable(row,	app, hasOffer, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null));
 
-			if (offer) {
+
+			if (isOffer) {
 				offerPresented = true;
-			}
-
-			if (i.hasNext()) {
-				validateDateScript += " || ";
 			}
 
 			row++;
@@ -144,13 +142,14 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		//Cannot use DateInput.setAsNotEmpty because we doesn't want this requirement 
 		//unless the user has selected the actual radio button.		
-		validateDateScript =
-			"function validateDates() { if("
-				+ validateDateScript
-				+ ") { alert('Please select a valid date'); return false; } else {return true;}}";
 
 		Script script = new Script("javascript");
-		script.setFunction("validateDates", validateDateScript);
+		
+		script.setFunction("validateDates", 
+			"function validateDates() { if("
+			+ validateDateScript
+			+ ") { alert('Please select a valid date'); return false; } else {return true;}}");
+		
 		_onSubmitHandler =
 			"if (!validateDates()) return false; else return confirm('"
 				+ _page.localize(SUBMIT_ALERT_1)
@@ -171,22 +170,43 @@ class ChildCarePlaceOfferTable1 extends Table {
 	 * @param status
 	 * @param prognosis
 	 */
-	private String addToTable(
-		int row,
-		String id,
-		String name,
-		String offerText,
-		String prognosis,
-		boolean presentOffer,
-		boolean disable,
-		boolean disableReqBtn,
-		boolean isAccepted,
-		boolean isCancelled,
-		boolean disableAccept) {
+	private String addToTable(int row, ChildCareApplication app, boolean hasOffer, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean disableReqBtn) throws RemoteException{
+		
+		int providerId = app.getProviderId();
+		int ownerId = app.getOwner().getID();
+		String name = app.getChoiceNumber()	+ ": " + app.getProvider().getName() + _page.getDebugInfo(app);
+		
+		String offerText = isOffer ? GRANTED + app.getFromDate() : "";
+		String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
+		boolean presentOffer = isOffer && !offerPresented;
+		boolean disable = offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected();
+			
+		boolean isAccepted = app.isAcceptedByParent();
+		boolean isCancelled = app.isCancelledOrRejectedByParent();
+				
+//			
+//			app.getProviderId(),
+//			app.getOwner().getID(),
+//			app.getChoiceNumber()
+//				+ ": "
+//				+ app.getProvider().getName()
+//				+ _page.getDebugInfo(app),
+//			offer ? GRANTED + app.getFromDate() : "",
+//			app.getPrognosis() != null ? app.getPrognosis() : "",
+//			offer && !offerPresented,
+//			offerPresented
+//				|| app.getApplicationStatus()
+//					== _page.childCarebusiness.getStatusRejected(),
+//			iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null,
+//			app.isAcceptedByParent(),
+//			app.isCancelledOrRejectedByParent(),
 
+			
+			
 		int index = row - 1;
+
 		//row=2 for first row because of heading is in row 1
-		add(new HiddenInput(CCConstants.APPID + index, id));
+		add(new HiddenInput(CCConstants.APPID + index, ""+app.getNodeID()));
 		String textColor = "black";
 		if (isCancelled) {
 			textColor = "red";
@@ -202,30 +222,26 @@ class ChildCarePlaceOfferTable1 extends Table {
 			t.setStyleAttribute("color:" + textColor);
 			add(t, 1, row);
 		}
+
 		if (offerText != null) {
 			Text t = _page.getSmallText(offerText);
 			t.setStyleAttribute("color:" + textColor);
 			add(t, 2, row);
 		}
-		if (prognosis != null) {
-			Text t = _page.getSmallText(prognosis);
-			t.setStyleAttribute("color:" + textColor);
-			add(t, 3, row);
-		}
-		//add(prognosis, 3, row);
-		//SubmitButton reqBtn = new SubmitButton(_page.localize(REQUEST_INFO), CCConstants.APPID, id);
+
 
 		if (!disableReqBtn) {
 			Link reqBtn = new Link(_page.localize(REQUEST_INFO));
 			reqBtn.addParameter(
 				CCConstants.ACTION,
 				CCConstants.ACTION_REQUEST_INFO);
-			reqBtn.addParameter(CCConstants.APPID, id);
+			reqBtn.addParameter(CCConstants.APPID, app.getNodeID());
 
 			reqBtn.setName(REQUEST_INFO[0]);
 			reqBtn.setAsImageButton(true);
-			add(reqBtn, 4, row);
+			add(reqBtn, 3, row);
 		}
+
 
 		//		System.out.println("DATE ID" + date.getID());		
 
@@ -272,13 +288,17 @@ class ChildCarePlaceOfferTable1 extends Table {
 			date.setStyleAttribute("style", _page.getSmallTextFontStyle());
 
 			//			System.out.println("DATE ID" + date.getIDForDay());
+			
 
-			add(rb1, 5, row);
-			add(new Text("<NOBR>"), 6, row);
-			add(rb2, 6, row);
-			add(date, 6, row);
-			add(new Text("</NOBR>"), 6, row);
-			add(rb3, 7, row);
+//			b.setWindowToOpen(ChildCareProviderQueueWindow.class);
+
+			add(rb1, 4, row);
+			add(new Text("<NOBR>"), 5, row);
+			add(rb2, 5, row);
+			add(date, 5, row);
+			add(new Text("</NOBR>"), 5, row);
+			add(rb3, 6, row);
+			
 			validateDateScript =
 				"(document.getElementById('"
 					+ rb2.getID()
@@ -294,6 +314,27 @@ class ChildCarePlaceOfferTable1 extends Table {
 					+ "').value == 'YY'))";
 
 		}
+		
+		int col = hasOffer ? 7 : 4;
+
+					
+		Link popup = new Link("...");
+//		popup.setImage(new Image());
+		popup.setWindowToOpen(ChildCareProviderQueueWindow.class);
+		popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
+		popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
+		popup.addParameter(CCConstants.USER_ID, "" + ownerId);
+		popup.setAsImageButton(true);
+		add(popup, col++, row);
+		
+		Link delete = new Link("Delete");
+//		popup.setImage(new Image());
+		delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
+		delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);
+		delete.addParameter(CCConstants.APPID, app.getNodeID());
+		delete.setAsImageButton(true);
+		add(delete, col++, row);
+				
 
 		if (row % 2 == 0) {
 			setRowColor(row++, _page.getZebraColor1());
@@ -309,24 +350,27 @@ class ChildCarePlaceOfferTable1 extends Table {
 	 * Method createTable.
 	 * @return Table
 	 */
-	private void initTable() {
+	private void initTable(boolean hasOffer) {
 		//		Table table = new Table(7, rows + 1); //Heading
 		//		setBorder(1);
 		//		setBorderColor("GREEN");
-
-		setRowColor(1, _page.getHeaderColor());
 
 		setCellspacing(2);
 		setCellpadding(4);
 
 		//Heading
-		add(HEADER_YOUR_CHOICE, 1, 1);
-		add(HEADER_OFFER, 2, 1);
-		add(HEADER_PROGNOSE, 3, 1);
-		add(HEADER_QUEUE_INFO, 4, 1);
-		add(HEADER_YES, 5, 1);
-		add(HEADER_YES_BUT, 6, 1);
-		add(HEADER_NO, 7, 1);
+		int col = 1;
+		
+		add(HEADER_YOUR_CHOICE, col++, 1);
+		add(HEADER_OFFER, col++, 1);
+		add(HEADER_QUEUE_INFO, col++, 1);
+		if (hasOffer) {
+			add(HEADER_YES, col++, 1);
+			add(HEADER_YES_BUT, col++, 1);
+			add(HEADER_NO, col++, 1);
+		}
+		
+		setRowColor(1, _page.getHeaderColor());		
 	}
 
 }
