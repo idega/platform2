@@ -57,6 +57,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String QUEUE_ORDER = "queue_order";
 	protected final static String APPLICATION_STATUS = "application_status";
 	protected final static String HAS_PRIORITY = "has_priority";
+	protected final static String HAS_DATE_SET = "has_date_set";
 	
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -101,6 +102,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(QUEUE_ORDER,"",true,true,java.lang.Integer.class);
 		addAttribute(APPLICATION_STATUS,"",true,true,java.lang.String.class,1);
 		addAttribute(HAS_PRIORITY,"",true,true,java.lang.Boolean.class);
+		addAttribute(HAS_DATE_SET,"",true,true,java.lang.Boolean.class);
 		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
 		addManyToOneRelationship(CHILD_ID,User.class);
@@ -201,6 +203,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getBooleanColumnValue(HAS_PRIORITY, false);
 	}
   
+	public boolean getHasDateSet() {
+		return getBooleanColumnValue(HAS_DATE_SET, false);
+	}
+  
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
 	}
@@ -283,6 +289,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public void setHasPriority(boolean hasPriority) {
 		setColumn(HAS_PRIORITY, hasPriority);
+	}
+  
+	public void setHasDateSet(boolean hasDateSet) {
+		setColumn(HAS_DATE_SET, hasDateSet);
 	}
   
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {

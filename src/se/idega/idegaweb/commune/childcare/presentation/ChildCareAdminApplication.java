@@ -257,7 +257,16 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 
 			if (status == getBusiness().getStatusSentIn()) {
 				if (numberInQueue == 1 || hasPriority) {
-					GenericButton offer = getButton("offer", localize("child_care.offer_placing","Offer placing"), ChildCareAdminWindow.METHOD_OFFER);
+					GenericButton offer = (GenericButton) getStyledInterface(new GenericButton("offer", localize("child_care.offer_placing","Offer placing")));
+					if (application.getHasDateSet()) {
+						offer.setWindowToOpen(ChildCareWindow.class);
+						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
+						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
+						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_OFFER);
+						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+					}
+					else
+						offer.setDisabled(true);
 					table.add(offer, 3, 1);
 					GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
 					table.add(changeDate, 5, 1);

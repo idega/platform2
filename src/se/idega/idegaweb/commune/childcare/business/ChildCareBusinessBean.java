@@ -201,6 +201,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void changePlacingDate(int applicationID, Date placingDate) throws RemoteException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			application.setHasDateSet(true);
 			application.setFromDate(placingDate);
 			application.store();
 		}
