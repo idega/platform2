@@ -32,6 +32,7 @@ public abstract class CategoryBlock extends Block {
 	private boolean autocreate = true;
 	protected boolean invalidateBlockCache = true;
 	protected boolean orderManually = false;
+	protected final static String METADATAKEY_CATEGORY_MAIN_VIEWER_PAGE = "category_main_viewer_page";
 	/**
 	 *  Returns the first Category bound to this instance
 	 */
@@ -180,7 +181,7 @@ public abstract class CategoryBlock extends Block {
 		return (ICCategoryHome) IDOLookup.getHome(ICCategory.class);
 	}
 	
-	public boolean copyBlock(int newInstanceID,DPTCopySession copySession) {
+	public boolean copyBlock(String pageKey,int newInstanceID,DPTCopySession copySession) {
 		CategoryFinder finder = CategoryFinder.getInstance();
 		List categories = finder.listOfCategoryForObjectInstanceId(getICObjectInstanceID());
 		if(categories != null) {
@@ -198,6 +199,11 @@ public abstract class CategoryBlock extends Block {
 							copySession.setNewValue(CategoryBlock.class,category,newCategory);
 							service.storeCategoryToParent(newCategory.getID(),category.getID());
 							catIDs[catIDIndex++] = newCategory.getID();
+							Object rPK = copySession.getRootPagePrimaryKey();
+							if(rPK != null) {
+								newCategory.addMetaData(METADATAKEY_CATEGORY_MAIN_VIEWER_PAGE,pageKey);
+								newCategory.store();
+							}
 						}else {
 							catIDs[catIDIndex++] = newCategory.getID();
 							service.storeCategoryToParent(newCategory.getID(),category.getID());

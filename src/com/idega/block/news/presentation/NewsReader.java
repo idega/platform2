@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.125 2004/05/10 18:24:24 gummi Exp $
+ * $Id: NewsReader.java,v 1.126 2004/05/24 13:46:47 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -935,17 +935,37 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   public void setInformationFontStyle(String style){
     getInformationProxy().setFontStyle(style);
   }
+  
+  public void setInformationFontStyleClass(String styleName) {
+  	getInformationProxy().removeMarkupAttribute("style");
+  	getInformationProxy().setStyleClass(styleName);
+  }
 
   public void setMoreAndBackFontStyle(String style){
     getMoreProxy().setFontStyle(style);
+  }
+  
+  public void setMoreAndBackFontStyleClass(String styleName) {
+  	getMoreProxy().removeMarkupAttribute("style");
+  	getMoreProxy().setStyleClass(styleName);
   }
 
   public void setHeadlineFontStyle(String face){
 	  getHeadlineProxy().setFontStyle(face);
   }
+  
+  public void setHeadlineStyleClass(String styleName) {
+  	getHeadlineProxy().removeMarkupAttribute("style");
+  	getHeadlineProxy().setStyleClass(styleName);
+  }
 
   public void setTextFontFontStyle(String face){
     getTextProxy().setFontStyle(face);
+  }
+  
+  public void setTextFontStyleClass(String styleName) {
+  	getTextProxy().removeMarkupAttribute("style");
+  	getTextProxy().setStyleClass(styleName);
   }
 
   public void setNumberOfLetters(int numberOfLetters){
