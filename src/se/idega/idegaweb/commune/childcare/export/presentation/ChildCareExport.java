@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExport.java,v 1.3 2005/02/14 19:33:06 anders Exp $
+ * $Id: ChildCareExport.java,v 1.4 2005/02/15 10:24:06 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
  * This idegaWeb block exports child care placements to text files
  * for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/14 19:33:06 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/15 10:24:06 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ChildCareExport extends CommuneBlock {
 
@@ -111,11 +111,15 @@ public class ChildCareExport extends CommuneBlock {
 		table.setCellspacing(getCellspacing());
 		
 		DateInput fromInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
+		fromInput.setToDisplayDayLast(true);
 		DateInput toInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
+		toInput.setToDisplayDayLast(true);
 		table.add(getLocalizedHeader(KEY_FROM_DATE,"From"), 1, 1);
 		table.add(fromInput, 2, 1);
 		table.add(getLocalizedHeader(KEY_TO_DATE,"To"), 3, 1);
 		table.add(toInput, 4, 1);
+		table.setNoWrap(2, 1);
+		table.setNoWrap(4, 1);
 		form.add(table);
 
 		table = new Table();
@@ -140,6 +144,7 @@ public class ChildCareExport extends CommuneBlock {
 		table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
+
 		int row = 0;
 		int col = 0;
 		int p_row = 1;
@@ -167,6 +172,7 @@ public class ChildCareExport extends CommuneBlock {
 					continue;
 				}
 				table.add(link, col, row);
+				table.setNoWrap(col, row);
 			}
 		}
 		form.add(table);
