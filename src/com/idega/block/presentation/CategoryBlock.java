@@ -119,8 +119,6 @@ public abstract class CategoryBlock extends Block{
   }
 
   public abstract String getCategoryType();
-  //{
-  //  return "no_type";
-  //}
+  public abstract boolean getMultible();
 
 }
