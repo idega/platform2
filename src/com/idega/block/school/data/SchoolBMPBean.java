@@ -11,6 +11,7 @@ import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.data.TxTextHome;
+import com.idega.core.data.Commune;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
 import com.idega.data.GenericEntity;
@@ -52,13 +53,17 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	/** Gimmi 4-5 Nov 2002 */
 	public final static String FAX = "fax_nr";
 	public final static String WEB_PAGE = "web_page";
-	public final static String MANAGEMENT_TYPE = "managment_type";
+	//public final static String MANAGEMENT_TYPE_ID = "managment_type";
+	public final static String MANAGEMENT_TYPE = "management_type";
 	public final static String HEADMASTER_USER_ID = "headmaster_user_id";
 	public final static String ASSISTANT_HEADMASTER_GROUP_ID = "assistant_hm_grp_id";
 	public final static String MAP_URL = "map_url";
 	/** Kelly 13-14 May 2003 */
 	public final static String ACTIVITY = "activity";
 	public final static String OPEN_HOURS = "open_hours";
+	
+	/** Laddi 3 Sep 2003 */
+	public final static String COMMUNE = "commune";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -77,7 +82,11 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		/** Gimmi 4-5 Nov 2002 */
 		this.addAttribute(FAX, "fax", true, true, String.class, 20);
 		this.addAttribute(WEB_PAGE, "web_page", true, true, String.class, 500);
-		this.addAttribute(MANAGEMENT_TYPE, "management_type", true, true, Integer.class);
+		
+		/** Laddi 3 Sep 2003 */
+		//this.addAttribute(MANAGEMENT_TYPE_ID, "management_type", true, true, Integer.class);
+		addManyToOneRelationship(MANAGEMENT_TYPE, SchoolManagementType.class);
+		
 		this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
 		this.addAttribute(ASSISTANT_HEADMASTER_GROUP_ID, "assistant headmaster group id", true, true, Integer.class, this.MANY_TO_ONE, Group.class);
 		this.addAttribute(MAP_URL, "url to map", true, true, String.class,500);
@@ -92,6 +101,8 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addManyToManyRelationShip(ICFile.class);
 		// Gimmi 27.12.2002
 		this.addManyToManyRelationShip(TxText.class);
+		
+		addManyToOneRelationship(COMMUNE, Commune.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -463,11 +474,15 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		setColumn(OPEN_HOURS, openHours);
 	}
 
-	public int getSchoolManagermentType() {
-		return getIntColumnValue(MANAGEMENT_TYPE);
+	public String getSchoolManagementTypeString() {
+		return getStringColumnValue(MANAGEMENT_TYPE);
 	}
 
-	public void setSchoolManagementType(int managementType) {
+	public SchoolManagementType getSchoolManagementType() {
+		return (SchoolManagementType) getColumnValue(MANAGEMENT_TYPE);
+	}
+
+	public void setSchoolManagementType(String managementType) {
 		setColumn(MANAGEMENT_TYPE, managementType);
 	}
 

@@ -1,7 +1,7 @@
 package com.idega.block.school.data;
 
 
-public interface School extends com.idega.data.IDOEntity
+public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegacyEntity
 {
  public void addImage(com.idega.core.data.ICFile p0)throws com.idega.data.IDORelationshipException;
  public void addSchoolType(com.idega.block.school.data.SchoolType p0)throws com.idega.data.IDOAddRelationshipException;
@@ -30,7 +30,8 @@ public interface School extends com.idega.data.IDOEntity
  public java.lang.String getSchoolKeyCode();
  public java.lang.String getSchoolLatitude();
  public java.lang.String getSchoolLongitude();
- public int getSchoolManagermentType();
+ public com.idega.block.school.data.SchoolManagementType getSchoolManagementType();
+ public java.lang.String getSchoolManagementTypeString();
  public java.lang.String getSchoolName();
  public java.lang.String getSchoolPhone();
  public java.util.Collection getSchoolTypes()throws com.idega.data.IDORelationshipException;
@@ -56,7 +57,7 @@ public interface School extends com.idega.data.IDOEntity
  public void setSchoolKeyCode(java.lang.String p0);
  public void setSchoolLatitude(java.lang.String p0);
  public void setSchoolLongitude(java.lang.String p0);
- public void setSchoolManagementType(int p0);
+ public void setSchoolManagementType(java.lang.String p0);
  public void setSchoolName(java.lang.String p0);
  public void setSchoolPhone(java.lang.String p0);
  public void setSchoolWebPage(java.lang.String p0);

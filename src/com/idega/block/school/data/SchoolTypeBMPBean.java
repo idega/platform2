@@ -19,18 +19,19 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   public static final String NAME = "type_name";
   public static final String INFO = "type_info";
   public static final String LOC_KEY = "loc_key";
-  public static final String TYPECATEGORY = "category_id";
   public static final String SCHOOLCATEGORY = "school_category";
   public static final String SCHOOLTYPE = "sch_school_type";
   public static final String MAXSCHOOLAGE = "max_school_age";
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
-    this.addAttribute(SCHOOLCATEGORY,"category",true,true,String.class);
     this.addAttribute(NAME,"Schooltype",true,true,String.class);
     this.addAttribute(INFO,"Info",true,true,String.class);
     this.addAttribute(MAXSCHOOLAGE,"Max school age",true,true,Integer.class);
     this.addAttribute(LOC_KEY,"Localization key",String.class);
+    
+    addManyToOneRelationship(SCHOOLCATEGORY, SchoolCategory.class);
+    setNullable(SCHOOLCATEGORY, false);
   }
 
   public String getEntityName() {
@@ -57,9 +58,17 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     return getStringColumnValue(INFO);
   }
 
+	public SchoolCategory getCategory(){
+		return (SchoolCategory) getColumnValue(SCHOOLCATEGORY);
+	}
+
   public String getSchoolCategory(){
     return getStringColumnValue(SCHOOLCATEGORY);
   }
+
+	public void setCategory(SchoolCategory category){
+		setColumn(SCHOOLCATEGORY,category);
+	}
 
   public void setSchoolCategory(String category){
     setColumn(SCHOOLCATEGORY,category);

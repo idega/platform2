@@ -23,7 +23,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	public static final String COLUMN_LOCALIZED_KEY = "localized_key";
 	
 	public static final String CATEGORY_CHILD_CARE = "CHILD_CARE";
-	public static final String CATEGORY_PRIMARY_SCHOOL = "PRIMARY_SCHOOL";
+	public static final String CATEGORY_ELEMENTARY_SCHOOL = "ELEMENTARY_SCHOOL";
 	public static final String CATEGORY_HIGH_SCHOOL = "HIGH_SCHOOL";
 	public static final String CATEGORY_COLLEGE = "COLLEGE";
 	public static final String CATEGORY_UNIVERSITY = "UNIVERSITY";
@@ -39,8 +39,8 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	 * @see com.idega.data.GenericEntity#insertStartData()
 	 */
 	public void insertStartData() throws Exception {
-		String[] categories = { CATEGORY_CHILD_CARE, CATEGORY_PRIMARY_SCHOOL, CATEGORY_HIGH_SCHOOL, CATEGORY_COLLEGE, CATEGORY_UNIVERSITY };
-		String[] names = { "Child care", "Primary school", "High school", "College", "University" };
+		String[] categories = { CATEGORY_CHILD_CARE, CATEGORY_ELEMENTARY_SCHOOL, CATEGORY_HIGH_SCHOOL, CATEGORY_COLLEGE, CATEGORY_UNIVERSITY };
+		String[] names = { "Child care", "Elementary school", "High school", "College", "University" };
 		
 		SchoolCategoryHome categoryHome = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 		SchoolCategory category;
@@ -106,5 +106,40 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 		query.appendSelectAllFrom(this);
 		
 		return idoFindPKsByQuery(query);
+	}
+	
+	public String ejbFindChildcareCategory() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_CHILD_CARE);
+		
+		return (String) idoFindOnePKByQuery(query);
+	}
+
+	public String ejbFindElementarySchoolCategory() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_ELEMENTARY_SCHOOL);
+		
+		return (String) idoFindOnePKByQuery(query);
+	}
+	
+	public String ejbFindHighSchoolCategory() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_HIGH_SCHOOL);
+		
+		return (String) idoFindOnePKByQuery(query);
+	}
+	
+	public String ejbFindCollegeCategory() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_COLLEGE);
+		
+		return (String) idoFindOnePKByQuery(query);
+	}
+	
+	public String ejbFindUniversityCategory() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_UNIVERSITY);
+		
+		return (String) idoFindOnePKByQuery(query);
 	}
 }
