@@ -12,6 +12,7 @@ public interface School extends com.idega.data.IDOEntity
  public void addSchoolYearsRemoveOther(int[] p0);
  public java.util.Collection findRelatedSchoolTypes()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
+ public java.lang.String getActivity();
  public int getAssistantHeadmasterGroupId();
  public com.idega.user.data.Group getHeadmasterGroup()throws java.rmi.RemoteException,javax.ejb.FinderException;
  public int getHeadmasterGroupId();
@@ -20,6 +21,7 @@ public interface School extends com.idega.data.IDOEntity
  public com.idega.block.text.data.LocalizedText getLocalizedText(int p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException;
  public java.lang.String getMapUrl();
  public java.lang.String getName();
+ public java.lang.String getOpenHours();
  public java.lang.String getSchoolAddress();
  public com.idega.block.school.data.SchoolArea getSchoolArea();
  public int getSchoolAreaId();
@@ -38,6 +40,7 @@ public interface School extends com.idega.data.IDOEntity
  public void initializeAttributes();
  public void removeFromClass(java.lang.Class p0)throws com.idega.data.IDORemoveRelationshipException;
  public void removeImages()throws com.idega.data.IDORelationshipException;
+ public void setActivity(java.lang.String p0);
  public void setAssistantHeadmasterGroupId(int p0);
  public void setHeadmasterGroupId(int p0);
  public void setHeadmasterUserId(int p0);
@@ -45,6 +48,7 @@ public interface School extends com.idega.data.IDOEntity
  public void setImages(java.util.Collection p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException;
  public void setLocalizedText(java.lang.String p0,int p1)throws com.idega.data.IDORelationshipException;
  public void setMapUrl(java.lang.String p0);
+ public void setOpenHours(java.lang.String p0);
  public void setSchoolAddress(java.lang.String p0);
  public void setSchoolAreaId(int p0);
  public void setSchoolFax(java.lang.String p0);

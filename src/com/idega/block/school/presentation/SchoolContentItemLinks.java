@@ -22,6 +22,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
+
 /**
  * @author gimmi
  */
@@ -42,24 +43,32 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		
 		int row = 1; /** breytti ut 0, vegna arrayIndexOutOfBounds Villu... */
 		boolean useBreak = false;
+
 				
-		String manType = getSchoolBusiness(_iwc).getSchoolManagementTypeString(_school.getSchoolManagermentType());
-		if (manType != null) {
+//		uncommented by Kelly
+//				
+//		String manType = getSchoolBusiness(_iwc).getSchoolManagementTypeString(_school.getSchoolManagermentType());
+//		if (manType != null) {
 //	Hans bad um thetta... held eg, Gimmi			
 //			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
 //			++row;
-			table.add(getText(_iwrb.getLocalizedString(manType)), 1, row);
-			useBreak = true;
-		}
+//  We add this further down as "Management" 
+//			table.add(getText(_iwrb.getLocalizedString(manType)), 1, row);
+//			useBreak = true;
+//		}
 		
-
+		useBreak = true;
+		
 		String address = _school.getSchoolAddress();
 		String zipArea = _school.getSchoolZipArea();
 		String zipCode = _school.getSchoolZipCode();
 		String phone = _school.getSchoolPhone();
 		String fax = _school.getSchoolFax();
 		String mapUrl = _school.getMapUrl();
-		if (address != null || zipArea != null || zipCode != null || phone != null || fax != null) {
+		String activity = _school.getActivity();
+		String open_hours = _school.getOpenHours();
+		
+		if ((address != null || zipArea != null || zipCode != null || phone != null || fax != null)) {
 			if (useBreak) {
 				++row;
 				table.setHeight(row, _spaceBetween);
@@ -98,31 +107,8 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			}
 			useBreak = true;
 		}
-		
-		try {
-			Collection hmUsers = getSchoolUserBusiness(_iwc).getHeadmasters(_school);
-			if (hmUsers != null && !hmUsers.isEmpty()) {
-//			int headmasterId = _school.getHeadmasterUserId();
-//			if (headmasterId > 0 ) {
-				if (useBreak) {
-					++row;
-					table.setHeight(row, _spaceBetween);
-					++row;
-				}
-				table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
-				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
-				Iterator iter = hmUsers.iterator();
-				while (iter.hasNext()) {
-					User user = uHome.findByPrimaryKey(iter.next());
-					row = insertUser(table, row, user);
-				}
-				useBreak = true;
-			}
-		} catch (FinderException e) {
-			e.printStackTrace(System.err);
-		}
-		
-		
+
+
 		String webPage = _school.getSchoolWebPage();
 		if (webPage != null) {
 			if (useBreak) {
@@ -134,10 +120,98 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			table.add(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")+":"), 1, row);	
 			++row;
 			table.add(link, 1, row);
-			
 			useBreak = true;
 		}
-		
+
+		if (useBreak) {
+			++row;
+			table.setHeight(row, _spaceBetween);
+			++row;
+		}
+
+		// Moved the management type here  (Kelly)
+		String manType = getSchoolBusiness(_iwc).getSchoolManagementTypeString(_school.getSchoolManagermentType());
+		if (manType != null) {
+			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
+			++row;
+			table.add(getText(_iwrb.getLocalizedString(manType)), 1, row);
+		}
+		if (useBreak) {
+			++row;
+			table.setHeight(row, _spaceBetween);
+			++row;
+		}
+
+		// Added the activity here  (Kelly)
+		if (activity != null) {
+			table.add(getHeader(_iwrb.getLocalizedString("school.activity", "Activity")+":"), 1, row);
+			++row;
+			table.add(getText(activity), 1, row);
+		}
+		boolean isSchool = isElementarySchool();
+
+		try {
+			Collection hmUsers = getSchoolUserBusiness(_iwc).getHeadmasters(_school);
+			if (hmUsers != null && !hmUsers.isEmpty()) {
+//			int headmasterId = _school.getHeadmasterUserId();
+//			if (headmasterId > 0 ) {
+				if (useBreak) {
+					++row;
+					table.setHeight(row, _spaceBetween);
+					++row;
+				}
+				if (isSchool) {
+					table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
+				} else {
+					table.add(getHeader(_iwrb.getLocalizedString("school.childcare_manager","Manager")+":"), 1, row);
+				}
+				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+				Iterator iter = hmUsers.iterator();
+				while (iter.hasNext()) {
+					User user = uHome.findByPrimaryKey(iter.next());
+					row = insertUser(table, row, user);
+				}
+				useBreak = true;
+			}
+		} catch (FinderException e) {
+			e.printStackTrace(System.err);
+		}
+		try {
+			Collection hmUsers = getSchoolUserBusiness(_iwc).getAssistantHeadmasters(_school);
+			if (hmUsers != null && !hmUsers.isEmpty()) {
+//			int headmasterId = _school.getHeadmasterUserId();
+//			if (headmasterId > 0 ) {
+				if (useBreak) {
+					++row;
+					table.setHeight(row, _spaceBetween);
+					++row;
+				}
+				if (isSchool) {
+					table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
+				} else {
+					table.add(getHeader(_iwrb.getLocalizedString("school.childcare_assistant_manager","Assistant Manager")+":"), 1, row);
+				}
+				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+				Iterator iter = hmUsers.iterator();
+				while (iter.hasNext()) {
+					User user = uHome.findByPrimaryKey(iter.next());
+					row = insertUser(table, row, user);
+				}
+				useBreak = true;
+			}
+		} catch (FinderException e) {
+			e.printStackTrace(System.err);
+		}
+		if (useBreak) {
+			++row;
+			table.setHeight(row, _spaceBetween);
+			++row;
+		}
+		if (open_hours != null) {
+			table.add(getHeader(_iwrb.getLocalizedString("school.open_hours", "Open hours")+":"), 1, row);
+			++row;
+			table.add(getText(open_hours), 1, row);
+		}
 
 		/** Her mun koma linkur i boxid eda boxid sjalft 		
 			if (useBreak) {
@@ -191,11 +265,18 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			Iterator pIter = phones.iterator();	
 			PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
 			Phone uPhone;
+			int phCounter = 1;
 			while (pIter.hasNext()) {
 				try {
 					uPhone = pHome.findByPrimaryKey(pIter.next());	
 					++row;
-					table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
+					if (phCounter == 1) {
+						table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
+					}
+					if (phCounter >= 2) {
+						table.add(getText(_iwrb.getLocalizedString("school.cell_phone","Mobil")+": "+uPhone.getNumber()), 1, row);
+					}
+					phCounter++;
 				} catch (FinderException e) {
 					e.printStackTrace(System.err);
 				}
@@ -203,7 +284,20 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		}
 		return row;
 	}
-	
+
+	private boolean isElementarySchool() {
+		try {
+			String category = getSchoolUserBusiness(_iwc).getSchoolCategory(_school);
+			if (category.equalsIgnoreCase("SCHOOL")) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return false;
+	}
+
+		
 	private Text getHeader(String content) {
 		Text text = new Text(content);
 		if (_headerStyle != null) {

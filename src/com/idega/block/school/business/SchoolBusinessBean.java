@@ -58,13 +58,27 @@ import com.idega.util.IWTimestamp;
  */
 public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness {
 
+
 	private static String CHILDCARE_SCHOOL_CATEGORY="CHILDCARE";
 	private static String ELEMENTARY_SCHOOL_CATEGORY="SCHOOL";
 	public static final String GROUP_TYPE_SCHOOL_GROUP = "school_staff_group";
+	
 	public static String MANAGEMENT_TYPE_PRIVATE = "school_man_type_private";
 	public static final int MANAGEMENT_TYPE_PRIVATE_ID = 1;
 	public static String MANAGEMENT_TYPE_PUBLIC = "school_man_type_public";
 	public static final int MANAGEMENT_TYPE_PUBLIC_ID = 2;
+
+	/**
+	 * Added by Kelly (kelly@lindman.se), 14 may 2003
+	 * Schools now have three management types
+	 */
+	public static final int MANAGEMENT_TYPE_COMM_ID = 1; // Communal management
+	public static String MANAGEMENT_TYPE_COMM = "school_man_type_communal";
+	public static final int MANAGEMENT_TYPE_INDE_ID = 2; // Independent management 
+	public static String MANAGEMENT_TYPE_INDE = "school_man_type_independent";
+	public static final int MANAGEMENT_TYPE_COOP_ID = 3; // Cooperative management
+	public static String MANAGEMENT_TYPE_COOP = "school_man_type_coop";
+
 
 	public SchoolHome getSchoolHome() throws java.rmi.RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);
@@ -475,6 +489,20 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	/**
+	 *	getAssistantHeadmasters added by Kelly (kelly@lindman.se) 15 may 2003 
+	 */
+
+	public Collection getAssistantHeadmasters(School school) throws RemoteException {
+		try {
+			return getUserBusiness().getGroupBusiness().getUsers(school.getAssistantHeadmasterGroupId());
+		}
+		catch (FinderException fe) {
+			throw new RemoteException(fe.getMessage());
+		}
+	}
+
+
 	public Collection getHeadmasters(School school) throws RemoteException {
 		try {
 			return getUserBusiness().getGroupBusiness().getUsers(school.getHeadmasterGroupId());
@@ -537,15 +565,21 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public String getSchoolManagementTypeString(int managementTypeId) {
+		/**
+		 * Added three managemnent types
+		 * by Kelly (kelly@lindman.se), 14 may 2003
+		 */
 		switch (managementTypeId) {
-			case MANAGEMENT_TYPE_PRIVATE_ID :
-				return MANAGEMENT_TYPE_PRIVATE;
-			case MANAGEMENT_TYPE_PUBLIC_ID :
-				return MANAGEMENT_TYPE_PUBLIC;
+			case MANAGEMENT_TYPE_COMM_ID :
+				return MANAGEMENT_TYPE_COMM;
+			case MANAGEMENT_TYPE_INDE_ID :
+				return MANAGEMENT_TYPE_INDE;
+			case MANAGEMENT_TYPE_COOP_ID :
+				return MANAGEMENT_TYPE_COOP;
 		}
 		return null;
 	}
-
+	
 	/**
 	 * @deprecated SHOULD NOT BE HERE
 	 */
@@ -578,11 +612,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return rootGroup;
 	}
 
+	
+
 	/**
 	* Returns or creates (if not available) the default usergroup all provider(childcare) administors have as their primary group.
 	* @throws CreateException if it failed to create the group.
 	* @throws FinderException if it failed to locate the group.
 	*/
+	
 	public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException {
 		Group rootGroup = null;
 		//create the default group

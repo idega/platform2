@@ -34,6 +34,9 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
+import com.idega.idegaweb.IWBundle;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import com.idega.user.data.User;
 
 /**
  * @author gimmi
@@ -57,10 +60,14 @@ public class SchoolContentEditor extends IWAdminWindow{
   private String PARAMETER_SCHOOL_ZIP_AREA = "scr_zipa";
   private String PARAMETER_SCHOOL_PHONE = "scr_ph";
   private String PARAMETER_SCHOOL_FAX = "scr_fx";
-	private String PARAMETER_SCHOOL_WEBPAGE = "scr_swp";
-	private String PARAMETER_SCHOOL_MANAGEMENT_TYPE = "scr_smtid";
-	private String PARAMETER_SCHOOL_MAP_URL = "scr_mprl";
-	  
+  private String PARAMETER_SCHOOL_WEBPAGE = "scr_swp";
+  private String PARAMETER_SCHOOL_MANAGEMENT_TYPE = "scr_smtid";
+  private String PARAMETER_SCHOOL_MAP_URL = "scr_mprl";
+  private String PARAMETER_SCHOOL_ACTIVITY = "scr_scac";
+  private String PARAMETER_SCHOOL_OPEN_HOURS = "scr_scoa";
+  
+  private String CONTENT_EDITORS_GROUP_PARAMETER_NAME = "school.content_editors_group_id";
+  	  
   private String PARAMETER_ACTION = "scr_act";
   private String ACTION_UPDATE = "scr_act_ud";
 
@@ -70,11 +77,12 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 	public SchoolContentEditor() {
     setUnMerged();
-    setWidth(700);
-    setHeight(700);
+    // Window changed to 780/580 to make space for the wider editor by Kelly (kelly@lindman.se) 15 may 2003
+    setWidth(780);
+    setHeight(750);
     setResizable(true);
     setScrollbar(true);
-		setTitle( "School Editor" );	
+		setTitle( "Edit school information" );	
 	}
 
 	public void main( IWContext iwc ) throws RemoteException {
@@ -87,17 +95,17 @@ public class SchoolContentEditor extends IWAdminWindow{
 			}else if (action.equals( ACTION_UPDATE)) {
 				boolean success = updateSchool(iwc);
 				if (success) {
-					addLeft("Update successful");
+					addLeft(_iwrb.getLocalizedString("school.update_successful", "Update successful"));
 				}else {
-					addLeft("Update failed");
+					addLeft(_iwrb.getLocalizedString("school.update_failed", "Update failed"));
 				}
 				mainForm(iwc);
 			}else {
-				add("dont know what to do");	
+				add(_iwrb.getLocalizedString("school.general_error", "General error"));	
 			}
 			
 		}else {
-			add("No school selected");	
+			add(_iwrb.getLocalizedString("school.no_school_selected", "No school selected"));	
 		}
 	}
 
@@ -127,13 +135,25 @@ public class SchoolContentEditor extends IWAdminWindow{
 		sue.setInputStyle(this.STYLE);
 	}
 
+	public String getBundleIdentifier(){
+	  return IW_BUNDLE_IDENTIFIER;
+	}
+
 	protected SchoolUserEditor getSchoolUserEditor(IWContext iwc) throws RemoteException {
 		return new SchoolUserEditor(iwc);
 	}
 
 
 	private void mainForm(IWContext iwc) throws RemoteException{
+
 		TextEditor information = new TextEditor(this.PARAMETER_INFORMATION, "");
+		// Modified by Kelly (kelly@lindman.se) 14 May 2003 
+		// changed width/height on edit window
+		// Changed to 3 different management types
+		// Activity and Open hours added
+		 
+		information.setWidth("580");
+		information.setHeight("300");
 
 		ImageInserter imageInserter = new ImageInserter(this.PARAMETER_IMAGE_ID);
 		imageInserter.setUseBoxParameterName(PARAMETER_USE_IMAGE);
@@ -144,19 +164,23 @@ public class SchoolContentEditor extends IWAdminWindow{
 		TextInput areaCode = new TextInput(PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE);
 		TextInput zipArea = new TextInput(PARAMETER_SCHOOL_ZIP_AREA);
 		TextInput mapUrl = new TextInput(PARAMETER_SCHOOL_MAP_URL);
+		TextInput activity = new TextInput(PARAMETER_SCHOOL_ACTIVITY);
+		TextInput openHours = new TextInput(PARAMETER_SCHOOL_OPEN_HOURS);
+		
 		schoolName.setSize(40);
 //		streetName.setSize(40);
 		areaCode.setSize(7);
 //		zipArea.setSize(20);
 		
 		DropdownMenu manType = new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE);
-		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE_ID), "Private"));
-		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_PUBLIC_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_PUBLIC_ID), "Public"));
-		
+		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_COMM_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_COMM_ID), "Communal"));
+		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_INDE_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_INDE_ID), "Independent"));
+		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_COOP_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_COOP_ID), "Cooperative"));
+
 		TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
 		TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
 		TextInput webPage = new TextInput(PARAMETER_SCHOOL_WEBPAGE);
-
+		
 		Box box = new Box("Repps");
 		box.setBorderColor("RED");
 		
@@ -201,6 +225,12 @@ public class SchoolContentEditor extends IWAdminWindow{
 			if ( _school.getMapUrl() != null ) {
 				mapUrl.setContent(_school.getMapUrl());	
 			}
+			if ( _school.getActivity() != null ) {
+				activity.setContent(_school.getActivity());	
+			}
+			if ( _school.getOpenHours() != null ) {
+				openHours.setContent(_school.getOpenHours());	
+			}
 			
 		} catch (IDORelationshipException e) {
 			e.printStackTrace(System.err);
@@ -219,7 +249,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			e.printStackTrace(System.err);
 		}
 
-		addLeft(formatHeadline(_iwrb.getLocalizedString("school.school_info_editor", "School information editor")), false);
+		addLeft(formatHeadline(_iwrb.getLocalizedString("school.school_info_editor", "Edit school information")), false);
 //		this.addLeft(_school.getName(), "School Information Editor");
 //		this.addBreak();
 
@@ -229,10 +259,12 @@ public class SchoolContentEditor extends IWAdminWindow{
 		addressTable.setCellpaddingAndCellspacing(0);
 		Text sNameText = new Text(_iwrb.getLocalizedString("school.address", "Address"));
 		Text sNumberText = new Text(_iwrb.getLocalizedString("school.number", "Number"));
-		Text sAreaCodeText = new Text(_iwrb.getLocalizedString("school.area_code", "Area Code"));
-		Text sZipAreaText = new Text(_iwrb.getLocalizedString("school.zip_area","Zip Area"));
+		Text sAreaCodeText = new Text(_iwrb.getLocalizedString("school.area_code", "Area code"));
+		Text sZipAreaText = new Text(_iwrb.getLocalizedString("school.zip_area","Zip area"));
 		Text sPhoneText = new Text(_iwrb.getLocalizedString("school.phone","Phone"));
 		Text sFaxText = new Text(_iwrb.getLocalizedString("school.fax","Fax"));
+		Text sActivityText = new Text(_iwrb.getLocalizedString("school.activity","Activity"));
+		Text sOpenHoursText = new Text(_iwrb.getLocalizedString("school.open_hours","Open hours"));
 
 		formatText(sNameText, true);
 		formatText(sNumberText, true);
@@ -240,11 +272,15 @@ public class SchoolContentEditor extends IWAdminWindow{
 		formatText(sPhoneText, true);
 		formatText(sFaxText, true);
 		formatText(sZipAreaText, true);
+		formatText(sActivityText, true);
+		formatText(sOpenHoursText, true);
 		setStyle(streetName);
 		setStyle(areaCode);
 		setStyle(phone);
 		setStyle(fax);
 		setStyle(zipArea);
+		setStyle(sActivityText);
+		setStyle(sOpenHoursText);
 		
 		addressTable.add(sNameText, 1, 1);
 		addressTable.add(streetName, 1, 2);
@@ -271,20 +307,22 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 		this.addRight(_iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
 		this.addRight(_iwrb.getLocalizedString("school.address", "Address"), streetName, true);
-		this.addRight(_iwrb.getLocalizedString("school.area_code", "Area Code"), areaCode, true);
-		this.addRight(_iwrb.getLocalizedString("school.zip_area","Zip Area"), zipArea, true);
-		this.addRight(_iwrb.getLocalizedString("school.phone","Phone"), phone, true);
-		this.addRight(_iwrb.getLocalizedString("school.fax","Fax"), fax, true);
-		this.addRight(_iwrb.getLocalizedString("school.management_type","Management type"), manType, true);
-		this.addRight(_iwrb.getLocalizedString("school.web_page","Web Page"), webPage, true);
-		this.addRight(_iwrb.getLocalizedString("school.map_url","Map Url"), mapUrl, true);
-
+		this.addRight(_iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
+		this.addRight(_iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
+		this.addRight(_iwrb.getLocalizedString("school.phone", "Phone"), phone, true);
+		this.addRight(_iwrb.getLocalizedString("school.fax", "Fax"), fax, true);
+		this.addRight(_iwrb.getLocalizedString("school.management_type", "Management type"), manType, true);
+		this.addRight(_iwrb.getLocalizedString("school.web_page", "Web page"), webPage, true);
+		this.addRight(_iwrb.getLocalizedString("school.map_url", "Map URL"), mapUrl, true);
+		this.addRight(_iwrb.getLocalizedString("school.activity", "Activity"), activity, true);
+		this.addRight(_iwrb.getLocalizedString("school.open_hours", "Open hours"), openHours, true);
+		
 //		this.addRight("Doc", doc, true);
 //		this.addRight("Box", box, true);
 		
 		this.addHiddenInput( new HiddenInput(PARAMETER_SCHOOL_ID, _school.getPrimaryKey().toString() ));
-		this.addSubmitButton(new SubmitButton(_iwrb.getLocalizedString("school.save","Save"), PARAMETER_ACTION, ACTION_UPDATE));
-		
+		this.addRight(new String(""));
+		this.addSubmitButton(new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE));
 	}
 
 
@@ -303,6 +341,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 			String manType = iwc.getParameter( PARAMETER_SCHOOL_MANAGEMENT_TYPE);
 			String webPage = iwc.getParameter( PARAMETER_SCHOOL_WEBPAGE );
 			String mapUrl = iwc.getParameter( PARAMETER_SCHOOL_MAP_URL );
+			String activity = iwc.getParameter( PARAMETER_SCHOOL_ACTIVITY );
+			String openHours = iwc.getParameter( PARAMETER_SCHOOL_OPEN_HOURS );
 			
 			try {
 				if (useImage == null) {
@@ -326,9 +366,19 @@ public class SchoolContentEditor extends IWAdminWindow{
 				}
 				text.setBody(information);
 				text.store();
-*/
+				*/
 				// ATHUGA HONDLAR BARA 1 Locale
-				_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
+
+				/**
+				* Modified by Kelly (kelly@lindman.se) 14 May 2003 
+				* Allow only Content Editors saving the information text.
+				* Headmasters and school personell shall not be able to change the info.
+				*/
+				
+				User currentUser = iwc.getCurrentUser();
+				if(currentUser.getGroupID() == getContentEditorsGroupId()) {
+					_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
+				}
 
 				if (!school_name.equals("")) {
 					_school.setSchoolName(school_name);	
@@ -351,6 +401,12 @@ public class SchoolContentEditor extends IWAdminWindow{
 				if (!webPage.equals("")) {
 					_school.setSchoolWebPage(webPage);	
 				}
+				if (!activity.equals("")) {
+					_school.setActivity(activity);	
+				}
+				if (!openHours.equals("")) {
+					_school.setOpenHours(openHours);	
+				}
 				if (manType != null && !manType.equals("-1")) {
 					try {
 						_school.setSchoolManagementType(Integer.parseInt(manType));
@@ -358,6 +414,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 						e.printStackTrace(System.err);
 					}
 				}
+						
 				if (!mapUrl.equals("")) {
 					_school.setMapUrl(mapUrl);	
 				}
@@ -377,6 +434,19 @@ public class SchoolContentEditor extends IWAdminWindow{
 			
 		}
 		return false;
+	}
+
+	private int getContentEditorsGroupId() {
+		// retrieves the group ID of Editors 
+		String groupId = getCommuneBundle().getProperty(CONTENT_EDITORS_GROUP_PARAMETER_NAME);
+		if (groupId != null) {
+				return Integer.parseInt(groupId);
+		}	
+		return -1;
+	}
+
+	protected IWBundle getCommuneBundle() {
+		return this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 	}
 
 	private SchoolBusiness getSchoolBusiness(IWApplicationContext iwac) throws RemoteException {

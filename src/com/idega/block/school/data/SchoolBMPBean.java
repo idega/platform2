@@ -55,6 +55,9 @@ public class SchoolBMPBean extends GenericEntity implements School {
 	public final static String HEADMASTER_USER_ID = "headmaster_user_id";
 	public final static String ASSISTANT_HEADMASTER_GROUP_ID = "assistant_hm_grp_id";
 	public final static String MAP_URL = "map_url";
+	/** Kelly 13-14 May 2003 */
+	public final static String ACTIVITY = "activity";
+	public final static String OPEN_HOURS = "open_hours";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -77,6 +80,9 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
 		this.addAttribute(ASSISTANT_HEADMASTER_GROUP_ID, "assistant headmaster group id", true, true, Integer.class, this.MANY_TO_ONE, Group.class);
 		this.addAttribute(MAP_URL, "url to map", true, true, String.class,500);
+		/** Kelly 13-14 May 2003 */
+		this.addAttribute(ACTIVITY, "The schools activity", true, true, String.class, 256);
+		this.addAttribute(OPEN_HOURS, "The school open hours", true, true, String.class, 256);
 
 		this.addManyToManyRelationShip(SchoolType.class);
 		this.addManyToManyRelationShip(SchoolYear.class);
@@ -454,6 +460,22 @@ public class SchoolBMPBean extends GenericEntity implements School {
 
 	public void setMapUrl(String url) {
 		setColumn(MAP_URL, url);
+	}
+
+	public String getActivity() {
+		return getStringColumnValue(ACTIVITY);
+	}
+
+	public void setActivity(String activity) {
+		setColumn(ACTIVITY, activity);
+	}
+
+	public String getOpenHours() {
+		return getStringColumnValue(OPEN_HOURS);
+	}
+
+	public void setOpenHours(String openHours) {
+		setColumn(OPEN_HOURS, openHours);
 	}
 
 	public int getSchoolManagermentType() {

@@ -27,6 +27,7 @@ import com.idega.user.data.UserHome;
 /**
  * @author gimmi
  */
+
 public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUserBusiness{
 
 	public static final int USER_TYPE_HEADMASTER = SchoolUserBMPBean.USER_TYPE_HEADMASTER;
@@ -198,6 +199,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 			}else if (category.equals("CHILDCARE")) {
 				userTypes.add(new String[] {"school.manager", "Manager", Integer.toString(USER_TYPE_HEADMASTER) });
+				userTypes.add(new String[] {"school.assistant_manager", "Assistant manager", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 			}
