@@ -521,40 +521,40 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		Form form = new Form();
 
 		Table formTable = new Table();
+		int formTableRow = 1;
 		
 		int selectedProvider = -1;
 		try{
 			selectedProvider = new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue();
 		} catch(NumberFormatException ex){		}
 				
-		addDropDown(formTable, PAR_SELECTED_PROVIDER, KEY_PROVIDER, getProvidersForOperationalField(iwc), selectedProvider, "getSchoolName", 1, 1);
+		addDropDown(formTable, PAR_SELECTED_PROVIDER, KEY_PROVIDER, getProvidersForOperationalField(iwc), selectedProvider, "getSchoolName", 1, formTableRow++);
 
-		
-		formTable.add(getLocalizedLabel("KEY_PERIODE", "Periode"), 1, 2);
+		if (errorMessage != null){
+			formTable.mergeCells(2, formTableRow, 10, formTableRow);
+			formTable.add(getErrorText(errorMessage), 2, formTableRow++);
+		}
+				
+		formTable.add(getLocalizedLabel("KEY_PERIODE", "Periode"), 1, formTableRow);
 		TextInput from = getTextInput(PAR_SEEK_FROM, "");
 		from.setLength(4);
-		from.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
+//		from.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
 		if (fromDate != null){
 			from.setContent(formatDate(fromDate, 4));	
 		}	
 		
 		TextInput to = getTextInput(PAR_SEEK_TO, "");
 		to.setLength(4);
-		to.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
+//		to.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
 		if (toDate != null){
 			to.setContent(formatDate(toDate, 4));	
 		}
-
-		if (errorMessage != null){
-			formTable.mergeCells(1, 1, 10, 1);
-			formTable.add(getErrorText(errorMessage), 1, 1);
-		}
 		
-		formTable.add(from, 2, 2);
-		formTable.add(getText(" - "), 2, 2);	
-		formTable.add(to, 2, 2);			
+		formTable.add(from, 2, formTableRow);
+		formTable.add(getText(" - "), 2, formTableRow);	
+		formTable.add(to, 2, formTableRow);			
 
-		formTable.add(getLocalizedButton(PAR_SEARCH_PAYMENTS, KEY_SEARCH, "Search"), 10, 2);
+		formTable.add(getLocalizedButton(PAR_SEARCH_PAYMENTS, KEY_SEARCH, "Search"), 10, formTableRow++);
 		form.maintainParameter(PAR_SELECTED_PROVIDER);
 //		if (user != null) {
 //			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
