@@ -206,7 +206,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	 */
 	public void createFiles(String schoolCategory, IWTimestamp paymentDate, String periodText, User user, Locale currentLocale) {
 		IFSFileCreationThread creationThread = new IFSFileCreationThread(schoolCategory, paymentDate, periodText, user, currentLocale, getIWApplicationContext());
-		creationThread.run();
+		creationThread.start();
 	}
 
 	/**
