@@ -643,7 +643,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			stamp.addMonths(2);
 			DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
 			dateInput.setDate(stamp.getDate());
-			dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+			if (restrictDates)
+				dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
 			dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 			dateInput.keepStatusOnAction(true);
 	
