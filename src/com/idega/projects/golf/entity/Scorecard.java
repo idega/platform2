@@ -4,6 +4,8 @@ package com.idega.projects.golf.entity;
 
 //import java.util.*;
 import java.sql.*;
+import com.idega.data.EntityFinder;
+import java.util.List;
 
 public class Scorecard extends GolfEntity{
 
@@ -159,5 +161,24 @@ public class Scorecard extends GolfEntity{
 
                 setColumn("update_handicap", update_handicap);
 	}
+
+        public void delete() throws SQLException{
+            try {
+                List strokes = EntityFinder.findAllByColumn(new Stroke(),"scorecard_id",this.getID());
+                Stroke stroke;
+                if (strokes != null) {
+                    if (strokes.size() > 0) {
+                        for (int i = 0; i < strokes.size(); i++) {
+                            stroke = (Stroke) strokes.get(0);
+                            stroke.delete();
+                        }
+
+                    }
+                }
+            }
+            catch (SQLException sql) {}
+
+            super.delete();
+        }
 
 }
