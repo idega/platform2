@@ -431,7 +431,10 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   public void setAsSiblingFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
     if(!this.isSiblingOf(personToSet,relatedPerson)){
       personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SIBLING);
-      relatedPerson.addUniqueRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
+      relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
+      /* Changed from addUnique 2 addRelation so that relation would be created
+       * relatedPerson.addUniqueRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
+       */
     }
   }
 
