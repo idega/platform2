@@ -34,6 +34,13 @@ public PostingParameters findPostingParameter(int p0)throws javax.ejb.FinderExce
 	return this.findByPrimaryKey(pk);
 }
 
+public java.util.Collection findPostingParametersByDate(java.sql.Date p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PostingParametersBMPBean)entity).ejbFindPostingParametersByDate(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findPostingParametersByPeriode(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PostingParametersBMPBean)entity).ejbFindPostingParametersByPeriode(p0,p1);
