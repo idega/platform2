@@ -23,28 +23,21 @@ public class RegisterNewMemberBox extends GolfBlock {
 			form.setPageToSubmitTo(responsePage);
 		}
 		
-		Table table = new Table();
-		table.setCellpaddingAndCellspacing(0);
+		Table table = new Table(2, 2);
+		table.setCellpadding(3);
+		table.setCellspacing(0);
 		int row = 1;
+		table.mergeCells(1, row, 2, row);
+		table.setAlignment(2, 2, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		table.mergeCells(1, row, 3, row);
-		table.add(getSmallHeader(localize("new.members", "New Members")), 1, row);
-		table.setRowStyleClass(row, getHeaderRowClass());
-		
+		Text social = getSmallText(localize("new.members.social_security_number", "Enter social security number") + ":");
 
-		Text texti = getSmallText(localize("new.members.text", "Only golfclub members can register."));
-		Text social = getSmallText(localize("new.members.socialsecuritynumber", "ssn :"));
-
-		++row;
-		table.add(texti, 1, row);
-		table.mergeCells(1, row, 3, row);
+		table.add(social, 1, row++);
 		
 		TextInput kt = (TextInput) getStyledInterface(new TextInput(RegisterNewMember.PARAMETER_PERSONAL_ID));
 
-		++row;
-		table.add(social, 1, row);
-		table.add(kt, 2, row);
-		table.add(new SubmitButton(getResourceBundle().getLocalizedString("register", "Register")), 3, row);
+		table.add(kt, 1, row);
+		table.add(getButton(new SubmitButton(getResourceBundle().getLocalizedString("register", "Register"))), 2, row);
 
 		form.add(table);
 		add(form);
