@@ -1,5 +1,5 @@
 /*
- * $Id: PostingStringBMPBean.java,v 1.5 2003/09/17 07:35:29 joakim Exp $
+ * $Id: PostingStringBMPBean.java,v 1.6 2003/12/02 10:16:37 sigtryggur Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -26,8 +26,8 @@ public class PostingStringBMPBean extends GenericEntity implements PostingString
 {
 	private static final String ENTITY_NAME = "cacc_posting_string";
 
-	private static final String COLUMN_VALID_FROM = "valid_from";
-	private static final String COLUMN_VALID_TO = "valid_to";
+	private static final String COLUMN_VALID_FROM = "VALID_FROM";
+	private static final String COLUMN_VALID_TO = "VALID_TO";
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
