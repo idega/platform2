@@ -15,6 +15,8 @@ import com.idega.user.data.User;
  * @author palli
  */
 public class CashierSubWindowTemplate extends Block {
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
+	
 	protected Group _club = null;
 	protected Group _division = null;
 	protected User _user = null;
@@ -48,5 +50,13 @@ public class CashierSubWindowTemplate extends Block {
 	
 	public User getUser() {
 		return _user;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
 	}
 }
