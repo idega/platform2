@@ -126,7 +126,14 @@ public class SupplyPoolBMPBean extends GenericEntity  implements SupplyPool{
 	
 	public void remove() {
 		setColumn(COLUMN_IS_DELETED, true);
+		try {
+			this.idoRemoveFrom(Product.class);
+		}
+		catch (IDORemoveRelationshipException e) {
+			e.printStackTrace();
+		}
 		store();
 	}
+	
 	
 }
