@@ -200,7 +200,7 @@
 <!-- end of abrv view -->
 	 <sql>
 	 <statement>
-	 create view em_UNIQUE_IDENTFIER (ic_group_id, email) as select ge.ic_group_id, e.address from ic_group_email ge, ic_email e where ge.ic_email_id = e.ic_email_id
+	 create view em_UNIQUE_IDENTIFIER (ic_group_id, email) as select ge.ic_group_id, e.address from ic_group_email ge, ic_email e where ge.ic_email_id = e.ic_email_id
 	 </statement>
 	 <poststatement>
 	 drop view em_UNIQUE_IDENTIFIER
