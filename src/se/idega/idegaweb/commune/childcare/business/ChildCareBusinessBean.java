@@ -4785,9 +4785,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					Iterator iter = parents.iterator();
 					while (iter.hasNext()) {
 						User parent = (User) iter.next();
-						if (!getUserBusiness().haveSameAddress(parent, appParent)) {
+//						if (!getUserBusiness().haveSameAddress(parent, appParent)) {
 							getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
-						}
+//						}
 					}
 				}
 				catch (NoCustodianFound ncf) {
