@@ -3,6 +3,8 @@ package se.idega.idegaweb.commune.business;
 import java.rmi.RemoteException;
 import javax.ejb.*;
 
+import com.idega.core.data.Email;
+import com.idega.core.data.Phone;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
@@ -77,4 +79,6 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	public void updateCitizen(int userID, String firstName, String middleName, String lastName, String personalID) throws RemoteException;
 	public void updateCitizenAddress(int userID, String address, String postalCode, String postalName) throws RemoteException;
 	public boolean haveSameAddress(User user, User compareUser) throws RemoteException;
+	public Email getEmail(User user);
+	public Phone getHomePhone(User user);
 }

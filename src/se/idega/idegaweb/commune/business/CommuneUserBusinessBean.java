@@ -9,6 +9,7 @@ import com.idega.core.business.AddressBusiness;
 import com.idega.core.data.Address;
 import com.idega.core.data.Country;
 import com.idega.core.data.CountryHome;
+import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PostalCode;
 import com.idega.data.*;
@@ -832,6 +833,24 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		catch (CreateException ce) {
 			ce.printStackTrace(System.err);
+		}
+	}
+	
+	public Email getEmail(User user) {
+		try {
+			return getUsersMainEmail(user);
+		}
+		catch (NoEmailFoundException e) {
+			return null;
+		}
+	}
+
+	public Phone getHomePhone(User user) {
+		try {
+			return this.getUsersHomePhone(user);
+		}
+		catch (NoPhoneFoundException e) {
+			return null;
 		}
 	}
  }
