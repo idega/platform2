@@ -936,7 +936,8 @@ public class UserEditor extends Block {
 					addressTable.add(new Parameter(prm_primaddress_postal_id, postalCode.getPrimaryKey().toString()));
 					addressTable.add(getOldParameter(prm_mainaddress_postal_code, postalCode.getPostalCode()));
 					addressTable.add(getOldParameter(prm_mainaddress_postal_name, postalCode.getName()));
-					Country country = postalCode.getCountry();
+					Country country = primaryAddress.getCountry();
+					//postalCode.getCountry();
 					if (country != null) {
 						//primaryCountryInput.setSelectedElement(country.getPrimaryKey().toString());
 						primaryCountryInput.setSelectedCountry(country);
@@ -976,7 +977,7 @@ public class UserEditor extends Block {
 					addressTable.add(new Parameter(prm_coaddress_postal_id, postalCode.getPrimaryKey().toString()));
 					addressTable.add(getOldParameter(prm_coaddress_postal_code, postalCode.getPostalCode()));
 					addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
-					Country country = postalCode.getCountry();
+					Country country = coAddress.getCountry();//postalCode.getCountry();
 					if (country != null) {
 						coCountryInput.setSelectedCountry(country);
 						addressTable.add(getOldParameter(prm_coaddress_country_id, country.getPrimaryKey().toString()));
@@ -1094,7 +1095,8 @@ public class UserEditor extends Block {
 				groupID = Integer.valueOf(group);
 			}
 			catch (NumberFormatException e1) {
-				e1.printStackTrace();
+				log(e1);
+				//e1.printStackTrace();
 			}
 			if(isValidPersonalID(pid) && !"".equals(fname) && !"".equals(lname)){
 				user = createUser(iwc, pid, fname, mname, lname, groupID);
@@ -1255,7 +1257,7 @@ public class UserEditor extends Block {
 							userID,
 							street,
 							postalID,
-							null,
+							country.getName(),
 							null,
 							null,
 							null,
@@ -1351,7 +1353,7 @@ public class UserEditor extends Block {
 							userID,
 							street,
 							postalID,
-							null,
+							country.getName(),
 							null,
 							null,
 							null,
