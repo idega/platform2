@@ -82,7 +82,7 @@ public class ClubPageIncluder extends PageIncluder {
             BuilderService bs;
             try {
                 bs = BuilderServiceFactory.getBuilderService(iwac);
-                finalUrl.append(PARAM_CALLING_PAGE_ID).append("=").append(bs.getCurrentPageId(iwc));
+                finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append(bs.getCurrentPageId(iwc));
             } catch (Exception e) {
                 e.printStackTrace();
             }
