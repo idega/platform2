@@ -119,6 +119,7 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 					t.add(entry.getUser().getName(), 2, row);
 //					t.add(entry.getDateOfEntry().toString(), 3, row);
 					t.add(Double.toString(entry.getAmount()), 3, row);
+					sum += entry.getAmount();
 //					t.add(entry.get)
 					row++;
 				}

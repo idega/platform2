@@ -97,7 +97,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	}
 	
 	public double getAmount() {
-		return getDoubleColumnValue(COLUMN_AMOUNT);
+		return getDoubleColumnValue(COLUMN_AMOUNT, 0);
 	}
 
 	public void setAmount(double amount) {
