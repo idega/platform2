@@ -748,6 +748,20 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
 		return idoGetNumberOfRecords(sql);
 	}
+	
+	public int ejbHomeGetNumberOfApplicationsByStatusAndActiveDate(int childID, String[] caseStatus, String caseCode, Date activeDate) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID,childID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		}
+		sql.appendAnd().appendLeftParenthesis().append("c."+REJECTION_DATE).appendLessThanOrEqualsSign().append(activeDate);
+		sql.appendOr().append("c."+REJECTION_DATE).appendIsNull().appendRightParenthesis();
+		return idoGetNumberOfRecords(sql);
+	}
 
 	public Collection ejbFindApplicationsByProviderAndDate(int providerID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
