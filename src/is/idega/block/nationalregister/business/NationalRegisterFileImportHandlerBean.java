@@ -1,22 +1,33 @@
 package is.idega.block.nationalregister.business;
 
 import is.idega.block.nationalregister.data.NationalRegister;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import com.idega.block.importer.business.ImportFileHandler;
+import com.idega.block.importer.data.GenericImportFile;
 import com.idega.block.importer.data.ImportFile;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.Timer;
+import com.idega.util.datastructures.MultivaluedHashMap;
 
 /**
  * @author palli
@@ -32,6 +43,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 	private ArrayList _failedRecords = new ArrayList();
 	private ArrayList _value;
+	private MultivaluedHashMap _familyRelations;
+	private MultivaluedHashMap _spouseRelations;
 
 	private static int COLUMN_SYMBOL = 0;
 	private static int COLUMN_OLD_ID = 1;
@@ -54,6 +67,15 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private static int COLUMN_PO = 18;
 	private static int COLUMN_ADDRESS = 19;
 
+	
+	
+	public static void main(String[] args) throws RemoteException {
+		NationalRegisterFileImportHandlerBean bean = new NationalRegisterFileImportHandlerBean();
+		ImportFile file = new GenericImportFile(new File("/User/gimmi/Desktop/thjodskra.txt"));
+		bean.setImportFile(file);
+		boolean tmp = bean.handleRecords();
+		System.out.println("Worked = "+tmp);
+	}
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -69,7 +91,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 			//iterate through the records and process them
 			String item;
-
+			_familyRelations = new MultivaluedHashMap();
+			_spouseRelations = new MultivaluedHashMap();
 			int count = 0;
 			while (!(item = (String) _file.getNextRecord()).equals("")) {
 				count++;
@@ -83,11 +106,16 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 				item = null;
 			}
+			
+			clock.stop();
+			System.out.println("Time to handleRecords: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s");
+			clock.start();
+			handleFamilyRelation();
 
 			printFailedRecords();
 
 			clock.stop();
-			System.out.println("Time to handleRecords: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s");
+			System.out.println("Time to handleFamilyRelation: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s");
 
 //			transaction.commit();
 
@@ -108,6 +136,131 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 	}
 
+	private boolean handleFamilyRelation() throws RemoteException {
+		if (_familyRelations != null) {
+			Set keys = _familyRelations.keySet();
+			UserHome userHome = null; 
+			NationalRegisterBusiness natReg = null;
+			MemberFamilyLogic familyLogic = null;
+			try {
+				familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+				natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
+				UserBusiness userBusiness = (UserBusiness) getServiceInstance(UserBusiness.class);
+				userHome = userBusiness.getUserHome();
+			} catch (IBOLookupException e) {
+				e.printStackTrace();
+			}
+			
+			if (keys != null && userHome != null && natReg != null) {
+				Iterator keysIter = keys.iterator();
+				Iterator ssnIter;
+				String key;
+				String ssn;
+				int counter = 0;
+				Collection ssnColl;
+				Collection familyColl;
+				while (keysIter.hasNext()) {
+					++counter;
+					key = (String) keysIter.next();
+					familyColl = new Vector();
+					ssnColl = _familyRelations.getCollection(key);
+					if (ssnColl != null) {
+						ssnIter = ssnColl.iterator();
+						while (ssnIter.hasNext()) {
+							ssn = (String) ssnIter.next();
+							try {
+								familyColl.add(userHome.findByPersonalID(ssn));
+							} catch (FinderException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+					
+					handleFamilyCollection(natReg, familyLogic, userHome, familyColl);
+					if ((counter % 100) == 0) {
+						System.out.println("NationalRegisterHandler processing family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, MemberFamilyLogic familyLogic, UserHome uHome, Collection coll) throws RemoteException {
+		if (coll != null) {
+			NationalRegister natReg;
+			Iterator iter = coll.iterator();
+			Collection coll2 = new Vector(coll);
+			Iterator iter2 = coll.iterator();
+			Collection parents = new Vector();
+			User user;
+			User user2;
+			Age age;
+			int oldestAge = 0;
+			String spouseSSN;
+			User oldestPerson = null;
+			while (iter.hasNext()) {
+				try {
+					user = (User) iter.next();
+					if (user.getDateOfBirth() != null) {
+						age = new Age(user.getDateOfBirth());
+						if (age.getYears() > oldestAge) {
+							oldestAge = age.getYears();
+							oldestPerson = user;
+						}
+					}
+					natReg = natRegBus.getEntryBySSN(user.getPersonalID());
+					spouseSSN = natReg.getSpouseSSN();
+					if (spouseSSN != null && !"".equals(spouseSSN)) {
+						parents.add(user);
+						parents.add(uHome.findByPersonalID(spouseSSN));
+						oldestAge = 0;
+						oldestPerson = null;
+						break;
+					}
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
+			if (oldestPerson != null) {
+				parents.add(oldestPerson);
+			}
+			
+			iter = coll.iterator();
+			while (iter.hasNext()) {
+				user = (User) iter.next();
+				//System.out.println("Got user : "+user.getName());
+				coll2.remove(user);
+				iter2 = coll2.iterator();
+				while (iter2.hasNext()) {
+					user2 = (User) iter2.next();
+					//System.out.println("      checking user : "+user2.getName());
+					try {
+						if (parents.contains(user)) {
+							if (parents.contains(user2)) {
+								familyLogic.setAsSpouseFor(user, user2);
+							} else {
+								familyLogic.setAsParentFor(user, user2);
+							}
+						} else {
+							if (parents.contains(user2)) {
+								familyLogic.setAsChildFor(user, user2);
+							} else {
+								familyLogic.setAsSiblingFor(user, user2);
+							}
+						}
+					} catch (CreateException e) {
+						e.printStackTrace();
+					}
+				}
+			}			
+			
+		}
+		
+		return false;
+	}
+	
 	private boolean processRecord(String record) throws RemoteException {
 		_value = _file.getValuesFromRecordString(record);
 
@@ -158,9 +311,14 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		//			//initialize business beans and data homes           
 		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 		
-		return natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
+		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
 		                          floor,sex,maritialStatus,empty,prohibitMarking,
 		                          nationality,placeOfBirth,spouseSSN,fate,parish,po,address);
+		if (success) {
+			_familyRelations.put(familyId, ssn);
+		}
+		
+		return success;
 	}
 
 	private String getProperty(int columnIndex) {
