@@ -43,7 +43,7 @@ import com.idega.presentation.ui.TextArea;
  * 
  * See <a href="http://www.beanshell.org">www.beanshell.org</a> for a tutorial in the Beanshell scripting language and some examples.<br>
  * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
- * @version 0.5
+ * @version 0.7
  */
 public class BeanShellScript extends Block {
 
