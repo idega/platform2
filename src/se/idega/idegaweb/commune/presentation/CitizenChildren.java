@@ -12,8 +12,9 @@ import java.util.Vector;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
-//import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -171,7 +172,12 @@ public class CitizenChildren extends CommuneBlock {
 	 * @return
 	 */
 	protected boolean getShowChild(IWContext iwc, User child) {
-		return true;
+		try {
+			return getFamilyLogic(iwc).isChildInCustodyOf(child, iwc.getCurrentUser());
+		}
+		catch (RemoteException re) {
+			return false;
+		}
 	}
 
 	private Link getChildLink(User child) throws java.rmi.RemoteException {
@@ -210,15 +216,23 @@ public class CitizenChildren extends CommuneBlock {
 
 	private Collection getChilds(IWContext iwc, User user) throws RemoteException {
 		/** @todo familymethods from usersystem */
-		MemberFamilyLogic ml = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 		try {
-			return ml.getChildrenInCustodyOf(user);
+			return getFamilyLogic(iwc).getChildrenInCustodyOf(user);
 		}
 		catch (RemoteException e) {
 		}
 		catch (NoChildrenFound e) {
 		}
 		return new Vector();
+	}
+	
+	private MemberFamilyLogic getFamilyLogic(IWApplicationContext iwac) {
+		try {
+			return (MemberFamilyLogic) IBOLookup.getServiceInstance(iwac, MemberFamilyLogic.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
 	}
 
 	/**
