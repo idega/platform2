@@ -85,7 +85,8 @@ class ChildCarePlaceOfferTable2 extends Table {
 			addToTable(
 				row,
 				((Integer) app.getPrimaryKey()).toString(),
-				app.getChoiceNumber() + ": " + app.getProvider().getName() + _page.getDebugInfo(app),
+				app.getChoiceNumber() + ": " + app.getProvider().getName() + _page.getDebugInfo(app) 
+			+ " ("+app.getMessage()+")", //Todo debug only - remove
 				offer ? GRANTED + app.getFromDate() : "",
 				app.getPrognosis() != null ? app.getPrognosis() : "",
 				offer,

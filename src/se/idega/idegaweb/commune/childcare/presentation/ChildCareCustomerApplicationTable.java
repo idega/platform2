@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.27 2003/05/09 16:07:35 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.28 2003/05/14 10:38:30 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -278,7 +278,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		//Removing other applications from the queue
 		Collection applications = findApplications(iwc);
 		Iterator allaps = applications.iterator();
-		//If choice 1 accepted, choice 2 shall not be deleted.
+		//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
 		int deleteFromChoice =
 			acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
 
@@ -355,6 +355,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			iwc.setSessionAttribute(DELETED_APPLICATIONS, deletedApps);
 		}
 		//The application is given status TYST/Z, so that it will be rendered correctly (red font)
+		application.setMessage("Deleted!"); //Todo Roar for debugging only
 		application.setApplicationStatus(childCarebusiness.getStatusRejected());
 		application.setStatus(STATUS_TYST);
 		deletedApps.add(application);
