@@ -33,11 +33,17 @@ private IWResourceBundle iwrb;
 public TextEditor(){
   setWidth(570);
   setHeight(430);
+  setUnMerged();
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
-    super.main(modinfo);
-    isAdmin = AccessControl.hasEditPermission(new TextReader(),modinfo);
+	public void main(ModuleInfo modinfo) {
+    try {
+      isAdmin = AccessControl.hasEditPermission(new TextReader(),modinfo);
+    }
+    catch (SQLException e) {
+      isAdmin = false;
+    }
+
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
 
@@ -50,29 +56,59 @@ public TextEditor(){
 
 			if ( mode == null ) {
 				mode = "new";
-				newText(modinfo);
+        try {
+  				newText(modinfo);
+        }
+        catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
 			}
 			else if ( mode.equals("update") ) {
 				update = true;
-				newText(modinfo);
+        try {
+  				newText(modinfo);
+        }
+        catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
 			}
 			else if ( mode.equals("save") ) {
 				save = true;
 				if ( action.equals("update") ) {
           update = true;
         }
-				saveText(modinfo);
+        try {
+          saveText(modinfo);
+        }
+        catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
 			}
 			else if ( mode.equals("delete") ) {
-				confirmDelete(modinfo);
+        try {
+  				confirmDelete(modinfo);
+        }
+        catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
 			}
 
 			if ( action.equals("delete") ) {
-				deleteText(modinfo);
+        try {
+  				deleteText(modinfo);
+        }
+        catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
 			}
 		}
 		else {
-			noAccess();
+      try {
+  			noAccess();
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
 		}
 	}
 
