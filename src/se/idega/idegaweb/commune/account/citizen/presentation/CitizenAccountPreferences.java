@@ -203,7 +203,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		Form form = new Form();
 		Table table = new Table();	
 //		table.setWidth(getWidth());
-		table.setCellpadding(1);
+		table.setCellpadding(2);
 		table.setCellspacing(getCellspacing());
 		form.add(table);
 		int row = 1;
@@ -371,6 +371,9 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		SubmitButton sbUpdate = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
 		
 		row++;
+		table.setHeight(row, 12);
+
+		row++;
 		table.add(tCurrentPassword, 1, row);
 		table.add(tiCurrentPassword, 2, row);
 
@@ -383,7 +386,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.add(tiNewPasswordRepeated, 2, row);
 		
 		row++;
-		table.addBreak(1, row);
+		table.setHeight(row, 12);
 
 		row++;
 		table.add(tEmail, 1, row);
