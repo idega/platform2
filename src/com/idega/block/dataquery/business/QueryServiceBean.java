@@ -408,7 +408,14 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	 */ 
 	private UserQuery storeOrUpdateQueryWithoutTransaction(String name, QueryHelper queryHelper, boolean isPrivate, boolean overwriteQuery, IWUserContext iwuc) 
 			throws IDOStoreException, IOException, CreateException, SQLException, FinderException {
-		Group group = getTopGroupForCurrentUser(iwuc);
+		Group group = null;
+		if (iwuc.isSuperAdmin()) {
+	  		User user = iwuc.getCurrentUser();
+	  		group = user;
+		}
+		else {
+		 group = getTopGroupForCurrentUser(iwuc);
+		}
 		// get user query, get xml data
 		XMLData data = null;
 		UserQuery userQuery = queryHelper.getUserQuery();
@@ -485,8 +492,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	private UserQuery storeQueryWithoutTransaction(String name, ICFile file, boolean isPrivate, Object userQueryToBeReplacedId, IWUserContext iwuc) throws CreateException, FinderException, RemoteException {
 		Group group = getTopGroupForCurrentUser(iwuc);
 		name = modifyNameIfNameAlreadyExists(name, group);
-		UserQueryHome userQueryHome = getUserQueryHome();
-		UserQuery userQuery = userQueryHome.create();
+		UserQueryHome queryHome = getUserQueryHome();
+		UserQuery userQuery = queryHome.create();
 		userQuery.setName(name);
 		userQuery.setOwnership(group);
 		userQuery.setSource(file);
@@ -498,8 +505,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			userQuery.setPermission(QueryConstants.PERMISSION_PUBLIC_QUERY);
 		}
 		userQuery.store();
-		QuerySequenceHome querySequenceHome = getQuerySequenceHome();
-		QuerySequence querySequence = querySequenceHome.create();
+		QuerySequenceHome sequenceHome = getQuerySequenceHome();
+		QuerySequence querySequence = sequenceHome.create();
 		// be sure that user query was stored before ((otherwise there is a problem with non existing primary key)
 		querySequence.setRealQuery(userQuery);
 		querySequence.setName(name);
@@ -510,8 +517,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		// set new pointers
 		if (userQueryToBeReplacedId != null) {
 			//  create new sequence
-			UserQuery oldUserQuery = userQueryHome.findByPrimaryKey(userQueryToBeReplacedId);
-			Collection sequences = querySequenceHome.findAllByRealQuery(oldUserQuery);
+			UserQuery oldUserQuery = queryHome.findByPrimaryKey(userQueryToBeReplacedId);
+			Collection sequences = sequenceHome.findAllByRealQuery(oldUserQuery);
 			Iterator iterator = sequences.iterator();
 			while (iterator.hasNext()) {
 				QuerySequence sequence = (QuerySequence) iterator.next();
@@ -519,7 +526,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 				sequence.store();
 			}
 			// create new sequence for the existing old user query
-			QuerySequence sequence = querySequenceHome.create();
+			QuerySequence sequence = sequenceHome.create();
 			String oldUserQueryName = oldUserQuery.getName();
 			sequence.setName(oldUserQueryName);
 			sequence.setRealQuery(oldUserQuery);
@@ -579,9 +586,9 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	}
 
 	private Collection getUserQueriesByGroup(Group group) throws FinderException {
-  	 UserQueryHome userQueryHome = getUserQueryHome();
-  	 Collection privateUserQueries = userQueryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PRIVATE_QUERY);
-  	 Collection publicUserQueries = userQueryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PUBLIC_QUERY);
+  	 UserQueryHome queryHome = getUserQueryHome();
+  	 Collection privateUserQueries = queryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PRIVATE_QUERY);
+  	 Collection publicUserQueries = queryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PUBLIC_QUERY);
   	 privateUserQueries.addAll(publicUserQueries);
   	 return privateUserQueries;
   }
