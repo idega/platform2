@@ -1,13 +1,14 @@
 package se.idega.idegaweb.commune.presentation;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
@@ -650,7 +651,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		}
 	}
 	
-	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
+	protected CommuneUserBusiness getUserBusiness(IWApplicationContext  iwc) throws IBOLookupException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
 	

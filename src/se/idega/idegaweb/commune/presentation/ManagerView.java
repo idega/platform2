@@ -10,7 +10,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.text.Name;
@@ -279,10 +278,6 @@ public class ManagerView extends CommuneBlock {
 		else{
 			throw new Exception("No manager selected");	
 		}
-	}
-
-	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
-		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 	}
 
 	/* Commented out since it is never used...

@@ -9,9 +9,6 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
-import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -230,10 +227,6 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 	public abstract String getNoUserFoundString();
 	
 	public abstract String getFoundUsersString();
-
-	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
-		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
-	}
 	
 	public void setUsesMultipleInputs(boolean multipleInputs) {
 		this.multipleInputs = multipleInputs;

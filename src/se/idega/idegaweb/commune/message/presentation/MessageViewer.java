@@ -2,13 +2,16 @@ package se.idega.idegaweb.commune.message.presentation;
 
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
+import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
@@ -20,8 +23,6 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.Name;
 import com.idega.util.text.TextSoap;
-import com.idega.presentation.Page;
-import com.idega.presentation.Script;
 
 /**
  * @author Laddi
@@ -253,7 +254,5 @@ public class MessageViewer extends CommuneBlock {
 		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
 	}
 
-	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
-		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
-	}
+
 }

@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.67 2004/09/10 09:40:48 malin Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.68 2004/09/22 10:50:28 aron Exp $
  * @since 12.2.2003 
  */
 
@@ -721,15 +721,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	ChildCareSession getChildCareSession(IWContext iwc) {
 		try {
 			return (ChildCareSession) com.idega.business.IBOLookup.getSessionInstance(iwc, ChildCareSession.class);
-		}
-		catch (RemoteException e) {
-			return null;
-		}
-	}
-
-	UserBusiness getUserBusiness(IWContext iwc) {
-		try {
-			return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 		}
 		catch (RemoteException e) {
 			return null;

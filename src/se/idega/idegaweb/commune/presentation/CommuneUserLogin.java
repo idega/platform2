@@ -7,13 +7,9 @@ package se.idega.idegaweb.commune.presentation;
 
 import is.idega.idegaweb.member.presentation.UserSearcher;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
-import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -257,7 +253,4 @@ public class CommuneUserLogin extends CommuneBlock {
 		useSearcher = flag;
 	}
 	
-	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
-		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
-	}
 }

@@ -29,7 +29,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.text.Name;
 
@@ -293,21 +292,8 @@ public class RedeemCheck extends CommuneBlock {
 	}
 	*/
 
-	protected FamilyLogic getMemberFamilyLogic(IWContext iwc) {
-		try {
-			return (FamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, FamilyLogic.class);
-		}
-		catch (RemoteException e) {
-			return null;
-		}
+	protected FamilyLogic getMemberFamilyLogic(IWContext iwc) throws RemoteException {
+		return getUserBusiness(iwc).getMemberFamilyLogic();
 	}
 	
-	protected UserBusiness getUserBusiness(IWContext iwc) {
-		try {
-			return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-		}
-		catch (RemoteException e) {
-			return null;
-		}
-	}	
 }

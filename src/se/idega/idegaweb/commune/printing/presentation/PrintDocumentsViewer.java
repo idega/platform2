@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-//import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
@@ -16,11 +15,8 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
-//import com.idega.block.process.data.CaseCode;
-import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.location.data.Address;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -1232,9 +1228,6 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			DocumentBusiness.class);
 	}
 
-	private UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
-		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
-	}
 
 	/* Commented out since it is never used...
 	private Message getMessage(String id, IWContext iwc) throws Exception {

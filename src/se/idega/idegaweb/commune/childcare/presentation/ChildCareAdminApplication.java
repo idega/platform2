@@ -390,8 +390,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_OFFER);
 						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 					}
-					else
+					else{
 						offer.setDisabled(true);
+						offer.setToolTip(localize("child_care.tooltip.button.offerplacing.date_not_yet_set","Date has not been set"));
+					}
 					table.add(offer, column++, 1);
 				}
 				else {
@@ -480,6 +482,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
 					
 				if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
+				    disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.active_placement_at_other_provider","Has an active placement at other provider"));
 					table.add(disabledCreateContract, 3, 1);
 					dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
 				}
@@ -496,6 +499,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 								terminationDate.addDays(1);
 								changeDate.addParameterToWindow(ChildCareAdminWindow.PARAMETER_EARLIEST_DATE, terminationDate.toString());
 								table.add(changeDate, 3, 1);
+								disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.startdate_is_before_latest_termination","Start date is before latest termination date"));
 								table.add(disabledCreateContract, 5, 1);
 							}
 							else {
@@ -535,6 +539,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					if (! application.getContract().isSigned()) {
 						placeInGroup = (GenericButton) getStyledInterface(new GenericButton("place_in_group", localize("child_care.place_in_group","Place in group")));
 						placeInGroup.setDisabled(true);
+						placeInGroup.setToolTip(localize("child_care.tooltip.button.place_in_group.contract_unsigned","Contract is unsigned"));
 						table.add(placeInGroup, column, 1);
 					}
 					else {

@@ -9,7 +9,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
@@ -89,10 +88,6 @@ public class ChildCareChildren extends ChildCareBlock {
 		else {
 			add(getErrorText(localize(ERROR_NO_RESPONSE_PAGE, "The response page has not been set.")));
 		}
-	}
-	
-	private CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
-		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
 	}
 
 	private CheckBusiness getCheckBusiness(IWApplicationContext iwac) throws RemoteException {

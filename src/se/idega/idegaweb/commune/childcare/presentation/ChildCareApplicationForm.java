@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
@@ -452,9 +451,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		}
 	}
 
-	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws Exception {
-		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
-	}
 
 	private boolean checkParameters(IWContext iwc) {
 		for (int i = 0; i < 5; i++) {

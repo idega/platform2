@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
@@ -485,10 +484,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
 		
 		return dropdown;
-	}
-
-	private CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
-		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
 	}
 
 	private CheckBusiness getCheckBusiness(IWApplicationContext iwac) throws RemoteException {
