@@ -69,6 +69,9 @@ public class TextReader extends Block implements Builderaware {
 	
 	private String textStyleName = "body";
 	private String headlineStyleName = "headline";
+	
+	private String textStyleClassName;
+	private String headlineStyleClassName;
 
 	public static String prmTextId = "txtr.textid";
 
@@ -165,6 +168,8 @@ public class TextReader extends Block implements Builderaware {
 		T.setWidth("100%");
 		String sHeadline = locText.getHeadline() != null ? locText.getHeadline() : "";
 		Text headline = getStyleText(sHeadline,headlineStyleName);
+		if(headlineStyleClassName != null)
+		  headline.setStyleClass(headlineStyleClassName);
 		if (headlineSize > -1)
 			headline.setFontSize(headlineSize);
 		if (headlineColor != null)
@@ -199,6 +204,8 @@ public class TextReader extends Block implements Builderaware {
 		}
 
 		Text body = getStyleText(textBody,textStyleName);
+		if(textStyleClassName != null)
+		  body.setStyleClass(textStyleClassName);
 		if (textSize > -1)
 			body.setFontSize(textSize);
 		if (textColor != null)
@@ -438,10 +445,10 @@ public class TextReader extends Block implements Builderaware {
 	}
 	
 	public void setHeadlineStyleClass(String styleClass) {
-		headlineStyleName = styleClass;	
+		headlineStyleClassName = styleClass;	
 	}
 
 	public void setTextStyleClass(String styleClass) {
-		textStyleName = styleClass;	
+		textStyleClassName = styleClass;	
 	}
 }
