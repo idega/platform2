@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/15 08:32:52 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/18 10:54:26 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -324,7 +324,7 @@ public class ViewpointForm extends CommuneBlock {
 		final SubCategory[] categories = getViewpointBusiness(iwc).findSubCategories(topCategoryId);
 		for (int i = 0; i < categories.length; i++) {
 			final String id = categories[i].getPrimaryKey().toString();
-			dropdown.addMenuElementFirst(id, categories[i].getName());
+			dropdown.addMenuElement(id, categories[i].getName());
 		}
 		final TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAM_SUBJECT));
 		textInput.setLength(40);
