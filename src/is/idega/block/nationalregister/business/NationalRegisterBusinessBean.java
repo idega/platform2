@@ -226,8 +226,9 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			femaleGender = home.getFemaleGender();
 			System.out.println("NationalRegisterBusinessBean : setting up gender");
 		}
-		
-		if (sex.equals("1") || sex.equals("3")) {
+		if (sex == null) {
+			return null;
+		} else if (sex.equals("1") || sex.equals("3")) {
 			return maleGender;
 		}	else {
 			return femaleGender;
