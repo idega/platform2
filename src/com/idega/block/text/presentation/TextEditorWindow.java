@@ -294,7 +294,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
           imageTable.add(immi,1,row);
           //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
-          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
+          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),f.getID(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
           delete.addParameter(prmDeleteFile,f.getID());
           delete.addParameter(prmUsedTextId,txText.getID());
