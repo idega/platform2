@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
-
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.CalendarEntry;
 import com.idega.block.cal.data.CalendarLedger;
@@ -94,14 +93,14 @@ public class CalendarView extends Block{
 	 */
 	private Table dayView(IWContext iwc, IWTimestamp stamp) {
 		//row is 2 because in the first row info on the day (name etc. are printed)
-		int row = 2;
+		int row = 1;
 		now = new IWTimestamp();
 		
 		Table backTable = new Table();
 		backTable.setColor("#cccccc");
 		backTable.setCellspacing(1);
 		backTable.setCellpadding(0);	
-		backTable.setWidth(500);
+		backTable.setWidth(Table.HUNDRED_PERCENT);//500
 		backTable.setHeight(400);
 		
 		
@@ -112,25 +111,33 @@ public class CalendarView extends Block{
 		//the style for each cell,
 		//the entrylist for each hour
 		for(int i=beginHour;i<=endHour;i++) {
-			backTable.setHeight(1,row,"40");
-			backTable.setHeight(2,row,"40");
+			backTable.setHeight(1,row,40);
+			backTable.setHeight(2,row,40);
+			backTable.setWidth(1,row,40);
 			
 			Table dayTable = new Table();
 			dayTable.setCellspacing(0);
-			dayTable.setCellpadding(1);
-			dayTable.setWidth("100%");
-			dayTable.setHeight("100%");
+			dayTable.setCellpadding(0);
+			dayTable.setWidth(Table.HUNDRED_PERCENT);
+			dayTable.setHeight(Table.HUNDRED_PERCENT);
 			Table entryTable = new Table();
 			entryTable.setCellspacing(0);
-			entryTable.setCellpadding(1);
-			entryTable.setWidth("100%");
-			entryTable.setHeight("100%");
+			entryTable.setCellpadding(0);
+			entryTable.setWidth(Table.HUNDRED_PERCENT);
+			entryTable.setHeight(Table.HUNDRED_PERCENT);
 			entryTable.setColor(1,1,"#ffffff");
+			entryTable.setColor(1,2,"#f9f9f9");
+			entryTable.setStyleClass(1,2,"borderTop");
+			entryTable.setHeight(1,1,18);
+			entryTable.setHeight(1,2,18);
 			now.setTime(i,0,0);
-			dayTable.add(now.getDateString("hh:mm"),1,1);
+			Text timeText = new Text(now.getDateString("HH:mm",iwc.getCurrentLocale()));
+			timeText.setBold();
+			dayTable.add(timeText,1,1);
+			dayTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_CENTER);
 			dayTable.setColor(1,1,"#ffffff");
 			backTable.add(dayTable,1,row);
-			backTable.setWidth(1,row,"7%");
+			
 			Timestamp fromStamp = Timestamp.valueOf(stamp.getDateString("yyyy-MM-dd hh:mm:ss.S")); 
 			fromStamp.setHours(beginHour);
 			fromStamp.setMinutes(0);
@@ -217,8 +224,30 @@ public class CalendarView extends Block{
 							headlineLink.setWindowToOpen(EntryInfoWindow.class);
 						}
 						headlineLink.setStyleClass(entryLink);
-						entryTable.add(headlineLink,1,1);
-						entryTable.add("<br>",1,1);
+						if(i == fStamp.getHours()) {
+							if(fStamp.getMinutes() >= 30) {
+								entryTable.add(headlineLink,1,2);
+							}
+							else {
+								entryTable.add(headlineLink,1,1);
+								entryTable.add(headlineLink,1,2);
+							}
+						}
+						else if(i == tStamp.getHours()) {
+							if(tStamp.getMinutes() >= 30) {
+								entryTable.add(headlineLink,1,1);
+								entryTable.add(headlineLink,1,2);
+							}
+							else {
+								entryTable.add(headlineLink,1,1);
+							}
+						}
+						else {
+							entryTable.add(headlineLink,1,1);
+							entryTable.add(headlineLink,1,2);
+						}						
+						entryTable.add(Text.BREAK,1,1);
+						entryTable.add(Text.BREAK,1,2);
 					}						
 				}
 							
