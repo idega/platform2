@@ -6,6 +6,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
@@ -90,5 +91,9 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException{
 		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
 	}
+	
+	public Collection ejbFindMessagesByStatus(Group group, String[] status)throws FinderException{
+		return super.ejbFindAllCasesByGroupAndStatusArray(group, status);
+	}	
  
 }

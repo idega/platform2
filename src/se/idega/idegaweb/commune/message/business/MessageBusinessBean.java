@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.41 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.42 2003/10/13 18:25:18 roar Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -170,6 +171,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		String[] validStatuses = { getCaseStatusOpen().getPrimaryKey().toString(), getCaseStatusGranted().getPrimaryKey().toString() };
 		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,validStatuses);
 	}
+	
+	public Collection findMessages(Group group) throws Exception {
+		String[] validStatuses = { getCaseStatusOpen().getPrimaryKey().toString(), getCaseStatusGranted().getPrimaryKey().toString() };
+		return getMessageHome(TYPE_USER_MESSAGE).findMessages(group, validStatuses);
+	}	
 
 	public Message createUserMessage(User user, String subject, String body) {
 		return createUserMessage(null, user, subject, body, true);
