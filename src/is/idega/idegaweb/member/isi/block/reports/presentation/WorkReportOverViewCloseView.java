@@ -210,7 +210,11 @@ public class WorkReportOverViewCloseView extends Block {
 		HasNationLeagueCheckBoxConverter hasNLConverter = new HasNationLeagueCheckBoxConverter();
 		hasNLConverter.maintainParameters(params);
 		
+		EditOkayButtonConverter okCancelButton = new EditOkayButtonConverter();
+		okCancelButton.maintainParameters(params);
+		
     Object[] columns = {
+    	"okeCancel", okCancelButton,
     	REPORT_YEAR,null,
 	//		REGIONAL_UNION_NUMBER,null,
 			REGIONAL_UNION_ABBR,null,
