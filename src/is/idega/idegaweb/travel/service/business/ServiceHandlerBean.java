@@ -1,20 +1,23 @@
 package is.idega.idegaweb.travel.service.business;
 
-import is.idega.idegaweb.travel.presentation.ServiceViewer;
-import is.idega.idegaweb.travel.data.Service;
-import java.sql.SQLException;
-import com.idega.util.IWTimestamp;
+import java.rmi.*;
+import java.sql.*;
 import java.util.*;
-import java.rmi.RemoteException;
-import com.idega.business.*;
-import com.idega.presentation.IWContext;
-import com.idega.block.trade.stockroom.data.*;
+
+import javax.ejb.*;
+
 import com.idega.block.trade.stockroom.business.*;
-import is.idega.idegaweb.travel.service.presentation.*;
-import is.idega.idegaweb.travel.service.tour.presentation.*;
-import is.idega.idegaweb.travel.service.hotel.presentation.*;
-import is.idega.idegaweb.travel.presentation.Voucher;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.business.*;
+import com.idega.presentation.*;
+import com.idega.util.*;
+import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.presentation.*;
+import is.idega.idegaweb.travel.service.hotel.presentation.*;
+import is.idega.idegaweb.travel.service.presentation.*;
+import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
+import is.idega.idegaweb.travel.service.tour.presentation.*;
 
 /**
  * <p>Title: idega</p>
@@ -53,7 +56,7 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
         return new TourBookingForm(iwc, product);
       }
     }else {
-      System.out.println("iter.hasNext() = false");
+      System.out.println("[ServiceHandlerBean] iter.hasNext() = false");
     }
     return new TourBookingForm(iwc, product);
   }
@@ -77,6 +80,34 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     return new TourDesigner(iwc);
   }
 
+  public ServiceOverview getServiceOverview(IWContext iwc, Product product) throws RemoteException, FinderException{
+    Collection coll = getProductCategoryFactory().getProductCategory(product);
+    Iterator iter = coll.iterator();
+    /**
+     * Only supports Products with ONE ProductCategory
+     */
+    if (iter.hasNext()) {
+      ProductCategory pCat = (ProductCategory) iter.next();
+      String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
+      if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
+        System.out.println("Returning ServiceOverview for TOUR");
+        return new TourOverview(iwc);
+      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
+        System.out.println("Cannot find ServiceOverview for ProductCategory HOTEL, returning form for TOUR");
+        return new TourOverview(iwc);
+      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
+        System.out.println("Cannot find ServiceOverview for ProductCategory FISHING, returning form for TOUR");
+        return new TourOverview(iwc);
+      }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
+        System.out.println("Cannot find ServiceOverview for ProductCategory PRODUCT, returning form for TOUR");
+        return new TourOverview(iwc);
+      }
+    }
+
+    TourOverview tOverview = new TourOverview(iwc);
+
+    return tOverview;
+  }
 
   public Voucher getVoucher(Booking booking) throws Exception {
     int productId = booking.getServiceID();

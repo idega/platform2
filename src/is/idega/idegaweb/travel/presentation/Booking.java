@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.presentation.*;
+import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
 import is.idega.idegaweb.travel.service.business.*;
 
 /**
@@ -275,8 +276,8 @@ public class Booking extends TravelManager {
   }
 
   private Table getContentHeader(IWContext iwc) throws Exception{
-    ServiceOverview so = new ServiceOverview(iwc);
-    Table table = so.getProductInfoTable(iwc, iwrb, this.product);
+    ServiceOverview so = super.getServiceHandler(iwc).getServiceOverview(iwc, this.product );
+    Table table = so.getServiceInfoTable(iwc, this.product);
 
     return table;
   }

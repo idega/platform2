@@ -400,6 +400,14 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
+    return ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, false);
+  }
+
+  public int ejbHomeGetNumberOfBookingsByDateOfBooking(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
+    return ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, productPriceIds, travelAddressIds, true);
+  }
+
+  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds, boolean useDateOfBookingColumn){
     int returner = 0;
     StringBuffer sql = new StringBuffer();
     //Connection conn = null;
@@ -419,6 +427,11 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       String tTable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
 
       //conn = ConnectionBroker.getConnection();
+      String dateColumn = this.getBookingDateColumnName();
+      if (useDateOfBookingColumn) {
+        dateColumn = this.getDateOfBookingColumnName();
+      }
+
         String[] many = {};
             sql.append("Select b."+getTotalCountColumnName()+" from "+getBookingTableName()+" b");
             sql.append(","+pTable+" p,"+middleTable+" m,"+tTable+" t");
@@ -462,12 +475,12 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             }
             sql.append(" and (");
             if ( (fromStamp != null) && (toStamp == null) ) {
-              sql.append(getBookingDateColumnName()+" like '"+fromStamp.toSQLDateString()+"%'");
+              sql.append(dateColumn+" like '"+fromStamp.toSQLDateString()+"%'");
             }else if ( (fromStamp != null) && (toStamp != null)) {
               sql.append(" (");
-              sql.append(getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+              sql.append(dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
-              sql.append(getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
+              sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"')");
             }
             sql.append(" )");
 
@@ -488,8 +501,15 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-
   public Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
+    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnName, address,getBookingDateColumnName() );
+  }
+
+  public Collection ejbFindBookingsByDateOfBooking(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
+    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnName, address,this.getDateOfBookingColumnName() );
+  }
+
+  private Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String dateColumn) throws FinderException, RemoteException{
     Collection returner = null;
     StringBuffer sql = new StringBuffer();
 
@@ -520,12 +540,12 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     sql.append("b."+getIsValidColumnName()+" = 'Y'");
     if (fromStamp != null && toStamp == null) {
       sql.append(" and ");
-      sql.append("b."+getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
+      sql.append("b."+dateColumn+" containing '"+fromStamp.toSQLDateString()+"'");
     }else if (fromStamp != null && toStamp != null) {
       sql.append(" and ");
-      sql.append("b."+getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+      sql.append("b."+dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
       sql.append(" and ");
-      sql.append("b."+getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"'");
+      sql.append("b."+dateColumn+" <= '"+toStamp.toSQLDateString()+"'");
     }
     if (bookingTypeIds != null) {
       if (bookingTypeIds.length > 0 ) {
@@ -543,7 +563,9 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       sql.append(" and ").append("b."+columnName).append(" = '").append(columnValue).append("'");
     }
 
-    sql.append(" order by "+getBookingDateColumnName());
+    if (dateColumn != null)  {
+      sql.append(" order by "+dateColumn);
+    }
 
     returner = this.idoFindPKsBySQL(sql.toString());
     //returner = (GeneralBooking[]) (((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).createLegacy()).findAll(sql.toString());

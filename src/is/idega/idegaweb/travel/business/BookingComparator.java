@@ -1,18 +1,17 @@
 package is.idega.idegaweb.travel.business;
 
-import javax.ejb.FinderException;
-import java.rmi.RemoteException;
-import com.idega.presentation.IWContext;
-import com.idega.core.user.data.User;
-import com.idega.util.IsCollator;
-import com.idega.util.IWTimestamp;
+import java.rmi.*;
+import java.sql.*;
 import java.util.*;
-import java.util.Comparator;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import is.idega.idegaweb.travel.service.tour.data.TourBooking;
-import is.idega.idegaweb.travel.data.HotelPickupPlace;
 
-import java.sql.SQLException;
+import javax.ejb.*;
+
+import com.idega.core.user.data.*;
+import com.idega.presentation.*;
+import com.idega.util.*;
+import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.interfaces.*;
+import is.idega.idegaweb.travel.service.tour.data.*;
 
 /**
  * Title:
@@ -33,6 +32,7 @@ public class BookingComparator implements Comparator {
   public static final int OWNER = 106;
   public static final int DATE = 107;
   public static final int AMOUNT = 108;
+  public static final int DATE_OF_BOOKING = 109;
 
 
   private int sortBy;
@@ -72,9 +72,11 @@ public class BookingComparator implements Comparator {
           break;
           case OWNER   : result = ownerSort(o1, o2);
           break;
-          case DATE   : result = dateSort(o1, o2);
+          case DATE   : result = dateSort(o1, o2, false);
           break;
           case AMOUNT   : result = amountSort(o1, o2);
+          break;
+        case DATE_OF_BOOKING   : result = dateSort(o1, o2, true);
           break;
         }
       }catch (RemoteException re) {
@@ -231,12 +233,20 @@ public class BookingComparator implements Comparator {
     }
   }
 
-  private int dateSort(Object o1, Object o2)throws RemoteException {
+  private int dateSort(Object o1, Object o2, boolean useDateOfBooking)throws RemoteException {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
 
-    IWTimestamp t1 = new IWTimestamp(p1.getBookingDate());
-    IWTimestamp t2 = new IWTimestamp(p2.getBookingDate());
+    IWTimestamp t1 = null;
+    IWTimestamp t2 = null;
+
+    if (useDateOfBooking) {
+      t1 = new IWTimestamp(p1.getDateOfBooking());
+      t2 = new IWTimestamp(p2.getDateOfBooking());
+    }else{
+      t1 = new IWTimestamp(p1.getBookingDate());
+      t2 = new IWTimestamp(p2.getBookingDate());
+    }
 
     if (t1.isLaterThan(t2)) {
       return 1;

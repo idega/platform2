@@ -1,30 +1,27 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
-import is.idega.idegaweb.travel.service.presentation.DesignerForm;
-import javax.ejb.FinderException;
+import java.rmi.*;
+import java.sql.*;
 import java.util.*;
-import com.idega.util.ListUtil;
-import com.idega.business.IBOLookup;
-import java.rmi.RemoteException;
-import com.idega.data.IDOLookup;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.util.IWTimestamp;
-import com.idega.idegaweb.*;
-import is.idega.idegaweb.travel.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import java.sql.SQLException;
+
 import javax.ejb.*;
-import com.idega.block.media.presentation.ImageInserter;
-import com.idega.core.data.Address;
-import com.idega.core.data.AddressType;
-import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
-import is.idega.idegaweb.travel.service.tour.data.*;
+
+import com.idega.block.media.presentation.*;
+import com.idega.block.trade.stockroom.business.*;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.business.*;
+import com.idega.core.data.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.util.*;
 import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.presentation.ServiceDesigner;
-import is.idega.idegaweb.travel.presentation.TravelManager;
+import is.idega.idegaweb.travel.presentation.*;
+import is.idega.idegaweb.travel.service.presentation.*;
+import is.idega.idegaweb.travel.service.tour.business.*;
+import is.idega.idegaweb.travel.service.tour.data.*;
 
 /**
  *  Title: idegaWeb TravelBooking Description: Copyright: Copyright (c) 2001

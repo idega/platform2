@@ -1,17 +1,13 @@
 package is.idega.idegaweb.travel.presentation;
-import java.util.Vector;
-import java.util.List;
-import com.idega.util.ListUtil;
-import com.idega.block.trade.stockroom.data.SupplierHome;
-import com.idega.data.IDOLookup;
-import java.sql.SQLException;
-import java.rmi.RemoteException;
-import com.idega.presentation.ui.*;
-import com.idega.block.trade.stockroom.data.Supplier;
+import java.sql.*;
+import java.util.*;
+
+
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.data.*;
+import com.idega.presentation.*;
 import com.idega.presentation.text.*;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.ui.*;
 
 /**
  * Title:        idegaWeb
@@ -27,11 +23,9 @@ public class AdministratorReports extends Reports {
   private Supplier _supplier;
   private List _suppliers;
   protected AdministratorReport _report;
-//  private static String ACTION = "adRep_ac";
-//  private static final String PARAMATER_DATE_FROM = "active_from";
-//  private static final String PARAMATER_DATE_TO = "active_to";
   private static final String PARAMETER_ONLINE_REPORT = OnlineBookingReport.class.toString();//"adRep_or";
   private String PARAMETER_SUPPLIER_ID = "adRep_spID";
+  public static final String PARAMETER_SUPPLIER_ID_STATIC = "adRep_stSpId";
 
   public AdministratorReports() {
   }
@@ -40,23 +34,28 @@ public class AdministratorReports extends Reports {
 //    super.main(iwc);
     init(iwc);
 
-    add(Text.BREAK);
-    String _action = iwc.getParameter(ACTION);
-    if (_action == null) {
-      reportList(iwc);
-    }else {
-      Form form = new Form();
-        form.maintainParameter(this.ACTION);
-      form.add(topTable(iwc));
-      form.add(report(iwc));
-      form.add(Text.BREAK);
-      add(form);
-    }
+    if (super.isLoggedOn(iwc)) {
 
-    Table table = new Table();
+      add(Text.BREAK);
+      String _action = iwc.getParameter(ACTION);
+      if (_action == null) {
+        reportList(iwc);
+      }else {
+        Form form = new Form();
+        form.maintainParameter(this.ACTION);
+        form.add(topTable(iwc));
+        form.add(report(iwc));
+        form.add(Text.BREAK);
+        add(form);
+      }
+
+      Table table = new Table();
 //      table.setWidth("90%");
       table.add(getBackLink());
-    add(table);
+      add(table);
+    } else {
+      add(super.getLoggedOffTable(iwc));
+    }
 
   }
 
@@ -112,6 +111,8 @@ public class AdministratorReports extends Reports {
 //        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, _supplier.getID(), PARAMETER_PRODUCT_ID);
         if (_supplier != null) {
             trip.setSelectedElement(Integer.toString(_supplier.getID()));
+        } else if (iwc.isParameterSet(PARAMETER_SUPPLIER_ID_STATIC)){
+          trip.setSelectedElement(iwc.getParameter(PARAMETER_SUPPLIER_ID_STATIC));
         }
         trip.addMenuElementFirst("-1", _iwrb.getLocalizedString("travel.all_suppliers","All suppliers"));
 
@@ -191,9 +192,9 @@ public class AdministratorReports extends Reports {
 
 
     if (_report.useTwoDates()) {
-      table.add(_report.getReport(_suppliers, iwc, _stamp, _toStamp));
+      table.add(_report.getAdministratorReport(_suppliers, iwc, _stamp, _toStamp));
     }else {
-      table.add(_report.getReport(_suppliers, iwc, _stamp));
+      table.add(_report.getAdministratorReport(_suppliers, iwc, _stamp));
     }
 
     return table;

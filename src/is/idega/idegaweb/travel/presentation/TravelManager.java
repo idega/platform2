@@ -1,25 +1,19 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.data.IDOLookup;
+import java.rmi.*;
+import java.sql.*;
 import java.util.*;
-import com.idega.core.user.business.UserBusiness;
-import is.idega.idegaweb.travel.business.*;
-import java.rmi.RemoteException;
-import com.idega.idegaweb.*;
-import com.idega.business.IBOLookup;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import javax.servlet.jsp.JspPage;
-import is.idega.idegaweb.travel.presentation.*;
-import com.idega.block.trade.stockroom.data.*;
+
 import com.idega.block.trade.stockroom.business.*;
-import java.sql.SQLException;
-import com.idega.block.login.presentation.Login;
-import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.business.*;
 import com.idega.core.accesscontrol.data.*;
-import com.idega.block.login.business.*;
-import com.idega.core.user.data.User;
+import com.idega.core.user.data.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.service.business.*;
 
 public class TravelManager extends Block {
@@ -391,6 +385,8 @@ public class TravelManager extends Block {
 
     /**
      * @deprecated
+     * @param _iwrb IWResourceBundle
+     * @return default bundle image
      */
     public static Image getDefaultImage(IWResourceBundle _iwrb) {
       return _iwrb.getImage("images/picture.gif");

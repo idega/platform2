@@ -18,8 +18,8 @@ import com.idega.presentation.IWContext;
 public interface AdministratorReport {
 
   public boolean useTwoDates();
-  public PresentationObject getReport(List suppliers, IWContext iwc, IWTimestamp stamp)throws RemoteException, FinderException;
-  public PresentationObject getReport(List suppliers, IWContext iwc, IWTimestamp fromStamp, IWTimestamp toStamp)throws RemoteException, FinderException;
+  public PresentationObject getAdministratorReport(List suppliers, IWContext iwc, IWTimestamp stamp)throws RemoteException, FinderException;
+  public PresentationObject getAdministratorReport(List suppliers, IWContext iwc, IWTimestamp fromStamp, IWTimestamp toStamp)throws RemoteException, FinderException;
   public String getReportName();
   public String getReportDescription();
 }

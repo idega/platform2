@@ -1,7 +1,5 @@
 package is.idega.idegaweb.travel.data;
 
-import com.idega.block.trade.stockroom.data.Reseller;
-import com.idega.data.IDORelationshipException;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import javax.ejb.*;
 
@@ -26,12 +24,14 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public int getPaymentTypeId() throws java.rmi.RemoteException;
  public java.lang.String getPostalCode() throws java.rmi.RemoteException;
  public java.lang.String getReferenceNumber() throws java.rmi.RemoteException;
+ public com.idega.block.trade.stockroom.data.Reseller getReseller()throws javax.ejb.FinderException,com.idega.data.IDORelationshipException,java.rmi.RemoteException, java.rmi.RemoteException;
  public is.idega.idegaweb.travel.data.Service getService() throws java.rmi.RemoteException;
  public int getServiceID() throws java.rmi.RemoteException;
  public java.lang.String getTelephoneNumber() throws java.rmi.RemoteException;
  public int getTotalCount() throws java.rmi.RemoteException;
  public java.util.Collection getTravelAddresses()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public int getUserId() throws java.rmi.RemoteException;
+ public void initializeAttributes() throws java.rmi.RemoteException;
  public void removeAllTravelAddresses()throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void removeFromAllResellers()throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void removeFromReseller(com.idega.block.trade.stockroom.data.Reseller p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
@@ -44,7 +44,6 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public void setCountry(java.lang.String p0) throws java.rmi.RemoteException;
  public void setCreditcardAuthorizationNumber(java.lang.String p0) throws java.rmi.RemoteException;
  public void setDateOfBooking(java.sql.Timestamp p0) throws java.rmi.RemoteException;
- public void setDefaultValues() throws java.rmi.RemoteException;
  public void setEmail(java.lang.String p0) throws java.rmi.RemoteException;
  public void setIsValid(boolean p0) throws java.rmi.RemoteException;
  public void setName(java.lang.String p0) throws java.rmi.RemoteException;
@@ -57,6 +56,5 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public void setTelephoneNumber(java.lang.String p0) throws java.rmi.RemoteException;
  public void setTotalCount(int p0) throws java.rmi.RemoteException;
  public void setUserId(int p0) throws java.rmi.RemoteException;
- public Reseller getReseller() throws java.rmi.RemoteException, IDORelationshipException, FinderException;
  public void store() throws java.rmi.RemoteException;
 }

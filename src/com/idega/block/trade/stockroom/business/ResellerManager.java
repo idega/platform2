@@ -513,13 +513,15 @@ public class ResellerManager {
 
     GenericGroup group;
     String type;
-    for (int i = 0; i < groups.size(); i++) {
-      group = (GenericGroup) groups.get(i);
-      type = group.getGroupType();
-      if (type != null && type.equals(com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.GROUP_TYPE_VALUE)) {
-        isReseller = true;
-        number= i;
-        break;
+    if (groups != null) {
+      for (int i = 0; i < groups.size(); i++) {
+        group = (GenericGroup) groups.get(i);
+        type = group.getGroupType();
+        if (type != null && type.equals(com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean.GROUP_TYPE_VALUE)) {
+          isReseller = true;
+          number= i;
+          break;
+        }
       }
     }
 

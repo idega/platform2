@@ -252,7 +252,15 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   public  int getNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException{
-    return getGeneralBookingHome().getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, new int[] {});
+    return getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, false);//, new int[] {});
+  }
+
+  public  int getNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, boolean orderByDateOfBooking) throws RemoteException{
+    if (orderByDateOfBooking) {
+      return getGeneralBookingHome().getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, new int[] {});
+    } else {
+      return getGeneralBookingHome().getNumberOfBookingsByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, null);
+    }
   }
 
   public  Booking[] getBookings(List products, IWTimestamp stamp) throws RemoteException, FinderException{
@@ -269,6 +277,10 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   public  Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp fromStamp, IWTimestamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException {
+    return getBookings(products, bookingTypeIds, fromStamp, toStamp, columnName, columnValue, false);
+  }
+
+  public  Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp fromStamp, IWTimestamp toStamp, String columnName, String columnValue, boolean searchByDateOfBooking) throws RemoteException, FinderException {
     if (products != null) {
       int[] ids = new int[products.size()];
       Product prod;
@@ -276,7 +288,11 @@ public class BookerBean extends IBOServiceBean implements Booker{
         prod = (Product) products.get(i);
         ids[i] = prod.getID();
       }
-      return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null));
+      if (searchByDateOfBooking) {
+        return this.collectionToBookingsArray(getGeneralBookingHome().findBookingsByDateOfBooking(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null));
+      }else {
+        return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null));
+      }
     }
     return new Booking[]{};
   }

@@ -1,31 +1,24 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.data.*;
-import javax.ejb.FinderException;
-import java.rmi.RemoteException;
+import java.rmi.*;
+import java.sql.*;
 import java.util.*;
-import is.idega.idegaweb.travel.business.*;
-import java.util.Vector;
-import com.idega.presentation.Block;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.calendar.presentation.SmallCalendar;
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import com.idega.util.text.TextSoap;
-import com.idega.core.accesscontrol.business.AccessControl;
-import java.sql.SQLException;
-import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.stockroom.business.*;
-import java.text.DecimalFormat;
-import java.util.List;
 
-import is.idega.idegaweb.travel.data.*;
+import javax.ejb.*;
+
+import com.idega.block.trade.data.*;
+import com.idega.block.trade.stockroom.business.*;
+import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.data.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.util.*;
+import com.idega.util.text.*;
+import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.data.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -53,19 +46,15 @@ public class ServiceOverview extends TravelManager {
   public ServiceOverview() {
   }
 
-  public ServiceOverview(IWContext iwc)throws Exception {
-    super.main(iwc);
-    init(iwc);
-  }
+//  public ServiceOverview(IWContext iwc)throws Exception {
+//    super.main(iwc);
+//    init(iwc);
+//  }
 
   public void add(PresentationObject mo) {
     super.add(mo);
   }
 
-
-  public void repps() {
-
-  }
 
   public void main(IWContext iwc) throws Exception{
       super.main(iwc);
@@ -84,10 +73,12 @@ public class ServiceOverview extends TravelManager {
               displayForm(iwc);
           }
 
+
           super.addBreak();
       }else {
         add(super.getLoggedOffTable(iwc));
       }
+
   }
 
   private void init(IWContext iwc) throws RemoteException {
@@ -101,7 +92,7 @@ public class ServiceOverview extends TravelManager {
       dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,iwc).substring(0,3);
       dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,iwc).substring(0,3);
   }
-
+/*
   public Table getTopTable(IWContext iwc) {
       Table topTable = new Table(4,2);
         topTable.setBorder(0);
@@ -141,7 +132,7 @@ public class ServiceOverview extends TravelManager {
 
       return topTable;
   }
-
+*/
   public void deleteServices(IWContext iwc) throws RemoteException, FinderException, SQLException{
     String[] serviceIds = (String[]) iwc.getParameterValues(deleteParameter);
     Service serviceToDelete;
@@ -156,7 +147,7 @@ public class ServiceOverview extends TravelManager {
   public void displayForm(IWContext iwc) throws RemoteException, IDOFinderException, SQLException{
       add(Text.getBreak());
       Form form = new Form();
-      Table topTable = this.getTopTable(iwc);
+//      Table topTable = this.getTopTable(iwc);
         form.add(Text.BREAK);
       Table table = new Table();
         table.setBorder(0);
@@ -244,29 +235,24 @@ public class ServiceOverview extends TravelManager {
           pCatIds = coll.iterator();
           while (pCatIds.hasNext()) {
             pCat = (ProductCategory) pCatIds.next();
-//              pCat = pCatHome.findByPrimaryKeyLegacy( ( (Integer) pCatIds.next() ).intValue() );
             System.out.println("prodCat = "+pCat.getCategoryType());
           }
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }
 
+        is.idega.idegaweb.travel.service.presentation.ServiceOverview so;
+
         for (int i = iStartNumber; i < iStopNumber; i++) {
           try {
             product = (Product) products.get(i);
-            contentTable = getProductInfoTable(iwc,iwrb,product);
-
-
-            /*ServiceViewer sv = new ServiceViewer();
-              sv.setService(((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID()));
-            table.add(sv);*/
-
+            so = super.getServiceHandler(iwc).getServiceOverview(iwc, product);
+            contentTable = so.getServiceInfoTable(iwc, product);
+//            contentTable = getServiceInfoTable(iwc,iwrb,product);
 
             ++row;
             table.mergeCells(1,row,5,row);
             table.add(contentTable,1,row);
-
-
 
             ++row;
             table.mergeCells(1,row,5,row);
@@ -282,8 +268,6 @@ public class ServiceOverview extends TravelManager {
 
             book = LinkGenerator.getLink(iwc, product.getID(), Booking.class);
               book.setImage(iwrb.getImage("buttons/book.gif"));
-            /* bookClone.clone();
-              book.addParameter(Booking.parameterProductId,product.getID());*/
 
             edit = (Link) editClone.clone();
               edit.addParameter(ServiceDesigner.parameterUpdateServiceId, product.getID());
@@ -318,14 +302,14 @@ public class ServiceOverview extends TravelManager {
             snf.printStackTrace(System.err);
           }catch (TimeframeNotFoundException tnf) {
             tnf.printStackTrace(System.err);
+          }catch (FinderException fe) {
+            fe.printStackTrace(System.err);
           }
         }
-
 
         if (productsSize < 1) ++row;
         table.add(pagesTable,1, row);
         table.setAlignment(1,row,"center");
-
       }
 
       add(form);
@@ -379,7 +363,7 @@ public class ServiceOverview extends TravelManager {
       text.setText(content);
     return text;
   }
-
+/*
   // BUSINESS
   public IWTimestamp getFromIdegaTimestamp(IWContext iwc) {
       IWTimestamp stamp = null;
@@ -407,15 +391,13 @@ public class ServiceOverview extends TravelManager {
       return stamp;
   }
 
-
-
-  public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
+*/
+/*
+  public Table getServiceInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
         Table contentTable;
         int contRow = 0;
         contentTable = new Table();
 
-
-//      DecimalFormat df = new DecimalFormat("0.00");
       int[] dayOfWeek = new int[] {};
 
         Text nameText = (Text) theText.clone();
@@ -461,7 +443,6 @@ public class ServiceOverview extends TravelManager {
         Text prodName;
         Text timeframeTxt;
         Text depFrom;
-//        Text depTime;
         Text arrFrom;
         Text arrTime;
         Text actDays;
@@ -477,7 +458,6 @@ public class ServiceOverview extends TravelManager {
 
 
         service = getTravelStockroomBusiness(iwc).getService(product);
-//        timeframe = TravelStockroomBusiness.getTimeframe(product);
         timeframes = product.getTimeframes();
         try {
           depAddresses = product.getDepartureAddresses(true);
@@ -501,9 +481,6 @@ public class ServiceOverview extends TravelManager {
         if (service.getDepartureTime() != null) {
           depTimeStamp = new IWTimestamp(service.getDepartureTime());
         }
-        //depTime = (Text) theBoldText.clone();
-            //depTime.setFontColor(super.BLACK);
-            //depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
         arrFrom = (Text) theBoldText.clone();
             arrFrom.setFontColor(super.BLACK);
@@ -562,25 +539,19 @@ public class ServiceOverview extends TravelManager {
           depFrom = (Text) theBoldText.clone();
           depFrom.setFontColor(super.BLACK);
           depFrom.setText(depAddress.getName());
-/*
-          depTimeStamp = new idegaTimestamp(depAddresses[l].getTime());
-          depTime = (Text) theBoldText.clone();
-          depTime.setFontColor(super.BLACK);
-          depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
-*/
+
           contentTable.setVerticalAlignment(2,contRow,"top");
           contentTable.setVerticalAlignment(3,contRow,"top");
           contentTable.setVerticalAlignment(4,contRow,"top");
           contentTable.setVerticalAlignment(5,contRow,"top");
           contentTable.add(departureFromText,2,contRow);
-          //contentTable.add(departureTimeText,4,contRow);
+
           contentTable.setAlignment(2,contRow,"right");
           contentTable.setAlignment(3,contRow,"left");
           contentTable.setAlignment(4,contRow,"right");
           contentTable.setAlignment(5,contRow,"left");
           contentTable.add(depFrom,3,contRow);
-//          contentTable.add(depTime,4,contRow);
-          //contentTable.add(depTime,5,contRow);
+
           contentTable.setRowColor(contRow, super.GRAY);
           ++contRow;
           for (int k = 0; k < timeframes.length; k++) {
@@ -612,10 +583,8 @@ public class ServiceOverview extends TravelManager {
               contentTable.setAlignment(3,contRow,"left");
               contentTable.add(timeframeTxt,3,contRow);
               contentTable.setRowColor(contRow, super.GRAY);
-            }else if (prices.length == 0) {
-//              contentTable.add("NO PRICES : ", 2, contRow);
-//              ++contRow;
             }
+
             for (int j = 0; j < prices.length; j++) {
               currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
               nameOfCategory = (Text) theText.clone();
@@ -653,7 +622,7 @@ public class ServiceOverview extends TravelManager {
 
           }
         }
-//        ++contRow;
+
         contentTable.setVerticalAlignment(2,contRow,"top");
         contentTable.setVerticalAlignment(3,contRow,"top");
         contentTable.setVerticalAlignment(4,contRow,"top");
@@ -681,6 +650,6 @@ public class ServiceOverview extends TravelManager {
         contentTable.setColor(super.WHITE);
 
     return contentTable;
-  }
+  }*/
 
 }

@@ -658,7 +658,7 @@ public class BookingOverview extends TravelManager {
           }
 
           dateTextBold.setText(currentStamp.getLocaleDate(iwc));
-          nameTextBold.setText(service.getName());
+          nameTextBold.setText(service.getName(super.getLocaleId()));
           countTextBold.setText(Integer.toString(seats));
           availableTextBold.setText(Integer.toString(available));
           assignedTextBold.setText(Integer.toString(assigned));

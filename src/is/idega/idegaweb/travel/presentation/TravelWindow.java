@@ -1,17 +1,16 @@
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.business.*;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
-import com.idega.business.IBOLookup;
-import java.rmi.RemoteException;
-import com.idega.idegaweb.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import is.idega.idegaweb.travel.presentation.TravelManager;
+import java.rmi.*;
 
-import com.idega.core.user.data.User;
-import com.idega.block.login.business.LoginBusiness;
+import com.idega.block.login.business.*;
+import com.idega.block.trade.stockroom.business.*;
+import com.idega.business.*;
+import com.idega.core.user.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import is.idega.idegaweb.travel.business.*;
 
 /**
  * Title:        idegaWeb TravelBooking
