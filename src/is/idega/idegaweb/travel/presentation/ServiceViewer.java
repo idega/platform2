@@ -135,7 +135,7 @@ public class ServiceViewer extends Window {
     try {
       int[] dagur = ServiceDay.getDaysOfWeek(serv.getID());
 
-      if( (dagur.length == 7) && (!listView) ){
+      if( (dagur.length == 7) && (listView) ){
         depart.append("Every day at ");/**localize**/
       }
       else{
