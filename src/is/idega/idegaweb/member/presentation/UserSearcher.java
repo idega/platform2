@@ -116,6 +116,9 @@ public class UserSearcher extends Block {
 	private boolean showMultipleResetButton = false;
 	/** Flag for hiding buttons */
 	private boolean showButtons = true;
+	
+	/** Flag for forgiving ssn search */
+	private boolean useFlexiblePersonalID = true;
 	/** unique identifier */
 	private String uniqueIdentifier = "unique";
 	/** flag for showing result overflow */
@@ -266,6 +269,16 @@ public class UserSearcher extends Block {
 			|| (first != null && first.length() > 0)
 			|| (middle != null && middle.length() > 0)
 			|| (last != null && last.length() > 0)){
+			// forgiving search criteria
+			if(useFlexiblePersonalID){
+				StringBuffer sb = new StringBuffer();
+				for (int i=0; i<pid.length(); i++) {
+					if (Character.isDigit(pid.charAt(i)))
+						sb.append(pid.charAt(i));
+				}
+				//sb.insert(0,"%");
+				pid = sb.toString();
+			}
 			usersFound =home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true, false);
 		}
 		else{
@@ -948,5 +961,11 @@ public boolean getToFormSubmit(){
 	return setToFormSubmit;
 }
 
+public void setUseFlexiblePersonalID(boolean flag){
+	useFlexiblePersonalID = flag;
+}
 
+public boolean isUseFlexiblePersonalID(){
+	return useFlexiblePersonalID;
+}
 }
