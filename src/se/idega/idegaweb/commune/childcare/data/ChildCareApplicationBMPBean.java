@@ -1011,7 +1011,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		}
 		Date today = new Date(System.currentTimeMillis());
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append("c." + CHILD_ID + " in ")
+		.appendAnd().append(CHILD_ID + " in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1038,7 +1038,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		}
 		Date today = new Date(System.currentTimeMillis());
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append("c." + CHILD_ID + " not in ")
+		.appendAnd().append(CHILD_ID + " not in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1090,7 +1090,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		}
 		Date today = new Date(System.currentTimeMillis());
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append("c." + CHILD_ID + " in ")
+		.appendAnd().append(CHILD_ID + " in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1117,7 +1117,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		}
 		Date today = new Date(System.currentTimeMillis());
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
-		.appendAnd().append("c." + CHILD_ID + " not in ")
+		.appendAnd().append(CHILD_ID + " not in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1189,7 +1189,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		Date today = new Date(System.currentTimeMillis());
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
 		sql.appendAndEqualsQuoted(APPLICATION_STATUS, status)
-		.appendAnd().append("c." + CHILD_ID + " not in ")
+		.appendAnd().append(CHILD_ID + " not in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
@@ -1216,7 +1216,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		Date today = new Date(System.currentTimeMillis());
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
 		sql.appendAndEqualsQuoted(APPLICATION_STATUS, status)
-		.appendAnd().append("c." + CHILD_ID + "in ")
+		.appendAnd().append(CHILD_ID + "in ")
 		.appendLeftParenthesis()
 		.appendSelect().append("c.child_id").appendFrom()
 		.append("comm_childcare_archive a,")
