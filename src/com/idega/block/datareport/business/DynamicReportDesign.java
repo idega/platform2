@@ -396,7 +396,8 @@ public class DynamicReportDesign {
 		if(_tempFileCounter == _TEMP_FILE_COUNTER_MAX){
 		 _tempFileCounter=1;
 		}
-		return _tempFileCounter++;
+		//return _tempFileCounter++;
+		return _tempFileCounter;  //TODO add 1,  TEP++;
 	}
 	
 	private int getTempFileNumber(){

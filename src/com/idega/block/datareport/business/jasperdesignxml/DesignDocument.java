@@ -407,37 +407,45 @@ public class DesignDocument extends XMLDocument {
 	public File writeToFile(String path)throws IOException{
 		BufferedOutputStream outputStream = null;
 		File auxiliaryFile = null;
-		try {
-			auxiliaryFile = new File(path);
-//			boolean dirsCreated = auxiliaryFile.mkdirs();
-//			System.out.println("Directories were created: "+dirsCreated);
-			outputStream = new BufferedOutputStream(new FileOutputStream(auxiliaryFile));
-		}
-		catch (FileNotFoundException ex)  {
-			System.err.println("[XMLData] problem creating file. Message is: "+ex.getMessage());
-			ex.printStackTrace(System.err);
-			throw new IOException("xml file could not be stored");
-		}
-		// now we have an output stream of the auxiliary file
-		// write to the xml file
-		XMLOutput xmlOutput = new XMLOutput("  ", true);
-		xmlOutput.setLineSeparator(System.getProperty("line.separator"));
-		xmlOutput.setTextNormalize(true);
-		//xmlOutput.setEncoding("ISO8859_1");
-		//xmlOutput.setEncoding("iso-8859_1");
-		xmlOutput.setEncoding("UTF-8");
-
-		try {
-			xmlOutput.output(this, outputStream);
-		}
-		catch (IOException ex) {
-			System.err.println("[XMLData] problem writing to file. Message is: "+ex.getMessage());
-			ex.printStackTrace(System.err);
+		auxiliaryFile = new File(path);
+		
+		//	TODO remove check  TMP
+		if(auxiliaryFile != null && !auxiliaryFile.exists()){
+			try {
+	//			boolean dirsCreated = auxiliaryFile.mkdirs();
+	//			System.out.println("Directories were created: "+dirsCreated);
+				outputStream = new BufferedOutputStream(new FileOutputStream(auxiliaryFile));
+			}
+			catch (FileNotFoundException ex)  {
+				System.err.println("[XMLData] problem creating file. Message is: "+ex.getMessage());
+				ex.printStackTrace(System.err);
+				throw new IOException("xml file could not be stored");
+			}
+		
+		
+		
+			// now we have an output stream of the auxiliary file
+			// write to the xml file
+			XMLOutput xmlOutput = new XMLOutput("  ", true);
+			xmlOutput.setLineSeparator(System.getProperty("line.separator"));
+			xmlOutput.setTextNormalize(true);
+			//xmlOutput.setEncoding("ISO8859_1");
+			//xmlOutput.setEncoding("iso-8859-1");
+			//xmlOutput.setEncoding("UTF-8");
+	
+			try {
+				xmlOutput.output(this, outputStream);
+			}
+			catch (IOException ex) {
+				System.err.println("[XMLData] problem writing to file. Message is: "+ex.getMessage());
+				ex.printStackTrace(System.err);
+				outputStream.close();
+				throw new IOException("xml file could not be stored");
+			}
 			outputStream.close();
-			throw new IOException("xml file could not be stored");
+			// writing finished
+		
 		}
-		outputStream.close();
-		// writing finished
 				
 		return auxiliaryFile;
 
@@ -474,6 +482,8 @@ public class DesignDocument extends XMLDocument {
 	 * @see InputStream getInputstream(File file)
 	 */
 	public InputStream getInputstream(String tmpPath) throws IOException{
+		
+		
 		return getInputstream(writeToFile(tmpPath));
 	}
 	
