@@ -68,8 +68,8 @@ public class RefundReport extends TravelManager implements AdministratorReport {
     types.addMenuElement(CreditCardBusinessBean.CLIENT_TYPE_KORTATHJONUSTAN, "KORTATHJONUSTAN");
     types.setSelectedElement(CC_CLIENT_TYPE);
     types.setToSubmit();
-    table.add(types, 5, row);
-    table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_RIGHT);
+    table.add(types, 6, row);
+    table.setAlignment(6, row, Table.HORIZONTAL_ALIGN_RIGHT);
     table.setRowColor(row, super.backgroundColor);
     
     ++row;
@@ -112,7 +112,9 @@ public class RefundReport extends TravelManager implements AdministratorReport {
 	  	    table.add(getText(booking.getService().getProduct().getSupplier().getName()), 2, row);
 	  	    table.add(getText(parent.getBrandName()), 4, row);
 	  	    table.add(getText(TextSoap.decimalFormat(parentAmount, 2)+" "+entry.getCurrency()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+parentStamp.getLocaleDate(iwc)), 5, row);
-	  	    table.add(getText(booking.getCode()), 6, row);
+	  	    if (booking.getCode() != null) {
+	  	    		table.add(getText(booking.getCode()), 6, row);
+	  	    }
 	  		}
 
     }
