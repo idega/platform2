@@ -9,7 +9,10 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.contract.data.Contract;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassBMPBean;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberBMPBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
@@ -416,6 +419,35 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindByDateRangeAndProviderWhereStatusActive(Date startDate, Date endDate,School school) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append(" distinct a.COMM_CHILDCARE_ARCHIVE_ID from "+getEntityName()).append(" a, ")
+		.append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c, ");
+		sql.append(SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER).append(" scm, ");
+		sql.append(SchoolClassBMPBean.SCHOOLCLASS).append(" sc ");
+		sql.appendWhereEquals("a."+COLUMN_APPLICATION_ID, "c.COMM_CHILDCARE_ID");
+		sql.appendAnd();
+		sql.appendEquals("a."+COLUMN_SCH_CLASS_MEMBER,"scm."+SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID);
+		sql.appendAnd();
+		sql.appendEquals("sc."+SchoolClassBMPBean.SCHOOLCLASSID,"scm."+SchoolClassMemberBMPBean.SCHOOLCLASS);
+		sql.appendAnd();
+		sql.appendEquals("sc."+SchoolClassBMPBean.SCHOOL,school.getPrimaryKey().toString());
+		sql.appendAnd().appendLeftParenthesis();
+		sql.appendEqualsQuoted("c.APPLICATION_STATUS","F");
+		sql.appendOr().appendEqualsQuoted("c.APPLICATION_STATUS","V");
+		sql.appendRightParenthesis();
+		sql.appendAnd().append("a."+COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
+		sql.appendAnd().appendLeftParenthesis().append("a."+COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(startDate);
+		sql.appendOr().append("a."+COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+
+		//Temp Patch for Lotta until they have fixed the problem
+//		sql.appendAnd().append("a."+COLUMN_CARE_TIME).appendGreaterThanSign().append("0");
+
+		System.out.println("SQL: "+sql);
+		return idoFindPKsByQuery(sql);
+	}	
+	
+	
 	public Collection ejbFindByDateRangeWhereStatusActive(Date startDate, Date endDate) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelect().append(" distinct a.COMM_CHILDCARE_ARCHIVE_ID from "+getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");

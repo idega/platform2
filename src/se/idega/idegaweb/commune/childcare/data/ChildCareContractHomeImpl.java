@@ -41,9 +41,9 @@ public java.util.Collection findByChild(int p0)throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-	public java.util.Collection findByChildAndDateRange (com.idega.user.data.User child, java.sql.Date startDate, java.sql.Date endDate) throws javax.ejb.FinderException {
+public java.util.Collection findByChildAndDateRange(com.idega.user.data.User p0,java.sql.Date p1,java.sql.Date p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByChildAndDateRange (child, startDate, endDate);
+	java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByChildAndDateRange(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -69,6 +69,13 @@ public java.util.Collection findByDateRange(java.sql.Date p0,java.sql.Date p1)th
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByDateRangeAndProviderWhereStatusActive(java.sql.Date p0,java.sql.Date p1,com.idega.block.school.data.School p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByDateRangeAndProviderWhereStatusActive(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findByDateRangeWhereStatusActive(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByDateRangeWhereStatusActive(p0,p1);
@@ -79,6 +86,13 @@ public java.util.Collection findByDateRangeWhereStatusActive(java.sql.Date p0,ja
 public ChildCareContract findBySchoolClassMember(com.idega.block.school.data.SchoolClassMember p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareContractBMPBean)entity).ejbFindBySchoolClassMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public ChildCareContract findContractByChildAndPeriod(com.idega.user.data.User p0,com.idega.util.TimePeriod p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareContractBMPBean)entity).ejbFindContractByChildAndPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
@@ -100,13 +114,6 @@ public java.util.Collection findFutureContractsByApplication(int p0,java.sql.Dat
 public ChildCareContract findLatestContractByApplication(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareContractBMPBean)entity).ejbFindLatestContractByApplication(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
- public ChildCareContract findContractByChildAndPeriod(com.idega.user.data.User child, com.idega.util.TimePeriod period)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ChildCareContractBMPBean)entity).ejbFindContractByChildAndPeriod(child, period);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
