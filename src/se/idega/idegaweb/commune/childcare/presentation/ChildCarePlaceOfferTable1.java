@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.SortedSet;
 
-
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.presentation.IWContext;
@@ -17,7 +16,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 
 class ChildCarePlaceOfferTable1 extends Table {
-	
 
 	private static Text HEADER_YOUR_CHOICE;
 	private static Text HEADER_OFFER;
@@ -28,7 +26,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	private static Text HEADER_NO;
 	private static String CONFIRM_DELETE;
 
-	private static String GRANTED;
+	private static String GRANTED, VALID_UNTIL;
 
 	private final static String[] SUBMIT_ALERT_1 =
 		new String[] {
@@ -62,18 +60,21 @@ class ChildCarePlaceOfferTable1 extends Table {
 					"ccatp1_yes_but",
 					"No, but don't delete from queue");
 			HEADER_NO = page.getLocalHeader("ccatp1_no", "No");
-			
-			CONFIRM_DELETE = page
-			   .localize(
-				   "ccatp1_confirm_delete",
-				   "Really delete?")
-			   .toString();		
+
+			CONFIRM_DELETE =
+				page
+					.localize("ccatp1_confirm_delete", "Really delete?")
+					.toString();
 
 			GRANTED =
 				page
 					.localize(
 						"ccatp1_granted",
-						"You have received an offer from ")
+						"You have received an offer from")
+					.toString();
+			VALID_UNTIL =
+				page
+					.localize("ccatp1_valid_until", "This offer is valid until")
 					.toString();
 
 			_initializeStatics = true;
@@ -86,51 +87,56 @@ class ChildCarePlaceOfferTable1 extends Table {
 		SortedSet applications,
 		boolean hasOffer)
 		throws RemoteException {
-			
-//		super(9, applications.size() + 1);
+
+		//		super(9, applications.size() + 1);
 		initConstants(page);
 
 		initTable(hasOffer);
 
-//		System.out.println("Applications: " + applications);
+		//		System.out.println("Applications: " + applications);
 		Iterator i = applications.iterator();
 		int row = 2;
 		boolean offerPresented = false;
 		//To avoid more than the first offer to be presented with accept/reject possibilities
 		StringBuffer validateDateScript = new StringBuffer("false ");
-		
+
 		boolean choiceOneAccepted = false;
 		while (i.hasNext()) {
 			ChildCareApplication app =
 				((ComparableApp) i.next()).getApplication();
-				
-			if (app.getApplicationStatus() == _page.getChildCareBusiness(iwc).getStatusParentsAccept()){
+
+			if (app.getApplicationStatus()
+				== _page.getChildCareBusiness(iwc).getStatusParentsAccept()) {
 				continue;
 			}
-
-
 
 			//Only first offer should be presented with possibility to accept / reject
 			boolean isOffer =
 				app.getStatus().equalsIgnoreCase(
 					ChildCareCustomerApplicationTable.STATUS_BVJD);
-			
+
 			//When simultaneous offers for choice 1 and 2 and choice 1 is accepted, the user shall, for offer 2,
 			//be presented with possibilities only to reject with new date or reject, not accept.
-			boolean disableAccept = false;		
-			if (app.isAcceptedByParent() && app.getChoiceNumber() == 1){
+			boolean disableAccept = false;
+			if (app.isAcceptedByParent() && app.getChoiceNumber() == 1) {
 				choiceOneAccepted = true;
 			}
-			if (app.getChoiceNumber() == 2 && isOffer && choiceOneAccepted){
+			if (app.getChoiceNumber() == 2 && isOffer && choiceOneAccepted) {
 				disableAccept = true;
 			}
 
-
 			//Adding row to the table
-			validateDateScript.append(" || ");			
+			validateDateScript.append(" || ");
 			validateDateScript.append(
-				addToTable(iwc, row,	app, hasOffer, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null));
-
+				addToTable(
+					row,
+					app,
+					hasOffer,
+					isOffer,
+					offerPresented,
+					disableAccept,
+					iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())
+						!= null));
 
 			if (isOffer) {
 				offerPresented = true;
@@ -143,12 +149,13 @@ class ChildCarePlaceOfferTable1 extends Table {
 		//unless the user has selected the actual radio button.		
 
 		Script script = new Script("javascript");
-		
-		script.setFunction("validateDates", 
+
+		script.setFunction(
+			"validateDates",
 			"function validateDates() { if("
-			+ validateDateScript
-			+ ") { alert('Please select a valid date'); return false; } else {return true;}}");
-		
+				+ validateDateScript
+				+ ") { alert('Please select a valid date'); return false; } else {return true;}}");
+
 		_onSubmitHandler =
 			"if (!validateDates()) return false; else return confirm('"
 				+ _page.localize(SUBMIT_ALERT_1)
@@ -169,42 +176,70 @@ class ChildCarePlaceOfferTable1 extends Table {
 	 * @param status
 	 * @param prognosis
 	 */
-	private String addToTable(IWContext iwc, int row, ChildCareApplication app, boolean hasOffer, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean disableReqBtn) throws RemoteException{
-		
+	private String addToTable(
+		int row,
+		ChildCareApplication app,
+		boolean hasOffer,
+		boolean isOffer,
+		boolean offerPresented,
+		boolean disableAccept,
+		boolean disableReqBtn)
+		throws RemoteException {
+
 		int providerId = app.getProviderId();
 		int ownerId = app.getOwner().getID();
-		String name = app.getChoiceNumber()	+ ": " + app.getProvider().getName() + _page.getDebugInfo(app);
-		
-		String offerText = isOffer ? GRANTED + app.getFromDate() : "";
+		String name =
+			app.getChoiceNumber()
+				+ ": "
+				+ app.getProvider().getName()
+				+ _page.getDebugInfo(app);
+
+		String validUntil =
+			app.getOfferValidUntil() != null
+				? VALID_UNTIL + " " + app.getOfferValidUntil() + "."
+				: "";
+
+		String offerText =
+			isOffer
+				? app.getQueueDate()
+					+ ": "
+					+ GRANTED
+					+ " "
+					+ app.getFromDate()
+					+ ". "
+					+ validUntil
+				: "";
+
 		boolean presentOffer = isOffer && !offerPresented;
-		boolean disable = offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected();
-			
+		boolean disable =
+			offerPresented
+				|| app.getApplicationStatus()
+					== _page.childCarebusiness.getStatusRejected();
+
 		boolean isAccepted = app.isAcceptedByParent();
 		boolean isCancelled = app.isCancelledOrRejectedByParent();
-				
-//			
-//			app.getProviderId(),
-//			app.getOwner().getID(),
-//			app.getChoiceNumber()
-//				+ ": "
-//				+ app.getProvider().getName()
-//				+ _page.getDebugInfo(app),
-//			offer ? GRANTED + app.getFromDate() : "",
-//			app.getPrognosis() != null ? app.getPrognosis() : "",
-//			offer && !offerPresented,
-//			offerPresented
-//				|| app.getApplicationStatus()
-//					== _page.childCarebusiness.getStatusRejected(),
-//			iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null,
-//			app.isAcceptedByParent(),
-//			app.isCancelledOrRejectedByParent(),
 
-			
-			
+		//			
+		//			app.getProviderId(),
+		//			app.getOwner().getID(),
+		//			app.getChoiceNumber()
+		//				+ ": "
+		//				+ app.getProvider().getName()
+		//				+ _page.getDebugInfo(app),
+		//			offer ? GRANTED + app.getFromDate() : "",
+		//			app.getPrognosis() != null ? app.getPrognosis() : "",
+		//			offer && !offerPresented,
+		//			offerPresented
+		//				|| app.getApplicationStatus()
+		//					== _page.childCarebusiness.getStatusRejected(),
+		//			iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null,
+		//			app.isAcceptedByParent(),
+		//			app.isCancelledOrRejectedByParent(),
+
 		int index = row - 1;
 
 		//row=2 for first row because of heading is in row 1
-		add(new HiddenInput(CCConstants.APPID + index, ""+app.getNodeID()));
+		add(new HiddenInput(CCConstants.APPID + index, "" + app.getNodeID()));
 		String textColor = "black";
 		if (isCancelled) {
 			textColor = "red";
@@ -227,8 +262,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(t, 2, row);
 		}
 
-
-		if (!disableReqBtn) {
+		if (!disableReqBtn && !isCancelled) {
 			Link reqBtn = new Link(_page.localize(REQUEST_INFO));
 			reqBtn.addParameter(
 				CCConstants.ACTION,
@@ -239,7 +273,6 @@ class ChildCarePlaceOfferTable1 extends Table {
 			reqBtn.setAsImageButton(true);
 			add(reqBtn, 3, row);
 		}
-
 
 		//		System.out.println("DATE ID" + date.getID());		
 
@@ -273,9 +306,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 				rb2.setOnChange(CCConstants.NEW_DATE + index + ".disabled=false;");
 				rb3.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
 			*/
-			if (disableAccept){
+			if (disableAccept) {
 				rb1.setDisabled(true);
-				rb2.setSelected();				
+				rb2.setSelected();
 			} else {
 				rb1.setSelected();
 			}
@@ -286,9 +319,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 			date.setStyleAttribute("style", _page.getSmallTextFontStyle());
 
 			//			System.out.println("DATE ID" + date.getIDForDay());
-			
 
-//			b.setWindowToOpen(ChildCareProviderQueueWindow.class);
+			//			b.setWindowToOpen(ChildCareProviderQueueWindow.class);
 
 			add(rb1, 4, row);
 			add(new Text("<NOBR>"), 5, row);
@@ -296,7 +328,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(date, 5, row);
 			add(new Text("</NOBR>"), 5, row);
 			add(rb3, 6, row);
-			
+
 			validateDateScript =
 				"(document.getElementById('"
 					+ rb2.getID()
@@ -312,30 +344,30 @@ class ChildCarePlaceOfferTable1 extends Table {
 					+ "').value == 'YY'))";
 
 		}
-		
-		int col = hasOffer ? 7 : 4;
 
-					
-		Link popup = new Link();
-//		popup.setImage(new Image());
-//		popup.setAsImageButton(true);
-		popup.setImage(_page.getEditIcon("Edit"));
-		popup.setWindowToOpen(ChildCareProviderQueueWindow.class);
-		popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
-		popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
-		popup.addParameter(CCConstants.USER_ID, "" + ownerId);
-
-		add(popup, col++, row);
-		
-		Link delete = new Link();
-//		delete.setAsImageButton(true);
-		delete.setImage(_page.getDeleteIcon("Delete"));		
-//		popup.setImage(new Image());
-		delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
-		delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);
-		delete.addParameter(CCConstants.APPID, app.getNodeID());
-		add(delete, col++, row);
-				
+		if (!isCancelled)  {
+			int col = hasOffer ? 7 : 4;
+	
+			Link popup = new Link();
+			//		popup.setImage(new Image());
+			//		popup.setAsImageButton(true);
+			popup.setImage(_page.getEditIcon("View prognosis and provider queue"));
+			popup.setWindowToOpen(ChildCareProviderQueueWindow.class);
+			popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
+			popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
+			popup.addParameter(CCConstants.USER_ID, "" + ownerId);
+	
+			add(popup, col++, row);
+	
+			Link delete = new Link();
+			//		delete.setAsImageButton(true);
+			delete.setImage(_page.getDeleteIcon("Delete"));
+			//		popup.setImage(new Image());
+			delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
+			delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);
+			delete.addParameter(CCConstants.APPID, app.getNodeID());
+			add(delete, col++, row);
+		}
 
 		if (row % 2 == 0) {
 			setRowColor(row++, _page.getZebraColor1());
@@ -361,7 +393,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		//Heading
 		int col = 1;
-		
+
 		add(HEADER_YOUR_CHOICE, col++, 1);
 		add(HEADER_OFFER, col++, 1);
 		add(HEADER_QUEUE_INFO, col++, 1);
@@ -370,8 +402,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(HEADER_YES_BUT, col++, 1);
 			add(HEADER_NO, col++, 1);
 		}
-		
-		setRowColor(1, _page.getHeaderColor());		
+
+		setRowColor(1, _page.getHeaderColor());
 	}
 
 }

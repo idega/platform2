@@ -42,7 +42,7 @@ class ChildCarePlaceOfferTable2 extends Table {
 				page
 					.localize(
 						"ccatp2_granted",
-						"You have received an offer from ")
+						"You have accepted this offer, starting ")
 					.toString();
 
 			_initializeStatics = true;

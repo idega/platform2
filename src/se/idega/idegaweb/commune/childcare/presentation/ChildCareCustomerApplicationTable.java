@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.26 2003/05/09 11:26:43 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.27 2003/05/09 16:07:35 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -47,13 +47,13 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		new String[] {
 			"ccot_alert_2",
 			"Do you want to commit your choice? This can not be undone afterwards." };
-	private final static String[] NO_PLACEMENT = {"ccot_no_placement", "Detta barn har ingen placering"};
-	private final static String[] PLACED_AT = {"ccot_placed_at", "Placerad hos"};
-	private final static String[] PERSONAL_ID = {"ccot_personal_id", "Personal id"};
-	private final static String[] NAME = {"ccot_name", "Name"};	
-	
-	
-	
+	private final static String[] NO_PLACEMENT =
+		{ "ccot_no_placement", "Detta barn har ingen placering" };
+	private final static String[] PLACED_AT =
+		{ "ccot_placed_at", "Placerad hos" };
+	private final static String[] PERSONAL_ID =
+		{ "ccot_personal_id", "Personal id" };
+	private final static String[] NAME = { "ccot_name", "Name" };
 
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
@@ -76,6 +76,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
+
+		setCacheable(false);
 		childCarebusiness = getChildCareBusiness(iwc);
 
 		Form form = new Form();
@@ -91,7 +93,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					form.setOnSubmit(
 						createPagePhase1(iwc, layoutTbl, applications));
 				} else {
-					createPagePhase2(layoutTbl, applications);
+					form.setOnSubmit(createPagePhase2(layoutTbl, applications));
 				}
 				break;
 
@@ -122,19 +124,24 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					new Boolean(true));
 				createRequestInfoConfirmPage(layoutTbl);
 				break;
-		
-			case CCConstants.ACTION_DELETE:
+
+			case CCConstants.ACTION_DELETE :
 				application =
 					getChildCareBusiness(iwc).getApplicationByPrimaryKey(
-						iwc.getParameter(CCConstants.APPID));	
-//				application.setApplicationStatus(childCarebusiness.getStatusRejected());
-//				application.setStatus(STATUS_TYST);
-									
-				getChildCareBusiness(iwc).removeFromQueue(application, iwc.getCurrentUser());
-					
+						iwc.getParameter(CCConstants.APPID));
+				//				application.setApplicationStatus(childCarebusiness.getStatusRejected());
+				//				application.setStatus(STATUS_TYST);
+
+				addDeletedAppToSession(iwc, application);
+				getChildCareBusiness(iwc).removeFromQueue(
+					application,
+					iwc.getCurrentUser());
+				applications = findApplications(iwc);
+				form.setOnSubmit(
+					createPagePhase1(iwc, layoutTbl, applications));
+
 				break;
-				
-			
+
 			default :
 				iwc.removeSessionAttribute(DELETED_APPLICATIONS);
 				form.setOnSubmit(
@@ -153,7 +160,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 */
 	private int parseAction(IWContext iwc) {
 		if (iwc.isParameterSet(CCConstants.ACTION)) {
-			System.out.println("ACTION: " + iwc.getParameter(CCConstants.ACTION));
+			System.out.println(
+				"ACTION: " + iwc.getParameter(CCConstants.ACTION));
 			return Integer.parseInt(iwc.getParameter(CCConstants.ACTION));
 		} else if (
 			iwc.isParameterSet(ChildCarePlaceOfferTable1.REQUEST_INFO[0])) {
@@ -175,8 +183,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			String[] status = (String[]) i.next();
-//			System.out.println(
-//				"handleKeepQueueStatus: " + status[0] + " " + status[1]);
+			//			System.out.println(
+			//				"handleKeepQueueStatus: " + status[0] + " " + status[1]);
 			if (status[0] != null) {
 				if (status[1] != null && status[1].equals(CCConstants.NO)) {
 					//					getChildCareBusiness(iwc).removeFromQueue(new Integer(status[0]).intValue(), iwc.getCurrentUser());
@@ -197,7 +205,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		//delete all removed application from session
 		iwc.removeSessionAttribute(DELETED_APPLICATIONS);
 	}
-	
+
 	/**
 	 * Method getKeepInQueue returns the applications keep request from screen 2.
 	 * @param iwc
@@ -214,11 +222,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					iwc.getParameter(CCConstants.KEEP_IN_QUEUE + i)});
 			i++;
 		}
-//		add(new Text("Length:" + list.size()));
+		//		add(new Text("Length:" + list.size()));
 		return list;
 	}
-
-
 
 	/**
 	 * Method handleAcceptStatus handles the accept/reject requests from screen 1.
@@ -240,11 +246,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					childCarebusiness.getApplicationByPrimaryKey(status._appid);
 
 				if (status.equals(CCConstants.YES)) {
-//					System.out.println(
-//						"Accepting application:"
-//							+ application.getNodeID()
-//							+ " "
-//							+ application.getChoiceNumber());
+					//					System.out.println(
+					//						"Accepting application:"
+					//							+ application.getNodeID()
+					//							+ " "
+					//							+ application.getChoiceNumber());
 					getChildCareBusiness(iwc).parentsAgree(
 						Integer.valueOf(status._appid).intValue(),
 						application.getOwner(),
@@ -280,7 +286,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			ChildCareApplication app = (ChildCareApplication) allaps.next();
 
 			if (app.getChoiceNumber() > deleteFromChoice
-			//TODO: This is probably not nessesary anymore (Roar)
+				//TODO: This is probably not nessesary anymore (Roar)
 				|| (acceptedChoiceNumber == 2
 					&& app.getChoiceNumber() == 1
 					&& isAccepted(app))) {
@@ -317,13 +323,13 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		return list;
 	}
-	
-/**
- * Return true iff the application has an accepted offer; it has status PREL/C
- * @param application
- * @return
- * @throws RemoteException
- */
+
+	/**
+	 * Return true iff the application has an accepted offer; it has status PREL/C
+	 * @param application
+	 * @return
+	 * @throws RemoteException
+	 */
 	private boolean isAccepted(ChildCareApplication application)
 		throws RemoteException {
 
@@ -332,12 +338,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				== childCarebusiness.getStatusParentsAccept();
 	}
 
-/**
- * Add a deleted application to the session so that it will not be deleted from the screen until the session has ended.
- * @param iwc
- * @param application
- * @throws RemoteException
- */
+	/**
+	 * Add a deleted application to the session so that it will not be deleted from the screen until the session has ended.
+	 * @param iwc
+	 * @param application
+	 * @throws RemoteException
+	 */
 	private void addDeletedAppToSession(
 		IWContext iwc,
 		ChildCareApplication application)
@@ -375,13 +381,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			+ application.getFromDate();
 	}
 
-
-
-/**
- * Represent a accept/reject request for an applications
- * @author Roar
- *
- */
+	/**
+	 * Represent a accept/reject request for an applications
+	 * @author Roar
+	 *
+	 */
 	private class AcceptedStatus {
 		String _appid, _status;
 		Date _date;
@@ -438,11 +442,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	} // End class
 
-/**
- * Creates confirmation page after pressing request info button
- * @param layoutTbl
- * @throws RemoteException
- */
+	/**
+	 * Creates confirmation page after pressing request info button
+	 * @param layoutTbl
+	 * @throws RemoteException
+	 */
 
 	private void createRequestInfoConfirmPage(Table layoutTbl)
 		throws RemoteException {
@@ -477,8 +481,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			return "";
 
 		} else {
-			Table placementInfo = getPlacedAtSchool(iwc, getAcceptedOffer(applications));
-			
+			Table placementInfo =
+				getPlacedAtSchool(iwc, getAcceptedOffer(applications));
+
 			Table appTable =
 				new ChildCarePlaceOfferTable1(
 					iwc,
@@ -487,102 +492,110 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					hasOffer(applications));
 			//sorted by order number
 
+			Link cancelBtn = new Link(localize(CANCEL));
+			cancelBtn.setAsImageButton(true);
+			cancelBtn.setParameter(
+				CCConstants.ACTION,
+				new Integer(CCConstants.ACTION_CANCEL_1).toString());
+
 			SubmitButton submitBtn =
 				new SubmitButton(
 					localize(SUBMIT),
 					CCConstants.ACTION,
 					new Integer(CCConstants.ACTION_SUBMIT_1).toString());
 			submitBtn.setAsImageButton(true);
-			SubmitButton cancelBtn =
-				new SubmitButton(
-					localize(CANCEL),
-					CCConstants.ACTION,
-					new Integer(CCConstants.ACTION_CANCEL_1).toString());
-			cancelBtn.setAsImageButton(true);
 
 			layoutTbl.add(placementInfo, 1, 1);
 			layoutTbl.add(appTable, 1, 3);
-			layoutTbl.add(submitBtn, 1, 6);
 			layoutTbl.add(cancelBtn, 1, 6);
+			layoutTbl.add(submitBtn, 1, 6);
 			layoutTbl.setAlignment(1, 6, "right");
 			layoutTbl.add(getHelpTextPage1(), 1, 7);
 			layoutTbl.setStyle(1, 7, "padding-top", "15px");
 			return ((ChildCarePlaceOfferTable1) appTable).getOnSubmitHandler();
 		}
 	}
-	
-	private Table getPlacedAtSchool(IWContext iwc, ChildCareApplication acceptedOffer){
-		Table layoutTbl = new Table();
-		
-		String childId = iwc.getParameter(CHILD_ID);
-		User child = UserBusiness.getUser(Integer.parseInt(childId));
-		layoutTbl.add(getText(localize(NAME) + ":"), 1, 1);		
-		layoutTbl.add(getText(child.getName()), 2, 1);
-		layoutTbl.add(getText("&nbsp;&nbsp;&nbsp;&nbsp;" + localize(PERSONAL_ID) + ":"), 3, 1);	
-		layoutTbl.add(getText(child.getPersonalID()), 4, 1);		
 
-				
+	private Table getPlacedAtSchool(
+		IWContext iwc,
+		ChildCareApplication acceptedOffer) {
+		Table layoutTbl = new Table();
+
+		String childId = iwc.getParameter(CHILD_ID);
+		if (childId == null) {
+			childId = (String) iwc.getSessionAttribute(CHILD_ID);
+		}
+
+		User child = UserBusiness.getUser(Integer.parseInt(childId));
+		layoutTbl.add(getHeader(localize(NAME) + ":"), 1, 1);
+		layoutTbl.add(getText(child.getName()), 2, 1);
+		layoutTbl.add(
+			getHeader("&nbsp;&nbsp;&nbsp;&nbsp;" + localize(PERSONAL_ID) + ":"),
+			3,
+			1);
+		layoutTbl.add(getText(child.getPersonalID()), 4, 1);
+
 		if (acceptedOffer != null) {
 
 			School school = acceptedOffer.getProvider();
-				
-			layoutTbl.add(getText(localize(PLACED_AT) + ":"), 1, 3);
+
+			layoutTbl.add(getHeader(localize(PLACED_AT) + ":"), 1, 3);
 			layoutTbl.add(getText(school.getName()), 2, 3);
 			layoutTbl.add(getText(school.getSchoolAddress()), 2, 4);
 			layoutTbl.add(getText(school.getSchoolPhone()), 2, 6);
-			
+			layoutTbl.setHeight(3, 25);
+			layoutTbl.setAlignment(1, 3, "bottom");
+			layoutTbl.setAlignment(2, 3, "bottom");
 
 			Link careTimePopup = new Link("Endra omsorgstid");
-//			popup.setImage(new Image());
+			//			popup.setImage(new Image());
 			careTimePopup.setWindowToOpen(ChildCareNewCareTimeWindow.class);
-			careTimePopup.addParameter(CCConstants.APPID, acceptedOffer.getNodeID());
+			careTimePopup.addParameter(
+				CCConstants.APPID,
+				acceptedOffer.getNodeID());
 			careTimePopup.setAsImageButton(true);
 			layoutTbl.add(careTimePopup, 1, 8);
-			
+
 			Link contractPopup = new Link("Avsluta kontrakt");
-//			popup.setImage(new Image());
+			//			popup.setImage(new Image());
 			contractPopup.setWindowToOpen(ChildCareEndContractWindow.class);
-			contractPopup.addParameter(CCConstants.APPID, acceptedOffer.getNodeID());
+			contractPopup.addParameter(
+				CCConstants.APPID,
+				acceptedOffer.getNodeID());
 			contractPopup.setAsImageButton(true);
-			layoutTbl.add(contractPopup, 1, 8);			
-						
+			layoutTbl.add(contractPopup, 1, 8);
+
+			layoutTbl.setHeight(8, 50);
+			layoutTbl.mergeCells(1, 8, 4, 8);
+			layoutTbl.setAlignment(1, 8, "middle");
+
 		} else {
-			layoutTbl.add(getText(localize(NO_PLACEMENT)), 1, 3);	
-			layoutTbl.mergeCells(1, 3, 2, 3);						
-		}	
-		
-
-		
-//		Link contractPopup = new Link("Avsluta contract");
-////		popup.setImage(new Image());
-//		contractPopup.setWindowToOpen(ChildCareEndContractWindow.class);
-//		contractPopup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
-//		contractPopup.addParameter(CCConstants.APPID, "" + app.getNodeID());
-//		contractPopup.addParameter(CCConstants.USER_ID, "" + ownerId);
-//		contractPopup.setAsImageButton(true);
-//		layoutTbl.add(contractPopup, 1, 8);		
-		
-		
-
-//		home.findByApplication(acceptedOffer.getNodeID());
-		
-
-		
-		return layoutTbl;	
+			layoutTbl.add(getText(localize(NO_PLACEMENT)), 1, 3);
+			layoutTbl.mergeCells(1, 3, 2, 3);
+			layoutTbl.setHeight(3, 50);
+			layoutTbl.setAlignment(1, 3, "middle");
+		}
+		return layoutTbl;
 	}
 
-/**
- * Construct the html for the second screen
- * @param layoutTbl
- * @param applications
- * @throws RemoteException
- */
-	private void createPagePhase2(Table layoutTbl, Collection applications)
+	/**
+	 * Construct the html for the second screen
+	 * @param layoutTbl
+	 * @param applications
+	 * @throws RemoteException
+	 */
+	private String createPagePhase2(Table layoutTbl, Collection applications)
 		throws RemoteException {
 		Table appTable =
 			new ChildCarePlaceOfferTable2(
 				this,
 				sortApplications(applications, true));
+
+		Link cancelBtn = new Link(localize(CANCEL));
+		cancelBtn.setAsImageButton(true);
+		cancelBtn.setParameter(
+			CCConstants.ACTION,
+			new Integer(CCConstants.ACTION_CANCEL_2).toString());
 
 		SubmitButton submitBtn =
 			new SubmitButton(
@@ -590,19 +603,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				CCConstants.ACTION,
 				new Integer(CCConstants.ACTION_SUBMIT_2).toString());
 		submitBtn.setAsImageButton(true);
-		submitBtn.setSubmitConfirm(localize(SUBMIT_ALERT_2));
-
-		SubmitButton cancelBtn =
-			new SubmitButton(
-				localize(CANCEL),
-				CCConstants.ACTION,
-				new Integer(CCConstants.ACTION_CANCEL_2).toString());
-		cancelBtn.setAsImageButton(true);
+		//		submitBtn.setSubmitConfirm(localize(SUBMIT_ALERT_2));
 
 		layoutTbl.add(appTable, 1, 2);
-		layoutTbl.add(submitBtn, 1, 3);
 		layoutTbl.add(cancelBtn, 1, 3);
+		layoutTbl.add(submitBtn, 1, 3);
 		layoutTbl.setAlignment(1, 3, "right");
+
+		return "return confirm('" + localize(SUBMIT_ALERT_2) + "')";
 	}
 
 	/**
@@ -631,12 +639,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			Iterator i = applications.iterator();
 			while (i.hasNext()) {
 				ChildCareApplication app = (ChildCareApplication) i.next();
-//				System.out.println(
-//					"findApplications - Status: " + app.getStatus());
+				//				System.out.println(
+				//					"findApplications - Status: " + app.getStatus());
 				if (app.getApplicationStatus()
 					== getChildCareBusiness(iwc).getStatusCancelled()
 					|| app.getApplicationStatus()
-						== getChildCareBusiness(iwc).getStatusRejected()			
+						== getChildCareBusiness(iwc).getStatusRejected()
 					|| app.getStatus().equals(STATUS_TYST)) {
 					i.remove();
 				}
@@ -660,12 +668,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return applications;
 	}
 
-/**
- * Checks if the specifid application has an offer connected to it (status BVJD/B).
- * @param applications
- * @return
- * @throws RemoteException
- */
+	/**
+	 * Checks if the specifid application has an offer connected to it (status BVJD/B).
+	 * @param applications
+	 * @return
+	 * @throws RemoteException
+	 */
 	private boolean hasOffer(Collection applications) throws RemoteException {
 
 		Iterator i = applications.iterator();
@@ -675,13 +683,13 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			String caseStatus = app.getStatus();
 			char appStatus = app.getApplicationStatus();
-//			System.out.println(
-//				"STATUS: "
-//					+ app.getNodeID()
-//					+ " - "
-//					+ caseStatus
-//					+ "/"
-//					+ appStatus);
+			//			System.out.println(
+			//				"STATUS: "
+			//					+ app.getNodeID()
+			//					+ " - "
+			//					+ caseStatus
+			//					+ "/"
+			//					+ appStatus);
 			if (caseStatus
 				.equals(ChildCareCustomerApplicationTable.STATUS_BVJD)
 				&& appStatus != childCarebusiness.getStatusAccepted())
@@ -690,38 +698,39 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Checks if the specifid application has an offer connected to it (status BVJD/B).
 	 * @param applications
 	 * @return
 	 * @throws RemoteException
 	 */
-		private ChildCareApplication getAcceptedOffer(Collection applications) throws RemoteException {
+	private ChildCareApplication getAcceptedOffer(Collection applications)
+		throws RemoteException {
 
-			Iterator i = applications.iterator();
+		Iterator i = applications.iterator();
 
-			while (i.hasNext()) {
-				ChildCareApplication app = (ChildCareApplication) i.next();
+		while (i.hasNext()) {
+			ChildCareApplication app = (ChildCareApplication) i.next();
 
-				String caseStatus = app.getStatus();
-				char appStatus = app.getApplicationStatus();
-//				System.out.println(
-//					"STATUS: "
-//						+ app.getNodeID()
-//						+ " - "
-//						+ caseStatus
-//						+ "/"
-//						+ appStatus);
-				if (caseStatus
-					.equals(ChildCareCustomerApplicationTable.STATUS_PREL)
-					&& appStatus == childCarebusiness.getStatusParentsAccept())
-					return app;
+			String caseStatus = app.getStatus();
+			char appStatus = app.getApplicationStatus();
+			//				System.out.println(
+			//					"STATUS: "
+			//						+ app.getNodeID()
+			//						+ " - "
+			//						+ caseStatus
+			//						+ "/"
+			//						+ appStatus);
+			if (caseStatus
+				.equals(ChildCareCustomerApplicationTable.STATUS_PREL)
+				&& appStatus == childCarebusiness.getStatusParentsAccept())
+				return app;
 
-			}
-			return null;
 		}
-		
+		return null;
+	}
+
 	/**
 	 * Method getChildCareBusiness returns the ChildCareBusiness object.
 	 * @param iwc
@@ -741,22 +750,17 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			return null;
 		}
 	}
-	
 
 	UserBusiness getUserBusiness(IWContext iwc) {
 		try {
 			return (
-				UserBusiness) com
-					.idega
-					.business
-					.IBOLookup
-					.getServiceInstance(
+				UserBusiness) com.idega.business.IBOLookup.getServiceInstance(
 				iwc,
 				UserBusiness.class);
 		} catch (RemoteException e) {
 			return null;
 		}
-	}	
+	}
 
 	/**
 	 * Method sortApplications sorts a Collection of applications.
@@ -839,11 +843,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	public InterfaceObject getStyledInterface(InterfaceObject o) {
 		return super.getStyledInterface(o);
 	}
-	
+
 	public Image getEditIcon(String toolTip) {
 		return super.getEditIcon(toolTip);
 	}
-	
+
 	public Image getDeleteIcon(String toolTip) {
 		return super.getDeleteIcon(toolTip);
 	}
@@ -861,7 +865,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	}
 
 	//property setDebug
-	
+
 	private boolean _debug = false;
 
 	public void setDebug(boolean debug) {
@@ -872,12 +876,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return _debug;
 	}
 
-/**
- * Returns a string of debug information if the property setDebug is turned on, empty string otherwise.
- * @param app
- * @return
- * @throws RemoteException
- */
+	/**
+	 * Returns a string of debug information if the property setDebug is turned on, empty string otherwise.
+	 * @param app
+	 * @return
+	 * @throws RemoteException
+	 */
 	String getDebugInfo(ChildCareApplication app) throws RemoteException {
 		return (getDebug())
 			? " (Id:"
