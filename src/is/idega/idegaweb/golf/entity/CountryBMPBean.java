@@ -3,6 +3,8 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
+import java.util.Collection;
+
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
@@ -55,5 +57,9 @@ public class CountryBMPBean extends GenericEntity implements Country{
 	
 	public Object ejbFindByAbbreviation(String abbreviation) throws FinderException {
 		return idoFindOnePKByColumnBySQL("abbrevation", abbreviation);
+	}
+	
+	public Collection ejbFindAll() throws FinderException {
+		return idoFindAllIDsBySQL();
 	}
 }

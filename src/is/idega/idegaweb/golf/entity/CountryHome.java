@@ -8,6 +8,7 @@ public interface CountryHome extends com.idega.data.IDOHome
  public Country findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public Country findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public Country findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
+ public java.util.Collection findAll()throws javax.ejb.FinderException;
  public Country findByAbbreviation(java.lang.String p0)throws javax.ejb.FinderException;
 
 }

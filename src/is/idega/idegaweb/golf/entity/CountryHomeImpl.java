@@ -24,6 +24,13 @@ public class CountryHomeImpl extends com.idega.data.IDOFactory implements Countr
  }
 
 
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CountryBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public Country findByAbbreviation(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((CountryBMPBean)entity).ejbFindByAbbreviation(p0);

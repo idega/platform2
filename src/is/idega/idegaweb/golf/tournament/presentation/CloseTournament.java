@@ -291,12 +291,12 @@ public class CloseTournament extends TournamentBlock {
 		stampur.addDays(-2);
 
 		boolean calculate = true;
-
+/*
 		String query = modinfo.getParameter("calculate");
 		if (query == null) {
 			calculate = false;
 		}
-
+*/
 		DisplayScores[] members = getTournamentBusiness(modinfo).getDisplayScores("t.tournament_id = " + tournament_id + " ", "m.member_id");
 
 		if (calculate) {

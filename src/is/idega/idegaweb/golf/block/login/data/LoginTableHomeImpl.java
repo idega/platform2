@@ -31,6 +31,13 @@ public LoginTable findByMember(is.idega.idegaweb.golf.entity.Member p0)throws ja
 	return this.findByPrimaryKey(pk);
 }
 
+public java.util.Collection findByUserLogin(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((LoginTableBMPBean)entity).ejbFindByUserLogin(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public LoginTable findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (LoginTable) super.findByPrimaryKeyIDO(pk);
  }
