@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderTypeBMPBean.java,v 1.10 2003/11/24 17:53:00 joakim Exp $
+ * $Id: ProviderTypeBMPBean.java,v 1.11 2004/01/15 15:00:20 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the provider type (childcare, school, e t c).
  * <p>
- * Last modified: $Date: 2003/11/24 17:53:00 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/15 15:00:20 $ by $Author: palli $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType {
 
@@ -110,6 +110,5 @@ public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType 
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_LOCALIZATION_KEY, KEY_COMMUNE);
 		return (Integer) idoFindOnePKByQuery(query);
-	}
-	
+	}	
 }

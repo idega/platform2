@@ -275,27 +275,47 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	}
 
 	public Collection ejbFindBySchoolCategoryStatusInCommuneWithCommunalManagement(String schoolCategory, char status) throws FinderException {
-		IDOQuery sql = idoQuery();
+/*		IDOQuery sql = idoQuery();
 		sql.append("select p.* from " + ENTITY_NAME + " p, sch_school s, ic_commune c");
 		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
 		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
 		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "s.sch_school_id");
 		sql.appendAndEquals("s.commune", "c.ic_commune_id");
 		sql.appendAndEqualsQuoted("c.default_commune","Y");
-		sql.appendAndEqualsQuoted("s.management_type","COMMUNE");
+		sql.appendAndEqualsQuoted("s.management_type","COMMUNE");*/
+		
+		IDOQuery sql = idoQuery();
+		sql.append("select p.* from " + ENTITY_NAME + " p, cacc_provider_acc_prop prop, cacc_provider_type t");
+		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
+		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "prop.school_id");
+		sql.appendAndEquals("prop.provider_type_id", "t.provider_type_id");
+		sql.appendAndEqualsQuoted("t.localization_key","cacc_provider_type.commune");
+		
+		System.out.println("sql = " + sql.toString());
 		
 		return idoFindPKsBySQL(sql.toString());
 	}
 
 	public Collection ejbFindBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(String schoolCategory, char status) throws FinderException {
-		IDOQuery sql = idoQuery();
+/*		IDOQuery sql = idoQuery();
 		sql.append("select p.* from " + ENTITY_NAME + " p, sch_school s, ic_commune c");
 		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
 		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
 		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "s.sch_school_id");
 		sql.appendAndEquals("s.commune", "c.ic_commune_id");
 		sql.appendAnd();
-		sql.append("((c.default_commune = 'N' or c.default_commune is null) or (not s.management_type = 'COMMUNE'))");
+		sql.append("((c.default_commune = 'N' or c.default_commune is null) or (not s.management_type = 'COMMUNE'))");*/
+		
+		IDOQuery sql = idoQuery();
+		sql.append("select p.* from " + ENTITY_NAME + " p, cacc_provider_acc_prop prop, cacc_provider_type t");
+		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
+		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "prop.school_id");
+		sql.appendAndEquals("prop.provider_type_id", "t.provider_type_id");
+		sql.appendAndEqualsQuoted("t.localization_key","cacc_provider_type.private");
+		
+		System.out.println("sql = " + sql.toString());
 		
 		return idoFindPKsBySQL(sql.toString());
 	}
