@@ -2535,8 +2535,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Collection reports = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, clubsFilter);
 		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, true);
 		
-		//gera map sem heldur utan um allstölur fyrir öll félög sem ekki hafa hæsta flokk
-		//gera map fyrir öll félög með hæsta flokk
+		//gera map sem heldur utan um allstï¿½lur fyrir ï¿½ll fï¿½lï¿½g sem ekki hafa hï¿½sta flokk
+		//gera map fyrir ï¿½ll fï¿½lï¿½g meï¿½ hï¿½sta flokk
 		Map recordsMapKeyedByLeagueIdentifierAndClubsName = new TreeMap();
 		
 		
@@ -4152,9 +4152,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				
 				String leagueIdentifier = getLeagueIdentifier(league);
 				//fetch the stats or initialize
-				ReportableData leagueStatsData = (ReportableData) leagueStatsMap.get(leagueKey);
-			
-				ReportableData regData = (ReportableData) leagueStatsMap.get(leagueIdentifier);
+				ReportableData regData = (ReportableData) leagueStatsMap.get(leagueKey);
 				if(regData==null) {
 					regData = new ReportableData();
 					leagueStatsMap.put(leagueKey, regData);
