@@ -41,14 +41,15 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.57 2003/12/11 15:06:51 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.58 2003/12/30 17:12:27 laddi Exp $
  * @since 12.2.2003 
  */
 
 public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information." }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign contract"};
-
+	private final static String[] SUBMIT_ANSWER = { "ccot_submit_answer", "Submit" };
+	
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
 
@@ -480,7 +481,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			cancelBtn.setPageToOpen(getParentPageID());
 			cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
 
-			SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
+			String[] submitName =_showOnlyAfterSchoolCare ? SUBMIT_ANSWER : SUBMIT;
+			SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(submitName)));
 			submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
 			
 			int row = 1;
