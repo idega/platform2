@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.13 2003/10/21 23:22:50 kjell Exp $
+ * $Id: RegulationList.java,v 1.14 2003/12/13 17:40:31 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.13 2003/10/21 23:22:50 kjell Exp $
+ * $Id: RegulationList.java,v 1.14 2003/12/13 17:40:31 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -63,7 +63,7 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_BUTTON_COPY = PP + "button_copy";
 	private final static String KEY_BUTTON_EDIT = PP + "button_edit";
 	private final static String KEY_MENU_SORTNAME_HEADER = PP + "menu_sortname_header"; 
-	private final static String KEY_MENU_SORTPERIODE_HEADER = PP + "menu_sortperiode_header"; 
+	private final static String KEY_MENU_SORTPERIOD_HEADER = PP + "menu_sortperiod_header"; 
 	private final static String KEY_NEW = PP + "new";
 	private final static String KEY_PERIOD_SEARCH = PP + "period_searc"; 
 	private final static String KEY_PERIOD = PP + "period"; 
@@ -329,7 +329,7 @@ public class RegulationList extends AccountingBlock {
 	 */
 	private DropdownMenu sortBySelector(String name, int refIndex) {
 		DropdownMenu menu = new DropdownMenu(name);
-		menu.addMenuElementFirst("1", localize(KEY_MENU_SORTPERIODE_HEADER, "Period"));
+		menu.addMenuElementFirst("1", localize(KEY_MENU_SORTPERIOD_HEADER, "Period"));
 		menu.addMenuElementFirst("2", localize(KEY_MENU_SORTNAME_HEADER, "Benämning"));
 		menu.setSelectedElement(refIndex);
 		return (DropdownMenu) getStyledInterface(menu);

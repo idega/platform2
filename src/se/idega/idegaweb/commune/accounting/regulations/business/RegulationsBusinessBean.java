@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.94 2003/12/10 22:56:39 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.95 2003/12/13 17:40:31 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1093,9 +1093,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Gets regulations for a certain periode
-	 * @param from periode (Date)
-	 * @param to periode (Date)
+	 * Gets regulations for a certain period
+	 * @param from period (Date)
+	 * @param to period (Date)
 	 * @return collection of Regulations
 	 * @author Kelly
 	 * 
@@ -1114,9 +1114,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Gets regulations for a certain periode, operationID, FLowTypeID and SortByID
-	 * @param from periode (Date)
-	 * @param to periode (Date)
+	 * Gets regulations for a certain period, operationID, FLowTypeID and SortByID
+	 * @param from period (Date)
+	 * @param to period (Date)
 	 * @param operationID
 	 * @param flowTypeID
 	 * @param sortByID
