@@ -96,6 +96,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT = "WorkReportStatsBusiness.player_annual_change_percent";
 	private static final String LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL = "WorkReportStatsBusiness.player_annual_change_percent_of_total";
 	private static final String LOCALIZED_PERCENT_REPORTS_DONE = "WorkReportStatsBusiness.percent_reports_done";
+	private static final String LOCALIZED_COUNT = "WorkReportStatsBusiness.count";
 	
 
 	// names of reportable fields
@@ -151,6 +152,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_PLAYERS_ANNUAL_CHANGE_PERCENT = "annual_player_change_percent";
 	private static final String FIELD_NAME_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL = "annual_player_change_percent_of_total";
 	private static final String FIELD_NAME_PERCENT_REPORTS_DONE = "percent_reports_done";
+	private static final String FIELD_NAME_COUNT = "count";
 
 	/**
 	 *  
@@ -3365,7 +3367,45 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		return reportCollection;
 	}
 	
+	
+	/*
+	 * Report B12.6.1 of the ISI Specs
+	 */
+	public ReportableCollection sixDotOne () throws RemoteException {
+
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+
+		//PARAMETES
+
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+
+		//PARAMETERS that are also FIELDS
 		
+		ReportableField regionalUnionName = new ReportableField(FIELD_NAME_REGIONAL_UNION_NAME, String.class);
+		regionalUnionName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionName);
+
+		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
+		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
+		reportCollection.addField(clubName);
+		
+		ReportableField count = new ReportableField(FIELD_NAME_COUNT, String.class);
+		count.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COUNT, "Count"), currentLocale);
+		reportCollection.addField(count);
+				
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	
 	private boolean showClubStatus(WorkReport report, String status) {
 		String reportStatus = report.getStatus();
 		boolean show = true;
