@@ -212,7 +212,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		if (useSecureServer && !iwc.isSecure()) {
 			String URI = iwc.getRequest().getRequestURI();
 			String serverName = bundle.getProperty(LinkGenerator.PROPERTY_SERVER_NAME);
-			if (URI.indexOf("nat.sidan.is") > 0 && serverName != null) {
+			if (URI.indexOf("nat.sidan.is") >= 0 && serverName != null) {
 				URI.replaceFirst("nat.sidan.is",  serverName);
 			}
 			Link secureLink = new Link(getErrorText(iwrb.getLocalizedString("travel.click_here", "CLICK HERE")), URI+"?"+iwc.getQueryString());
