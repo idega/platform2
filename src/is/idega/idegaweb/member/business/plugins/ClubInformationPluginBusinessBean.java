@@ -125,11 +125,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		return null;
 	}
 
-  public boolean createSpecialConnection(String connection, int parentGroupId, String clubName, IWContext iwc) {
-  	System.out.println("connection = " + connection);
-		System.out.println("parentGroupId = " + parentGroupId);
-		System.out.println("clubName = " + clubName);
-  	
+  public boolean createSpecialConnection(String connection, int parentGroupId, String clubName, IWContext iwc) {  	
 		if (connection == null || connection.equals(""))
 			return false;
 
@@ -139,6 +135,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 
 			Group child = null;
 			Group clubDivisionGroup = null;
+			Group clubDivisionTemplateGroup = null;
 			boolean foundIt = false;
 			boolean foundClubDivisionGroup = false;
 			List children = specialGroup.getChildGroups();
@@ -146,6 +143,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			while (it.hasNext() && !(foundIt && foundClubDivisionGroup)) {
 				child = (Group) it.next();
 				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+					clubDivisionTemplateGroup = child;
 					foundIt = true;
 				}
 				else if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_DIVISION)) {
@@ -158,16 +156,15 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 				clubDivisionGroup = specialGroup;
 			}
 
-			if (foundIt && child != null) {
+			if (foundIt && clubDivisionTemplateGroup != null) {
 				Group newGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
 				newGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
-				newGroup.setName(child.getName());
+				newGroup.setName("Flokkar");
 				newGroup.store();
 				setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newGroup);
-				
-			
+						
 				group.addGroup(newGroup);
-				insertCopyOfChild(newGroup, child, clubDivisionGroup, clubName,iwc);
+				insertCopyOfChild(newGroup, clubDivisionTemplateGroup, clubDivisionGroup, clubName,iwc);
 			}
 		}
 		catch (Exception e) {
@@ -185,19 +182,30 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			Group specialGroup = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(connection)));
 
 			Group child = null;
+			Group clubDivisionTemplateGroup = null;
+			Group clubDivisionGroup = null;
 			boolean foundIt = false;
+			boolean foundClubDivisionGroup = false;
 			List children = specialGroup.getChildGroups();
 			Iterator it = children.iterator();
-			while (it.hasNext()) {
+			while (it.hasNext() && !(foundIt && foundClubDivisionGroup)) {
 				child = (Group) it.next();
 				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+					clubDivisionTemplateGroup = child;
 					foundIt = true;
-					break;
+				}
+				else if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_DIVISION)) {
+					clubDivisionGroup = child;
+					foundClubDivisionGroup = true;
 				}
 			}
 
-			if (foundIt && child != null) {
-				insertCopyOfChild(group, child, specialGroup, clubName,iwc);
+			if (clubDivisionGroup == null) {
+				clubDivisionGroup = specialGroup;
+			}
+
+			if (foundIt && clubDivisionTemplateGroup != null) {
+				insertCopyOfChild(group, clubDivisionTemplateGroup, clubDivisionGroup, clubName,iwc);
 			}
 		}
 		catch (Exception e) {
