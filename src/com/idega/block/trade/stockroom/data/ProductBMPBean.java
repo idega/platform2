@@ -261,6 +261,10 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     return this.getIntColumnValue( getColumnNameSupplierId() );
   }
 
+  public Supplier getSupplier() {
+  		return (Supplier) getColumnValue( getColumnNameSupplierId() );
+  }
+  
   /**
    *  Gets the fileId attribute of the Product object
    *

@@ -1,7 +1,8 @@
 package com.idega.block.trade.stockroom.data;
 
 
-public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDataCapable
+
+public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDataCapable//, BasketItem
 {
  public void addArrivalAddress(com.idega.core.location.data.Address p0) throws java.rmi.RemoteException;
  public boolean addCategory(com.idega.block.trade.stockroom.data.ProductCategory p0) throws java.rmi.RemoteException;
@@ -25,6 +26,7 @@ public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDa
  public java.lang.String getProductDescription(int p0) throws java.rmi.RemoteException;
  public java.lang.String getProductName(int p0) throws java.rmi.RemoteException;
  public java.lang.String getProductTeaser(int p0) throws java.rmi.RemoteException;
+ public Supplier getSupplier();
  public int getSupplierId() throws java.rmi.RemoteException;
  public com.idega.block.text.data.TxText getText()throws java.sql.SQLException, java.rmi.RemoteException;
  public com.idega.block.trade.stockroom.data.Timeframe getTimeframe()throws java.sql.SQLException, java.rmi.RemoteException;
