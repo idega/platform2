@@ -419,7 +419,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		browser.setArtificialCompoundId("report_overview", null);
 		browser.setLeadingEntityIsUndefined();
 		// browser.setShowAllEntities("", queryRepresentations);
-		browser.setEntities("", queryRepresentations, 1);
+		browser.setEntities("", queryRepresentations, 10);
 		// some design features
 		browser.setCellpadding(2);
 		// define some converters
