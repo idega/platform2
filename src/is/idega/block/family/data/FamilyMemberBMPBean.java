@@ -1,5 +1,5 @@
 /*
- * $Id: FamilyMemberBMPBean.java,v 1.4 2004/09/06 20:30:25 gimmi Exp $ Created on 27.8.2004
+ * $Id: FamilyMemberBMPBean.java,v 1.5 2004/09/15 13:42:10 gimmi Exp $ Created on 27.8.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  * 
@@ -24,10 +24,10 @@ import com.idega.user.data.UserBMPBean;
 
 /**
  * 
- * Last modified: $Date: 2004/09/06 20:30:25 $ by $Author: gimmi $
+ * Last modified: $Date: 2004/09/15 13:42:10 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 
@@ -57,6 +57,7 @@ public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 		addAttribute(COLUMN_ROLE,"role",true,true,java.lang.Integer.class);
 		
 		addIndex("IDX_FAM_MEMBER_1", COLUMN_USER);
+		addIndex("IDX_FAM_MEMBER_2", COLUMN_FAMILY_NR);
 	}
 	
 	public void setFamilyNr(String familyNr) {
