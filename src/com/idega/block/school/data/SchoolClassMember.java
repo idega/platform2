@@ -10,6 +10,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public java.lang.String getNotes();
  public java.sql.Timestamp getRegisterDate();
  public int getRegistratorId();
+ public java.sql.Timestamp getRemovedDate();
  public int getSchoolClassId();
  public boolean getSpeciallyPlaced();
  public com.idega.user.data.User getStudent();
@@ -20,6 +21,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public void setNotes(java.lang.String p0);
  public void setRegisterDate(java.sql.Timestamp p0);
  public void setRegistratorId(int p0);
+ public void setRemovedDate(java.sql.Timestamp p0);
  public void setSchoolClassId(int p0);
  public void setSpeciallyPlaced(boolean p0);
 }

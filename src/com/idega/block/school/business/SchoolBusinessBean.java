@@ -1007,6 +1007,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, date);
+		}
+		catch (FinderException e) {
+			return new Vector();
+		}
+	}
+
 	public Collection findStudentsBySchoolAndSeasonAndYear(int schoolID, int seasonID, int yearID) throws RemoteException {
 		try {
 			return getSchoolClassMemberHome().findBySchoolAndSeasonAndYear(schoolID, seasonID, yearID);

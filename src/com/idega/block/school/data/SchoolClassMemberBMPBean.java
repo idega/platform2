@@ -1,6 +1,7 @@
 package com.idega.block.school.data;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -29,6 +30,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public final static String NOTES = "notes";
   public final static String SCHOOLCLASS = "sch_school_class_id";
   public final static String REGISTER_DATE = "register_date";
+	public final static String REMOVED_DATE = "removed_date";
   public final static String REGISTRATOR = "registrator";
   public final static String NEEDS_SPECIAL_ATTENTION = "NEEDS_SPECIAL_ATTENTION";
   public final static String SPECIALLY_PLACED = "SPECIALLY_PLACED";
@@ -40,10 +42,11 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     this.addAttribute(SCHOOLCLASS,"class",true,true,Integer.class,MANY_TO_ONE,SchoolClass.class);
     this.addAttribute(NOTES,"notes",true,true,String.class,255);
     this.addAttribute(REGISTER_DATE,"registerdate",true,true,Timestamp.class);
+		this.addAttribute(REMOVED_DATE,"removeddate",true,true,Timestamp.class);
     this.addAttribute(REGISTRATOR,"registrator",true,true,Integer.class,MANY_TO_ONE,com.idega.core.user.data.User.class);
     this.addAttribute(NEEDS_SPECIAL_ATTENTION,"Needs special attention",true,true,Boolean.class);
     this.addAttribute(SPECIALLY_PLACED,"Specially placed",true,true,Boolean.class);
-    this.addAttribute(LANGUAGE,"Needs special attention",true,true,String.class);
+    this.addAttribute(LANGUAGE,"Language",true,true,String.class);
   }
   public String getEntityName() {
     return SCHOOLCLASSMEMBER;
@@ -69,6 +72,12 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public Timestamp getRegisterDate(){
     return (Timestamp) this.getColumnValue(REGISTER_DATE);
   }
+	public void setRemovedDate(Timestamp stamp){
+		this.setColumn(REMOVED_DATE,stamp);
+	}
+	public Timestamp getRemovedDate(){
+		return (Timestamp) this.getColumnValue(REMOVED_DATE);
+	}
   public void setRegistratorId(int id){
     this.setColumn(REGISTRATOR,id);
   }
@@ -220,6 +229,23 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
 		if (schoolClassID != -1)
 			sql.appendAndEquals("mb."+SCHOOLCLASS, schoolClassID);
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+  
+	public Collection ejbFindBySchool(int schoolID, int schoolClassID, Date date) throws FinderException, RemoteException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl, ic_user u")
+		.appendWhere().append(" cl."+SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID)
+		.appendAndEquals("u.ic_user_id", "mb."+this.MEMBER)
+		.appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
+		if (schoolClassID != -1)
+			sql.appendAndEquals("mb."+SCHOOLCLASS, schoolClassID);
+		sql.appendAnd().appendLeftParenthesis().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date)
+			.appendOr().append(REGISTER_DATE).append(" is null").appendRightParenthesis();
+		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date)
+			.appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
 		return super.idoFindPKsBySQL(sql.toString());
 	}
