@@ -1,5 +1,5 @@
 /*
- * $Id: ExtendedDropdownDouble.java,v 1.6 2003/11/21 19:01:19 tryggvil Exp $
+ * $Id: ExtendedDropdownDouble.java,v 1.7 2004/02/26 09:10:01 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,7 +14,7 @@ import java.lang.reflect.*;
 
 import com.idega.presentation.*;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.InterfaceObjectContainer;
+import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.data.GenericEntity;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -45,7 +45,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * Kelly
  * 
  */ 
-public class ExtendedDropdownDouble extends InterfaceObjectContainer {
+public class ExtendedDropdownDouble extends InterfaceObject {
 	private String _styleClass;
 	private String _primarySelected;
 	private String _secondarySelected;
@@ -327,4 +327,16 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
 		}
 	}
  
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.ui.InterfaceObject#handleKeepStatus(com.idega.presentation.IWContext)
+	 */
+	public void handleKeepStatus(IWContext iwc) {
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#isContainer()
+	 */
+	public boolean isContainer() {
+		return false;
+	}
 }
