@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.19 2002/04/06 18:52:26 tryggvil Exp $
+ * $Id: ApplicationForm.java,v 1.20 2002/06/12 16:36:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -67,6 +67,7 @@ public class ApplicationForm extends PresentationObjectContainer {
    *
    */
   protected void control(IWContext iwc) {
+    debugParameters(iwc);
     String statusString = iwc.getParameter(APP_STATUS);
     int status = 0;
 

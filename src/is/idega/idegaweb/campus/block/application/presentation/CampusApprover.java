@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.29 2002/06/10 12:19:05 laddi Exp $
+ * $Id: CampusApprover.java,v 1.30 2002/06/12 16:35:34 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1521,14 +1521,14 @@ public class CampusApprover extends Block {
 	T.add(priority,col,row);
       }
       if(bEdit){
-	SubmitButton view = new SubmitButton("viewer","View");
+	SubmitButton view = new SubmitButton(iwrb.getLocalizedImageButton("view","View"),"viewer","View");
 	T.add(view,col,row);
       }
       else{
-	SubmitButton edit = new SubmitButton("editor","Edit");
+	SubmitButton edit = new SubmitButton(iwrb.getLocalizedImageButton("edit","Edit"),"editor","Edit");
 	T.add(edit,col,row);
       }
-      SubmitButton save = new SubmitButton("save","Save");
+      SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), "save","Save");
       T.add(save,col,row);
     return T;
   }
