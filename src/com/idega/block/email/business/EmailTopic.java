@@ -105,6 +105,7 @@ public interface EmailTopic{
   public int getCategoryId();
   public String getSenderName();
   public String getSenderEmail();
+  public Integer getIdentifier();
 
 }
 

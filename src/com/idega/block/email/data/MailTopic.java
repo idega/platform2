@@ -21,4 +21,5 @@ public interface MailTopic extends IDOEntity,EmailTopic,CategoryEntity
  public void setName(java.lang.String p0) ;
  public void setSenderName(java.lang.String p0) ;
  public void setSenderEmail(java.lang.String p0) ;
+ 
 }

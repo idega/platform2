@@ -520,7 +520,7 @@ public class SetupEditor extends Block {
   		int topicID;
   		while(iter.hasNext()){
   			topic = (EmailTopic) iter.next();
-  			topicID = Integer.parseInt(topic.toString());
+  			topicID = topic.getIdentifier().intValue();
   			T.add(getTopicLink(topicID,topic.getName()),1,row);
   			
   			category = (ICCategory) categories.get(Integer.toString(topic.getCategoryId()));

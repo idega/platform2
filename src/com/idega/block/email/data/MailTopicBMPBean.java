@@ -209,5 +209,13 @@ public class MailTopicBMPBean extends CategoryEntityBMPBean implements MailTopic
   public  Object ejbFindOneByListId(int listId)throws FinderException{
   	return super.idoFindOnePKBySQL("select * from "+this.TABLE_NAME+" where "+this.LIST+" = "+listId);
   }
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.business.EmailTopic#getIdentifier()
+	 */
+	public Integer getIdentifier() {
+		// TODO Auto-generated method stub
+		return (Integer) getPrimaryKey();
+	}
+
 }
 
