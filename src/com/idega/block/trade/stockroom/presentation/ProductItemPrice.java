@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.sql.SQLException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
@@ -31,23 +33,24 @@ public class ProductItemPrice extends ProductItem {
 
   public void main(IWContext iwc) {
     super.main(iwc);
-    drawObject();
+    drawObject(iwc);
   }
 
-  private void drawObject() {
+  private void drawObject(IWContext iwc) {
     Text text = getText(defaultText);
     if ( _product != null ) {
       ProductPrice pPrice = StockroomBusiness.getPrice(_product);
       if (pPrice != null && pPrice.getPrice() > 0 ) {
-        text.setText(Integer.toString((int) pPrice.getPrice()));
-        if (this.showCurrency) {
-          try {
-            text.addToText(Text.NON_BREAKING_SPACE);
-            text.addToText(((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getName());
-          }catch (SQLException sql) {}
-        }
+	NumberFormat format = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
+	text.setText(format.format((double)pPrice.getPrice()));
+	if (this.showCurrency) {
+	  try {
+	    text.addToText(Text.NON_BREAKING_SPACE);
+	    text.addToText(((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getName());
+	  }catch (SQLException sql) {}
+	}
       }else {
-        text.setText("");
+	text.setText("");
       }
     }
     add(text);
