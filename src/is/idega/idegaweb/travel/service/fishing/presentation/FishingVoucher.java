@@ -21,10 +21,6 @@ public class FishingVoucher extends Voucher{
     super(booking);
   }
 
-  public void main(IWContext iwc) throws Exception{
-    super.main(iwc);
-    setupVoucher(iwc);
-  }
   protected void setupVoucher(IWContext iwc) throws RemoteException {
     IWResourceBundle iwrb = super.getResourceBundle();
     super.addToClientInfo(iwrb.getLocalizedString("travel.address_lg","Address")+" : "+_booking.getAddress()+", "+_booking.getPostalCode()+" "+_booking.getCity()+", "+_booking.getCountry());

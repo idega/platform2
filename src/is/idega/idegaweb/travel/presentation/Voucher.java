@@ -76,7 +76,7 @@ public abstract class Voucher extends TravelManager {
 
   public void main(IWContext iwc) throws Exception{
     super.initializer(iwc);
-
+		setupVoucher(iwc);
     _bundle = super.getBundle();
     _iwrb = super.getResourceBundle();
     _iwc = iwc;
