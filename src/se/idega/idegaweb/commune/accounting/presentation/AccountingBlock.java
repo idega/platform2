@@ -250,7 +250,7 @@ public abstract class AccountingBlock extends CommuneBlock {
 	 * @param dateString the date string to parse
 	 * @author anders
 	 */
-	protected Date parseDate(String dateString) {
+	public Date parseDate(String dateString) {
 		if (dateString == null) {
 			return null;
 		}
@@ -503,7 +503,7 @@ public abstract class AccountingBlock extends CommuneBlock {
 		}
 	}
 
-	protected CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) {
+	public CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) {
 		try {
 			return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
 		}
