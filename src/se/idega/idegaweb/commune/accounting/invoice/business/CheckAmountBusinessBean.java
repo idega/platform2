@@ -5,6 +5,7 @@ import is.idega.experimental.pdftest.PDFTest;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
@@ -38,13 +40,14 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolHome;
-import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.contact.data.Email;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
@@ -66,11 +69,11 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
- * Last modified: $Date: 2004/01/22 10:07:44 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/02 10:12:47 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -90,10 +93,10 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	public Map sendCheckAmountLists(IWContext iwc, String schoolCategoryPK) {
 		IWBundle accountingBundle = iwc.getApplication().getBundle(AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER);
 		IWResourceBundle iwrb = accountingBundle.getResourceBundle(iwc);
-		return sendCheckAmountLists(iwc, iwrb, schoolCategoryPK);
+		return sendCheckAmountLists(iwc.getCurrentUser (), iwrb, schoolCategoryPK);
 	}
 	
-	public Map sendCheckAmountLists(IWContext iwc, IWResourceBundle iwrb, String schoolCategoryPK) {
+	public Map sendCheckAmountLists(User currentUser, IWResourceBundle iwrb, String schoolCategoryPK) {
 		final Map result = new TreeMap ();
 		final Map filesSentByEmail = new TreeMap ();
 		final Map filesSentByPapermail = new TreeMap ();
@@ -117,13 +120,13 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			School school;
 			long startTime = System.currentTimeMillis ();
 			if (schools != null && !schools.isEmpty()) {
-				MessageBusiness mBusiness = (MessageBusiness) IBOLookup.getServiceInstance(iwc, MessageBusiness.class); 
+				MessageBusiness mBusiness = getMessageBusiness ();
 				Iterator schoolIter = schools.iterator();
 				while (schoolIter.hasNext()) {
 					school = (School) schoolIter.next();
 					File file;
 					try {
-						file = createExternalCheckAmountList (iwc, schoolCategory, school);
+						file = createExternalCheckAmountList (schoolCategory, school);
 					} catch (NoPaymentRecordsFoundException e) {
 						noMailSentSinceNoPaymentRecords.put (school.getName (),
 																						 new Integer (-1));
@@ -137,60 +140,14 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 								 + " (" + minutes + ":" + seconds + " minutes) " + elapsedTime);
 						continue;
 					}
-					SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
-					Collection headmasters = sub.getHeadmasters(school);
-					Collection assheadmasters = sub.getAssistantHeadmasters(school);
-					Collection users = new ArrayList();
-					Collection emails = new ArrayList();
-					users.addAll(headmasters);
-					users.addAll(assheadmasters);
-					User user;
-					Email email;
+					Collection emailReceivers = findEmailReceiversAndNotifyThem(iwrb, currentUser, school, mBusiness);
 					
-					boolean emailFound = false;
-					if (users.size() > 0) {
-						for (Iterator i = users.iterator(); i.hasNext();) {
-							user = (User) i.next();
-							//System.out.println("Creating userMessage for "+user.getName());
-							mBusiness.createUserMessage(null, user, iwc.getCurrentUser(), null, iwrb.getLocalizedString(CHECK_AMOUNT_LIST_SENT_KEY, CHECK_AMOUNT_LIST_SENT_DEFAULT), iwrb.getLocalizedString(CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_KEY, CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_DEFAULT), false);
-							emails.addAll(user.getEmails());
-							emailFound = !emails.isEmpty();
-						}
-					}
-					
-					if (!emailFound) {
-						//add(" SnailMail");
-						ICFileHome icFileHome = (ICFileHome) IDOLookup.getHome(ICFile.class); 
-						ICFile icFile = icFileHome.create();
-						//System.out.println(file.getAbsolutePath());
-						icFile.setFileValue(new FileInputStream(file.getAbsoluteFile()));
-						icFile.setMimeType("application/x-pdf");
-						icFile.setName(file.getName());
-						icFile.store();
-						
-						PrintedLetterMessageHome plmHome = (PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessage.class);
-						PrintedLetterMessage plm = (PrintedLetterMessage) plmHome.create();
-						plm.setSubject(iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT) + " " + school.getName ());
-						plm.setMessageData(icFile);
-						plm.setOwner(iwc.getCurrentUser());
-						//mBusiness.flagMessageAsUnPrinted(iwc.getCurrentUser(), plm);
-						mBusiness.flagMessageAsPrinted(iwc.getCurrentUser(), plm);
-						plm.store();
+					if (emailReceivers.isEmpty ()) {
+						ICFile icFile = sendPaperMail(iwrb, currentUser, school, mBusiness, file);
 						filesSentByPapermail.put (school.getName (),
 																			icFile.getPrimaryKey ());
 					} else {
-						for (Iterator i = emails.iterator(); i.hasNext();) {
-							email = (Email) i.next();
-							if (mBusiness.getIfCanSendEmail()) {
-								mBusiness.sendMessage
-										(email.getEmailAddress(),
-										 iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY,
-																						 CHECK_AMOUNT_LIST_DEFAULT) + " - "
-										 +school.getName() + " "
-										 + yearAndMonthFormatter.format (new java.util.Date ()), "",
-										 file);
-							}
-						}
+						sendEmails(iwrb, school, mBusiness, file, emailReceivers);
 						filesSentByEmail.put (school.getName (), new Integer (-1));					
 					}
 					file.delete();
@@ -211,12 +168,65 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return result;
 	}
 
+	private Collection findEmailReceiversAndNotifyThem(IWResourceBundle iwrb, User currentUser, School school, MessageBusiness mBusiness) throws IBOLookupException, RemoteException, FinderException {
+		SchoolUserBusiness sub = getSchoolUserBusiness ();
+		Collection headmasters = sub.getHeadmasters(school);
+		Collection assheadmasters = sub.getAssistantHeadmasters(school);
+		Collection users = new ArrayList();
+		users.addAll(headmasters);
+		users.addAll(assheadmasters);
+		Collection emailReceivers = new ArrayList();
+		if (users.size() > 0) {
+			for (Iterator i = users.iterator(); i.hasNext();) {
+				final User user = (User) i.next();
+				mBusiness.createUserMessage(null, user, currentUser, null, iwrb.getLocalizedString(CHECK_AMOUNT_LIST_SENT_KEY, CHECK_AMOUNT_LIST_SENT_DEFAULT), iwrb.getLocalizedString(CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_KEY, CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_DEFAULT), false);
+				emailReceivers.addAll(user.getEmails());
+			}
+		}
+		return emailReceivers;
+	}
+
+	private void sendEmails(IWResourceBundle iwrb, School school, MessageBusiness mBusiness, File file, Collection emails) throws RemoteException {
+		Email email;
+		for (Iterator i = emails.iterator(); i.hasNext();) {
+			email = (Email) i.next();
+			if (mBusiness.getIfCanSendEmail()) {
+				mBusiness.sendMessage
+						(email.getEmailAddress(),
+						 iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY,
+																		 CHECK_AMOUNT_LIST_DEFAULT) + " - "
+						 +school.getName() + " "
+						 + yearAndMonthFormatter.format (new java.util.Date ()), "",
+						 file);
+			}
+		}
+	}
+
+	private ICFile sendPaperMail(IWResourceBundle iwrb, User currentUser, School school, MessageBusiness mBusiness, File file) throws IDOLookupException, CreateException, FileNotFoundException, RemoteException {
+		ICFileHome icFileHome = (ICFileHome) IDOLookup.getHome(ICFile.class); 
+		ICFile icFile = icFileHome.create();
+		icFile.setFileValue(new FileInputStream(file.getAbsoluteFile()));
+		icFile.setMimeType("application/x-pdf");
+		icFile.setName(file.getName());
+		icFile.store();
+		
+		PrintedLetterMessageHome plmHome = (PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessage.class);
+		PrintedLetterMessage plm = (PrintedLetterMessage) plmHome.create();
+		plm.setSubject(iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT) + " " + school.getName ());
+		plm.setMessageData(icFile);
+		plm.setOwner(currentUser);
+		//mBusiness.flagMessageAsUnPrinted(currentUser, plm);
+		mBusiness.flagMessageAsPrinted(currentUser, plm);
+		plm.store();
+		return icFile;
+	}
+
 	private String getTitle (final Object schoolId) {
 		return "CheckbeloppsLista_" + schoolId + "_"
 				+ IWTimestamp.RightNow ().getDate ();
 	}
 
-	private File createExternalCheckAmountList (IWContext iwc, SchoolCategory schoolCategory, School school) throws Exception {
+	private File createExternalCheckAmountList (SchoolCategory schoolCategory, School school) throws Exception {
 
 		// find payment records
 		PaymentHeaderHome phHome = (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
@@ -241,7 +251,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		Document outerDocument = PDFTest.getLetterDocumentTemplate();
 		PdfWriter writer = PdfWriter.getInstance(outerDocument, fileOut);
 		outerDocument.open();
-		DocumentBusiness docBus = (DocumentBusiness) IBOLookup.getServiceInstance(iwc, DocumentBusiness.class);
+		DocumentBusiness docBus = getDocumentBusiness ();
 		outerDocument.newPage();
 		docBus.createDefaultLetterHeader (outerDocument, getAddressString (school),
 																			writer);
@@ -604,6 +614,30 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	private PostingBusiness getPostingBusiness () {
 		try {
 			return (PostingBusiness) getServiceInstance (PostingBusiness.class);
+		}	catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+ 
+	private SchoolUserBusiness getSchoolUserBusiness () {
+		try {
+			return (SchoolUserBusiness) getServiceInstance (SchoolUserBusiness.class);
+		}	catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+ 
+	private MessageBusiness getMessageBusiness () {
+		try {
+			return (MessageBusiness) getServiceInstance (MessageBusiness.class);
+		}	catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+ 
+	private DocumentBusiness getDocumentBusiness () {
+		try {
+			return (DocumentBusiness) getServiceInstance (DocumentBusiness.class);
 		}	catch (RemoteException e) {
 			throw new IBORuntimeException(e);
 		}
