@@ -34,6 +34,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+import se.idega.util.ErrorLogger;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;

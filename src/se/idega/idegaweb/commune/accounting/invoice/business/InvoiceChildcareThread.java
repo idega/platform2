@@ -44,6 +44,7 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.EmploymentType;
+import se.idega.util.ErrorLogger;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
