@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWStyleManager;
@@ -138,6 +139,9 @@ public class GolfWindow extends Window {
   protected IWBundle _iwb;
   protected IWResourceBundle _iwrb;
   private boolean initialized;
+  
+  private String styleScript = "DefaultStyle.css";
+  private boolean useStyleSheetFromCoreBundle = true;
 
   public GolfWindow() {
     super();
@@ -145,7 +149,7 @@ public class GolfWindow extends Window {
     this.setMarginWidth(0);
     this.setLeftMargin(0);
     this.setTopMargin(0);
-    this.setBackgroundColor("#A5C77D");
+    this.setBackgroundColor("#7faf46");
 
     initialized = false;
     constructTable();
@@ -157,7 +161,7 @@ public class GolfWindow extends Window {
     this.setMarginWidth(0);
     this.setLeftMargin(0);
     this.setTopMargin(0);
-    this.setBackgroundColor("#A5C77D");
+    this.setBackgroundColor("#7faf46");
 
     initialized = false;
     constructTable();
@@ -180,7 +184,7 @@ public class GolfWindow extends Window {
     table.setHeight(Table.HUNDRED_PERCENT);
     table.setVerticalAlignment(1, 7, Table.VERTICAL_ALIGN_TOP);
 
-    table.setHeight(1, 1, 59);
+//    table.setHeight(1, 1, 59);
     table.setHeight(1, 2, 1);
     table.setHeight(1, 3, 1);
     table.setHeight(1, 4, 21);
@@ -192,22 +196,25 @@ public class GolfWindow extends Window {
     table.setCellpaddingLeft(1, 7, 6);
     table.setCellpaddingRight(1, 7, 6);
     table.setCellpaddingBottom(1, 7, 6);
-    
-    table.setBackgroundImage(1, 1, iwb.getImage("golfwindow/top_59px.jpg"));
+    //7faf46
+//    table.setBackgroundImage(1, 1, iwb.getImage("golfwindow/top_59px.jpg"));
     table.setColor(1, 2, "#CDCECD");
     table.setColor(1, 3, "#858584");
     table.setBackgroundImage(1, 4, iwb.getImage("golfwindow/menu_21px.jpg"));
     table.setColor(1, 5, "#3A5A20");
-    table.setBackgroundImage(1, 6, iwb.getImage("golfwindow/grad_5px.jpg"));
-    table.setColor(1, 7, "#A5C77D");
+    //table.setBackgroundImage(1, 6, iwb.getImage("golfwindow/grad_5px.jpg"));
+    table.setColor(1, 6, "#7faf46");
+    table.setColor(1, 7, "#7faf46");
 
-    Image topLeft = iwb.getImage("golfwindow/golf-logo.jpg");
-    topLeft.setAlignment(Image.ALIGNMENT_LEFT);
-    Image topRight = iwb.getImage("golfwindow/idega-logo.jpg");
-    topRight.setAlignment(Image.ALIGNMENT_RIGHT);
+//    Image topLeft = iwb.getImage("golfwindow/golf-logo.jpg");
+//    topLeft.setAlignment(Image.ALIGNMENT_LEFT);
+//    Image topRight = iwb.getImage("golfwindow/idega-logo.jpg");
+//    topRight.setAlignment(Image.ALIGNMENT_RIGHT);
 
-    table.add(topLeft, 1, 1);
-    table.add(topRight, 1, 1);
+//    table.add(topLeft, 1, 1);
+    table.setRowStyleClass(1,"top");
+    table.setStyleClass(1,1,"banner");
+//    table.add(topRight, 1, 1);
     
     contentTable.setCellpadding(0);
     contentTable.setCellspacing(0);
@@ -344,6 +351,7 @@ public class GolfWindow extends Window {
       e.printStackTrace();
     }
     super._main(modinfo);
+    setStyleSheetURL(this.getStyleSheetPath(modinfo)+styleScript);
   }
 
   /*
@@ -860,10 +868,50 @@ public class GolfWindow extends Window {
 	}
 
   	
-  	
-  	/**
-  	 * Style related methods begin
-  	 */
 
+
+	
+	  /**
+	   * This method depends on iwbCore and iwb to be initialized
+	   * @return the path of the chosen stylesheet
+	   */
+	  private String getStyleSheetPath(IWContext iwc) {
+	  	IWProperty styleSheet = null;
+		String styleSrc = null;
+		IWBundle iwbCore = iwc.getIWMainApplication().getCoreBundle();
+	  	if(useStyleSheetFromCoreBundle) {
+	  		styleSheet = iwc.getIWMainApplication().getSystemProperties().getIWProperty(iwbCore.getBundleIdentifier()+".editorwindow_styleSheet_path");
+	  		if(styleSheet==null) {
+				styleSrc = iwbCore.getVirtualPath()+"/editorwindow/";
+				iwc.getIWMainApplication().getSystemProperties().getNewProperty().setProperty(iwbCore.getBundleIdentifier()+".editorwindow_styleSheet_path",styleSrc);
+			} else {
+				styleSrc = styleSheet.getValue();
+			}
+	  	} else {
+	  		styleSheet = iwc.getIWMainApplication().getSystemProperties().getIWProperty(getBundleIdentifier()+".editorwindow_styleSheet_name");
+	  		if(styleSheet==null) {
+	  			styleSrc = _iwb.getVirtualPath()+"/editorwindow/";
+	  			iwc.getIWMainApplication().getSystemProperties().getNewProperty().setProperty(getBundleIdentifier()+".editorwindow_styleSheet_name",styleSrc);
+	  		} else {
+	  			styleSrc = styleSheet.getValue();
+	  		}
+	  	}
+		return styleSrc;
+	  }
+	  
+	  public void setStyleScript(String styleScriptName) {
+	  	styleScript= styleScriptName;
+	  }
+	  
+	  /**
+	   * 
+	   * @param value if false it uses the current bundle of the extended class.  Default value is true.
+	   */
+	  public void setToUseStyleSheetFromCoreBundle(boolean value) {
+	  	useStyleSheetFromCoreBundle = value;
+	  }
+
+	
+	
   	
 }

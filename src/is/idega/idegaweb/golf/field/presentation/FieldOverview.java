@@ -279,7 +279,7 @@ public class FieldOverview extends GolfBlock {
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", "0");
 		
 		if (hole_text.length > 0) {
-			if(hole_text[0].getTextID() < 0) {
+			if(isAdmin() && hole_text[0].getTextID() < 0) {
 				TxText text = TextBusiness.saveText(-1,-1,iwc.getCurrentLocaleId(),iwc.getCurrentUserId(),this.getICObjectInstanceID(),null,null,"","","",null,null);
 				hole_text[0].setTextID(text.getID());
 				hole_text[0].store();
@@ -299,6 +299,10 @@ public class FieldOverview extends GolfBlock {
 
 		if (fieldText != null) {
 			contentTable.add(fieldText, 1, 3);
+			contentTable.setCellpaddingLeft(1,3,"10%");
+			contentTable.setCellpaddingRight(1,3,"10%");
+			contentTable.setCellpaddingBottom(1,3,25);
+			contentTable.setCellpaddingTop(1,3,10);
 			row++;
 		}
 		contentTable.add(getHoleChooser(field_id), 1, row);
@@ -435,7 +439,7 @@ public class FieldOverview extends GolfBlock {
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", hole_number);
 		if (hole_text.length > 0) {
-			if(hole_text[0].getTextID() < 0) {
+			if(isAdmin() && hole_text[0].getTextID() < 0) {
 				TxText text = TextBusiness.saveText(-1,-1,iwc.getCurrentLocaleId(),iwc.getCurrentUserId(),this.getICObjectInstanceID(),null,null,"","","",null,null);
 				hole_text[0].setTextID(text.getID());
 				hole_text[0].store();
@@ -448,6 +452,13 @@ public class FieldOverview extends GolfBlock {
 
 		if (fieldText != null) {
 			outerTable.add(fieldText, 1, row);
+			outerTable.add(Text.getBreak(), 1, row);
+			outerTable.add(Text.getBreak(), 1, row);
+			outerTable.setCellpaddingLeft(1,row,"10%");
+			outerTable.setCellpaddingRight(1,row,"10%");
+			outerTable.setCellpaddingBottom(1,row,20);
+			outerTable.setCellpaddingTop(1,row,10);
+			//outerTable.setBorder(1);
 			++row;
 		}
 
@@ -467,6 +478,7 @@ public class FieldOverview extends GolfBlock {
 
 		Link courseOverview = new Link(getResourceBundle().getLocalizedString("field.field_overview", "-&nbsp;Field&nbsp;overview&nbsp;-"));
 		courseOverview.addParameter("field_id", field_id);
+		courseOverview.setToMaintainAllParameter(false);
 
 		Link nextHole = new Link(getResourceBundle().getLocalizedString("field.next_hole", "Next&nbsp;hole&nbsp;&gt;&gt;"));
 		nextHole.addParameter("hole_number", String.valueOf(Integer.parseInt(hole_number) + 1));
