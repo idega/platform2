@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.1 2001/11/08 15:53:51 aron Exp $
+ * $Id: Tabber.java,v 1.2 2001/11/09 12:17:01 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -141,7 +141,7 @@ public class Tabber extends Block {
       Link2.addParameter(strAction,ACT21);
 
       Image allocation = iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif");
-      Link Link3 = CF.getLink(allocation,CF.ADM_ALLOCATION,CampusAdminPage.class);
+      Link Link3 = CF.getLink(allocation,CF.ADM_ALLOCATION);
       Link3.addParameter(strAction,ACT22);
 
       Image apartments = iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif");

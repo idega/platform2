@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.2 2001/11/08 19:00:27 aron Exp $
+ * $Id: TextControl.java,v 1.3 2001/11/09 12:17:01 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,12 +42,18 @@ public class TextControl extends Block {
   private final int NOACT = 0;
 	private IWBundle iwb;
 
+	 private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
+
 
   public TextControl(){
     MiddleColor = "#9FA9B3";
     LightColor = "#D7DADF";
     DarkColor = "#27324B";
   }
+
+	public String getBundleIdentifier(){
+	  return IW_BUNDLE_IDENTIFIER;
+	}
 
   public PresentationObject getTabs(){
     return Tabs;

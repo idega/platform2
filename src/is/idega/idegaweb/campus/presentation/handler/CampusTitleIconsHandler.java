@@ -24,6 +24,7 @@ public class CampusTitleIconsHandler implements PropertyHandler {
 
 	public final static String MENU = TitleIcons.MAINMENU;
 	public final static String LOGIN = TitleIcons.LOGIN;
+	public final static String IDEGA = TitleIcons.IDEGALOGO;
 
   public CampusTitleIconsHandler() {
   }
@@ -35,6 +36,7 @@ public class CampusTitleIconsHandler implements PropertyHandler {
     menu.addMenuElement("","Select:");
     menu.addMenuElement(MENU ,"MENU");
     menu.addMenuElement(LOGIN,"LOGIN");
+		 menu.addMenuElement(IDEGA,"IDEGALOGO");
     menu.setSelectedElement(value);
     return menu;
   }
