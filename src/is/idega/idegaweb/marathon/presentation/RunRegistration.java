@@ -743,6 +743,7 @@ public class RunRegistration extends Block {
 		}
 
 		int sevenKM = Integer.parseInt(iwrb.getIWBundleParent().getProperty("7_km_id", "113"));
+		int threeKM = Integer.parseInt(iwrb.getIWBundleParent().getProperty("3_km_id", "126"));
 
 		int userID = -1;
 		
@@ -808,7 +809,7 @@ public class RunRegistration extends Block {
 							travelURL += "_rent";
 						}
 					}
-					if (Integer.parseInt(distance) == sevenKM && ssnIS != null) {
+					if ( (Integer.parseInt(distance) == sevenKM || Integer.parseInt(distance) == threeKM)&& ssnIS != null) {
 						int age = getRunBiz(iwc).getAgeFromPersonalID(ssnIS);
 						if (age > 0 && age <= 12) {
 							travelURL += "_12";
@@ -820,14 +821,14 @@ public class RunRegistration extends Block {
 						showPayment = false;
 					}
 					payBlue.setURL(URL);
-					payBlue.setLocale(iwc.getCurrentLocale());
-					payBlue.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
 					payBlue.setTarget(Link.TARGET_NEW_WINDOW);
 					payGreen.setURL(URL);
-					payGreen.setLocale(iwc.getCurrentLocale());
-					payBlue.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
 					payGreen.setTarget(Link.TARGET_NEW_WINDOW);
 				}
+				payBlue.setLocale(iwc.getCurrentLocale());
+				payBlue.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
+				payGreen.setLocale(iwc.getCurrentLocale());
+				payGreen.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
 		
 				buttonTable.add(backBlue, 1, 1);
 				buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
