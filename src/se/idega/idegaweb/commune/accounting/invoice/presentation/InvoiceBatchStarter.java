@@ -193,9 +193,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		link = page;
 	}
 
-	/*
-	 * The IWContext parameter is used in the TestPosts subclass
-	 */
+
 	protected PresentationObject getShoolDropDown(){
 		return new Text("");
 	}
