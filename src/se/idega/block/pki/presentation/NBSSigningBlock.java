@@ -15,6 +15,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import java.io.File;
+
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.nexus.nbs.sdk.HttpMessage;
 import se.nexus.nbs.sdk.NBSMessageHttp;
@@ -45,6 +46,8 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		INIT_DONE = "se.idega.block.pki.INIT_DONE";
 				
 	public final static String NBS_SIGNED_ENTITY = "se.idega.block.pki.business.NBS_SIGNED_ENTITY";
+	
+	private final static String BIDT_SDK_PATH_PROPERTY = "bidt_sdk_path";	
 	
 	
 	public String getBundleIdentifier() {
@@ -134,6 +137,8 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			String signedData = new String(result.getSignedData().getEncoded());
 			entity.setXmlSignedData(signedData);	
 			entity.setSignedFlag(true);	
+			entity.setSignedBy(iwc.getCurrentUser().getID());
+			entity.setSignedDate(new java.sql.Date( java.lang.System.currentTimeMillis()));
 			entity.store();
 		} catch(ClassCastException ex){
 			ex.printStackTrace();
@@ -207,7 +212,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		
 		NBSServerFactory serverGenerator = (NBSServerFactory) iwc.getApplicationContext().getApplicationAttribute(SERVER_FACTORY);
 		if (serverGenerator == null){
-			File configFile = new File(getConfigFilePath());		
+			File configFile = new File(getConfigFilePath(iwc));		
 			System.out.println("configFile: "+ configFile);	
 			serverGenerator = new NBSServerFactory();
 			serverGenerator.init(configFile);
@@ -217,13 +222,12 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		return serverGenerator;
 	}
 	
-	private String getConfigFilePath()
-	{
+
+	
+	private String getConfigFilePath(IWContext iwc){
+
 		System.out.println("getConfigFilePath()");
-//		String cbtConfigFile = iwc.getServletContext().getInitParameter("CbtConfigFile");	
-//		System.out.println("ContractBusiness.ConfigFilePath: " + cbtConfigFile);	
-			
-		return "C:/idega/webs/nacka/WEB-INF/bidt_sdk.properties";
-		//return cbtConfigFile;
+		String path = getBundle(iwc).getProperty(BIDT_SDK_PATH_PROPERTY);
+		return path != null ? path : "bidt_sdk.properties";
 	}
 }
