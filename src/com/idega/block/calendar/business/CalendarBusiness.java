@@ -60,30 +60,20 @@ public static final String PARAMETER_SHOW_CALENDAR = "show_calendar";
 public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
   public static IWTimestamp getTimestamp(String day,String month,String year) {
-    IWTimestamp stamp = null;
+    IWTimestamp stamp = new IWTimestamp();
 
-    if(month != null && year != null){
-      try {
-	int iDay = 1;
-	try {
-	  iDay = Integer.parseInt(day);
-	}
-	catch (Exception e) {
-	  iDay = 1;
-	}
-
-	int iMonth = Integer.parseInt(month);
-	int iYear = Integer.parseInt(year);
-
-	stamp = new IWTimestamp(iDay,iMonth,iYear);
-      }
-      catch (Exception ex) {
-	stamp = new IWTimestamp();
-      }
-    }
-    else
-      stamp = new IWTimestamp();
-
+		if (day != null) {
+			stamp.setDay(Integer.parseInt(day));
+		}else {
+			stamp.setDay(1);
+		}
+		if (month != null) {
+			stamp.setMonth(Integer.parseInt(month));
+		}
+		if (year != null) {
+			stamp.setYear(Integer.parseInt(year));
+		}
+	
     stamp.setHour(0);
     stamp.setMinute(0);
     stamp.setSecond(0);
