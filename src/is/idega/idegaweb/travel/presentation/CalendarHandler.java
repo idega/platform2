@@ -139,7 +139,7 @@ public class CalendarHandler extends TravelManager {
 
       int row = 1;
 
-      if (_timeframe.getIfYearly()) {
+//      if (_timeframe.getIfYearly()) {
         Form form = new Form();
         for (int i = 0; i < parameterName.size(); i++) {
           form.maintainParameter((String) parameterName.get(i));
@@ -148,13 +148,13 @@ public class CalendarHandler extends TravelManager {
         form.maintainParameter(CalendarBusiness.PARAMETER_MONTH);
 
         Table yearTable = new Table(2,1);
-        idegaTimestamp temp = idegaTimestamp.RightNow();
-        DropdownMenu year = new DropdownMenu(CalendarBusiness.PARAMETER_YEAR);
-          for (int i = 2000; i < ( temp.getYear() +4 ); i++) {
-              year.addMenuElement(i,""+i);
+        idegaTimestamp tempSt = idegaTimestamp.RightNow();
+        DropdownMenu yearMenu = new DropdownMenu(CalendarBusiness.PARAMETER_YEAR);
+          for (int i = 2000; i < ( tempSt.getYear() +4 ); i++) {
+              yearMenu.addMenuElement(i,""+i);
           }
-          year.setSelectedElement(Integer.toString(this._stamp.getYear()));
-          year.setToSubmit();
+          yearMenu.setSelectedElement(Integer.toString(this._stamp.getYear()));
+          yearMenu.setToSubmit();
 
         Text yearTxt = (Text) theText.clone();
           yearTxt.setText(iwrb.getLocalizedString("travel.year","Year"));
@@ -164,7 +164,7 @@ public class CalendarHandler extends TravelManager {
           }
 
         yearTable.add(yearTxt,1,1);
-        yearTable.add(year,2,1);
+        yearTable.add(yearMenu,2,1);
         yearTable.setAlignment(1,1,"left");
         yearTable.setAlignment(2,1,"left");
 
@@ -173,7 +173,7 @@ public class CalendarHandler extends TravelManager {
         table.setAlignment(1,row,"center");
         table.add(form,1,row);
         ++row;
-      }
+//      }
 
       Text jan = (Text) theText.clone();
         jan.setFontStyle("text-decoration: none;");
