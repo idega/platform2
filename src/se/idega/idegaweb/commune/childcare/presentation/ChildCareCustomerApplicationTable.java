@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.95 2005/02/25 08:22:36 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.96 2005/02/25 15:38:20 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -710,7 +711,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	private void deleteOffer(IWContext iwc) throws RemoteException {
 		int applicationId = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
-		getChildCareBusiness(iwc).deleteOffer(applicationId, iwc.getCurrentUser());
+		ChildCareBusiness b = getChildCareBusiness(iwc);
+		b.deleteOffer(applicationId, iwc.getCurrentUser());
+		ChildCareApplication app = b.getApplication(applicationId);
+		User child = app.getChild();
+		DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
+		Date today = new Date(System.currentTimeMillis());
+		b.sendMessageToProvider(app, localize("child_care.offer_removed_custodian_subject", "Application offer removed by custodian"), localize("child_care.offer_removed_for_child", "Application offer removed for child") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + ", " + format.format(today) + ".");
+		b.sendMessageToParents(app, localize("child_care.offer_removed_subject", "Application offer removed"), localize("child_care.offer_removed_for_child", "Application offer removed for child") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())  + ", " + app.getProvider().getName() + " " + format.format(today) + ".");
 	}
 	
 	/**
