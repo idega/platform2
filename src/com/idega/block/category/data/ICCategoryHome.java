@@ -1,16 +1,63 @@
 package com.idega.block.category.data;
 
+import java.util.Collection;
+import java.util.List;
+import javax.ejb.FinderException;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.data.IDOHome;
 
-public interface ICCategoryHome extends com.idega.data.IDOHome
-{
- public ICCategory create() throws javax.ejb.CreateException, java.rmi.RemoteException;
- public ICCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection findAllByObjectInstance(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection findAllByObjectInstance(com.idega.core.component.data.ICObjectInstance p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection findRootsByType(java.lang.String p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getListOfCategoryForObjectInstance(com.idega.core.component.data.ICObjectInstance p0,boolean p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public int getOrderNumber(com.idega.block.category.data.Category p0,com.idega.core.component.data.ICObjectInstance p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public int getOrderNumber(com.idega.block.category.data.Category p0,String p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean setOrderNumber(com.idega.block.category.data.Category p0,com.idega.core.component.data.ICObjectInstance p1,int p2)throws com.idega.data.IDOException, java.rmi.RemoteException;
 
+/**
+ * @author gimmi
+ */
+public interface ICCategoryHome extends IDOHome {
+
+	public ICCategory create() throws javax.ejb.CreateException;
+
+	public ICCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+
+	public ICCategory findByPrimaryKey(int id) throws javax.ejb.FinderException;
+
+	public ICCategory findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbHomeGetListOfCategoryForObjectInstance
+	 */
+	public List getListOfCategoryForObjectInstance(ICObjectInstance obj, boolean order) throws FinderException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbHomeGetOrderNumber
+	 */
+	public int getOrderNumber(Category category, ICObjectInstance instance) throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbHomeGetOrderNumber
+	 */
+	public int getOrderNumber(Category category, String objectInstanceId) throws javax.ejb.FinderException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbHomeSetOrderNumber
+	 */
+	public boolean setOrderNumber(Category category, ICObjectInstance instance, int orderNumber)
+			throws com.idega.data.IDOException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbFindRootsByType
+	 */
+	public Collection findRootsByType(String type) throws FinderException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbFindAllByObjectInstance
+	 */
+	public Collection findAllByObjectInstance(int iObjectInstanceID) throws FinderException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbFindAllByObjectInstance
+	 */
+	public Collection findAllByObjectInstance(ICObjectInstance instance) throws FinderException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#ejbHomeFindAll
+	 */
+	public Collection findAll() throws FinderException;
 }

@@ -21,6 +21,11 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.MetaDataCapable;
 import com.idega.data.SimpleQuerier;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 public class ICCategoryBMPBean extends com.idega.data.TreeableEntityBMPBean implements ICCategory, Category, MetaDataCapable {
 	
@@ -320,4 +325,21 @@ private static final String IC_CATEGORY_IC_OBJECT_INSTANCE_MIDDLE_TABLE_NAME = "
 	public Collection getFiles() throws IDORelationshipException {
 		return this.idoGetRelatedEntities(ICFile.class);
 	}
+
+	/**
+	 * Returns a collection of categories that are of the type getCategoryType()
+	 * @return Collection of categories
+	 * @throws FinderException
+	 */
+  public Collection ejbHomeFindAll() throws FinderException {
+		Table table = new Table(this);
+		Column column = new Column(table, getColumnType());
+		Column valid = new Column(table, getColumnValid());
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(column, MatchCriteria.EQUALS, getCategoryType()));
+		query.addCriteria(new MatchCriteria(valid, MatchCriteria.NOTEQUALS, false));
+		return idoFindPKsBySQL(query.toString());
+  }
+
 }

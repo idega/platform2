@@ -3,43 +3,152 @@ package com.idega.block.category.data;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Locale;
-
-import com.idega.core.file.data.*;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.MetaDataCapable;
+import com.idega.data.TreeableEntity;
 
-public interface ICCategory extends com.idega.data.TreeableEntity,IDOLegacyEntity,com.idega.block.category.data.Category
-{
- public void setValid(boolean p0);
- public boolean getValid();
- public void setLocaleId(int p0);
- public int getBusinessId();
- public java.lang.String getCategoryType();
- public void setName(java.lang.String p0);
- public void initializeAttributes();
- public void setDescription(java.lang.String p0);
- public java.lang.String getDescription();
- public void setType(java.lang.String p0);
- public java.sql.Timestamp getCreated();
- public java.lang.String getName();
- public void setBusinessId(int p0);
- public int getParentId();
- public java.lang.String getType();
- public int getLocaleId();
- public void setParentId(int p0);
- public void setCreated(java.sql.Timestamp p0);
- public String getName(Locale locale) ;
- public String getDescription(Locale locale);
- public ICCategoryTranslation getCategoryTranslation(Locale locale)throws RemoteException;
- // Gimmi 8.04.2003
- public void setOwnerGroupId(int ownerGroupId);
- public int getOwnerGroupId();
- public void addFile(ICFile file) throws IDOAddRelationshipException;
- public void removeFile(ICFile file) throws IDORemoveRelationshipException;
- public Collection getFiles() throws IDORelationshipException;
- public java.sql.Timestamp getInvalidationDate();
- public void setInvalidationDate(java.sql.Timestamp date);
- 
+
+/**
+ * @author gimmi
+ */
+public interface ICCategory extends TreeableEntity, IDOLegacyEntity, Category, MetaDataCapable {
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getBusinessId
+	 */
+	public int getBusinessId();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setBusinessId
+	 */
+	public void setBusinessId(int id);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getParentId
+	 */
+	public int getParentId();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setParentId
+	 */
+	public void setParentId(int id);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getLocaleId
+	 */
+	public int getLocaleId();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setLocaleId
+	 */
+	public void setLocaleId(int id);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getDescription
+	 */
+	public String getDescription();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setDescription
+	 */
+	public void setDescription(String description);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getValid
+	 */
+	public boolean getValid();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setValid
+	 */
+	public void setValid(boolean valid);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getCreated
+	 */
+	public java.sql.Timestamp getCreated();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setCreated
+	 */
+	public void setCreated(java.sql.Timestamp created);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getInvalidationDate
+	 */
+	public java.sql.Timestamp getInvalidationDate();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setInvalidationDate
+	 */
+	public void setInvalidationDate(java.sql.Timestamp date);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getType
+	 */
+	public String getType();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setType
+	 */
+	public void setType(String type);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getCategoryType
+	 */
+	public String getCategoryType();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getName
+	 */
+	public String getName(Locale locale);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getDescription
+	 */
+	public String getDescription(Locale locale);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getCategoryTranslation
+	 */
+	public ICCategoryTranslation getCategoryTranslation(Locale locale) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#setOwnerGroupId
+	 */
+	public void setOwnerGroupId(int ownerGroupId);
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getOwnerGroupId
+	 */
+	public int getOwnerGroupId();
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#addFile
+	 */
+	public void addFile(ICFile file) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#removeFile
+	 */
+	public void removeFile(ICFile file) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.category.data.ICCategoryBMPBean#getFiles
+	 */
+	public Collection getFiles() throws IDORelationshipException;
 }

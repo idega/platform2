@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
+import com.idega.block.category.data.ICCategoryBMPBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORemoveRelationshipException;
 /**
@@ -19,7 +19,7 @@ import com.idega.data.IDORemoveRelationshipException;
  * @version 1.0
  */
 
-public class ProductCategoryBMPBean extends com.idega.block.category.data.ICCategoryBMPBean implements com.idega.block.trade.stockroom.data.ProductCategory {
+public class ProductCategoryBMPBean extends ICCategoryBMPBean implements ProductCategory {
 
   public static final String CATEGORY_TYPE_PRODUCT = "sr_prod_cat_product";
 
@@ -75,11 +75,18 @@ public class ProductCategoryBMPBean extends com.idega.block.category.data.ICCate
 
     }else if (coll.size() == 0) {
 
-      ProductCategory pCat = pcHome.createLegacy();
-        pCat.setCategoryType(type);
-        pCat.setName(type);
-        pCat.store();
+      ProductCategory pCat;
+			try {
+				pCat = pcHome.create();
+				pCat.setCategoryType(type);
+		    pCat.setName(type);
+		    pCat.store();
       return pCat;
+			}
+			catch (CreateException e) {
+				e.printStackTrace();
+				return null;
+			}
 
     }else {//(coll.size() > 1) {
 
@@ -87,6 +94,8 @@ public class ProductCategoryBMPBean extends com.idega.block.category.data.ICCate
 
     }
   }
-
-
+  
+	public Collection ejbHomeFindAll() throws FinderException {
+		return super.ejbHomeFindAll();
+	}
 } // Class ProductCategory
