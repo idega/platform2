@@ -596,7 +596,7 @@ public class GrayForums extends ForumPresentation{
   }
 
   protected void initSomeThreads() throws SQLException {
-     Some = new SomeThreads("/forum/index.jsp", 3, true);
+     //Some = new SomeThreads("/forum/index.jsp", 3, true);
     //Some.setBackgroundColor(MenuFontColor);
     //Some.setLinkCellWidth("146");
     //Some.setLinkCellHeight("22");
