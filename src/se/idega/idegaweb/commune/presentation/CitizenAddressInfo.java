@@ -47,7 +47,7 @@ public class CitizenAddressInfo extends PresentationObjectContainer
 				PostalCode code = null;
 				if (addr != null)
 				{
-					addressString = addr.getStreetName() + " " + addr.getStreetNumber();
+					addressString = addr.getStreetAddress();
 					code = addr.getPostalCode();
 				}
 				else
@@ -56,7 +56,7 @@ public class CitizenAddressInfo extends PresentationObjectContainer
 				}
 				if (code != null)
 				{
-					postalCodeString = code.getPostalCode()+ " " + code.getName();
+					postalCodeString = code.getPostalAddress();
 				}
 				else
 				{

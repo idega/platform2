@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.3 2002/08/13 15:45:34 tryggvil Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.4 2002/08/13 21:21:43 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -238,11 +238,11 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			business.acceptApplication(new Integer(id).intValue(),Converter.convertToNewUser(iwc.getUser()));
 
-			form.add(getText("Approved appl. for : " + id));
+			form.add(getText(localize("caa_acc_application", "Approved application number : ") + id));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			form.add(getText("Failed to approve appl. for : " + id));
+			form.add(getText(localize("caa_acc_application_failed", "There was an error accepting application number : " + id)));
 		}
 
 		SubmitButton list = new SubmitButton(localize(PARAM_FORM_LIST, "List"), PARAM_FORM_LIST, "");
@@ -265,11 +265,11 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				business.rejectApplication(new Integer(id).intValue(),Converter.convertToNewUser(iwc.getUser()),iwc.getParameter(PARAM_MESSAGE));			
 			}
 
-			form.add(getText("Rejected appl. for : " + id));
+			form.add(getText(localize("caa_rej_application", "Rejected application number : ") + id));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			form.add(getText("Failed to reject appl. for : " + id));
+			form.add(getText(localize("caa_rej_application_failed", "There was an error rejecting application number : ") + id));
 		}
 		
 		SubmitButton list = new SubmitButton(localize(PARAM_FORM_LIST, "List"), PARAM_FORM_LIST, "");

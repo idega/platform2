@@ -187,7 +187,9 @@ public class CheckRequestAdmin extends CommuneBlock {
 		User child = getCheckBusiness(iwc).getUserById(iwc, check.getChildId());
 		if (child != null) {
 			--row;
-			checkInfoTable.add(getSmallText(child.getPersonalID() + ", " + child.getName()), 2, row);
+			String childSSN = PersonalIDFormatter.format(child.getPersonalID(),iwc.getApplication().getSettings().getApplicationLocale());
+
+			checkInfoTable.add(getSmallText(childSSN + ", " + child.getName()), 2, row);
 			Collection addresses = child.getAddresses();
 			Address address = null;
 			PostalCode zip = null;
@@ -198,9 +200,9 @@ public class CheckRequestAdmin extends CommuneBlock {
 				break;
 			}
 			if (address != null) {
-				checkInfoTable.add(getSmallText(", " + address.getStreetName() + " " + address.getStreetNumber()), 2, row);
+				checkInfoTable.add(getSmallText(", " + address.getStreetAddress()), 2, row);
 				if (zip != null) {
-					checkInfoTable.add(getSmallText(" " + zip.getPostalCode()), 2, row);
+					checkInfoTable.add(getSmallText(" " + zip.getPostalAddress()), 2, row);
 				}
 			}
 

@@ -123,7 +123,7 @@ public class MessageBox extends CommuneBlock {
 	    Text date = null;
 	    CheckBox deleteCheck = null;
 	    boolean isRead = false;
-	    DateFormat dateFormat = java.text.DateFormat.getDateTimeInstance(2, 2, iwc.getCurrentLocale());
+	    DateFormat dateFormat = com.idega.util.CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
 	
 	    if ( messages != null ) {
 	    	Vector messageVector = new Vector(messages);
