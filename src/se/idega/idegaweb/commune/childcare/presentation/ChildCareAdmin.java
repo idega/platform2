@@ -165,9 +165,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				}
 				if (application.getHasPriority()) {
 					showPriority = true;
-					Text text = getSmallText("*");
-					text.setFontColor("#00FF00");
-					applicationTable.add(text, column, row);
+					applicationTable.add(getSmallText("*"), column, row);
 				}
 				if (showComment || showPriority)
 					applicationTable.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
@@ -198,12 +196,11 @@ public class ChildCareAdmin extends ChildCareBlock {
 			applicationTable.add(getSmallErrorText("* "), 1, row);
 			applicationTable.add(getSmallText(localize("child_care.placed_at_other_provider","Placed at other provider")), 1, row++);
 		}
-		if (showComment) {
-			applicationTable.setHeight(2, row++);
+		if (showPriority) {
+			if (!showComment)
+				applicationTable.setHeight(2, row++);
 			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-			Text text = getSmallText("*");
-			text.setFontColor("#00FF00");
-			applicationTable.add(text, 1, row);
+			applicationTable.add(getSmallText("* "), 1, row);
 			applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row);
 		}
 		
