@@ -1969,7 +1969,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			table.setHeight(1, 2, "100%");
 			
 			frame.add(table);
-			frame.addBottom(getDetailLinks(frame.product, frame.depAddresses));
+			frame.addBottom(getDetailLinks(frame.product, frame.depAddresses, frame.timeframe));
 		} 
 		else {
 			Table table = new Table(1, 1);
@@ -1981,7 +1981,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return frame;
 	}
 	
-	private Form getDetailLinks(Product product, Collection departureAddresses) throws RemoteException {
+	private Form getDetailLinks(Product product, Collection departureAddresses, Timeframe frame) throws RemoteException {
 		Form form = new Form();
 		form = addParameters(form, product.getID(), false);
 		Table linkTable = new Table(3, 1);
@@ -1989,16 +1989,21 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		try {
 			if (departureAddresses != null && !departureAddresses.isEmpty()) {
 				DropdownMenu addresses = new DropdownMenu(PARAMETER_ADDRESS_ID);
-				addresses.addMenuElements(departureAddresses);
+//				addresses.addMenuElements(departureAddresses);
+//				DropdownMenu addresses = new DropdownMenu(PARAMETER_PRODUCT_PRICE_ID);
+				Iterator iter = departureAddresses.iterator();
+				TravelAddress ta;
+				while (iter.hasNext()) {
+					ta = (TravelAddress) iter.next();
+					ProductPrice[]prices = ProductPriceBMPBean.getProductPrices(product.getID(), frame.getID(), ta.getID(), true, this.getPriceCategoryKey());
+					if (prices.length > 0) {
+						addresses.addMenuElement(ta.getPrimaryKey().toString(), ta.getName());
+					}
+				}
 				addresses.setStyleClass(getStyleName(BookingForm.STYLENAME_INTERFACE));
 				//linkTable.add( getSmallText(iwrb.getLocalizedString("travel.search.departure_from", "Departure from")+" : "), 3 ,1);
 				linkTable.add( addresses, 2, 1);
 				linkTable.add( Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
-				/*Iterator iter = depAddresses.iterator();
-				TravelAddress ta;
-				while (iter.hasNext()) {
-					ta = (TravelAddress) iter.next();
-				}*/
 			}
 		} catch (Exception e) {
 			
