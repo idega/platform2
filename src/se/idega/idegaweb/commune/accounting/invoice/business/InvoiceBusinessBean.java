@@ -1,6 +1,36 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.awt.Color;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
+
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -18,51 +48,21 @@ import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
+import com.lowagie.text.Element;
 import com.lowagie.text.PageSize;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
-import com.lowagie.text.Element;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/26 12:40:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 22:57:06 $ by $Author: palli $
  *
  * @author Joakim
- * @version $Revision: 1.52 $
+ * @version $Revision: 1.53 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {

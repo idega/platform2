@@ -56,8 +56,6 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
-import com.idega.user.data.GroupType;
-import com.idega.user.data.GroupTypeHome;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 /**
