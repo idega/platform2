@@ -235,6 +235,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						PaymentFlowConstant.IN, 			//The payment flow is out
 						startPeriod.getDate(),							//Current date to select the correct date range
 						RuleTypeConstant.DERIVED,			//The conditiontype
+						null,
 						conditions								//The conditions that need to fulfilled
 						);
 

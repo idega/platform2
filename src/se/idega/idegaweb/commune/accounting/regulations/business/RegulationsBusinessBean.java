@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.77 2003/11/28 16:37:47 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.78 2003/11/30 22:30:53 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1752,7 +1752,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param condition
 	 * @return ArrayList containing the regulations 
 	 */
-	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(String operation, String flow, Date period, String conditionType, Collection condition) {
+	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+	String operation, String flow, Date period, String conditionType, String mainRule, Collection condition) {
 		Collection match = new ArrayList();
 
 		try {

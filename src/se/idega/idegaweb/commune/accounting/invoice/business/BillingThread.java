@@ -205,21 +205,32 @@ public abstract class BillingThread extends Thread{
 		startTime = new IWTimestamp(start);
 		startTime.setAsDate();
 		time = new IWTimestamp(startPeriod);
+		log.info("Start Placement = "+startTime.toString()+"  Start period = "+time.toString());
 		time.setAsDate();
 		startTime = startTime.isLater(startTime,time);
+		log.info("Start for calc set to = "+startTime.toString());
 		//Then get end date
 		endTime = new IWTimestamp(endPeriod);
+		log.info("End period = "+endTime);
 		endTime.setAsDate();
 		if(end!=null){
 			time = new IWTimestamp(end);
+			log.info("End placement = "+time);
 			endTime = endTime.isEarlier(endTime, time);
 		}
+		log.info("End for calc set to = "+endTime.toString());
 		//calc the how many months are in the given time.
 		months = endTime.getMonth() - startTime.getMonth() + (endTime.getYear()-startTime.getYear())*12;
 		months += 1.0;
 		months -= percentOfMonthDone(startTime);
 		months -= 1.0 - percentOfMonthDone(endTime);
 		days = IWTimestamp.getDaysBetween(startTime, endTime);
+		log.info("Months set to "+months+"  days set to "+days);
+	}
+	
+	public static void main(String[] arg){
+		IWTimestamp s = new IWTimestamp();
+		s.setMonth(10);
 	}
 
 	/**
