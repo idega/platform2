@@ -17,6 +17,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.EmailHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -50,12 +51,13 @@ public class Register extends Block {
 	
 	private boolean _mailError = false;
 	
-	public final static int PERSONAL_NUMBER_NOT_FOUND = 1000;
+	//public final static int PERSONAL_NUMBER_NOT_FOUND = 1000;
 	
 	public final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private static final int[] KT_MULT = {3, 2, 7, 6, 5, 4, 3, 2}; 
+	//private static final int[] KT_MULT = {3, 2, 7, 6, 5, 4, 3, 2}; 
 	
 	public void control() {
+		System.out.println("Processing registration");
 		PresentationObject po;
 		String message;
 		if(_iwc.getParameter("reg_personal_number")!=null) {
@@ -73,10 +75,11 @@ public class Register extends Block {
 				System.out.println("Stage 2 completed");
 				po = getStage3Page(null);
 			} else {
-				System.out.println("Stage 2 redisplayed");
 				if(_mailError) {
+					System.out.println("Stage 2 completed");
 					po = getStage3Page(message);
 				} else {
+					System.out.println("Stage 2 redisplayed");
 					po = getStage2Page(message);
 				}
 			}
@@ -89,12 +92,17 @@ public class Register extends Block {
 	}
 	
 	private PresentationObject getStage1Page(String message) {
+		getParentPage().setTitle(_iwrb.getLocalizedString("register.stage1_title", "Registration - SSN"));
+		
 		Table T = new Table();
 		int row = 1;
 		if(message!=null) {
 			T.mergeCells(1,row,2,row);
 			T.add(message, 1, row++);
 		}
+		String instructions = _iwrb.getLocalizedString("register.stage1_instructions", "Please provide your SSN, this will be your username when you log in");
+		T.mergeCells(1, row, 2, row);
+		T.add(instructions, 1, row++);
 		String labelPersonNumber = _iwrb.getLocalizedString("register.person_number", "SSN");
 		TextInput inputPersonalNumber = new TextInput("reg_personal_number");
 		if (_iwc.isParameterSet("reg_personal_number")) {
@@ -133,6 +141,10 @@ public class Register extends Block {
 			if(user.getGroupID()==-1) {
 				return _iwrb.getLocalizedString("register.user_not_in_any_group", "User must be a member of a group.");
 			}
+			LoginTable lt = getLoginTable(user);
+			if(lt!=null) {
+				return _iwrb.getLocalizedString("register.user_already_has_login", "You already have a login, can not create another");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return _iwrb.getLocalizedString("register.error_looking_pn", "Error searching for user by SSN");
@@ -142,6 +154,8 @@ public class Register extends Block {
 	}
 	
 	private PresentationObject getStage2Page(String message) {
+		getParentPage().setTitle(_iwrb.getLocalizedString("register.stage2_title", "Registration - login"));
+		
 		Table T = new Table();
 		int row = 1;
 		if(message!=null) {
@@ -153,8 +167,8 @@ public class Register extends Block {
 		TextInput inputPassword = new PasswordInput("reg_password");
 		String labelPasswordConfirmed = _iwrb.getLocalizedString("register.password_confirmed", "Retyps Password");
 		TextInput inputPasswordConfirmed = new PasswordInput("reg_password_confirmed");
-		//String labelEmail = _iwrb.getLocalizedString("register.email_address", "Email");
-		//TextInput inputEmail = new TextInput("reg_email");
+		String labelEmail = _iwrb.getLocalizedString("register.email_address", "Email");
+		TextInput inputEmail = new TextInput("reg_email");
 		String labelHintQuestion = _iwrb.getLocalizedString("register.hint_question", "Hint question");
 		TextInput inputHintQuestion = new TextInput("reg_hint_question");
 		String labelHintAnswer = _iwrb.getLocalizedString("register.hint_answer", "Answer");
@@ -166,8 +180,8 @@ public class Register extends Block {
 		T.add(inputPassword, 2, row++);
 		T.add(labelPasswordConfirmed, 1, row);
 		T.add(inputPasswordConfirmed, 2, row++);
-		//T.add(labelEmail, 1, row);
-		//T.add(inputEmail, 2, row++);
+		T.add(labelEmail, 1, row);
+		T.add(inputEmail, 2, row++);
 		T.mergeCells(1, row, 2, row);
 		T.add(textHint, 1, row++);
 		T.add(labelHintQuestion, 1, row);
@@ -200,7 +214,7 @@ public class Register extends Block {
 	private String processStage2() {
 		String password = _iwc.getParameter("reg_password");
 		String passwordConfirmed = _iwc.getParameter("reg_password_confirmed");
-		//String email = _iwc.getParameter("reg_email");
+		String email = _iwc.getParameter("reg_email");
 		String hintQ = _iwc.getParameter("reg_hint_question");
 		String hintA = _iwc.getParameter("reg_hint_answer");
 		String kt = _iwc.getParameter("reg_kt");
@@ -236,9 +250,14 @@ public class Register extends Block {
 			lt.setUserId(user.getID());
 			lt.setUserLogin(kt);
 			lt.store();
-			/*if(email!=null && email.length()>0) {
-				user.add
-			}*/
+			if(email!=null && email.length()>0) {
+				System.out.println("adding email " + email + " to user " + user.getName());
+				Email emailIDO = ((EmailHome) IDOLookup.getHome(Email.class)).create();
+				emailIDO.setEmailAddress(email);
+				emailIDO.store();
+				user.addEmail(emailIDO);
+				user.store();
+			}
 			LoginBusiness.changeUserPassword(user, password);
 			msg = sendMessage(user, kt, password);
 			if(msg!=null) {
@@ -258,6 +277,8 @@ public class Register extends Block {
 	}
 	
 	private PresentationObject getStage3Page(String message) {
+		getParentPage().setTitle(_iwrb.getLocalizedString("register.stage3_title", "Registration - Done"));
+		
 		Table T = new Table();
 		int row = 1;
 		if(message!=null) {
@@ -381,4 +402,5 @@ public class Register extends Block {
 		}
 		return lt;
 	}
+	
 }
