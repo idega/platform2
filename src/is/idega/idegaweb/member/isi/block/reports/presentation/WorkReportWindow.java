@@ -149,7 +149,7 @@ public class WorkReportWindow extends IWAdminWindow {
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {
 				table.add(new WorkReportCloser(),2,1);	//not a selector
-				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
+				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"));
 			}
 			else if (action.equals(ACTION_STATISTICS)) {
 				selector = new WorkReportSelector();
