@@ -22,6 +22,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.texteditor.TextEditor;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -63,6 +64,7 @@ public class HelpWindow extends StyledIWAdminWindow {
 	private final static String SAVE = "hlp_save";
 	private final static String CLOSE = "hlp_close";
 	private final static String EDIT = "hlp_edit";
+	private final static String CLOSE_WINDOW = "hlp_close_window";
 	
 	private final static String ERROR_NO_HELP_KEY = "hlp_err_no_key";
 	private final static String ERROR_NO_BUNDLE = "hlp_err_no_bundle";
@@ -182,7 +184,7 @@ public class HelpWindow extends StyledIWAdminWindow {
 		t.setStyleClass(mainTableStyle);
 		t.setWidth(210);
 //		t.setHeight(400);
-		SubmitButton close = new SubmitButton(_iwrb.getLocalizedImageButton(CLOSE, "Close"), CLOSE);
+		CloseButton close = new CloseButton(_iwrb.getLocalizedImageButton(CLOSE_WINDOW, "Close"));
 		int row = 1;
 		if (_hasEdit) {
 			t.resize(1, 5);
