@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
+import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 
 import com.idega.business.IBOLookup;
 import com.idega.event.IWPageEventListener;
@@ -49,13 +50,7 @@ public class ChildCareEventListener implements IWPageEventListener {
 				session.setSeasonID(Integer.parseInt(iwc.getParameter(session.getParameterSeasonID())));
 
 			if (iwc.isParameterSet(session.getParameterStatus())) {
-				String status = iwc.getParameter(session.getParameterStatus());
-				if (status != "-1") {
-					session.setStatus(status);
-				}
-				else {
-					session.setStatus(null);
-				}
+				session.setStatus(iwc.getParameter(session.getParameterStatus()));
 			}
 
 			if (session.getSortBy() == ChildCareAdmin.SORT_ALL) {
@@ -63,7 +58,11 @@ public class ChildCareEventListener implements IWPageEventListener {
 				session.setFromTimestamp(null);
 				session.setToTimestamp(null);
 			}
-				
+
+			if (session.getStatus().equals(ChildCareBlock.STATUS_ALL)) {
+				session.setStatus(null);
+			}
+			
 			return true;
 		}
 		catch (RemoteException re) {
