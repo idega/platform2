@@ -125,11 +125,12 @@ public class BeanShellScript extends Block {
 		catch (TargetError e) {
 			System.err.println("[IW BeanShellScript] - The script or code called by the script threw an exception: " + e.getTarget());
 			obj = new Text("The script or code called by the script threw an exception: " + e.getTarget());
-			
+			e.printStackTrace();
 		}
 		catch (EvalError e2) {
 			System.err.println("[IW BeanShellScript] - There was an error in evaluating the script:" + e2);
 			obj = new Text("There was an error in evaluating the script:" + e2);
+			e2.printStackTrace();
 		} 
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
