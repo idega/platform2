@@ -355,6 +355,25 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return new Booking[]{};
   }
 
+  public int getBookingsTotalCountByOthersInPool(Product product, IWTimestamp stamp) throws RemoteException {
+  	try {
+	  	TravelStockroomBusiness tsb = getServiceHandler().getServiceBusiness(product);
+	  	if (tsb.supportsSupplyPool()) {
+	  		Collection coll = tsb.getProductsSharingPool(product);
+	  		if (coll != null) {
+		  		Vector ids = new Vector();
+		  		Iterator iter = coll.iterator();
+		  		while (iter.hasNext()) {
+		  			ids.add(((Product) iter.next()).getPrimaryKey());
+		  		}
+		  		getGeneralBookingHome().getBookingsTotalCount(ids, stamp, null, -1, new int[] {}, null, false, true, null);
+	  		}
+	  	} 
+  	} catch (FinderException f) {
+
+  	}
+		return 0;
+  }
 
   public  Booking[] getBookings(int serviceId, IWTimestamp stamp) throws RemoteException, FinderException{
     return getBookings(serviceId, stamp, new int[]{});
@@ -804,7 +823,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
     }
     return gbHome;
   }
-
+  
   public Booking[] collectionToBookingsArray(Collection coll) {
     return (Booking[]) coll.toArray(new Booking[]{});
   }

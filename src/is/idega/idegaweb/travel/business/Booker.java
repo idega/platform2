@@ -1,66 +1,328 @@
 package is.idega.idegaweb.travel.business;
 
+import is.idega.idegaweb.travel.data.BookingEntry;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.interfaces.Booking;
-
+import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.Collection;
-
+import java.util.List;
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOService;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.IWTimestamp;
 
-public interface Booker extends com.idega.business.IBOService
-{
- public void addCacheKeyToInvalidateOnSave(String key);
- public int Book(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,com.idega.util.IWTimestamp p7,int p8,int p9,java.lang.String p10,int p11,int p12,int p13,int p14,java.lang.String p15, String code, String referenceNumber)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public int BookBySupplier(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,com.idega.util.IWTimestamp p7,int p8,java.lang.String p9,int p10,int p11,int p12,int p13,java.lang.String p14, String code, String referenceNumber)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.interfaces.Booking[] collectionToBookingsArray(java.util.Collection p0) throws java.rmi.RemoteException;
- public boolean deleteBooking(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean deleteBooking(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public int getAvailableItems(com.idega.block.trade.stockroom.data.ProductPrice p0,com.idega.util.IWTimestamp p1) throws java.rmi.RemoteException;
- public is.idega.idegaweb.travel.data.BookingEntry[] getBookingEntries(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public float getBookingEntryPrice(is.idega.idegaweb.travel.data.BookingEntry p0,is.idega.idegaweb.travel.interfaces.Booking p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public float getBookingPrice(java.util.List p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public float getBookingPrice(is.idega.idegaweb.travel.data.GeneralBooking[] p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public float getBookingPrice(is.idega.idegaweb.travel.interfaces.Booking[] p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public float getBookingPrice(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean deleteBooking(Booking booking, boolean deleteRelated) throws RemoteException, FinderException;
-	 //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int[] p0,com.idega.util.IWTimestamp p1,int[] p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3,com.idega.block.trade.stockroom.data.TravelAddress p4)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int p0,com.idega.util.IWTimestamp p1,int[] p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int p0,com.idega.util.IWTimestamp p1,com.idega.block.trade.stockroom.data.TravelAddress p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int p0,com.idega.util.IWTimestamp p1,int p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,int[] p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,int[] p1,com.idega.util.IWTimestamp p2,com.idega.util.IWTimestamp p3,java.lang.String p4,java.lang.String p5)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,int[] p1,com.idega.util.IWTimestamp p2,com.idega.util.IWTimestamp p3,java.lang.String p4,java.lang.String p5,boolean p6, boolean validOnly)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,java.lang.String p3,java.lang.String p4)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- 
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1, int travelAddressID)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(com.idega.block.trade.stockroom.data.ProductPrice p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,Collection travelAddresses, boolean p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,int p2, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(java.util.List p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCountByReseller(int p0,int p1,com.idega.util.IWTimestamp p2,com.idega.block.trade.stockroom.data.TravelAddress p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCountByReseller(int p0,int p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCountByResellers(int[] p0,int p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCountByResellers(int p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.trade.data.Currency getCurrency(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.sql.SQLException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.TravelAddress getDepartureAddress(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.data.GeneralBookingHome getGeneralBookingHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.List getMultibleBookings(is.idega.idegaweb.travel.data.GeneralBooking p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public int[] getMultipleBookingNumber(is.idega.idegaweb.travel.data.GeneralBooking p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.lang.String getPaymentType(com.idega.idegaweb.IWResourceBundle p0,int p1) throws java.rmi.RemoteException;
- public com.idega.presentation.ui.DropdownMenu getPaymentTypeDropdown(com.idega.idegaweb.IWResourceBundle p0,java.lang.String p1) throws java.rmi.RemoteException;
- public com.idega.presentation.ui.DropdownMenu getPaymentTypes(com.idega.idegaweb.IWResourceBundle p0) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.business.ProductBusiness getProductBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.service.business.ProductCategoryFactory getProductCategoryFactory()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.service.business.ServiceHandler getServiceHandler()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.Object getServiceType(int p0) throws java.rmi.RemoteException;
- public void removeBookingPriceApplication(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean setPickup(int p0,int p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int updateBooking(int p0,int p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,com.idega.util.IWTimestamp p8,int p9,java.lang.String p10,int p11,int p12,int p13,int p14,java.lang.String p15, String p16, String referenceNumber)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+
+/**
+ * @author gimmi
+ */
+public interface Booker extends IBOService {
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#BookBySupplier
+	 */
+	public int BookBySupplier(int serviceId, String country, String name, String address, String city,
+			String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType,
+			int userId, int ownerId, int addressId, String comment, String code, String referenceNumber)
+			throws RemoteException, CreateException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#Book
+	 */
+	public int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber,
+			String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType,
+			int userId, int ownerId, int addressId, String comment, String code, String referenceNumber)
+			throws RemoteException, CreateException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#updateBooking
+	 */
+	public int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city,
+			String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType,
+			int userId, int ownerId, int addressId, String comment, String code, String referenceNumber)
+			throws RemoteException, CreateException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#setPickup
+	 */
+	public boolean setPickup(int bookingId, int pickupPlaceId, String pickupInfo) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCountByResellers
+	 */
+	public int getBookingsTotalCountByResellers(int serviceId, IWTimestamp stamp) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCountByResellers
+	 */
+	public int getBookingsTotalCountByResellers(int[] resellerIds, int serviceId, IWTimestamp stamp)
+			throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCountByReseller
+	 */
+	public int getBookingsTotalCountByReseller(int resellerId, int serviceId, IWTimestamp stamp) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCountByReseller
+	 */
+	public int getBookingsTotalCountByReseller(int resellerId, int serviceId, IWTimestamp stamp,
+			TravelAddress travelAddress) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
+	 */
+	public int getBookingsTotalCount(List products, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType,
+			Collection travelAddresses) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
+	 */
+	public int getBookingsTotalCount(int serviceId, IWTimestamp stamp, int travelAddressID) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
+	 */
+	public int getBookingsTotalCount(int serviceId, IWTimestamp stamp, int bookingType, Collection travelAddresses)
+			throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
+	 */
+	public int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp,
+			Collection travelAddresses) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
+	 */
+	public int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType,
+			Collection travelAddresses) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
+	 */
+	public int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType,
+			Collection travelAddresses, boolean orderByDateOfBooking) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(List products, IWTimestamp stamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp stamp) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(List products, IWTimestamp fromStamp, IWTimestamp toStamp, String columnName,
+			String columnValue) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp fromStamp, IWTimestamp toStamp,
+			String columnName, String columnValue) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp fromStamp, IWTimestamp toStamp,
+			String columnName, String columnValue, boolean searchByDateOfBooking, boolean validOnly)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCountByOthersInPool
+	 */
+	public int getBookingsTotalCountByOthersInPool(Product product, IWTimestamp stamp) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(int serviceId, IWTimestamp stamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(int serviceId, IWTimestamp stamp, TravelAddress address) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(int serviceId, IWTimestamp stamp, int bookingTypeId) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(int serviceId, IWTimestamp stamp, int[] bookingTypeIds) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(int[] serviceIds, IWTimestamp stamp, int[] bookingTypeIds) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp, int[] bookingTypeIds)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookings
+	 */
+	public Booking[] getBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp, int[] bookingTypeIds,
+			TravelAddress address) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingEntryPrice
+	 */
+	public float getBookingEntryPrice(BookingEntry entry, Booking booking) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
+	 */
+	public float getBookingPrice(List bookings) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
+	 */
+	public float getBookingPrice(GeneralBooking[] bookings) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
+	 */
+	public float getBookingPrice(Booking[] bookings) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingPrice
+	 */
+	public float getBookingPrice(Booking booking) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#removeBookingPriceApplication
+	 */
+	public void removeBookingPriceApplication(Booking booking) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingEntries
+	 */
+	public BookingEntry[] getBookingEntries(Booking booking) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#deleteBooking
+	 */
+	public boolean deleteBooking(int bookingId) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#deleteBooking
+	 */
+	public boolean deleteBooking(Booking booking, boolean deleteRelated) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#deleteBooking
+	 */
+	public boolean deleteBooking(Booking booking) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getServiceType
+	 */
+	public Object getServiceType(int serviceId) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getPaymentTypes
+	 */
+	public DropdownMenu getPaymentTypes(IWResourceBundle iwrb) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getPaymentTypeDropdown
+	 */
+	public DropdownMenu getPaymentTypeDropdown(IWResourceBundle iwrb, String name) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getPaymentType
+	 */
+	public String getPaymentType(IWResourceBundle iwrb, int paymentType) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getCurrency
+	 */
+	public Currency getCurrency(Booking booking) throws SQLException, FinderException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getDepartureAddress
+	 */
+	public TravelAddress getDepartureAddress(Booking _booking) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getMultibleBookings
+	 */
+	public List getMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getAvailableItems
+	 */
+	public int getAvailableItems(ProductPrice pPrice, IWTimestamp stamp) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getMultipleBookingNumber
+	 */
+	public int[] getMultipleBookingNumber(GeneralBooking booking) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getBookingsTotalCount
+	 */
+	public int getBookingsTotalCount(ProductPrice pPrice) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#addCacheKeyToInvalidateOnSave
+	 */
+	public void addCacheKeyToInvalidateOnSave(String key) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getGeneralBookingHome
+	 */
+	public GeneralBookingHome getGeneralBookingHome() throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#collectionToBookingsArray
+	 */
+	public Booking[] collectionToBookingsArray(Collection coll) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getServiceHandler
+	 */
+	public ServiceHandler getServiceHandler() throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getProductCategoryFactory
+	 */
+	public ProductCategoryFactory getProductCategoryFactory() throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.BookerBean#getProductBusiness
+	 */
+	public ProductBusiness getProductBusiness() throws RemoteException;
 }
