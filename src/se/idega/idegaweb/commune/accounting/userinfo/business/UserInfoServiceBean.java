@@ -394,12 +394,11 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		// - compare what's expected to be most differing field first
 		// - fields joined from other tables with foreign keys are considered late
 
-		// if this is the same address row, then return immediately
-		if (address1.getPrimaryKey ().equals (address2.getPrimaryKey ())) {
-			return true;
-		}
-
 		try {
+			// if this is the same address row, then return immediately
+			if (address1.getPrimaryKey ().equals (address2.getPrimaryKey ())) {
+				return true;
+			}
 			if (address1.getStreetName ()
 					.equalsIgnoreCase	(address2.getStreetName ())) {
 				// they have same street name
