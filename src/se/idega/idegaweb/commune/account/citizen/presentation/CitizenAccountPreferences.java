@@ -270,7 +270,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String valuePhoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
 		if (valuePhoneWork == null) {
 			try {
-				Phone p = ub.getUsersMobilePhone(user);
+				Phone p = ub.getUsersWorkPhone(user);
 				valuePhoneWork = p.getNumber();
 			}
 			catch (NoPhoneFoundException npfe) {
