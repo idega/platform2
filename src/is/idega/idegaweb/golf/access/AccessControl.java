@@ -8,6 +8,7 @@ package is.idega.idegaweb.golf.access;
 import is.idega.idegaweb.golf.entity.Group;
 import is.idega.idegaweb.golf.entity.Member;
 import java.sql.SQLException;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 
@@ -19,6 +20,8 @@ import com.idega.presentation.PresentationObject;
 public class AccessControl {
 
 	public static final String ACCESSCONTROL_GROUP_PARAMETER = "iw_accesscontrol_group";
+    public static final String PRM_PREFIX = "golf_";
+    public static final String LOGIN_STATE_PARAMETER = PRM_PREFIX+LoginBusinessBean.LoginStateParameter;
 	
     public static final String USER_ATTRIBUTE_PARAMETER = "member_login";
 
@@ -29,6 +32,10 @@ public class AccessControl {
 
 	public static final String CURRENT_GOLF_UNION_ID_ATTRIBUTE = "golf_union_id";
 	public static final String CLUB_ADMIN_GOLF_UNION_ID_ATTRIBUTE = "admin_golf_union_id";
+	
+	public static void internalSetState(IWContext modinfo, String state) {
+		modinfo.setSessionAttribute(LOGIN_STATE_PARAMETER, state);
+	}
 
 	public static Member getMember(IWContext modinfo) {
 		return (Member) modinfo.getSession().getAttribute(USER_ATTRIBUTE_PARAMETER);
