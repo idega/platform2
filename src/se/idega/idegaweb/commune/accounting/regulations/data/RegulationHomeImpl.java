@@ -66,12 +66,29 @@ public java.util.Collection findRegulationsByNameNoCase(String name) throws java
 	return this.getEntityCollectionForPrimaryKeys(ids);	
 }
 
+
+
 public Collection findRegulationsByNameNoCaseAndDate(String name, Date validDate) throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByNameNoCaseAndDate(name, validDate);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);	
 }
+
+public Collection findRegulationsByNameNoCaseAndCategory(String name, String catId) throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByNameNoCaseAndCategory(name, catId);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);	
+}
+
+public Collection findRegulationsByNameNoCaseDateAndCategory(String name, Date validDate, String catId) throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByNameNoCaseDateAndCategory(name, validDate, catId);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);	
+}
+
 
 
 public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException{
