@@ -55,6 +55,10 @@ public class TextChooser extends AbstractChooser {
   public void setSelectedText(TxText text){
     super.setChooserValue("",text.getID());
   }
+  
+  public void setSelectedText(int id){
+    super.setChooserValue("",id);
+  }
 
   public void setValue(Object text){
     setSelectedText((TxText)text);
