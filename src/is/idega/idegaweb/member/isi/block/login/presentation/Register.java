@@ -153,6 +153,8 @@ public class Register extends Block {
 		TextInput inputPassword = new PasswordInput("reg_password");
 		String labelPasswordConfirmed = _iwrb.getLocalizedString("register.password_confirmed", "Retyps Password");
 		TextInput inputPasswordConfirmed = new PasswordInput("reg_password_confirmed");
+		//String labelEmail = _iwrb.getLocalizedString("register.email_address", "Email");
+		//TextInput inputEmail = new TextInput("reg_email");
 		String labelHintQuestion = _iwrb.getLocalizedString("register.hint_question", "Hint question");
 		TextInput inputHintQuestion = new TextInput("reg_hint_question");
 		String labelHintAnswer = _iwrb.getLocalizedString("register.hint_answer", "Answer");
@@ -164,6 +166,8 @@ public class Register extends Block {
 		T.add(inputPassword, 2, row++);
 		T.add(labelPasswordConfirmed, 1, row);
 		T.add(inputPasswordConfirmed, 2, row++);
+		//T.add(labelEmail, 1, row);
+		//T.add(inputEmail, 2, row++);
 		T.mergeCells(1, row, 2, row);
 		T.add(textHint, 1, row++);
 		T.add(labelHintQuestion, 1, row);
@@ -196,6 +200,7 @@ public class Register extends Block {
 	private String processStage2() {
 		String password = _iwc.getParameter("reg_password");
 		String passwordConfirmed = _iwc.getParameter("reg_password_confirmed");
+		//String email = _iwc.getParameter("reg_email");
 		String hintQ = _iwc.getParameter("reg_hint_question");
 		String hintA = _iwc.getParameter("reg_hint_answer");
 		String kt = _iwc.getParameter("reg_kt");
@@ -231,6 +236,9 @@ public class Register extends Block {
 			lt.setUserId(user.getID());
 			lt.setUserLogin(kt);
 			lt.store();
+			/*if(email!=null && email.length()>0) {
+				user.add
+			}*/
 			LoginBusiness.changeUserPassword(user, password);
 			msg = sendMessage(user, kt, password);
 			if(msg!=null) {
@@ -301,23 +309,21 @@ public class Register extends Block {
 		String server = _iwb.getProperty("register.email_server");
 		
 		if(server == null) {
-			System.out.println("email server bundle property not set, no registration notification sent to user " + user.getName());
 			return _iwrb.getLocalizedString("register.no_email_server_configured", "Couldn't send email notification of registration (no server defined)");
 		}
 		
-		String letter =
-						_iwrb.getLocalizedString(
-						"register.email_body",
-						"You have been registered on Felix.\nUsername : {0} \nPassword: {1} \n");
-
+		String letter = _iwrb.getLocalizedString("register.email_body", "You have been registered on Felix.\nUsername : {0} \nPassword: {1} \n");
+		
+		Object[] objs = {login,password};
+		
 		if (letter != null) {
 			try {
 				Collection emailCol = user.getEmails();
 				if(emailCol!=null && !emailCol.isEmpty()) {
 					Iterator emailIter = user.getEmails().iterator();
+					StringBuffer buf = new StringBuffer();
 					while(emailIter.hasNext()) {
 						String address = ((Email) emailIter.next()).getEmailAddress();
-						Object[] objs = {login,password};
 						String body = MessageFormat.format(letter,objs);
 						
 						System.out.println("Sending registration notification to " + address);
@@ -330,7 +336,14 @@ public class Register extends Block {
 							server,
 							_iwrb.getLocalizedString("register.email_subject", "Felix Registration"),
 							body);
+						
+						if(buf.length()>0) {
+							buf.append(",");
+						}
+						buf.append(address);
 					}
+					
+					return _iwrb.getLocalizedString("register.email_sent_to", "Registration nofification sent to: ") + buf.toString();
 				} else {
 					return _iwrb.getLocalizedString("register.no_email_address", "Couldn't send email notification of registration, no address to send to");
 				}
@@ -343,10 +356,8 @@ public class Register extends Block {
 			System.out.println("No registration notification letter found, nothing sent to user " + login);
 			return _iwrb.getLocalizedString("register.no_email_letter_configured", "Couldn't send email notification of registration (no letter template defined)");
 		}
-		
-		return null;
 	}
-	
+
 	private LoginTable getLoginTable(User user) {
 		LoginTable lt = null;
 		try {
