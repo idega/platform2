@@ -92,7 +92,7 @@ public class MessageBox extends CommuneBlock {
       mainTable.setCellpadding(14);
       mainTable.setCellspacing(0);
       mainTable.setColor(getBackgroundColor());
-      //mainTable.setWidth(600);
+      mainTable.setWidth(getWidth());
     }
     mainTable.add(po);
   }
@@ -122,11 +122,13 @@ public class MessageBox extends CommuneBlock {
 
     Form f = new Form();
     Table table = new Table(1,3);
+    table.setWidth(Table.HUNDRED_PERCENT);
     table.setCellpaddingAndCellspacing(0);
     f.add(table);
     
     ColumnList messageList = new ColumnList(3);
     table.add(messageList,1,1);
+    messageList.setWidth(Table.HUNDRED_PERCENT);
     messageList.setBackroundColor("#e0e0e0");
     messageList.setHeader(localize("message.subject","Subject"),1);
     messageList.setHeader(localize("message.date","Date"),2);
@@ -219,7 +221,7 @@ public class MessageBox extends CommuneBlock {
 
     add(new Break(2));
     Table t = new Table();
-    t.setWidth("100%");
+    t.setWidth(Table.HUNDRED_PERCENT);
     t.setAlignment(1,1,"right");
     Link l = getLocalizedLink("message.back", "Back");
     l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
@@ -255,7 +257,7 @@ public class MessageBox extends CommuneBlock {
     }
 
     Table t = new Table(1,5);
-    t.setWidth("100%");
+    t.setWidth(Table.HUNDRED_PERCENT);
     t.add(getText(s),1,1);
     t.setAlignment(1,1,"center");
     if(nrOfMessagesToDelete==0){
