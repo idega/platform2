@@ -147,7 +147,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private CloseButton close;
 	private Form form;
-	private boolean restrictDates;
+	private boolean restrictDates = false;
 	boolean onlyAllowFutureCareDate = true; //Changed according to #nacc149
 
 	/**
@@ -1364,8 +1364,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
 			earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 
-		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "true");
-		restrictDates = true;
+		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "false");
+		restrictDates = false;
 		if (restrict != null) {
 			restrictDates = Boolean.valueOf(restrict).booleanValue();
 		}
