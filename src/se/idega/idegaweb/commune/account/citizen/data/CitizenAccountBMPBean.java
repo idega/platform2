@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.18 2003/01/14 13:59:06 gimmi Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.19 2003/01/20 09:18:07 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -222,7 +222,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	 * @throws IDOException
 	 */
 	public int ejbHomeGetTotalCount() throws IDOException{
-		IDOQuery query = new IDOQuery();
+		IDOQuery query = idoQuery();
 			query.appendSelectCountFrom(this);
 		return this.idoGetNumberOfRecords(query);	
 	}
