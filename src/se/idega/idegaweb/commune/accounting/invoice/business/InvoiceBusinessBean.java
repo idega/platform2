@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/11 10:29:05 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/11 13:41:26 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.103 $
+ * @version $Revision: 1.104 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -684,7 +684,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					= getRegulationSpecTypeHome ().findByPrimaryKey
 					(regSpecTypeId);
 			final String regSpecTypeName = regSpecType.getRegSpecType ();
-			if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
+			if (regSpecTypeName.equals (RegSpecConstant.CHECK)) {
 				final School school = record.getProvider ();
 				final SchoolCategory schoolCategory = header.getSchoolCategory ();
 				final Date period = header.getPeriod ();
@@ -802,7 +802,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final String ownPosting,
 		 final String doublePosting,
 		 final String regSpecTypeName) throws RemoteException, CreateException {
-		final char status = 'P';
+		final char status = ConstantStatus.PRELIMINARY;
 		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader(school, schoolCategory, period, status);
 		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
 		paymentRecord.setCreatedBy (null != createdBy ? createdBy : "");

@@ -51,6 +51,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceStrings;
 import se.idega.idegaweb.commune.accounting.invoice.business.PaymentSummary;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
@@ -68,22 +69,16 @@ import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
-//import com.idega.idegaweb.IWMainApplication;
-//import com.idega.io.MediaWritable;
-//import com.idega.io.MemoryInputStream;
-//import java.io.ByteArrayOutputStream;
-//import java.io.IOException;
-//import java.io.OutputStream;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/06 16:24:14 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/11 13:41:26 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.98 $
+ * @version $Revision: 1.99 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -754,7 +749,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	
 	
 	private static boolean isPreliminaryRecord (final PaymentRecord record) {
-		return record.getStatus () == 'P';
+		return record.getStatus () == ConstantStatus.PRELIMINARY;
 		/*
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
