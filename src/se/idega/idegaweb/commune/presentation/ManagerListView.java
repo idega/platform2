@@ -99,10 +99,10 @@ public class ManagerListView extends CommuneBlock {
 	public void add(PresentationObject po) {
 		if (mainTable == null) {
 			mainTable = new Table();
-			mainTable.setCellpadding(14);
+			mainTable.setCellpadding(0);
 			mainTable.setCellspacing(0);
-			mainTable.setColor(getBackgroundColor());
-			mainTable.setWidth(600);
+			//mainTable.setColor(getBackgroundColor());
+			mainTable.setWidth("100%");
 		}
 		mainTable.add(po);
 	}
@@ -132,46 +132,46 @@ public class ManagerListView extends CommuneBlock {
 			
 			Collection users = getGroupBusiness(iwc).getUsersDirectlyRelated(topGroup);
 			if (users != null & !users.isEmpty()) {
-				Form f = new Form();
-				ColumnList messageList = new ColumnList(3);
-				f.add(messageList);
-				messageList.setBackroundColor("#e0e0e0");
-				messageList.setHeader(localize("managerlistview.name", "Name"), 1);
+				Table table = new Table();
+				table.setCellpadding(getCellpadding());
+				table.setCellspacing(getCellspacing());
+				int row = 1;
+				
+				table.add(getSmallHeader(localize("managerlistview.name", "Name")), 1, row);
+				table.add(getSmallHeader(localize("managerlistview.description", "Description")), 2, row++);
 
-				PresentationObject userName = null;
+				User user = null;
+				Link userName = null;
+				Text description = null;
 
-				//CheckBox deleteCheck = null;
-				boolean isRead = false;
 				if (users != null) {
 					Iterator iter = users.iterator();
 					while (iter.hasNext()) {
 						try {
-							User user = (User) iter.next();
-							Text tUserName = getSmallText(user.getName());
-							Link lUserName = new Link(tUserName);
-							userName = lUserName;
+							user = (User) iter.next();
+							userName = getSmallLink(user.getName());
 							if(managerPageID!=-1){
-								lUserName.setPage(managerPageID);
+								userName.setPage(managerPageID);
 							}
-							lUserName.addParameter(PARAM_MANAGER_ID,user.getPrimaryKey().toString());
-							messageList.add(userName);
-							Text tEmail = getSmallText("-");
-							messageList.add(tEmail);
-							Text tPhone = getSmallText("-");
-							messageList.add(tPhone);
-						} catch (Exception e) {
-							add(e);
-							e.printStackTrace();
+							userName.addParameter(PARAM_MANAGER_ID,user.getPrimaryKey().toString());
+							table.add(userName, 1, row);
+							
+							if (user.getDescription() != null) {
+								description = getSmallText(user.getDescription());
+								table.add(description, 2, row);
+							}
 						}
-						//messageList.add(deleteCheck);
+						catch (Exception e) {
+						}
+						table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
+						row++;
 					}
 				}
-				messageList.skip(2);
-				add(f);
-			} else {
+				add(table);
+			}
+			else {
 				add(getSmallText(localize("managerlistview.no_managers", "No managers")));
 			}
-		//}
 	}
 	
 	
