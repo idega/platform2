@@ -61,14 +61,9 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		try{
 			
-//			add(new Text(iwrb.getLocalizedString("nbssb_signcon","Sign Contract")));
-			
 			if (iwc.isInEditMode() || iwc.isInPreviewMode()){
 				return;
 			}
-	
-//			boolean initDone = iwc.getSessionAttribute(INIT_DONE) != null;
-			
 			NBSSignedEntity signedEntity = getNBSSignedEntity(iwc);
 			String toBeSigned = signedEntity.getText();
 			
@@ -87,10 +82,6 @@ public class NBSSigningBlock extends Block implements Builderaware{
 				case NBSSignedEntity.ACTION_PROCESS:
 					processSignContract(iwc);	
 					forwardToIBPage(iwc,getParentPage(), getGotoPage());					
-					break;
-				
-				case NBSSignedEntity.ACTION_END:
-					add(new Text(iwrb.getLocalizedString("nbssb_forwarding","Forwarding...")));				
 					break;
 				
 			}
@@ -163,11 +154,14 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	
 	
 	public void processSignContract(IWContext iwc) throws NBSException, Exception{
+		if (iwc.getCurrentUser() == null){
+			throw new Exception(getResourceBundle(iwc).getLocalizedString("nbssb_session_lost", "Session lost"));
+		}
 		NBSSignedEntity entity = getNBSSignedEntity(iwc);				
 					
 		NBSServerHttp server = getNBSServer(iwc);	
 		HttpMessage httpReq = new HttpMessage();
-		ServletUtil.servletRequestToHttpMessage(iwc.getRequest(), httpReq);		
+			ServletUtil.servletRequestToHttpMessage(iwc.getRequest(), httpReq);		
 		
 		try {
 			NBSSignResult result = (NBSSignResult) server.handleMessage(httpReq);
@@ -189,30 +183,6 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	}
 	
 
-	
-//	private boolean verifySign(int contractId) throws NBSException {
-//		try{
-//			Contract contract =
-//			((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class))
-//				.findByPrimaryKeyLegacy(contractId);
-//				
-//			return contract.getSignedFlag().booleanValue();
-//	
-//	//		XMLParser xmlp = new XMLParser();
-//	//		XMLDocument xmld = xmlp.parse(new StringReader(contract.getXmlSignedData()));
-//	//		XMLElement element = xmld.getRootElement();
-//	//	
-//							
-////			NBSServerCrypt nbsServerCrypt = new NBSServerCrypt();
-////			
-////			NBSResult result = nbsServerCrypt.verifySignature(contract.getText(), contract.getXmlSignedData());
-////			return true; //TODO roar What to return....
-//		} catch(SQLException ex){
-//			ex.printStackTrace();
-//		}		
-//		return false;
-//	}
-		
 	/**
 	 * Gets the BidtServer instance.
 	 */
