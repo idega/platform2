@@ -522,7 +522,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		stats.add(b12_1_1,2,2);
 		stats.addBreak(2,2);
 		
-		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
+		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType()) && !WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(getUserType())){
 			LinkContainer b12_1_2 = new LinkContainer();
 			b12_1_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_2_reportname", "Players per reg.uni. -/+ 16"), false));
 			b12_1_2.addParameter(ACTION, ACTION_STATISTICS);
@@ -568,10 +568,10 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			stats.addBreak(2,2);
 		}
 			
+		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType()) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(getUserType())){
+			stats.add(formatText(iwrb.getLocalizedString("workreportwindow.regional_unions", "Regional unions")),1,3);
 		
-		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.regional_unions", "Regional unions")),1,3);
 		
-		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
 			LinkContainer b12_2_1 = new LinkContainer();
 			b12_2_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_1_reportname", "Members per reg.uni."), false));
 			b12_2_1.addParameter(ACTION, ACTION_STATISTICS);
@@ -638,20 +638,18 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			
 			stats.add(b12_2_6,2,4);
 			stats.addBreak(2,4);
-		}
 		
-		LinkContainer b12_2_7 = new LinkContainer();
-		b12_2_7.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_7_reportname", "Members per reg.uni. and type"), false));
-		b12_2_7.addParameter(ACTION, ACTION_STATISTICS);
-		b12_2_7.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.2.7.xml");
-		b12_2_7.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.7.xml");
-		b12_2_7.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_7_reportname");
-		b12_2_7.setStyleClass(styledLink);
 		
-		stats.add(b12_2_7,2,4);
-		stats.addBreak(2,4);
-		
-		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
+			LinkContainer b12_2_7 = new LinkContainer();
+			b12_2_7.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_7_reportname", "Members per reg.uni. and type"), false));
+			b12_2_7.addParameter(ACTION, ACTION_STATISTICS);
+			b12_2_7.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.2.7.xml");
+			b12_2_7.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.7.xml");
+			b12_2_7.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_7_reportname");
+			b12_2_7.setStyleClass(styledLink);
+			
+			stats.add(b12_2_7,2,4);
+			stats.addBreak(2,4);
 		
 			LinkContainer b12_2_8 = new LinkContainer();
 			b12_2_8.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_8_reportname", "Players per reg.uni. and type"), false));
@@ -668,16 +666,19 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.clubs", "Clubs")),1,5);
 		
-		LinkContainer b12_3_1 = new LinkContainer();
-		b12_3_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_3_1_reportname", "Members -/+ 16 by type"), false));
-		b12_3_1.addParameter(ACTION, ACTION_STATISTICS);
-		b12_3_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.3.1.xml");
-		b12_3_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.3.1.xml");
-		b12_3_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_3_1_reportname");
-		b12_3_1.setStyleClass(styledLink);
-
-		stats.add(b12_3_1,2,6);
-		stats.addBreak(2,6);
+		if(!WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(getUserType())){
+			
+			LinkContainer b12_3_1 = new LinkContainer();
+			b12_3_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_3_1_reportname", "Members -/+ 16 by type"), false));
+			b12_3_1.addParameter(ACTION, ACTION_STATISTICS);
+			b12_3_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.3.1.xml");
+			b12_3_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.3.1.xml");
+			b12_3_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_3_1_reportname");
+			b12_3_1.setStyleClass(styledLink);
+	
+			stats.add(b12_3_1,2,6);
+			stats.addBreak(2,6);
+		}
 		
 		LinkContainer b12_3_2 = new LinkContainer();
 		b12_3_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_3_2_reportname", "Players -/+ 16 by type"), false));
@@ -702,116 +703,129 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 
 		stats.add(b12_4_2,2,8);
 		//stats.addBreak(2,8);
+		if(!WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(getUserType())){	
+			stats.add(formatText(iwrb.getLocalizedString("workreportwindow.reports_list", "Reports list")),1,9);
 		
-		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.reports_list", "Reports list")),1,9);
+			if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
+				LinkContainer b12_5_1 = new LinkContainer();
+				b12_5_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_1_reportname", "League and reg.uni."), false));
+				b12_5_1.addParameter(ACTION, ACTION_STATISTICS);
+				b12_5_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.1.xml");
+				b12_5_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.1.xml");
+				b12_5_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_1_reportname");
+				b12_5_1.setStyleClass(styledLink);
 		
-		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
-			LinkContainer b12_5_1 = new LinkContainer();
-			b12_5_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_1_reportname", "League and reg.uni."), false));
-			b12_5_1.addParameter(ACTION, ACTION_STATISTICS);
-			b12_5_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.1.xml");
-			b12_5_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.1.xml");
-			b12_5_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_1_reportname");
-			b12_5_1.setStyleClass(styledLink);
+				stats.add(b12_5_1,2,10);
+				stats.addBreak(2,10);
+			}
+			
+		
+			LinkContainer b12_5_2 = new LinkContainer();
+			b12_5_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_2_reportname", "Clubs split"), false));
+			b12_5_2.addParameter(ACTION, ACTION_STATISTICS);
+			b12_5_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.2.xml");
+			b12_5_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.2.xml");
+			b12_5_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_2_reportname");
+			b12_5_2.setStyleClass(styledLink);
 	
-			stats.add(b12_5_1,2,10);
+			stats.add(b12_5_2,2,10);
 			stats.addBreak(2,10);
+			
+			
+			if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
+				LinkContainer b12_5_3 = new LinkContainer();
+				b12_5_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_3_reportname", "Clubs comparison"), false));
+				b12_5_3.addParameter(ACTION, ACTION_STATISTICS);
+				b12_5_3.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.3.xml");
+				b12_5_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.3.xml");
+				b12_5_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_3_reportname");
+				b12_5_3.setStyleClass(styledLink);
+		
+				stats.add(b12_5_3,2,10);
+				stats.addBreak(2,10);
+				
+				LinkContainer b12_5_4 = new LinkContainer();
+				b12_5_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_4_reportname", "Regional unions"), false));
+				b12_5_4.addParameter(ACTION, ACTION_STATISTICS);
+				b12_5_4.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.4.xml");
+		  	b12_5_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.4.xml");
+				b12_5_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_4_reportname");
+				b12_5_4.setStyleClass(styledLink);
+		
+				stats.add(b12_5_4,2,10);
+				stats.addBreak(2,10);
+				
+				LinkContainer b12_5_5 = new LinkContainer();
+				b12_5_5.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_5_reportname", "Regional union, comparison"), false));
+				b12_5_5.addParameter(ACTION, ACTION_STATISTICS);
+				b12_5_5.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.5.xml");
+				b12_5_5.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.5.xml");
+				b12_5_5.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_5_reportname");
+				b12_5_5.setStyleClass(styledLink);
+		
+				stats.add(b12_5_5,2,10);
+				
+			
+				stats.addBreak(2,10);
+			}
+		
 		}
 		
-		LinkContainer b12_5_2 = new LinkContainer();
-		b12_5_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_2_reportname", "Clubs split"), false));
-		b12_5_2.addParameter(ACTION, ACTION_STATISTICS);
-		b12_5_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.2.xml");
-		b12_5_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.2.xml");
-		b12_5_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_2_reportname");
-		b12_5_2.setStyleClass(styledLink);
-
-		stats.add(b12_5_2,2,10);
-		stats.addBreak(2,10);
-		
 		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
-			LinkContainer b12_5_3 = new LinkContainer();
-			b12_5_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_3_reportname", "Clubs comparison"), false));
-			b12_5_3.addParameter(ACTION, ACTION_STATISTICS);
-			b12_5_3.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.3.xml");
-			b12_5_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.3.xml");
-			b12_5_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_3_reportname");
-			b12_5_3.setStyleClass(styledLink);
-	
-			stats.add(b12_5_3,2,10);
-			stats.addBreak(2,10);
-			
-			LinkContainer b12_5_4 = new LinkContainer();
-			b12_5_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_4_reportname", "Regional unions"), false));
-			b12_5_4.addParameter(ACTION, ACTION_STATISTICS);
-			b12_5_4.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.4.xml");
-	  	b12_5_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.4.xml");
-			b12_5_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_4_reportname");
-			b12_5_4.setStyleClass(styledLink);
-	
-			stats.add(b12_5_4,2,10);
-			stats.addBreak(2,10);
-			
-			LinkContainer b12_5_5 = new LinkContainer();
-			b12_5_5.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_5_reportname", "Regional union, comparison"), false));
-			b12_5_5.addParameter(ACTION, ACTION_STATISTICS);
-			b12_5_5.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.5.xml");
-			b12_5_5.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.5.xml");
-			b12_5_5.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_5_reportname");
-			b12_5_5.setStyleClass(styledLink);
-	
-			stats.add(b12_5_5,2,10);
-			
+			stats.add(formatText(iwrb.getLocalizedString("workreportwindow.misc_statistics", "Misc Statistics")),1,11);
 		
-			stats.addBreak(2,10);
-		}
+			if(!WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(getUserType())){
+				LinkContainer b12_6_1 = new LinkContainer();
+				b12_6_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_1_reportname", "Regional union, age statistics"), false));
+				b12_6_1.addParameter(ACTION, ACTION_STATISTICS);
+				b12_6_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.1.xml");
+				b12_6_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.1.xml");
+				b12_6_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_1_reportname");
+				b12_6_1.setStyleClass(styledLink);
+			
+	
+				stats.add(b12_6_1,2,12);	
+				stats.addBreak(2,12);	
+			}
+			
+			if(!WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(getUserType())){
+				LinkContainer b12_6_2 = new LinkContainer();
+				b12_6_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_2_reportname", "League, age statistics"), false));
+				b12_6_2.addParameter(ACTION, ACTION_STATISTICS);
+				b12_6_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.2.xml");
+				b12_6_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.2.xml");
+				b12_6_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_2_reportname");
+				b12_6_2.setStyleClass(styledLink);
 		
-		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.misc_statistics", "Misc Statistics")),1,11);
+				stats.add(b12_6_2,2,12);	
+				stats.addBreak(2,12);
+			}
+			
+			if(!WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(getUserType())){
+				LinkContainer b12_6_3 = new LinkContainer();
+				b12_6_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_3_reportname", "Regional union"), false));
+				b12_6_3.addParameter(ACTION, ACTION_STATISTICS);
+				b12_6_3.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.3.xml");
+				b12_6_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.3.xml");
+				b12_6_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_3_reportname");
+				b12_6_3.setStyleClass(styledLink);
 		
-		if(!WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
-			LinkContainer b12_6_1 = new LinkContainer();
-			b12_6_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_1_reportname", "Regional union, age statistics"), false));
-			b12_6_1.addParameter(ACTION, ACTION_STATISTICS);
-			b12_6_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.1.xml");
-			b12_6_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.1.xml");
-			b12_6_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_1_reportname");
-			b12_6_1.setStyleClass(styledLink);
-	
-			stats.add(b12_6_1,2,12);	
-			stats.addBreak(2,12);	
+				stats.add(b12_6_3,2,12);	
+				stats.addBreak(2,12);
+			}
 			
-			LinkContainer b12_6_2 = new LinkContainer();
-			b12_6_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_2_reportname", "League, age statistics"), false));
-			b12_6_2.addParameter(ACTION, ACTION_STATISTICS);
-	  	b12_6_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.2.xml");
-			b12_6_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.2.xml");
-			b12_6_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_2_reportname");
-			b12_6_2.setStyleClass(styledLink);
-	
-			stats.add(b12_6_2,2,12);	
-			stats.addBreak(2,12);
-			
-			LinkContainer b12_6_3 = new LinkContainer();
-			b12_6_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_3_reportname", "Regional union"), false));
-			b12_6_3.addParameter(ACTION, ACTION_STATISTICS);
-			b12_6_3.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.3.xml");
-			b12_6_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.3.xml");
-			b12_6_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_3_reportname");
-			b12_6_3.setStyleClass(styledLink);
-	
-			stats.add(b12_6_3,2,12);	
-			stats.addBreak(2,12);
-			
-			LinkContainer b12_6_4 = new LinkContainer();
-			b12_6_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_4_reportname", "League"), false));
-			b12_6_4.addParameter(ACTION, ACTION_STATISTICS);
-			b12_6_4.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.4.xml");
-			b12_6_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.4.xml");
-			b12_6_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_4_reportname");
-			b12_6_4.setStyleClass(styledLink);
-			
-			stats.add(b12_6_4,2,12);	
-			stats.addBreak(2,12);
+			if(!WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(getUserType())){
+				LinkContainer b12_6_4 = new LinkContainer();
+				b12_6_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_4_reportname", "League"), false));
+				b12_6_4.addParameter(ACTION, ACTION_STATISTICS);
+				b12_6_4.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.4.xml");
+				b12_6_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.4.xml");
+				b12_6_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_4_reportname");
+				b12_6_4.setStyleClass(styledLink);
+				
+				stats.add(b12_6_4,2,12);	
+				stats.addBreak(2,12);
+			}
 		}
 		
 		
