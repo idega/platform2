@@ -68,6 +68,7 @@ public class MessengerApplet extends Applet implements Runnable{
 
   /**Construct the applet*/
   public MessengerApplet() {
+    setBackground(Color.white);
   }
 
 
