@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.7 2002/08/13 12:26:26 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.8 2002/08/14 13:42:32 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,10 +72,31 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	public User getUser(String pid) {
 		User user = null;
 		try {
-			user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(pid);
+			StringBuffer userPid = new StringBuffer(pid);
+			int i = pid.indexOf('-');
+			if (i != -1) {
+				userPid.deleteCharAt(i);
+				pid = userPid.toString();
+			}
+			if (userPid.length() == 10)	{
+				userPid.insert(0,"19");
+			}
+			user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userPid.toString());
 		}
-		catch (Exception e) {
+		catch (RemoteException e) {
 			return null;
+		}
+		catch (FinderException e) {
+			if (pid.length() == 10) {
+				StringBuffer userPid = new StringBuffer("20");
+				userPid.append(pid);
+				try {
+					user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userPid.toString());			
+				}
+				catch(Exception ex) {
+					return null;	
+				}				
+			}
 		}
 
 		return user;
