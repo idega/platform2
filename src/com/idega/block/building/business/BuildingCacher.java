@@ -185,6 +185,19 @@ public class BuildingCacher {
     return (Complex)hComplexes.get(new Integer(id));
   }
 
+  public static Complex getComplex(){
+    if(hComplexes == null || setToReload){
+      reload();
+    }
+    else {
+      Iterator iter = hComplexes.keySet().iterator();
+      while (iter.hasNext()) {
+        return (Complex) iter.next();
+      }
+    }
+    return null;
+  }
+
   public static Building getBuilding(int id){
     if(hBuildings == null || setToReload){
       reload();
