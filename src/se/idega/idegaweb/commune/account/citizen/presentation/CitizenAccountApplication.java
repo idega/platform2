@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.42 2002/12/17 13:06:33 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.43 2003/01/10 10:33:25 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,9 @@ import com.idega.presentation.ui.*;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import java.util.*;
+import javax.ejb.*;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
 
@@ -29,11 +31,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/12/17 13:06:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/10 10:33:25 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.43 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -176,8 +178,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 			final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
 			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			final User user = business.getUser(ssn);
-			if (user == null) {
-				// unknown user applies
+            if (user == null || !citizenLivesInNacka (iwc, user)) {
+				// unknown or not-living-in-nacka user applies
 				final Text text = new Text(localize(UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT));
 				text.setFontColor(COLOR_RED);
 				add(text);
@@ -215,6 +217,17 @@ public class CitizenAccountApplication extends CommuneBlock {
 			viewSimpleApplicationForm(iwc);
 		}
 	}
+
+    private boolean citizenLivesInNacka
+        (final IWContext iwc, final User citizen)
+        throws RemoteException, CreateException, FinderException {
+        final int primary = citizen.getPrimaryGroupID();
+        final CommuneUserBusiness commune = (CommuneUserBusiness)
+                IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+        final Group rootCitizenGroup = commune.getRootCitizenGroup();
+        return primary
+                == ((Integer) rootCitizenGroup.getPrimaryKey ()).intValue ();
+    }
 
 	private void viewUnknownCitizenApplicationForm1(final IWContext iwc) {
 		final Table table = createTable(this);
