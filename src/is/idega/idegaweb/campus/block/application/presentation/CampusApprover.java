@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.31 2002/06/13 14:31:19 aron Exp $
+ * $Id: CampusApprover.java,v 1.32 2002/06/20 11:39:26 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -146,7 +146,7 @@ public class CampusApprover extends Block {
 	  bEdit = false;
 	}
 
-	if(iwc.getParameter("save")!= null){
+	if(iwc.getParameter("save")!= null && !iwc.getParameter("save").equals("")){
           bEdit = false;
 	  id = updateWholeApplication(iwc,id);
 	  if (iwc.isParameterSet("priority_drop")) {
@@ -521,8 +521,9 @@ public class CampusApprover extends Block {
     DT.setTitlesHorizontal(true);
     int row = 1,col = 1;
     DT.add(Edit.formatText(iwrb.getLocalizedString("subject","Subject")),col++,row);
-    DT.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),col++,row);
     DT.add(Edit.formatText(iwrb.getLocalizedString("count","Count")),col++,row);
+    DT.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),col++,row);
+
     DT.add(Edit.formatText(iwrb.getLocalizedString("last_submission","Last in")),col++,row);
     DT.add(Edit.formatText(iwrb.getLocalizedString("first_submission","First in")),col++,row);
     DT.add(Edit.formatText(iwrb.getLocalizedString("last_changed","Last change")),col++,row);
