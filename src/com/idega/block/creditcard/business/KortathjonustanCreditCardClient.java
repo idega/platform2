@@ -42,18 +42,9 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	private String PROPERTY_PASSWORD = "pwd";
 	private String PROPERTY_SITE = "site";
 
-	private String PROPERTY_MERCHANT_LANGUAGE = "mlang"; // valid
-																																										// =
-																																										// en,
-																																										// is
-																																										// (default
-																																										// en)
-	private String PROPERTY_CLIENT_LANGUAGE = "clang"; // valid
-																																						 // =
-																																						 // en,
-																																						 // is
-																																						 // (default
-																																						 // en)
+	private String PROPERTY_MERCHANT_LANGUAGE = "mlang"; // valid = en, is (default = en)
+	private String PROPERTY_CLIENT_LANGUAGE = "clang"; // valid = en, is (default = en)
+
 	private String PROPERTY_CLIENT_IP = "cip";
 
 	private String PROPERTY_CARDHOLDER_NAME = "d2name";
@@ -63,33 +54,20 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	private String PROPERTY_CURRENT_DATE = "d12";
 	private String PROPERTY_CC_EXPIRE = "d14";
 	private String PROPERTY_REFERENCE_ID = "d31";
-	private String PROPERTY_APPROVAL_CODE = "d38"; // Value
-																																				 // gotten
-																																				 // from
-																																				 // Response
-	private String PROPERTY_ACTION_CODE = "d39"; // Value
-																																		 // gotten
-																																		 // from
-																																		 // Response
+	private String PROPERTY_APPROVAL_CODE = "d38"; // gotten from response
+	private String PROPERTY_ACTION_CODE = "d39"; // gotten from response
+	
 	private String PROPERTY_ACCEPTOR_TERM_ID = "d41";
 	private String PROPERTY_ACCEPTOR_IDENT = "d42";
 	private String PROPERTY_CC_VERIFY_CODE = "d47";
 	private String PROPERTY_CURRENCY_CODE = "d49";
-	private String PROPERTY_ORIGINAL_DATA_ELEMENT = "d56"; // Value
-																																											// from
-																																											// Response
+	private String PROPERTY_ORIGINAL_DATA_ELEMENT = "d56"; // gotten from response
 
-	private String PROPERTY_AMOUNT_ECHO = "o4"; // Echo
-																																		 // from d4
-	private String PROPERTY_CURRENT_DATE_ECHO = "o12"; // Echo
-																																								 // from
-																																								 // d12
-	private String PROPERTY_APPROVAL_CODE_ECHO = "o38"; // Echo
-																																									 // from
-																																									 // d38
-	private String PROPERTY_ACTION_CODE_ECHO = "o39"; // Echo
-																																							 // from
-																																							 // d39
+	private String PROPERTY_AMOUNT_ECHO = "o4"; // Echo from d4
+	private String PROPERTY_CURRENT_DATE_ECHO = "o12"; // Echo from d12
+	private String PROPERTY_APPROVAL_CODE_ECHO = "o38"; // Echo from d38
+	private String PROPERTY_ACTION_CODE_ECHO = "o39"; // Echo from d39
+
 	private String PROPERTY_SHIPPING_ADDRESS = "d2saddr";
 	private String PROPERTY_SHIPPING_CITY = "d2scity";
 	private String PROPERTY_SHIPPING_ZIP = "d2szip";
@@ -126,8 +104,8 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	//private String strAmount = "3000";
 	private String strName = null; //"Grimur";
 	private String strCurrentDate = null;//"031216113900";
-	private String strCurrencyCode = null; //"352"; // ISK, check
-																										 // Appendix A, page 20
+	private String strCurrencyCode = null; //"352"; // ISK, check Appendix A, page 20
+
 	private String strCurrencyExponent = null;
 	private String strReferenceNumber = null;//Integer.toString((int)
 																												 // (Math.random() *
