@@ -1,0 +1,10 @@
+delete from ISI_WR_BOARD_MEMB_ISI_WR_GROUP;
+delete from ISI_WR_BOARD_MEMB;
+delete from ISI_WR_CLUB_ACC_REC;
+delete from ISI_WR_DIV_BOARD_ISI_WR_GROUP;
+delete from ISI_WR_DIV_BOARD;
+delete from ISI_WORK_REPORT_ISI_WR_GROUP;
+delete from ISI_WR_CLUB_MEMB_ISI_WR_GROUP;
+delete from ISI_WR_CLUB_MEMB;
+delete from ISI_WR_GROUP;
+delete from ISI_WORK_REPORT;
