@@ -1,8 +1,13 @@
 package com.idega.block.email.presentation;
 
 import com.idega.block.email.business.*;
+import com.idega.block.email.data.MailAccount;
+import com.idega.block.email.data.MailAccountHome;
+import com.idega.block.email.data.MailLetter;
+import com.idega.block.email.data.MailLetterHome;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.data.ICCategory;
+import com.idega.data.IDOLookup;
 import com.idega.core.business.EmailDataView;
 import com.idega.core.business.Category;
 import com.idega.idegaweb.IWBundle;
@@ -18,6 +23,8 @@ import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.text.TextFormat;
@@ -50,13 +57,16 @@ public class SetupEditor extends Block {
   private final static String prmSave = "eme_save";
   private final static String prmView = "eme_view";
   private final static String prmDel = "eme_del";
+  private final static String prmEmails = "eme_emails";
+  private final static String prmWelcome = "eme_welc";
+  private final static String prmEditTopic = "eme_tpced";
 
   private final static String EMAIL_BUNDLE_IDENTIFIER = "com.idega.block.email";
 
   private int instance = -1;
-  //private int group = -1;
   private int topic = -1;
   private int account = -1;
+  private int letterID = -1;
   private boolean New = false;
   private boolean Save = false;
   private boolean Edit = true;
@@ -72,7 +82,6 @@ public class SetupEditor extends Block {
   private IWBundle iwb, core;
   private IWResourceBundle iwrb;
   private Map categories;
-  //private Map groups;
   private Map topics;
 
   private TextFormat tf;
@@ -114,42 +123,30 @@ public class SetupEditor extends Block {
     if (iwc.isParameterSet(prmAccountId)) {
       account = Integer.parseInt(iwc.getParameter(prmAccountId));
     }
+    
+    if(iwc.isParameterSet(prmWelcome))
+    	letterID = Integer.parseInt(iwc.getParameter(prmWelcome));
 
-    if (iwc.isParameterSet(prmNew)) {
-      NewObject = iwc.getParameter(prmNew);
-    }
-
-    if (iwc.isParameterSet(prmEdit)) {
-      EditObject = iwc.getParameter(prmEdit);
-    }
-
-    Save = iwc.isParameterSet(prmSave);
-    Edit = iwc.isParameterSet(prmEdit);
-
-    //Collection Coll = MailFinder.getInstance().getEmailGroups(instance);
 
     // Heavy work :
-    processForm(iwc);
-    //groups = MailFinder.getInstance().mapOfEmailGroups(instance);
+    processForms(iwc);
+    
     categories = CategoryFinder.getInstance().getMapOfCategoriesById(instance);
     topics = MailFinder.getInstance().mapOfTopics(instance);
 
     tf = TextFormat.getInstance();
-    Table T = new Table(3, 2);
-    T.setWidth("800");
-    T.setWidth(2, "200");
-    T.setWidth(3, "200");
-    T.setColumnVerticalAlignment(2, "top");
-    T.setColumnVerticalAlignment(3, "top");
-    T.mergeCells(2, 1, 2, 2);
-    T.mergeCells(3, 1, 3, 2);
-    T.add(getTopics(iwc), 1, 2);
+    Table T = new Table(1, 3);
+    T.add(getTopicsOverView(iwc), 1, 1);
 
-    if ( topic > 0) {
-      T.add(getAccounts(iwc), 2, 1);
-    }
-    if(topic > 0)
-      T.add(getTopicEmails(iwc),3,1);
+  	if(iwc.isParameterSet(prmEmails))
+  		T.add(getSubscribers(iwc),1,2);
+  	else if(iwc.isParameterSet(prmWelcome))
+  		T.add(getLetterForm(iwc),1,2);
+  	else if(iwc.isParameterSet(prmEditTopic))
+  		T.add(getTopicForm(iwc),1,2);
+  	else if(iwc.isParameterSet(prmAccountId))
+  		T.add(getAccountForm(iwc),1,2);
+  		
     Form F = new Form();
     F.add(new HiddenInput(prmInstanceId, String.valueOf(instance)));
     //F.add(new HiddenInput(prmGroupId, String.valueOf(group)));
@@ -193,191 +190,6 @@ public class SetupEditor extends Block {
       }
     }
   }
-
-
-  /**
-   *  Gets the groups of the SetupEditor object
-   *
-   * @param  iwc  Description of the Parameter
-   * @return      The groups value
-   */
-  /*
-  public PresentationObject getGroups(IWContext iwc) {
-    DataTable T = new DataTable();
-    T.setWidth("100%");
-    T.addTitle(iwrb.getLocalizedString("list.groups", "Groups"));
-    T.setTitlesHorizontal(true);
-
-    int row = 1;
-    int col = 1;
-    T.add(tf.format(iwrb.getLocalizedString("name", "Name")), 1, row);
-    T.add(tf.format(iwrb.getLocalizedString("description", "Description")), 2, row);
-    T.add(tf.format(iwrb.getLocalizedString("category", "Category")),3, row);
-    row++;
-    TextInput name = new TextInput("name");
-    TextInput info = new TextInput("info");
-    DropdownMenu cats = getCategoryDropdown("cat", "");
-
-    if (groups != null && groups.size() > 0) {
-      java.util.Iterator iter = groups.values().iterator();
-      EmailGroup grp;
-      Link deleteLink;
-      Link groupLink;
-      Link editLink;
-      int id;
-      while (iter.hasNext()) {
-        col = 1;
-        grp = (EmailGroup) iter.next();
-        id = Integer.parseInt(grp.toString());
-        if (id == group && EditObject.equals("group")) {
-          name.setContent(grp.getName());
-          if (grp.getDescription() != null) {
-            info.setContent(grp.getDescription());
-          }
-          T.add(name, 1, row);
-          T.add(info, 2, row);
-          T.add(cats, 3, row);
-          T.add(new HiddenInput(prmGroupId, String.valueOf(id)));
-          formAdded = true;
-        } else {
-          groupLink = new Link(tf.format(grp.getName()));
-          groupLink.addParameter(prmInstanceId, String.valueOf(instance));
-          groupLink.addParameter(prmGroupId, id);
-          T.add(groupLink, 1, row);
-          T.add(tf.format(grp.getDescription()), 2, row);
-          T.add(tf.format(((Category) categories.get(Integer.toString(grp.getCategoryId()))).getName()), 3, row);
-          editLink = new Link((Image) editImage.clone());
-          editLink.addParameter(prmInstanceId, String.valueOf(instance));
-          editLink.addParameter(prmGroupId, id);
-          editLink.addParameter(prmEdit, "group");
-          T.add(editLink, 4, row);
-          deleteLink = new Link((Image) deleteImage.clone());
-          deleteLink.addParameter(prmInstanceId, String.valueOf(instance));
-          deleteLink.addParameter(prmGroupId, id);
-          deleteLink.addParameter(prmDel, "group");
-          T.add(deleteLink, 5, row);
-
-        }
-        row++;
-      }
-    }
-    if (!formAdded && NewObject.equals("group")) {
-      T.add(name, 1, row);
-      T.add(info, 2, row);
-      T.add(cats, 3, row);
-      formAdded = true;
-    } else {
-      Link li = new Link(iwrb.getLocalizedImageButton("new", "New"));
-      li.addParameter(prmInstanceId, String.valueOf(instance));
-      li.addParameter(prmNew, "group");
-      T.addButton(li);
-    }
-    if (formAdded) {
-      T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save", "group"));
-    }
-    return T;
-  }
-*/
-
-  /**
-   *  Gets the topics of the SetupEditor object
-   *
-   * @param  iwc  Description of the Parameter
-   * @return      The topics value
-   */
-  public PresentationObject getTopics(IWContext iwc) {
-    DataTable T = new DataTable();
-    T.setWidth("100%");
-    String title = iwrb.getLocalizedString("list.topics", "Topics");
-    //title += " " + iwrb.getLocalizedString("list.ingroup", "in group") + " ";
-
-    //EmailGroup grp = (EmailGroup) groups.get(String.valueOf(group));
-    //title += grp.getName();
-
-    T.addTitle(title);
-    T.setTitlesHorizontal(true);
-
-    int row = 1;
-    int col = 1;
-    T.add(tf.format(iwrb.getLocalizedString("name", "Name")), 1, row);
-    T.add(tf.format(iwrb.getLocalizedString("description", "Description")), 2, row);
-    T.add(tf.format(iwrb.getLocalizedString("category", "Category")), 3, row);
-    row++;
-    TextInput name = new TextInput("name");
-    TextInput info = new TextInput("info");
-    //DropdownMenu grps = getGroupDropdown("grp", String.valueOf(group));
-    DropdownMenu cats = getCategoryDropdown("cat","");
-
-    if (topics != null && topics.size() > 0) {
-      java.util.Iterator iter = topics.values().iterator();
-      EmailTopic tpc;
-      Link deleteLink;
-      Link topicLink;
-      //Link groupLink;
-      Link editLink;
-      int id;
-      while (iter.hasNext()) {
-        col = 1;
-        tpc = (EmailTopic) iter.next();
-        id = Integer.parseInt(tpc.toString());
-        if (id == topic && EditObject.equals("topic")) {
-          name.setContent(tpc.getName());
-          if (tpc.getDescription() != null) {
-            info.setContent(tpc.getDescription());
-          }
-          T.add(name, 1, row);
-          T.add(info, 2, row);
-          T.add(cats, 3, row);
-          //T.add(grps, 3, row);
-          T.add(new HiddenInput(prmTopicId, String.valueOf(id)));
-          formAdded = true;
-        } else {
-
-          topicLink = new Link(tf.format(tpc.getName()));
-          topicLink.addParameter(prmInstanceId, String.valueOf(instance));
-          //groupLink.addParameter(prmGroupId, group);
-          topicLink.addParameter(prmTopicId, id);
-          T.add(topicLink, 1, row);
-
-          T.add(tf.format(tpc.getDescription()), 2, row);
-          //T.add(tf.format(((EmailGroup) groups.get(Integer.toString(tpc.getGroupId()))).getName()), 3, row);
-          T.add(tf.format(((ICCategory) categories.get(Integer.toString(tpc.getCategoryId()))).getName()), 3, row);
-          editLink = new Link((Image) editImage.clone());
-          editLink.addParameter(prmInstanceId, String.valueOf(instance));
-          editLink.addParameter(prmTopicId, id);
-          editLink.addParameter(prmEdit, "topic");
-          //editLink.addParameter(prmGroupId, group);
-          T.add(editLink, 4, row);
-          deleteLink = new Link((Image) deleteImage.clone());
-          deleteLink.addParameter(prmInstanceId, String.valueOf(instance));
-          deleteLink.addParameter(prmTopicId, id);
-          //deleteLink.addParameter(prmGroupId, group);
-          deleteLink.addParameter(prmDel, "topic");
-          T.add(deleteLink, 5, row);
-
-        }
-        row++;
-      }
-    }
-    if (!formAdded && NewObject.equals("topic")) {
-      T.add(name, 1, row);
-      T.add(info, 2, row);
-      T.add(cats, 3, row);
-      formAdded = true;
-    } else {
-      Link li = new Link(iwrb.getLocalizedImageButton("new", "New"));
-      li.addParameter(prmInstanceId, String.valueOf(instance));
-      //li.addParameter(prmGroupId, group);
-      li.addParameter(prmNew, "topic");
-      T.addButton(li);
-    }
-    if (formAdded) {
-      T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save", "topic"));
-    }
-
-    return T;
-  }
-
 
   /**
    *  Gets the accounts of the SetupEditor object
@@ -514,32 +326,6 @@ public class SetupEditor extends Block {
     }
     if (formAdded) {
       T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save", "account"));
-    }
-    return T;
-  }
-
-
-  /**
-   *  Gets the topicEmails of the SetupEditor object
-   *
-   * @param  iwc  Description of the Parameter
-   * @return      The topic emails value
-   */
-  public PresentationObject getTopicEmails(IWContext iwc) {
-    DataTable T = new DataTable();
-    T.setWidth("100%");
-    T.addTitle(iwrb.getLocalizedString("list.topic_emails", "Topic emails"));
-    T.setUseTitles(false);
-    EmailTopic tpc = (EmailTopic) topics.get(String.valueOf(topic));
-    if (tpc != null) {
-      Collection emails = MailFinder.getInstance().getListEmails(tpc.getListId());
-      int row = 1;
-      if (emails != null) {
-        Iterator iter = emails.iterator();
-        while (iter.hasNext()) {
-          T.add(tf.format(((EmailDataView) iter.next()).getEmailAddress()), 1, row++);
-        }
-      }
     }
     return T;
   }
@@ -687,10 +473,6 @@ public class SetupEditor extends Block {
     if (topic > 0) {
       MailBusiness.getInstance().deleteTopicAccount(account);
     }
-    /*else if (group > 0) {
-      MailBusiness.getInstance().deleteGroupAccount(account);
-    }
-    */
   }
 
 
@@ -711,4 +493,253 @@ public class SetupEditor extends Block {
     }
     return "";
   }
+  
+  public PresentationObject getTopicsOverView(IWContext iwc){
+  	Table T = new Table();
+  	int row = 1;
+ 	T.add(getTopicLink(-1,iwrb.getLocalizedString("new_topic","New topic")),1,row);
+ 	row++;
+  	T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),1,row);
+  	T.add(tf.format(iwrb.getLocalizedString("category","Category"),tf.HEADER),2,row);
+  	T.add(tf.format(iwrb.getLocalizedString("mail_server","Mail server"),tf.HEADER),3,row);
+  	T.add(tf.format(iwrb.getLocalizedString("subscribers","Subscribers"),tf.HEADER),4,row);
+  	T.add(tf.format(iwrb.getLocalizedString("welcome","Welcome"),tf.HEADER),5,row);
+  	row++;
+  	if(!topics.isEmpty()){
+  		Iterator iter = topics.values().iterator();
+  		EmailTopic topic;
+  		ICCategory category;
+  		EmailAccount account;
+  		EmailLetter welcome;
+  		Collection welcomes;
+  		Collection accounts;
+  		int emailCount;
+  		int topicID;
+  		while(iter.hasNext()){
+  			topic = (EmailTopic) iter.next();
+  			topicID = Integer.parseInt(topic.toString());
+  			T.add(getTopicLink(topicID,topic.getName()),1,row);
+  			
+  			category = (ICCategory) categories.get(Integer.toString(topic.getCategoryId()));
+  			T.add(tf.format(category.getName()),2,row);
+  			accounts = MailFinder.getInstance().getTopicAccounts(topicID,MailProtocol.SMTP);
+  			if(accounts!=null && !accounts.isEmpty()){
+  				account = (EmailAccount) accounts.iterator().next();
+  				T.add(getAccountLink(topicID,Integer.parseInt( account.toString()),account.getHost()),3,row);
+  			}
+  			else{
+  				T.add(getAccountLink(topicID,-1,"X"),3,row);
+  			}
+  			emailCount = MailFinder.getInstance().getListEmailsCount(topic.getListId());
+  			T.add((getSubscribersLink(topicID,String.valueOf(emailCount))),4,row);
+  			welcomes = MailFinder.getInstance().getEmailLetters(topicID,MailLetter.TYPE_SUBSCRIPTION);
+  			if(welcomes!=null && !welcomes.isEmpty()){
+  				welcome = (MailLetter) welcomes.iterator().next();
+  				T.add(getWelcomeLetterLink(Integer.parseInt(welcome.toString()),topicID,welcome.getSubject()),5,row);
+  				//T.add(tf.format(welcome.getSubject()),5,row);
+  			}
+  			else{
+  				T.add(getWelcomeLetterLink(-1,topicID,"X"),5,row);
+  			}
+  			row++;
+  		}
+  	}
+  	return T;
+  }
+  
+  public Link getSubscribersLink(int topicID,String text){
+  	Link L = new Link(tf.format(text));
+  	L.addParameter(prmEmails,"true");
+  	L.addParameter(prmInstanceId, String.valueOf(instance));
+    L.addParameter(prmTopicId, topicID);
+  	return L;
+  }
+  
+  public Link getWelcomeLetterLink(int letterId,int topicID,String text){
+  	Link L = new Link(tf.format(text));
+  	L.addParameter(prmInstanceId, String.valueOf(instance));
+  	L.addParameter(prmWelcome,String.valueOf(letterId));
+    L.addParameter(prmTopicId, topicID);
+  	return L;
+  }
+  
+   public Link getTopicLink(int topicID,String text){
+  	Link L = new Link(tf.format(text));
+  	L.addParameter(prmInstanceId, String.valueOf(instance));
+    L.addParameter(prmEditTopic,"true");
+    L.addParameter(prmTopicId, topicID);
+  	return L;
+  }
+  
+  public Link getAccountLink(int topicID,int accountID,String text){
+  	Link L = new Link(tf.format(text));
+  	L.addParameter(prmInstanceId, String.valueOf(instance));
+    L.addParameter(prmAccountId,String.valueOf(accountID));
+    L.addParameter(prmTopicId, topicID);
+  	return L;
+  }
+  
+  
+  public PresentationObject getSubscribers(IWContext iwc){
+  	Table T = new Table();
+  	int row= 1;
+  	T.add(tf.format(iwrb.getLocalizedString("subscribing_emails","Subscribing emails"),tf.HEADER),1,row++);
+  	
+  	if (topic > 0) {
+      Collection emails = MailFinder.getInstance().getListEmails(topic);
+      if (emails != null) {
+        Iterator iter = emails.iterator();
+        while (iter.hasNext()) {
+          T.add(tf.format(((EmailDataView) iter.next()).getEmailAddress()), 1, row++);
+        }
+      }
+  	}
+  	return T;
+  }
+  
+  public PresentationObject getLetterForm(IWContext iwc){
+    Table T = new Table();
+    TextInput fromAddress = new TextInput("from_address");
+    fromAddress.setLength(80);
+    TextInput fromName = new TextInput("from_name");
+    fromName.setLength(80);
+    TextInput subject = new TextInput("subject");
+    subject.setLength(80);
+    TextArea body = new TextArea("body",70,20);
+    if(letterID >0){
+    	EmailLetter letter = null;
+    	try {
+			letter = ((MailLetterHome)IDOLookup.getHome(MailLetter.class)).findByPrimaryKey(new Integer(letterID));
+			fromAddress.setContent(letter.getFromAddress());
+			fromName.setContent(letter.getFromName());
+			subject.setContent(letter.getSubject());
+			body.setContent(letter.getBody());
+		}
+		catch (Exception e) {
+		}
+    	T.add(new HiddenInput(prmWelcome,String.valueOf(letterID)));	
+    }
+    
+    int row = 1;
+
+    T.add(tf.format(iwrb.getLocalizedString("letter.from_name","Sender name"),tf.HEADER),1,row);
+    T.add(fromName,2,row++);
+    T.add(tf.format(iwrb.getLocalizedString("letter.from_address","Sender address"),tf.HEADER),1,row);
+    T.add(fromAddress,2,row++);
+    T.add(tf.format(iwrb.getLocalizedString("letter.subject","Subject"),tf.HEADER),1,row);
+    T.add(subject,2,row++);
+    T.add(tf.format(iwrb.getLocalizedString("letter.body","Body"),tf.HEADER),1,row);
+    T.add(body,2,row++);
+
+    SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save_letter");
+    SubmitButton delete = new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),"remove_letter");
+    //SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save");
+
+	//CheckBox save = new CheckBox("save","true");
+    Table submitTable = new Table(5,1);
+		//submitTable.add(tf.format(iwrb.getLocalizedString("save_to_archive","Save to archive")),3,1);
+    submitTable.add(save,3,1);
+    submitTable.add(delete,5,1);
+    //submitTable.add(send,5,1);
+    T.add(submitTable,2,row);
+    T.setAlignment(2,row,"right");
+
+
+    return T;
+  }
+  
+  public void processForms(IWContext iwc){
+  	
+    if(iwc.isParameterSet("save_letter.x") && topic>0){
+		this.saveLetter(iwc);
+    }
+    else if(iwc.isParameterSet("save_topic.x")){
+    	this.saveTopic(iwc);
+    }
+    else if(letterID>0 && iwc.isParameterSet("remove_letter.x")){
+    	MailBusiness.getInstance().deleteLetter(letterID);
+    }
+    else if(iwc.isParameterSet("save_account.x")){
+    	this.saveAccount(iwc);
+    }
+    else if(account>0 && iwc.isParameterSet("remove_account.x") ){
+    	this.deleteAccount();
+    }
+    else if(topic>0 && iwc.isParameterSet("remove_topic.x") ){
+    	this.deleteTopic();
+    }
+  }
+  
+  public void saveLetter(IWContext iwc){
+  	
+  	String fromname = iwc.getParameter("from_name");
+	String fromaddress = iwc.getParameter("from_address");
+	String subject = iwc.getParameter("subject");
+	String body = iwc.getParameter("body");
+    EmailLetter letter = MailBusiness.getInstance().saveTopicLetter(letterID,fromname,fromaddress,subject,body,EmailLetter.TYPE_SUBSCRIPTION,topic);
+  }
+  
+  public PresentationObject getTopicForm(IWContext iwc){
+  	Table T = new Table();
+  	int row = 1;
+
+  	T.add(tf.format(iwrb.getLocalizedString("name", "Name"),tf.HEADER), 1, row++);
+    T.add(tf.format(iwrb.getLocalizedString("description", "Description"),tf.HEADER), 1, row++);
+    T.add(tf.format(iwrb.getLocalizedString("category", "Category"),tf.HEADER), 1, row++);
+    row=1;
+    TextInput name = new TextInput("name");
+    TextInput info = new TextInput("info");
+    //DropdownMenu grps = getGroupDropdown("grp", String.valueOf(group));
+    DropdownMenu cats = getCategoryDropdown("cat","");
+    if(topic>0){
+    	EmailTopic top = (EmailTopic) topics.get(String.valueOf(topic));
+    	if(top!=null){
+    		name.setContent(top.getName());
+    		info.setContent(top.getDescription());
+    		cats.setSelectedElement(top.getCategoryId());
+    	}
+    }    
+    T.add(name,2,row++);
+    T.add(info,2,row++);
+    T.add(cats,2,row++);
+    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save_topic"),2,row);
+     T.add(new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),"remove_topic"),2,row);
+    return T;
+  }
+  
+  public PresentationObject getAccountForm(IWContext iwc){
+  	Table T = new Table();
+  	int row = 1;
+  	TextInput name = new TextInput("name");
+    TextInput host = new TextInput("host");
+    TextInput user = new TextInput("user");
+    TextInput pass = new TextInput("pass");
+    DropdownMenu proto = getProtocolDropdown("proto", "");
+    T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),1,row++);
+    T.add(tf.format(iwrb.getLocalizedString("host","Host"),tf.HEADER),1,row++);
+    T.add(tf.format(iwrb.getLocalizedString("user","User"),tf.HEADER),1,row++);
+    T.add(tf.format(iwrb.getLocalizedString("pass","Passwd"),tf.HEADER),1,row++);
+    T.add(new HiddenInput("proto",String.valueOf(MailProtocol.SMTP)));
+    if(account > 0){
+    	try {
+			MailAccount acc =((MailAccountHome) IDOLookup.getHome(MailAccount.class)).findByPrimaryKey(new Integer(account));
+			name.setContent(acc.getName());
+			host.setContent(acc.getHost());
+			user.setContent(acc.getUser());
+			pass.setContent(acc.getPassword());
+			T.add(new HiddenInput(prmAccountId,acc.getPrimaryKey().toString()));
+		}
+		catch (Exception e) {
+		}
+   	}
+   	row = 1;
+   	T.add(name,2,row++);
+   	T.add(host,2,row++);
+   	T.add(user,2,row++);
+   	T.add(pass,2,row++);
+   	T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save_account"),2,row);;
+    T.add(new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),"remove_account"),2,row);;
+    return T;
+  }
+  
 }

@@ -1,8 +1,12 @@
 package com.idega.block.email.data;
 
 import com.idega.block.email.business.EmailTopic;
+import com.idega.data.CategoryEntity;
+import com.idega.data.CategoryEntityBMPBean;
 import com.idega.data.IDOLegacyEntity;
 import java.sql.Timestamp;
+
+import javax.ejb.FinderException;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -14,7 +18,7 @@ import java.sql.Timestamp;
  * @version    1.0
  */
 
-public class MailTopicBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.email.data.MailTopic,com.idega.block.email.business.EmailTopic {
+public class MailTopicBMPBean extends CategoryEntityBMPBean implements MailTopic,EmailTopic,CategoryEntity {
 
   /**
    * @todo    Description of the Field
@@ -178,6 +182,10 @@ public class MailTopicBMPBean extends com.idega.data.CategoryEntityBMPBean imple
    */
   public void setCreated(Timestamp created) {
     setColumn(CREATED, created);
+  }
+  
+  public  Object ejbFindOneByListId(int listId)throws FinderException{
+  	return super.idoFindOnePKBySQL("select * from "+this.TABLE_NAME+" where "+this.LIST+" = "+listId);
   }
 }
 

@@ -49,6 +49,7 @@ public interface EmailLetter{
   public final static int TYPE_DRAFT = 4;
 
 
+  public final static int TYPE_LIST = 5;
 
   /**
 

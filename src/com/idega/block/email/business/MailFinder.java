@@ -10,10 +10,13 @@ import com.idega.block.email.data.MailLetter;
 import com.idega.block.email.data.MailList;
 import com.idega.block.email.data.MailTopic;
 import com.idega.block.email.data.MailTopicBMPBean;
+import com.idega.block.email.data.MailTopicHome;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.data.Email;
+import com.idega.core.data.EmailBMPBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLookup;
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -74,12 +77,30 @@ public class MailFinder {
 
   public Collection getEmailLetters(int topicId) {
     try {
-      MailTopic t = ((com.idega.block.email.data.MailTopicHome)com.idega.data.IDOLookup.getHomeLegacy(MailTopic.class)).findByPrimaryKeyLegacy(topicId);
+      MailTopic t = ((MailTopicHome)IDOLookup.getHomeLegacy(MailTopic.class)).findByPrimaryKey(new Integer(topicId));
       return EntityFinder.getInstance().findRelatedOrdered(t, MailLetter.class, com.idega.block.email.data.MailLetterBMPBean.CREATED, true);
     } catch (IDOFinderException ex) {}
     catch(Exception ex){}
     return null;
   }
+  
+  public Collection getEmailLetters(int topicId,int type){
+  	try {
+  	StringBuffer sql = new StringBuffer("select l.* from ");
+  	sql.append(" em_letter l,em_topic t,em_letter_em_topic m ");
+  	sql.append(" where l.em_letter_id = m.em_letter_id ");
+  	sql.append(" and t.em_topic_id = m.em_topic_id ");
+  	sql.append(" and t.em_topic_id  = ");
+  	sql.append(topicId);
+  	sql.append(" and l.letter_type=");
+  	sql.append(type);
+  	//System.err.println(sql.toString());
+  	return EntityFinder.getInstance().findAll(MailLetter.class,sql.toString());
+  	} catch (IDOFinderException ex) {}
+    catch(Exception ex){}
+    return null;
+  }
+  
 
 
   /**
@@ -243,6 +264,13 @@ public class MailFinder {
     }
     return null;
   }
+  
+  public int getListEmailsCount(int listId){
+  	try{
+  	return com.idega.block.email.data.MailListBMPBean.getEntityInstance(MailList.class, listId).getNumberOfRecordsRelated(EmailBMPBean.getEntityInstance(Email.class));
+  	}catch(Exception ex){ex.printStackTrace();}
+  	return 0;
+  }
 
 
   /**
@@ -251,7 +279,7 @@ public class MailFinder {
    * @todo            Description of the Method
    */
   public Map mapOfTopics(int InstanceId) {
-    return EntityFinder.getInstance().getMapOfEntity(getTopics(InstanceId), ((MailTopic) com.idega.block.email.data.MailTopicBMPBean.getEntityInstance(MailTopic.class)).getIDColumnName());
+    return EntityFinder.getInstance().getMapOfEntity(getTopics(InstanceId),  MailTopicBMPBean.TABLE_NAME+"_ID");
   }
 
   public Email lookupEmail(String EmailAddress){

@@ -2,10 +2,16 @@ package com.idega.block.email.business;
 
 import com.idega.block.email.data.*;
 import com.idega.core.data.Email;
+import com.idega.data.IDOLookup;
+import com.idega.util.IWTimestamp;
+
+import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+
+import javax.ejb.FinderException;
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
  *
@@ -80,10 +86,10 @@ public class MailBusiness {
    */
   public MailTopic saveTopic(int id, String name, String info, int iCategoryId) {
     try {
-      MailTopic topic = (MailTopic) com.idega.block.email.data.MailTopicBMPBean.getEntityInstance(MailTopic.class);
+      MailTopic topic = ((MailTopicHome) IDOLookup.getHome(MailTopic.class)).create();
       boolean update = false;
       if (id > 0) {
-        topic.findByPrimaryKey(id);
+      	topic =  ((MailTopicHome) IDOLookup.getHome(MailTopic.class)).findByPrimaryKey(new Integer(id));
         update = true;
       }
 
@@ -91,16 +97,16 @@ public class MailBusiness {
       topic.setDescription(info);
       topic.setCategoryId(iCategoryId);
       if (update) {
-        topic.update();
+        topic.store();
       } else {
-        MailList list = ((com.idega.block.email.data.MailListHome)com.idega.data.IDOLookup.getHomeLegacy(MailList.class)).createLegacy();
+        MailList list = ((MailListHome)IDOLookup.getHome(MailList.class)).create();
         list.setCreated(com.idega.util.IWTimestamp.getTimestampRightNow());
         list.setName(topic.getName() + " list");
         list.setDescription(topic.getDescription());
         list.insert();
-        topic.setListId(list.getID());
+        topic.setListId(((Integer)list.getPrimaryKey()).intValue());
         topic.setCreated(com.idega.util.IWTimestamp.getTimestampRightNow());
-        topic.insert();
+        topic.store();
       }
 
       return topic;
@@ -237,17 +243,27 @@ public class MailBusiness {
         eEmail.setEmailAddress(email);
         eEmail.insert();
       }
-
+		
       for (int i = 0; i < ListIds.length; i++) {
         try{
+        //System.err.println("adding "+eEmail.getEmailAddress()+" to "+ListIds[i]);
         eEmail.addTo(MailList.class, ListIds[i]);
+        MailTopic topic =((MailTopicHome) IDOLookup.getHome(MailTopic.class)).findOneByListId(ListIds[i]);
+        sendWelcomeLetters(topic,eEmail.getEmailAddress());
         }
         catch(Exception ex){}
       }
 
     } catch (Exception ex) {
-      ex.printStackTrace();
+      //ex.printStackTrace();
     }
+  }
+  
+  public void sendWelcomeLetters(MailTopic topic,String email)throws RemoteException,FinderException{
+  	Collection letters = MailFinder.getInstance().getEmailLetters(((Integer)topic.getPrimaryKey()).intValue(),EmailLetter.TYPE_SUBSCRIPTION);
+  	if(letters!=null &&!letters.isEmpty()){
+  		this.sendLetter((EmailLetter)letters.iterator().next(),topic);
+  	}
   }
 
   /**
@@ -257,7 +273,21 @@ public class MailBusiness {
   public void deleteTopic(int id) {
     try {
 
-      ((com.idega.block.email.data.MailTopicHome)com.idega.data.IDOLookup.getHomeLegacy(MailTopic.class)).findByPrimaryKeyLegacy(id).delete();
+      MailTopic topic = ((MailTopicHome)IDOLookup.getHomeLegacy(MailTopic.class)).findByPrimaryKey(new Integer(id));
+	 topic.removeFrom(MailLetter.class);
+	 topic.removeFrom(MailAccount.class);
+	 topic.remove();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+  
+  public void deleteLetter(int id) {
+    try {
+
+      MailLetter l = ((MailLetterHome)IDOLookup.getHomeLegacy(MailLetter.class)).findByPrimaryKey(new Integer(id));
+      l.removeFrom(MailTopic.class);
+      l.remove();
 
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -325,6 +355,7 @@ public class MailBusiness {
       letter.setSubject(subject);
       letter.setBody(body);
       letter.setType(type);
+      letter.setCreated(IWTimestamp.getTimestampRightNow());
 
       if (update) {
         letter.update();
@@ -350,23 +381,23 @@ public class MailBusiness {
    * @param  letter  Description of the Parameter
    * @param  topic   Description of the Parameter
    */
-  public void sendLetter(EmailLetter letter, MailTopic topic) {
-    Collection accounts = MailFinder.getInstance().getTopicAccounts(topic.getID(), MailProtocol.SMTP);
-    if (accounts == null || accounts.size() == 0) {
-      accounts = MailFinder.getInstance().getGroupAccounts(topic.getGroupId(), MailProtocol.SMTP);
-    }
-
+  public void sendLetter(EmailLetter letter, MailTopic topic) throws RemoteException{
+    Collection accounts = MailFinder.getInstance().getTopicAccounts(((Integer)topic.getPrimaryKey()).intValue(), MailProtocol.SMTP);
     if (accounts != null && accounts.size() > 0) {
       Collection emails = MailFinder.getInstance().getListEmails(topic.getListId());
       Iterator iter = accounts.iterator();
       EmailAccount account = iter.hasNext() ? ((EmailAccount) iter.next()) : null;
       if (account != null) {
-        ListServer server = new ListServer();
-        server.sendMailLetter(letter, account, emails);
+        sendMailLetter(letter, account, emails);
       }
     } else {
       System.err.println("unable to send mail: no account");
     }
+  }
+  
+  public void sendMailLetter(EmailLetter letter,EmailAccount account,Collection emails){
+  	ListServer server = new ListServer();
+    server.sendMailLetter(letter, account, emails);
   }
 
 }

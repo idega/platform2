@@ -13,35 +13,15 @@ public class MailTopicHomeImpl extends com.idega.data.IDOFactory implements Mail
  }
 
 
- public MailTopic createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
+public MailTopic findOneByListId(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((MailTopicBMPBean)entity).ejbFindOneByListId(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
 
  public MailTopic findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (MailTopic) super.findByPrimaryKeyIDO(pk);
- }
-
-
- public MailTopic findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (MailTopic) super.findByPrimaryKeyIDO(id);
- }
-
-
- public MailTopic findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
  }
 
 

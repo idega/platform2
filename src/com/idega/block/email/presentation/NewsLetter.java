@@ -98,7 +98,7 @@ public class NewsLetter extends CategoryBlock {
    * @todo        Description of the Method
    */
   public void main(IWContext iwc) {
-    debugParameters(iwc);
+    //debugParameters(iwc);
     iwb = getBundle(iwc);
     core = iwc.getApplication().getCoreBundle();
     iwrb = getResourceBundle(iwc);
@@ -117,24 +117,32 @@ public class NewsLetter extends CategoryBlock {
       T.setAlignment(1, row++, "left");
     }
 
-    if (categoryID > 0) {
-      T.add(getMailInputTable(iwc),1,row++);
-      PresentationObject obj = null;
+    if (categoryID > 0 ){
+      if(topics!=null && !topics.isEmpty()) {
+        T.add(getMailInputTable(iwc),1,row++);
+        PresentationObject obj = null;
 
-      switch (viewType) {
-	case DROP:
-	  obj = getDropdownView(iwc);
-	  break;
-	case CHECK:
-	  obj = getCheckBoxView(iwc);
-	  break;
-	case SINGLE:
-	  obj = getCheckBoxView(iwc);
-	  break;
-      }
+        switch (viewType) {
+        case DROP:
+          obj = getDropdownView(iwc);
+          break;
+        case CHECK:
+          obj = getCheckBoxView(iwc);
+          break;
+        case SINGLE:
+          obj = getCheckBoxView(iwc);
+          break;
+        }
 
-      if ( obj != null )
-	T.add(obj,1,row);
+        if ( obj != null )
+          T.add(obj,1,row);
+        }
+        else{
+          T.add(iwrb.getLocalizedString("no_topic","Please create a topic"),1,row);
+        }
+    }
+    else{
+          T.add(iwrb.getLocalizedString("no_category","Please create a category"),1,row);
     }
 
     Form F = new Form();
@@ -155,15 +163,15 @@ public class NewsLetter extends CategoryBlock {
       DropdownMenu drp = new DropdownMenu("nl_list");
       Iterator iter = topics.iterator();
       if(topics.size() > 1){
-	while (iter.hasNext()) {
-	  EmailTopic tpc = (EmailTopic) iter.next();
-	  drp.addMenuElement(tpc.getListId(), tpc.getName());
-	}
-	T.add(drp, 1, 2);
+				while (iter.hasNext()) {
+					EmailTopic tpc = (EmailTopic) iter.next();
+					drp.addMenuElement(tpc.getListId(), tpc.getName());
+				}
+				T.add(drp, 1, 2);
       }
       else if(iter.hasNext()){
-	EmailTopic tpc = (EmailTopic) iter.next();
-	T.add(new HiddenInput("nl_list",tpc.toString()));
+				EmailTopic tpc = (EmailTopic) iter.next();
+				T.add(new HiddenInput("nl_list",String.valueOf( tpc.getListId())));
       }
       return T;
     }
@@ -174,32 +182,32 @@ public class NewsLetter extends CategoryBlock {
   private PresentationObject getMailInputTable(IWContext iwc){
     Table T = new Table();
       T.setCellpaddingAndCellspacing(0);
-    TextInput email = new TextInput("nl_email");
+      TextInput email = new TextInput("nl_email");
       email.setStyleAttribute(_inputStyle);
       email.setLength(_inputLength);
       email.setContent("Enter e-mail here");
       email.setOnFocus("this.value=''");
-    SubmitButton send;
-    if (submitImage != null) {
-      send = new SubmitButton(submitImage, "nl_send");
-    }
-    else {
-      send = new SubmitButton(iwrb.getLocalizedImageButton("subscribe", "Subscribe"), "nl_send");
-    }
+			SubmitButton send;
+			if (submitImage != null) {
+				send = new SubmitButton(submitImage, "nl_send");
+			}
+			else {
+				send = new SubmitButton(iwrb.getLocalizedImageButton("subscribe", "Subscribe"), "nl_send");
+			}
 
-    if ( _submitBelow ) {
-      T.add(email, 1, 1);
-      T.setHeight(1, 2, _spaceBetween);
-      T.add(send, 1, 3);
-    }
-    else {
-      T.add(email, 1, 1);
-      T.setWidth(2, 1, _spaceBetween);
-      T.add(send, 3, 1);
-    }
+			if ( _submitBelow ) {
+				T.add(email, 1, 1);
+				T.setHeight(1, 2, _spaceBetween);
+				T.add(send, 1, 3);
+			}
+			else {
+				T.add(email, 1, 1);
+				T.setWidth(2, 1, _spaceBetween);
+				T.add(send, 3, 1);
+			}
 
-    return T;
-  }
+			return T;
+	}
 
   /**
    *  Gets the checkBoxView of the NewsLetter object
@@ -214,11 +222,11 @@ public class NewsLetter extends CategoryBlock {
       Iterator iter = topics.iterator();
       int row = 1;
       while (iter.hasNext()) {
-	EmailTopic tpc = (EmailTopic) iter.next();
-	chk = new CheckBox("nl_list",tpc.toString());
-	T.add(chk, 1, row);
-	T.add(tpc.getName(),2,row);
-	row++;
+				EmailTopic tpc = (EmailTopic) iter.next();
+				chk = new CheckBox("nl_list",String.valueOf(tpc.getListId()));
+				T.add(chk, 1, row);
+				T.add(tpc.getName(),2,row);
+				row++;
       }
       return T;
     }
@@ -254,15 +262,15 @@ public class NewsLetter extends CategoryBlock {
   private void processForm(IWContext iwc) {
     if (iwc.isParameterSet("nl_send") || iwc.isParameterSet("nl_send.x")) {
       if (iwc.isParameterSet("nl_email")) {
-	String email = iwc.getParameter("nl_email");
-	if (email.indexOf("@") > 0) {
-	  String[] sids = iwc.getParameterValues("nl_list");
-	  int[] ids = new int[sids.length];
-	  for (int i = 0; i < sids.length; i++) {
-	    ids[i] = Integer.parseInt(sids[i]);
-	  }
-	  MailBusiness.getInstance().saveEmailToLists(email, ids);
-	}
+				String email = iwc.getParameter("nl_email");
+				if (email.indexOf("@") > 0) {
+					String[] sids = iwc.getParameterValues("nl_list");
+					int[] ids = new int[sids.length];
+					for (int i = 0; i < sids.length; i++) {
+						ids[i] = Integer.parseInt(sids[i]);
+					}
+					MailBusiness.getInstance().saveEmailToLists(email, ids);
+				}
       }
     }
   }
