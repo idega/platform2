@@ -324,73 +324,69 @@ public class ProductPriceDesigner extends TravelWindow {
   }
 
   private boolean priceCategorySave(IWContext iwc) {
-      String[] timeframeIds = (String[]) iwc.getParameterValues(PARAMETER_TIMEFRAME_ID);
-      String[] addressIds = (String[]) iwc.getParameterValues(PARAMETER_ADDRESS_ID);
-      String[] priceDiscount = (String[]) iwc.getParameterValues(PARAMETER_PRICE_DISCOUNT);
-      String[] maxUsage = (String[]) iwc.getParameterValues("max_usage");
-      String[] priceCategoryIds = (String[]) iwc.getParameterValues(this.PARAMETER_PRODUCT_CATEGORY_ID);
+    String[] timeframeIds = (String[]) iwc.getParameterValues(PARAMETER_TIMEFRAME_ID);
+    String[] addressIds = (String[]) iwc.getParameterValues(PARAMETER_ADDRESS_ID);
+    String[] priceDiscount = (String[]) iwc.getParameterValues(PARAMETER_PRICE_DISCOUNT);
+    String[] maxUsage = (String[]) iwc.getParameterValues("max_usage");
+    String[] priceCategoryIds = (String[]) iwc.getParameterValues(this.PARAMETER_PRODUCT_CATEGORY_ID);
 
-      String[] productPriceIds = (String[]) iwc.getParameterValues(this.PARAMETER_PRODUCT_PRICE_ID);
+    String[] productPriceIds = (String[]) iwc.getParameterValues(this.PARAMETER_PRODUCT_PRICE_ID);
 
+    try {
+      if (priceDiscount != null) {
+        int priceCategoryId = 0;
+        int productPriceId = -1;
 
-      try {
-        if (priceDiscount != null) {
-          int priceCategoryId = 0;
-          int productPriceId = -1;
+        com.idega.block.trade.stockroom.data.ProductPriceBMPBean.clearPrices(((Integer)_product.getPrimaryKey()).intValue(), this._currencyId);
 
-          com.idega.block.trade.stockroom.data.ProductPriceBMPBean.clearPrices(((Integer)_product.getPrimaryKey()).intValue(), this._currencyId);
+        float price;
+        int iMaxUsage;
+        int iAddressId;
+        int iTimeframeId;
+        PriceCategory pCategory;
+        ProductPrice pPrice;
+        for (int i = 0; i < priceDiscount.length; i++) {
+          pPrice = null;
+          if (!priceDiscount[i].equals("")) {
+            productPriceId = Integer.parseInt(productPriceIds[i]);
+            priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
 
-          float price;
-          int iMaxUsage;
-          int iAddressId;
-          int iTimeframeId;
-          PriceCategory pCategory;
-          ProductPrice pPrice;
-          for (int i = 0; i < priceDiscount.length; i++) {
-            pPrice = null;
-            if (!priceDiscount[i].equals("")) {
-              productPriceId = Integer.parseInt(productPriceIds[i]);
-              priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
+            try {
+              iAddressId = Integer.parseInt(addressIds[i]);
+            } catch (NullPointerException ex) {
+              iAddressId = -1;
+            }
 
-              try {
-                iAddressId = Integer.parseInt(addressIds[i]);
+            try {
+              iTimeframeId = Integer.parseInt(timeframeIds[i]);
+            } catch (NullPointerException ex) {
+              iTimeframeId = -1;
+            }
+
+            pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
+
+            if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
+              priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
+              pPrice = getTravelStockroomBusiness(iwc).setPrice(productPriceId,((Integer)_product.getPrimaryKey()).intValue() , priceCategoryId, _currencyId,IWTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT, iTimeframeId, iAddressId);
+            }else if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
+              priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
+              if (priceDiscount[i].indexOf(",") > 0) {
+                priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],",");
+                price = (float) Float.parseFloat(priceDiscount[i]);
+                price = price / 100;
+              }else {
+                price = (float) Float.parseFloat(priceDiscount[i]);
               }
-              catch (NullPointerException ex) {
-                iAddressId = -1;
-              }
-
-              try {
-                iTimeframeId = Integer.parseInt(timeframeIds[i]);
-              }
-              catch (NullPointerException ex) {
-                iTimeframeId = -1;
-              }
-
-              pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
-
-              if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
-                priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
-                pPrice = getTravelStockroomBusiness(iwc).setPrice(productPriceId,((Integer)_product.getPrimaryKey()).intValue() , priceCategoryId, _currencyId,IWTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT, iTimeframeId, iAddressId);
-              }else if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
-                priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
-                if (priceDiscount[i].indexOf(",") > 0) {
-                  priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],",");
-                  price = (float) Float.parseFloat(priceDiscount[i]);
-                  price = price / 100;
-                }else {
-                  price = (float) Float.parseFloat(priceDiscount[i]);
-                }
-                pPrice = getTravelStockroomBusiness(iwc).setPrice(productPriceId,((Integer)_product.getPrimaryKey()).intValue() , priceCategoryId, _currencyId,IWTimestamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, iTimeframeId, iAddressId);
-              }
+              pPrice = getTravelStockroomBusiness(iwc).setPrice(productPriceId,((Integer)_product.getPrimaryKey()).intValue() , priceCategoryId, _currencyId,IWTimestamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, iTimeframeId, iAddressId);
             }
           }
         }
-        return true;
-      }catch (Exception e) {
-        e.printStackTrace(System.err);
-        return false;
       }
-
+      return true;
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+      return false;
+    }
 
   }
 

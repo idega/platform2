@@ -4,28 +4,29 @@ import javax.ejb.*;
 
 public interface ProductPrice extends com.idega.data.IDOLegacyEntity
 {
- public void delete();
  public int getCurrencyId();
+ public void invalidate();
  public int getDiscount();
- public boolean getIsValid();
- public int getMaxUsage();
- public float getPrice();
- public com.idega.block.trade.stockroom.data.PriceCategory getPriceCategory();
- public int getPriceCategoryID();
- public java.lang.Integer getPriceCategoryIDInteger();
+ public void setPriceCategoryID(int p0);
  public java.sql.Timestamp getPriceDate();
  public int getPriceType();
- public int getProductId();
- public void invalidate();
+ public java.lang.Integer getPriceCategoryIDInteger();
  public void setCurrencyId(int p0);
- public void setCurrencyId(java.lang.Integer p0);
- public void setDefaultValues();
- public void setIsValid(boolean p0);
- public void setMaxUsage(int p0);
- public void setPrice(float p0);
- public void setPriceCategoryID(int p0);
- public void setPriceDate(java.sql.Timestamp p0);
- public void setPriceType(int p0);
  public void setProductId(int p0);
  public void validate();
+ public void setCurrencyId(java.lang.Integer p0);
+ public boolean getIsValid();
+ public void setPrice(float p0);
+ public java.util.Collection getTravelAddresses()throws com.idega.data.IDORelationshipException;
+ public float getPrice();
+ public void setPriceDate(java.sql.Timestamp p0);
+ public int getMaxUsage();
+ public java.util.Collection getTimeframes()throws com.idega.data.IDORelationshipException;
+ public void setPriceType(int p0);
+ public void initializeAttributes();
+ public void setMaxUsage(int p0);
+ public int getProductId();
+ public int getPriceCategoryID();
+ public com.idega.block.trade.stockroom.data.PriceCategory getPriceCategory();
+ public void setIsValid(boolean p0);
 }

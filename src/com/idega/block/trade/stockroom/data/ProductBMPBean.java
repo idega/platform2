@@ -300,7 +300,6 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
       try {
         Collection coll = this.idoGetRelatedEntities(Timeframe.class);
         TimeframeHome tHome = (TimeframeHome) IDOLookup.getHome(Timeframe.class);
-//      List tFrames = EntityFinder.findRelated( this, com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance( Timeframe.class ) );
         List tFrames = new Vector();
         Iterator iter = coll.iterator();
         while (iter.hasNext()) {

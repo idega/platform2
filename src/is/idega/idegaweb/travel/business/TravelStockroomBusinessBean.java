@@ -954,6 +954,100 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
+  protected void removeExtraPrices(Product product) throws RemoteException, FinderException{
+    try {
+      System.out.println("[TSB] removing extra prices ");
+      ProductBusiness pBus = this.getProductBusiness();
+      List addresses = pBus.getDepartureAddresses(product, false);
+      Timeframe[] timeframes = product.getTimeframes();
+      TravelAddress tAddress = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).create();
+      Timeframe timeframe = ((TimeframeHome) IDOLookup.getHome(Timeframe.class)).create();
+
+
+      ProductPrice[] allPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, false);
+
+      ProductPrice price;
+      Collection cFrames;
+      Collection cAddresses;
+      boolean remove = false;
+      for (int i = 0; i < allPrices.length; i++) {
+        price = allPrices[i];
+        System.out.println("============================================================");
+        System.out.println("[TSB] working with price : "+price.getPrice());
+
+        cFrames = price.getTimeframes();
+        cAddresses = price.getTravelAddresses();
+
+        Iterator iter = cFrames.iterator();
+        System.out.print("[TSB] cFrames contains : ");
+        while (iter.hasNext()) {
+          Object item = iter.next();
+          System.out.print(" "+item.toString() +",");
+        }
+        System.out.println(";");
+
+        iter = cAddresses.iterator();
+        System.out.print("[TSB] cAddresses contains : ");
+        while (iter.hasNext()) {
+          Object item = iter.next();
+          System.out.print(" "+item.toString() +",");
+        }
+        System.out.println(";");
+
+        if (timeframes.length == 0 && cFrames.size() > 0) {
+          remove = true;
+        }
+        if (addresses.size() == 0 && cAddresses.size() > 0) {
+          remove = true;
+        }
+
+
+        if (!remove) {
+          for (int j = 0; j < timeframes.length; j++) {
+            System.out.println("... timeframeId = "+timeframes[j].getID());
+            if ( ! cFrames.contains(timeframes[j].getPrimaryKey()) ) {
+              remove = true;
+              break;
+            }
+          }
+        }
+
+        if (remove) {
+          System.out.println("[TSB] remove == true, (timeframe) removing price with price = "+price.getPrice());
+          price.delete();
+          price.update();
+        }else {
+          Iterator iAddresses = addresses.iterator();
+          while (iAddresses.hasNext()) {
+            TravelAddress item = (TravelAddress) iAddresses.next();
+            System.out.println("... addressId = "+item.getPrimaryKey());
+            if (cAddresses.contains(item.getPrimaryKey()) ) {
+              remove = true;
+              break;
+            }
+
+          }
+        }
+
+        if (remove) {
+          System.out.println("[TSB] remove == true, (address) removing price with price = "+price.getPrice());
+          price.delete();
+          price.update();
+        }
+
+
+      }
+
+    }catch (SQLException ex) {
+      throw new FinderException(ex.getMessage());
+    }catch (CreateException ex) {
+      throw new FinderException(ex.getMessage());
+    }catch (IDORelationshipException ex) {
+      throw new FinderException(ex.getMessage());
+    }
+
+  }
+
   protected int[] setDepartureAddress(int serviceId, String departureFrom, IWTimestamp departureTime) throws RemoteException, FinderException, SQLException, IDOFinderException{
     int departureAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueDepartureAddressType);
     TravelAddress departureAddress = null;

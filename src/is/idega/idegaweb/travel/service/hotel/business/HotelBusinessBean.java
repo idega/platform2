@@ -67,6 +67,12 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       pCat.addTo(Product.class, productId);
     }catch (SQLException sql) {}
 
+    Product product = (( ProductHome ) IDOLookup.getHome(Product.class)).findByPrimaryKey(new Integer(productId));
+    product.removeAllFrom(TravelAddress.class);
+    product.removeAllFrom(Timeframe.class);
+
+    this.removeExtraPrices(product);
+
 
     return productId;
   }

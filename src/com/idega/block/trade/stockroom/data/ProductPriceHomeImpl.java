@@ -7,9 +7,11 @@ public class ProductPriceHomeImpl extends com.idega.data.IDOFactory implements P
   return ProductPrice.class;
  }
 
+
  public ProductPrice create() throws javax.ejb.CreateException{
-  return (ProductPrice) super.idoCreate();
+  return (ProductPrice) super.createIDO();
  }
+
 
  public ProductPrice createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class ProductPriceHomeImpl extends com.idega.data.IDOFactory implements P
 
  }
 
- public ProductPrice findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ProductPrice) super.idoFindByPrimaryKey(id);
- }
 
  public ProductPrice findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ProductPrice) super.idoFindByPrimaryKey(pk);
+  return (ProductPrice) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public ProductPrice findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (ProductPrice) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public ProductPrice findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class ProductPriceHomeImpl extends com.idega.data.IDOFactory implements P
 	}
 
  }
+
 
 
 }

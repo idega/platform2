@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.util.Collection;
 import com.idega.util.text.TextSoap;
 import com.idega.block.trade.business.CurrencyHolder;
 import javax.ejb.FinderException;
@@ -311,6 +312,12 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     setColumn(getColumnNameMaxUsage(), maxUsage);
   }
 
+  public Collection getTravelAddresses() throws IDORelationshipException{
+    return this.idoGetRelatedEntities(TravelAddress.class);
+  }
+  public Collection getTimeframes() throws IDORelationshipException {
+    return this.idoGetRelatedEntities(Timeframe.class);
+  }
 
 
   public static String getProductPriceTableName(){return "SR_PRODUCT_PRICE";}

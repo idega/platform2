@@ -106,35 +106,10 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     }
     String imageId = iwc.getParameter( PARAMETER_DESIGN_IMAGE_ID );
     String numberOfUnits = iwc.getParameter( PARAMETER_NUMBER_OF_UNITS );
-/*    String activeFrom = iwc.getParameter( PARAMETER_ACTIVE_FROM );
-    String activeTo = iwc.getParameter( PARAMETER_ACTIVE_TO );
-    String activeYearly = iwc.getParameter( PARAMETER_ACTIVE_YEARLY );
-
-    String allDays = iwc.getParameter( PARAMETER_ALL_DAYS );
-    String mondays = iwc.getParameter( PARAMETER_MONDAYS );
-    String tuesdays = iwc.getParameter( PARAMETER_TUESDAYS );
-    String wednesdays = iwc.getParameter( PARAMETER_WEDNESDAYS );
-    String thursdays = iwc.getParameter( PARAMETER_THURSDAYS );
-    String fridays = iwc.getParameter( PARAMETER_FRIDAYS );
-    String saturdays = iwc.getParameter( PARAMETER_SATURDAYS );
-    String sundays = iwc.getParameter( PARAMETER_SUNDAYS );
-
-    String departureFrom = iwc.getParameter( PARAMETER_DEPARTURE_FROM );
-    String departureTime = iwc.getParameter( PARAMETER_DEPARTURE_TIME );
-    String arrivalAt = iwc.getParameter( PARAMETER_ARRIVAL_AT );
-    String arrivalTime = iwc.getParameter( PARAMETER_ARRIVAL_TIME );
-*/
     String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
     String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
 
-/*
-    boolean yearly = false;
-    if ( activeYearly != null ) {
-      if ( activeYearly.equals( "Y" ) ) {
-        yearly = true;
-      }
-    }
-*/
+
     int iDiscountType = com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT;
     if ( discountType != null ) {
       iDiscountType = Integer.parseInt( discountType );
@@ -155,65 +130,6 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       }
     }
 
-/*
-    IWTimestamp activeFromStamp = null;
-    if ( activeFrom != null ) {
-      activeFromStamp = new IWTimestamp( activeFrom );
-    }
-
-    IWTimestamp activeToStamp = null;
-    if ( activeTo != null ) {
-      activeToStamp = new IWTimestamp( activeTo );
-    }
-
-    IWTimestamp departureStamp = null;
-    if ( departureTime != null ) {
-      departureStamp = new IWTimestamp( "2001-01-01 " + departureTime );
-    }
-
-    IWTimestamp arrivalStamp = null;
-    if ( arrivalTime != null ) {
-      arrivalStamp = new IWTimestamp( "2001-01-01 " + arrivalTime );
-    }
-
-
-    int[] tempDays = new int[7];
-    int counter = 0;
-    if ( allDays != null ) {
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY;
-      tempDays[counter++] = is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY;
-    } else {
-      if ( sundays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
-      }
-      if ( mondays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.MONDAY;
-      }
-      if ( tuesdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.TUESDAY;
-      }
-      if ( wednesdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.WEDNESDAY;
-      }
-      if ( thursdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.THURSDAY;
-      }
-      if ( fridays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.FRIDAY;
-      }
-      if ( saturdays != null ) {
-        tempDays[counter++] = java.util.GregorianCalendar.SATURDAY;
-      }
-    }
-
-    int[] activeDays = new int[counter];
-    System.arraycopy( tempDays, 0, activeDays, 0, counter );
-*/
 
     int returner = -1;
 
@@ -252,6 +168,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
   public Form getDesignerForm( IWContext iwc, int serviceId ) throws RemoteException, FinderException {
     boolean isDataValid = true;
+    boolean isChangingFromOtherType = false;
+
 
     if ( serviceId != -1 ) {
       isDataValid = setupData( serviceId );
@@ -272,11 +190,9 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
       TextInput name = new TextInput( PARAMETER_NAME );
       name.setSize( 40 );
-      //name.keepStatusOnAction();
       TextArea description = new TextArea( PARAMETER_DESCRIPTION );
       description.setWidth( "50" );
       description.setHeight( "12" );
-      //description.keepStatusOnAction();
       TextInput number = new TextInput( PARAMETER_NUMBER );
       number.setSize( 20 );
       number.keepStatusOnAction();
@@ -284,52 +200,6 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 
       int currentYear = IWTimestamp.RightNow().getYear();
 
-/*      DateInput active_from = new DateInput( PARAMETER_ACTIVE_FROM );
-      active_from.setDate( stamp.getDate() );
-      active_from.setYearRange( 2001, currentYear + 5 );
-      active_from.keepStatusOnAction();
-      DateInput active_to = new DateInput( PARAMETER_ACTIVE_TO );
-      stamp.addDays( 92 );
-      active_to.setDate( stamp.getDate() );
-      active_to.setYearRange( 2001, currentYear + 5 );
-      active_to.keepStatusOnAction();
-      BooleanInput active_yearly = new BooleanInput( PARAMETER_ACTIVE_YEARLY );
-      active_yearly.setSelected( false );
-      active_yearly.keepStatusOnAction();
-
-      CheckBox allDays = new CheckBox( PARAMETER_ALL_DAYS );
-      CheckBox mondays = new CheckBox( PARAMETER_MONDAYS );
-      CheckBox tuesdays = new CheckBox( PARAMETER_TUESDAYS );
-      CheckBox wednesdays = new CheckBox( PARAMETER_WEDNESDAYS );
-      CheckBox thursdays = new CheckBox( PARAMETER_THURSDAYS );
-      CheckBox fridays = new CheckBox( PARAMETER_FRIDAYS );
-      CheckBox saturdays = new CheckBox( PARAMETER_SATURDAYS );
-      CheckBox sundays = new CheckBox( PARAMETER_SUNDAYS );
-      allDays.keepStatusOnAction();
-      mondays.keepStatusOnAction();
-      tuesdays.keepStatusOnAction();
-      wednesdays.keepStatusOnAction();
-      thursdays.keepStatusOnAction();
-      fridays.keepStatusOnAction();
-      saturdays.keepStatusOnAction();
-      sundays.keepStatusOnAction();
-
-      TextInput departure_from = new TextInput( PARAMETER_DEPARTURE_FROM );
-      departure_from.setSize( 40 );
-      departure_from.keepStatusOnAction();
-      TimeInput departure_time = new TimeInput( PARAMETER_DEPARTURE_TIME );
-      departure_time.setHour( 8 );
-      departure_time.setMinute( 0 );
-      departure_time.keepStatusOnAction();
-      TextInput arrival_at = new TextInput( PARAMETER_ARRIVAL_AT );
-      arrival_at.setSize( 40 );
-      arrival_at.keepStatusOnAction();
-      TimeInput arrival_time = new TimeInput( PARAMETER_ARRIVAL_TIME );
-      arrival_time.setHour( 8 );
-      arrival_time.setMinute( 0 );
-      arrival_time.keepStatusOnAction();
-
-*/
       TextInput numberOfUnits = new TextInput( PARAMETER_NUMBER_OF_UNITS );
 
       DropdownMenu discountType = new DropdownMenu( PARAMETER_DISCOUNT_TYPE );
@@ -356,13 +226,9 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       Text imgText = ( Text ) theBoldText.clone();
       imgText.setText( _iwrb.getLocalizedString( "travel.image", "Image" ) );
 
-//      table.add(descText,1,row);
-//      table.add(description, 2,row);
       table.setVerticalAlignment( 1, row, "top" );
       table.setVerticalAlignment( 2, row, "top" );
 
-//      ++row;
-//      table.add(locales, 2, row);
       ++row;
 
       ImageInserter imageInserter = new ImageInserter( PARAMETER_DESIGN_IMAGE_ID );
@@ -380,14 +246,11 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
         if ( imageId != null ) {
           imageInserter.setImageId( Integer.parseInt( imageId ) );
           imageInserter.setSelected( true );
-          //imageInserter = new ImageInserter(Integer.parseInt(imageId), "design_image_id");
         } else if ( _product.getFileId() != -1 ) {
           imageInserter.setImageId( _product.getFileId() );
           imageInserter.setSelected( true );
-          //imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
         }
       }
-      //imageInserter.setWindowToReload(true);
 
 
       table.setVerticalAlignment( 1, row, "top" );
@@ -405,102 +268,6 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       Text tfYearlyText = ( Text ) smallText.clone();
       tfYearlyText.setText( _iwrb.getLocalizedString( "travel.yearly", "yearly" ) );
 
-/*      Table activeTable = new Table( 5, 2 );
-
-      activeTable.add( tfFromText, 1, 1 );
-      activeTable.add( active_from, 1, 2 );
-      activeTable.add( tfToText, 3, 1 );
-      activeTable.add( active_to, 3, 2 );
-      activeTable.add( tfYearlyText, 5, 1 );
-      activeTable.add( active_yearly, 5, 2 );
-
-      activeTable.setVerticalAlignment( 1, 1, "bottom" );
-      activeTable.setVerticalAlignment( 3, 1, "bottom" );
-      activeTable.setVerticalAlignment( 5, 1, "bottom" );
-
-      table.add( timeframeText, 1, row );
-      table.add( activeTable, 2, row );
-*/
-/*
-      ++row;
-      Table weekdayFixTable = new Table( 9, 2 );
-      weekdayFixTable.setCellpadding( 0 );
-      weekdayFixTable.setCellspacing( 1 );
-      weekdayFixTable.setWidth( "350" );
-      weekdayFixTable.setColumnAlignment( 1, "center" );
-      weekdayFixTable.setColumnAlignment( 2, "center" );
-      weekdayFixTable.setColumnAlignment( 3, "center" );
-      weekdayFixTable.setColumnAlignment( 4, "center" );
-      weekdayFixTable.setColumnAlignment( 5, "center" );
-      weekdayFixTable.setColumnAlignment( 6, "center" );
-      weekdayFixTable.setColumnAlignment( 7, "center" );
-      weekdayFixTable.setColumnAlignment( 8, "center" );
-      weekdayFixTable.setColumnAlignment( 9, "center" );
-
-      Text alld = ( Text ) smallText.clone();
-      alld.setText( _iwrb.getLocalizedString( "travel.all_days", "All" ) );
-      Text mond = ( Text ) smallText.clone();
-      mond.setText( _iwrb.getLocalizedString( "travel.mon", "mon" ) );
-      Text tued = ( Text ) smallText.clone();
-      tued.setText( _iwrb.getLocalizedString( "travel.tue", "tue" ) );
-      Text wedd = ( Text ) smallText.clone();
-      wedd.setText( _iwrb.getLocalizedString( "travel.wed", "wed" ) );
-      Text thud = ( Text ) smallText.clone();
-      thud.setText( _iwrb.getLocalizedString( "travel.thu", "thu" ) );
-      Text frid = ( Text ) smallText.clone();
-      frid.setText( _iwrb.getLocalizedString( "travel.fri", "fri" ) );
-      Text satd = ( Text ) smallText.clone();
-      satd.setText( _iwrb.getLocalizedString( "travel.sat", "sat" ) );
-      Text sund = ( Text ) smallText.clone();
-      sund.setText( _iwrb.getLocalizedString( "travel.sun", "sun" ) );
-
-      weekdayFixTable.add( alld, 1, 1 );
-      weekdayFixTable.add( mond, 3, 1 );
-      weekdayFixTable.add( tued, 4, 1 );
-      weekdayFixTable.add( wedd, 5, 1 );
-      weekdayFixTable.add( thud, 6, 1 );
-      weekdayFixTable.add( frid, 7, 1 );
-      weekdayFixTable.add( satd, 8, 1 );
-      weekdayFixTable.add( sund, 9, 1 );
-
-      weekdayFixTable.add( allDays, 1, 2 );
-      weekdayFixTable.add( mondays, 3, 2 );
-      weekdayFixTable.add( tuesdays, 4, 2 );
-      weekdayFixTable.add( wednesdays, 5, 2 );
-      weekdayFixTable.add( thursdays, 6, 2 );
-      weekdayFixTable.add( fridays, 7, 2 );
-      weekdayFixTable.add( saturdays, 8, 2 );
-      weekdayFixTable.add( sundays, 9, 2 );
-
-      Text weekdaysText = ( Text ) theBoldText.clone();
-      weekdaysText.setText( _iwrb.getLocalizedString( "travel.weekdays", "Weekdays" ) );
-      table.add( weekdaysText, 1, row );
-      table.add( weekdayFixTable, 2, row );
-
-      ++row;
-      Text arrivalAtText = ( Text ) theBoldText.clone();
-      arrivalAtText.setText( _iwrb.getLocalizedString( "travel.arrival_at", "Arrival at" ) );
-      table.add( arrivalAtText, 1, row );
-      table.add( arrival_at, 2, row );
-
-      ++row;
-      Text arrivalTimeText = ( Text ) theBoldText.clone();
-      arrivalTimeText.setText( _iwrb.getLocalizedString( "travel.arrival_time", "Arrival time" ) );
-      table.add( arrivalTimeText, 1, row );
-      table.add( arrival_time, 2, row );
-
-      ++row;
-      Text departureFromText = ( Text ) theBoldText.clone();
-      departureFromText.setText( _iwrb.getLocalizedString( "travel.departure_from", "Departure from" ) );
-      table.add( departureFromText, 1, row );
-      table.add( departure_from, 2, row );
-
-      ++row;
-      Text departureTimeText = ( Text ) theBoldText.clone();
-      departureTimeText.setText( _iwrb.getLocalizedString( "travel.departure_time", "Departure time" ) );
-      table.add( departureTimeText, 1, row );
-      table.add( departure_time, 2, row );
-*/
       ++row;
       Text noUnitsText = ( Text ) theBoldText.clone();
       noUnitsText.setText( _iwrb.getLocalizedString( "travel.number_of_units", "Number of units" ) );
@@ -526,56 +293,11 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
         Parameter par1 = new Parameter( PARAMETER_IS_UPDATE, Integer.toString( serviceId ) );
         par1.keepStatusOnAction();
         table.add( par1 );
-        /*
-        if ( _timeframe != null ) {
-          Parameter par2 = new Parameter( PARAMETER_TIMEFRAME_ID, Integer.toString( _timeframe.getID() ) );
-          par2.keepStatusOnAction();
-          table.add( par2 );
-          active_from.setDate( new IWTimestamp( _timeframe.getFrom() ).getDate() );
-          active_to.setDate( new IWTimestamp( _timeframe.getTo() ).getDate() );
-          active_yearly.setSelected( _timeframe.getIfYearly() );
-        }*/
 
         name.setContent( _product.getProductName( super.getLocaleId() ) );
         number.setContent( _product.getNumber() );
         description.setContent( _product.getProductDescription( super.getLocaleId() ) );
 
-        /*
-        int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
-        try {
-          ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDay = sdayHome.create();
-          days = sDay.getDaysOfWeek(_service.getID());
-        }catch (Exception e) {
-          e.printStackTrace(System.err);
-        }
-        for ( int i = 0; i < days.length; i++ ) {
-          switch ( days[i] ) {
-            case is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY:
-              sundays.setChecked( true );
-              break;
-            case is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY:
-              mondays.setChecked( true );
-              break;
-            case is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY:
-              tuesdays.setChecked( true );
-              break;
-            case is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY:
-              wednesdays.setChecked( true );
-              break;
-            case is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY:
-              thursdays.setChecked( true );
-              break;
-            case is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY:
-              fridays.setChecked( true );
-              break;
-            case is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY:
-              saturdays.setChecked( true );
-              break;
-          }
-        }
-        IWTimestamp tempStamp;
-        */
 
         discountType.setSelectedElement( Integer.toString( _product.getDiscountTypeId() ) );
       } else {
