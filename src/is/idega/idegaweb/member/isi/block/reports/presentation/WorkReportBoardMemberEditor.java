@@ -335,10 +335,9 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         Iterator collIterator = coll.iterator();
         while (collIterator.hasNext())  {
           WorkReportGroup league = (WorkReportGroup) collIterator.next();
-          String id = league.getGroupId().toString(); 
           String name = league.getName(); 
           String display = resourceBundle.getLocalizedString(name, name);
-          optionMap.put(id, display);
+          optionMap.put(name, display);
           }
         }
         return optionMap;
