@@ -1265,7 +1265,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			if (message.getParentCase() == null) {
 				return true;
 			}
-			CaseCode caseCode = message.getCaseCode();
+			CaseCode caseCode = message.getParentCase().getCaseCode();
 			CommuneCaseBusiness ccBus = (CommuneCaseBusiness) IBOLookup.getServiceInstance(iwc, CommuneCaseBusiness.class);
 			CaseCode[] codes = ccBus.getProviderCaseCodes();
 			for (int i = 0; i < codes.length && canDisplay; i++) {
