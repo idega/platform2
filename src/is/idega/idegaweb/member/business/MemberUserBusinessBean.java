@@ -14,7 +14,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.sun.rsasign.r;
+
 /**
  * Description:	Use this business class to handle member information
  * Copyright:    Copyright (c) 2003
