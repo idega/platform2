@@ -70,7 +70,7 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
-import com.sun.rsasign.t;
+
 /**
  * The <code>UserEditor</code> handles user relations and addresses.
  * It contains a configurable unstrict user search. If more than one
