@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.46 2003/07/24 16:54:32 aron Exp $
+ * $Id: CampusApprover.java,v 1.47 2003/07/24 17:08:11 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -449,10 +449,10 @@ public class CampusApprover extends Block {
 			iwc.setSessionAttribute("iterator", iterator);
 			int len = L.size();
 			
-			if(iGlobalSize>0){
+			if(iGlobalSize>0 && iGlobalSize<=len){
 				len = iGlobalSize;
 			}
-			T.addTitle(iwrb.getLocalizedString("applicants", "Applicants")+" "+iwrb.getLocalizedString("viewing","viewing")
+			T.addTitle(iwrb.getLocalizedString("applicants", "Applicants")+" "+iwrb.getLocalizedString("showing","showing")
 			+" "+len+" "+iwrb.getLocalizedString("of","of")+" "+L.size());
 
 			boolean showcan = false;
