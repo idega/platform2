@@ -51,7 +51,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
     
     addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report",true,true,Integer.class,"many-to-one",WorkReport.class);
     
-    addAttribute(COLUMN_NAME_GROUP_ID, "Group id",true,true,Integer.class,"one-to-one",Group.class);
+    addAttribute(COLUMN_NAME_GROUP_ID, "Group id",true,true,Integer.class,"many-to-one",Group.class);
     
     addAttribute(COLUMN_NAME_HOME_PAGE, "Home page",true, true, String.class, 40);
     addAttribute(COLUMN_NAME_PERSONAL_ID,"Personal id",true,true,String.class,10);
@@ -129,8 +129,8 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
   public void setPostalCode(PostalCode postalCode) {
     setColumn(COLUMN_NAME_POSTAL_CODE_ID, postalCode);
   }
-  public void setPostalCodeID(int postal_code_id) {
-    setColumn(COLUMN_NAME_POSTAL_CODE_ID, postal_code_id);
+  public void setPostalCodeID(int postalCodeId) {
+    setColumn(COLUMN_NAME_POSTAL_CODE_ID, postalCodeId);
   }
   
 
@@ -164,6 +164,14 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
   
   public String getEmail(){
     return getStringColumnValue(COLUMN_NAME_EMAIL);
+  }
+  
+  public void setWorKReportGroupID(int workReportGroupID)  {
+    setColumn(COLUMN_NAME_WORK_REPORT_GROUP_ID, workReportGroupID);
+  }
+  
+  public int getWorkReportGroupID() {
+    return getIntColumnValue(COLUMN_NAME_WORK_REPORT_GROUP_ID);
   }
   
   public Collection ejbFindAllWorkReportDivisionBoardByWorkReportId(int reportId) throws FinderException{

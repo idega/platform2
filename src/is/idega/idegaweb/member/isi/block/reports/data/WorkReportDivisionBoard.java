@@ -15,6 +15,7 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public int getReportId();
  public java.lang.String getSecondPhone();
  public java.lang.String getStreetName();
+ public int getWorkReportGroupID();
  public void initializeAttributes();
  public void setEmail(java.lang.String p0);
  public void setFax(java.lang.String p0);
@@ -28,4 +29,5 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public void setReportId(int p0);
  public void setSecondPhone(java.lang.String p0);
  public void setStreetName(java.lang.String p0);
+ public void setWorKReportGroupID(int p0);
 }
