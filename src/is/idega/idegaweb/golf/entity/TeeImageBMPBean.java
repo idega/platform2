@@ -5,6 +5,7 @@ package is.idega.idegaweb.golf.entity;
 //import java.util.*;
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 
+import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 
 public class TeeImageBMPBean extends GenericEntity implements TeeImage{
@@ -13,9 +14,8 @@ public class TeeImageBMPBean extends GenericEntity implements TeeImage{
 		addAttribute(getIDColumnName());
 		addAttribute("field_id", "Völlur", true, true, "java.lang.Integer");
 		addAttribute("hole_number", "Holunúmer", true, true, "java.lang.Integer");
-                      addAttribute("image_id","Image",false,false,Integer.class,"one-to-many",ImageEntity.class);
-		//addAttribute("image_id", "Mynd", true, true, "java.lang.Integer");
-	}
+    addManyToOneRelationship("image", ICFile.class);
+  }
 
 	public String getEntityName(){
 		return "tee_image";
@@ -37,12 +37,15 @@ public class TeeImageBMPBean extends GenericEntity implements TeeImage{
 		setColumn("hole_number", hole_number);
 	}
 
-	public int getImageId(){
-		return getIntColumnValue("image_id");
+	public int getImageID(){
+		return getIntColumnValue("image");
 	}
 
-	public void setImageId(int image_id){
-		setColumn("image_id", image_id);
+	public void setImageID(int imageID){
+		setColumn("image", imageID);
 	}
 
+	public void setImageID(Integer imageID){
+		setColumn("image", imageID);
+	}
 }

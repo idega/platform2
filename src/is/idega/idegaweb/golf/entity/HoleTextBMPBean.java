@@ -7,6 +7,7 @@ import is.idega.idegaweb.golf.block.text.data.TextModule;
 
 import java.sql.SQLException;
 
+import com.idega.block.text.data.TxText;
 import com.idega.data.GenericEntity;
 
 public class HoleTextBMPBean extends GenericEntity implements HoleText{
@@ -15,7 +16,7 @@ public class HoleTextBMPBean extends GenericEntity implements HoleText{
 		addAttribute(getIDColumnName());
                 addAttribute("field_id","Númer vallar",true,true,"java.lang.Integer","many-to-one","is.idega.idegaweb.golf.entity.Field");
                 addAttribute("hole_number","Númer holu",true,true,"java.lang.Integer");
-		addAttribute("text_id", "Félag", true, true, Integer.class,"many-to-one",TextModule.class);
+		addManyToOneRelationship("text", TxText.class);
 	}
 
         public String getEntityName(){
@@ -38,11 +39,11 @@ public class HoleTextBMPBean extends GenericEntity implements HoleText{
             return getIntColumnValue("hole_number");
         }
 
-	public void setTextId(int text_id) {
-            setColumn("text_id",new Integer(text_id));
+	public void setTextID(int textID) {
+            setColumn("text",textID);
         }
 
-        public int getTextId() {
-            return getIntColumnValue("text_id");
+        public int getTextID() {
+            return getIntColumnValue("text");
         }
 }
